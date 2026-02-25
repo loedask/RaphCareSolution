@@ -5,7 +5,7 @@ using RaphCare.Domain.Clinical;
 
 namespace RaphCare.Application.Features.Clinical.Commands.UpdateVisit;
 
-public class UpdateVisitHandler : IRequestHandler<UpdateVisitCommand>
+public class UpdateVisitHandler : IRequestHandler<UpdateVisitCommand, Unit>
 {
     private readonly IRepository<Visit> _repository;
     private readonly IUnitOfWork _unitOfWork;

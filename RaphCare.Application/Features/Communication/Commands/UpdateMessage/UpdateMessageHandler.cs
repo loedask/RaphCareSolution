@@ -5,24 +5,16 @@ using RaphCare.Domain.Communication;
 
 namespace RaphCare.Application.Features.Communication.Commands.UpdateMessage;
 
-public class UpdateMessageHandler : IRequestHandler<UpdateMessageCommand>
+public class UpdateMessageHandler(
+    IRepository<Message> repository,
+    IUnitOfWork unitOfWork,
+    ICurrentUserService currentUserService,
+    IDateTimeProvider dateTimeProvider) : IRequestHandler<UpdateMessageCommand, Unit>
 {
-    private readonly IRepository<Message> _repository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IDateTimeProvider _dateTimeProvider;
-
-    public UpdateMessageHandler(
-        IRepository<Message> repository,
-        IUnitOfWork unitOfWork,
-        ICurrentUserService currentUserService,
-        IDateTimeProvider dateTimeProvider)
-    {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-        _currentUserService = currentUserService;
-        _dateTimeProvider = dateTimeProvider;
-    }
+    private readonly IRepository<Message> _repository = repository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly ICurrentUserService _currentUserService = currentUserService;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
     public async Task<Unit> Handle(UpdateMessageCommand request, CancellationToken cancellationToken)
     {

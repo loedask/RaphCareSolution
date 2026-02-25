@@ -2,7 +2,7 @@ using MediatR;
 
 namespace RaphCare.Application.Features.Patients.Commands.UpdatePatient;
 
-public class UpdatePatientCommand : IRequest
+public class UpdatePatientCommand : IRequest<Unit>
 {
     public Guid Id { get; set; }
     public string? FirstName { get; set; }

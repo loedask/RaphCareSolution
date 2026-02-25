@@ -4,24 +4,16 @@ using RaphCare.Domain.Patients;
 
 namespace RaphCare.Application.Features.Patients.Commands.CreatePatient;
 
-public class CreatePatientHandler : IRequestHandler<CreatePatientCommand, Guid>
+public class CreatePatientHandler(
+    IRepository<Patient> repository,
+    IUnitOfWork unitOfWork,
+    ICurrentUserService currentUserService,
+    IDateTimeProvider dateTimeProvider) : IRequestHandler<CreatePatientCommand, Guid>
 {
-    private readonly IRepository<Patient> _repository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IDateTimeProvider _dateTimeProvider;
-
-    public CreatePatientHandler(
-        IRepository<Patient> repository,
-        IUnitOfWork unitOfWork,
-        ICurrentUserService currentUserService,
-        IDateTimeProvider dateTimeProvider)
-    {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-        _currentUserService = currentUserService;
-        _dateTimeProvider = dateTimeProvider;
-    }
+    private readonly IRepository<Patient> _repository = repository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly ICurrentUserService _currentUserService = currentUserService;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
     public async Task<Guid> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
     {

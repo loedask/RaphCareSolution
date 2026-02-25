@@ -5,7 +5,7 @@ using RaphCare.Domain.Clinical;
 
 namespace RaphCare.Application.Features.Appointments.Commands.UpdateAppointment;
 
-public class UpdateAppointmentHandler : IRequestHandler<UpdateAppointmentCommand>
+public class UpdateAppointmentHandler : IRequestHandler<UpdateAppointmentCommand, Unit>
 {
     private readonly IRepository<Appointment> _repository;
     private readonly IUnitOfWork _unitOfWork;

@@ -2,7 +2,7 @@ using MediatR;
 
 namespace RaphCare.Application.Features.Clinical.Commands.UpdateVisit;
 
-public class UpdateVisitCommand : IRequest
+public class UpdateVisitCommand : IRequest<Unit>
 {
     public Guid Id { get; set; }
     public DateTime? VisitEnd { get; set; }

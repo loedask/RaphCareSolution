@@ -5,7 +5,7 @@ using RaphCare.Domain.Patients;
 
 namespace RaphCare.Application.Features.Insurance.Commands.UpdateInsuranceProfile;
 
-public class UpdateInsuranceProfileHandler : IRequestHandler<UpdateInsuranceProfileCommand>
+public class UpdateInsuranceProfileHandler : IRequestHandler<UpdateInsuranceProfileCommand, Unit>
 {
     private readonly IRepository<InsuranceProfile> _repository;
     private readonly IUnitOfWork _unitOfWork;

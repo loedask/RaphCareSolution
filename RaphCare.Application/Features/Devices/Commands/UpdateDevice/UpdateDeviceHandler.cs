@@ -5,7 +5,7 @@ using RaphCare.Domain.Devices;
 
 namespace RaphCare.Application.Features.Devices.Commands.UpdateDevice;
 
-public class UpdateDeviceHandler : IRequestHandler<UpdateDeviceCommand>
+public class UpdateDeviceHandler : IRequestHandler<UpdateDeviceCommand, Unit>
 {
     private readonly IRepository<Device> _repository;
     private readonly IUnitOfWork _unitOfWork;

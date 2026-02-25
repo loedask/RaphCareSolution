@@ -5,7 +5,7 @@ using RaphCare.Domain.Billing;
 
 namespace RaphCare.Application.Features.Billing.Commands.UpdateInvoice;
 
-public class UpdateInvoiceHandler : IRequestHandler<UpdateInvoiceCommand>
+public class UpdateInvoiceHandler : IRequestHandler<UpdateInvoiceCommand, Unit>
 {
     private readonly IRepository<Invoice> _repository;
     private readonly IUnitOfWork _unitOfWork;

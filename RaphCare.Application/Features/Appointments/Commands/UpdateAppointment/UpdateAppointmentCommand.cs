@@ -2,7 +2,7 @@ using MediatR;
 
 namespace RaphCare.Application.Features.Appointments.Commands.UpdateAppointment;
 
-public class UpdateAppointmentCommand : IRequest
+public class UpdateAppointmentCommand : IRequest<Unit>
 {
     public Guid Id { get; set; }
     public DateTime? ScheduledStart { get; set; }
