@@ -1,6 +1,6 @@
 using FluentValidation;
 using MediatR;
-using RaphCare.Application.Common.Exceptions;
+using ValidationException = RaphCare.Application.Common.Exceptions.ValidationException;
 
 namespace RaphCare.Application.Common.Behaviors;
 
