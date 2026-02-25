@@ -1,11 +1,8 @@
-using RaphCare.Domain.Common;
+using RaphCare.Application.Common.DTOs;
 
-namespace RaphCare.Domain.Communication;
+namespace RaphCare.Application.Features.Communication.DTOs;
 
-/// <summary>
-/// Outbound or logged communication (email, SMS, push).
-/// </summary>
-public class Message : BaseEntity
+public class MessageDto : BaseDto
 {
     public Guid ClinicId { get; set; }
     public string RecipientUserId { get; set; } = string.Empty;

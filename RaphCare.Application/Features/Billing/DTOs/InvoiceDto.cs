@@ -1,17 +1,14 @@
-using RaphCare.Domain.Common;
+using RaphCare.Application.Common.DTOs;
 
-namespace RaphCare.Domain.Billing;
+namespace RaphCare.Application.Features.Billing.DTOs;
 
-/// <summary>
-/// Billing invoice for a patient or visit.
-/// </summary>
-public class Invoice : BaseEntity
+public class InvoiceDto : BaseDto
 {
     public Guid ClinicId { get; set; }
     public Guid PatientId { get; set; }
     public Guid? VisitId { get; set; }
     public decimal Amount { get; set; }
-    public string Currency { get; set; } = "ZAR";
+    public string Currency { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public DateTime DueDate { get; set; }
     public DateTime? PaidAt { get; set; }
