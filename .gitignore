@@ -1,2 +1,5 @@
 .vs/
 RaphCare.Domain/obj/
+RaphCare.Application/bin/
+RaphCare.Application/obj/
+RaphCare.Domain/bin/
