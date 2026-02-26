@@ -5,10 +5,8 @@ using RaphCare.Domain.Patients;
 
 namespace RaphCare.Infrastructure.Persistence;
 
-public class ClinicalDbContext : DbContext
+public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : DbContext(options)
 {
-    public ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : base(options) { }
-
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<Clinic> Clinics => Set<Clinic>();
     public DbSet<Appointment> Appointments => Set<Appointment>();

@@ -4,10 +4,8 @@ using RaphCare.Domain.Patients;
 
 namespace RaphCare.Infrastructure.Persistence;
 
-public class InsuranceDbContext : DbContext
+public class InsuranceDbContext(DbContextOptions<InsuranceDbContext> options) : DbContext(options)
 {
-    public InsuranceDbContext(DbContextOptions<InsuranceDbContext> options) : base(options) { }
-
     public DbSet<InsurancePlan> InsurancePlans => Set<InsurancePlan>();
     public DbSet<InsuranceProfile> InsuranceProfiles => Set<InsuranceProfile>();
 

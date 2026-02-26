@@ -3,10 +3,8 @@ using RaphCare.Domain.Identity;
 
 namespace RaphCare.Infrastructure.Persistence;
 
-public class IdentityDbContext : DbContext
+public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : DbContext(options)
 {
-    public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
-
     public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Permission> Permissions => Set<Permission>();

@@ -3,10 +3,8 @@ using RaphCare.Domain.Billing;
 
 namespace RaphCare.Infrastructure.Persistence;
 
-public class BillingDbContext : DbContext
+public class BillingDbContext(DbContextOptions<BillingDbContext> options) : DbContext(options)
 {
-    public BillingDbContext(DbContextOptions<BillingDbContext> options) : base(options) { }
-
     public DbSet<Invoice> Invoices => Set<Invoice>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

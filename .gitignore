@@ -5,3 +5,5 @@ RaphCare.Application/obj/
 RaphCare.Domain/bin/
 RaphCare.Infrastructure/obj/
 RaphCare.Infrastructure/bin/
+RaphCare.Persistence/obj/
+RaphCare.Identity/obj/

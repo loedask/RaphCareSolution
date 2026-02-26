@@ -3,10 +3,8 @@ using RaphCare.Domain.Devices;
 
 namespace RaphCare.Infrastructure.Persistence;
 
-public class DeviceDbContext : DbContext
+public class DeviceDbContext(DbContextOptions<DeviceDbContext> options) : DbContext(options)
 {
-    public DeviceDbContext(DbContextOptions<DeviceDbContext> options) : base(options) { }
-
     public DbSet<Device> Devices => Set<Device>();
     public DbSet<DeviceType> DeviceTypes => Set<DeviceType>();
     public DbSet<DeviceManufacturer> DeviceManufacturers => Set<DeviceManufacturer>();
