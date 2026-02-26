@@ -9,11 +9,9 @@ namespace RaphCare.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ClinicalController : ControllerBase
+public class ClinicalController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public ClinicalController(IMediator mediator) { _mediator = mediator; }
+    private readonly IMediator _mediator = mediator;
 
     [HttpGet("visits/{id:guid}")]
     public async Task<IActionResult> GetVisit(Guid id, CancellationToken cancellationToken)

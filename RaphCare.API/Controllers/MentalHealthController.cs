@@ -6,11 +6,9 @@ namespace RaphCare.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MentalHealthController : ControllerBase
+public class MentalHealthController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public MentalHealthController(IMediator mediator) { _mediator = mediator; }
+    private readonly IMediator _mediator = mediator;
 
     /// <summary>Get mental health assessments. Roles: Admin, Provider.</summary>
     [HttpGet("assessments")]

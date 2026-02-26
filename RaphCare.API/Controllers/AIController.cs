@@ -6,11 +6,9 @@ namespace RaphCare.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AIController : ControllerBase
+public class AIController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public AIController(IMediator mediator) => _mediator = mediator;
+    private readonly IMediator _mediator = mediator;
 
     [HttpPost("summary")]
     public async Task<IActionResult> GenerateSummary([FromBody] GenerateSummaryCommand command, CancellationToken cancellationToken)

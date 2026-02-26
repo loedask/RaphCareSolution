@@ -7,11 +7,9 @@ namespace RaphCare.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TelemedicineController : ControllerBase
+public class TelemedicineController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public TelemedicineController(IMediator mediator) { _mediator = mediator; }
+    private readonly IMediator _mediator = mediator;
 
     [HttpGet("sessions/{id:guid}")]
     public async Task<IActionResult> GetSession(Guid id, CancellationToken ct)

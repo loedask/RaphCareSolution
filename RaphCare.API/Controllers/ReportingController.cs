@@ -6,11 +6,9 @@ namespace RaphCare.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportingController : ControllerBase
+public class ReportingController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public ReportingController(IMediator mediator) => _mediator = mediator;
+    private readonly IMediator _mediator = mediator;
 
     /// <summary>Get dashboard snapshot for a clinic. Roles: Admin, Provider.</summary>
     [HttpGet("dashboard")]
