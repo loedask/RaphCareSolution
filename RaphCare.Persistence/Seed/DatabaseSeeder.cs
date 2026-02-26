@@ -43,6 +43,7 @@ public static class DatabaseSeeder
         }
 
         var now = DateTime.UtcNow;
+
         var adminRole = new Role
         {
             Id = Guid.NewGuid(),

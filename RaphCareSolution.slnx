@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/src/" />
+  <Folder Name="/src/">
+    <Project Path="RaphCare.API/RaphCare.API.csproj" />
+  </Folder>
   <Folder Name="/src/Core/">
     <Project Path="RaphCare.Application/RaphCare.Application.csproj" />
     <Project Path="RaphCare.Domain/RaphCare.Domain.csproj" />

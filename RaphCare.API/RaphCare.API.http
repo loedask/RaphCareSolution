@@ -1,0 +1,6 @@
+@RaphCare.API_HostAddress = http://localhost:5281
+
+GET {{RaphCare.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
