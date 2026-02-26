@@ -4,6 +4,7 @@ using RaphCare.Domain.Patients;
 
 namespace RaphCare.Infrastructure.Persistence.Configurations;
 
+/// <summary>EF Core Fluent API configuration for the InsuranceProfile entity (insurance bounded context).</summary>
 public class InsuranceProfileConfiguration : IEntityTypeConfiguration<InsuranceProfile>
 {
     public void Configure(EntityTypeBuilder<InsuranceProfile> builder)

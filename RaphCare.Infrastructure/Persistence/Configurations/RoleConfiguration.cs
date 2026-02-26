@@ -4,6 +4,7 @@ using RaphCare.Domain.Identity;
 
 namespace RaphCare.Infrastructure.Persistence.Configurations;
 
+/// <summary>EF Core Fluent API configuration for the Role entity (identity bounded context).</summary>
 public class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
     public void Configure(EntityTypeBuilder<Role> builder)

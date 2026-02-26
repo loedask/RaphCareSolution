@@ -4,6 +4,7 @@ using RaphCare.Domain.AI;
 
 namespace RaphCare.Infrastructure.Persistence.Configurations;
 
+/// <summary>EF Core Fluent API configuration for the WellnessInsight entity (AI bounded context).</summary>
 public class WellnessInsightConfiguration : IEntityTypeConfiguration<WellnessInsight>
 {
     public void Configure(EntityTypeBuilder<WellnessInsight> builder)

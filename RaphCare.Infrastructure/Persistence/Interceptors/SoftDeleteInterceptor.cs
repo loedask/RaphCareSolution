@@ -4,6 +4,10 @@ using RaphCare.Domain.Common.Interfaces;
 
 namespace RaphCare.Infrastructure.Persistence.Interceptors;
 
+/// <summary>
+/// EF Core SaveChanges interceptor. Uses the SavingChanges / SavingChangesAsync lifecycle hook to convert physical deletes into soft deletes for entities implementing <see cref="RaphCare.Domain.Common.Interfaces.ISoftDelete"/> (sets IsDeleted and DeletedAt, then marks as Modified).
+/// Exists to enforce soft-delete behavior consistently across all DbContexts.
+/// </summary>
 public class SoftDeleteInterceptor : SaveChangesInterceptor
 {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)

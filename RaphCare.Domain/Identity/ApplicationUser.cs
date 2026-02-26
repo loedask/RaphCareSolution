@@ -1,5 +1,9 @@
 namespace RaphCare.Domain.Identity;
 
+/// <summary>
+/// Domain representation of an authenticated user, synced from Microsoft Entra ID.
+/// Used for authorization and audit; not ASP.NET Identity.
+/// </summary>
 public class ApplicationUser
 {
     public Guid Id { get; set; }

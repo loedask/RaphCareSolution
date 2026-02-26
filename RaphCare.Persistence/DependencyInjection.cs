@@ -5,11 +5,16 @@ using RaphCare.Infrastructure.Persistence.Interceptors;
 
 namespace RaphCare.Persistence;
 
+/// <summary>Persistence layer registration: all bounded-context DbContexts, interceptors, and connection strings.</summary>
 public static class DependencyInjection
 {
     private const string DefaultConnectionName = "DefaultConnection";
     private const string MigrationsAssemblyName = "RaphCare.Persistence";
 
+    /// <summary>Registers all DbContexts (Identity, Clinical, Device, Insurance, Billing, AI) with SQL Server, interceptors, and development-only options.</summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">Application configuration (connection strings, environment).</param>
+    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddPersistence(
         this IServiceCollection services,
         IConfiguration configuration)

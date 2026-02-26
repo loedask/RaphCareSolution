@@ -1,5 +1,6 @@
 namespace RaphCare.Application.Features.MentalHealth.DTOs;
 
+/// <summary>Application-layer DTO for a mental health assessment in list or detail responses.</summary>
 public class MentalHealthAssessmentDto
 {
     public Guid Id { get; set; }

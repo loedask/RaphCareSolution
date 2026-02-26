@@ -7,9 +7,7 @@ using RaphCare.Application.Features.Billing.Queries.GetInvoices;
 
 namespace RaphCare.API.Controllers;
 
-/// <summary>
-/// Invoicing and billing. Roles: Admin, Provider.
-/// </summary>
+/// <summary>Invoicing and billing. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
 [ApiController]
 [Route("api/[controller]")]
 public class BillingController(IMediator mediator) : ControllerBase

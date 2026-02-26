@@ -4,6 +4,7 @@ using RaphCare.Application.Features.AI.Commands.GenerateSummary;
 
 namespace RaphCare.API.Controllers;
 
+/// <summary>AI-powered summaries and insights. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
 [ApiController]
 [Route("api/[controller]")]
 public class AIController(IMediator mediator) : ControllerBase

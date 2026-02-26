@@ -10,6 +10,8 @@ public class AuditMiddleware(RequestDelegate next, ILogger<AuditMiddleware> logg
     private readonly RequestDelegate _next = next;
     private readonly ILogger<AuditMiddleware> _logger = logger;
 
+    /// <summary>Logs request path, user id, and timestamp then invokes the next middleware.</summary>
+    /// <param name="context">The HTTP context.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         var path = context.Request.Path.Value ?? "-";

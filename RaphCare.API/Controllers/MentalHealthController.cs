@@ -4,6 +4,7 @@ using RaphCare.Application.Features.MentalHealth.Queries.GetMentalHealthAssessme
 
 namespace RaphCare.API.Controllers;
 
+/// <summary>Mental health assessments. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
 [ApiController]
 [Route("api/[controller]")]
 public class MentalHealthController(IMediator mediator) : ControllerBase

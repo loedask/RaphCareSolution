@@ -3,6 +3,7 @@ using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Infrastructure.Services;
 
+/// <summary>Outbound SMS integration. Placeholder for Twilio, Africa's Talking, or similar.</summary>
 public class SmsService : ISmsService
 {
     private readonly ILogger<SmsService> _logger;

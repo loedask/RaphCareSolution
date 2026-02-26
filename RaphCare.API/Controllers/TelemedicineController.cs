@@ -5,6 +5,7 @@ using RaphCare.Application.Features.Telemedicine.Queries.GetTeleSessionById;
 
 namespace RaphCare.API.Controllers;
 
+/// <summary>Telemedicine sessions. Thin API; delegates to MediatR. Roles: Admin, Provider, Patient.</summary>
 [ApiController]
 [Route("api/[controller]")]
 public class TelemedicineController(IMediator mediator) : ControllerBase

@@ -1,5 +1,8 @@
 namespace RaphCare.Domain.Identity;
 
+/// <summary>
+/// Fine-grained permission (e.g. Patients.Read, Visits.Write) assigned to roles.
+/// </summary>
 public class Permission
 {
     public Guid Id { get; set; }

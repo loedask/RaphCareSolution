@@ -1,5 +1,8 @@
 namespace RaphCare.Domain.Identity;
 
+/// <summary>
+/// Join entity linking an application user to a role for role-based authorization.
+/// </summary>
 public class UserRole
 {
     public Guid Id { get; set; }

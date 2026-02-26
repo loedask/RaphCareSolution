@@ -6,7 +6,7 @@ using RaphCare.Domain.Identity;
 namespace RaphCare.Identity.Entra;
 
 /// <summary>
-/// Ensures an ApplicationUser exists for the Entra principal and syncs EntraObjectId, Email, DisplayName.
+/// Ensures an ApplicationUser exists for the Entra principal and syncs EntraObjectId, Email, DisplayName. Role in authentication pipeline: call after JWT validation to provision or sync the domain user for the current request.
 /// </summary>
 public class EntraUserProvisioningService(
     IApplicationUserStore userStore,
@@ -16,6 +16,10 @@ public class EntraUserProvisioningService(
     private readonly IApplicationUserStore _userStore = userStore ?? throw new ArgumentNullException(nameof(userStore));
     private readonly ILogger<EntraUserProvisioningService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
+    /// <summary>Ensures a domain user exists for the principal; creates or updates from Entra claims (oid, email, name).</summary>
+    /// <param name="principal">The authenticated claims principal from the JWT.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The application user (existing or newly created).</returns>
     public async Task<ApplicationUser> EnsureUserExistsAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
     {
         var entraObjectId = GetEntraObjectId(principal);

@@ -3,6 +3,7 @@ using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Infrastructure.Services;
 
+/// <summary>Payment processing integration. Placeholder for mobile money and card payments.</summary>
 public class PaymentGatewayService : IPaymentGatewayService
 {
     private readonly ILogger<PaymentGatewayService> _logger;

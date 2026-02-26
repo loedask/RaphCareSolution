@@ -1,5 +1,8 @@
 namespace RaphCare.Domain.Identity;
 
+/// <summary>
+/// Join entity linking a role to a permission for fine-grained access control.
+/// </summary>
 public class RolePermission
 {
     public Guid Id { get; set; }

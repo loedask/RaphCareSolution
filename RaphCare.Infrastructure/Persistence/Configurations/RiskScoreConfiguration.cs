@@ -4,6 +4,7 @@ using RaphCare.Domain.AI;
 
 namespace RaphCare.Infrastructure.Persistence.Configurations;
 
+/// <summary>EF Core Fluent API configuration for the RiskScore entity (AI bounded context).</summary>
 public class RiskScoreConfiguration : IEntityTypeConfiguration<RiskScore>
 {
     public void Configure(EntityTypeBuilder<RiskScore> builder)

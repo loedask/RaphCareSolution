@@ -7,6 +7,7 @@ using RaphCare.Application.Features.Appointments.Queries.GetAppointments;
 
 namespace RaphCare.API.Controllers;
 
+/// <summary>Appointment scheduling and management. Thin API; delegates to MediatR. Roles: Admin, Provider, Patient.</summary>
 [ApiController]
 [Route("api/[controller]")]
 public class AppointmentsController(IMediator mediator) : ControllerBase

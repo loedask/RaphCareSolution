@@ -3,6 +3,7 @@ using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Infrastructure.Services;
 
+/// <summary>Outbound email integration. Placeholder for SendGrid, SMTP, or Azure Communication Services.</summary>
 public class EmailService : IEmailService
 {
     private readonly ILogger<EmailService> _logger;

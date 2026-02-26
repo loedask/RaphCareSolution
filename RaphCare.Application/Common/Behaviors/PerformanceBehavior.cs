@@ -4,12 +4,16 @@ using System.Diagnostics;
 
 namespace RaphCare.Application.Common.Behaviors;
 
+/// <summary>
+/// MediatR pipeline behavior that measures handler execution time and logs a warning when it exceeds 500 ms.
+/// </summary>
 public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     private readonly ILogger<PerformanceBehavior<TRequest, TResponse>> _logger;
     private readonly Stopwatch _timer = new();
 
+    /// <summary>Creates the performance behavior.</summary>
     public PerformanceBehavior(ILogger<PerformanceBehavior<TRequest, TResponse>> logger)
     {
         _logger = logger;

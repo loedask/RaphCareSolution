@@ -4,6 +4,7 @@ using RaphCare.Domain.Clinical;
 
 namespace RaphCare.Infrastructure.Persistence.Configurations;
 
+/// <summary>EF Core Fluent API configuration for the Visit entity (clinical bounded context).</summary>
 public class VisitConfiguration : IEntityTypeConfiguration<Visit>
 {
     public void Configure(EntityTypeBuilder<Visit> builder)

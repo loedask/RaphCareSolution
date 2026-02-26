@@ -7,6 +7,10 @@ using System.Reflection;
 
 namespace RaphCare.Infrastructure.Persistence.Interceptors;
 
+/// <summary>
+/// EF Core SaveChanges interceptor. Uses the SavedChangesAsync lifecycle hook after a successful save to collect domain events from <see cref="Domain.Common.BaseEntity"/> entries, dispatch them via <see cref="IDomainEventDispatcher"/> (which publishes each as a MediatR notification), then clear the events from the entities.
+/// Ensures domain events are published only after persistence succeeds.
+/// </summary>
 public class DomainEventDispatcherInterceptor(IDomainEventDispatcher dispatcher) : SaveChangesInterceptor
 {
     private static readonly PropertyInfo? DomainEventsProp = typeof(BaseEntity)

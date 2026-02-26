@@ -4,11 +4,15 @@ using ValidationException = RaphCare.Application.Common.Exceptions.ValidationExc
 
 namespace RaphCare.Application.Common.Behaviors;
 
+/// <summary>
+/// MediatR pipeline behavior that runs FluentValidation for the request before the handler. Throws <see cref="Exceptions.ValidationException"/> on failure.
+/// </summary>
 public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators = validators;
 
+    /// <inheritdoc />
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,

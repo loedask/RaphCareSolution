@@ -4,6 +4,7 @@ using RaphCare.Application.Features.Reporting.Queries.GetDashboardSnapshot;
 
 namespace RaphCare.API.Controllers;
 
+/// <summary>Reporting and dashboard snapshots. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
 [ApiController]
 [Route("api/[controller]")]
 public class ReportingController(IMediator mediator) : ControllerBase

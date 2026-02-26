@@ -4,6 +4,7 @@ using RaphCare.Domain.Devices;
 
 namespace RaphCare.Infrastructure.Persistence.Configurations;
 
+/// <summary>EF Core Fluent API configuration for the Device entity (device bounded context).</summary>
 public class DeviceConfiguration : IEntityTypeConfiguration<Device>
 {
     public void Configure(EntityTypeBuilder<Device> builder)

@@ -3,6 +3,7 @@ using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Infrastructure.Services;
 
+/// <summary>AI integration for summaries, wellness insights, and risk scores. Placeholder for Azure OpenAI / GPT.</summary>
 public class AIService : IAIService
 {
     private readonly ILogger<AIService> _logger;

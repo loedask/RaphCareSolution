@@ -4,16 +4,21 @@ using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Application.Common.Behaviors;
 
+/// <summary>
+/// MediatR pipeline behavior that enforces authenticated user before handler execution. Throws <see cref="ForbiddenAccessException"/> when not authenticated.
+/// </summary>
 public class AuthorizationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     private readonly ICurrentUserService _currentUserService;
 
+    /// <summary>Creates the authorization behavior.</summary>
     public AuthorizationBehavior(ICurrentUserService currentUserService)
     {
         _currentUserService = currentUserService;
     }
 
+    /// <inheritdoc />
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,

@@ -4,6 +4,7 @@ using RaphCare.Domain.Organization;
 
 namespace RaphCare.Infrastructure.Persistence.Configurations;
 
+/// <summary>EF Core Fluent API configuration for the Clinic entity (clinical bounded context).</summary>
 public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
 {
     public void Configure(EntityTypeBuilder<Clinic> builder)

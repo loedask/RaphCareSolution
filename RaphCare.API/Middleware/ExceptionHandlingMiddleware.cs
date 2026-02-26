@@ -13,6 +13,8 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
     private readonly RequestDelegate _next = next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
 
+    /// <summary>Invokes the next middleware; on exception, logs and returns ProblemDetails (404/400/403/500).</summary>
+    /// <param name="context">The HTTP context.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         try

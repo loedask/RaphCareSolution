@@ -4,6 +4,7 @@ using RaphCare.Domain.Billing;
 
 namespace RaphCare.Infrastructure.Persistence.Configurations;
 
+/// <summary>EF Core Fluent API configuration for the Invoice entity (billing bounded context).</summary>
 public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 {
     public void Configure(EntityTypeBuilder<Invoice> builder)

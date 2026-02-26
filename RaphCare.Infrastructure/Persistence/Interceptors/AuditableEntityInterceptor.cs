@@ -4,6 +4,10 @@ using System.Reflection;
 
 namespace RaphCare.Infrastructure.Persistence.Interceptors;
 
+/// <summary>
+/// EF Core SaveChanges interceptor. Uses the SavingChanges / SavingChangesAsync lifecycle hook to set CreatedAt and UpdatedAt on <see cref="Domain.Common.BaseEntity"/> entries before persistence.
+/// Exists so audit fields are set in one place without duplicating logic in handlers.
+/// </summary>
 public class AuditableEntityInterceptor : SaveChangesInterceptor
 {
     private static readonly PropertyInfo? CreatedAtProp = typeof(Domain.Common.BaseEntity)

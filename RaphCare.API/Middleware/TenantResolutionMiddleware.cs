@@ -12,6 +12,8 @@ public class TenantResolutionMiddleware(RequestDelegate next, ILogger<TenantReso
     private readonly RequestDelegate _next = next;
     private readonly ILogger<TenantResolutionMiddleware> _logger = logger;
 
+    /// <summary>Validates X-Clinic-Id header, stores ClinicId in HttpContext.Items, or returns 400 if missing/invalid. Skips non-API and Swagger paths.</summary>
+    /// <param name="context">The HTTP context.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         var path = context.Request.Path.Value ?? "";

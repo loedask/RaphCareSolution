@@ -1,5 +1,8 @@
 namespace RaphCare.Domain.Identity;
 
+/// <summary>
+/// Security role used for role-based authorization (e.g. Administrator, Clinician, Patient).
+/// </summary>
 public class Role
 {
     public Guid Id { get; set; }

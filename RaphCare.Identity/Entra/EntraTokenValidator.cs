@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace RaphCare.Identity.Entra;
 
 /// <summary>
-/// Validates JWTs issued by Microsoft Entra ID and returns a ClaimsPrincipal.
+/// Validates JWTs issued by Microsoft Entra ID and returns a ClaimsPrincipal. Used in the authentication pipeline when validating bearer tokens (e.g. for API or background calls).
 /// </summary>
 public class EntraTokenValidator(Microsoft.Extensions.Options.IOptions<EntraOptions> options)
 {

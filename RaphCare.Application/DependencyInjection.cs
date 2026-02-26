@@ -6,8 +6,12 @@ using RaphCare.Application.Common.Behaviors;
 
 namespace RaphCare.Application;
 
+/// <summary>Application layer registration: MediatR, FluentValidation, and pipeline behaviors (logging, performance, authorization, validation, transaction).</summary>
 public static class DependencyInjection
 {
+    /// <summary>Registers application services and MediatR handlers from the current assembly.</summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         var assembly = Assembly.GetExecutingAssembly();

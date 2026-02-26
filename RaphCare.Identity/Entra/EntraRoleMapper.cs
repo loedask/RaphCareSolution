@@ -3,8 +3,7 @@ using System.Security.Claims;
 namespace RaphCare.Identity.Entra;
 
 /// <summary>
-/// Maps Entra roles/groups from the JWT to internal role names.
-/// Uses "roles" or "groups" claim types.
+/// Maps Entra roles/groups from the JWT to internal role names for authorization. Uses "roles" or "groups" claim types from the authentication pipeline.
 /// </summary>
 public class EntraRoleMapper
 {

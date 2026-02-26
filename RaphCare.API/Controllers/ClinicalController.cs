@@ -7,6 +7,7 @@ using RaphCare.Application.Features.Clinical.Queries.GetVisits;
 
 namespace RaphCare.API.Controllers;
 
+/// <summary>Clinical visits and documentation. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
 [ApiController]
 [Route("api/[controller]")]
 public class ClinicalController(IMediator mediator) : ControllerBase
