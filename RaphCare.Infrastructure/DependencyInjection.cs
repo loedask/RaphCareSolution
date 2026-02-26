@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Application.Common.Interfaces;
@@ -14,91 +13,10 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-        var isDevelopment = string.Equals(
-            configuration["ASPNETCORE_ENVIRONMENT"] ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
-            "Development",
-            StringComparison.OrdinalIgnoreCase);
-
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped<AuditableEntityInterceptor>();
         services.AddScoped<SoftDeleteInterceptor>();
         services.AddScoped<DomainEventDispatcherInterceptor>();
-
-        services.AddDbContext<IdentityDbContext>((sp, options) =>
-        {
-            options.UseSqlServer(connectionString);
-            options.AddInterceptors(
-                sp.GetRequiredService<AuditableEntityInterceptor>(),
-                sp.GetRequiredService<SoftDeleteInterceptor>(),
-                sp.GetRequiredService<DomainEventDispatcherInterceptor>());
-            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            if (isDevelopment)
-            {
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-            }
-        });
-
-        services.AddDbContext<ClinicalDbContext>((sp, options) =>
-        {
-            options.UseSqlServer(connectionString);
-            options.AddInterceptors(
-                sp.GetRequiredService<AuditableEntityInterceptor>(),
-                sp.GetRequiredService<SoftDeleteInterceptor>(),
-                sp.GetRequiredService<DomainEventDispatcherInterceptor>());
-            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            if (isDevelopment)
-            {
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-            }
-        });
-
-        services.AddDbContext<DeviceDbContext>((sp, options) =>
-        {
-            options.UseSqlServer(connectionString);
-            options.AddInterceptors(
-                sp.GetRequiredService<AuditableEntityInterceptor>(),
-                sp.GetRequiredService<SoftDeleteInterceptor>(),
-                sp.GetRequiredService<DomainEventDispatcherInterceptor>());
-            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            if (isDevelopment)
-            {
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-            }
-        });
-
-        services.AddDbContext<BillingDbContext>((sp, options) =>
-        {
-            options.UseSqlServer(connectionString);
-            options.AddInterceptors(
-                sp.GetRequiredService<AuditableEntityInterceptor>(),
-                sp.GetRequiredService<DomainEventDispatcherInterceptor>());
-            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            if (isDevelopment)
-            {
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-            }
-        });
-
-        services.AddDbContext<InsuranceDbContext>((sp, options) =>
-        {
-            options.UseSqlServer(connectionString);
-            options.AddInterceptors(
-                sp.GetRequiredService<AuditableEntityInterceptor>(),
-                sp.GetRequiredService<DomainEventDispatcherInterceptor>());
-            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            if (isDevelopment)
-            {
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-            }
-        });
 
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISmsService, SmsService>();

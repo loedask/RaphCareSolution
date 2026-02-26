@@ -1,10 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using RaphCare.Domain.Devices;
+using RaphCare.Infrastructure.Persistence.Configurations;
 
-namespace RaphCare.Infrastructure.Persistence;
+namespace RaphCare.Persistence;
 
-public class DeviceDbContext(DbContextOptions<DeviceDbContext> options) : DbContext(options)
+/// <summary>
+/// Bounded context: Device registry and assignments.
+/// </summary>
+public class DeviceDbContext : DbContext
 {
+    public DeviceDbContext(DbContextOptions<DeviceDbContext> options) : base(options) { }
+
     public DbSet<Device> Devices => Set<Device>();
     public DbSet<DeviceType> DeviceTypes => Set<DeviceType>();
     public DbSet<DeviceManufacturer> DeviceManufacturers => Set<DeviceManufacturer>();
@@ -13,6 +19,7 @@ public class DeviceDbContext(DbContextOptions<DeviceDbContext> options) : DbCont
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new Configurations.DeviceConfiguration());
+        modelBuilder.ApplyConfiguration(new DeviceConfiguration());
+        modelBuilder.ApplyPersistenceConventions();
     }
 }

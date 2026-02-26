@@ -5,14 +5,14 @@ using RaphCare.Domain.Identity;
 using RaphCare.Domain.Insurance;
 using RaphCare.Domain.Organization;
 
-namespace RaphCare.Infrastructure.Persistence.Seed;
+namespace RaphCare.Persistence.Seed;
 
 public static class DatabaseSeeder
 {
     public static async Task SeedAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-        var logger = loggerFactory.CreateLogger("RaphCare.Infrastructure.Persistence.Seed.DatabaseSeeder");
+        var logger = loggerFactory.CreateLogger("RaphCare.Persistence.Seed.DatabaseSeeder");
         try
         {
             await using var scope = serviceProvider.CreateAsyncScope();
@@ -33,7 +33,7 @@ public static class DatabaseSeeder
         ILogger logger,
         CancellationToken cancellationToken)
     {
-        var context = scopedProvider.GetService<Persistence.IdentityDbContext>();
+        var context = scopedProvider.GetService<IdentityDbContext>();
         if (context == null) return;
 
         if (await context.Roles.AnyAsync(cancellationToken).ConfigureAwait(false))
