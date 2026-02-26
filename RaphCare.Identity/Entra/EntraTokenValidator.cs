@@ -6,15 +6,10 @@ namespace RaphCare.Identity.Entra;
 /// <summary>
 /// Validates JWTs issued by Microsoft Entra ID and returns a ClaimsPrincipal.
 /// </summary>
-public class EntraTokenValidator
+public class EntraTokenValidator(Microsoft.Extensions.Options.IOptions<EntraOptions> options)
 {
     private readonly JwtSecurityTokenHandler _tokenHandler = new();
-    private readonly EntraOptions _options;
-
-    public EntraTokenValidator(Microsoft.Extensions.Options.IOptions<EntraOptions> options)
-    {
-        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-    }
+    private readonly EntraOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
     /// <summary>
     /// Validates the JWT and returns the claims principal. Throws on invalid token.

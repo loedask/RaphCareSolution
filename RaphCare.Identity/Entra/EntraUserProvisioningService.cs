@@ -8,18 +8,13 @@ namespace RaphCare.Identity.Entra;
 /// <summary>
 /// Ensures an ApplicationUser exists for the Entra principal and syncs EntraObjectId, Email, DisplayName.
 /// </summary>
-public class EntraUserProvisioningService : IUserProvisioningService
+public class EntraUserProvisioningService(
+    IApplicationUserStore userStore,
+    ILogger<EntraUserProvisioningService> logger
+    ) : IUserProvisioningService
 {
-    private readonly IApplicationUserStore _userStore;
-    private readonly ILogger<EntraUserProvisioningService> _logger;
-
-    public EntraUserProvisioningService(
-        IApplicationUserStore userStore,
-        ILogger<EntraUserProvisioningService> logger)
-    {
-        _userStore = userStore ?? throw new ArgumentNullException(nameof(userStore));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly IApplicationUserStore _userStore = userStore ?? throw new ArgumentNullException(nameof(userStore));
+    private readonly ILogger<EntraUserProvisioningService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task<ApplicationUser> EnsureUserExistsAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
     {

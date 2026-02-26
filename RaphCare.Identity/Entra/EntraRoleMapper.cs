@@ -14,7 +14,7 @@ public class EntraRoleMapper
     /// <summary>
     /// Returns the set of internal role names for the principal (e.g. for authorization).
     /// </summary>
-    public IEnumerable<string> MapRoles(ClaimsPrincipal principal)
+    public static IEnumerable<string> MapRoles(ClaimsPrincipal principal)
     {
         if (principal == null)
             yield break;

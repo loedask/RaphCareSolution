@@ -3,6 +3,8 @@
   <Folder Name="/src/Core/">
     <Project Path="RaphCare.Application/RaphCare.Application.csproj" />
     <Project Path="RaphCare.Domain/RaphCare.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
     <Project Path="RaphCare.Identity/RaphCare.Identity.csproj" />
     <Project Path="RaphCare.Infrastructure/RaphCare.Infrastructure.csproj" />
     <Project Path="RaphCare.Persistence/RaphCare.Persistence.csproj" />
