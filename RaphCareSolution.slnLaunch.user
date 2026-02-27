@@ -1,0 +1,32 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "RaphCare.API\\RaphCare.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "RaphCare.Mobile\\RaphCare.Mobile.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "RaphCare.Web\\RaphCare.Web.csproj",
+        "Action": "Start"
+      }
+    ]
+  },
+  {
+    "Name": "New Profile (1)",
+    "Projects": [
+      {
+        "Path": "RaphCare.API\\RaphCare.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "RaphCare.Mobile\\RaphCare.Mobile.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
