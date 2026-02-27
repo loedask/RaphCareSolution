@@ -11,3 +11,5 @@ RaphCare.Identity/bin/
 RaphCare.Persistence/bin/
 RaphCare.API/obj/
 RaphCare.API/bin/
+RaphCare.Mobile/obj/
+RaphCare.Web/obj/
