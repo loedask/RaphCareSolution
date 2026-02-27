@@ -1,7 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RaphCare.Application.Common.Interfaces;
+using RaphCare.Domain.Billing;
+using RaphCare.Domain.Clinical;
+using RaphCare.Domain.Communication;
+using RaphCare.Domain.Devices;
+using RaphCare.Domain.Patients;
+using RaphCare.Domain.Telemedicine;
+using RaphCare.Domain.Reporting;
 using RaphCare.Infrastructure.Persistence.Interceptors;
+using RaphCare.Persistence.Repositories;
 
 namespace RaphCare.Persistence;
 
@@ -123,6 +132,19 @@ public static class DependencyInjection
                 options.EnableSensitiveDataLogging();
             }
         });
+
+        services.AddScoped<IUnitOfWork, PersistenceUnitOfWork>();
+
+        services.AddScoped<IRepository<Patient>>(sp => new EfRepository<Patient, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<Visit>>(sp => new EfRepository<Visit, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<Appointment>>(sp => new EfRepository<Appointment, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<TeleSession>>(sp => new EfRepository<TeleSession, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<Message>>(sp => new EfRepository<Message, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+
+        services.AddScoped<IRepository<Invoice>>(sp => new EfRepository<Invoice, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
+        services.AddScoped<IRepository<Device>>(sp => new EfRepository<Device, DeviceDbContext>(sp.GetRequiredService<DeviceDbContext>()));
+        services.AddScoped<IRepository<InsuranceProfile>>(sp => new EfRepository<InsuranceProfile, InsuranceDbContext>(sp.GetRequiredService<InsuranceDbContext>()));
+        services.AddScoped<IRepository<DashboardSnapshot>>(sp => new EfRepository<DashboardSnapshot, AIDbContext>(sp.GetRequiredService<AIDbContext>()));
 
         return services;
     }

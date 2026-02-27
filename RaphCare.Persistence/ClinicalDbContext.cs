@@ -1,13 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using RaphCare.Domain.Clinical;
+using RaphCare.Domain.Communication;
 using RaphCare.Domain.Organization;
 using RaphCare.Domain.Patients;
+using RaphCare.Domain.Telemedicine;
 using RaphCare.Infrastructure.Persistence.Configurations;
 
 namespace RaphCare.Persistence;
 
 /// <summary>
-/// Bounded context: Clinical only. No financial entities.
+/// Bounded context: Clinical (patients, visits, appointments, tele-sessions, messages). No financial entities.
 /// </summary>
 public class ClinicalDbContext : DbContext
 {
@@ -18,12 +20,16 @@ public class ClinicalDbContext : DbContext
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Visit> Visits => Set<Visit>();
     public DbSet<CarePlan> CarePlans => Set<CarePlan>();
+    public DbSet<TeleSession> TeleSessions => Set<TeleSession>();
+    public DbSet<Message> Messages => Set<Message>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new PatientConfiguration());
         modelBuilder.ApplyConfiguration(new ClinicConfiguration());
         modelBuilder.ApplyConfiguration(new VisitConfiguration());
+        modelBuilder.ApplyConfiguration(new TeleSessionConfiguration());
+        modelBuilder.ApplyConfiguration(new MessageConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }
