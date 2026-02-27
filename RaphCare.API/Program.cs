@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using RaphCare.API.Extensions;
 using RaphCare.API.Middleware;
 using RaphCare.Application;
 using RaphCare.Identity;
@@ -65,6 +66,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    await app.ApplyMigrationsAsync();
 }
+
 
 app.Run();
