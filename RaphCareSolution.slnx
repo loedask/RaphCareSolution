@@ -13,6 +13,7 @@
     <Project Path="RaphCare.Persistence/RaphCare.Persistence.csproj" />
   </Folder>
   <Folder Name="/src/UI/">
+    <Project Path="RaphCare.Client/RaphCare.Client.csproj" Id="1f3e627f-90cd-42d0-a220-20f4fdf42455" />
     <Project Path="RaphCare.Mobile/RaphCare.Mobile.csproj" />
     <Project Path="RaphCare.Web/RaphCare.Web.csproj" />
   </Folder>

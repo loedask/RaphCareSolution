@@ -1,0 +1,39 @@
+using System.Net.Http;
+using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
+using RaphCare.Client.Generated;
+using RaphCare.Client.Services;
+using RaphCare.Client.Services.Base;
+
+namespace RaphCare.Client;
+
+using ApiClient = Generated.Client;
+
+public static class ServiceRegistration
+{
+    public const string HttpClientName = "RaphCare";
+
+    /// <summary>
+    /// Registers the RaphCare API client layer: NSwag client, HttpClient, AutoMapper, and feature services.
+    /// Configure base address via HttpClient (e.g. from options) — do not hardcode BaseUrl.
+    /// </summary>
+    public static IServiceCollection AddRaphCareClient(this IServiceCollection services, Action<HttpClient>? configureHttpClient = null)
+    {
+        services.AddAutoMapper(cfg =>
+        {
+            cfg.AddMaps(typeof(ServiceRegistration).Assembly);
+        });
+
+        services.AddHttpClient<IClient, ApiClient>(HttpClientName, client =>
+        {
+            configureHttpClient?.Invoke(client);
+        });
+
+        services.AddScoped<IPatientService>(sp => new PatientService(
+            sp.GetRequiredService<IClient>(),
+            sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName),
+            sp.GetRequiredService<IMapper>()!));
+
+        return services;
+    }
+}
