@@ -11,10 +11,8 @@ namespace RaphCare.Persistence;
 /// <summary>
 /// Bounded context: Clinical (patients, visits, appointments, tele-sessions, messages). No financial entities.
 /// </summary>
-public class ClinicalDbContext : DbContext
+public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : DbContext(options)
 {
-    public ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : base(options) { }
-
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<Clinic> Clinics => Set<Clinic>();
     public DbSet<Appointment> Appointments => Set<Appointment>();

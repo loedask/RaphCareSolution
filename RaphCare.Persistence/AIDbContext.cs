@@ -8,10 +8,8 @@ namespace RaphCare.Persistence;
 /// <summary>
 /// Bounded context: AI-generated insights, risk scores, and reporting snapshots. Optimized for read-heavy workloads.
 /// </summary>
-public class AIDbContext : DbContext
+public class AIDbContext(DbContextOptions<AIDbContext> options) : DbContext(options)
 {
-    public AIDbContext(DbContextOptions<AIDbContext> options) : base(options) { }
-
     public DbSet<WellnessInsight> WellnessInsights => Set<WellnessInsight>();
     public DbSet<RiskScore> RiskScores => Set<RiskScore>();
     public DbSet<DashboardSnapshot> DashboardSnapshots => Set<DashboardSnapshot>();
