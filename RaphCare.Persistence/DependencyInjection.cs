@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Application.Common.Interfaces;
@@ -39,6 +40,7 @@ public static class DependencyInjection
 
         services.AddDbContext<IdentityDbContext>((sp, options) =>
         {
+            options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             options.UseSqlServer(GetConnectionString("IdentityConnection"), sql =>
                 sql.MigrationsAssembly(MigrationsAssemblyName));
             options.AddInterceptors(
@@ -55,6 +57,7 @@ public static class DependencyInjection
 
         services.AddDbContext<ClinicalDbContext>((sp, options) =>
         {
+            options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             options.UseSqlServer(GetConnectionString("ClinicalConnection"), sql =>
                 sql.MigrationsAssembly(MigrationsAssemblyName));
             options.AddInterceptors(
@@ -71,6 +74,7 @@ public static class DependencyInjection
 
         services.AddDbContext<DeviceDbContext>((sp, options) =>
         {
+            options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             options.UseSqlServer(GetConnectionString("DeviceConnection"), sql =>
                 sql.MigrationsAssembly(MigrationsAssemblyName));
             options.AddInterceptors(
@@ -87,6 +91,7 @@ public static class DependencyInjection
 
         services.AddDbContext<InsuranceDbContext>((sp, options) =>
         {
+            options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             options.UseSqlServer(GetConnectionString("InsuranceConnection"), sql =>
                 sql.MigrationsAssembly(MigrationsAssemblyName));
             options.AddInterceptors(
@@ -103,6 +108,7 @@ public static class DependencyInjection
 
         services.AddDbContext<BillingDbContext>((sp, options) =>
         {
+            options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             options.UseSqlServer(GetConnectionString("BillingConnection"), sql =>
                 sql.MigrationsAssembly(MigrationsAssemblyName));
             options.AddInterceptors(
@@ -119,6 +125,7 @@ public static class DependencyInjection
 
         services.AddDbContext<AIDbContext>((sp, options) =>
         {
+            options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             options.UseSqlServer(GetConnectionString("AIConnection"), sql =>
                 sql.MigrationsAssembly(MigrationsAssemblyName));
             options.AddInterceptors(
