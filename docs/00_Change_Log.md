@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-02-25
+2026-03-07
 
 ## High-level summary of changes
 
-Documentation was re-analyzed against the current codebase and updated so that the RaphCare Dev Companion knowledge files stay aligned with the solution. No new modules or fundamental architecture changes were introduced; updates reflect existing structure (API App folder, Persistence-based user store, Client generated methods, Swagger/operation names, Infrastructure placeholder services).
+Documentation was re-analyzed against the current codebase and updated so that the RaphCare Dev Companion knowledge files stay aligned with the solution. Updates focus on RaphCare.Mobile structure (Core/Features, Core/Shared, converters namespace), RaphCare.Client bearer-token support (IAccessTokenProvider, BearerTokenHandler), and Mobile auth/workflow details.
 
 ## New modules added
 
@@ -14,25 +14,21 @@ Documentation was re-analyzed against the current codebase and updated so that t
 
 ## Modules modified
 
-- **RaphCare.API:** Documented App/ folder layout (App/Middleware, App/Extensions, App/Contracts). Controllers remain at root. Swagger and root redirect to `/swagger` documented as Development-only. CreatePatientResponse and SwaggerExtensions (AddRaphCareSwagger, UseRaphCareSwagger) documented.
-- **RaphCare.Persistence:** Documented ApplicationUserStore (implements IApplicationUserStore). Documented migration folder layout (IdentityDb, Clinical, InsuranceDb, BillingDb, AIDb). Seed structure unchanged (DatabaseSeeder orchestrator, context-specific seeders).
-- **RaphCare.Infrastructure:** Clarified that IApplicationUserStore is not implemented here (implemented in Persistence). Documented CurrentUserService, DateTimeProvider, and placeholder services (Email, SMS, PaymentGateway, AI, DeviceIntegration, TeleSession).
-- **RaphCare.Client:** Documented removal of ApiRoutes. Documented Contracts/Interfaces (IPatientService). Documented generated client method names (GetPatientByIdAsync, GetPatientsPaginatedAsync, CreatePatientAsync, UpdatePatientAsync) and that they come from API controller `Name` (operationId). PatientService documented as calling those methods.
+- **RaphCare.Mobile:** Documented folder structure under Core/ (Core/Features: Auth, Home, Records, Appointments, Insurance, Settings; Core/Shared: Navigation/AppNavigator, Services/Auth, FeatureFlags, Views/UnderConstructionPage, Components; Core/Converters, Core/ViewModels). View namespaces RaphCare.Mobile.Features.*.Views and RaphCare.Mobile.Shared.Views. Converters namespace corrected to RaphCare.Mobile.Core.Converters (App.xaml).
+- **RaphCare.Client:** Documented IAccessTokenProvider (Contracts) and BearerTokenHandler (Services/Base). AddRaphCareClient(..., useBearerToken: true) adds BearerTokenHandler and requires host to register IAccessTokenProvider.
 
 ## Database changes
 
-- None. BillingDbContext connection string key documented as BillingConnection (or Default). ApplyMigrationsAsync order and location (App/Extensions) documented.
+- None.
 
 ## Auth changes
 
-- None. IApplicationUserStore implementation location corrected: implemented in RaphCare.Persistence (ApplicationUserStore), not in Infrastructure.
+- **Mobile:** Documented Entra auth (Core.Shared.Services.Auth: EntraAuthOptions, IAuthService, EntraAuthService); SecureStorageAccessTokenProvider implements Client's IAccessTokenProvider; API client registered with useBearerToken: true so requests include Bearer token.
 
 ## Workflow updates
 
-- **Patient flow (client):** New subsection in 06_Key_Workflows describing PatientService use of generated client methods (GetPatientByIdAsync, GetPatientsPaginatedAsync, CreatePatientAsync, UpdatePatientAsync) and Response/ApiException handling.
-- **Patients API:** Documented operation names (GetPatientById, GetPatientsPaginated, CreatePatient, UpdatePatient) and ProducesResponseType for Swagger/NSwag.
+- **Mobile:** Documented auth flow (Landing → Register/Sign-in → Home), AppNavigator route registration and GoToFeatureAsync (feature-flag aware), UnderConstructionPage for disabled features.
 
 ## External integrations added/removed
 
-- **Added (documentation only):** Placeholder implementations in Infrastructure for IPaymentGatewayService, IEmailService, ISmsService, IDeviceIntegrationService, ITeleSessionService (no external SDKs wired).
-- **Removed:** None.
+- None.

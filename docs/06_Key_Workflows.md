@@ -35,3 +35,9 @@
 - **Seeding:** DatabaseSeeder runs IdentitySeeder (roles/permissions), ClinicalSeeder (demo clinic), InsuranceSeeder (sample plan), DeviceSeeder and BillingSeeder (placeholders). Invoked separately (e.g. at startup or via a one-off); not part of API request pipeline.
 - **Reporting:** GET api/reporting/dashboard (clinicId, snapshotDate) returns dashboard data; handler uses GetDashboardSnapshotQuery; data from AIDbContext (DashboardSnapshots) and related aggregates.
 - **Migrations:** In Development, ApplyMigrationsAsync runs at API startup and applies all six DbContext migrations.
+
+## Mobile App Flow
+
+- **Startup:** AppShell registers all routes via AppNavigator.RegisterAllRoutes(). Shell shows LandingPage (auth) or HomePage (main) based on navigation.
+- **Auth:** User lands on LandingPage; can go to Register (RegisterOptions → RegisterEmail → VerifyEmail) or SignIn. After successful Entra sign-in, app navigates to Home. SecureStorageAccessTokenProvider stores token and supplies it to RaphCare.Client via IAccessTokenProvider; all API calls use Bearer token.
+- **Feature navigation:** AppNavigator.GoToFeatureAsync(route, featureDisplayName) navigates to a feature page; if the feature is disabled (FeatureFlags), shows UnderConstructionPage instead. Routes: Home, Records, Appointments, Insurance, Settings (and auth routes).

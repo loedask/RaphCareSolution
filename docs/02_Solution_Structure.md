@@ -61,19 +61,26 @@
 - **DependencyInjection.cs** — Registers Entra options, JWT Bearer validation, user provisioning, role mapper
 
 ### RaphCare.Client
-- **Contracts/** — Response&lt;T&gt;, ApiException; **Contracts/Interfaces/** — IPatientService (service contracts)
+- **Contracts/** — Response&lt;T&gt;, ApiException, IAccessTokenProvider (provides access token for Bearer auth when host implements it)
+- **Contracts/Interfaces/** — IPatientService (service contracts)
 - **Services/Base/Generated/** — NSwag-generated Client and IClient (ClientService.cs), generated DTOs (PatientDto, PatientDtoPagedResult, CreatePatientResponse); method names follow API operation names (GetPatientByIdAsync, GetPatientsPaginatedAsync, CreatePatientAsync, UpdatePatientAsync)
-- **Services/Base/** — Partial IClient/Client (expose HttpClient); BaseHttpService (wraps IClient and HttpClient; generic Get/Post/Put/Delete returning Response&lt;T&gt;)
+- **Services/Base/** — Partial IClient/Client (expose HttpClient); BaseHttpService (wraps IClient and HttpClient; generic Get/Post/Put/Delete returning Response&lt;T&gt;); BearerTokenHandler (DelegatingHandler that attaches Bearer token from IAccessTokenProvider when useBearerToken is true)
 - **Services/** — PatientService (example); implements IPatientService; calls generated client methods (GetPatientByIdAsync, GetPatientsPaginatedAsync, CreatePatientAsync, UpdatePatientAsync); inject IClient and IMapper
 - **Models/** — ViewModels and request DTOs (e.g. PatientViewModel, CreatePatientRequest)
 - **Mappings/** — AutoMapper profiles (DTOs to ViewModels)
-- **ServiceRegistration.cs** — AddRaphCareClient (registers client, HttpClient, AutoMapper, feature services)
+- **ServiceRegistration.cs** — AddRaphCareClient(configureHttpClient?, useBearerToken); when useBearerToken is true, adds BearerTokenHandler and requires IAccessTokenProvider to be registered in the host (e.g. Mobile)
 
 ### RaphCare.Web
 - Blazor WASM structure (App, components, pages, etc.); references RaphCare.Client
 
 ### RaphCare.Mobile
-- MAUI app structure; references RaphCare.Client
+- **Core/Features/** — Feature-specific Views, ViewModels, Services, Models: Auth (Landing, RegisterOptions, RegisterEmail, VerifyEmail, SignIn; EntraAuthService, EntraAuthOptions, IAuthService, SecureStorageAccessTokenProvider), Home, Records, Appointments, Insurance, Settings. View namespaces: RaphCare.Mobile.Features.*.Views for Shell/routing; ViewModels/Services use RaphCare.Mobile.Core.Features.*.
+- **Core/Shared/** — AppNavigator (Navigation; RegisterAllRoutes, GoToFeatureAsync for feature-flag aware navigation), Services/Auth (EntraAuthOptions, IAuthService, EntraAuthService used by MauiProgram), Services/FeatureFlags (FeatureFlags), Views/UnderConstructionPage (RaphCare.Mobile.Shared.Views), Components (GradientButton, CardView, InputField, IconButton).
+- **Core/Converters/** — InvertedBoolConverter, StringNotEmptyConverter (namespace RaphCare.Mobile.Core.Converters; referenced in App.xaml).
+- **Core/ViewModels/** — BaseViewModel.
+- **AppShell** — Shell with FlyoutBehavior Disabled; routes LandingPage (auth) and HomePage (main); AppNavigator.RegisterAllRoutes() for all feature routes. References RaphCare.Mobile.Features.Auth.Views, RaphCare.Mobile.Features.Home.Views.
+- **MauiProgram** — Registers Entra auth (Core.Shared.Services.Auth), SecureStorageAccessTokenProvider as IAccessTokenProvider, view models and pages; AddRaphCareClient(..., useBearerToken: true). MAUI Blazor Hybrid (AddMauiBlazorWebView).
+- References RaphCare.Client; implements bearer-token auth via IAccessTokenProvider.
 
 ## Responsibilities Summary
 

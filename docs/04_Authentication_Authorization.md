@@ -39,3 +39,8 @@ Policies are registered in Program.cs with `AddAuthorization(options => { ... })
 
 - **Header:** `X-Clinic-Id` (required for API paths under `/api/`). Enforced by TenantResolutionMiddleware.
 - **Storage:** Resolved clinic ID is stored in HttpContext.Items (key: TenantResolutionMiddleware.ClinicIdItemKey). Non-API and Swagger paths are skipped. Missing or invalid Guid returns 400.
+
+## Mobile Client Auth
+
+- **Entra login:** RaphCare.Mobile uses Microsoft Entra ID for sign-in. Core.Shared.Services.Auth: EntraAuthOptions (ClientId, TenantId, ApiScope), IAuthService, EntraAuthService. Configured in MauiProgram; tokens obtained via Entra flow.
+- **API requests:** SecureStorageAccessTokenProvider (Core.Features.Auth.Services) implements RaphCare.Client.Contracts.IAccessTokenProvider and is registered in MauiProgram. AddRaphCareClient(..., useBearerToken: true) registers BearerTokenHandler so every API request includes the current access token from IAccessTokenProvider.
