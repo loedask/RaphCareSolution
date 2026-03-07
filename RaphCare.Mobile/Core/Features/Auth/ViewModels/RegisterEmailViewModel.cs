@@ -1,6 +1,6 @@
 using System.Windows.Input;
+using RaphCare.Mobile.Core.ViewModels;
 using RaphCare.Mobile.Features.Auth.Services;
-using RaphCare.Mobile.ViewModels;
 
 namespace RaphCare.Mobile.Features.Auth.ViewModels;
 

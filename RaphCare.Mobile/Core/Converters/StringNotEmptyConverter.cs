@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace RaphCare.Mobile.Converters;
+namespace RaphCare.Mobile.Core.Converters;
 
 public class StringNotEmptyConverter : IValueConverter
 {

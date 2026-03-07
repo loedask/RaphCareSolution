@@ -1,5 +1,5 @@
 using System.Windows.Input;
-using RaphCare.Mobile.ViewModels;
+using RaphCare.Mobile.Core.ViewModels;
 
 namespace RaphCare.Mobile.Features.Auth.ViewModels;
 

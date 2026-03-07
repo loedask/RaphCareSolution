@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace RaphCare.Mobile.ViewModels;
+namespace RaphCare.Mobile.Core.ViewModels;
 
 /// <summary>
 /// Base class for MVVM ViewModels with property change notification and busy state.

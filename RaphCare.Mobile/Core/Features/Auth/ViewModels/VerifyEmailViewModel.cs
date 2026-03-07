@@ -1,13 +1,13 @@
 using System.Windows.Input;
+using RaphCare.Mobile.Core.ViewModels;
 using RaphCare.Mobile.Features.Auth.Services;
-using RaphCare.Mobile.ViewModels;
 
 namespace RaphCare.Mobile.Features.Auth.ViewModels;
 
 /// <summary>
-/// Sign-in with Entra ID. On success navigates to HomePage.
+/// Email verification prompt. User verifies via Entra; then Sign In navigates to sign-in and then Home.
 /// </summary>
-public class SignInViewModel : BaseViewModel
+public class VerifyEmailViewModel : BaseViewModel
 {
     private readonly IAuthService _authService;
 
@@ -20,14 +20,14 @@ public class SignInViewModel : BaseViewModel
     }
 
     public ICommand SignInCommand { get; }
-    public ICommand BackCommand { get; }
+    public ICommand ResendCommand { get; }
 
-    public SignInViewModel(IAuthService authService)
+    public VerifyEmailViewModel(IAuthService authService)
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
-        Title = "Sign In";
+        Title = "Verify Email";
         SignInCommand = new Command(async () => await SignInAsync(), () => !IsBusy);
-        BackCommand = new Command(async () => await GoBackAsync());
+        ResendCommand = new Command(async () => await ResendAsync(), () => !IsBusy);
     }
 
     private async Task SignInAsync()
@@ -55,11 +55,19 @@ public class SignInViewModel : BaseViewModel
         }
     }
 
-    private async Task GoBackAsync()
+    private async Task ResendAsync()
     {
-        if (Shell.Current.Navigation.NavigationStack.Count > 1)
-            await Shell.Current.GoToAsync("..").ConfigureAwait(false);
-        else
-            await Shell.Current.GoToAsync("//LandingPage").ConfigureAwait(false);
+        if (IsBusy) return;
+        IsBusy = true;
+        try
+        {
+            // Entra handles verification; resend is typically done from the verification email link.
+            ErrorMessage = null;
+            await Task.CompletedTask.ConfigureAwait(false);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 }

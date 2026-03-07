@@ -1,13 +1,13 @@
 using System.Windows.Input;
+using RaphCare.Mobile.Core.ViewModels;
 using RaphCare.Mobile.Features.Auth.Services;
-using RaphCare.Mobile.ViewModels;
 
 namespace RaphCare.Mobile.Features.Auth.ViewModels;
 
 /// <summary>
-/// Email verification prompt. User verifies via Entra; then Sign In navigates to sign-in and then Home.
+/// Sign-in with Entra ID. On success navigates to HomePage.
 /// </summary>
-public class VerifyEmailViewModel : BaseViewModel
+public class SignInViewModel : BaseViewModel
 {
     private readonly IAuthService _authService;
 
@@ -20,14 +20,14 @@ public class VerifyEmailViewModel : BaseViewModel
     }
 
     public ICommand SignInCommand { get; }
-    public ICommand ResendCommand { get; }
+    public ICommand BackCommand { get; }
 
-    public VerifyEmailViewModel(IAuthService authService)
+    public SignInViewModel(IAuthService authService)
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
-        Title = "Verify Email";
+        Title = "Sign In";
         SignInCommand = new Command(async () => await SignInAsync(), () => !IsBusy);
-        ResendCommand = new Command(async () => await ResendAsync(), () => !IsBusy);
+        BackCommand = new Command(async () => await GoBackAsync());
     }
 
     private async Task SignInAsync()
@@ -55,19 +55,11 @@ public class VerifyEmailViewModel : BaseViewModel
         }
     }
 
-    private async Task ResendAsync()
+    private async Task GoBackAsync()
     {
-        if (IsBusy) return;
-        IsBusy = true;
-        try
-        {
-            // Entra handles verification; resend is typically done from the verification email link.
-            ErrorMessage = null;
-            await Task.CompletedTask.ConfigureAwait(false);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        if (Shell.Current.Navigation.NavigationStack.Count > 1)
+            await Shell.Current.GoToAsync("..").ConfigureAwait(false);
+        else
+            await Shell.Current.GoToAsync("//LandingPage").ConfigureAwait(false);
     }
 }
