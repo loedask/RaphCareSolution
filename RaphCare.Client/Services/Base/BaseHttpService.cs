@@ -1,8 +1,7 @@
+using RaphCare.Client.Contracts;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using RaphCare.Client.Contracts;
-using RaphCare.Client.Generated;
 
 namespace RaphCare.Client.Services.Base;
 

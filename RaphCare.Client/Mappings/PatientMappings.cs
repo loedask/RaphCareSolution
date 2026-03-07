@@ -1,6 +1,6 @@
 using AutoMapper;
-using RaphCare.Client.Generated;
 using RaphCare.Client.Models;
+using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Mappings;
 

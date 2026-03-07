@@ -1,6 +1,5 @@
 using AutoMapper;
 using RaphCare.Client.Contracts;
-using RaphCare.Client.Generated;
 using RaphCare.Client.Models;
 using RaphCare.Client.Services.Base;
 
@@ -20,7 +19,7 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
             var viewModel = _mapper.Map<PatientViewModel>(dto);
             return Response<PatientViewModel?>.Success(viewModel);
         }
-        catch (ApiException ex)
+        catch (Contracts.ApiException ex)
         {
             return Response<PatientViewModel?>.Failure(ex.Message, ex.StatusCode);
         }
@@ -36,7 +35,7 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
             var viewModel = _mapper.Map<PagedResultViewModel<PatientViewModel>>(dto);
             return Response<PagedResultViewModel<PatientViewModel>>.Success(viewModel);
         }
-        catch (ApiException ex)
+        catch (Contracts.ApiException ex)
         {
             return Response<PagedResultViewModel<PatientViewModel>>.Failure(ex.Message, ex.StatusCode);
         }
@@ -52,7 +51,7 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
                 return Response<Guid>.Failure("Create returned no result.");
             return Response<Guid>.Success(result.Id);
         }
-        catch (ApiException ex)
+        catch (Contracts.ApiException ex)
         {
             return Response<Guid>.Failure(ex.Message, ex.StatusCode);
         }
@@ -67,7 +66,7 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
             await Client.UpdatePatientAsync(id, command, cancellationToken).ConfigureAwait(false);
             return Response<bool>.Success(true);
         }
-        catch (ApiException ex)
+        catch (Contracts.ApiException ex)
         {
             return Response<bool>.Failure(ex.Message, ex.StatusCode);
         }

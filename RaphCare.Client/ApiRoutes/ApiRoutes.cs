@@ -1,7 +1,8 @@
 namespace RaphCare.Client.ApiRoutes;
 
 /// <summary>
-/// API route constants organized by feature. Use with HttpClient base address set to API root.
+/// API route constants organized by feature. Use only when extending Swagger (e.g. documentation, grouping).
+/// Do not use in client services; services must communicate via IClient (Generated/ClientService.cs) only.
 /// </summary>
 public static class ApiRoutes
 {
