@@ -13,13 +13,11 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
     {
         try
         {
-            var dto = await Client.GetPatientAsync(id, cancellationToken).ConfigureAwait(false);
-            if (dto is null)
-                return Response<PatientViewModel?>.Failure("Patient not found.", 404);
+            var dto = await Client.PatientsGETAsync(id, cancellationToken).ConfigureAwait(false);
             var viewModel = _mapper.Map<PatientViewModel>(dto);
             return Response<PatientViewModel?>.Success(viewModel);
         }
-        catch (Contracts.ApiException ex)
+        catch (RaphCare.Client.Services.Base.ApiException ex)
         {
             return Response<PatientViewModel?>.Failure(ex.Message, ex.StatusCode);
         }
@@ -29,13 +27,11 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
     {
         try
         {
-            var dto = await Client.GetPatientsAsync(pageNumber, pageSize, cancellationToken).ConfigureAwait(false);
-            if (dto is null)
-                return Response<PagedResultViewModel<PatientViewModel>>.Failure("Failed to load patients.");
+            var dto = await Client.PatientsGET2Async(pageNumber, pageSize, cancellationToken).ConfigureAwait(false);
             var viewModel = _mapper.Map<PagedResultViewModel<PatientViewModel>>(dto);
             return Response<PagedResultViewModel<PatientViewModel>>.Success(viewModel);
         }
-        catch (Contracts.ApiException ex)
+        catch (RaphCare.Client.Services.Base.ApiException ex)
         {
             return Response<PagedResultViewModel<PatientViewModel>>.Failure(ex.Message, ex.StatusCode);
         }
@@ -46,12 +42,10 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
         try
         {
             var command = _mapper.Map<CreatePatientCommand>(request);
-            var result = await Client.CreatePatientAsync(command, cancellationToken).ConfigureAwait(false);
-            if (result is null)
-                return Response<Guid>.Failure("Create returned no result.");
+            var result = await Client.PatientsPOSTAsync(command, cancellationToken).ConfigureAwait(false);
             return Response<Guid>.Success(result.Id);
         }
-        catch (Contracts.ApiException ex)
+        catch (RaphCare.Client.Services.Base.ApiException ex)
         {
             return Response<Guid>.Failure(ex.Message, ex.StatusCode);
         }
@@ -63,10 +57,10 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
         {
             request.Id = id;
             var command = _mapper.Map<UpdatePatientCommand>(request);
-            await Client.UpdatePatientAsync(id, command, cancellationToken).ConfigureAwait(false);
+            await Client.PatientsPUTAsync(id, command, cancellationToken).ConfigureAwait(false);
             return Response<bool>.Success(true);
         }
-        catch (Contracts.ApiException ex)
+        catch (RaphCare.Client.Services.Base.ApiException ex)
         {
             return Response<bool>.Failure(ex.Message, ex.StatusCode);
         }

@@ -9,7 +9,7 @@ public class PatientMappings : Profile
     public PatientMappings()
     {
         CreateMap<PatientDto, PatientViewModel>();
-        CreateMap<PagedResultOfPatientDto, PagedResultViewModel<PatientViewModel>>()
+        CreateMap<PatientDtoPagedResult, PagedResultViewModel<PatientViewModel>>()
             .ForMember(d => d.Items, o => o.MapFrom(s => s.Items));
         CreateMap<CreatePatientRequest, CreatePatientCommand>();
         CreateMap<UpdatePatientRequest, UpdatePatientCommand>();
