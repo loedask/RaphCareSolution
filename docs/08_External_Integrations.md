@@ -2,18 +2,20 @@
 
 ## Payment Gateways
 
-- **Application:** Interface `IPaymentGatewayService` exists in Application.Common.Interfaces. No implementation found in the repo; no Stripe, PayPal, or other payment SDK packages in any .csproj.
+- **Application:** Interface `IPaymentGatewayService` exists in Application.Common.Interfaces.
+- **Infrastructure:** Placeholder implementation PaymentGatewayService (no Stripe, PayPal, or other payment SDK in .csproj).
 - **Billing:** Invoices and billing entities exist; no wired payment provider.
 
 ## Device SDKs
 
 - **Domain:** Device, DeviceType, DeviceAssignment, and reading types (HeartRateReading, BloodPressureReading, GlucoseReading, etc.) are defined. DeviceDbContext and DevicesController provide CRUD for devices.
-- **Integration:** No third-party device SDKs or device-cloud packages referenced in the solution. No ingestion pipeline or background worker for device readings in the codebase. DeviceSeeder is a placeholder.
+- **Infrastructure:** IDeviceIntegrationService has a placeholder implementation (DeviceIntegrationService). No third-party device SDKs or device-cloud packages in the solution. No ingestion pipeline or background worker for device readings. DeviceSeeder is a placeholder.
 
 ## Messaging Services
 
-- **Application:** Interfaces `IEmailService` and `ISmsService` exist. No implementations in the repo; no Twilio, SendGrid, or similar packages in .csproj.
-- **Domain:** EmailLog, SMSLog, Notification, Message (in-app) exist. No external messaging integration documented.
+- **Application:** Interfaces `IEmailService` and `ISmsService` exist.
+- **Infrastructure:** Placeholder implementations EmailService and SmsService (no Twilio, SendGrid, or similar packages in .csproj).
+- **Domain:** EmailLog, SMSLog, Notification, Message (in-app) exist. No external messaging integration wired.
 
 ## AI Services
 
@@ -27,6 +29,5 @@
 ## Summary
 
 - **Implemented:** Entra ID for JWT validation and user provisioning.
-- **Interfaces only (no implementation):** Payment gateway, email, SMS, notification.
-- **Placeholder only:** AI service (no SDK); device ingestion (no SDK or job).
-- **Not present:** Payment gateways, device SDKs, messaging providers, or AI SDKs as NuGet or code.
+- **Placeholder implementations in Infrastructure (no external SDKs):** IPaymentGatewayService, IEmailService, ISmsService, IAIService, IDeviceIntegrationService, ITeleSessionService.
+- **Not present:** Payment gateways, device SDKs, messaging providers, or AI SDKs as NuGet or wired code.

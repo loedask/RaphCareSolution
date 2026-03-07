@@ -17,9 +17,10 @@
 ## Folder Breakdown by Project
 
 ### RaphCare.API
-- **Controllers/** — REST controllers (Patients, Appointments, Clinical, Devices, Insurance, Billing, Telemedicine, MentalHealth, AI, Reporting); all use `api/[controller]` and MediatR
-- **Middleware/** — ExceptionHandlingMiddleware, TenantResolutionMiddleware, AuditMiddleware
-- **Extensions/** — DatabaseMigrationExtensions (ApplyMigrationsAsync for Development)
+- **Controllers/** — REST controllers (Patients, Appointments, Clinical, Devices, Insurance, Billing, Telemedicine, MentalHealth, AI, Reporting); all use `api/[controller]` and MediatR; PatientsController uses `Name` on actions for Swagger operationId (GetPatientById, GetPatientsPaginated, CreatePatient, UpdatePatient)
+- **App/Middleware/** — ExceptionHandlingMiddleware, TenantResolutionMiddleware, AuditMiddleware
+- **App/Extensions/** — DatabaseMigrationExtensions (ApplyMigrationsAsync for Development), SwaggerExtensions (AddRaphCareSwagger, UseRaphCareSwagger; root redirect to /swagger in Development)
+- **App/Contracts/** — CreatePatientResponse (OpenAPI response type for POST patients)
 
 ### RaphCare.Application
 - **Common/** — Interfaces (IRepository, IUnitOfWork, ICurrentUserService, IAIService, IApplicationUserStore, IUserProvisioningService, IDomainEventDispatcher, IDateTimeProvider, IPaymentGatewayService, IEmailService, ISmsService, INotificationService), DTOs (PagedResult, BaseDto), Behaviors (Logging, Performance, Authorization, Validation, Transaction), Exceptions
@@ -46,14 +47,14 @@
 - **Persistence/Interceptors/** — AuditableEntityInterceptor, SoftDeleteInterceptor, DomainEventDispatcherInterceptor
 - **Persistence/Configurations/** — EF configurations for entities (in Infrastructure; some configurations may live in Persistence)
 - **Services/** — Implementations (e.g. AIService placeholder implementing IAIService)
-- **Identity/** — Implementation of IApplicationUserStore (wraps IdentityDbContext)
+- **Identity/** — (IApplicationUserStore is implemented in Persistence.ApplicationUserStore)
 
 ### RaphCare.Persistence
 - **DbContexts:** IdentityDbContext, ClinicalDbContext, DeviceDbContext, InsuranceDbContext, BillingDbContext, AIDbContext
+- **ApplicationUserStore** — Implements IApplicationUserStore against IdentityDbContext (FindByEntraObjectIdAsync, CreateAsync, UpdateAsync)
 - **Repositories/** — EfRepository<TEntity, TContext>; repository registration per entity/context in DependencyInjection
-- **Configurations/** — Additional EF configurations if any
 - **Seed/** — DatabaseSeeder (orchestrator), IdentitySeeder, ClinicalSeeder, InsuranceSeeder, DeviceSeeder (placeholder), BillingSeeder (placeholder)
-- **Migrations/** — EF Core migrations (per DbContext); typically under Migrations folder(s)
+- **Migrations/** — EF Core migrations (per DbContext); under Migrations/ and per-context subfolders (IdentityDb, Clinical, InsuranceDb, BillingDb, AIDb)
 
 ### RaphCare.Identity
 - **Entra/** — EntraOptions, EntraTokenValidator, EntraUserProvisioningService, EntraRoleMapper
@@ -61,9 +62,9 @@
 
 ### RaphCare.Client
 - **Contracts/** — Response&lt;T&gt;, ApiException; **Contracts/Interfaces/** — IPatientService (service contracts)
-- **Generated/** — NSwag-style partial Client and IClient, generated DTOs (e.g. PatientDto, PatientDtoPagedResult)
-- **Services/Base/** — BaseHttpService (wraps IClient and HttpClient; generic Get/Post/Put/Delete returning Response&lt;T&gt;)
-- **Services/** — PatientService (example); implement Contracts interfaces; inject IClient and IMapper
+- **Services/Base/Generated/** — NSwag-generated Client and IClient (ClientService.cs), generated DTOs (PatientDto, PatientDtoPagedResult, CreatePatientResponse); method names follow API operation names (GetPatientByIdAsync, GetPatientsPaginatedAsync, CreatePatientAsync, UpdatePatientAsync)
+- **Services/Base/** — Partial IClient/Client (expose HttpClient); BaseHttpService (wraps IClient and HttpClient; generic Get/Post/Put/Delete returning Response&lt;T&gt;)
+- **Services/** — PatientService (example); implements IPatientService; calls generated client methods (GetPatientByIdAsync, GetPatientsPaginatedAsync, CreatePatientAsync, UpdatePatientAsync); inject IClient and IMapper
 - **Models/** — ViewModels and request DTOs (e.g. PatientViewModel, CreatePatientRequest)
 - **Mappings/** — AutoMapper profiles (DTOs to ViewModels)
 - **ServiceRegistration.cs** — AddRaphCareClient (registers client, HttpClient, AutoMapper, feature services)

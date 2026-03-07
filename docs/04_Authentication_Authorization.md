@@ -5,7 +5,7 @@
 - **Provider:** Microsoft Entra ID (Azure AD). JWTs are issued by Entra and validated by the API.
 - **Configuration:** Entra options are bound from configuration section `Entra` (e.g. Authority, Audience, TenantId). Section name constant: `EntraOptions.SectionName = "Entra"`.
 - **User storage:** ApplicationUser is stored in IdentityDbContext (Persistence). Users are provisioned or updated from Entra claims after each successful JWT validation via `IUserProvisioningService` (implemented by `EntraUserProvisioningService`).
-- **Key types:** ApplicationUser (EntraObjectId, Email, DisplayName), Role, Permission, UserRole, RolePermission. No ASP.NET Core Identity identity store; custom IApplicationUserStore implemented against IdentityDbContext.
+- **Key types:** ApplicationUser (EntraObjectId, Email, DisplayName), Role, Permission, UserRole, RolePermission. No ASP.NET Core Identity identity store; custom IApplicationUserStore implemented in RaphCare.Persistence (ApplicationUserStore) against IdentityDbContext.
 
 ## JWT Strategy
 

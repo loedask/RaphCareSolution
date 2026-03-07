@@ -5,7 +5,7 @@
 - **Purpose:** Users, roles, permissions, sessions, and audit for authentication and authorization.
 - **Entities:** ApplicationUser, Role, Permission, UserRole, RolePermission, RefreshTokenRecord, UserSession, AuditLog, LoginAudit, AccessPolicy.
 - **Persistence:** IdentityDbContext (Users, Roles, Permissions, UserRoles, RolePermissions).
-- **Services:** EntraTokenValidator, EntraUserProvisioningService, EntraRoleMapper (RaphCare.Identity); IApplicationUserStore (implemented in Infrastructure).
+- **Services:** EntraTokenValidator, EntraUserProvisioningService, EntraRoleMapper (RaphCare.Identity); IApplicationUserStore (implemented in RaphCare.Persistence.ApplicationUserStore).
 - **Controllers:** None; auth is middleware and policy-based.
 - **Relationships:** Identity is referenced by all other modules for current user and tenant; ApplicationUser is provisioned from Entra.
 
@@ -25,7 +25,7 @@
 - **Purpose:** Patient registration and demographics.
 - **Entities:** Patient, PatientProfile, InsuranceProfile, Address, EmergencyContact, Allergy, Medication, MedicalHistory, ChronicCondition, FamilyHistory, ConsentRecord, etc.
 - **Application:** CreatePatient, UpdatePatient, GetPatientById, GetPatients (paginated).
-- **Controllers:** PatientsController — GET by id, GET list (pageNumber, pageSize), POST, PUT by id.
+- **Controllers:** PatientsController — GET by id (Name = "GetPatientById"), GET list (Name = "GetPatientsPaginated"; pageNumber, pageSize), POST (Name = "CreatePatient"), PUT by id (Name = "UpdatePatient"). ProducesResponseType for typed Swagger/NSwag.
 - **Persistence:** ClinicalDbContext (Patients).
 - **Relationships:** Patient belongs to Clinic; can have InsuranceProfile; linked to Appointments, Visits, DeviceAssignments.
 

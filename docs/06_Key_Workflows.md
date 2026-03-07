@@ -1,5 +1,9 @@
 # Key Workflows
 
+## Patient Flow (Client)
+
+- **Client:** RaphCare.Client PatientService uses generated IClient methods: GetPatientByIdAsync, GetPatientsPaginatedAsync, CreatePatientAsync, UpdatePatientAsync (operation names from API controller `Name`). Returns Response&lt;T&gt;; catches generated ApiException on failure.
+
 ## Appointment Flow
 
 - **Create:** Client POSTs to api/appointments with body; AppointmentsController sends CreateAppointmentCommand via MediatR. Handler uses repository to add Appointment (linked to Patient/Clinic). Returns created resource or id.

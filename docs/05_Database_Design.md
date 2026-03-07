@@ -10,7 +10,7 @@ Six bounded-context DbContexts live in RaphCare.Persistence. Each can use a dedi
 | ClinicalDbContext | ClinicalConnection (or Default) | Patients, Clinics, Appointments, Visits, CarePlans, TeleSessions, Messages |
 | DeviceDbContext | DeviceConnection (or Default) | Devices, DeviceTypes, DeviceManufacturers, DeviceFirmwares, DeviceAssignments |
 | InsuranceDbContext | InsuranceConnection (or Default) | InsurancePlans, InsuranceProfiles |
-| BillingDbContext | (Default) | Invoices |
+| BillingDbContext | BillingConnection (or Default) | Invoices |
 | AIDbContext | (Default) | WellnessInsights, RiskScores, DashboardSnapshots |
 
 All contexts use the same migrations assembly: `RaphCare.Persistence`. Interceptors registered: AuditableEntityInterceptor, SoftDeleteInterceptor, DomainEventDispatcherInterceptor. Query tracking is NoTracking by default for read-oriented usage.
@@ -34,5 +34,5 @@ Entity configurations are applied via EF Core model builder (configurations in I
 ## Migration Strategy
 
 - Migrations are generated and stored in RaphCare.Persistence (assembly RaphCare.Persistence). Each DbContext has its own set of migrations.
-- **ApplyMigrationsAsync** (DatabaseMigrationExtensions): runs only in Development. Creates a scope and calls `Database.MigrateAsync()` on ClinicalDbContext, DeviceDbContext, InsuranceDbContext, BillingDbContext, AIDbContext, IdentityDbContext in sequence. Invoked from API Program.cs after Build, before Run.
+- **ApplyMigrationsAsync** (DatabaseMigrationExtensions, in App/Extensions): runs only in Development. Creates a scope and calls `Database.MigrateAsync()` on ClinicalDbContext, DeviceDbContext, InsuranceDbContext, BillingDbContext, AIDbContext, IdentityDbContext in that order. Invoked from API Program.cs after Build, before Run.
 - Production: migrations are not auto-applied by this code; deploy via your own process (e.g. CI/CD or manual).
