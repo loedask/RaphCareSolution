@@ -15,7 +15,7 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
     {
         try
         {
-            var dto = await Client.PatientsGETAsync(id, cancellationToken).ConfigureAwait(false);
+            var dto = await Client.GetPatientByIdAsync(id, cancellationToken).ConfigureAwait(false);
             var viewModel = _mapper.Map<PatientViewModel>(dto);
             return Response<PatientViewModel?>.Success(viewModel);
         }
@@ -29,7 +29,7 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
     {
         try
         {
-            var dto = await Client.PatientsGET2Async(pageNumber, pageSize, cancellationToken).ConfigureAwait(false);
+            var dto = await Client.GetPatientsPaginatedAsync(pageNumber, pageSize, cancellationToken).ConfigureAwait(false);
             var viewModel = _mapper.Map<PagedResultViewModel<PatientViewModel>>(dto);
             return Response<PagedResultViewModel<PatientViewModel>>.Success(viewModel);
         }
@@ -44,7 +44,7 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
         try
         {
             var command = _mapper.Map<CreatePatientCommand>(request);
-            var result = await Client.PatientsPOSTAsync(command, cancellationToken).ConfigureAwait(false);
+            var result = await Client.CreatePatientAsync(command, cancellationToken).ConfigureAwait(false);
             return Response<Guid>.Success(result.Id);
         }
         catch (RaphCare.Client.Services.Base.ApiException ex)
@@ -59,7 +59,7 @@ public class PatientService(IClient client, HttpClient httpClient, IMapper mappe
         {
             request.Id = id;
             var command = _mapper.Map<UpdatePatientCommand>(request);
-            await Client.PatientsPUTAsync(id, command, cancellationToken).ConfigureAwait(false);
+            await Client.UpdatePatientAsync(id, command, cancellationToken).ConfigureAwait(false);
             return Response<bool>.Success(true);
         }
         catch (RaphCare.Client.Services.Base.ApiException ex)
