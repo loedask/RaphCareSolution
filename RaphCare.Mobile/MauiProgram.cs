@@ -25,13 +25,13 @@ namespace RaphCare.Mobile
                 });
 
             // Entra auth (Shared/Services/Auth)
-            builder.Services.Configure<Shared.Services.Auth.EntraAuthOptions>(options =>
+            builder.Services.Configure<Core.Shared.Services.Auth.EntraAuthOptions>(options =>
             {
                 options.ClientId = "YOUR_CLIENT_ID"; // Replace with app registration client ID
                 options.TenantId = "common";
                 options.ApiScope = "api://raphcare-api/.default";
             });
-            builder.Services.AddSingleton<Shared.Services.Auth.IAuthService, Shared.Services.Auth.EntraAuthService>();
+            builder.Services.AddSingleton<Core.Shared.Services.Auth.IAuthService, Core.Shared.Services.Auth.EntraAuthService>();
             builder.Services.AddSingleton<RaphCare.Client.Contracts.IAccessTokenProvider, SecureStorageAccessTokenProvider>();
 
             builder.Services.AddTransient<LandingViewModel>();

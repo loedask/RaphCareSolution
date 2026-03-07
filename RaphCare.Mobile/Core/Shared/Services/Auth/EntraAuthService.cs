@@ -2,9 +2,9 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
-using RaphCare.Mobile.Shared.Models;
+using RaphCare.Mobile.Core.Shared.Models;
 
-namespace RaphCare.Mobile.Shared.Services.Auth;
+namespace RaphCare.Mobile.Core.Shared.Services.Auth;
 
 /// <summary>
 /// Microsoft Entra ID authentication using MSAL. Handles sign-up, sign-in, and secure token storage.

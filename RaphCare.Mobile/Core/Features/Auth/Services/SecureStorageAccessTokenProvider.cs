@@ -1,5 +1,4 @@
 using RaphCare.Client.Contracts;
-using RaphCare.Mobile.Shared.Services.Auth;
 
 namespace RaphCare.Mobile.Core.Features.Auth.Services;
 

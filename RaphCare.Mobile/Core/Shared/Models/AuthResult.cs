@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Shared.Models;
+namespace RaphCare.Mobile.Core.Shared.Models;
 
 /// <summary>
 /// Result of an authentication operation (sign-up or sign-in).

@@ -1,13 +1,13 @@
+using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
 using RaphCare.Mobile.Features.Appointments.Views;
 using RaphCare.Mobile.Features.Auth.Views;
 using RaphCare.Mobile.Features.Home.Views;
 using RaphCare.Mobile.Features.Insurance.Views;
 using RaphCare.Mobile.Features.Records.Views;
 using RaphCare.Mobile.Features.Settings.Views;
-using RaphCare.Mobile.Shared.Services.FeatureFlags;
 using RaphCare.Mobile.Shared.Views;
 
-namespace RaphCare.Mobile.Shared.Navigation;
+namespace RaphCare.Mobile.Core.Shared.Navigation;
 
 /// <summary>
 /// Registers all app routes and provides navigation that respects feature flags.
