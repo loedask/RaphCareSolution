@@ -23,6 +23,9 @@ public static class DependencyInjection
         services.AddScoped<SoftDeleteInterceptor>();
         services.AddScoped<DomainEventDispatcherInterceptor>();
 
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<IPaymentGatewayService, PaymentGatewayService>();

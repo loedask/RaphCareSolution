@@ -134,6 +134,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IUnitOfWork, PersistenceUnitOfWork>();
+        services.AddScoped<IApplicationUserStore, ApplicationUserStore>();
 
         services.AddScoped<IRepository<Patient>>(sp => new EfRepository<Patient, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Visit>>(sp => new EfRepository<Visit, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));

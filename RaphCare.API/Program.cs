@@ -15,6 +15,7 @@ builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddIdentity(builder.Configuration);
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 builder.Services.AddAuthorization(options =>
