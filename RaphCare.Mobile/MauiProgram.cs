@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
-using RaphCare.Mobile.Features.Auth.Services;
-using RaphCare.Mobile.Features.Auth.ViewModels;
 using RaphCare.Mobile.Features.Auth.Views;
 using RaphCare.Mobile.Features.Home.Views;
 using RaphCare.Client;
+using RaphCare.Mobile.Core.Features.Auth.Services;
+using RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
 namespace RaphCare.Mobile
 {
