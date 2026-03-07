@@ -6,15 +6,9 @@ using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-public class PatientService : BaseHttpService, IPatientService
+public class PatientService(IClient client, HttpClient httpClient, IMapper mapper) : BaseHttpService(client, httpClient), IPatientService
 {
-    private readonly IMapper _mapper;
-
-    public PatientService(IClient client, HttpClient httpClient, IMapper mapper)
-        : base(client, httpClient)
-    {
-        _mapper = mapper;
-    }
+    private readonly IMapper _mapper = mapper;
 
     public async Task<Response<PatientViewModel?>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {

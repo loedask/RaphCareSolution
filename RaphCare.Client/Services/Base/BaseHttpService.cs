@@ -10,18 +10,12 @@ namespace RaphCare.Client.Services.Base;
 /// Base service that wraps the generated API client and provides generic HTTP helpers
 /// with standardized Response&lt;T&gt; and ApiException handling.
 /// </summary>
-public abstract class BaseHttpService
+public abstract class BaseHttpService(IClient client, HttpClient httpClient)
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    protected BaseHttpService(IClient client, HttpClient httpClient)
-    {
-        Client = client;
-        HttpClient = httpClient;
-    }
-
-    protected IClient Client { get; }
-    protected HttpClient HttpClient { get; }
+    protected IClient Client { get; } = client;
+    protected HttpClient HttpClient { get; } = httpClient;
 
     protected async Task<Response<T>> GetAsync<T>(string requestUri, CancellationToken cancellationToken = default)
     {

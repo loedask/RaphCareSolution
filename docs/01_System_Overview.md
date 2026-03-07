@@ -11,7 +11,7 @@ RaphCare is a healthcare platform supporting clinical workflows, patient managem
 - **Data:** Entity Framework Core 9, SQL Server
 - **Application layer:** MediatR (CQRS-style), FluentValidation
 - **Auth:** JWT Bearer; tokens validated against Microsoft Entra ID (Azure AD)
-- **Client:** Blazor WebAssembly (RaphCare.Web), .NET MAUI (RaphCare.Mobile)
+- **Client:** Blazor WebAssembly (RaphCare.Web), .NET MAUI Blazor Hybrid (RaphCare.Mobile)
 - **Shared client:** RaphCare.Client (HTTP client abstraction, NSwag-style generated client, AutoMapper)
 
 ## Architectural Style
