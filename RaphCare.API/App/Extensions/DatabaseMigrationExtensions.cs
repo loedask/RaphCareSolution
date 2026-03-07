@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RaphCare.Persistence;
 
-namespace RaphCare.API.Extensions;
+namespace RaphCare.API.App.Extensions;
 
 public static class DatabaseMigrationExtensions
 {

@@ -1,7 +1,8 @@
+using RaphCare.Client.Contracts;
 using RaphCare.Client.Models;
 using RaphCare.Client.Models.Patients;
 
-namespace RaphCare.Client.Contracts;
+namespace RaphCare.Client.Contracts.Interfaces;
 
 public interface IPatientService
 {

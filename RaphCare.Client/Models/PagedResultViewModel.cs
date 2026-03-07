@@ -1,4 +1,4 @@
-namespace RaphCare.Client.Models.Patients;
+namespace RaphCare.Client.Models;
 
 public class PagedResultViewModel<T>
 {

@@ -1,6 +1,6 @@
 using Microsoft.OpenApi.Models;
 
-namespace RaphCare.API.Extensions;
+namespace RaphCare.API.App.Extensions;
 
 /// <summary>
 /// Centralizes Swagger/OpenAPI registration and pipeline setup for the API.

@@ -1,5 +1,6 @@
 using AutoMapper;
 using RaphCare.Client.Contracts;
+using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models;
 using RaphCare.Client.Models.Patients;
 using RaphCare.Client.Services.Base;

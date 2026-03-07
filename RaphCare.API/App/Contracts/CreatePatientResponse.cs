@@ -1,4 +1,4 @@
-namespace RaphCare.API.Contracts;
+namespace RaphCare.API.App.Contracts;
 
 /// <summary>
 /// Response body for POST /api/Patients (201 Created). Used for OpenAPI/Swagger only.

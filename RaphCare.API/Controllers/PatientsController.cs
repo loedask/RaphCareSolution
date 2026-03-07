@@ -1,12 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using RaphCare.API.Contracts;
 using RaphCare.Application.Features.Patients.Commands.CreatePatient;
 using RaphCare.Application.Features.Patients.Commands.UpdatePatient;
 using RaphCare.Application.Features.Patients.DTOs;
 using RaphCare.Application.Features.Patients.Queries.GetPatientById;
 using RaphCare.Application.Features.Patients.Queries.GetPatients;
 using RaphCare.Application.Common.DTOs;
+using RaphCare.API.App.Contracts;
 
 namespace RaphCare.API.Controllers;
 
