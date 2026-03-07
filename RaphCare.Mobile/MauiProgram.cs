@@ -24,15 +24,14 @@ namespace RaphCare.Mobile
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            // Entra auth options (bind from config or set in code)
-            builder.Services.Configure<EntraAuthOptions>(options =>
+            // Entra auth (Shared/Services/Auth)
+            builder.Services.Configure<Shared.Services.Auth.EntraAuthOptions>(options =>
             {
                 options.ClientId = "YOUR_CLIENT_ID"; // Replace with app registration client ID
                 options.TenantId = "common";
                 options.ApiScope = "api://raphcare-api/.default";
             });
-
-            builder.Services.AddSingleton<IAuthService, EntraAuthService>();
+            builder.Services.AddSingleton<Shared.Services.Auth.IAuthService, Shared.Services.Auth.EntraAuthService>();
             builder.Services.AddSingleton<RaphCare.Client.Contracts.IAccessTokenProvider, SecureStorageAccessTokenProvider>();
 
             builder.Services.AddTransient<LandingViewModel>();
@@ -47,6 +46,11 @@ namespace RaphCare.Mobile
             builder.Services.AddTransient<VerifyEmailPage>();
             builder.Services.AddTransient<SignInPage>();
             builder.Services.AddTransient<HomePage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Features.Records.Views.RecordsPage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Features.Appointments.Views.AppointmentsPage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Features.Insurance.Views.InsurancePage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Features.Settings.Views.SettingsPage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Shared.Views.UnderConstructionPage>();
             builder.Services.AddTransient<AppShell>();
 
             // API client with bearer token (base URL should come from config)

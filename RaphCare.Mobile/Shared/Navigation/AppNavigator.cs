@@ -1,0 +1,81 @@
+using RaphCare.Mobile.Features.Appointments.Views;
+using RaphCare.Mobile.Features.Auth.Views;
+using RaphCare.Mobile.Features.Home.Views;
+using RaphCare.Mobile.Features.Insurance.Views;
+using RaphCare.Mobile.Features.Records.Views;
+using RaphCare.Mobile.Features.Settings.Views;
+using RaphCare.Mobile.Shared.Services.FeatureFlags;
+using RaphCare.Mobile.Shared.Views;
+
+namespace RaphCare.Mobile.Shared.Navigation;
+
+/// <summary>
+/// Registers all app routes and provides navigation that respects feature flags.
+/// </summary>
+public static class AppNavigator
+{
+    public const string Landing = "LandingPage";
+    public const string RegisterOptions = "RegisterOptionsPage";
+    public const string RegisterEmail = "RegisterEmailPage";
+    public const string VerifyEmail = "VerifyEmailPage";
+    public const string SignIn = "SignInPage";
+    public const string Home = "HomePage";
+    public const string Records = "RecordsPage";
+    public const string Appointments = "AppointmentsPage";
+    public const string Insurance = "InsurancePage";
+    public const string Settings = "SettingsPage";
+    public const string UnderConstruction = "UnderConstructionPage";
+
+    /// <summary>
+    /// Call once at app startup (e.g. from AppShell or MauiProgram) to register every route.
+    /// </summary>
+    public static void RegisterAllRoutes()
+    {
+        // Auth
+        Routing.RegisterRoute(Landing, typeof(LandingPage));
+        Routing.RegisterRoute(RegisterOptions, typeof(RegisterOptionsPage));
+        Routing.RegisterRoute(RegisterEmail, typeof(RegisterEmailPage));
+        Routing.RegisterRoute(VerifyEmail, typeof(VerifyEmailPage));
+        Routing.RegisterRoute(SignIn, typeof(SignInPage));
+
+        // Main
+        Routing.RegisterRoute(Home, typeof(HomePage));
+        Routing.RegisterRoute(Records, typeof(RecordsPage));
+        Routing.RegisterRoute(Appointments, typeof(AppointmentsPage));
+        Routing.RegisterRoute(Insurance, typeof(InsurancePage));
+        Routing.RegisterRoute(Settings, typeof(SettingsPage));
+
+        // Shared
+        Routing.RegisterRoute(UnderConstruction, typeof(UnderConstructionPage));
+    }
+
+    /// <summary>
+    /// Navigate to a feature page; if the feature is disabled, shows UnderConstructionPage instead.
+    /// </summary>
+    public static async Task GoToFeatureAsync(string route, string? featureDisplayName = null, bool absolute = false)
+    {
+        var (enabled, pageRoute) = GetFeatureRoute(route);
+        if (enabled)
+        {
+            var path = absolute ? "//" + pageRoute : pageRoute;
+            await Shell.Current.GoToAsync(path);
+        }
+        else
+        {
+            var uri = $"{UnderConstruction}?featureName={Uri.EscapeDataString(featureDisplayName ?? route)}";
+            await Shell.Current.GoToAsync(uri);
+        }
+    }
+
+    private static (bool enabled, string route) GetFeatureRoute(string route)
+    {
+        return route switch
+        {
+            Records => (FeatureFlags.RecordsEnabled, Records),
+            Appointments => (FeatureFlags.AppointmentsEnabled, Appointments),
+            Insurance => (FeatureFlags.InsuranceEnabled, Insurance),
+            Settings => (FeatureFlags.SettingsEnabled, Settings),
+            _ => (true, route)
+        };
+    }
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <!-- Primary palette (e.g. primary #1F9FB2) -->
+    <Color x:Key="PrimaryColor">#1F9FB2</Color>
+    <Color x:Key="PrimaryDarkColor">#1A8799</Color>
+    <Color x:Key="PrimaryLightColor">#4DB3C2</Color>
+
+    <!-- Secondary / accent -->
+    <Color x:Key="SecondaryColor">#7B2CBF</Color>
+    <Color x:Key="AccentColor">#512BD4</Color>
+
+    <!-- Neutrals -->
+    <Color x:Key="BackgroundColor">#F8FAFC</Color>
+    <Color x:Key="SurfaceColor">#FFFFFF</Color>
+    <Color x:Key="TextPrimaryColor">#1A1A1A</Color>
+    <Color x:Key="TextSecondaryColor">#64748B</Color>
+    <Color x:Key="TextMutedColor">#94A3B8</Color>
+    <Color x:Key="BorderColor">#E2E8F0</Color>
+
+    <!-- Semantic -->
+    <Color x:Key="SuccessColor">#22C55E</Color>
+    <Color x:Key="ErrorColor">#EF4444</Color>
+    <Color x:Key="WarningColor">#F59E0B</Color>
+
+    <!-- Auth gradient (preserve existing) -->
+    <Color x:Key="GradientStartColor">#512BD4</Color>
+    <Color x:Key="GradientMidColor">#7B2CBF</Color>
+    <Color x:Key="GradientEndColor">#240046</Color>
+</ResourceDictionary>
