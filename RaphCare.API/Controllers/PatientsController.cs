@@ -18,7 +18,7 @@ namespace RaphCare.API.Controllers;
 public class PatientsController(IMediator mediator) : ControllerBase
 {
     /// <summary>Get a patient by id.</summary>
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetPatientById")]
     [ProducesResponseType(typeof(PatientDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
@@ -28,7 +28,7 @@ public class PatientsController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>Get paginated list of patients.</summary>
-    [HttpGet]
+    [HttpGet(Name = "GetPatientsPaginated")]
     [ProducesResponseType(typeof(PagedResult<PatientDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetList([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
     {
@@ -37,7 +37,7 @@ public class PatientsController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>Create a new patient.</summary>
-    [HttpPost]
+    [HttpPost(Name = "CreatePatient")]
     [ProducesResponseType(typeof(CreatePatientResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreatePatientCommand command, CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ public class PatientsController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>Update an existing patient.</summary>
-    [HttpPut("{id:guid}")]
+    [HttpPut("{id:guid}", Name = "UpdatePatient")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePatientCommand command, CancellationToken cancellationToken)
