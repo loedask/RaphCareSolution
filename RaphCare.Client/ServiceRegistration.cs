@@ -1,13 +1,12 @@
 using System.Net.Http;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-using RaphCare.Client.Generated;
 using RaphCare.Client.Services;
 using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client;
 
-using ApiClient = Generated.Client;
+using ApiClient = Services.Base.Client;
 
 public static class ServiceRegistration
 {
