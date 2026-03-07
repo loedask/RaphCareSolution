@@ -1,4 +1,4 @@
-namespace RaphCare.API.Middleware;
+namespace RaphCare.API.App.Middleware;
 
 /// <summary>
 /// Extracts and validates X-Clinic-Id header and stores ClinicId in HttpContext.Items.

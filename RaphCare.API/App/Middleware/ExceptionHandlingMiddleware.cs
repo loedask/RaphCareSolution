@@ -3,7 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.Exceptions;
 
-namespace RaphCare.API.Middleware;
+namespace RaphCare.API.App.Middleware;
 
 /// <summary>
 /// Catches unhandled exceptions, logs them, and returns a ProblemDetails response.

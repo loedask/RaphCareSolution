@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace RaphCare.API.Middleware;
+namespace RaphCare.API.App.Middleware;
 
 /// <summary>
 /// Logs request path, user id (if authenticated), and timestamp for audit trail.

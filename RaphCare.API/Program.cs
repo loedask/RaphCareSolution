@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using RaphCare.API.App.Extensions;
-using RaphCare.API.Middleware;
+using RaphCare.API.App.Middleware;
 using RaphCare.Application;
 using RaphCare.Identity;
 using RaphCare.Infrastructure;
