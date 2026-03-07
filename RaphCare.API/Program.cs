@@ -63,13 +63,14 @@ app.UseMiddleware<AuditMiddleware>();
 
 app.MapControllers();
 
+app.UseSwagger();
+app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "RaphCare API v1"));
+
+app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-
     await app.ApplyMigrationsAsync();
 }
-
 
 app.Run();
