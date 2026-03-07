@@ -60,10 +60,10 @@
 - **DependencyInjection.cs** — Registers Entra options, JWT Bearer validation, user provisioning, role mapper
 
 ### RaphCare.Client
-- **Contracts/** — Response<T>, ApiException
+- **Contracts/** — Response&lt;T&gt;, ApiException, IPatientService (service interfaces and shared client types)
 - **Generated/** — NSwag-style partial Client and IClient, generated DTOs (e.g. PatientDto, PatientDtoPagedResult)
-- **Services/Base/** — BaseHttpService (wraps IClient and HttpClient; generic Get/Post/Put/Delete returning Response<T>)
-- **Services/** — IPatientService, PatientService (example); inject IClient and IMapper
+- **Services/Base/** — BaseHttpService (wraps IClient and HttpClient; generic Get/Post/Put/Delete returning Response&lt;T&gt;)
+- **Services/** — PatientService (example); implement Contracts interfaces; inject IClient and IMapper
 - **Models/** — ViewModels and request DTOs (e.g. PatientViewModel, CreatePatientRequest)
 - **Mappings/** — AutoMapper profiles (DTOs to ViewModels)
 - **ServiceRegistration.cs** — AddRaphCareClient (registers client, HttpClient, AutoMapper, feature services)

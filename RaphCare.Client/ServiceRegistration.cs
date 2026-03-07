@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using RaphCare.Client.Contracts;
 using RaphCare.Client.Services;
 using RaphCare.Client.Services.Base;
 
