@@ -37,10 +37,11 @@ app.UseMiddleware<AuditMiddleware>();
 
 app.MapControllers();
 
-app.UseRaphCareSwagger();
-
 if (app.Environment.IsDevelopment())
 {
+
+    app.UseRaphCareSwagger();
+
     await app.ApplyMigrationsAsync();
 }
 
