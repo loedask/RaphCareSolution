@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-
-    <!-- Page title -->
+    <!-- Prototype: font-display = Space Grotesk, font-body = DM Sans. Use OpenSans until fonts added. -->
+    <!-- page-title 1.75rem 700, section-title 1.25rem 600, body-lg 1rem, body-md 0.875rem, caption 0.75rem -->
     <Style TargetType="Label" x:Key="TitleLarge">
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="Margin" Value="0,0,0,8" />
     </Style>
 
     <Style TargetType="Label" x:Key="TitleMedium">
@@ -19,12 +19,18 @@
 
     <Style TargetType="Label" x:Key="TitleSmall">
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
-        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontSize" Value="20" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
-    <!-- Body -->
+    <Style TargetType="Label" x:Key="SectionTitle">
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+    </Style>
+
     <Style TargetType="Label" x:Key="BodyLarge">
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
         <Setter Property="FontSize" Value="16" />
@@ -43,10 +49,13 @@
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
-    <!-- Caption / overline -->
     <Style TargetType="Label" x:Key="Caption">
         <Setter Property="TextColor" Value="{StaticResource TextMutedColor}" />
-        <Setter Property="FontSize" Value="11" />
-        <Setter Property="FontAttributes" Value="Italic" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style TargetType="Label" x:Key="Micro">
+        <Setter Property="TextColor" Value="{StaticResource TextMutedColor}" />
+        <Setter Property="FontSize" Value="10" />
     </Style>
 </ResourceDictionary>

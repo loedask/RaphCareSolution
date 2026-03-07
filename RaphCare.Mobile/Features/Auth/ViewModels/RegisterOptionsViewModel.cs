@@ -10,12 +10,14 @@ public class RegisterOptionsViewModel : BaseViewModel
 {
     public ICommand CreateWithEmailCommand { get; }
     public ICommand BackCommand { get; }
+    public ICommand SignInCommand { get; }
 
     public RegisterOptionsViewModel()
     {
         Title = "Create Account";
         CreateWithEmailCommand = new Command(async () => await GoToRegisterEmailAsync());
         BackCommand = new Command(async () => await GoBackAsync());
+        SignInCommand = new Command(async () => await Shell.Current.GoToAsync("SignInPage").ConfigureAwait(false));
     }
 
     private async Task GoToRegisterEmailAsync()

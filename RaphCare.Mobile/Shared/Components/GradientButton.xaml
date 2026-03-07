@@ -12,8 +12,8 @@
         >
     <Button.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="{StaticResource PrimaryColor}" Offset="0" />
-            <GradientStop Color="{StaticResource PrimaryDarkColor}" Offset="1" />
+            <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+            <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
         </LinearGradientBrush>
     </Button.Background>
 </Button>

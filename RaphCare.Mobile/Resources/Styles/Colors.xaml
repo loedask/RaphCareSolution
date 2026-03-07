@@ -1,30 +1,69 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <!-- Primary palette (e.g. primary #1F9FB2) -->
-    <Color x:Key="PrimaryColor">#1F9FB2</Color>
-    <Color x:Key="PrimaryDarkColor">#1A8799</Color>
-    <Color x:Key="PrimaryLightColor">#4DB3C2</Color>
+    <!-- From prototype index.css :root (HSL converted to hex) -->
+    <!-- background 210 20% 98% / foreground 220 40% 13% -->
+    <Color x:Key="BackgroundColor">#F5F7FA</Color>
+    <Color x:Key="ForegroundColor">#1E293B</Color>
 
-    <!-- Secondary / accent -->
-    <Color x:Key="SecondaryColor">#7B2CBF</Color>
-    <Color x:Key="AccentColor">#512BD4</Color>
+    <!-- primary 192 75% 42% (teal) / primary-foreground -->
+    <Color x:Key="PrimaryColor">#1A9FAE</Color>
+    <Color x:Key="PrimaryForegroundColor">#FFFFFF</Color>
+    <Color x:Key="PrimaryDarkColor">#158A97</Color>
+    <Color x:Key="PrimaryLightColor">#3DB8B8</Color>
 
-    <!-- Neutrals -->
-    <Color x:Key="BackgroundColor">#F8FAFC</Color>
+    <!-- secondary 210 30% 96% -->
+    <Color x:Key="SecondaryColor">#F1F5F9</Color>
+    <Color x:Key="SecondaryForegroundColor">#334155</Color>
+
+    <!-- card 0 0% 100% -->
+    <Color x:Key="CardColor">#FFFFFF</Color>
+    <Color x:Key="CardForegroundColor">#1E293B</Color>
     <Color x:Key="SurfaceColor">#FFFFFF</Color>
-    <Color x:Key="TextPrimaryColor">#1A1A1A</Color>
+
+    <!-- muted / muted-foreground 215 12% 52% -->
+    <Color x:Key="MutedColor">#E2E8F0</Color>
+    <Color x:Key="MutedForegroundColor">#64748B</Color>
+
+    <!-- accent 168 55% 46% -->
+    <Color x:Key="AccentColor">#2DB896</Color>
+    <Color x:Key="AccentForegroundColor">#FFFFFF</Color>
+
+    <!-- destructive 0 68% 56% -->
+    <Color x:Key="DestructiveColor">#E53935</Color>
+    <Color x:Key="ErrorColor">#E53935</Color>
+
+    <!-- border / input 210 18% 92% -->
+    <Color x:Key="BorderColor">#E4E8ED</Color>
+    <Color x:Key="InputColor">#E4E8ED</Color>
+    <Color x:Key="RingColor">#1A9FAE</Color>
+
+    <!-- RaphCare premium: navy, teal -->
+    <Color x:Key="NavyColor">#1A2234</Color>
+    <Color x:Key="NavyLightColor">#2D3A52</Color>
+    <Color x:Key="TealColor">#1A9FAE</Color>
+    <Color x:Key="TealLightColor">#3DB8B8</Color>
+    <Color x:Key="TealGlowColor">#6DD4C8</Color>
+
+    <!-- Text (align with foreground/muted) -->
+    <Color x:Key="TextPrimaryColor">#1E293B</Color>
     <Color x:Key="TextSecondaryColor">#64748B</Color>
     <Color x:Key="TextMutedColor">#94A3B8</Color>
-    <Color x:Key="BorderColor">#E2E8F0</Color>
 
-    <!-- Semantic -->
+    <!-- Semantic / health -->
     <Color x:Key="SuccessColor">#22C55E</Color>
-    <Color x:Key="ErrorColor">#EF4444</Color>
     <Color x:Key="WarningColor">#F59E0B</Color>
+    <Color x:Key="HealthNormalColor">#22C55E</Color>
+    <Color x:Key="HealthAttentionColor">#F59E0B</Color>
+    <Color x:Key="HealthCriticalColor">#E53935</Color>
 
-    <!-- Auth gradient (preserve existing) -->
-    <Color x:Key="GradientStartColor">#512BD4</Color>
-    <Color x:Key="GradientMidColor">#7B2CBF</Color>
-    <Color x:Key="GradientEndColor">#240046</Color>
+    <!-- Calm palette -->
+    <Color x:Key="CalmColor">#F0F2F7</Color>
+    <Color x:Key="CalmAccentColor">#8B7EC8</Color>
+    <Color x:Key="CalmSoftColor">#E8E5F2</Color>
+
+    <!-- Auth gradient (prototype gradient-brand: navy -> navy-light -> teal) -->
+    <Color x:Key="GradientStartColor">#1A2234</Color>
+    <Color x:Key="GradientMidColor">#2D3A52</Color>
+    <Color x:Key="GradientEndColor">#1A9FAE</Color>
 </ResourceDictionary>

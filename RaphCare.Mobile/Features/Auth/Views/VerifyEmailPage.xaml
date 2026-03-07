@@ -12,7 +12,7 @@
             <Label Text="We sent a verification link to your email. Open it to verify your account, then sign in below."
                    Style="{StaticResource AuthSubtitleLabel}" />
 
-            <Label Text="{Binding ErrorMessage}" TextColor="#FF6B6B" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" Margin="0,0,0,8" />
+            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" Margin="0,0,0,8" FontSize="12" />
 
             <Button Text="Sign In"
                     Style="{StaticResource AuthPrimaryButton}"

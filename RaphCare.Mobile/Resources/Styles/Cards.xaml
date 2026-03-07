@@ -1,24 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-
-    <!-- Card border (use StrokeShape in view: RoundRectangle CornerRadius="12") -->
+    <!-- Prototype radius 0.875rem. rounded-2xl 16, card-premium shadow-card -->
+    <!-- Register method cards: p-5 rounded-2xl shadow-soft border border-border -->
     <Style TargetType="Border" x:Key="CardBorder">
-        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceColor}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource CardColor}" />
         <Setter Property="Stroke" Value="{StaticResource BorderColor}" />
         <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Padding" Value="16" />
+        <Setter Property="Padding" Value="20" />
         <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
-    <!-- Gradient brush for hero / auth background -->
+    <Style TargetType="Border" x:Key="CardPremium">
+        <Setter Property="BackgroundColor" Value="{StaticResource CardColor}" />
+        <Setter Property="Stroke" Value="{StaticResource BorderColor}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+
+    <!-- gradient-brand: navy -> navy-light -> teal (Welcome screen) -->
     <LinearGradientBrush x:Key="AuthBackgroundGradient" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Color="{StaticResource GradientStartColor}" Offset="0" />
         <GradientStop Color="{StaticResource GradientMidColor}" Offset="0.5" />
         <GradientStop Color="{StaticResource GradientEndColor}" Offset="1" />
     </LinearGradientBrush>
 
-    <!-- Auth label styles (for auth pages) -->
+    <!-- gradient-teal: teal -> accent (primary CTA buttons) -->
+    <LinearGradientBrush x:Key="GradientTealBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+        <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+    </LinearGradientBrush>
+
     <Style TargetType="Label" x:Key="AuthTitleLabel">
         <Setter Property="TextColor" Value="White" />
         <Setter Property="FontSize" Value="28" />
@@ -28,7 +41,7 @@
     </Style>
 
     <Style TargetType="Label" x:Key="AuthSubtitleLabel">
-        <Setter Property="TextColor" Value="#E0D0F0" />
+        <Setter Property="TextColor" Value="{StaticResource TealGlowColor}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />

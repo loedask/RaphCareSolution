@@ -21,6 +21,7 @@ public class SignInViewModel : BaseViewModel
 
     public ICommand SignInCommand { get; }
     public ICommand BackCommand { get; }
+    public ICommand SignUpCommand { get; }
 
     public SignInViewModel(IAuthService authService)
     {
@@ -28,6 +29,7 @@ public class SignInViewModel : BaseViewModel
         Title = "Sign In";
         SignInCommand = new Command(async () => await SignInAsync(), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync());
+        SignUpCommand = new Command(async () => await Shell.Current.GoToAsync("RegisterOptionsPage").ConfigureAwait(false));
     }
 
     private async Task SignInAsync()

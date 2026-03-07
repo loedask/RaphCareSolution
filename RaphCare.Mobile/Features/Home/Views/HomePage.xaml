@@ -3,12 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RaphCare.Mobile.Features.Home.Views.HomePage"
              Title="Home"
-             Background="{StaticResource AuthBackgroundGradient}">
+             BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="32" VerticalOptions="Center" Spacing="16">
-            <Label Text="Welcome to RaphCare" Style="{StaticResource AuthTitleLabel}" />
-            <Label Text="You're signed in." Style="{StaticResource AuthSubtitleLabel}" />
+        <VerticalStackLayout Padding="24" VerticalOptions="Center" Spacing="8">
+            <Label Text="Welcome to RaphCare" Style="{StaticResource TitleLarge}" />
+            <Label Text="You're signed in." Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

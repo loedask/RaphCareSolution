@@ -1,28 +1,34 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:views="clr-namespace:RaphCare.Mobile.Features.Auth.Views"
+             xmlns:shared="clr-namespace:RaphCare.Mobile.Shared.Components"
              x:Class="RaphCare.Mobile.Features.Auth.Views.SignInPage"
              Shell.NavBarIsVisible="False"
-             Background="{StaticResource AuthBackgroundGradient}">
+             BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="32" VerticalOptions="Center" Spacing="24">
-            <Label Text="Sign In" Style="{StaticResource AuthTitleLabel}" />
-            <Label Text="Sign in with your account to continue." Style="{StaticResource AuthSubtitleLabel}" />
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <HorizontalStackLayout Margin="0,56,0,24" HorizontalOptions="Start">
+                <Button Style="{StaticResource IconBackButton}" Text="←" FontSize="20" Command="{Binding BackCommand}" />
+            </HorizontalStackLayout>
 
-            <Label Text="{Binding ErrorMessage}" TextColor="#FF6B6B" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" Margin="0,0,0,8" />
+            <Label Text="Welcome back" Style="{StaticResource TitleLarge}" Margin="0,0,0,8" />
+            <Label Text="Sign in to your account to continue."
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   Margin="0,0,0,32" />
 
-            <Button Text="Sign In"
-                    Style="{StaticResource AuthPrimaryButton}"
+            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" FontSize="12" Margin="0,0,0,8" />
+
+            <shared:GradientButton Text="Sign in"
                     Command="{Binding SignInCommand}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                    Margin="0,32,0,0" />
+                    Margin="0,16,0,0" />
 
-            <Button Text="Back"
-                    Style="{StaticResource AuthSecondaryButton}"
-                    Command="{Binding BackCommand}"
-                    Margin="0,8,0,0" />
+            <HorizontalStackLayout Margin="0,32,0,0" HorizontalOptions="Center" Spacing="4">
+                <Label Text="Don't have an account?" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Button Text="Sign up" Style="{StaticResource TextButton}" Padding="0" Command="{Binding SignUpCommand}" />
+            </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

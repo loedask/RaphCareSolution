@@ -49,6 +49,7 @@ public class RegisterEmailViewModel : BaseViewModel
 
     public ICommand RegisterCommand { get; }
     public ICommand BackCommand { get; }
+    public ICommand SignInCommand { get; }
 
     public RegisterEmailViewModel(IAuthService authService)
     {
@@ -56,6 +57,7 @@ public class RegisterEmailViewModel : BaseViewModel
         Title = "Create with Email";
         RegisterCommand = new Command(async () => await RegisterAsync(), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync());
+        SignInCommand = new Command(async () => await Shell.Current.GoToAsync("SignInPage").ConfigureAwait(false));
     }
 
     private async Task RegisterAsync()

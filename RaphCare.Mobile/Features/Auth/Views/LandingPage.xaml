@@ -8,18 +8,24 @@
              Background="{StaticResource AuthBackgroundGradient}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="32" VerticalOptions="Center" Spacing="24">
-            <Label Text="RaphCare" Style="{StaticResource AuthTitleLabel}" FontSize="36" />
-            <Label Text="Your health, simplified." Style="{StaticResource AuthSubtitleLabel}" />
-
-            <Button Text="Create Account"
-                    Style="{StaticResource AuthPrimaryButton}"
-                    Command="{Binding CreateAccountCommand}"
-                    Margin="0,32,0,0" />
+        <VerticalStackLayout Padding="24" VerticalOptions="Center" Spacing="12">
+            <Label Text="RaphCare" Style="{StaticResource AuthTitleLabel}" FontSize="36" Margin="0,0,0,32" />
+            <Label Text="Your health, simplified." Style="{StaticResource AuthSubtitleLabel}" Margin="0,0,0,48" />
 
             <Button Text="Sign In"
+                    Style="{StaticResource AuthPrimaryButton}"
+                    Command="{Binding SignInCommand}"
+                    Margin="0,0,0,12" />
+
+            <Button Text="Create Account"
                     Style="{StaticResource AuthSecondaryButton}"
-                    Command="{Binding SignInCommand}" />
+                    Command="{Binding CreateAccountCommand}" />
+
+            <Label Text="Healthcare without barriers."
+                   Style="{StaticResource Micro}"
+                   TextColor="{StaticResource TealGlowColor}"
+                   HorizontalOptions="Center"
+                   Margin="0,32,0,0" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
