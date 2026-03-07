@@ -30,4 +30,4 @@
 - **Domain:** One folder (and namespace) per bounded area; entities and value objects in that namespace. Common for shared base types and interfaces.
 - **Persistence:** DbContexts at root; Repositories in Repositories/; Seed in Seed/; migrations in Migrations/ (or per-context subfolders). Configurations can be in Persistence or Infrastructure.Persistence.Configurations.
 - **API:** Controllers in Controllers/; middleware in Middleware/; extensions in Extensions/.
-- **Client:** Contracts, Generated, Services, Services/Base, Models, Mappings, ApiRoutes; one ServiceRegistration for registration.
+- **Client:** Contracts, Generated, Services, Services/Base, Models, Mappings; one ServiceRegistration for registration.

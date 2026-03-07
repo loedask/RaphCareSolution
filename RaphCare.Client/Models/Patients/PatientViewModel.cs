@@ -1,4 +1,4 @@
-namespace RaphCare.Client.Models;
+namespace RaphCare.Client.Models.Patients;
 
 public class PatientViewModel
 {

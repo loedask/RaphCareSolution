@@ -61,12 +61,11 @@
 
 ### RaphCare.Client
 - **Contracts/** — Response<T>, ApiException
-- **Generated/** — NSwag-style partial Client and IClient, generated DTOs (e.g. PatientDto, PagedResultOfPatientDto)
+- **Generated/** — NSwag-style partial Client and IClient, generated DTOs (e.g. PatientDto, PatientDtoPagedResult)
 - **Services/Base/** — BaseHttpService (wraps IClient and HttpClient; generic Get/Post/Put/Delete returning Response<T>)
 - **Services/** — IPatientService, PatientService (example); inject IClient and IMapper
 - **Models/** — ViewModels and request DTOs (e.g. PatientViewModel, CreatePatientRequest)
 - **Mappings/** — AutoMapper profiles (DTOs to ViewModels)
-- **ApiRoutes/** — Static route constants by feature
 - **ServiceRegistration.cs** — AddRaphCareClient (registers client, HttpClient, AutoMapper, feature services)
 
 ### RaphCare.Web

@@ -1,4 +1,3 @@
-using System.Net.Http;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Client.Services;
