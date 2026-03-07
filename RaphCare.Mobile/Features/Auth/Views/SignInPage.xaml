@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:RaphCare.Mobile.Features.Auth.Views"
+             x:Class="RaphCare.Mobile.Features.Auth.Views.SignInPage"
+             Shell.NavBarIsVisible="False"
+             Background="{StaticResource AuthBackgroundGradient}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" VerticalOptions="Center" Spacing="24">
+            <Label Text="Sign In" Style="{StaticResource AuthTitleLabel}" />
+            <Label Text="Sign in with your account to continue." Style="{StaticResource AuthSubtitleLabel}" />
+
+            <Label Text="{Binding ErrorMessage}" TextColor="#FF6B6B" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" Margin="0,0,0,8" />
+
+            <Button Text="Sign In"
+                    Style="{StaticResource AuthPrimaryButton}"
+                    Command="{Binding SignInCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    Margin="0,32,0,0" />
+
+            <Button Text="Back"
+                    Style="{StaticResource AuthSecondaryButton}"
+                    Command="{Binding BackCommand}"
+                    Margin="0,8,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

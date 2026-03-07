@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <TargetFrameworks>net10.0-android</TargetFrameworks>
@@ -20,13 +20,7 @@
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
         <Nullable>enable</Nullable>
 
-        <!-- Enable XAML source generation for faster build times and improved performance.
-             This generates C# code from XAML at compile time instead of runtime inflation.
-             To disable, remove this line.
-             For individual files, you can override by setting Inflator metadata:
-               <MauiXaml Update="MyPage.xaml" Inflator="Default" /> (reverts to defaults: Runtime for Debug, XamlC for Release)
-               <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
-        <MauiXamlInflator>SourceGen</MauiXamlInflator>
+        <!-- XAML: use runtime inflation (SourceGen had issues with ResourceDictionary/Styles) -->
 
         <!-- Display name -->
         <ApplicationTitle>RaphCare.Mobile</ApplicationTitle>
@@ -67,9 +61,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\RaphCare.Client\RaphCare.Client.csproj" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Identity.Client" Version="4.66.0" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RaphCare.Mobile.Features.Home.Views.HomePage"
+             Title="Home"
+             Background="{StaticResource AuthBackgroundGradient}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" VerticalOptions="Center" Spacing="16">
+            <Label Text="Welcome to RaphCare" Style="{StaticResource AuthTitleLabel}" />
+            <Label Text="You're signed in." Style="{StaticResource AuthSubtitleLabel}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

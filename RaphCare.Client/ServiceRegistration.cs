@@ -15,18 +15,22 @@ public static class ServiceRegistration
     /// <summary>
     /// Registers the RaphCare API client layer: NSwag client, HttpClient, AutoMapper, and feature services.
     /// Configure base address via HttpClient (e.g. from options) — do not hardcode BaseUrl.
+    /// When <paramref name="useBearerToken"/> is true, ensure <see cref="Contracts.IAccessTokenProvider"/> is registered so requests include the bearer token.
     /// </summary>
-    public static IServiceCollection AddRaphCareClient(this IServiceCollection services, Action<HttpClient>? configureHttpClient = null)
+    public static IServiceCollection AddRaphCareClient(this IServiceCollection services, Action<HttpClient>? configureHttpClient = null, bool useBearerToken = false)
     {
         services.AddAutoMapper(cfg =>
         {
             cfg.AddMaps(typeof(ServiceRegistration).Assembly);
         });
 
-        services.AddHttpClient<IClient, ApiClient>(HttpClientName, client =>
+        var httpClientBuilder = services.AddHttpClient<IClient, ApiClient>(HttpClientName, client =>
         {
             configureHttpClient?.Invoke(client);
         });
+
+        if (useBearerToken)
+            httpClientBuilder.AddHttpMessageHandler<BearerTokenHandler>();
 
         services.AddScoped<IPatientService>(sp => new PatientService(
             sp.GetRequiredService<IClient>(),

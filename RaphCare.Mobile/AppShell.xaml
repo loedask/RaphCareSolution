@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:auth="clr-namespace:RaphCare.Mobile.Features.Auth.Views"
+       xmlns:home="clr-namespace:RaphCare.Mobile.Features.Home.Views"
+       x:Class="RaphCare.Mobile.AppShell"
+       x:Name="AppShellRoot"
+       FlyoutBehavior="Disabled">
+
+    <!-- Auth flow: Landing is first; other auth pages are reached via GoToAsync (registered routes) -->
+    <FlyoutItem Route="LandingPage" FlyoutDisplayOptions="AsSingleItem">
+        <ShellContent ContentTemplate="{DataTemplate auth:LandingPage}" />
+    </FlyoutItem>
+
+    <!-- Main app (after login); navigate with GoToAsync("//HomePage") -->
+    <FlyoutItem Route="HomePage" FlyoutDisplayOptions="AsSingleItem">
+        <ShellContent ContentTemplate="{DataTemplate home:HomePage}" />
+    </FlyoutItem>
+</Shell>

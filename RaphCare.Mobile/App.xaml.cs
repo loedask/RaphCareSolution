@@ -1,4 +1,6 @@
-﻿namespace RaphCare.Mobile
+using Microsoft.Extensions.DependencyInjection;
+
+namespace RaphCare.Mobile
 {
     public partial class App : Application
     {
@@ -9,7 +11,8 @@
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new MainPage()) { Title = "RaphCare.Mobile" };
+            var shell = MauiProgram.ServiceProvider!.GetRequiredService<AppShell>();
+            return new Window(shell) { Title = "RaphCare" };
         }
     }
 }

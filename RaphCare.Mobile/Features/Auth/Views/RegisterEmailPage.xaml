@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:RaphCare.Mobile.Features.Auth.Views"
+             x:Class="RaphCare.Mobile.Features.Auth.Views.RegisterEmailPage"
+             Shell.NavBarIsVisible="False"
+             Background="{StaticResource AuthBackgroundGradient}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="12">
+            <Label Text="Create with Email" Style="{StaticResource AuthTitleLabel}" Margin="0,24,0,0" />
+            <Label Text="Enter your details to get started." Style="{StaticResource AuthSubtitleLabel}" />
+
+            <Entry Placeholder="First name" Text="{Binding FirstName}" Style="{StaticResource AuthEntry}" />
+            <Entry Placeholder="Last name" Text="{Binding LastName}" Style="{StaticResource AuthEntry}" />
+            <Entry Placeholder="Email" Keyboard="Email" Text="{Binding Email}" Style="{StaticResource AuthEntry}" />
+            <Entry Placeholder="Password" IsPassword="True" Text="{Binding Password}" Style="{StaticResource AuthEntry}" />
+
+            <Label Text="{Binding ErrorMessage}" TextColor="#FF6B6B" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" Margin="0,0,0,8" />
+
+            <Button Text="Create Account"
+                    Style="{StaticResource AuthPrimaryButton}"
+                    Command="{Binding RegisterCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    Margin="0,16,0,0" />
+
+            <Button Text="Back"
+                    Style="{StaticResource AuthSecondaryButton}"
+                    Command="{Binding BackCommand}"
+                    Margin="0,8,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
