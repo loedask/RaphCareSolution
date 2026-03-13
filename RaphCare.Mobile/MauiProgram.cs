@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RaphCare.Mobile.Features.Auth.Views;
 using RaphCare.Mobile.Features.Home.Views;
@@ -17,6 +18,10 @@ namespace RaphCare.Mobile
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+
+            // Configuration (appsettings.json)
+            builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -24,13 +29,9 @@ namespace RaphCare.Mobile
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            // Entra auth (Shared/Services/Auth)
-            builder.Services.Configure<Core.Shared.Services.Auth.EntraAuthOptions>(options =>
-            {
-                options.ClientId = "YOUR_CLIENT_ID"; // Replace with app registration client ID
-                options.TenantId = "common";
-                options.ApiScope = "api://raphcare-api/.default";
-            });
+            // Entra auth (Shared/Services/Auth) from configuration
+            builder.Services.Configure<Core.Shared.Services.Auth.EntraAuthOptions>(
+                builder.Configuration.GetSection(Core.Shared.Services.Auth.EntraAuthOptions.SectionName));
             builder.Services.AddSingleton<Core.Shared.Services.Auth.IAuthService, Core.Shared.Services.Auth.EntraAuthService>();
             builder.Services.AddSingleton<RaphCare.Client.Contracts.IAccessTokenProvider, SecureStorageAccessTokenProvider>();
 
@@ -53,10 +54,11 @@ namespace RaphCare.Mobile
             builder.Services.AddTransient<RaphCare.Mobile.Shared.Views.UnderConstructionPage>();
             builder.Services.AddTransient<AppShell>();
 
-            // API client with bearer token (base URL should come from config)
+            // API client with bearer token (base URL from config, with fallback)
+            var apiBaseAddress = builder.Configuration["Api:BaseAddress"] ?? "https://localhost:7001/";
             builder.Services.AddRaphCareClient(client =>
             {
-                client.BaseAddress = new Uri("https://localhost:7001/"); // Replace with your API base URL
+                client.BaseAddress = new Uri(apiBaseAddress);
             }, useBearerToken: true);
 
             builder.Services.AddMauiBlazorWebView();
