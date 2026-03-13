@@ -1,3 +1,5 @@
+using Microsoft.Maui.Devices;
+
 namespace RaphCare.Mobile.Core.Shared.Services.Auth;
 
 /// <summary>
@@ -18,6 +20,15 @@ public class EntraAuthOptions
             ? Authority!.TrimEnd('/')
             : $"https://login.microsoftonline.com/{TenantId}/v2.0";
 
-    public string GetRedirectUri() =>
-        RedirectUri.Replace("{ClientId}", ClientId, StringComparison.OrdinalIgnoreCase);
+    public string GetRedirectUri()
+    {
+        // MSAL on desktop/WinUI requires a loopback redirect URI (http://localhost)
+        if (DeviceInfo.Platform == DevicePlatform.WinUI)
+        {
+            return "http://localhost";
+        }
+
+        // For mobile platforms, use the MSAL custom scheme
+        return RedirectUri.Replace("{ClientId}", ClientId, StringComparison.OrdinalIgnoreCase);
+    }
 }
