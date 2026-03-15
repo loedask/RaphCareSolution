@@ -51,13 +51,9 @@ public class EntraUserProvisioningService(
 
     private async Task SyncUserAsync(ApplicationUser user, ClaimsPrincipal principal, CancellationToken cancellationToken)
     {
-        var email = GetEmail(principal);
-        var displayName = GetDisplayName(principal);
-        if (user.Email == email && user.DisplayName == displayName)
-            return;
-
-        user.Email = email;
-        user.DisplayName = displayName;
+        user.Email = GetEmail(principal);
+        user.DisplayName = GetDisplayName(principal);
+        user.IsActive = true;
         user.UpdatedAt = DateTime.UtcNow;
         await _userStore.UpdateAsync(user, cancellationToken).ConfigureAwait(false);
     }

@@ -51,6 +51,17 @@ public static class DependencyInjection
                         return config.SigningKeys;
                     }
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        if (context.Principal == null)
+                            return;
+                        var provisioning = context.HttpContext.RequestServices
+                            .GetRequiredService<IUserProvisioningService>();
+                        await provisioning.EnsureUserExistsAsync(context.Principal, context.HttpContext.RequestAborted);
+                    }
+                };
             });
 
         return services;
