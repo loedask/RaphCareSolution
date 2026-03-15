@@ -34,4 +34,5 @@ public class Patient : AggregateRoot, ISoftDelete
     public LifestyleProfile? LifestyleProfile { get; set; }
     public ICollection<RiskFactor> RiskFactors { get; set; } = new List<RiskFactor>();
     public ICollection<PatientTag> PatientTags { get; set; } = new List<PatientTag>();
+    public ICollection<VoiceRecording> VoiceRecordings { get; set; } = new List<VoiceRecording>();
 }

@@ -20,6 +20,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<CarePlan> CarePlans => Set<CarePlan>();
     public DbSet<TeleSession> TeleSessions => Set<TeleSession>();
     public DbSet<Message> Messages => Set<Message>();
+    public DbSet<VoiceRecording> VoiceRecordings => Set<VoiceRecording>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +29,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new VisitConfiguration());
         modelBuilder.ApplyConfiguration(new TeleSessionConfiguration());
         modelBuilder.ApplyConfiguration(new MessageConfiguration());
+        modelBuilder.ApplyConfiguration(new VoiceRecordingConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

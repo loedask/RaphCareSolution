@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IAIService, AIService>();
         services.AddScoped<IDeviceIntegrationService, DeviceIntegrationService>();
         services.AddScoped<ITeleSessionService, TeleSessionService>();
+        services.AddScoped<ISpeechToTextService, AzureSpeechToTextService>();
 
         return services;
     }
