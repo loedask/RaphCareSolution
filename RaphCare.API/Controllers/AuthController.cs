@@ -37,13 +37,13 @@ public class AuthController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Verify([FromBody] VerifyOtpCommand command, CancellationToken cancellationToken)
     {
-        var success = await mediator.Send(command, cancellationToken);
-        if (!success)
+        var result = await mediator.Send(command, cancellationToken);
+        if (!result.Success)
         {
             return BadRequest(new { error = "Invalid or expired code." });
         }
 
-        return Ok(new { success = true });
+        return Ok(new { success = true, token = result.Token });
     }
 }
 

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Identity.Entra;
@@ -31,8 +30,6 @@ public static class DependencyInjection
                 if (validIssuers == null || validIssuers.Length == 0)
                     validIssuers = new[] { $"{authority}/", authority };
 
-                options.Authority = authority;
-                options.Audience = audience;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidAudience = audience,
@@ -41,16 +38,9 @@ public static class DependencyInjection
                     ValidateAudience = !string.IsNullOrWhiteSpace(audience),
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.FromMinutes(2),
-                    IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
-                    {
-                        var configManager = new Microsoft.IdentityModel.Protocols.ConfigurationManager<OpenIdConnectConfiguration>(
-                            $"{authority}/.well-known/openid-configuration",
-                            new OpenIdConnectConfigurationRetriever());
-                        var config = configManager.GetConfigurationAsync(CancellationToken.None).GetAwaiter().GetResult();
-                        return config.SigningKeys;
-                    }
+                    ClockSkew = TimeSpan.FromMinutes(2)
                 };
+
                 options.Events = new JwtBearerEvents
                 {
                     OnTokenValidated = async context =>

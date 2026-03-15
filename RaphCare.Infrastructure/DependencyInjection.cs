@@ -29,6 +29,8 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<IOtpService, OtpService>();
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPaymentGatewayService, PaymentGatewayService>();
         services.AddScoped<IAIService, AIService>();
         services.AddScoped<IDeviceIntegrationService, DeviceIntegrationService>();
