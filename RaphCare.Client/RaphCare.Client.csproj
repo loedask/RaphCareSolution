@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Services\Base\Generated\ClientService.cs" />
+    <None Include="Services\Base\NSwag\ClientService.cs" />
   </ItemGroup>
 
   <ItemGroup>
