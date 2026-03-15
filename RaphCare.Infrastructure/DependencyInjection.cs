@@ -28,6 +28,7 @@ public static class DependencyInjection
 
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISmsService, SmsService>();
+        services.AddScoped<IOtpService, OtpService>();
         services.AddScoped<IPaymentGatewayService, PaymentGatewayService>();
         services.AddScoped<IAIService, AIService>();
         services.AddScoped<IDeviceIntegrationService, DeviceIntegrationService>();
