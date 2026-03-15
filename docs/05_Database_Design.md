@@ -6,8 +6,8 @@ Six bounded-context DbContexts live in RaphCare.Persistence. Each can use a dedi
 
 | DbContext | Connection string key | DbSets |
 |-----------|------------------------|--------|
-| IdentityDbContext | IdentityConnection (or Default) | Users (ApplicationUser), Roles, Permissions, UserRoles, RolePermissions |
-| ClinicalDbContext | ClinicalConnection (or Default) | Patients, Clinics, Appointments, Visits, CarePlans, TeleSessions, Messages |
+| IdentityDbContext | IdentityConnection (or Default) | Users (ApplicationUser), Roles, Permissions, UserRoles, RolePermissions, OtpCodes |
+| ClinicalDbContext | ClinicalConnection (or Default) | Patients, Clinics, Appointments, Visits, CarePlans, TeleSessions, Messages, VoiceRecordings |
 | DeviceDbContext | DeviceConnection (or Default) | Devices, DeviceTypes, DeviceManufacturers, DeviceFirmwares, DeviceAssignments |
 | InsuranceDbContext | InsuranceConnection (or Default) | InsurancePlans, InsuranceProfiles |
 | BillingDbContext | BillingConnection (or Default) | Invoices |
@@ -17,8 +17,8 @@ All contexts use the same migrations assembly: `RaphCare.Persistence`. Intercept
 
 ## Key Tables (by Context)
 
-- **Identity:** ApplicationUser (e.g. Id, EntraObjectId, Email, DisplayName), Role, Permission, UserRole, RolePermission.
-- **Clinical:** Patient (Id, ClinicId, etc.), Clinic, Appointment, Visit, CarePlan, TeleSession, Message.
+- **Identity:** ApplicationUser (e.g. Id, EntraObjectId, Email, DisplayName), Role, Permission, UserRole, RolePermission, OtpCode (PhoneNumber, CodeHash, ExpiresAt, IsUsed, CreatedAt, UsedAt).
+- **Clinical:** Patient (Id, ClinicId, etc.), Clinic, Appointment, Visit, CarePlan, TeleSession, Message, VoiceRecording (PatientId, StorageUrl, DurationSeconds, Language).
 - **Devices:** Device, DeviceType, DeviceManufacturer, DeviceFirmware, DeviceAssignment.
 - **Insurance:** InsurancePlan, InsuranceProfile.
 - **Billing:** Invoice.

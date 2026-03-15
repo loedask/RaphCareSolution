@@ -18,7 +18,7 @@
 ## Layer Separation Rules
 
 - **Domain:** No references to Application, Infrastructure, Persistence, or API. Only domain types and interfaces in Domain.Common.
-- **Application:** References Domain only. Defines interfaces (IRepository, IUnitOfWork, IAIService, etc.); no concrete persistence or external service implementations. Application logic lives in MediatR handlers and validators.
+- **Application:** References Domain only. Defines interfaces (IRepository, IUnitOfWork, IAIService, IOtpService, ITokenService, ISpeechToTextService, etc.); no concrete persistence or external service implementations. Application logic lives in MediatR handlers and validators.
 - **Infrastructure:** Implements application interfaces (e.g. AIService, interceptors, CurrentUserService, DateTimeProvider, placeholder services). References Application and Domain. May reference Persistence for DbContext types if implementing store against them. IApplicationUserStore is implemented in Persistence, not Infrastructure.
 - **Persistence:** DbContexts, configurations, repositories, migrations, seeders, ApplicationUserStore (IApplicationUserStore). References Domain and Application (interfaces). No reference to API or Identity.
 - **Identity:** Auth and user provisioning. References Application (IUserProvisioningService, IApplicationUserStore contract) and Domain (ApplicationUser). No reference to Persistence; user store implementation lives in Persistence (ApplicationUserStore).

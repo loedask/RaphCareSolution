@@ -2,17 +2,17 @@
 
 ## Identity Setup
 
-- **Provider:** Microsoft Entra ID (Azure AD). JWTs are issued by Entra and validated by the API.
-- **Configuration:** Entra options are bound from configuration section `Entra` (e.g. Authority, Audience, TenantId). Section name constant: `EntraOptions.SectionName = "Entra"`.
-- **User storage:** ApplicationUser is stored in IdentityDbContext (Persistence). Users are provisioned or updated from Entra claims after each successful JWT validation via `IUserProvisioningService` (implemented by `EntraUserProvisioningService`).
-- **Key types:** ApplicationUser (EntraObjectId, Email, DisplayName), Role, Permission, UserRole, RolePermission. No ASP.NET Core Identity identity store; custom IApplicationUserStore implemented in RaphCare.Persistence (ApplicationUserStore) against IdentityDbContext.
+- **Provider:** Microsoft Entra ID (Azure AD) for staff; phone OTP + API-issued JWT for patients.
+- **Configuration:** Entra options are bound from configuration section `Entra` (e.g. Authority, Audience, TenantId). Section name constant: `EntraOptions.SectionName = "Entra"`. API-issued JWTs use section `Jwt` (JwtOptions: Issuer, Audience, Secret).
+- **User storage:** ApplicationUser is stored in IdentityDbContext (Persistence). Users are provisioned or updated from Entra claims after each successful Entra JWT validation via `IUserProvisioningService`, or created/updated on OTP verify (phone stored in Email, EntraObjectId empty) with Patient role.
+- **Key types:** ApplicationUser (EntraObjectId, Email, DisplayName), Role, Permission, UserRole, RolePermission, OtpCode. No ASP.NET Core Identity identity store; custom IApplicationUserStore implemented in RaphCare.Persistence (ApplicationUserStore) against IdentityDbContext.
 
 ## JWT Strategy
 
 - **Scheme:** JWT Bearer (`JwtBearerDefaults.AuthenticationScheme`). Registered in RaphCare.Identity's `AddIdentity` with `AddAuthentication(JwtBearer).AddJwtBearer(...)`.
 - **Validation:** Entra metadata (OpenID Connect) is used to validate signature and claims. Configured via EntraOptions (Authority, etc.).
-- **Token source:** Clients obtain tokens from Entra (e.g. MSAL or Entra login flow); API only validates the Bearer token. No token issuance in the API.
-- **Post-validation:** After validation, `EntraUserProvisioningService` ensures an ApplicationUser exists (or updates) for the principal using `oid` (Entra object ID), email, and display name.
+- **Token source:** Staff: clients obtain tokens from Entra (e.g. MSAL or Entra login flow); API validates the Bearer token. Patients: after OTP verify, API issues a JWT via `ITokenService.GeneratePatientToken` (TokenService, JwtOptions); no token issuance for staff in the API.
+- **Post-validation:** After Entra validation, `EntraUserProvisioningService` ensures an ApplicationUser exists (or updates) for the principal using `oid`, email, and display name. OTP verify flow provisions or finds user by phone (Email), assigns Patient role, writes LoginAudit, returns API-issued token.
 
 ## Role Definitions
 
@@ -39,6 +39,11 @@ Policies are registered in Program.cs with `AddAuthorization(options => { ... })
 
 - **Header:** `X-Clinic-Id` (required for API paths under `/api/`). Enforced by TenantResolutionMiddleware.
 - **Storage:** Resolved clinic ID is stored in HttpContext.Items (key: TenantResolutionMiddleware.ClinicIdItemKey). Non-API and Swagger paths are skipped. Missing or invalid Guid returns 400.
+
+## Phone OTP Auth (API)
+
+- **Endpoints:** POST api/auth/otp/send (SendOtpCommand; rate-limited per phone, returns 429 if exceeded), POST api/auth/otp/verify (VerifyOtpCommand; returns 200 with `{ success, token }` or 400). AuthController is [AllowAnonymous].
+- **Flow:** Send: IOtpService.GenerateOtpAsync stores hashed code in OtpCodes, ISmsService sends code. Verify: IOtpService.ValidateOtpAsync marks OTP used; find or create ApplicationUser (Email = phone), assign Patient role, LoginAudit, ITokenService.GeneratePatientToken returns JWT for patient sessions.
 
 ## Mobile Client Auth
 

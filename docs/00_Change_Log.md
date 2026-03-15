@@ -2,33 +2,41 @@
 
 ## Date
 
-2026-03-07
+2026-03-15
 
 ## High-level summary of changes
 
-Documentation was re-analyzed against the current codebase and updated so that the RaphCare Dev Companion knowledge files stay aligned with the solution. Updates focus on RaphCare.Mobile structure (Core/Features, Core/Shared, converters namespace), RaphCare.Client bearer-token support (IAccessTokenProvider, BearerTokenHandler), and Mobile auth/workflow details.
+Documentation was re-analyzed against the current codebase and updated so that the RaphCare Dev Companion knowledge files stay aligned with the solution. Updates reflect phone OTP authentication (send/verify), API-issued JWT for patients, voice onboarding (CreatePatientFromVoice), and related entities, services, and endpoints.
 
 ## New modules added
 
-- None.
+- **Auth (OTP):** Application feature and AuthController for phone-based OTP send/verify; IOtpService, ITokenService; API-issued JWT for verified patients.
+- **Onboarding (Voice):** Application feature and VoiceOnboardingController for voice-first patient creation; ISpeechToTextService, CreatePatientFromVoiceCommand; VoiceRecording entity and ClinicalDbContext VoiceRecordings.
 
 ## Modules modified
 
-- **RaphCare.Mobile:** Documented folder structure under Core/ (Core/Features: Auth, Home, Records, Appointments, Insurance, Settings; Core/Shared: Navigation/AppNavigator, Services/Auth, FeatureFlags, Views/UnderConstructionPage, Components; Core/Converters, Core/ViewModels). View namespaces RaphCare.Mobile.Features.*.Views and RaphCare.Mobile.Shared.Views. Converters namespace corrected to RaphCare.Mobile.Core.Converters (App.xaml).
-- **RaphCare.Client:** Documented IAccessTokenProvider (Contracts) and BearerTokenHandler (Services/Base). AddRaphCareClient(..., useBearerToken: true) adds BearerTokenHandler and requires host to register IAccessTokenProvider.
+- **RaphCare.API:** Added AuthController (api/auth/otp — POST send, POST verify), VoiceOnboardingController (api/onboarding — POST voice, multipart).
+- **RaphCare.Application:** Added interfaces IOtpService, ITokenService, ISpeechToTextService; features Auth (SendOtp, VerifyOtp), Onboarding (CreatePatientFromVoice); TranscriptionResult DTO.
+- **RaphCare.Domain:** Added OtpCode (Identity), VoiceRecording (Patients); Patient has VoiceRecordings collection.
+- **RaphCare.Infrastructure:** Added OtpService, TokenService (JwtOptions), AzureSpeechToTextService (placeholder); OtpCodeConfiguration, VoiceRecordingConfiguration.
+- **RaphCare.Persistence:** IdentityDbContext — OtpCodes DbSet and OtpCodeConfiguration; ClinicalDbContext — VoiceRecordings DbSet and VoiceRecordingConfiguration; IRepository&lt;VoiceRecording&gt; registration.
 
 ## Database changes
 
-- None.
+- **Identity:** OtpCode entity and OtpCodes table (PhoneNumber, CodeHash, ExpiresAt, IsUsed, CreatedAt, UsedAt); configuration in Infrastructure.Persistence.Configurations.
+- **Clinical:** VoiceRecording entity and VoiceRecordings table (PatientId, StorageUrl, DurationSeconds, Language); FK to Patient; configuration in Infrastructure.
 
 ## Auth changes
 
-- **Mobile:** Documented Entra auth (Core.Shared.Services.Auth: EntraAuthOptions, IAuthService, EntraAuthService); SecureStorageAccessTokenProvider implements Client's IAccessTokenProvider; API client registered with useBearerToken: true so requests include Bearer token.
+- **Dual auth:** Staff continue to use Entra JWT; patients may use phone OTP verify and receive API-issued JWT (ITokenService.GeneratePatientToken, JwtOptions: Issuer, Audience, Secret).
+- **OTP flow:** POST send (rate-limited, ISmsService), POST verify (validate, provision/find ApplicationUser by phone in Email, assign Patient role, LoginAudit, return token). AuthController [AllowAnonymous].
 
 ## Workflow updates
 
-- **Mobile:** Documented auth flow (Landing → Register/Sign-in → Home), AppNavigator route registration and GoToFeatureAsync (feature-flag aware), UnderConstructionPage for disabled features.
+- **OTP Auth Flow:** Documented send and verify endpoints and handler flow.
+- **Voice Onboarding Flow:** Documented POST api/onboarding/voice (multipart), CreatePatientFromVoiceHandler (transcribe, create patient, set phone, create VoiceRecording, return PatientId and Transcription).
 
 ## External integrations added/removed
 
-- None.
+- **Added (application-level):** ISpeechToTextService (AzureSpeechToTextService placeholder for voice onboarding). ITokenService for API-issued JWT (no external IdP). IOtpService (internal IdentityDbContext storage).
+- **Removed:** None.

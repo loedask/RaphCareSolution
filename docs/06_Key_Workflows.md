@@ -29,6 +29,15 @@
 - **Readings:** Domain defines reading types (e.g. HeartRateReading, BloodPressureReading, GlucoseReading). Storage and ingestion paths (e.g. background ingestion, device SDK) are not implemented in the repo; no external device SDK or job runner present.
 - **Seeding:** DeviceSeeder is a placeholder (no-op with log).
 
+## OTP Auth Flow
+
+- **Send:** POST api/auth/otp/send with phone number. SendOtpHandler: IOtpService.GenerateOtpAsync (rate limit per phone), ISmsService sends code; returns 204 or 429.
+- **Verify:** POST api/auth/otp/verify with phone and code. VerifyOtpHandler: validate OTP, find or create ApplicationUser (Email = phone), assign Patient role, LoginAudit, ITokenService.GeneratePatientToken; returns 200 with token or 400.
+
+## Voice Onboarding Flow
+
+- **Submit:** POST api/onboarding/voice (multipart: audioFile, language, phoneNumber, clinicId). CreatePatientFromVoiceHandler: ISpeechToTextService.TranscribeAsync, CreatePatientCommand, set patient phone, create VoiceRecording; returns PatientId and Transcription. OTP-verified phone is assumed by client/session.
+
 ## Admin Flow
 
 - **Auth:** Admin uses Entra; role "Administrator" maps to RequireAdmin policy. TenantResolutionMiddleware requires X-Clinic-Id for /api/*.

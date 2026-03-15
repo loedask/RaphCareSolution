@@ -17,20 +17,20 @@
 ## Folder Breakdown by Project
 
 ### RaphCare.API
-- **Controllers/** — REST controllers (Patients, Appointments, Clinical, Devices, Insurance, Billing, Telemedicine, MentalHealth, AI, Reporting); all use `api/[controller]` and MediatR; PatientsController uses `Name` on actions for Swagger operationId (GetPatientById, GetPatientsPaginated, CreatePatient, UpdatePatient)
+- **Controllers/** — REST controllers (Patients, Appointments, Clinical, Devices, Insurance, Billing, Telemedicine, MentalHealth, AI, Reporting, Auth, VoiceOnboarding); all use `api/[controller]` and MediatR; AuthController at `api/auth/otp` (POST send, POST verify); VoiceOnboardingController at `api/onboarding` (POST voice, multipart); PatientsController uses `Name` on actions for Swagger operationId (GetPatientById, GetPatientsPaginated, CreatePatient, UpdatePatient)
 - **App/Middleware/** — ExceptionHandlingMiddleware, TenantResolutionMiddleware, AuditMiddleware
 - **App/Extensions/** — DatabaseMigrationExtensions (ApplyMigrationsAsync for Development), SwaggerExtensions (AddRaphCareSwagger, UseRaphCareSwagger; root redirect to /swagger in Development)
 - **App/Contracts/** — CreatePatientResponse (OpenAPI response type for POST patients)
 
 ### RaphCare.Application
-- **Common/** — Interfaces (IRepository, IUnitOfWork, ICurrentUserService, IAIService, IApplicationUserStore, IUserProvisioningService, IDomainEventDispatcher, IDateTimeProvider, IPaymentGatewayService, IEmailService, ISmsService, INotificationService), DTOs (PagedResult, BaseDto), Behaviors (Logging, Performance, Authorization, Validation, Transaction), Exceptions
-- **Features/** — Vertical slices per feature (e.g. Patients, Appointments, Clinical, Devices, Insurance, Billing, Telemedicine, Communication, MentalHealth, AI, Reporting); each contains Commands, Queries, DTOs, Validators, Handlers
+- **Common/** — Interfaces (IRepository, IUnitOfWork, ICurrentUserService, IAIService, IApplicationUserStore, IUserProvisioningService, IDomainEventDispatcher, IDateTimeProvider, IPaymentGatewayService, IEmailService, ISmsService, INotificationService, IOtpService, ITokenService, ISpeechToTextService), DTOs (PagedResult, BaseDto), Behaviors (Logging, Performance, Authorization, Validation, Transaction), Exceptions
+- **Features/** — Vertical slices per feature (e.g. Patients, Appointments, Clinical, Devices, Insurance, Billing, Telemedicine, Communication, MentalHealth, AI, Reporting, Auth, Onboarding); each contains Commands, Queries, DTOs, Validators, Handlers
 
 ### RaphCare.Domain
 - **Common/** — BaseEntity, AggregateRoot, ValueObject, Enumeration, DomainEvent, interfaces
-- **Identity/** — ApplicationUser, Role, Permission, UserRole, RolePermission, RefreshTokenRecord, UserSession, AuditLog, LoginAudit, AccessPolicy
+- **Identity/** — ApplicationUser, Role, Permission, UserRole, RolePermission, RefreshTokenRecord, UserSession, AuditLog, LoginAudit, AccessPolicy, OtpCode
 - **Organization/** — Clinic, Department, Facility, Provider, Administrator, Therapist, ServiceOffering, ProviderSchedule, AvailabilityBlock, SupportStaff
-- **Patients/** — Patient, PatientProfile, InsuranceProfile, Address, EmergencyContact, Allergy, Medication, MedicalHistory, etc.
+- **Patients/** — Patient, PatientProfile, InsuranceProfile, Address, EmergencyContact, Allergy, Medication, MedicalHistory, VoiceRecording, etc.
 - **Clinical/** — Appointment, Visit, CarePlan, Prescription, ClinicalNote, LabResult, Diagnosis, Procedure, etc.
 - **Communication/** — Message, Conversation, Notification, EmailLog, SMSLog, etc.
 - **Devices/** — Device, DeviceType, DeviceAssignment, DeviceReading, HeartRateReading, BloodPressureReading, etc.
@@ -45,12 +45,12 @@
 
 ### RaphCare.Infrastructure
 - **Persistence/Interceptors/** — AuditableEntityInterceptor, SoftDeleteInterceptor, DomainEventDispatcherInterceptor
-- **Persistence/Configurations/** — EF configurations for entities (in Infrastructure; some configurations may live in Persistence)
-- **Services/** — Implementations (e.g. AIService placeholder implementing IAIService)
+- **Persistence/Configurations/** — EF configurations for entities (in Infrastructure; e.g. OtpCodeConfiguration, VoiceRecordingConfiguration)
+- **Services/** — Implementations (e.g. AIService, OtpService, TokenService, AzureSpeechToTextService placeholder)
 - **Identity/** — (IApplicationUserStore is implemented in Persistence.ApplicationUserStore)
 
 ### RaphCare.Persistence
-- **DbContexts:** IdentityDbContext, ClinicalDbContext, DeviceDbContext, InsuranceDbContext, BillingDbContext, AIDbContext
+- **DbContexts:** IdentityDbContext (Users, Roles, Permissions, UserRoles, RolePermissions, OtpCodes), ClinicalDbContext (Patients, Clinics, Appointments, Visits, CarePlans, TeleSessions, Messages, VoiceRecordings), DeviceDbContext, InsuranceDbContext, BillingDbContext, AIDbContext
 - **ApplicationUserStore** — Implements IApplicationUserStore against IdentityDbContext (FindByEntraObjectIdAsync, CreateAsync, UpdateAsync)
 - **Repositories/** — EfRepository<TEntity, TContext>; repository registration per entity/context in DependencyInjection
 - **Seed/** — DatabaseSeeder (orchestrator), IdentitySeeder, ClinicalSeeder, InsuranceSeeder, DeviceSeeder (placeholder), BillingSeeder (placeholder)

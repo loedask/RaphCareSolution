@@ -2,12 +2,12 @@
 
 ## Identity
 
-- **Purpose:** Users, roles, permissions, sessions, and audit for authentication and authorization.
-- **Entities:** ApplicationUser, Role, Permission, UserRole, RolePermission, RefreshTokenRecord, UserSession, AuditLog, LoginAudit, AccessPolicy.
-- **Persistence:** IdentityDbContext (Users, Roles, Permissions, UserRoles, RolePermissions).
-- **Services:** EntraTokenValidator, EntraUserProvisioningService, EntraRoleMapper (RaphCare.Identity); IApplicationUserStore (implemented in RaphCare.Persistence.ApplicationUserStore).
-- **Controllers:** None; auth is middleware and policy-based.
-- **Relationships:** Identity is referenced by all other modules for current user and tenant; ApplicationUser is provisioned from Entra.
+- **Purpose:** Users, roles, permissions, sessions, audit, and phone OTP codes for authentication and authorization.
+- **Entities:** ApplicationUser, Role, Permission, UserRole, RolePermission, RefreshTokenRecord, UserSession, AuditLog, LoginAudit, AccessPolicy, OtpCode.
+- **Persistence:** IdentityDbContext (Users, Roles, Permissions, UserRoles, RolePermissions, OtpCodes).
+- **Services:** EntraTokenValidator, EntraUserProvisioningService, EntraRoleMapper (RaphCare.Identity); IApplicationUserStore (implemented in RaphCare.Persistence.ApplicationUserStore); IOtpService (OtpService in Infrastructure, backed by IdentityDbContext).
+- **Controllers:** AuthController at `api/auth/otp` — POST send (SendOtpCommand), POST verify (VerifyOtpCommand); [AllowAnonymous]. Staff auth remains middleware and policy-based.
+- **Relationships:** Identity is referenced by all other modules for current user and tenant; ApplicationUser is provisioned from Entra or from OTP verify (phone stored in Email).
 
 ---
 
@@ -23,11 +23,11 @@
 ## Patients
 
 - **Purpose:** Patient registration and demographics.
-- **Entities:** Patient, PatientProfile, InsuranceProfile, Address, EmergencyContact, Allergy, Medication, MedicalHistory, ChronicCondition, FamilyHistory, ConsentRecord, etc.
+- **Entities:** Patient, PatientProfile, InsuranceProfile, Address, EmergencyContact, Allergy, Medication, MedicalHistory, ChronicCondition, FamilyHistory, ConsentRecord, VoiceRecording, etc.
 - **Application:** CreatePatient, UpdatePatient, GetPatientById, GetPatients (paginated).
 - **Controllers:** PatientsController — GET by id (Name = "GetPatientById"), GET list (Name = "GetPatientsPaginated"; pageNumber, pageSize), POST (Name = "CreatePatient"), PUT by id (Name = "UpdatePatient"). ProducesResponseType for typed Swagger/NSwag.
-- **Persistence:** ClinicalDbContext (Patients).
-- **Relationships:** Patient belongs to Clinic; can have InsuranceProfile; linked to Appointments, Visits, DeviceAssignments.
+- **Persistence:** ClinicalDbContext (Patients, VoiceRecordings).
+- **Relationships:** Patient belongs to Clinic; can have InsuranceProfile and VoiceRecordings; linked to Appointments, Visits, DeviceAssignments.
 
 ---
 
@@ -37,8 +37,8 @@
 - **Entities:** Appointment, Visit, CarePlan, Prescription, PrescriptionItem, ClinicalNote, LabResult, Diagnosis, Procedure, SOAPNote, VitalSignRecord, Referral, etc.
 - **Application:** Create/Update/Get Appointment; Create/Update/Get Visit; GetVisits (paginated, optional clinicId).
 - **Controllers:** AppointmentsController (CRUD); ClinicalController (visits: GET by id, GET list, POST, PUT).
-- **Persistence:** ClinicalDbContext (Appointments, Visits, CarePlans, etc.).
-- **Relationships:** Appointment and Visit reference Patient and Clinic; Visit can have prescriptions, notes, lab results.
+- **Persistence:** ClinicalDbContext (Appointments, Visits, CarePlans, VoiceRecordings, etc.).
+- **Relationships:** Appointment and Visit reference Patient and Clinic; Visit can have prescriptions, notes, lab results; VoiceRecording references Patient.
 
 ---
 
@@ -126,3 +126,24 @@
 - **Controllers:** ReportingController — GET dashboard (clinicId, snapshotDate).
 - **Persistence:** AIDbContext (DashboardSnapshots).
 - **Relationships:** Aggregates data from clinical and other contexts.
+
+---
+
+## Auth (OTP)
+
+- **Purpose:** Phone-based OTP send/verify for patient onboarding and low-friction access; API-issued JWT for verified patients.
+- **Application:** SendOtpCommand (rate-limited; IOtpService + ISmsService), VerifyOtpCommand (IOtpService validate, provision ApplicationUser, assign Patient role, LoginAudit, ITokenService.GeneratePatientToken).
+- **Controllers:** AuthController (see Identity). Endpoints: POST api/auth/otp/send, POST api/auth/otp/verify; returns token on success.
+- **Services:** IOtpService (generate/validate, hash stored in IdentityDbContext.OtpCodes), ITokenService (API-issued JWT via JwtOptions: Issuer, Audience, Secret).
+- **Relationships:** Uses Identity (OtpCode, ApplicationUser, UserRole, LoginAudit).
+
+---
+
+## Onboarding (Voice)
+
+- **Purpose:** Voice-first patient onboarding: accept audio, transcribe, extract fields, create patient, store recording reference.
+- **Application:** CreatePatientFromVoiceCommand — ISpeechToTextService.TranscribeAsync, CreatePatientCommand, update patient phone, create VoiceRecording; CreatePatientFromVoiceResult (PatientId, Transcription).
+- **Controllers:** VoiceOnboardingController at `api/onboarding` — POST voice (multipart: audioFile, language, phoneNumber, clinicId); [AllowAnonymous].
+- **Services:** ISpeechToTextService (TranscriptionResult: FullText, ExtractedFields); AzureSpeechToTextService placeholder in Infrastructure.
+- **Persistence:** ClinicalDbContext (Patients, VoiceRecordings); IRepository&lt;VoiceRecording&gt; and IRepository&lt;Patient&gt;.
+- **Relationships:** Consumes Auth (OTP-verified phone assumed by client/session); creates Patient and VoiceRecording.
