@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.Telemedicine.Commands.CreateTeleSession;
 using RaphCare.Application.Features.Telemedicine.Queries.GetTeleSessionById;
@@ -6,6 +7,7 @@ using RaphCare.Application.Features.Telemedicine.Queries.GetTeleSessionById;
 namespace RaphCare.API.Controllers;
 
 /// <summary>Telemedicine sessions. Thin API; delegates to MediatR. Roles: Admin, Provider, Patient.</summary>
+[Authorize(Policy = "RequireProvider")]
 [ApiController]
 [Route("api/[controller]")]
 public class TelemedicineController(IMediator mediator) : ControllerBase

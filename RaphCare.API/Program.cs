@@ -28,6 +28,12 @@ builder.Services.AddRaphCareSwagger();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseRaphCareSwagger();
+    await app.ApplyMigrationsAsync();
+}
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
@@ -36,13 +42,5 @@ app.UseMiddleware<TenantResolutionMiddleware>();
 app.UseMiddleware<AuditMiddleware>();
 
 app.MapControllers();
-
-if (app.Environment.IsDevelopment())
-{
-
-    app.UseRaphCareSwagger();
-
-    await app.ApplyMigrationsAsync();
-}
 
 app.Run();

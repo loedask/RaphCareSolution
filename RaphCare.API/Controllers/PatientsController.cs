@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.Patients.Commands.CreatePatient;
 using RaphCare.Application.Features.Patients.Commands.UpdatePatient;
@@ -13,6 +14,7 @@ namespace RaphCare.API.Controllers;
 /// <summary>
 /// Patient registration and retrieval. Roles: Admin, Provider.
 /// </summary>
+[Authorize(Policy = "RequireProvider")]
 [ApiController]
 [Route("api/[controller]")]
 public class PatientsController(IMediator mediator) : ControllerBase

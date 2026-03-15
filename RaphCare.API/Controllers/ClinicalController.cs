@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.Clinical.Commands.CreateVisit;
 using RaphCare.Application.Features.Clinical.Commands.UpdateVisit;
@@ -8,6 +9,7 @@ using RaphCare.Application.Features.Clinical.Queries.GetVisits;
 namespace RaphCare.API.Controllers;
 
 /// <summary>Clinical visits and documentation. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
+[Authorize(Policy = "RequireProvider")]
 [ApiController]
 [Route("api/[controller]")]
 public class ClinicalController(IMediator mediator) : ControllerBase

@@ -1,10 +1,12 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.AI.Commands.GenerateSummary;
 
 namespace RaphCare.API.Controllers;
 
 /// <summary>AI-powered summaries and insights. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
+[Authorize(Policy = "RequireProvider")]
 [ApiController]
 [Route("api/[controller]")]
 public class AIController(IMediator mediator) : ControllerBase

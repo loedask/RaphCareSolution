@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.Insurance.Commands.CreateInsuranceProfile;
 using RaphCare.Application.Features.Insurance.Commands.UpdateInsuranceProfile;
@@ -8,6 +9,7 @@ using RaphCare.Application.Features.Insurance.Queries.GetInsuranceProfiles;
 namespace RaphCare.API.Controllers;
 
 /// <summary>Insurance profiles and plans. Thin API; delegates to MediatR. Roles: Admin, Provider, Patient.</summary>
+[Authorize(Policy = "RequireProvider")]
 [ApiController]
 [Route("api/[controller]")]
 public class InsuranceController(IMediator mediator) : ControllerBase

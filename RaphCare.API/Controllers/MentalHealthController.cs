@@ -1,10 +1,12 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.MentalHealth.Queries.GetMentalHealthAssessments;
 
 namespace RaphCare.API.Controllers;
 
 /// <summary>Mental health assessments. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
+[Authorize(Policy = "RequireProvider")]
 [ApiController]
 [Route("api/[controller]")]
 public class MentalHealthController(IMediator mediator) : ControllerBase

@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.Billing.Commands.CreateInvoice;
 using RaphCare.Application.Features.Billing.Commands.UpdateInvoice;
@@ -8,6 +9,7 @@ using RaphCare.Application.Features.Billing.Queries.GetInvoices;
 namespace RaphCare.API.Controllers;
 
 /// <summary>Invoicing and billing. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
+[Authorize(Policy = "RequireAdmin")]
 [ApiController]
 [Route("api/[controller]")]
 public class BillingController(IMediator mediator) : ControllerBase

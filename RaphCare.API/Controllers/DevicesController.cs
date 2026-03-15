@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.Devices.Commands.CreateDevice;
 using RaphCare.Application.Features.Devices.Commands.UpdateDevice;
@@ -8,6 +9,7 @@ using RaphCare.Application.Features.Devices.Queries.GetDevices;
 namespace RaphCare.API.Controllers;
 
 /// <summary>Device registry and management. Thin API; delegates to MediatR. Roles: Admin, Provider.</summary>
+[Authorize(Policy = "RequireProvider")]
 [ApiController]
 [Route("api/[controller]")]
 public class DevicesController(IMediator mediator) : ControllerBase
