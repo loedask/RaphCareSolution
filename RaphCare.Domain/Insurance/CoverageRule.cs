@@ -1,5 +1,4 @@
 using RaphCare.Domain.Common;
-using RaphCare.Domain.Common.Interfaces;
 
 namespace RaphCare.Domain.Insurance;
 
