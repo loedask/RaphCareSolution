@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Patients;
 
@@ -9,6 +10,7 @@ public class CreatePatientHandler(
     IRepository<Patient> repository,
     IRepository<PatientExternalId> externalIdRepository,
     IUnitOfWork unitOfWork,
+    IPatientUniqueConflictResolver conflictResolver,
     ICurrentUserService currentUserService,
     IDateTimeProvider dateTimeProvider) : IRequestHandler<CreatePatientCommand, Guid>
 {
@@ -16,6 +18,7 @@ public class CreatePatientHandler(
     private readonly IRepository<Patient> _repository = repository;
     private readonly IRepository<PatientExternalId> _externalIdRepository = externalIdRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IPatientUniqueConflictResolver _conflictResolver = conflictResolver;
     private readonly ICurrentUserService _currentUserService = currentUserService;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
@@ -52,9 +55,10 @@ public class CreatePatientHandler(
 
         await _repository.AddAsync(patient, cancellationToken);
 
+        var externalIdValue = (string?)null;
         if (request.ClinicId != Guid.Empty)
         {
-            var externalIdValue = !string.IsNullOrWhiteSpace(request.ExternalId)
+            externalIdValue = !string.IsNullOrWhiteSpace(request.ExternalId)
                 ? request.ExternalId.Trim()
                 : patient.Id.ToString();
             await _externalIdRepository.AddAsync(new PatientExternalId
@@ -65,8 +69,22 @@ public class CreatePatientHandler(
             }, cancellationToken);
         }
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return patient.Id;
+        try
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            return patient.Id;
+        }
+        catch (DbUpdateException)
+        {
+            var existingId = await _conflictResolver.ResolveExistingPatientIdAsync(
+                request.NationalHealthId,
+                sourceSystem,
+                externalIdValue,
+                cancellationToken);
+            if (existingId.HasValue)
+                return existingId.Value;
+            throw;
+        }
     }
 }
 
