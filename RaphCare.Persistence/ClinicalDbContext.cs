@@ -14,6 +14,7 @@ namespace RaphCare.Persistence;
 public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : DbContext(options)
 {
     public DbSet<Patient> Patients => Set<Patient>();
+    public DbSet<PatientExternalId> PatientExternalIds => Set<PatientExternalId>();
     public DbSet<Clinic> Clinics => Set<Clinic>();
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Visit> Visits => Set<Visit>();
@@ -25,6 +26,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new PatientConfiguration());
+        modelBuilder.ApplyConfiguration(new PatientExternalIdConfiguration());
         modelBuilder.ApplyConfiguration(new ClinicConfiguration());
         modelBuilder.ApplyConfiguration(new VisitConfiguration());
         modelBuilder.ApplyConfiguration(new TeleSessionConfiguration());

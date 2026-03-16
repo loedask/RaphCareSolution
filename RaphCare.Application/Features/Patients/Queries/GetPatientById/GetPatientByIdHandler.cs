@@ -19,7 +19,6 @@ public class GetPatientByIdHandler(IRepository<Patient> repository) : IRequestHa
             : new PatientDto
         {
             Id = patient.Id,
-            ClinicId = patient.ClinicId,
             FirstName = patient.FirstName,
             LastName = patient.LastName,
             DateOfBirth = patient.DateOfBirth
