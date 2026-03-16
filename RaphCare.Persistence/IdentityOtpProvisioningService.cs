@@ -7,15 +7,18 @@ namespace RaphCare.Persistence;
 
 /// <summary>
 /// EF Core implementation of OTP-based identity provisioning and patient linking,
-/// using <see cref="IdentityDbContext"/> and <see cref="ClinicalDbContext"/>.
+/// using <see cref="IdentityDbContext"/>, <see cref="ClinicalDbContext"/>, and
+/// <see cref="IMasterPatientIndexService"/> to avoid duplicate patients.
 /// </summary>
 public class IdentityOtpProvisioningService(
     IdentityDbContext identityDbContext,
     ClinicalDbContext clinicalDbContext,
+    IMasterPatientIndexService mpi,
     IDateTimeProvider clock) : IIdentityOtpProvisioningService
 {
     private readonly IdentityDbContext _identityDbContext = identityDbContext ?? throw new ArgumentNullException(nameof(identityDbContext));
     private readonly ClinicalDbContext _clinicalDbContext = clinicalDbContext ?? throw new ArgumentNullException(nameof(clinicalDbContext));
+    private readonly IMasterPatientIndexService _mpi = mpi ?? throw new ArgumentNullException(nameof(mpi));
     private readonly IDateTimeProvider _clock = clock ?? throw new ArgumentNullException(nameof(clock));
 
     public async Task<(ApplicationUser user, Patient patient)> EnsureUserAndPatientForPhoneAsync(
@@ -51,14 +54,32 @@ public class IdentityOtpProvisioningService(
         }
 
         // Ensure Patient entity exists and is linked to this ApplicationUser.
+        // Use MPI to resolve existing patient (e.g. from REST or voice onboarding) before creating a new one.
         var patient = await _clinicalDbContext.Patients
             .FirstOrDefaultAsync(p => p.ApplicationUserId == user.Id, cancellationToken);
 
         if (patient is null)
         {
-            // Try to backfill an existing patient created via other flows using the same phone number.
-            patient = await _clinicalDbContext.Patients
-                .FirstOrDefaultAsync(p => p.PhoneNumber == normalizedPhone, cancellationToken);
+            var existing = await _mpi.FindMatchAsync(
+                nationalHealthId: null,
+                sourceSystem: null,
+                externalId: null,
+                firstName: normalizedPhone,
+                lastName: "",
+                dateOfBirth: DateTime.UtcNow.Date,
+                phoneNumber: normalizedPhone,
+                cancellationToken);
+
+            if (existing != null)
+            {
+                // Re-fetch with tracking so SaveChanges persists the link (DbContext uses NoTracking).
+                patient = await _clinicalDbContext.Patients.FindAsync([existing.Id], cancellationToken);
+                if (patient != null)
+                {
+                    patient.LinkToApplicationUser(user.Id);
+                    await _clinicalDbContext.SaveChangesAsync(cancellationToken);
+                }
+            }
 
             if (patient is null)
             {
@@ -71,11 +92,10 @@ public class IdentityOtpProvisioningService(
                     IsActive = true
                 };
 
-                await _clinicalDbContext.Patients.AddAsync(patient, cancellationToken);
+                _clinicalDbContext.Patients.Add(patient);
+                patient.LinkToApplicationUser(user.Id);
+                await _clinicalDbContext.SaveChangesAsync(cancellationToken);
             }
-
-            patient.LinkToApplicationUser(user.Id);
-            await _clinicalDbContext.SaveChangesAsync(cancellationToken);
         }
 
         // Ensure Patient role is assigned.
