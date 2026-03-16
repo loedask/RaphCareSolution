@@ -147,6 +147,7 @@ public static class DependencyInjection
         services.AddScoped<IIdentityOtpProvisioningService, IdentityOtpProvisioningService>();
 
         services.AddScoped<IMasterPatientIndexService, MasterPatientIndexService>();
+        services.AddScoped<IPatientMergeService, PatientMergeService>();
         services.AddScoped<IPatientUniqueConflictResolver, PatientUniqueConflictResolver>();
         services.AddScoped<IUniqueConstraintViolationDetector, SqlServerUniqueConstraintViolationDetector>();
         services.AddScoped<IRepository<Patient>>(sp => new EfRepository<Patient, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));

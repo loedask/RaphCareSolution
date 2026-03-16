@@ -1,0 +1,131 @@
+using Microsoft.EntityFrameworkCore;
+using RaphCare.Application.Common.Interfaces;
+using RaphCare.Domain.Patients;
+
+namespace RaphCare.Persistence;
+
+/// <summary>
+/// Merges duplicate patient records into a primary record for MPI reconciliation.
+/// Reassigns all related entities to the primary, respects PatientExternalId uniqueness, soft-deletes the duplicate, and records the merge in PatientMergeHistory.
+/// </summary>
+public class PatientMergeService : IPatientMergeService
+{
+    private readonly ClinicalDbContext _clinical;
+    private readonly InsuranceDbContext _insurance;
+    private readonly DeviceDbContext _device;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUserService _currentUserService;
+
+    public PatientMergeService(
+        ClinicalDbContext clinical,
+        InsuranceDbContext insurance,
+        DeviceDbContext device,
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService)
+    {
+        _clinical = clinical ?? throw new ArgumentNullException(nameof(clinical));
+        _insurance = insurance ?? throw new ArgumentNullException(nameof(insurance));
+        _device = device ?? throw new ArgumentNullException(nameof(device));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+    }
+
+    /// <inheritdoc />
+    public async Task MergePatientsAsync(Guid primaryPatientId, Guid duplicatePatientId, CancellationToken ct)
+    {
+        // 1. Validate both patients exist (query filter excludes soft-deleted)
+        var primary = await _clinical.Patients.FindAsync([primaryPatientId], ct).ConfigureAwait(false);
+        if (primary == null)
+            throw new InvalidOperationException($"Primary patient not found: {primaryPatientId}.");
+
+        var duplicate = await _clinical.Patients.FindAsync([duplicatePatientId], ct).ConfigureAwait(false);
+        if (duplicate == null)
+            throw new InvalidOperationException($"Duplicate patient not found: {duplicatePatientId}.");
+
+        // 2. Prevent merging a patient with itself
+        if (primaryPatientId == duplicatePatientId)
+            throw new InvalidOperationException("Cannot merge a patient with itself.");
+
+        // 3. Move all related entities from duplicate to primary (single logical transaction across contexts)
+
+        // Clinical DB: Visits, Appointments, TeleSessions, VoiceRecordings, CarePlans
+        await _clinical.Visits
+            .Where(v => v.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(v => v.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+        await _clinical.Appointments
+            .Where(a => a.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(a => a.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+        await _clinical.TeleSessions
+            .Where(t => t.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(t => t.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+        await _clinical.VoiceRecordings
+            .Where(r => r.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(r => r.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+        await _clinical.CarePlans
+            .Where(c => c.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(c => c.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        // Clinical DB: entities exposed via Set<> (same database as per InitialClinical migration)
+        await _clinical.Set<MedicalHistory>()
+            .Where(m => m.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(m => m.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+        await _clinical.Set<Medication>()
+            .Where(m => m.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(m => m.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+        await _clinical.Set<Allergy>()
+            .Where(a => a.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(a => a.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+        await _clinical.Set<ChronicCondition>()
+            .Where(c => c.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(c => c.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        // 4. PatientExternalIds: ensure uniqueness (SourceSystem, ExternalId). Remove conflicting rows, then reassign the rest.
+        var primaryPairs = await _clinical.PatientExternalIds
+            .Where(e => e.PatientId == primaryPatientId)
+            .Select(e => new { e.SourceSystem, e.ExternalId })
+            .ToListAsync(ct).ConfigureAwait(false);
+        var primarySet = primaryPairs.Select(k => (k.SourceSystem, k.ExternalId)).ToHashSet();
+        var duplicateExternals = await _clinical.PatientExternalIds
+            .Where(e => e.PatientId == duplicatePatientId)
+            .Select(e => new { e.Id, e.SourceSystem, e.ExternalId })
+            .ToListAsync(ct).ConfigureAwait(false);
+        var conflictIds = duplicateExternals
+            .Where(d => primarySet.Contains((d.SourceSystem, d.ExternalId)))
+            .Select(d => d.Id)
+            .ToList();
+        if (conflictIds.Count > 0)
+            await _clinical.PatientExternalIds
+                .Where(e => conflictIds.Contains(e.Id))
+                .ExecuteDeleteAsync(ct).ConfigureAwait(false);
+        await _clinical.PatientExternalIds
+            .Where(e => e.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(e => e.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        // Insurance DB
+        await _insurance.InsuranceProfiles
+            .Where(i => i.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(i => i.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        // Device DB: assignments linked to patient
+        await _device.DeviceAssignments
+            .Where(d => d.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(d => d.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        // 5. Soft delete the duplicate patient
+        duplicate.IsDeleted = true;
+        duplicate.DeletedAt = DateTime.UtcNow;
+        _clinical.Patients.Update(duplicate);
+
+        // 6. Merge audit logging
+        var mergedBy = _currentUserService.CurrentUserId;
+        _clinical.PatientMergeHistory.Add(new PatientMergeHistory
+        {
+            PrimaryPatientId = primaryPatientId,
+            MergedPatientId = duplicatePatientId,
+            MergedAt = DateTime.UtcNow,
+            MergedByUserId = mergedBy
+        });
+
+        await _unitOfWork.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
+}
