@@ -7,30 +7,20 @@ using RaphCare.Persistence;
 
 namespace RaphCare.Application.Features.Auth.Commands.VerifyOtp;
 
-public class VerifyOtpHandler : IRequestHandler<VerifyOtpCommand, VerifyOtpResult>
+public class VerifyOtpHandler(
+    IOtpService otpService,
+    IdentityDbContext dbContext,
+    ClinicalDbContext clinicalDbContext,
+    IDateTimeProvider clock,
+    ICurrentUserService currentUser,
+    ITokenService tokenService) : IRequestHandler<VerifyOtpCommand, VerifyOtpResult>
 {
-    private readonly IOtpService _otpService;
-    private readonly IdentityDbContext _dbContext;
-    private readonly ClinicalDbContext _clinicalDbContext;
-    private readonly IDateTimeProvider _clock;
-    private readonly ICurrentUserService _currentUser;
-    private readonly ITokenService _tokenService;
-
-    public VerifyOtpHandler(
-        IOtpService otpService,
-        IdentityDbContext dbContext,
-        ClinicalDbContext clinicalDbContext,
-        IDateTimeProvider clock,
-        ICurrentUserService currentUser,
-        ITokenService tokenService)
-    {
-        _otpService = otpService;
-        _dbContext = dbContext;
-        _clinicalDbContext = clinicalDbContext;
-        _clock = clock;
-        _currentUser = currentUser;
-        _tokenService = tokenService;
-    }
+    private readonly IOtpService _otpService = otpService;
+    private readonly IdentityDbContext _dbContext = dbContext;
+    private readonly ClinicalDbContext _clinicalDbContext = clinicalDbContext;
+    private readonly IDateTimeProvider _clock = clock;
+    private readonly ICurrentUserService _currentUser = currentUser;
+    private readonly ITokenService _tokenService = tokenService;
 
     public async Task<VerifyOtpResult> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
     {
