@@ -20,7 +20,7 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.Property(e => e.PhoneNumber).HasMaxLength(30);
         builder.Property(e => e.Email).HasMaxLength(256);
         builder.HasIndex(e => e.ApplicationUserId);
-        builder.HasIndex(e => e.NationalHealthId);
+        builder.HasIndex(e => e.NationalHealthId).IsUnique();
         builder.HasQueryFilter(e => !e.IsDeleted);
         builder.HasMany(e => e.Addresses).WithOne(a => a.Patient).HasForeignKey(a => a.PatientId).OnDelete(DeleteBehavior.Restrict);
         builder.HasMany(e => e.InsuranceProfiles).WithOne(i => i.Patient).HasForeignKey(i => i.PatientId).OnDelete(DeleteBehavior.Restrict);

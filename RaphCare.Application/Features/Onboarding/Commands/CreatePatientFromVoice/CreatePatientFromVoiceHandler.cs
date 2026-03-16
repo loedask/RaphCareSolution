@@ -35,15 +35,17 @@ public class CreatePatientFromVoiceHandler(
             ClinicId = request.ClinicId,
             FirstName = firstName,
             LastName = lastName,
-            DateOfBirth = dateOfBirth
+            DateOfBirth = dateOfBirth,
+            PhoneNumber = request.PhoneNumber,
+            SourceSystem = request.ClinicId.ToString()
         };
 
         var patientId = await _mediator.Send(createPatient, cancellationToken);
 
         var patient = await _patientRepository.GetByIdAsync(patientId, cancellationToken);
-        if (patient != null)
+        if (patient != null && !string.IsNullOrWhiteSpace(request.PhoneNumber))
         {
-            patient.PhoneNumber = request.PhoneNumber;
+            patient.PhoneNumber = request.PhoneNumber.Trim();
             await _patientRepository.UpdateAsync(patient, cancellationToken);
         }
 

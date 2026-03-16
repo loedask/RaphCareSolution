@@ -13,7 +13,7 @@ public class PatientExternalIdConfiguration : IEntityTypeConfiguration<PatientEx
         builder.Property(e => e.SourceSystem).IsRequired().HasMaxLength(256);
         builder.Property(e => e.ExternalId).IsRequired().HasMaxLength(256);
 
-        builder.HasIndex(e => new { e.SourceSystem, e.ExternalId });
+        builder.HasIndex(e => new { e.SourceSystem, e.ExternalId }).IsUnique();
     }
 }
 
