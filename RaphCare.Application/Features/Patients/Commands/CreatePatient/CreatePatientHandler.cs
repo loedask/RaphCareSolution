@@ -19,7 +19,6 @@ public class CreatePatientHandler(
     {
         var patient = new Patient
         {
-            ClinicId = request.ClinicId,
             FirstName = request.FirstName,
             LastName = request.LastName,
             DateOfBirth = request.DateOfBirth,

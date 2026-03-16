@@ -27,7 +27,6 @@ public class GetPatientsHandler : IRequestHandler<GetPatientsQuery, PagedResult<
             .Select(p => new PatientDto
             {
                 Id = p.Id,
-                ClinicId = p.ClinicId,
                 FirstName = p.FirstName,
                 LastName = p.LastName,
                 DateOfBirth = p.DateOfBirth

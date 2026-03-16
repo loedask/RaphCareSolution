@@ -23,9 +23,8 @@ public class PatientClinicAuthorizationService(
         var userId = _currentUserService.CurrentUserId
             ?? throw new ForbiddenAccessException("Unauthenticated user.");
 
-        var patient = await _patientRepository.FirstOrDefaultAsync(
-            p => p.ApplicationUserId == userId,
-            cancellationToken);
+        var patients = await _patientRepository.ListAsync(cancellationToken);
+        var patient = patients.FirstOrDefault(p => p.ApplicationUserId == userId);
 
         return patient
             ?? throw new ForbiddenAccessException("No patient record linked to this user.");
@@ -35,9 +34,8 @@ public class PatientClinicAuthorizationService(
     {
         var patient = await GetCurrentPatientAsync(cancellationToken);
 
-        var hasAccess = await _visitRepository.AnyAsync(
-            v => v.PatientId == patient.Id && v.ClinicId == clinicId,
-            cancellationToken);
+        var visits = await _visitRepository.ListAsync(cancellationToken);
+        var hasAccess = visits.Any(v => v.PatientId == patient.Id && v.ClinicId == clinicId);
 
         if (!hasAccess)
         {
