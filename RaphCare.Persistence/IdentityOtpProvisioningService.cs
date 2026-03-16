@@ -9,21 +9,14 @@ namespace RaphCare.Persistence;
 /// EF Core implementation of OTP-based identity provisioning and patient linking,
 /// using <see cref="IdentityDbContext"/> and <see cref="ClinicalDbContext"/>.
 /// </summary>
-public class IdentityOtpProvisioningService : IIdentityOtpProvisioningService
+public class IdentityOtpProvisioningService(
+    IdentityDbContext identityDbContext,
+    ClinicalDbContext clinicalDbContext,
+    IDateTimeProvider clock) : IIdentityOtpProvisioningService
 {
-    private readonly IdentityDbContext _identityDbContext;
-    private readonly ClinicalDbContext _clinicalDbContext;
-    private readonly IDateTimeProvider _clock;
-
-    public IdentityOtpProvisioningService(
-        IdentityDbContext identityDbContext,
-        ClinicalDbContext clinicalDbContext,
-        IDateTimeProvider clock)
-    {
-        _identityDbContext = identityDbContext ?? throw new ArgumentNullException(nameof(identityDbContext));
-        _clinicalDbContext = clinicalDbContext ?? throw new ArgumentNullException(nameof(clinicalDbContext));
-        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-    }
+    private readonly IdentityDbContext _identityDbContext = identityDbContext ?? throw new ArgumentNullException(nameof(identityDbContext));
+    private readonly ClinicalDbContext _clinicalDbContext = clinicalDbContext ?? throw new ArgumentNullException(nameof(clinicalDbContext));
+    private readonly IDateTimeProvider _clock = clock ?? throw new ArgumentNullException(nameof(clock));
 
     public async Task<(ApplicationUser user, Patient patient)> EnsureUserAndPatientForPhoneAsync(
         string phoneNumber,
