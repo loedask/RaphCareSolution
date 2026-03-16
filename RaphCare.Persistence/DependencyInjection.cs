@@ -142,6 +142,8 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork, PersistenceUnitOfWork>();
         services.AddScoped<IApplicationUserStore, ApplicationUserStore>();
+        services.AddScoped<IOtpService, OtpService>();
+        services.AddScoped<IIdentityOtpProvisioningService, IdentityOtpProvisioningService>();
 
         services.AddScoped<IRepository<Patient>>(sp => new EfRepository<Patient, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<VoiceRecording>>(sp => new EfRepository<VoiceRecording, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
