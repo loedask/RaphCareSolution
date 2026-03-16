@@ -27,4 +27,10 @@ public class CurrentUserService : ICurrentUserService
 
     /// <inheritdoc />
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+
+    /// <inheritdoc />
+    public string? IpAddress => _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+
+    /// <inheritdoc />
+    public string? UserAgent => _httpContextAccessor.HttpContext?.Request?.Headers["User-Agent"].ToString();
 }

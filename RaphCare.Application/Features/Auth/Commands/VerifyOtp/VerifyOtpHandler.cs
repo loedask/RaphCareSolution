@@ -1,23 +1,19 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Identity;
 using RaphCare.Domain.Patients;
-using RaphCare.Persistence;
 
 namespace RaphCare.Application.Features.Auth.Commands.VerifyOtp;
 
 public class VerifyOtpHandler(
     IOtpService otpService,
-    IdentityDbContext dbContext,
-    ClinicalDbContext clinicalDbContext,
+    IIdentityOtpProvisioningService identityOtpProvisioningService,
     IDateTimeProvider clock,
     ICurrentUserService currentUser,
     ITokenService tokenService) : IRequestHandler<VerifyOtpCommand, VerifyOtpResult>
 {
     private readonly IOtpService _otpService = otpService;
-    private readonly IdentityDbContext _dbContext = dbContext;
-    private readonly ClinicalDbContext _clinicalDbContext = clinicalDbContext;
+    private readonly IIdentityOtpProvisioningService _identityOtpProvisioningService = identityOtpProvisioningService;
     private readonly IDateTimeProvider _clock = clock;
     private readonly ICurrentUserService _currentUser = currentUser;
     private readonly ITokenService _tokenService = tokenService;
@@ -43,96 +39,16 @@ public class VerifyOtpHandler(
                 CreatedAt = _clock.UtcNow
             };
 
-            _dbContext.Add(failedAudit);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _identityOtpProvisioningService.LogLoginAttemptAsync(failedAudit, cancellationToken);
 
             return new VerifyOtpResult { Success = false };
         }
 
-        // Successful OTP: find or create ApplicationUser for this phone-based patient.
-        // We use Email to store the phone identifier in this first iteration.
-        var normalizedPhone = request.PhoneNumber.Trim();
-
-        var user = await _dbContext.Users
-            .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(
-                u => u.Email == normalizedPhone,
-                cancellationToken);
-
-        if (user == null)
-        {
-            user = new ApplicationUser
-            {
-                Id = Guid.NewGuid(),
-                EntraObjectId = string.Empty,
-                Email = normalizedPhone,
-                DisplayName = normalizedPhone,
-                IsActive = true,
-                IsDeleted = false,
-                CreatedAt = _clock.UtcNow
-            };
-
-            _dbContext.Users.Add(user);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
+        // Successful OTP: delegate to identity/patient provisioning service.
+        var (user, patient) = await _identityOtpProvisioningService
+            .EnsureUserAndPatientForPhoneAsync(request.PhoneNumber, cancellationToken);
 
         userIdForAudit = user.Id;
-
-        // Ensure Patient entity exists and is linked to this ApplicationUser.
-        var patient = await _clinicalDbContext.Patients
-            .FirstOrDefaultAsync(p => p.ApplicationUserId == user.Id, cancellationToken);
-
-        if (patient is null)
-        {
-            var normalizedPhone = request.PhoneNumber.Trim();
-
-            // Try to backfill an existing patient created via other flows using the same phone number.
-            patient = await _clinicalDbContext.Patients
-                .FirstOrDefaultAsync(p => p.PhoneNumber == normalizedPhone, cancellationToken);
-
-            if (patient is null)
-            {
-                patient = new Patient
-                {
-                    ClinicId = Guid.Empty,
-                    FirstName = normalizedPhone,
-                    LastName = string.Empty,
-                    DateOfBirth = DateTime.UtcNow, // placeholder until onboarding collects real DOB
-                    PhoneNumber = normalizedPhone,
-                    IsActive = true
-                };
-
-                await _clinicalDbContext.Patients.AddAsync(patient, cancellationToken);
-            }
-
-            patient.LinkToApplicationUser(user.Id);
-            await _clinicalDbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        // Ensure Patient role is assigned.
-        var patientRole = await _dbContext.Roles
-            .FirstOrDefaultAsync(r => r.Name == "Patient", cancellationToken);
-
-        if (patientRole != null)
-        {
-            var hasPatientRole = await _dbContext.UserRoles
-                .AnyAsync(ur => ur.UserId == user.Id && ur.RoleId == patientRole.Id, cancellationToken);
-
-            if (!hasPatientRole)
-            {
-                var link = new UserRole
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = user.Id,
-                    RoleId = patientRole.Id,
-                    CreatedAt = _clock.UtcNow
-                };
-
-                _dbContext.UserRoles.Add(link);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-            }
-        }
 
         var token = _tokenService.GeneratePatientToken(user, patient.Id);
 
@@ -147,8 +63,7 @@ public class VerifyOtpHandler(
             CreatedAt = _clock.UtcNow
         };
 
-        _dbContext.Add(successAudit);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _identityOtpProvisioningService.LogLoginAttemptAsync(successAudit, cancellationToken);
 
         return new VerifyOtpResult
         {
