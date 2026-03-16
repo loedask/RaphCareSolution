@@ -1,5 +1,7 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Domain.Events;
 using RaphCare.Domain.Patients;
 
 namespace RaphCare.Persistence;
@@ -15,19 +17,22 @@ public class PatientMergeService : IPatientMergeService
     private readonly DeviceDbContext _device;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IMediator _mediator;
 
     public PatientMergeService(
         ClinicalDbContext clinical,
         InsuranceDbContext insurance,
         DeviceDbContext device,
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IMediator mediator)
     {
         _clinical = clinical ?? throw new ArgumentNullException(nameof(clinical));
         _insurance = insurance ?? throw new ArgumentNullException(nameof(insurance));
         _device = device ?? throw new ArgumentNullException(nameof(device));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     /// <inheritdoc />
@@ -117,15 +122,19 @@ public class PatientMergeService : IPatientMergeService
         _clinical.Patients.Update(duplicate);
 
         // 6. Merge audit logging
+        var mergedAt = DateTime.UtcNow;
         var mergedBy = _currentUserService.CurrentUserId;
         _clinical.PatientMergeHistory.Add(new PatientMergeHistory
         {
             PrimaryPatientId = primaryPatientId,
             MergedPatientId = duplicatePatientId,
-            MergedAt = DateTime.UtcNow,
+            MergedAt = mergedAt,
             MergedByUserId = mergedBy
         });
 
         await _unitOfWork.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        // 7. Publish domain event for handlers (e.g. Application Insights logging, cache invalidation, MPI reconciliation, external integrations)
+        await _mediator.Publish(new PatientMergedEvent(primaryPatientId, duplicatePatientId, mergedAt, mergedBy), ct).ConfigureAwait(false);
     }
 }
