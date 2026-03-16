@@ -21,6 +21,15 @@ public class CurrentUserService : ICurrentUserService
         ?? _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
 
     /// <inheritdoc />
+    public Guid? CurrentUserId
+    {
+        get
+        {
+            return Guid.TryParse(UserId, out var id) ? id : null;
+        }
+    }
+
+    /// <inheritdoc />
     public string? UserName => _httpContextAccessor.HttpContext?.User?.Identity?.Name
         ?? _httpContextAccessor.HttpContext?.User?.FindFirst("name")?.Value
         ?? _httpContextAccessor.HttpContext?.User?.FindFirst("preferred_username")?.Value;

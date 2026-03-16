@@ -6,6 +6,7 @@ namespace RaphCare.Application.Common.Interfaces;
 public interface ICurrentUserService
 {
     string? UserId { get; }
+    Guid? CurrentUserId { get; }
     string? UserName { get; }
     bool IsAuthenticated { get; }
     string? IpAddress { get; }
