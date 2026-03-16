@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Identity;
 using RaphCare.Domain.Patients;
+using RaphCare.Persistence;
 
 namespace RaphCare.Application.Features.Auth.Commands.VerifyOtp;
 
