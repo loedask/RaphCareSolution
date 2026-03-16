@@ -64,7 +64,6 @@ public class IdentityOtpProvisioningService(
             {
                 patient = new Patient
                 {
-                    ClinicId = Guid.Empty,
                     FirstName = normalizedPhone,
                     LastName = string.Empty,
                     DateOfBirth = DateTime.UtcNow, // placeholder until onboarding collects real DOB
