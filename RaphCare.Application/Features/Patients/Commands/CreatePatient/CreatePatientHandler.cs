@@ -11,6 +11,7 @@ public class CreatePatientHandler(
     IRepository<PatientExternalId> externalIdRepository,
     IUnitOfWork unitOfWork,
     IPatientUniqueConflictResolver conflictResolver,
+    IUniqueConstraintViolationDetector uniqueConstraintDetector,
     ICurrentUserService currentUserService,
     IDateTimeProvider dateTimeProvider) : IRequestHandler<CreatePatientCommand, Guid>
 {
@@ -19,6 +20,7 @@ public class CreatePatientHandler(
     private readonly IRepository<PatientExternalId> _externalIdRepository = externalIdRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IPatientUniqueConflictResolver _conflictResolver = conflictResolver;
+    private readonly IUniqueConstraintViolationDetector _uniqueConstraintDetector = uniqueConstraintDetector;
     private readonly ICurrentUserService _currentUserService = currentUserService;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
@@ -74,15 +76,18 @@ public class CreatePatientHandler(
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return patient.Id;
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
-            var existingId = await _conflictResolver.ResolveExistingPatientIdAsync(
+            if (!_uniqueConstraintDetector.IsUniqueConstraintViolation(ex))
+                throw;
+
+            var resolved = await _conflictResolver.ResolveExistingPatientIdAsync(
                 request.NationalHealthId,
                 sourceSystem,
                 externalIdValue,
                 cancellationToken);
-            if (existingId.HasValue)
-                return existingId.Value;
+            if (resolved.HasValue)
+                return resolved.Value;
             throw;
         }
     }

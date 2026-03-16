@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Persistence.Utilities;
 using RaphCare.Domain.Billing;
 using RaphCare.Domain.Clinical;
 using RaphCare.Domain.Communication;
@@ -147,6 +148,7 @@ public static class DependencyInjection
 
         services.AddScoped<IMasterPatientIndexService, MasterPatientIndexService>();
         services.AddScoped<IPatientUniqueConflictResolver, PatientUniqueConflictResolver>();
+        services.AddScoped<IUniqueConstraintViolationDetector, SqlServerUniqueConstraintViolationDetector>();
         services.AddScoped<IRepository<Patient>>(sp => new EfRepository<Patient, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<PatientExternalId>>(sp => new EfRepository<PatientExternalId, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<VoiceRecording>>(sp => new EfRepository<VoiceRecording, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
