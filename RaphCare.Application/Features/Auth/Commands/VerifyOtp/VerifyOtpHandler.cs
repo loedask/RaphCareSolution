@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Identity;
+using RaphCare.Domain.Patients;
 using RaphCare.Persistence;
 
 namespace RaphCare.Application.Features.Auth.Commands.VerifyOtp;
@@ -10,6 +11,7 @@ public class VerifyOtpHandler : IRequestHandler<VerifyOtpCommand, VerifyOtpResul
 {
     private readonly IOtpService _otpService;
     private readonly IdentityDbContext _dbContext;
+    private readonly ClinicalDbContext _clinicalDbContext;
     private readonly IDateTimeProvider _clock;
     private readonly ICurrentUserService _currentUser;
     private readonly ITokenService _tokenService;
@@ -17,12 +19,14 @@ public class VerifyOtpHandler : IRequestHandler<VerifyOtpCommand, VerifyOtpResul
     public VerifyOtpHandler(
         IOtpService otpService,
         IdentityDbContext dbContext,
+        ClinicalDbContext clinicalDbContext,
         IDateTimeProvider clock,
         ICurrentUserService currentUser,
         ITokenService tokenService)
     {
         _otpService = otpService;
         _dbContext = dbContext;
+        _clinicalDbContext = clinicalDbContext;
         _clock = clock;
         _currentUser = currentUser;
         _tokenService = tokenService;
@@ -85,6 +89,37 @@ public class VerifyOtpHandler : IRequestHandler<VerifyOtpCommand, VerifyOtpResul
 
         userIdForAudit = user.Id;
 
+        // Ensure Patient entity exists and is linked to this ApplicationUser.
+        var patient = await _clinicalDbContext.Patients
+            .FirstOrDefaultAsync(p => p.ApplicationUserId == user.Id, cancellationToken);
+
+        if (patient is null)
+        {
+            var normalizedPhone = request.PhoneNumber.Trim();
+
+            // Try to backfill an existing patient created via other flows using the same phone number.
+            patient = await _clinicalDbContext.Patients
+                .FirstOrDefaultAsync(p => p.PhoneNumber == normalizedPhone, cancellationToken);
+
+            if (patient is null)
+            {
+                patient = new Patient
+                {
+                    ClinicId = Guid.Empty,
+                    FirstName = normalizedPhone,
+                    LastName = string.Empty,
+                    DateOfBirth = DateTime.UtcNow, // placeholder until onboarding collects real DOB
+                    PhoneNumber = normalizedPhone,
+                    IsActive = true
+                };
+
+                await _clinicalDbContext.Patients.AddAsync(patient, cancellationToken);
+            }
+
+            patient.LinkToApplicationUser(user.Id);
+            await _clinicalDbContext.SaveChangesAsync(cancellationToken);
+        }
+
         // Ensure Patient role is assigned.
         var patientRole = await _dbContext.Roles
             .FirstOrDefaultAsync(r => r.Name == "Patient", cancellationToken);
@@ -109,7 +144,7 @@ public class VerifyOtpHandler : IRequestHandler<VerifyOtpCommand, VerifyOtpResul
             }
         }
 
-        var token = _tokenService.GeneratePatientToken(user);
+        var token = _tokenService.GeneratePatientToken(user, patient.Id);
 
         var successAudit = new LoginAudit
         {

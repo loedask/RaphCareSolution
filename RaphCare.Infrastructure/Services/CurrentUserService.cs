@@ -17,7 +17,8 @@ public class CurrentUserService : ICurrentUserService
 
     /// <inheritdoc />
     public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirst("oid")?.Value
-        ?? _httpContextAccessor.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        ?? _httpContextAccessor.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+        ?? _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
 
     /// <inheritdoc />
     public string? UserName => _httpContextAccessor.HttpContext?.User?.Identity?.Name

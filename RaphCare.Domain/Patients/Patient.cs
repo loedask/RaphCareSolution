@@ -9,6 +9,13 @@ namespace RaphCare.Domain.Patients;
 public class Patient : AggregateRoot, ISoftDelete
 {
     public Guid ClinicId { get; set; }
+
+    /// <summary>
+    /// Canonical identity link to the authentication user.
+    /// Nullable to support legacy/manual patients without an account yet.
+    /// </summary>
+    public Guid? ApplicationUserId { get; private set; }
+
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; }
@@ -35,4 +42,14 @@ public class Patient : AggregateRoot, ISoftDelete
     public ICollection<RiskFactor> RiskFactors { get; set; } = new List<RiskFactor>();
     public ICollection<PatientTag> PatientTags { get; set; } = new List<PatientTag>();
     public ICollection<VoiceRecording> VoiceRecordings { get; set; } = new List<VoiceRecording>();
+
+    public void LinkToApplicationUser(Guid applicationUserId)
+    {
+        if (applicationUserId == Guid.Empty)
+        {
+            throw new ArgumentException("ApplicationUserId cannot be empty.", nameof(applicationUserId));
+        }
+
+        ApplicationUserId = applicationUserId;
+    }
 }

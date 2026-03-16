@@ -18,11 +18,12 @@ public class TokenService : ITokenService
         _options = options.Value;
     }
 
-    public string GeneratePatientToken(ApplicationUser user)
+    public string GeneratePatientToken(ApplicationUser user, Guid patientId)
     {
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new("patientId", patientId.ToString()),
             new("phone", user.Email ?? string.Empty),
             new(ClaimTypes.Role, "Patient")
         };

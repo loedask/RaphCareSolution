@@ -11,6 +11,7 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
     {
         builder.ToTable("Patients");
         builder.HasKey(e => e.Id);
+        builder.Property(e => e.ApplicationUserId);
         builder.Property(e => e.FirstName).IsRequired().HasMaxLength(100);
         builder.Property(e => e.LastName).IsRequired().HasMaxLength(100);
         builder.Property(e => e.Gender).IsRequired().HasMaxLength(20);
@@ -18,6 +19,7 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.Property(e => e.PhoneNumber).HasMaxLength(30);
         builder.Property(e => e.Email).HasMaxLength(256);
         builder.HasIndex(e => e.ClinicId);
+        builder.HasIndex(e => e.ApplicationUserId);
         builder.HasIndex(e => new { e.ClinicId, e.IsDeleted });
         builder.HasQueryFilter(e => !e.IsDeleted);
         builder.HasMany(e => e.Addresses).WithOne(a => a.Patient).HasForeignKey(a => a.PatientId).OnDelete(DeleteBehavior.Restrict);
