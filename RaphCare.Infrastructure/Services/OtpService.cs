@@ -8,20 +8,14 @@ using RaphCare.Persistence;
 namespace RaphCare.Infrastructure.Services;
 
 /// <summary>OTP generation and validation backed by the identity database.</summary>
-public class OtpService : IOtpService
+public class OtpService(IdentityDbContext dbContext, IDateTimeProvider clock) : IOtpService
 {
     private static readonly TimeSpan OtpLifetime = TimeSpan.FromMinutes(5);
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromMinutes(10);
     private const int MaxOtpsPerWindow = 3;
 
-    private readonly IdentityDbContext _dbContext;
-    private readonly IDateTimeProvider _clock;
-
-    public OtpService(IdentityDbContext dbContext, IDateTimeProvider clock)
-    {
-        _dbContext = dbContext;
-        _clock = clock;
-    }
+    private readonly IdentityDbContext _dbContext = dbContext;
+    private readonly IDateTimeProvider _clock = clock;
 
     public async Task<string> GenerateOtpAsync(string phoneNumber, CancellationToken cancellationToken = default)
     {
