@@ -38,14 +38,19 @@ public class PatientMergeService : IPatientMergeService
     /// <inheritdoc />
     public async Task MergePatientsAsync(Guid primaryPatientId, Guid duplicatePatientId, CancellationToken ct)
     {
-        // 1. Validate both patients exist (query filter excludes soft-deleted)
+        // 1. Validate primary exists (query filter excludes soft-deleted)
         var primary = await _clinical.Patients.FindAsync([primaryPatientId], ct).ConfigureAwait(false);
         if (primary == null)
             throw new InvalidOperationException($"Primary patient not found: {primaryPatientId}.");
 
-        var duplicate = await _clinical.Patients.FindAsync([duplicatePatientId], ct).ConfigureAwait(false);
+        // Load duplicate with filter ignored so we can detect already-merged (soft-deleted) and enforce idempotency
+        var duplicate = await _clinical.Patients
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(p => p.Id == duplicatePatientId, ct).ConfigureAwait(false);
         if (duplicate == null)
             throw new InvalidOperationException($"Duplicate patient not found: {duplicatePatientId}.");
+        if (duplicate.IsDeleted)
+            return; // Idempotency: already merged, no-op to avoid duplicate merge or duplicate event
 
         // 2. Prevent merging a patient with itself
         if (primaryPatientId == duplicatePatientId)
