@@ -7,7 +7,8 @@ Phase 1 provides minimal, FHIR-shaped JSON exports for:
 - `Appointment` (minimal phase 1 export for existing appointments)
 - `Organization` (clinic/practice)
 
-This is **not** a full FHIR server. No bundles/search endpoints, no full resource model, and no FHIR `$everything` support yet.
+This is **not** a full FHIR server. No full resource model, no `$everything`, and no full FHIR search semantics yet.
+Phase 1 adds **minimal** `Bundle`/`searchset` collection endpoints for interoperability.
 
 ## Security
 - Endpoints are restricted to `RequireProvider` (Admin/Provider).
@@ -15,9 +16,30 @@ This is **not** a full FHIR server. No bundles/search endpoints, no full resourc
 
 ## Endpoints
 - `GET /api/fhir/patients/{id}`
+- `GET /api/fhir/patients` (minimal searchset)
 - `GET /api/fhir/encounters/{id}`
+- `GET /api/fhir/encounters` (minimal searchset)
 - `GET /api/fhir/appointments/{id}`
+- `GET /api/fhir/appointments` (minimal searchset)
 - `GET /api/fhir/organizations/{id}`
+- `GET /api/fhir/organizations` (minimal searchset)
+
+## Minimal Bundle/searchset support (phase 1)
+Collection endpoints return a minimal `Bundle` with:
+- `Bundle.type = "searchset"`
+- `Bundle.total = number of returned resources`
+- `Bundle.entry[*].resource = the same minimal DTOs as the single-resource endpoints`
+
+Supported query parameters (exact match, no paging):
+- Patients: `id` (Guid), `nationalHealthId` (string)
+- Encounters: `patientId` (Guid), `clinicId` (Guid)
+- Appointments: `patientId` (Guid), `status` (string)
+- Organizations: `active` (boolean)
+
+Limitations (intentional):
+- No paging/cursor semantics yet
+- No include/revinclude
+- No full FHIR search semantics (only the explicit query params above)
 
 ## Mapping Rules (Identifier systems)
 FHIR-shaped DTOs use internal `urn:raphcare:*` identifier systems:
@@ -33,7 +55,6 @@ FHIR-shaped DTOs use internal `urn:raphcare:*` identifier systems:
 
 ## Roadmap
 - TeleSession mapping
-- Bundle export/search support
 - Import endpoints (FHIR -> domain)
 - Patient-safe FHIR access (clinic scoping via `PatientClinicAccess`)
 - Content negotiation for `application/fhir+json`

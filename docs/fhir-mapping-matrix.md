@@ -66,3 +66,18 @@ Phase 1 maps **`Clinic`** to FHIR `Organization`.
 | `Clinic.RegistrationNumber` | `Organization.identifier` (system = `urn:raphcare:clinic-registration-number`) | Included only when non-empty |
 | `Clinic.IsActive` | `Organization.active` | Exported as `bool?` |
 
+---
+
+## Bundle searchset (collection endpoints)
+
+Phase 1 collection endpoints return a minimal `Bundle`:
+- `Bundle.type = "searchset"`
+- `Bundle.total = number of returned resources`
+- `Bundle.entry[*].resource` uses the exact same minimal DTO mappings as the corresponding single-resource endpoints (`Patient`, `Encounter`, `Appointment`, `Organization`)
+- `Bundle.entry[*].fullUrl` uses a stable URN: `urn:raphcare:fhir:{ResourceType}/{id}`
+
+Notes:
+- No paging/cursor semantics yet
+- No include/revinclude
+- No full FHIR search semantics beyond the explicitly supported exact-match query parameters
+

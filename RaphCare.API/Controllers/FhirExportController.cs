@@ -2,9 +2,13 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Application.Features.Interoperability.Queries.GetFhirAppointments;
+using RaphCare.Application.Features.Interoperability.Queries.GetFhirEncounters;
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirPatientById;
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirEncounterById;
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirAppointmentById;
+using RaphCare.Application.Features.Interoperability.Queries.GetFhirPatients;
+using RaphCare.Application.Features.Interoperability.Queries.GetFhirOrganizations;
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirOrganizationById;
 
 namespace RaphCare.API.Controllers;
@@ -170,6 +174,177 @@ public class FhirExportController(
             auditLogger.LogExportAttempt(
                 resourceType: "Appointment",
                 resourceId: id,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: false,
+                errorMessage: ex.Message);
+            throw;
+        }
+    }
+
+    [HttpGet("patients", Name = "SearchFhirPatients")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SearchPatients(
+        [FromQuery] Guid? id,
+        [FromQuery] string? nationalHealthId,
+        CancellationToken cancellationToken)
+    {
+        ApplyFhirJsonContentTypeIfRequested();
+        var requestedAtUtc = DateTime.UtcNow;
+        var clinicId = clinicContext.ClinicId;
+        var requestedByUserId = currentUserService.CurrentUserId;
+
+        try
+        {
+            var result = await mediator.Send(
+                new GetFhirPatientsQuery { Id = id, NationalHealthId = nationalHealthId },
+                cancellationToken).ConfigureAwait(false);
+
+            auditLogger.LogExportAttempt(
+                resourceType: "Patient",
+                resourceId: Guid.Empty,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: true,
+                errorMessage: null);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            auditLogger.LogExportAttempt(
+                resourceType: "Patient",
+                resourceId: Guid.Empty,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: false,
+                errorMessage: ex.Message);
+            throw;
+        }
+    }
+
+    [HttpGet("encounters", Name = "SearchFhirEncounters")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SearchEncounters(
+        [FromQuery] Guid? patientId,
+        [FromQuery] Guid? clinicId,
+        CancellationToken cancellationToken)
+    {
+        ApplyFhirJsonContentTypeIfRequested();
+        var requestedAtUtc = DateTime.UtcNow;
+        var requestedByUserId = currentUserService.CurrentUserId;
+        var auditClinicId = clinicContext.ClinicId;
+
+        try
+        {
+            var result = await mediator.Send(
+                new GetFhirEncountersQuery { PatientId = patientId, ClinicId = clinicId },
+                cancellationToken).ConfigureAwait(false);
+
+            auditLogger.LogExportAttempt(
+                resourceType: "Encounter",
+                resourceId: Guid.Empty,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: auditClinicId,
+                success: true,
+                errorMessage: null);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            auditLogger.LogExportAttempt(
+                resourceType: "Encounter",
+                resourceId: Guid.Empty,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: auditClinicId,
+                success: false,
+                errorMessage: ex.Message);
+            throw;
+        }
+    }
+
+    [HttpGet("appointments", Name = "SearchFhirAppointments")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SearchAppointments(
+        [FromQuery] Guid? patientId,
+        [FromQuery] string? status,
+        CancellationToken cancellationToken)
+    {
+        ApplyFhirJsonContentTypeIfRequested();
+        var requestedAtUtc = DateTime.UtcNow;
+        var clinicId = clinicContext.ClinicId;
+        var requestedByUserId = currentUserService.CurrentUserId;
+
+        try
+        {
+            var result = await mediator.Send(
+                new GetFhirAppointmentsQuery { PatientId = patientId, Status = status },
+                cancellationToken).ConfigureAwait(false);
+
+            auditLogger.LogExportAttempt(
+                resourceType: "Appointment",
+                resourceId: Guid.Empty,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: true,
+                errorMessage: null);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            auditLogger.LogExportAttempt(
+                resourceType: "Appointment",
+                resourceId: Guid.Empty,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: false,
+                errorMessage: ex.Message);
+            throw;
+        }
+    }
+
+    [HttpGet("organizations", Name = "SearchFhirOrganizations")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SearchOrganizations(
+        [FromQuery] bool? active,
+        CancellationToken cancellationToken)
+    {
+        ApplyFhirJsonContentTypeIfRequested();
+        var requestedAtUtc = DateTime.UtcNow;
+        var clinicId = clinicContext.ClinicId;
+        var requestedByUserId = currentUserService.CurrentUserId;
+
+        try
+        {
+            var result = await mediator.Send(
+                new GetFhirOrganizationsQuery { Active = active },
+                cancellationToken).ConfigureAwait(false);
+
+            auditLogger.LogExportAttempt(
+                resourceType: "Organization",
+                resourceId: Guid.Empty,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: true,
+                errorMessage: null);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            auditLogger.LogExportAttempt(
+                resourceType: "Organization",
+                resourceId: Guid.Empty,
                 requestedByUserId: requestedByUserId,
                 requestedAtUtc: requestedAtUtc,
                 clinicId: clinicId,
