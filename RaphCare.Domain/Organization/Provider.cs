@@ -4,8 +4,13 @@ using RaphCare.Domain.Common.Interfaces;
 namespace RaphCare.Domain.Organization;
 
 /// <summary>
-/// Medical doctor or clinician. Aggregate root for provider-related consistency.
+/// Medical doctor or clinician.
 /// </summary>
+/// 
+/// <remarks>
+/// Aggregate rationale: aggregate root that keeps provider-related consistency for schedules and offerings.
+/// Relationship: belongs to a specific <see cref="Clinic"/> via <c>ClinicId</c>.
+/// </remarks>
 public class Provider : AggregateRoot, ISoftDelete
 {
     public Guid ClinicId { get; set; }

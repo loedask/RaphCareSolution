@@ -4,8 +4,13 @@ using RaphCare.Domain.Common.Interfaces;
 namespace RaphCare.Domain.Organization;
 
 /// <summary>
-/// Top-level healthcare organization. Aggregate root for multi-clinic isolation.
+/// Top-level healthcare organization.
 /// </summary>
+/// 
+/// <remarks>
+/// Aggregate rationale: this is the aggregate root for multi-clinic isolation.
+/// Relationship: owns <c>Facilities</c>, <c>Departments</c>, <c>Providers</c>, and <c>ServiceOfferings</c> collections.
+/// </remarks>
 public class Clinic : AggregateRoot, ISoftDelete
 {
     public string Name { get; set; } = string.Empty;

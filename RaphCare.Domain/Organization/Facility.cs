@@ -5,6 +5,11 @@ namespace RaphCare.Domain.Organization;
 /// <summary>
 /// Physical or virtual branch of a clinic.
 /// </summary>
+///
+/// <remarks>
+/// Relationship: belongs to a specific <see cref="Clinic"/> via <c>ClinicId</c>.
+/// Aggregate rationale: a clinic-scoped entity (not an aggregate root).
+/// </remarks>
 public class Facility : BaseEntity
 {
     public Guid ClinicId { get; set; }
