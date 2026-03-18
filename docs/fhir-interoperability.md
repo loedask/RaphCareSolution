@@ -4,6 +4,7 @@
 Phase 1 provides minimal, FHIR-shaped JSON exports for:
 - `Patient` (global patient identity)
 - `Encounter` (clinic-scoped `Visit` only)
+- `Appointment` (minimal phase 1 export for existing appointments)
 - `Organization` (clinic/practice)
 
 This is **not** a full FHIR server. No bundles/search endpoints, no full resource model, and no FHIR `$everything` support yet.
@@ -15,6 +16,7 @@ This is **not** a full FHIR server. No bundles/search endpoints, no full resourc
 ## Endpoints
 - `GET /api/fhir/patients/{id}`
 - `GET /api/fhir/encounters/{id}`
+- `GET /api/fhir/appointments/{id}`
 - `GET /api/fhir/organizations/{id}`
 
 ## Mapping Rules (Identifier systems)
@@ -30,12 +32,15 @@ FHIR-shaped DTOs use internal `urn:raphcare:*` identifier systems:
 - Core domain model remains unchanged; we reuse existing global patient and MPI identifiers.
 
 ## Roadmap
-- Appointment mapping
 - TeleSession mapping
 - Bundle export/search support
 - Import endpoints (FHIR -> domain)
 - Patient-safe FHIR access (clinic scoping via `PatientClinicAccess`)
 - Content negotiation for `application/fhir+json`
+
+## Appointment export limitations (phase 1)
+- `Appointment.participant` includes patient actor reference only (provider/staff mapping deferred).
+- `Appointment.comment` is exported from `Appointment.Reason` when available.
 
 ## Patient.birthDate format
 `Patient.birthDate` is exported as an ISO date-only string in `yyyy-MM-dd` format (FHIR `date`, no time component).

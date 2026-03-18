@@ -153,6 +153,7 @@ public static class DependencyInjection
         services.AddScoped<IPatientFhirMapper, PatientFhirMapper>();
         services.AddScoped<IEncounterFhirMapper, EncounterFhirMapper>();
         services.AddScoped<IOrganizationFhirMapper, OrganizationFhirMapper>();
+        services.AddScoped<IAppointmentFhirMapper, AppointmentFhirMapper>();
 
         services.AddScoped<IMasterPatientIndexService, MasterPatientIndexService>();
         services.AddScoped<IPatientMergeService, PatientMergeService>();

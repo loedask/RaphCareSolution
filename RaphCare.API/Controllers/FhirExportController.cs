@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirPatientById;
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirEncounterById;
+using RaphCare.Application.Features.Interoperability.Queries.GetFhirAppointmentById;
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirOrganizationById;
 
 namespace RaphCare.API.Controllers;
@@ -131,6 +132,43 @@ public class FhirExportController(
         {
             auditLogger.LogExportAttempt(
                 resourceType: "Organization",
+                resourceId: id,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: false,
+                errorMessage: ex.Message);
+            throw;
+        }
+    }
+
+    [HttpGet("appointments/{id:guid}", Name = "GetFhirAppointmentById")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAppointment([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        ApplyFhirJsonContentTypeIfRequested();
+        var requestedAtUtc = DateTime.UtcNow;
+        var clinicId = clinicContext.ClinicId;
+        var requestedByUserId = currentUserService.CurrentUserId;
+        try
+        {
+            var result = await mediator.Send(new GetFhirAppointmentByIdQuery { Id = id }, cancellationToken).ConfigureAwait(false);
+            auditLogger.LogExportAttempt(
+                resourceType: "Appointment",
+                resourceId: id,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: true,
+                errorMessage: null);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            auditLogger.LogExportAttempt(
+                resourceType: "Appointment",
                 resourceId: id,
                 requestedByUserId: requestedByUserId,
                 requestedAtUtc: requestedAtUtc,

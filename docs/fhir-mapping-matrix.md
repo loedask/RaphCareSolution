@@ -39,6 +39,22 @@ Phase 1 uses **`Visit`** as the canonical source for FHIR `Encounter`.
 
 ---
 
+## Appointment mapping
+
+Phase 1 exports existing **`Appointment`** as a minimal FHIR-shaped `Appointment` DTO.
+
+| RaphCare field | FHIR field | Notes |
+|---|---|---|
+| `Appointment.Id` | `Appointment.id` |  |
+| `Appointment.Status` | `Appointment.status` | Included only when non-empty |
+| `Appointment.ScheduledStart` | `Appointment.start` |  |
+| `Appointment.ScheduledEnd` | `Appointment.end` |  |
+| `Appointment.PatientId` | `Appointment.participant.actor.reference` | `Patient/{Appointment.PatientId}` (phase 1 includes patient participant only) |
+| `Appointment.Status` | `Appointment.participant.status` | Uses same value as `Appointment.Status` in phase 1 |
+| `Appointment.Reason` | `Appointment.comment` | Exported when non-empty |
+| `Appointment.ProviderId` | `Appointment.participant.actor.reference` | Deferred (phase 2). No clean Practitioner mapping exists yet in phase 1. |
+| `Appointment.ClinicId` | (not mapped) | Deferred (phase 2). |
+
 ## Organization mapping
 
 Phase 1 maps **`Clinic`** to FHIR `Organization`.
