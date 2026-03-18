@@ -5,6 +5,9 @@ using RaphCare.Domain.Patients;
 
 namespace RaphCare.Application.Features.Patients.Commands.CreatePatient;
 
+/// <summary>
+/// Handles patient registration by resolving potential duplicates via MPI and persisting the patient record.
+/// </summary>
 public class CreatePatientHandler(
     IMasterPatientIndexService mpi,
     IRepository<Patient> repository,
@@ -24,6 +27,13 @@ public class CreatePatientHandler(
     private readonly ICurrentUserService _currentUserService = currentUserService;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
+    /// <summary>
+    /// Processes the create patient command, returning the id of the newly created patient
+    /// or an existing patient resolved through duplicate/conflict resolution.
+    /// </summary>
+    /// <param name="request">The create patient command.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>The id of the created or resolved patient.</returns>
     public async Task<Guid> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
     {
         var sourceSystem = request.SourceSystem ?? (request.ClinicId != Guid.Empty ? request.ClinicId.ToString() : null);

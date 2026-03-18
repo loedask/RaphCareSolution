@@ -5,6 +5,9 @@ using RaphCare.Domain.Patients;
 
 namespace RaphCare.Application.Features.Patients.Commands.UpdatePatient;
 
+/// <summary>
+/// Handles updating an existing patient record.
+/// </summary>
 public class UpdatePatientHandler(
     IRepository<Patient> repository,
     IUnitOfWork unitOfWork,
@@ -16,6 +19,12 @@ public class UpdatePatientHandler(
     private readonly ICurrentUserService _currentUserService = currentUserService;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
+    /// <summary>
+    /// Processes the update patient command by applying provided fields and saving changes.
+    /// </summary>
+    /// <param name="request">The update command.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns><see cref="Unit.Value"/> when the update is complete.</returns>
     public async Task<Unit> Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
     {
         var patient = await _repository.GetByIdAsync(request.Id, cancellationToken) ?? throw new NotFoundException(nameof(Patient), request.Id);

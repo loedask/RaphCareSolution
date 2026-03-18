@@ -4,6 +4,9 @@ using RaphCare.Application.Features.Patients.DTOs;
 
 namespace RaphCare.Application.Features.Patients.Queries.GetPatients;
 
+/// <summary>
+/// Request model for retrieving a paged list of patients.
+/// </summary>
 public class GetPatientsQuery : IRequest<PagedResult<PatientDto>>
 {
     public int PageNumber { get; set; } = 1;
