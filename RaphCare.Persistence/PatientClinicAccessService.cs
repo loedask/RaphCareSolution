@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Patients;
+using RaphCare.Domain.Patients.Enums;
 
 namespace RaphCare.Persistence;
 

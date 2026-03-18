@@ -1,4 +1,5 @@
 using RaphCare.Domain.Common;
+using RaphCare.Domain.Patients.Enums;
 
 namespace RaphCare.Domain.Patients;
 

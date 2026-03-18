@@ -1,4 +1,4 @@
-namespace RaphCare.Domain.Patients;
+namespace RaphCare.Domain.Patients.Enums;
 
 /// <summary>
 /// How a patient gained access to a specific clinic.

@@ -8,11 +8,13 @@ using RaphCare.Domain.Billing;
 using RaphCare.Domain.Clinical;
 using RaphCare.Domain.Communication;
 using RaphCare.Domain.Devices;
+using RaphCare.Domain.Organization;
 using RaphCare.Domain.Patients;
 using RaphCare.Domain.Telemedicine;
 using RaphCare.Domain.Reporting;
 using RaphCare.Infrastructure.Persistence.Interceptors;
 using RaphCare.Persistence.Repositories;
+using RaphCare.Persistence.FhirMappers;
 
 namespace RaphCare.Persistence;
 
@@ -148,12 +150,17 @@ public static class DependencyInjection
         services.AddScoped<IPatientIdentityTimelineService, PatientIdentityTimelineService>();
         services.AddScoped<IPatientClinicAccessService, PatientClinicAccessService>();
 
+        services.AddScoped<IPatientFhirMapper, PatientFhirMapper>();
+        services.AddScoped<IEncounterFhirMapper, EncounterFhirMapper>();
+        services.AddScoped<IOrganizationFhirMapper, OrganizationFhirMapper>();
+
         services.AddScoped<IMasterPatientIndexService, MasterPatientIndexService>();
         services.AddScoped<IPatientMergeService, PatientMergeService>();
         services.AddScoped<IPatientUniqueConflictResolver, PatientUniqueConflictResolver>();
         services.AddScoped<IUniqueConstraintViolationDetector, SqlServerUniqueConstraintViolationDetector>();
         services.AddScoped<IRepository<Patient>>(sp => new EfRepository<Patient, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<PatientExternalId>>(sp => new EfRepository<PatientExternalId, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<Clinic>>(sp => new EfRepository<Clinic, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<VoiceRecording>>(sp => new EfRepository<VoiceRecording, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Visit>>(sp => new EfRepository<Visit, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Appointment>>(sp => new EfRepository<Appointment, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
