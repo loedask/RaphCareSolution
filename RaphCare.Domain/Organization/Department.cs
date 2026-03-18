@@ -1,5 +1,3 @@
-using RaphCare.Domain.Common;
-
 namespace RaphCare.Domain.Organization;
 
 /// <summary>
@@ -9,11 +7,8 @@ namespace RaphCare.Domain.Organization;
 /// Relationship: belongs to a specific <see cref="Clinic"/> via <c>ClinicId</c>.
 /// Aggregate rationale: acts as a subdivision within the clinic domain boundary (not a standalone aggregate root).
 /// </remarks>
-public class Department : BaseEntity
+public class Department : ClinicOwnedEntity
 {
-    public Guid ClinicId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
-
-    public Clinic Clinic { get; set; } = null!;
 }

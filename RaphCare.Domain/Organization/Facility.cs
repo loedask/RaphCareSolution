@@ -1,5 +1,3 @@
-using RaphCare.Domain.Common;
-
 namespace RaphCare.Domain.Organization;
 
 /// <summary>
@@ -10,14 +8,11 @@ namespace RaphCare.Domain.Organization;
 /// Relationship: belongs to a specific <see cref="Clinic"/> via <c>ClinicId</c>.
 /// Aggregate rationale: a clinic-scoped entity (not an aggregate root).
 /// </remarks>
-public class Facility : BaseEntity
+public class Facility : ClinicOwnedEntity
 {
-    public Guid ClinicId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public bool IsVirtual { get; set; }
-
-    public Clinic Clinic { get; set; } = null!;
 }
