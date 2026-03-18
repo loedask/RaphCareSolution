@@ -4,14 +4,9 @@ using RaphCare.Application.Common.Interfaces;
 namespace RaphCare.Infrastructure.Services;
 
 /// <summary>Outbound SMS integration. Placeholder for Twilio, Africa's Talking, or similar.</summary>
-public class SmsService : ISmsService
+public class SmsService(ILogger<SmsService> logger) : ISmsService
 {
-    private readonly ILogger<SmsService> _logger;
-
-    public SmsService(ILogger<SmsService> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<SmsService> _logger = logger;
 
     public Task SendSmsAsync(string phoneNumber, string message, CancellationToken cancellationToken = default)
     {

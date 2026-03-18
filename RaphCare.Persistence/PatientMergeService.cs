@@ -10,30 +10,20 @@ namespace RaphCare.Persistence;
 /// Merges duplicate patient records into a primary record for MPI reconciliation.
 /// Reassigns all related entities to the primary, respects PatientExternalId uniqueness, soft-deletes the duplicate, and records the merge in PatientMergeHistory.
 /// </summary>
-public class PatientMergeService : IPatientMergeService
+public class PatientMergeService(
+    ClinicalDbContext clinical,
+    InsuranceDbContext insurance,
+    DeviceDbContext device,
+    IUnitOfWork unitOfWork,
+    ICurrentUserService currentUserService,
+    IMediator mediator) : IPatientMergeService
 {
-    private readonly ClinicalDbContext _clinical;
-    private readonly InsuranceDbContext _insurance;
-    private readonly DeviceDbContext _device;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IMediator _mediator;
-
-    public PatientMergeService(
-        ClinicalDbContext clinical,
-        InsuranceDbContext insurance,
-        DeviceDbContext device,
-        IUnitOfWork unitOfWork,
-        ICurrentUserService currentUserService,
-        IMediator mediator)
-    {
-        _clinical = clinical ?? throw new ArgumentNullException(nameof(clinical));
-        _insurance = insurance ?? throw new ArgumentNullException(nameof(insurance));
-        _device = device ?? throw new ArgumentNullException(nameof(device));
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
-        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    }
+    private readonly ClinicalDbContext _clinical = clinical ?? throw new ArgumentNullException(nameof(clinical));
+    private readonly InsuranceDbContext _insurance = insurance ?? throw new ArgumentNullException(nameof(insurance));
+    private readonly DeviceDbContext _device = device ?? throw new ArgumentNullException(nameof(device));
+    private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+    private readonly ICurrentUserService _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+    private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
     /// <inheritdoc />
     public async Task MergePatientsAsync(Guid primaryPatientId, Guid duplicatePatientId, CancellationToken ct)

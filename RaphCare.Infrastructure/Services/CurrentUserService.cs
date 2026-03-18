@@ -6,14 +6,9 @@ namespace RaphCare.Infrastructure.Services;
 /// <summary>
 /// Provides the current user from the HTTP request's authenticated principal (e.g. JWT claims).
 /// </summary>
-public class CurrentUserService : ICurrentUserService
+public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-    }
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
 
     /// <inheritdoc />
     public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirst("oid")?.Value

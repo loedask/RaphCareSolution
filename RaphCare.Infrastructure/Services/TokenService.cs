@@ -9,14 +9,9 @@ using RaphCare.Domain.Identity;
 namespace RaphCare.Infrastructure.Services;
 
 /// <summary>Generates JWT tokens for patient sessions.</summary>
-public class TokenService : ITokenService
+public class TokenService(IOptions<JwtOptions> options) : ITokenService
 {
-    private readonly JwtOptions _options;
-
-    public TokenService(IOptions<JwtOptions> options)
-    {
-        _options = options.Value;
-    }
+    private readonly JwtOptions _options = options.Value;
 
     public string GeneratePatientToken(ApplicationUser user, Guid patientId)
     {

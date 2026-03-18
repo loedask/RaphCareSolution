@@ -48,6 +48,11 @@ public class Patient : AggregateRoot, ISoftDelete
     public ICollection<VoiceRecording> VoiceRecordings { get; set; } = new List<VoiceRecording>();
     public ICollection<PatientExternalId> ExternalIds { get; private set; } = new List<PatientExternalId>();
 
+    /// <summary>
+    /// Links this patient record to an authentication user account.
+    /// </summary>
+    /// <param name="applicationUserId">The authentication user identifier to link.</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="applicationUserId"/> is <see cref="Guid.Empty"/>.</exception>
     public void LinkToApplicationUser(Guid applicationUserId)
     {
         if (applicationUserId == Guid.Empty)
@@ -58,6 +63,12 @@ public class Patient : AggregateRoot, ISoftDelete
         ApplicationUserId = applicationUserId;
     }
 
+    /// <summary>
+    /// Sets the national/government-issued health identifier.
+    /// </summary>
+    /// <param name="nationalHealthId">
+    /// The identifier value; whitespace values are normalized to <c>null</c>.
+    /// </param>
     public void SetNationalHealthId(string? nationalHealthId)
     {
         NationalHealthId = string.IsNullOrWhiteSpace(nationalHealthId) ? null : nationalHealthId;

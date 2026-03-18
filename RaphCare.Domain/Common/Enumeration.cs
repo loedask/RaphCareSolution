@@ -6,16 +6,10 @@ namespace RaphCare.Domain.Common;
 /// Smart enum (enumeration) base class for type-safe, extensible domain values.
 /// Use for VisitStatus, InsurancePlanType, DeviceType, PermissionCodes, etc.
 /// </summary>
-public abstract class Enumeration : IEquatable<Enumeration>, IComparable<Enumeration>
+public abstract class Enumeration(int id, string name) : IEquatable<Enumeration>, IComparable<Enumeration>
 {
-    public int Id { get; }
-    public string Name { get; }
-
-    protected Enumeration(int id, string name)
-    {
-        Id = id;
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-    }
+    public int Id { get; } = id;
+    public string Name { get; } = name ?? throw new ArgumentNullException(nameof(name));
 
     public override string ToString() => Name;
 
