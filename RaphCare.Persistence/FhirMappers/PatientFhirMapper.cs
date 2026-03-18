@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Interoperability.DTOs;
 using RaphCare.Domain.Patients;
+using System.Globalization;
 
 namespace RaphCare.Persistence.FhirMappers;
 
@@ -24,7 +25,7 @@ public class PatientFhirMapper(ClinicalDbContext clinicalDbContext) : IPatientFh
         {
             Id = patient.Id.ToString(),
             Gender = string.IsNullOrWhiteSpace(patient.Gender) ? null : patient.Gender,
-            BirthDate = patient.DateOfBirth,
+            BirthDate = patient.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             Name = new List<FhirHumanNameDto>
             {
                 new()

@@ -18,7 +18,8 @@ public class FhirPatientDto
 
     public string? Gender { get; set; }
 
-    public DateTime? BirthDate { get; set; }
+    [JsonPropertyName("birthDate")]
+    public string? BirthDate { get; set; }
 
     public List<FhirContactPointDto> Telecom { get; set; } = new();
 }

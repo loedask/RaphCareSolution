@@ -21,13 +21,21 @@ public class FhirExportController(
     IClinicContext clinicContext,
     IFhirExportAuditLogger auditLogger) : ControllerBase
 {
-    // TODO: future support for content negotiation (application/fhir+json).
+    private static bool IsFhirJsonRequest(HttpRequest request)
+        => request.Headers.Accept.ToString().Contains("application/fhir+json", StringComparison.OrdinalIgnoreCase);
+
+    private void ApplyFhirJsonContentTypeIfRequested()
+    {
+        if (IsFhirJsonRequest(Request))
+            Response.ContentType = "application/fhir+json";
+    }
 
     [HttpGet("patients/{id:guid}", Name = "GetFhirPatientById")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPatient([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        ApplyFhirJsonContentTypeIfRequested();
         var requestedAtUtc = DateTime.UtcNow;
         var clinicId = clinicContext.ClinicId;
         var requestedByUserId = currentUserService.CurrentUserId;
@@ -64,6 +72,7 @@ public class FhirExportController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetEncounter([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        ApplyFhirJsonContentTypeIfRequested();
         var requestedAtUtc = DateTime.UtcNow;
         var clinicId = clinicContext.ClinicId;
         var requestedByUserId = currentUserService.CurrentUserId;
@@ -100,6 +109,7 @@ public class FhirExportController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOrganization([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        ApplyFhirJsonContentTypeIfRequested();
         var requestedAtUtc = DateTime.UtcNow;
         var clinicId = clinicContext.ClinicId;
         var requestedByUserId = currentUserService.CurrentUserId;

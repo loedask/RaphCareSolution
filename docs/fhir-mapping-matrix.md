@@ -17,7 +17,7 @@ Format: `RaphCare field -> FHIR field` with notes.
 | `PatientExternalIds[*].ExternalId` + `PatientExternalIds[*].SourceSystem` | `Patient.identifier[*]` | One identifier per `PatientExternalId` |
 | `Patient.FirstName` + `Patient.LastName` | `Patient.name` (`HumanName.given` + `HumanName.family`) | Given = first name, Family = last name (one HumanName element) |
 | `Patient.Gender` | `Patient.gender` | Included only when non-empty |
-| `Patient.DateOfBirth` | `Patient.birthDate` | Exported as date-time (DTO uses `DateTime?`) |
+| `Patient.DateOfBirth` | `Patient.birthDate` | Exported as date-only string `yyyy-MM-dd` (FHIR `date`) |
 | `Patient.PhoneNumber` | `Patient.telecom` (`ContactPoint.system="phone"`) | Included only when non-empty |
 | `Patient.Email` | `Patient.telecom` (`ContactPoint.system="email"`) | Included only when non-empty |
 

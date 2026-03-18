@@ -37,3 +37,6 @@ FHIR-shaped DTOs use internal `urn:raphcare:*` identifier systems:
 - Patient-safe FHIR access (clinic scoping via `PatientClinicAccess`)
 - Content negotiation for `application/fhir+json`
 
+## Patient.birthDate format
+`Patient.birthDate` is exported as an ISO date-only string in `yyyy-MM-dd` format (FHIR `date`, no time component).
+
