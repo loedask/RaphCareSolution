@@ -146,6 +146,7 @@ public static class DependencyInjection
         services.AddScoped<IOtpService, OtpService>();
         services.AddScoped<IIdentityOtpProvisioningService, IdentityOtpProvisioningService>();
         services.AddScoped<IPatientIdentityTimelineService, PatientIdentityTimelineService>();
+        services.AddScoped<IPatientClinicAccessService, PatientClinicAccessService>();
 
         services.AddScoped<IMasterPatientIndexService, MasterPatientIndexService>();
         services.AddScoped<IPatientMergeService, PatientMergeService>();

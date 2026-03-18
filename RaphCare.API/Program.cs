@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using RaphCare.API.App.Extensions;
+using RaphCare.API.Services;
 using RaphCare.API.App.Services;
 using RaphCare.API.App.Middleware;
 using RaphCare.Application;
@@ -15,7 +16,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddIdentity(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IClinicContext, HttpClinicContext>();
+builder.Services.AddScoped<IClinicContext, ClinicContext>();
 
 builder.Services.AddControllers();
 

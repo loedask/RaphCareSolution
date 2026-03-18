@@ -30,6 +30,16 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
         ?? _httpContextAccessor.HttpContext?.User?.FindFirst("preferred_username")?.Value;
 
     /// <inheritdoc />
+    public Guid? CurrentPatientId
+    {
+        get
+        {
+            var raw = _httpContextAccessor.HttpContext?.User?.FindFirst("patientId")?.Value;
+            return Guid.TryParse(raw, out var id) ? id : null;
+        }
+    }
+
+    /// <inheritdoc />
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
     /// <inheritdoc />

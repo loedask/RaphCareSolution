@@ -25,6 +25,8 @@ public static class DependencyInjection
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 
+        services.AddScoped<Common.Security.PatientClinicAccessGuardService>();
+
         return services;
     }
 }

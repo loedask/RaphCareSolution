@@ -11,36 +11,36 @@ namespace RaphCare.Application.Common.Security;
 public class PatientClinicAuthorizationService(
     ICurrentUserService currentUserService,
     IRepository<Patient> patientRepository,
-    IRepository<Visit> visitRepository)
+    IPatientClinicAccessService patientClinicAccessService)
     : IPatientClinicAuthorizationService
 {
     private readonly ICurrentUserService _currentUserService = currentUserService;
     private readonly IRepository<Patient> _patientRepository = patientRepository;
-    private readonly IRepository<Visit> _visitRepository = visitRepository;
+    private readonly IPatientClinicAccessService _patientClinicAccessService = patientClinicAccessService;
 
     public async Task<Patient> GetCurrentPatientAsync(CancellationToken cancellationToken)
     {
+        var patientId = _currentUserService.CurrentPatientId;
+        if (patientId is not null)
+        {
+            var patientFromToken = await _patientRepository.GetByIdAsync(patientId.Value, cancellationToken);
+            return patientFromToken ?? throw new ForbiddenAccessException("No patient record linked to this token.");
+        }
+
+        // Backward-compatible fallback: locate patient by ApplicationUserId.
         var userId = _currentUserService.CurrentUserId
             ?? throw new ForbiddenAccessException("Unauthenticated user.");
 
         var patients = await _patientRepository.ListAsync(cancellationToken);
         var patient = patients.FirstOrDefault(p => p.ApplicationUserId == userId);
 
-        return patient
-            ?? throw new ForbiddenAccessException("No patient record linked to this user.");
+        return patient ?? throw new ForbiddenAccessException("No patient record linked to this user.");
     }
 
     public async Task EnsurePatientClinicAccessAsync(Guid clinicId, CancellationToken cancellationToken)
     {
         var patient = await GetCurrentPatientAsync(cancellationToken);
-
-        var visits = await _visitRepository.ListAsync(cancellationToken);
-        var hasAccess = visits.Any(v => v.PatientId == patient.Id && v.ClinicId == clinicId);
-
-        if (!hasAccess)
-        {
-            throw new ForbiddenAccessException("Patient does not belong to this clinic.");
-        }
+        await _patientClinicAccessService.EnsureClinicAccessAsync(patient.Id, clinicId, cancellationToken);
     }
 }
 
