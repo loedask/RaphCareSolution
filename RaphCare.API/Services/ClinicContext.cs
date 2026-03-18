@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using RaphCare.API.App.Middleware;
 using RaphCare.Application.Common.Interfaces;
 
