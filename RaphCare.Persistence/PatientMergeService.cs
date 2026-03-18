@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Events;
 using RaphCare.Domain.Patients;
+using RaphCare.Domain.Patients.Enums;
 
 namespace RaphCare.Persistence;
 
@@ -16,7 +17,8 @@ public class PatientMergeService(
     DeviceDbContext device,
     IUnitOfWork unitOfWork,
     ICurrentUserService currentUserService,
-    IMediator mediator) : IPatientMergeService
+    IMediator mediator,
+    IPatientIdentityTimelineService patientIdentityTimelineService) : IPatientMergeService
 {
     private readonly ClinicalDbContext _clinical = clinical ?? throw new ArgumentNullException(nameof(clinical));
     private readonly InsuranceDbContext _insurance = insurance ?? throw new ArgumentNullException(nameof(insurance));
@@ -24,6 +26,7 @@ public class PatientMergeService(
     private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     private readonly ICurrentUserService _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    private readonly IPatientIdentityTimelineService _patientIdentityTimelineService = patientIdentityTimelineService ?? throw new ArgumentNullException(nameof(patientIdentityTimelineService));
 
     /// <inheritdoc />
     public async Task MergePatientsAsync(Guid primaryPatientId, Guid duplicatePatientId, CancellationToken ct)
@@ -126,6 +129,19 @@ public class PatientMergeService(
             MergedAt = mergedAt,
             MergedByUserId = mergedBy
         });
+
+        await _patientIdentityTimelineService.RecordEventAsync(
+            primaryPatientId,
+            PatientIdentityEventType.PatientMerged,
+            new
+            {
+                primaryPatientId,
+                mergedPatientId = duplicatePatientId,
+                mergedAt,
+                mergedByUserId = mergedBy
+            },
+            performedByUserId: mergedBy,
+            ct);
 
         await _unitOfWork.SaveChangesAsync(ct).ConfigureAwait(false);
 

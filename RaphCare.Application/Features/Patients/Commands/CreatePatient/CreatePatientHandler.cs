@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Patients;
+using RaphCare.Domain.Patients.Enums;
 
 namespace RaphCare.Application.Features.Patients.Commands.CreatePatient;
 
@@ -16,7 +17,8 @@ public class CreatePatientHandler(
     IPatientUniqueConflictResolver conflictResolver,
     IUniqueConstraintViolationDetector uniqueConstraintDetector,
     ICurrentUserService currentUserService,
-    IDateTimeProvider dateTimeProvider) : IRequestHandler<CreatePatientCommand, Guid>
+    IDateTimeProvider dateTimeProvider,
+    IPatientIdentityTimelineService patientIdentityTimelineService) : IRequestHandler<CreatePatientCommand, Guid>
 {
     private readonly IMasterPatientIndexService _mpi = mpi;
     private readonly IRepository<Patient> _repository = repository;
@@ -26,6 +28,7 @@ public class CreatePatientHandler(
     private readonly IUniqueConstraintViolationDetector _uniqueConstraintDetector = uniqueConstraintDetector;
     private readonly ICurrentUserService _currentUserService = currentUserService;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly IPatientIdentityTimelineService _patientIdentityTimelineService = patientIdentityTimelineService;
 
     /// <summary>
     /// Processes the create patient command, returning the id of the newly created patient
@@ -84,6 +87,22 @@ public class CreatePatientHandler(
         try
         {
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _patientIdentityTimelineService.RecordEventAsync(
+                patient.Id,
+                PatientIdentityEventType.PatientCreated,
+                new
+                {
+                    patient.FirstName,
+                    patient.LastName,
+                    patient.DateOfBirth,
+                    patient.PhoneNumber,
+                    patient.NationalHealthId,
+                    SourceSystem = sourceSystem,
+                    ExternalId = externalIdValue
+                },
+                _currentUserService.CurrentUserId,
+                cancellationToken);
+
             return patient.Id;
         }
         catch (DbUpdateException ex)

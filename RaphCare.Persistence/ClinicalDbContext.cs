@@ -23,6 +23,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<VoiceRecording> VoiceRecordings => Set<VoiceRecording>();
     public DbSet<PatientMergeHistory> PatientMergeHistory => Set<PatientMergeHistory>();
+    public DbSet<PatientIdentityEvent> PatientIdentityEvents => Set<PatientIdentityEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -34,6 +35,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new MessageConfiguration());
         modelBuilder.ApplyConfiguration(new VoiceRecordingConfiguration());
         modelBuilder.ApplyConfiguration(new PatientMergeHistoryConfiguration());
+        modelBuilder.ApplyConfiguration(new PatientIdentityEventConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

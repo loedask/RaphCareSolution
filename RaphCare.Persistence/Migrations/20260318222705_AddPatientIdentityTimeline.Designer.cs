@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RaphCare.Persistence;
 
@@ -11,9 +12,11 @@ using RaphCare.Persistence;
 namespace RaphCare.Persistence.Migrations
 {
     [DbContext(typeof(ClinicalDbContext))]
-    partial class ClinicalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260318222705_AddPatientIdentityTimeline")]
+    partial class AddPatientIdentityTimeline
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

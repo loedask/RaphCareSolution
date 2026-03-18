@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Identity;
 using RaphCare.Domain.Patients;
+using RaphCare.Domain.Patients.Enums;
 
 namespace RaphCare.Persistence;
 
@@ -14,12 +15,14 @@ public class IdentityOtpProvisioningService(
     IdentityDbContext identityDbContext,
     ClinicalDbContext clinicalDbContext,
     IMasterPatientIndexService mpi,
-    IDateTimeProvider clock) : IIdentityOtpProvisioningService
+    IDateTimeProvider clock,
+    IPatientIdentityTimelineService patientIdentityTimelineService) : IIdentityOtpProvisioningService
 {
     private readonly IdentityDbContext _identityDbContext = identityDbContext ?? throw new ArgumentNullException(nameof(identityDbContext));
     private readonly ClinicalDbContext _clinicalDbContext = clinicalDbContext ?? throw new ArgumentNullException(nameof(clinicalDbContext));
     private readonly IMasterPatientIndexService _mpi = mpi ?? throw new ArgumentNullException(nameof(mpi));
     private readonly IDateTimeProvider _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+    private readonly IPatientIdentityTimelineService _patientIdentityTimelineService = patientIdentityTimelineService;
 
     public async Task<(ApplicationUser user, Patient patient)> EnsureUserAndPatientForPhoneAsync(
         string phoneNumber,
@@ -76,7 +79,18 @@ public class IdentityOtpProvisioningService(
                 patient = await _clinicalDbContext.Patients.FindAsync([existing.Id], cancellationToken);
                 if (patient != null)
                 {
+                    var oldApplicationUserId = patient.ApplicationUserId;
                     patient.LinkToApplicationUser(user.Id);
+                    await _patientIdentityTimelineService.RecordEventAsync(
+                        patient.Id,
+                        PatientIdentityEventType.IdentityLinked,
+                        new
+                        {
+                            ApplicationUserId = user.Id,
+                            OldApplicationUserId = oldApplicationUserId
+                        },
+                        performedByUserId: null,
+                        cancellationToken);
                     await _clinicalDbContext.SaveChangesAsync(cancellationToken);
                 }
             }
@@ -94,6 +108,31 @@ public class IdentityOtpProvisioningService(
 
                 _clinicalDbContext.Patients.Add(patient);
                 patient.LinkToApplicationUser(user.Id);
+
+                await _patientIdentityTimelineService.RecordEventAsync(
+                    patient.Id,
+                    PatientIdentityEventType.PatientCreated,
+                    new
+                    {
+                        patient.FirstName,
+                        patient.LastName,
+                        patient.DateOfBirth,
+                        patient.PhoneNumber,
+                        patient.NationalHealthId
+                    },
+                    performedByUserId: null,
+                    cancellationToken);
+
+                await _patientIdentityTimelineService.RecordEventAsync(
+                    patient.Id,
+                    PatientIdentityEventType.IdentityLinked,
+                    new
+                    {
+                        ApplicationUserId = user.Id
+                    },
+                    performedByUserId: null,
+                    cancellationToken);
+
                 await _clinicalDbContext.SaveChangesAsync(cancellationToken);
             }
         }

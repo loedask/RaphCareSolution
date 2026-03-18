@@ -2,6 +2,7 @@ using MediatR;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Patients.Commands.CreatePatient;
 using RaphCare.Domain.Patients;
+using RaphCare.Domain.Patients.Enums;
 
 namespace RaphCare.Application.Features.Onboarding.Commands.CreatePatientFromVoice;
 
@@ -10,13 +11,15 @@ public class CreatePatientFromVoiceHandler(
     IMediator mediator,
     IRepository<VoiceRecording> voiceRecordingRepository,
     IRepository<Patient> patientRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<CreatePatientFromVoiceCommand, CreatePatientFromVoiceResult>
+    IUnitOfWork unitOfWork,
+    IPatientIdentityTimelineService patientIdentityTimelineService) : IRequestHandler<CreatePatientFromVoiceCommand, CreatePatientFromVoiceResult>
 {
     private readonly ISpeechToTextService _speechToTextService = speechToTextService;
     private readonly IMediator _mediator = mediator;
     private readonly IRepository<VoiceRecording> _voiceRecordingRepository = voiceRecordingRepository;
     private readonly IRepository<Patient> _patientRepository = patientRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IPatientIdentityTimelineService _patientIdentityTimelineService = patientIdentityTimelineService;
 
     public async Task<CreatePatientFromVoiceResult> Handle(CreatePatientFromVoiceCommand request, CancellationToken cancellationToken)
     {
@@ -45,8 +48,24 @@ public class CreatePatientFromVoiceHandler(
         var patient = await _patientRepository.GetByIdAsync(patientId, cancellationToken);
         if (patient != null && !string.IsNullOrWhiteSpace(request.PhoneNumber))
         {
-            patient.PhoneNumber = request.PhoneNumber.Trim();
+            var oldPhoneNumber = patient.PhoneNumber;
+            var newPhoneNumber = request.PhoneNumber.Trim();
+            patient.PhoneNumber = newPhoneNumber;
             await _patientRepository.UpdateAsync(patient, cancellationToken);
+
+            await _patientIdentityTimelineService.RecordEventAsync(
+                patient.Id,
+                PatientIdentityEventType.PatientUpdated,
+                new
+                {
+                    PhoneNumber = new
+                    {
+                        OldValue = oldPhoneNumber,
+                        NewValue = newPhoneNumber
+                    }
+                },
+                performedByUserId: null,
+                cancellationToken);
         }
 
         var recording = new VoiceRecording
