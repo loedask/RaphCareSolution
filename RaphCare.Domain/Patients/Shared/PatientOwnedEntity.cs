@@ -1,8 +1,8 @@
+using RaphCare.Domain.Common;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using RaphCare.Domain.Patients;
 
-namespace RaphCare.Domain.Common;
+namespace RaphCare.Domain.Patients.Shared;
 
 /// <summary>
 /// Base class for entities that are owned or associated with a specific Patient.

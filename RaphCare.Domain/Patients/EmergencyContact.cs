@@ -1,4 +1,4 @@
-using RaphCare.Domain.Common;
+using RaphCare.Domain.Patients.Shared;
 
 namespace RaphCare.Domain.Patients;
 

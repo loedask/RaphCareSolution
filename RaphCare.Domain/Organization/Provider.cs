@@ -16,7 +16,7 @@ public class Provider : AggregateRoot, ISoftDelete
     public Guid ClinicId { get; set; }
     public Guid ApplicationUserId { get; set; }
     public string LicenseNumber { get; set; } = string.Empty;
-    public string Specialty { get; set; } = string.Empty;
+    public ICollection<Specialty> Specialties { get; set; } = new List<Specialty>();
     public bool IsActive { get; set; }
     public DateTime? JoinedAt { get; set; }
     public bool IsDeleted { get; set; }
