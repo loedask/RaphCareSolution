@@ -1,4 +1,5 @@
 using RaphCare.Domain.Common.Interfaces;
+using RaphCare.Domain.Organization.Shared;
 
 namespace RaphCare.Domain.Organization;
 

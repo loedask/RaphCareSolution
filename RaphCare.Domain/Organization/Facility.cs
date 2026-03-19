@@ -1,3 +1,5 @@
+using RaphCare.Domain.Organization.Shared;
+
 namespace RaphCare.Domain.Organization;
 
 /// <summary>
