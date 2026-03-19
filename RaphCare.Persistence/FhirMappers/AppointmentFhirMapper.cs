@@ -5,7 +5,7 @@ using RaphCare.Domain.Clinical;
 namespace RaphCare.Persistence.FhirMappers;
 
 /// <summary>
-/// Minimal FHIR-shaped Appointment mapper (phase 1).
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Appointment mapper (phase 1).
 /// </summary>
 public class AppointmentFhirMapper : IAppointmentFhirMapper
 {

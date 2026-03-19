@@ -7,7 +7,7 @@ using System.Globalization;
 namespace RaphCare.Persistence.FhirMappers;
 
 /// <summary>
-/// Minimal FHIR-shaped patient mapper (phase 1).
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped patient mapper (phase 1).
 /// </summary>
 public class PatientFhirMapper(ClinicalDbContext clinicalDbContext) : IPatientFhirMapper
 {

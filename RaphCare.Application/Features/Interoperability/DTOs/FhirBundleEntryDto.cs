@@ -1,7 +1,7 @@
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// Minimal FHIR-shaped Bundle.entry element.
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Bundle.entry element.
 /// </summary>
 public class FhirBundleEntryDto
 {

@@ -4,7 +4,7 @@ using RaphCare.Application.Features.Interoperability.DTOs;
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// FHIR-shaped Encounter (phase 1 export, not a full FHIR implementation).
+/// FHIR (Fast Healthcare Interoperability Resources)-shaped Encounter (phase 1 export, not a full FHIR implementation).
 /// </summary>
 public class FhirEncounterDto
 {

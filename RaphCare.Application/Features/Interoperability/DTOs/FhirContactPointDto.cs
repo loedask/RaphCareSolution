@@ -1,7 +1,7 @@
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// Minimal FHIR-shaped ContactPoint.
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped ContactPoint.
 /// </summary>
 public class FhirContactPointDto
 {

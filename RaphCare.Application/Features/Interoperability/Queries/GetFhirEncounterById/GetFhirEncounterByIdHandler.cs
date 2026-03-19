@@ -7,7 +7,7 @@ using RaphCare.Domain.Clinical;
 namespace RaphCare.Application.Features.Interoperability.Queries.GetFhirEncounterById;
 
 /// <summary>
-/// Phase 1: exports a Visit as a minimal FHIR-shaped Encounter DTO.
+/// Phase 1: exports a Visit as a minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Encounter DTO.
 /// </summary>
 public class GetFhirEncounterByIdHandler(
     IRepository<Visit> repository,

@@ -77,7 +77,7 @@ Phase 1 collection endpoints return a minimal `Bundle`:
 - `Bundle.entry[*].fullUrl` uses a stable URN: `urn:raphcare:fhir:{ResourceType}/{id}`
 
 Notes:
-- No paging/cursor semantics yet
+- No full FHIR paging links/cursor semantics yet; minimal internal paging is supported via `pageNumber`/`pageSize`
 - No include/revinclude
 - No full FHIR search semantics beyond the explicitly supported exact-match query parameters
 

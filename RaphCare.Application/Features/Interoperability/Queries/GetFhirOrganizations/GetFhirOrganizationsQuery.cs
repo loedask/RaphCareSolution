@@ -9,5 +9,7 @@ namespace RaphCare.Application.Features.Interoperability.Queries.GetFhirOrganiza
 public class GetFhirOrganizationsQuery : IRequest<FhirBundleDto>
 {
     public bool? Active { get; set; }
+    public int PageNumber { get; set; } = 1;
+    public int PageSize { get; set; } = 20;
 }
 

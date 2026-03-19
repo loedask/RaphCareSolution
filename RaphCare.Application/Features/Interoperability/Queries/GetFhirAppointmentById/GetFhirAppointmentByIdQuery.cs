@@ -4,7 +4,7 @@ using RaphCare.Application.Features.Interoperability.DTOs;
 namespace RaphCare.Application.Features.Interoperability.Queries.GetFhirAppointmentById;
 
 /// <summary>
-/// Phase 1: exports a single Appointment as a minimal FHIR-shaped DTO.
+/// Phase 1: exports a single Appointment as a minimal FHIR (Fast Healthcare Interoperability Resources)-shaped DTO.
 /// </summary>
 public class GetFhirAppointmentByIdQuery : IRequest<FhirAppointmentDto>
 {

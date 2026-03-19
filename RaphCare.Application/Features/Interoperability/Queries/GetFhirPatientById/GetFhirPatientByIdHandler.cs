@@ -7,7 +7,7 @@ using RaphCare.Domain.Patients;
 namespace RaphCare.Application.Features.Interoperability.Queries.GetFhirPatientById;
 
 /// <summary>
-/// Phase 1: exports a patient as a minimal FHIR-shaped DTO.
+/// Phase 1: exports a patient as a minimal FHIR (Fast Healthcare Interoperability Resources)-shaped DTO.
 /// </summary>
 public class GetFhirPatientByIdHandler(
     IRepository<Patient> repository,

@@ -1,7 +1,7 @@
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// Minimal FHIR-shaped Identifier.
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Identifier.
 /// </summary>
 public class FhirIdentifierDto
 {

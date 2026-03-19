@@ -17,22 +17,27 @@ public class GetFhirPatientsHandler(
 
     public async Task<FhirBundleDto> Handle(GetFhirPatientsQuery request, CancellationToken cancellationToken)
     {
-        var patients = await _repository.ListAsync(cancellationToken).ConfigureAwait(false);
-
-        var filtered = patients.AsEnumerable();
-
-        if (request.Id is Guid id)
-            filtered = filtered.Where(p => p.Id == id);
-
+        string? nhidLower = null;
         if (!string.IsNullOrWhiteSpace(request.NationalHealthId))
-        {
-            var nhid = request.NationalHealthId.Trim();
-            filtered = filtered.Where(p =>
-                string.Equals(p.NationalHealthId, nhid, StringComparison.OrdinalIgnoreCase));
-        }
+            nhidLower = request.NationalHealthId.Trim().ToLower();
+
+        var pagedPatients = await _repository.SearchAsync(
+            queryShaper: q =>
+            {
+                if (request.Id is Guid id)
+                    q = q.Where(p => p.Id == id);
+
+                if (nhidLower is not null)
+                    q = q.Where(p => p.NationalHealthId != null && p.NationalHealthId.ToLower() == nhidLower);
+
+                return q;
+            },
+            pageNumber: request.PageNumber,
+            pageSize: request.PageSize,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
 
         var entries = new List<FhirBundleEntryDto>();
-        foreach (var patient in filtered)
+        foreach (var patient in pagedPatients.Items)
         {
             var dto = await _mapper.MapToDtoAsync(patient, cancellationToken).ConfigureAwait(false);
             entries.Add(new FhirBundleEntryDto
@@ -44,7 +49,7 @@ public class GetFhirPatientsHandler(
 
         return new FhirBundleDto
         {
-            Total = entries.Count,
+            Total = pagedPatients.TotalCount,
             Entry = entries
         };
     }

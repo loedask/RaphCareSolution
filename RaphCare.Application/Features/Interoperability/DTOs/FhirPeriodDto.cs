@@ -1,7 +1,7 @@
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// Minimal FHIR-shaped Period.
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Period.
 /// </summary>
 public class FhirPeriodDto
 {

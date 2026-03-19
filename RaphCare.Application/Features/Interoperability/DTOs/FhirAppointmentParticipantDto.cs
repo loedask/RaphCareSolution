@@ -1,7 +1,7 @@
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// Minimal FHIR-shaped Appointment.participant element.
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Appointment.participant element.
 /// </summary>
 public class FhirAppointmentParticipantDto
 {

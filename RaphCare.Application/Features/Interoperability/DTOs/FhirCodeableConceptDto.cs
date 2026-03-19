@@ -1,7 +1,7 @@
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// Minimal FHIR-shaped CodeableConcept.
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped CodeableConcept.
 /// </summary>
 public class FhirCodeableConceptDto
 {

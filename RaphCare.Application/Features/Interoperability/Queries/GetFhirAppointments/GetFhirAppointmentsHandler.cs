@@ -17,21 +17,29 @@ public class GetFhirAppointmentsHandler(
 
     public async Task<FhirBundleDto> Handle(GetFhirAppointmentsQuery request, CancellationToken cancellationToken)
     {
-        var appointments = await _repository.ListAsync(cancellationToken).ConfigureAwait(false);
+        var statusLower = request.Status;
+        if (!string.IsNullOrWhiteSpace(statusLower))
+            statusLower = statusLower.Trim().ToLower();
+        else
+            statusLower = null;
 
-        var filtered = appointments.AsEnumerable();
+        var pagedAppointments = await _repository.SearchAsync(
+            queryShaper: q =>
+            {
+                if (request.PatientId is Guid patientId)
+                    q = q.Where(a => a.PatientId == patientId);
 
-        if (request.PatientId is Guid patientId)
-            filtered = filtered.Where(a => a.PatientId == patientId);
+                if (statusLower is not null)
+                    q = q.Where(a => a.Status != null && a.Status.ToLower() == statusLower);
 
-        if (!string.IsNullOrWhiteSpace(request.Status))
-        {
-            var status = request.Status.Trim();
-            filtered = filtered.Where(a => string.Equals(a.Status, status, StringComparison.OrdinalIgnoreCase));
-        }
+                return q;
+            },
+            pageNumber: request.PageNumber,
+            pageSize: request.PageSize,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
 
         var entries = new List<FhirBundleEntryDto>();
-        foreach (var appointment in filtered)
+        foreach (var appointment in pagedAppointments.Items)
         {
             var dto = await _mapper.MapToDtoAsync(appointment, cancellationToken).ConfigureAwait(false);
             entries.Add(new FhirBundleEntryDto
@@ -43,7 +51,7 @@ public class GetFhirAppointmentsHandler(
 
         return new FhirBundleDto
         {
-            Total = entries.Count,
+            Total = pagedAppointments.TotalCount,
             Entry = entries
         };
     }

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// Minimal FHIR-shaped Bundle (phase 1 searchset, not full FHIR).
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Bundle (phase 1 searchset, not full FHIR).
 /// </summary>
 public class FhirBundleDto
 {

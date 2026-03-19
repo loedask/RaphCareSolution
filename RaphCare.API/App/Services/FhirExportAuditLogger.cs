@@ -4,7 +4,7 @@ using RaphCare.Application.Common.Interfaces;
 namespace RaphCare.API.App.Services;
 
 /// <summary>
-/// Structured log-based audit for FHIR export requests.
+/// Structured log-based audit for FHIR (Fast Healthcare Interoperability Resources) export requests.
 /// </summary>
 public class FhirExportAuditLogger(ILogger<FhirExportAuditLogger> logger) : IFhirExportAuditLogger
 {

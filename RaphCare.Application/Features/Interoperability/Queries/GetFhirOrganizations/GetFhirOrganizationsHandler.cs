@@ -17,15 +17,20 @@ public class GetFhirOrganizationsHandler(
 
     public async Task<FhirBundleDto> Handle(GetFhirOrganizationsQuery request, CancellationToken cancellationToken)
     {
-        var clinics = await _repository.ListAsync(cancellationToken).ConfigureAwait(false);
+        var pagedOrganizations = await _repository.SearchAsync(
+            queryShaper: q =>
+            {
+                if (request.Active is bool active)
+                    q = q.Where(c => c.IsActive == active);
 
-        var filtered = clinics.AsEnumerable();
-
-        if (request.Active is bool active)
-            filtered = filtered.Where(c => c.IsActive == active);
+                return q;
+            },
+            pageNumber: request.PageNumber,
+            pageSize: request.PageSize,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
 
         var entries = new List<FhirBundleEntryDto>();
-        foreach (var clinic in filtered)
+        foreach (var clinic in pagedOrganizations.Items)
         {
             var dto = await _mapper.MapToDtoAsync(clinic, cancellationToken).ConfigureAwait(false);
             entries.Add(new FhirBundleEntryDto
@@ -37,7 +42,7 @@ public class GetFhirOrganizationsHandler(
 
         return new FhirBundleDto
         {
-            Total = entries.Count,
+            Total = pagedOrganizations.TotalCount,
             Entry = entries
         };
     }

@@ -3,7 +3,7 @@ using RaphCare.Domain.Common;
 namespace RaphCare.Domain.Compliance;
 
 /// <summary>
-/// Mapping between FHIR resource types and internal domain entities.
+/// Mapping between FHIR (Fast Healthcare Interoperability Resources) resource types and internal domain entities.
 /// </summary>
 public class FHIRResourceMapping : BaseEntity
 {

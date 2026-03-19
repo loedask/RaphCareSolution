@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// FHIR-shaped Patient (phase 1 export, not a full FHIR implementation).
+/// FHIR (Fast Healthcare Interoperability Resources)-shaped Patient (phase 1 export, not a full FHIR implementation).
 /// </summary>
 public class FhirPatientDto
 {

@@ -4,7 +4,7 @@ using RaphCare.Domain.Patients;
 namespace RaphCare.Application.Common.Interfaces;
 
 /// <summary>
-/// Maps domain patient entities to a minimal FHIR-shaped DTO for export.
+/// Maps domain patient entities to a minimal FHIR (Fast Healthcare Interoperability Resources)-shaped DTO for export.
 /// </summary>
 public interface IPatientFhirMapper
 {

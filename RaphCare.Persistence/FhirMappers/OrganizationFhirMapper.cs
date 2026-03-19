@@ -5,7 +5,7 @@ using RaphCare.Domain.Organization;
 namespace RaphCare.Persistence.FhirMappers;
 
 /// <summary>
-/// Minimal FHIR-shaped Organization mapper (phase 1).
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Organization mapper (phase 1).
 /// </summary>
 public class OrganizationFhirMapper : IOrganizationFhirMapper
 {

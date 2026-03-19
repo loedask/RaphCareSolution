@@ -4,7 +4,7 @@ using RaphCare.Application.Features.Interoperability.DTOs;
 namespace RaphCare.Application.Features.Interoperability.Queries.GetFhirEncounterById;
 
 /// <summary>
-/// Phase 1: exports a Visit as a minimal FHIR-shaped Encounter DTO.
+/// Phase 1: exports a Visit as a minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Encounter DTO.
 /// </summary>
 public class GetFhirEncounterByIdQuery : IRequest<FhirEncounterDto>
 {

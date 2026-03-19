@@ -14,7 +14,7 @@ using RaphCare.Application.Features.Interoperability.Queries.GetFhirOrganization
 namespace RaphCare.API.Controllers;
 
 /// <summary>
-/// Phase 1 FHIR-shaped exports.
+/// Phase 1 FHIR (Fast Healthcare Interoperability Resources)-shaped exports.
 /// Security: Provider/Admin only. Patient-facing access is intentionally not exposed yet.
 /// </summary>
 [Authorize(Policy = "RequireProvider")]
@@ -188,17 +188,21 @@ public class FhirExportController(
     public async Task<IActionResult> SearchPatients(
         [FromQuery] Guid? id,
         [FromQuery] string? nationalHealthId,
-        CancellationToken cancellationToken)
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
     {
         ApplyFhirJsonContentTypeIfRequested();
         var requestedAtUtc = DateTime.UtcNow;
         var clinicId = clinicContext.ClinicId;
         var requestedByUserId = currentUserService.CurrentUserId;
+        pageNumber = pageNumber < 1 ? 1 : pageNumber;
+        pageSize = pageSize < 1 ? 20 : Math.Min(pageSize, 100);
 
         try
         {
             var result = await mediator.Send(
-                new GetFhirPatientsQuery { Id = id, NationalHealthId = nationalHealthId },
+                new GetFhirPatientsQuery { Id = id, NationalHealthId = nationalHealthId, PageNumber = pageNumber, PageSize = pageSize },
                 cancellationToken).ConfigureAwait(false);
 
             auditLogger.LogExportAttempt(
@@ -231,17 +235,21 @@ public class FhirExportController(
     public async Task<IActionResult> SearchEncounters(
         [FromQuery] Guid? patientId,
         [FromQuery] Guid? clinicId,
-        CancellationToken cancellationToken)
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
     {
         ApplyFhirJsonContentTypeIfRequested();
         var requestedAtUtc = DateTime.UtcNow;
         var requestedByUserId = currentUserService.CurrentUserId;
         var auditClinicId = clinicContext.ClinicId;
+        pageNumber = pageNumber < 1 ? 1 : pageNumber;
+        pageSize = pageSize < 1 ? 20 : Math.Min(pageSize, 100);
 
         try
         {
             var result = await mediator.Send(
-                new GetFhirEncountersQuery { PatientId = patientId, ClinicId = clinicId },
+                new GetFhirEncountersQuery { PatientId = patientId, ClinicId = clinicId, PageNumber = pageNumber, PageSize = pageSize },
                 cancellationToken).ConfigureAwait(false);
 
             auditLogger.LogExportAttempt(
@@ -274,17 +282,21 @@ public class FhirExportController(
     public async Task<IActionResult> SearchAppointments(
         [FromQuery] Guid? patientId,
         [FromQuery] string? status,
-        CancellationToken cancellationToken)
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
     {
         ApplyFhirJsonContentTypeIfRequested();
         var requestedAtUtc = DateTime.UtcNow;
         var clinicId = clinicContext.ClinicId;
         var requestedByUserId = currentUserService.CurrentUserId;
+        pageNumber = pageNumber < 1 ? 1 : pageNumber;
+        pageSize = pageSize < 1 ? 20 : Math.Min(pageSize, 100);
 
         try
         {
             var result = await mediator.Send(
-                new GetFhirAppointmentsQuery { PatientId = patientId, Status = status },
+                new GetFhirAppointmentsQuery { PatientId = patientId, Status = status, PageNumber = pageNumber, PageSize = pageSize },
                 cancellationToken).ConfigureAwait(false);
 
             auditLogger.LogExportAttempt(
@@ -316,17 +328,21 @@ public class FhirExportController(
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> SearchOrganizations(
         [FromQuery] bool? active,
-        CancellationToken cancellationToken)
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
     {
         ApplyFhirJsonContentTypeIfRequested();
         var requestedAtUtc = DateTime.UtcNow;
         var clinicId = clinicContext.ClinicId;
         var requestedByUserId = currentUserService.CurrentUserId;
+        pageNumber = pageNumber < 1 ? 1 : pageNumber;
+        pageSize = pageSize < 1 ? 20 : Math.Min(pageSize, 100);
 
         try
         {
             var result = await mediator.Send(
-                new GetFhirOrganizationsQuery { Active = active },
+                new GetFhirOrganizationsQuery { Active = active, PageNumber = pageNumber, PageSize = pageSize },
                 cancellationToken).ConfigureAwait(false);
 
             auditLogger.LogExportAttempt(

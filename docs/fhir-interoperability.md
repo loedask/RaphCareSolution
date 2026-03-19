@@ -27,19 +27,22 @@ Phase 1 adds **minimal** `Bundle`/`searchset` collection endpoints for interoper
 ## Minimal Bundle/searchset support (phase 1)
 Collection endpoints return a minimal `Bundle` with:
 - `Bundle.type = "searchset"`
-- `Bundle.total = number of returned resources`
+- `Bundle.total = total matching resources (before paging)`
 - `Bundle.entry[*].resource = the same minimal DTOs as the single-resource endpoints`
 
-Supported query parameters (exact match, no paging):
+Supported query parameters (exact match + minimal paging):
 - Patients: `id` (Guid), `nationalHealthId` (string)
 - Encounters: `patientId` (Guid), `clinicId` (Guid)
 - Appointments: `patientId` (Guid), `status` (string)
 - Organizations: `active` (boolean)
+All collection endpoints:
+- `pageNumber` (int, default `1`)
+- `pageSize` (int, default `20`, max `100`)
 
 Limitations (intentional):
-- No paging/cursor semantics yet
+- No full FHIR search semantics yet (only the explicit query params above)
+- No FHIR paging links/cursor semantics yet; paging is minimal/internal via `pageNumber/pageSize`
 - No include/revinclude
-- No full FHIR search semantics (only the explicit query params above)
 
 ## Mapping Rules (Identifier systems)
 FHIR-shaped DTOs use internal `urn:raphcare:*` identifier systems:

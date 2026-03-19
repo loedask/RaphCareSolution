@@ -1,7 +1,7 @@
 namespace RaphCare.Application.Features.Interoperability.DTOs;
 
 /// <summary>
-/// Minimal FHIR-shaped Reference.
+/// Minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Reference.
 /// </summary>
 public class FhirReferenceDto
 {

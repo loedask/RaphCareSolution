@@ -7,7 +7,7 @@ using RaphCare.Domain.Organization;
 namespace RaphCare.Application.Features.Interoperability.Queries.GetFhirOrganizationById;
 
 /// <summary>
-/// Phase 1: exports a Clinic as a minimal FHIR-shaped Organization DTO.
+/// Phase 1: exports a Clinic as a minimal FHIR (Fast Healthcare Interoperability Resources)-shaped Organization DTO.
 /// </summary>
 public class GetFhirOrganizationByIdHandler(
     IRepository<Clinic> repository,

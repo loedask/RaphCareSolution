@@ -4,7 +4,7 @@ using RaphCare.Domain.Clinical;
 namespace RaphCare.Application.Common.Interfaces;
 
 /// <summary>
-/// Maps domain appointment entities to a minimal FHIR-shaped DTO for export.
+/// Maps domain appointment entities to a minimal FHIR (Fast Healthcare Interoperability Resources)-shaped DTO for export.
 /// </summary>
 public interface IAppointmentFhirMapper
 {
