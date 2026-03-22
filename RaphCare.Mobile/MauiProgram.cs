@@ -27,7 +27,10 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                // Concept: display = Space Grotesk, body = DM Sans (google/fonts OFL variable TTFs under Resources/Fonts).
+                fonts.AddFont("SpaceGrotesk-VariableFont_wght.ttf", "SpaceGrotesk");
+                fonts.AddFont("DMSans-VariableFont_opsz_wght.ttf", "DMSans");
+                fonts.AddFont("DMSans-Italic-VariableFont_opsz_wght.ttf", "DMSansItalic");
             });
 
         builder.Services.AddRaphCareMobile(builder.Configuration);

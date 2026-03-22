@@ -33,7 +33,7 @@ Loaded in concept via Google Fonts in `src/index.css`:
 | **Display** | **Space Grotesk** | 400, 500, 600, 700 |
 | **Body** | **DM Sans** | 300–700, italic |
 
-**MAUI:** add font files under `RaphCare.Mobile/Resources/Fonts/` (or equivalent) and register in `MauiProgram` / `CreateFont` so labels match the concept. Until then, map to closest system fallback and document the gap here.
+**MAUI:** bundled as variable TTFs (OFL, from [google/fonts](https://github.com/google/fonts)) under `RaphCare.Mobile/Resources/Fonts/`, with `OFL-*.txt` license copies. Registered in `MauiProgram.ConfigureFonts`: alias **`SpaceGrotesk`** → `SpaceGrotesk-VariableFont_wght.ttf`, **`DMSans`** → `DMSans-VariableFont_opsz_wght.ttf`, **`DMSansItalic`** → `DMSans-Italic-VariableFont_opsz_wght.ttf`. Default **Label** / **Button** / **Entry** / **Editor** use **DM Sans** via `App.xaml`; display styles (`TitleLarge`, `SectionTitle`, …) and `AuthTitleLabel` set **Space Grotesk**.
 
 ---
 

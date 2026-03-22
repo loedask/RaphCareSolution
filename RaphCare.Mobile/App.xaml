@@ -13,6 +13,19 @@
                 <ResourceDictionary Source="Resources/Styles/Inputs.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Cards.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <!-- Default body face (display styles in Typography.xaml set SpaceGrotesk). -->
+            <Style TargetType="Label">
+                <Setter Property="FontFamily" Value="DMSans" />
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="FontFamily" Value="DMSans" />
+            </Style>
+            <Style TargetType="Entry">
+                <Setter Property="FontFamily" Value="DMSans" />
+            </Style>
+            <Style TargetType="Editor">
+                <Setter Property="FontFamily" Value="DMSans" />
+            </Style>
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
         </ResourceDictionary>

@@ -33,6 +33,7 @@
     </LinearGradientBrush>
 
     <Style TargetType="Label" x:Key="AuthTitleLabel">
+        <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="TextColor" Value="White" />
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontAttributes" Value="Bold" />
