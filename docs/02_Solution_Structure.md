@@ -73,14 +73,24 @@
 ### RaphCare.Web
 - Blazor WASM structure (App, components, pages, etc.); references RaphCare.Client
 
+### RaphCare.Mobile.Kernel
+- **net10.0** class library (no MAUI): `AuthResult`, `FeatureFlags`, `FeatureFlagOptions` — same CLR namespaces as before (`RaphCare.Mobile.Core.Shared.*`) so the MAUI app references this assembly for shared, testable primitives. Unit tests target Kernel only.
+
+### RaphCare.Mobile.Tests
+- **xUnit** project targeting **net10.0**; references **RaphCare.Mobile.Kernel** (not the MAUI app) so `dotnet test` does not run MAUI Resizetizer.
+
 ### RaphCare.Mobile
-- **Core/Features/** — Feature-specific Views, ViewModels, Services, Models: Auth (Landing, RegisterOptions, RegisterEmail, VerifyEmail, SignIn; EntraAuthService, EntraAuthOptions, IAuthService, SecureStorageAccessTokenProvider), Home, Records, Appointments, Insurance, Settings. View namespaces: RaphCare.Mobile.Features.*.Views for Shell/routing; ViewModels/Services use RaphCare.Mobile.Core.Features.*.
-- **Core/Shared/** — AppNavigator (Navigation; RegisterAllRoutes, GoToFeatureAsync for feature-flag aware navigation), Services/Auth (EntraAuthOptions, IAuthService, EntraAuthService used by MauiProgram), Services/FeatureFlags (FeatureFlags), Views/UnderConstructionPage, **ViewModels** (BaseViewModel; `RaphCare.Mobile.Core.Shared.ViewModels`), **Controls** (MAUI XAML: GradientButton, CardView, InputField, IconButton; `RaphCare.Mobile.Core.Shared.Controls`).
-- **Blazor/** — Razor UI for optional BlazorWebView (`Routes.razor`, `Layout/`, `Pages/`; namespace `RaphCare.Mobile.Blazor`).
-- **Core/Converters/** — InvertedBoolConverter, StringNotEmptyConverter (namespace RaphCare.Mobile.Core.Converters; referenced in App.xaml).
-- **AppShell** — Shell with FlyoutBehavior Disabled; routes LandingPage (auth) and HomePage (main); AppNavigator.RegisterAllRoutes() for all feature routes. References RaphCare.Mobile.Features.Auth.Views, RaphCare.Mobile.Features.Home.Views.
-- **MauiProgram** — Registers Entra auth (Core.Shared.Services.Auth), SecureStorageAccessTokenProvider as IAccessTokenProvider, view models and pages; AddRaphCareClient(..., useBearerToken: true). MAUI Blazor Hybrid (AddMauiBlazorWebView).
-- References RaphCare.Client; implements bearer-token auth via IAccessTokenProvider.
+- **Core/Features/** — Feature-specific Views and ViewModels (Auth, Home, Hybrid/BlazorHostPage, Records, Appointments, Insurance, Settings). Namespaces: `RaphCare.Mobile.Core.Features.*.Views` / `.ViewModels`. Auth services: EntraAuthService, IAuthService, EntraAuthOptions, SecureStorageAccessTokenProvider under **Core/Shared/Services/Auth**.
+- **Core/Shared/** — AppNavigator, Services/Auth, Views/UnderConstructionPage, **ViewModels** (`BaseViewModel`), **Controls** (MAUI XAML; `RaphCare.Mobile.Core.Shared.Controls`).
+- **Core/Infrastructure/** — `MobileServiceCollectionExtensions.AddRaphCareMobile`, `MobileServiceHub` (DI resolution for Shell pages).
+- **Blazor/** — Razor UI for BlazorWebView (`Routes.razor`, `Layout/`, `Pages/`; `RaphCare.Mobile.Blazor`).
+- **Resources/Strings/** — `AppResources.resx` + `AppResources.cs` for localization (`RaphCare.Mobile.Resources.Strings.AppResources`).
+- **Core/Converters/** — InvertedBoolConverter, StringNotEmptyConverter (`RaphCare.Mobile.Core.Converters`; merged in App.xaml).
+- **AppShell** — Shell; `AppNavigator.RegisterAllRoutes()` registers auth, main, hybrid (`BlazorHostPage`), and shared routes.
+- **MauiProgram** — Configuration: `appsettings.json`, optional `appsettings.Development.json` (DEBUG), User Secrets; `AddRaphCareMobile`; `FeatureFlags.Initialize` after build; `AddRaphCareClient(..., useBearerToken: true)`; `AddMauiBlazorWebView`.
+- References **RaphCare.Mobile.Kernel**, **RaphCare.Client**; bearer-token auth via `IAccessTokenProvider`.
+
+See **docs/09_Mobile_App_Guide.md** for configuration, secrets, flags, and testing.
 
 ## Responsibilities Summary
 

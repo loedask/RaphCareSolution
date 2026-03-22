@@ -1,0 +1,63 @@
+# RaphCare.Mobile — structure, configuration, and testing
+
+## Where code goes
+
+| Area | Use for |
+|------|---------|
+| **`Core/Features/<Name>/`** | Screens, feature view models, feature-only services/models. |
+| **`Core/Shared/`** | Reused across features: navigation, auth services, MAUI **Controls**, **ViewModels** (e.g. `BaseViewModel`), shared views. |
+| **`Core/Infrastructure/`** | Composition and DI registration (`MobileServiceCollectionExtensions`), service resolution (`MobileServiceHub`) for Shell/XAML constraints. |
+| **`Blazor/`** | Razor UI hosted inside **BlazorWebView** (see `BlazorHostPage`). |
+| **`RaphCare.Mobile.Kernel`** | Small **net10.0** library: `AuthResult`, feature flags types—no MAUI references. Keeps logic unit-testable without pulling MAUI workloads into test projects. |
+| **`RaphCare.Client`** | HTTP, API contracts, DTOs, `IAccessTokenProvider` consumption from the app—**not** duplicated in Mobile. |
+
+## Configuration layers (order)
+
+Loaded in `MauiProgram` for the MAUI host:
+
+1. `appsettings.json` (optional, tracked defaults)
+2. `appsettings.Development.json` (optional, **DEBUG only**)
+3. .NET **User Secrets** (optional; `UserSecretsId` in `RaphCare.Mobile.csproj`)
+
+Later sources override earlier ones for the same keys.
+
+### User Secrets (Entra / API / flags)
+
+```bash
+dotnet user-secrets set "Entra:ClientId" "<your-client-id>" --project RaphCare.Mobile
+dotnet user-secrets set "Api:BaseAddress" "https://localhost:7001/" --project RaphCare.Mobile
+dotnet user-secrets set "FeatureFlags:RecordsEnabled" "true" --project RaphCare.Mobile
+```
+
+Do **not** commit production secrets. Prefer User Secrets or your pipeline’s secret store for sensitive values.
+
+### Feature flags
+
+- Declared in **`appsettings.json`** under `"FeatureFlags"` (see `FeatureFlagOptions.SectionName`).
+- Applied at startup via `FeatureFlags.Initialize(...)` after the app is built.
+- Documented inline on `FeatureFlags` in **Kernel** (remarks + User Secrets example).
+
+## Shell pages and dependency injection
+
+Shell `DataTemplate` pages require a parameterless constructor. Those constructors resolve view models via **`MobileServiceHub.GetRequiredService<T>()`**, which prefers `Application.Current.Handler.MauiContext.Services` and falls back to the root provider set at startup.
+
+## Blazor hybrid sample
+
+- **`BlazorHostPage`** hosts `wwwroot/index.html` and the root **`Blazor/Routes.razor`** component.
+- From **Home**, use **Open Blazor sample UI** to navigate to the registered route (`AppNavigator.BlazorHost`).
+
+## Localization
+
+- Default strings live in **`Resources/Strings/AppResources.resx`** (`NeutralLanguage` **en** in the Mobile project).
+- Access via **`RaphCare.Mobile.Resources.Strings.AppResources`** (uses `ResourceManager` + `CurrentUICulture`).
+- Add culture-specific `.resx` files (e.g. `AppResources.es.resx`) following [.NET MAUI localization](https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/localization) guidance.
+
+## Testing
+
+- **`RaphCare.Mobile.Tests`** targets **net10.0** and references **`RaphCare.Mobile.Kernel` only** (avoids MAUI Resizetizer when running `dotnet test`).
+- Run: `dotnet test RaphCare.Mobile.Tests/RaphCare.Mobile.Tests.csproj`
+
+## Build quality
+
+- Repository-wide **`Directory.Build.props`**: `AnalysisLevel=latest-recommended`.
+- **`RaphCare.Mobile`**: `TreatWarningsAsErrors=true` in **Release** configurations.

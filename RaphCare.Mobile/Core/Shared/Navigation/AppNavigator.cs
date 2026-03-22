@@ -2,6 +2,7 @@ using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
 using RaphCare.Mobile.Core.Features.Appointments.Views;
 using RaphCare.Mobile.Core.Features.Auth.Views;
 using RaphCare.Mobile.Core.Features.Home.Views;
+using RaphCare.Mobile.Core.Features.Hybrid.Views;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
 using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Views;
@@ -25,6 +26,7 @@ public static class AppNavigator
     public const string Insurance = "InsurancePage";
     public const string Settings = "SettingsPage";
     public const string UnderConstruction = "UnderConstructionPage";
+    public const string BlazorHost = "BlazorHostPage";
 
     /// <summary>
     /// Call once at app startup (e.g. from AppShell or MauiProgram) to register every route.
@@ -45,8 +47,9 @@ public static class AppNavigator
         Routing.RegisterRoute(Insurance, typeof(InsurancePage));
         Routing.RegisterRoute(Settings, typeof(SettingsPage));
 
-        // Shared
+        // Shared / hybrid
         Routing.RegisterRoute(UnderConstruction, typeof(UnderConstructionPage));
+        Routing.RegisterRoute(BlazorHost, typeof(BlazorHostPage));
     }
 
     /// <summary>

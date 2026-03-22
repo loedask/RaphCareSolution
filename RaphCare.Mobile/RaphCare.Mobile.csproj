@@ -19,6 +19,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
         <Nullable>enable</Nullable>
+        <NeutralLanguage>en</NeutralLanguage>
+        <UserSecretsId>7c8e9f0a-1b2c-4d5e-8f9a-0b1c2d3e4f5a</UserSecretsId>
 
         <!-- XAML: use runtime inflation (SourceGen had issues with ResourceDictionary/Styles) -->
 
@@ -42,6 +44,10 @@
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -61,12 +67,15 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\RaphCare.Mobile.Kernel\RaphCare.Mobile.Kernel.csproj" />
         <ProjectReference Include="..\RaphCare.Client\RaphCare.Client.csproj" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
         <PackageReference Include="Microsoft.Identity.Client" Version="4.66.0" />
     </ItemGroup>
 

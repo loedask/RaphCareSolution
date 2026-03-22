@@ -1,18 +1,18 @@
-using Microsoft.Extensions.DependencyInjection;
+using RaphCare.Mobile.Core.Infrastructure.Composition;
+using RaphCare.Mobile.Resources.Strings;
 
-namespace RaphCare.Mobile
+namespace RaphCare.Mobile;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            var shell = MauiProgram.ServiceProvider!.GetRequiredService<AppShell>();
-            return new Window(shell) { Title = "RaphCare" };
-        }
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var shell = MobileServiceHub.GetRequiredService<AppShell>();
+        return new Window(shell) { Title = AppResources.WindowTitle };
     }
 }

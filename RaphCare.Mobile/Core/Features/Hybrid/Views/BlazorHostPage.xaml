@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:b="clr-namespace:Microsoft.AspNetCore.Components.WebView.Maui;assembly=Microsoft.AspNetCore.Components.WebView.Maui"
+             xmlns:blazor="clr-namespace:RaphCare.Mobile.Blazor"
+             x:Class="RaphCare.Mobile.Core.Features.Hybrid.Views.BlazorHostPage"
+             Title="Blazor sample">
+
+    <b:BlazorWebView x:Name="BlazorHost" HostPage="wwwroot/index.html">
+        <b:BlazorWebView.RootComponents>
+            <b:RootComponent Selector="#app" ComponentType="{x:Type blazor:Routes}" />
+        </b:BlazorWebView.RootComponents>
+    </b:BlazorWebView>
+</ContentPage>

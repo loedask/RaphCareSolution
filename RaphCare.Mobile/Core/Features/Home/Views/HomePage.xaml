@@ -6,9 +6,12 @@
              BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" VerticalOptions="Center" Spacing="8">
-            <Label Text="Welcome to RaphCare" Style="{StaticResource TitleLarge}" />
-            <Label Text="You're signed in." Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
+        <VerticalStackLayout Padding="24" VerticalOptions="Center" Spacing="16">
+            <Label x:Name="WelcomeLabel" Style="{StaticResource TitleLarge}" />
+            <Label x:Name="SignedInLabel" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
+            <Button x:Name="OpenBlazorButton"
+                    Style="{StaticResource PrimaryButton}"
+                    Clicked="OnOpenBlazorClicked" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

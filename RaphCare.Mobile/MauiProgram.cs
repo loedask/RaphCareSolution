@@ -1,76 +1,51 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RaphCare.Mobile.Core.Features.Auth.Views;
-using RaphCare.Mobile.Core.Features.Home.Views;
-using RaphCare.Client;
-using RaphCare.Mobile.Core.Features.Auth.ViewModels;
-using RaphCare.Mobile.Core.Shared.Services.Auth;
+using Microsoft.Extensions.Options;
+using RaphCare.Mobile.Core.Infrastructure.Composition;
+using RaphCare.Mobile.Core.Infrastructure.DependencyInjection;
+using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
 
-namespace RaphCare.Mobile
+namespace RaphCare.Mobile;
+
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static MauiApp CreateMauiApp()
     {
-        /// <summary>
-        /// Service provider for resolving dependencies when Shell creates pages via DataTemplate (parameterless constructor).
-        /// </summary>
-        public static IServiceProvider? ServiceProvider { get; private set; }
+        var builder = MauiApp.CreateBuilder();
 
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-
-            // Configuration (appsettings.json)
-            builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                });
-
-            // Entra auth (Shared/Services/Auth) from configuration
-            builder.Services.Configure<Core.Shared.Services.Auth.EntraAuthOptions>(
-                builder.Configuration.GetSection(Core.Shared.Services.Auth.EntraAuthOptions.SectionName));
-            builder.Services.AddSingleton<Core.Shared.Services.Auth.IAuthService, Core.Shared.Services.Auth.EntraAuthService>();
-            builder.Services.AddSingleton<RaphCare.Client.Contracts.IAccessTokenProvider, SecureStorageAccessTokenProvider>();
-
-            builder.Services.AddTransient<LandingViewModel>();
-            builder.Services.AddTransient<RegisterOptionsViewModel>();
-            builder.Services.AddTransient<RegisterEmailViewModel>();
-            builder.Services.AddTransient<VerifyEmailViewModel>();
-            builder.Services.AddTransient<SignInViewModel>();
-
-            builder.Services.AddTransient<LandingPage>();
-            builder.Services.AddTransient<RegisterOptionsPage>();
-            builder.Services.AddTransient<RegisterEmailPage>();
-            builder.Services.AddTransient<VerifyEmailPage>();
-            builder.Services.AddTransient<SignInPage>();
-            builder.Services.AddTransient<HomePage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Core.Features.Records.Views.RecordsPage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Core.Features.Appointments.Views.AppointmentsPage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Core.Features.Insurance.Views.InsurancePage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Core.Features.Settings.Views.SettingsPage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Core.Shared.Views.UnderConstructionPage>();
-            builder.Services.AddTransient<AppShell>();
-
-            // API client with bearer token (base URL from config, with fallback)
-            var apiBaseAddress = builder.Configuration["Api:BaseAddress"] ?? "https://localhost:7001/";
-            builder.Services.AddRaphCareClient(client =>
-            {
-                client.BaseAddress = new Uri(apiBaseAddress);
-            }, useBearerToken: true);
-
-            builder.Services.AddMauiBlazorWebView();
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
 #if DEBUG
-            builder.Services.AddBlazorWebViewDeveloperTools();
-            builder.Logging.AddDebug();
+        builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
 #endif
 
-            var app = builder.Build();
-            ServiceProvider = app.Services;
-            return app;
-        }
+        builder.Configuration.AddUserSecrets(typeof(App).Assembly, optional: true);
+
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+            });
+
+        builder.Services.AddRaphCareMobile(builder.Configuration);
+
+        builder.Services.AddMauiBlazorWebView();
+
+#if DEBUG
+        builder.Services.AddBlazorWebViewDeveloperTools();
+        builder.Logging.AddDebug();
+#endif
+
+        var app = builder.Build();
+
+        MobileServiceHub.SetRootProvider(app.Services);
+
+        var featureOptions = app.Services.GetRequiredService<IOptions<FeatureFlagOptions>>().Value;
+        FeatureFlags.Initialize(featureOptions);
+
+        return app;
     }
 }

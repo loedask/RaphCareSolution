@@ -17,4 +17,8 @@ RaphCare.Client/obj/
 RaphCare.Mobile/bin/
 RaphCare.Web/bin/
 RaphCare.Client/bin/
+RaphCare.Mobile.Kernel/obj/
+RaphCare.Mobile.Kernel/bin/
+RaphCare.Mobile.Tests/obj/
+RaphCare.Mobile.Tests/bin/
 concepts/
