@@ -6,6 +6,7 @@
              x:Class="RaphCare.Mobile.App">
     <Application.Resources>
         <ResourceDictionary>
+            <converters:LanguageRowHighlightConverter x:Key="LanguageRowHighlightConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Typography.xaml" />

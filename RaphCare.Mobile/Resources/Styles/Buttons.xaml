@@ -34,6 +34,7 @@
 
     <!-- Auth: gradient-brand (Welcome) or gradient-teal (Login/EmailRegister). Use teal gradient for CTAs -->
     <Style TargetType="Button" x:Key="AuthPrimaryButton" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="TextColor" Value="{StaticResource PrimaryForegroundColor}" />
         <Setter Property="CornerRadius" Value="12" />
         <Setter Property="Padding" Value="24,16" />

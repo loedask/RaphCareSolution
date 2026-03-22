@@ -58,53 +58,41 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="WindowTitle" xml:space="preserve">
-    <value>RaphCare</value>
-  </data>
-  <data name="HomeWelcome" xml:space="preserve">
-    <value>Welcome to RaphCare</value>
-  </data>
-  <data name="HomeSignedIn" xml:space="preserve">
-    <value>You're signed in.</value>
-  </data>
-  <data name="OpenBlazorSample" xml:space="preserve">
-    <value>Open Blazor sample UI</value>
-  </data>
   <data name="AuthWelcomeTagline" xml:space="preserve">
-    <value>Your complete healthcare ecosystem.
-Accessible. Intelligent. Human.</value>
+    <value>Mfumo wako kamili wa afya.
+Inapatikana. Mwenye akili. Kibinadamu.</value>
   </data>
   <data name="AuthHealthcareBarriers" xml:space="preserve">
-    <value>Healthcare Without Barriers</value>
+    <value>Afya bila vizuizi</value>
   </data>
   <data name="AuthLogoCardTagline" xml:space="preserve">
-    <value>Healthcare Without Barriers</value>
+    <value>Afya bila vizuizi</value>
   </data>
   <data name="AuthSignIn" xml:space="preserve">
-    <value>Sign In</value>
+    <value>Ingia</value>
   </data>
   <data name="AuthCreateAccount" xml:space="preserve">
-    <value>Create Account</value>
+    <value>Fungua akaunti</value>
   </data>
   <data name="AuthChooseLanguage" xml:space="preserve">
-    <value>Choose your language</value>
+    <value>Chagua lugha yako</value>
   </data>
   <data name="AuthWelcomeBack" xml:space="preserve">
-    <value>Welcome back</value>
+    <value>Karibu tena</value>
   </data>
   <data name="AuthSignInToContinue" xml:space="preserve">
-    <value>Sign in to your account to continue.</value>
+    <value>Ingia kwenye akaunti yako ili kuendelea.</value>
   </data>
   <data name="AuthSignInSecureHint" xml:space="preserve">
-    <value>You'll sign in securely with Microsoft (Entra ID). A browser window will open to complete sign-in—same as the web app, optimized for mobile.</value>
+    <value>Utaingia kwa usalama kwa Microsoft (Entra ID). Dirisha la kivinjari litafunguka—kama mtandao, linalofaa simu.</value>
   </data>
   <data name="AuthForgotPassword" xml:space="preserve">
-    <value>Forgot password?</value>
+    <value>Umesahau nenosiri?</value>
   </data>
   <data name="AuthDontHaveAccount" xml:space="preserve">
-    <value>Don't have an account?</value>
+    <value>Huna akaunti?</value>
   </data>
   <data name="AuthSignUp" xml:space="preserve">
-    <value>Sign up</value>
+    <value>Jisajili</value>
   </data>
 </root>

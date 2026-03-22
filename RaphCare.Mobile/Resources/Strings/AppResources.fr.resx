@@ -58,53 +58,41 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="WindowTitle" xml:space="preserve">
-    <value>RaphCare</value>
-  </data>
-  <data name="HomeWelcome" xml:space="preserve">
-    <value>Welcome to RaphCare</value>
-  </data>
-  <data name="HomeSignedIn" xml:space="preserve">
-    <value>You're signed in.</value>
-  </data>
-  <data name="OpenBlazorSample" xml:space="preserve">
-    <value>Open Blazor sample UI</value>
-  </data>
   <data name="AuthWelcomeTagline" xml:space="preserve">
-    <value>Your complete healthcare ecosystem.
-Accessible. Intelligent. Human.</value>
+    <value>Votre écosystème de santé complet.
+Accessible. Intelligent. Humain.</value>
   </data>
   <data name="AuthHealthcareBarriers" xml:space="preserve">
-    <value>Healthcare Without Barriers</value>
+    <value>Des soins de santé sans barrières</value>
   </data>
   <data name="AuthLogoCardTagline" xml:space="preserve">
-    <value>Healthcare Without Barriers</value>
+    <value>Des soins de santé sans barrières</value>
   </data>
   <data name="AuthSignIn" xml:space="preserve">
-    <value>Sign In</value>
+    <value>Se connecter</value>
   </data>
   <data name="AuthCreateAccount" xml:space="preserve">
-    <value>Create Account</value>
+    <value>Créer un compte</value>
   </data>
   <data name="AuthChooseLanguage" xml:space="preserve">
-    <value>Choose your language</value>
+    <value>Choisissez votre langue</value>
   </data>
   <data name="AuthWelcomeBack" xml:space="preserve">
-    <value>Welcome back</value>
+    <value>Bon retour</value>
   </data>
   <data name="AuthSignInToContinue" xml:space="preserve">
-    <value>Sign in to your account to continue.</value>
+    <value>Connectez-vous à votre compte pour continuer.</value>
   </data>
   <data name="AuthSignInSecureHint" xml:space="preserve">
-    <value>You'll sign in securely with Microsoft (Entra ID). A browser window will open to complete sign-in—same as the web app, optimized for mobile.</value>
+    <value>Vous vous connecterez en toute sécurité avec Microsoft (Entra ID). Une fenêtre de navigateur s'ouvrira—comme sur le web, adaptée au mobile.</value>
   </data>
   <data name="AuthForgotPassword" xml:space="preserve">
-    <value>Forgot password?</value>
+    <value>Mot de passe oublié ?</value>
   </data>
   <data name="AuthDontHaveAccount" xml:space="preserve">
-    <value>Don't have an account?</value>
+    <value>Vous n'avez pas de compte ?</value>
   </data>
   <data name="AuthSignUp" xml:space="preserve">
-    <value>Sign up</value>
+    <value>S'inscrire</value>
   </data>
 </root>

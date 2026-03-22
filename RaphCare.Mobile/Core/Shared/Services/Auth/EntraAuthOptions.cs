@@ -15,6 +15,9 @@ public class EntraAuthOptions
     public string RedirectUri { get; set; } = "msal{ClientId}://auth";
     public string ApiScope { get; set; } = "api://raphcare-api/.default";
 
+    /// <summary>Optional. Opened when the user taps "Forgot password?" (e.g. Microsoft SSPR or tenant reset page).</summary>
+    public string? SelfServicePasswordResetUrl { get; set; }
+
     public string GetAuthority() =>
         !string.IsNullOrWhiteSpace(Authority)
             ? Authority!.TrimEnd('/')

@@ -4,6 +4,7 @@
         x:Class="RaphCare.Mobile.Core.Shared.Controls.GradientButton"
         x:Name="RootButton"
         TextColor="White"
+        FontFamily="SpaceGrotesk"
         FontSize="16"
         FontAttributes="Bold"
         CornerRadius="12"
