@@ -14,7 +14,7 @@ public class EntraAuthService : IAuthService
     private const string AccessTokenKey = "access_token";
     private const string ExpiresOnKey = "expires_on";
 
-    private readonly IPublicClientApplication _msalClient;
+    private readonly IPublicClientApplication? _msalClient;
     private readonly EntraAuthOptions _options;
     private readonly ILogger<EntraAuthService> _logger;
 
@@ -22,20 +22,47 @@ public class EntraAuthService : IAuthService
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _msalClient = BuildMsalClient();
+
+        if (string.IsNullOrWhiteSpace(_options.ClientId))
+        {
+            _logger.LogCritical("Entra:ClientId is missing. Entra sign-in/up is disabled.");
+            return;
+        }
+
+        try
+        {
+            _msalClient = BuildMsalClient();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "MSAL failed to initialize. Entra sign-in/up is disabled.");
+        }
     }
 
     private IPublicClientApplication BuildMsalClient()
     {
         var builder = PublicClientApplicationBuilder
-            .Create(_options.ClientId)
+            .Create(_options.ClientId.Trim())
             .WithAuthority(_options.GetAuthority())
             .WithRedirectUri(_options.GetRedirectUri());
+
+#if ANDROID
+        // Required for interactive auth on Android; avoids native/UI-thread failures during token acquisition.
+        builder = builder.WithParentActivityOrWindow(() =>
+            Microsoft.Maui.ApplicationModel.Platform.CurrentActivity);
+#endif
+
         return builder.Build();
     }
 
+    private static AuthResult MsalUnavailable() =>
+        AuthResult.Fail("Sign-in is not available. Check Microsoft Entra configuration in appsettings.");
+
     public async Task<AuthResult> SignUpWithEmailAsync(string email, string password, CancellationToken cancellationToken = default)
     {
+        if (_msalClient is null)
+            return MsalUnavailable();
+
         try
         {
             var scopes = new[] { _options.ApiScope };
@@ -52,6 +79,9 @@ public class EntraAuthService : IAuthService
 
     public async Task<AuthResult> SignInAsync(CancellationToken cancellationToken = default)
     {
+        if (_msalClient is null)
+            return MsalUnavailable();
+
         try
         {
             var scopes = new[] { _options.ApiScope };
@@ -69,6 +99,9 @@ public class EntraAuthService : IAuthService
     /// <inheritdoc />
     public async Task<AuthResult> AcquireTokenInteractiveAsync(string authority, IReadOnlyList<string> scopes, CancellationToken cancellationToken = default)
     {
+        if (_msalClient is null)
+            return MsalUnavailable();
+
         if (string.IsNullOrWhiteSpace(authority))
             return AuthResult.Fail("Authority is required.");
 
@@ -113,9 +146,13 @@ public class EntraAuthService : IAuthService
 
     public async Task SignOutAsync(CancellationToken cancellationToken = default)
     {
-        var accounts = await _msalClient.GetAccountsAsync().ConfigureAwait(false);
-        foreach (var account in accounts)
-            await _msalClient.RemoveAsync(account).ConfigureAwait(false);
+        if (_msalClient is not null)
+        {
+            var accounts = await _msalClient.GetAccountsAsync().ConfigureAwait(false);
+            foreach (var account in accounts)
+                await _msalClient.RemoveAsync(account).ConfigureAwait(false);
+        }
+
         SecureStorage.Default.Remove(AccessTokenKey);
         SecureStorage.Default.Remove(ExpiresOnKey);
     }
@@ -129,6 +166,10 @@ public class EntraAuthService : IAuthService
             if (!string.IsNullOrEmpty(expiresOnStr) && DateTimeOffset.TryParse(expiresOnStr, out var expiresOn) && expiresOn > DateTimeOffset.UtcNow.AddMinutes(5))
                 return token;
         }
+
+        if (_msalClient is null)
+            return null;
+
         try
         {
             var accounts = (await _msalClient.GetAccountsAsync().ConfigureAwait(false)).ToList();

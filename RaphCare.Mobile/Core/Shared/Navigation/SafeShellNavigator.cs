@@ -9,11 +9,7 @@ namespace RaphCare.Mobile.Core.Shared.Navigation;
 /// </summary>
 public static class SafeShellNavigator
 {
-    public static Task GoToAsync(string route)
-    {
-        if (MainThread.IsMainThread)
-            return Shell.Current.GoToAsync(route);
-
-        return MainThread.InvokeOnMainThreadAsync(async () => await Shell.Current.GoToAsync(route).ConfigureAwait(true));
-    }
+    /// <summary>Always marshals to the main thread (gestures and continuations may not be on the UI thread on Android).</summary>
+    public static Task GoToAsync(string route) =>
+        MainThread.InvokeOnMainThreadAsync(() => Shell.Current.GoToAsync(route));
 }
