@@ -1,5 +1,7 @@
 # Authentication & Authorization
 
+**Azure portal + appsettings for API and mobile:** [Azure_Entra_Registration_Guide.md](./Azure_Entra_Registration_Guide.md)
+
 ## Identity Setup
 
 - **Provider:** Microsoft Entra ID (Azure AD) for staff; phone OTP + API-issued JWT for patients.
@@ -12,7 +14,7 @@
 - **Scheme:** JWT Bearer (`JwtBearerDefaults.AuthenticationScheme`). Registered in RaphCare.Identity's `AddIdentity` with `AddAuthentication(JwtBearer).AddJwtBearer(...)`.
 - **Validation:** Entra metadata (OpenID Connect) is used to validate signature and claims. Configured via EntraOptions (Authority, etc.).
 - **Token source:** Staff: clients obtain tokens from Entra (e.g. MSAL or Entra login flow); API validates the Bearer token. Patients: after OTP verify, API issues a JWT via `ITokenService.GeneratePatientToken` (TokenService, JwtOptions); no token issuance for staff in the API.
-- **Post-validation:** After Entra validation, `EntraUserProvisioningService` ensures an ApplicationUser exists (or updates) for the principal using `oid`, email, and display name. OTP verify flow provisions or finds user by phone (Email), assigns Patient role, writes LoginAudit, returns API-issued token.
+- **Post-validation:** After Entra JWT validation, `JwtBearerEvents.OnTokenValidated` (in `RaphCare.Identity` `AddIdentity`) calls `IUserProvisioningService.EnsureUserExistsAsync` (`EntraUserProvisioningService`) so an `ApplicationUser` is created or updated from `oid`, email, and display name. OTP verify flow provisions or finds user by phone (Email), assigns Patient role, writes LoginAudit, returns API-issued token.
 
 ## Role Definitions
 

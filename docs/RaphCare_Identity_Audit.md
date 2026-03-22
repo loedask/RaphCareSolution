@@ -4,6 +4,8 @@
 **Scope:** Full repository analysis for authentication and identity architecture.  
 **Note:** Analysis only; no code was modified.
 
+> **Update (later than this audit):** Entra user provisioning is wired via **`JwtBearerEvents.OnTokenValidated`** → **`EnsureUserExistsAsync`**. API controllers use **`[Authorize(Policy = …)]`**. For current Azure setup steps, see **[Azure_Entra_Registration_Guide.md](./Azure_Entra_Registration_Guide.md)**. Sections below that claim provisioning or `[Authorize]` are unused reflect the repo **at audit time**, not necessarily today.
+
 ---
 
 ## 1. Authentication System

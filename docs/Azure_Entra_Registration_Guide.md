@@ -1,177 +1,214 @@
-# Azure Entra ID Registration & Login Guide
+# Azure / Microsoft Entra setup: API + Mobile
 
-Based on the RaphCare codebase, you need **2 application registrations** in Microsoft Entra ID (Azure AD):
+This is the **single place** to configure **Microsoft Entra ID** (Azure AD) so **RaphCare.API** and **RaphCare.Mobile** work together for staff sign-in. Patient flows (phone OTP + API-issued JWT) are described in [04_Authentication_Authorization.md](./04_Authentication_Authorization.md)—not covered step-by-step here.
 
-| # | App registration   | Purpose |
-|---|--------------------|--------|
-| 1 | **RaphCare API**   | Backend API; tokens are issued *for* this app (audience). The API validates JWTs with this audience. |
-| 2 | **RaphCare Mobile** | Native (public) client; users sign in through this app and get access tokens for the API. |
+**Related docs:** [04_Authentication_Authorization.md](./04_Authentication_Authorization.md) (architecture), [09_Mobile_App_Guide.md](./09_Mobile_App_Guide.md) (mobile dev notes).
 
 ---
 
-## Part 1: Register the two applications in Azure
+## 1. What you register in Azure
 
-### 1.1 Register the API app (RaphCare API)
+You need **two app registrations** in the same Entra tenant:
 
-1. Go to [Azure Portal](https://portal.azure.com) → **Microsoft Entra ID** → **App registrations** → **New registration**.
-2. **Name:** `RaphCare API`.
-3. **Supported account types:** choose according to your needs (e.g. “Accounts in this organizational directory only” for single tenant).
-4. **Redirect URI:** leave blank (no web/login redirect for the API).
-5. Click **Register**.
-
-6. **Expose the API (so the mobile app can request tokens for it):**
-   - Open the new app → **Expose an API**.
-   - Click **Set** next to “Application ID URI” and set it to:  
-     `api://raphcare-api`  
-     (must match the mobile app’s scope `api://raphcare-api/.default` and the API’s `Entra:Audience`).
-   - Click **Add a scope** (optional for simple setup):
-     - Scope name: `access_as_user` (or any name).
-     - Who can consent: **Admins and users** (or **Admins only**).
-     - Save.  
-     For “.default” usage you don’t have to create a custom scope; the Application ID URI is enough.
-
-7. **Note these values** (you’ll use them in the API and in the mobile app’s API permissions):
-   - **Application (client) ID** → use as API app’s `Entra:ClientId` in `appsettings.json` (optional for validation; audience is what matters).
-   - **Directory (tenant) ID** → use as `Entra:TenantId` in the API.
-   - **Application ID URI** → must be exactly `api://raphcare-api` and must be set as **`Entra:Audience`** in the API.
+| App registration   | Purpose |
+|-------------------|---------|
+| **RaphCare API**  | Resource that exposes scopes; tokens are issued **for** this API (`aud` claim). The API validates JWTs against this audience. |
+| **RaphCare Mobile** | Public (native) client; users sign in here; MSAL requests delegated access to the API. |
 
 ---
 
-### 1.2 Register the Mobile app (RaphCare Mobile)
+## 2. Register the API application
+
+1. [Azure Portal](https://portal.azure.com) → **Microsoft Entra ID** → **App registrations** → **New registration**.
+2. **Name:** `RaphCare API` (or your name).
+3. **Supported account types:** e.g. single tenant, or B2C/External ID tenant if you use those.
+4. **Redirect URI:** leave blank for a pure API resource.
+5. **Register**, then note **Application (client) ID** and **Directory (tenant) ID**.
+
+### Expose an API
+
+1. Open **RaphCare API** → **Expose an API**.
+2. Set **Application ID URI** to match what the API expects, e.g. **`api://raphcare-api`** (must match `Entra:Audience` in the API `appsettings`).
+3. **Add a scope** (delegated) used by the mobile app, e.g.:
+   - **Scope name:** `access_as_user` (matches the sample mobile config `api://raphcare-api/access_as_user`).
+   - **Who can consent:** Admins and users (or per your policy).
+4. Save. Full scope value: `api://raphcare-api/access_as_user`.
+
+Alternatively you can use **`.../.default`** in the client if you prefer; then align `Entra:ApiScope` in the mobile app and ensure the API registration exposes the API correctly.
+
+### App roles (recommended for `[Authorize]` policies)
+
+Controllers use policies such as **RequireProvider** / **RequireAdmin**, which map to **role** claims. In the **RaphCare API** registration:
+
+1. **App roles** → create roles whose **Value** matches what the API expects, e.g. `Administrator`, `Clinician`, `Patient`.
+2. **Enterprise applications** → your API app → **Users and groups** → assign users (or groups) to those app roles.
+
+Without role assignment, the user may authenticate (200 on token validation) but receive **403** on role-protected endpoints.
+
+---
+
+## 3. Register the mobile application
 
 1. **App registrations** → **New registration**.
 2. **Name:** `RaphCare Mobile`.
-3. **Supported account types:** same as for the API (e.g. single tenant).
-4. **Redirect URI:**
-   - Platform: **Public client/native (mobile & desktop)**.
-   - URI: `msal<CLIENT_ID>://auth`  
-     You don’t have the Client ID yet; add this redirect **after** registration (see step 6).
-5. Click **Register**.
+3. **Supported account types:** same tenant model as the API.
+4. **Redirect URI:** **Public client/native** — after creation, set:
+   - **`msal{MOBILE_CLIENT_ID}://auth`**  
+     Replace `{MOBILE_CLIENT_ID}` with this app’s **Application (client) ID**.
 
-6. **Redirect URI (finish):**
-   - Go to **Authentication** → **Add a platform** → **Mobile and desktop applications**.
-   - Check **Default client type** → “Yes” (treat as public client).
-   - Under **Redirect URIs** add (replace `YOUR_MOBILE_CLIENT_ID` with the **Application (client) ID** of this “RaphCare Mobile” app):
-     - `msalYOUR_MOBILE_CLIENT_ID://auth`
-   - For MAUI you may also need platform-specific URIs (e.g. Android/iOS); add them if your docs or MSAL require.
-   - Save.
+5. **Authentication** → enable **Allow public client flows** if you use interactive MSAL on device.
 
-7. **API permissions (so the app can get tokens for the API):**
-   - **API permissions** → **Add a permission**.
-   - **My APIs** → select **RaphCare API**.
-   - Choose **Delegated permissions** and select the scope you exposed (e.g. `access_as_user`) or use **Application ID URI + “.default”** (e.g. `api://raphcare-api`).
-   - If you only exposed the Application ID URI and no custom scope, add permission to **“Access (api://raphcare-api)”** or the **.default** scope if shown.
-   - Click **Add permission**.
-   - If your org requires admin consent, click **Grant admin consent for …**.
+### API permissions
 
-8. **Note:**
-   - **Application (client) ID** of **RaphCare Mobile** → this is the **ClientId** you put in the mobile app (e.g. in `MauiProgram.cs`).
-   - **Directory (tenant) ID** → same tenant as the API; use in mobile as `TenantId` (often `"common"` only for multi-tenant; for single tenant use the actual tenant ID).
+1. **API permissions** → **Add a permission** → **My APIs** → **RaphCare API**.
+2. Add **Delegated** permission for the scope you exposed (e.g. `access_as_user`).
+3. **Grant admin consent** if required.
+
+### Platform redirect URIs (MAUI)
+
+- **Windows (WinUI):** the app uses **`http://localhost`** as redirect (see `EntraAuthOptions.GetRedirectUri()`).
+  - In the portal, add **Mobile and desktop** → `http://localhost` (or the specific loopback URI you configure) for local Windows debugging.
+- **Android / iOS:** follow [Microsoft identity platform redirect URIs for mobile](https://learn.microsoft.com/en-us/azure/active-directory/develop/reply-url) and add the MSAL-generated / intent-filter URIs your build uses.
 
 ---
 
-## Part 2: Configure your solution
+## 4. Configure RaphCare.API
 
-### 2.1 API (RaphCare.API)
+### `appsettings.json` (`Entra` section)
 
-Edit `RaphCare.API/appsettings.json` (and `appsettings.Development.json` if you use it):
+Bind to **`EntraOptions`** (`RaphCare.Identity`). Example:
 
 ```json
 "Entra": {
   "Authority": "https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0",
   "TenantId": "YOUR_TENANT_ID",
-  "ClientId": "API_APP_CLIENT_ID",
+  "ClientId": "YOUR_API_APP_CLIENT_ID",
   "Audience": "api://raphcare-api"
 }
 ```
 
-- **Authority:** `https://login.microsoftonline.com/<TenantId>/v2.0` (replace with your tenant ID).
-- **TenantId:** Directory (tenant) ID of the Entra tenant.
-- **ClientId:** Application (client) ID of the **RaphCare API** app (optional for JWT validation; audience is required).
-- **Audience:** Must be exactly the **Application ID URI** of the API app: `api://raphcare-api`.
+| Key | Meaning |
+|-----|--------|
+| **Authority** | Issuer base for token validation; typically `https://login.microsoftonline.com/{TenantId}/v2.0` for single-tenant workforce. |
+| **TenantId** | Directory (tenant) ID. |
+| **ClientId** | API app’s client ID (optional for pure validation; useful for diagnostics and consistency). |
+| **Audience** | Must match the **Application ID URI** (or the `aud` claim Entra puts on access tokens for your API), e.g. `api://raphcare-api`. |
+| **ValidIssuers** | Optional array; if omitted, issuers are derived from **Authority**. For **Azure AD B2C**, set explicit issuers for each user-flow policy. |
 
-The API validates incoming Bearer tokens by checking that the token’s audience and issuer match this configuration.
+Use **user-secrets** or environment variables in development; do not commit production secrets.
 
----
-
-### 2.2 Mobile app (RaphCare.Mobile)
-
-Edit `RaphCare.Mobile/MauiProgram.cs` (or use a config file and bind to `EntraAuthOptions`):
-
-```csharp
-builder.Services.Configure<Core.Shared.Services.Auth.EntraAuthOptions>(options =>
-{
-    options.ClientId = "YOUR_MOBILE_APP_CLIENT_ID";   // RaphCare Mobile app (client) ID
-    options.TenantId = "common";                      // or your tenant ID for single tenant
-    options.ApiScope = "api://raphcare-api/.default";
-    // Optional: set Authority if you need a custom authority (e.g. B2C)
-    // options.Authority = "https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0";
-    // RedirectUri defaults to msal{ClientId}://auth
-});
+```bash
+cd RaphCare.API
+dotnet user-secrets set "Entra:TenantId" "YOUR_TENANT_ID"
+dotnet user-secrets set "Entra:Authority" "https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0"
+dotnet user-secrets set "Entra:Audience" "api://raphcare-api"
+dotnet user-secrets set "Entra:ClientId" "YOUR_API_CLIENT_ID"
 ```
 
-- **ClientId:** Application (client) ID of the **RaphCare Mobile** app registration.
-- **TenantId:** `"common"` for multi-tenant; or your single tenant ID.
-- **ApiScope:** Must match the API’s Application ID URI + `/.default`: `api://raphcare-api/.default`.
+### How the API handles sign-in (readiness)
 
-Redirect URI is derived as `msal{ClientId}://auth`; it must match the redirect URI you added in the **RaphCare Mobile** app registration.
+There is **no** `/login` endpoint. The client obtains a token from Entra; the API only **validates** the JWT.
 
----
+| Capability | Status |
+|------------|--------|
+| JWT Bearer authentication | Registered in **`RaphCare.Identity`** `AddIdentity` (`AddJwtBearer`). **Authority** and **Audience** are set on `JwtBearerOptions` so OIDC metadata and signing keys load from Entra. |
+| Token validation | Signature, issuer, audience, lifetime (see `DependencyInjection.cs`). |
+| User provisioning | **`OnTokenValidated`** calls **`IUserProvisioningService.EnsureUserExistsAsync`** (`EntraUserProvisioningService`) so an **`ApplicationUser`** row is created/updated from the token (`oid`, email, name). |
+| Authorization | **`[Authorize(Policy = "RequireProvider")]`** (and similar) on API controllers; policies require roles **`Administrator`**, **`Clinician`**, **`Patient`** matching role claims in the token. |
 
-## Part 3: User registration and login
-
-### 3.1 Who “registers” the user?
-
-- **Option A – Standard Entra ID (this codebase):**  
-  “Registering the user” usually means **creating the user in the Entra tenant** (admin creates users or invites them). The mobile app then only does **sign-in** (login). User records in your app are created automatically by `EntraUserProvisioningService` after the first successful login (using `oid`, email, display name from the token).
-
-- **Option B – Self-service sign-up (B2C / External ID):**  
-  If you want users to **sign up themselves** (e.g. with email/password), you would use **Azure AD B2C** or **External ID** and point the mobile app’s authority and policies to that tenant. The **number of app registrations stays 2** (one for the API, one for the mobile); only the authority and possibly tenant change.
-
-Below we assume **Option A** (standard Entra ID).
+**Important:** Entra must issue **role** claims the API understands (via **app roles** assignment or claim mapping). Otherwise users get **403** on protected controllers even with a valid token.
 
 ---
 
-### 3.2 Add users in Entra (so they can log in)
+## 5. Configure RaphCare.Mobile
 
-1. **Azure Portal** → **Microsoft Entra ID** → **Users** → **Create user** (or **Invite external user**).
-2. Fill in name, email, and password (or send invite).
-3. Assign the user to groups/app roles if you use **EntraRoleMapper** (e.g. “Patient”, “Clinician”, “Administrator”) so the JWT contains the right `roles` (or groups) and your API policies (RequirePatient, RequireProvider, RequireAdmin) work.
+### `appsettings.json` (`Entra` section)
 
-No extra “registration” step is required in the RaphCare app: the first time the user signs in, the API provisions an `ApplicationUser` from the token.
+Binds to **`EntraAuthOptions`** (`RaphCare.Mobile`). Example (align with your portal):
+
+```json
+"Entra": {
+  "ClientId": "YOUR_MOBILE_APP_CLIENT_ID",
+  "TenantId": "YOUR_TENANT_ID",
+  "ApiScope": "api://raphcare-api/access_as_user",
+  "RedirectUri": "msalYOUR_MOBILE_APP_CLIENT_ID://auth",
+  "SelfServicePasswordResetUrl": "https://passwordreset.microsoftonline.com/",
+  "B2CPasswordResetAuthority": "",
+  "B2CPasswordResetScopes": "openid",
+  "ExternalSignUpUrl": ""
+}
+```
+
+| Key | Meaning |
+|-----|--------|
+| **ClientId** | **RaphCare Mobile** app registration client ID. |
+| **TenantId** | Same tenant as the API (or `common` / B2C-specific per MSAL docs). |
+| **ApiScope** | Delegated scope the mobile app requests (must match an exposed scope on the API app). |
+| **RedirectUri** | Optional; default is `msal{ClientId}://auth`. **WinUI** uses `http://localhost` in code—register that URI in Azure for desktop debugging. |
+| **SelfServicePasswordResetUrl** | Browser URL for “Forgot password?” when **B2CPasswordResetAuthority** is empty (workforce SSPR or B2C user-flow “Run now” link). |
+| **B2CPasswordResetAuthority** | If set, “Forgot password?” runs an in-app MSAL interactive flow against this policy authority instead of opening the browser URL. |
+| **ExternalSignUpUrl** | If set, **Create Account** / **Sign up** opens this URL (e.g. B2C sign-up user flow) instead of in-app registration pages. |
+
+User secrets (example):
+
+```bash
+cd RaphCare.Mobile
+dotnet user-secrets set "Entra:ClientId" "YOUR_MOBILE_CLIENT_ID"
+dotnet user-secrets set "Entra:TenantId" "YOUR_TENANT_ID"
+dotnet user-secrets set "Entra:ApiScope" "api://raphcare-api/access_as_user"
+```
+
+Set **`Api:BaseAddress`** to your running API URL (e.g. `https://localhost:7001/`). The HTTP client attaches **`Authorization: Bearer`** from secure storage when **`useBearerToken: true`** (see `MobileServiceCollectionExtensions`).
 
 ---
 
-### 3.3 Login flow (what the user does)
+## 6. Azure AD B2C / External ID (optional)
 
-1. User opens the mobile app.
-2. Taps **Sign in** (or equivalent); the app calls `IAuthService.SignInAsync()`.
-3. MSAL opens the Entra sign-in page (browser or in-app).
-4. User enters credentials (for a user that already exists in Entra).
-5. After success, MSAL returns access and refresh tokens; the app stores them (e.g. secure storage) and uses the access token as Bearer for API calls.
-6. The API validates the JWT (audience `api://raphcare-api`, issuer from Authority), then `EntraUserProvisioningService` ensures an `ApplicationUser` exists (or updates it) for that Entra `oid`.
-7. User is considered “registered” in your app database and logged in; they can use the app.
+The same **two-app** pattern applies in a B2C tenant: one registration exposes **`api://...`** scopes; the native app requests those scopes. Differences:
+
+- **Authority** in the API and **Authority** / policy hosts in MSAL for the mobile app must use your **B2C** endpoints (e.g. `https://{tenant}.b2clogin.com/...`).
+- Set **`Entra:ValidIssuers`** in the API to every issuer string your policies emit, if they differ from the default Authority-derived issuers.
+- Use **`ExternalSignUpUrl`** / **`SelfServicePasswordResetUrl`** / **`B2CPasswordResetAuthority`** on the mobile app as documented above; paste **Run now** links from the Azure portal where appropriate.
 
 ---
 
-### 3.4 Sign-up in the mobile app (EntraAuthService.SignUpWithEmailAsync)
+## 7. End-to-end check
 
-The code has a **Sign up with email** flow that triggers an **interactive** Entra flow. In **standard Entra ID** (single/multi-tenant without B2C):
+1. Start **RaphCare.API** (HTTPS).
+2. Run **RaphCare.Mobile**, sign in with an Entra user that has the correct **app role** assignments.
+3. Trigger an API call from the app (or use Swagger with a token from MSAL).
+4. Expect **401** if the token is missing/wrong audience/wrong issuer; **403** if the token is valid but **roles** are missing; **200** when roles match the controller policy.
 
-- There is no public “self-service sign-up” like in B2C; the interactive flow will typically be a **sign-in** experience. New users must be created in the tenant by an admin (or via invite) first.
-- So “Sign up” in the app can mean: “Open Entra; if the user doesn’t exist, they’ll get an error; if they do, they sign in.” For true self-service sign-up you’d switch to **Azure AD B2C** or **External ID** and keep the same two app registrations (API + Mobile), but register them in the B2C/External ID tenant and set the mobile app’s **Authority** (and possibly Redirect URI) to the B2C policy URLs.
+Decode a sample access token at [jwt.ms](https://jwt.ms): confirm **`aud`** equals **`Entra:Audience`**, **`iss`** matches your tenant/policy, and **`roles`** (or `scp`) are present as expected.
 
 ---
 
-## Summary checklist
+## 8. Troubleshooting
+
+| Symptom | What to check |
+|--------|----------------|
+| **invalid_audience** / audience mismatch | API **`Entra:Audience`** equals the API’s Application ID URI; mobile **`ApiScope`** requests that API’s scope; token **`aud`** matches. |
+| **Issuer mismatch** | **`Entra:Authority`** / **`ValidIssuers`** match token **`iss`** (include `/v2.0` where used). B2C: add policy-specific issuers. |
+| **Signature / metadata errors** | API **`JwtBearerOptions.Authority`** is set (see `RaphCare.Identity`); machine can reach `login.microsoftonline.com` or `b2clogin.com`. |
+| **401 with valid token** | Request includes **`Authorization: Bearer`**. |
+| **403 after 200 auth** | User lacks **app role** in Entra for the API; policies require **Administrator** / **Clinician** / **Patient**. |
+| **MSAL redirect_uri mismatch** | Portal redirect URIs match **`msal{ClientId}://auth`** and platform-specific URIs; Windows: **`http://localhost`**. |
+| **Mobile cannot reach API** | **`Api:BaseAddress`**, TLS/localhost trust, firewall. |
+
+---
+
+## 9. Checklist
 
 | Step | Action |
 |------|--------|
-| 1 | Create **RaphCare API** app registration; set Application ID URI to `api://raphcare-api`. |
-| 2 | Create **RaphCare Mobile** app registration; add redirect URI `msal<MobileClientId>://auth`; add API permission to RaphCare API. |
-| 3 | In API: set `Entra:Authority`, `Entra:TenantId`, `Entra:ClientId`, `Entra:Audience` (`api://raphcare-api`). |
-| 4 | In Mobile: set `ClientId` (Mobile app), `TenantId`, `ApiScope` = `api://raphcare-api/.default`. |
-| 5 | Create or invite users in Entra; assign roles/groups if needed. |
-| 6 | Users sign in from the app; first login provisions them in your app via `EntraUserProvisioningService`. |
+| 1 | Create **RaphCare API** registration; set Application ID URI **`api://raphcare-api`** (or your chosen URI and align **Audience**). |
+| 2 | Expose delegated scope (e.g. **`access_as_user`**); define **app roles** and assign users. |
+| 3 | Create **RaphCare Mobile** registration; redirect **`msal{MobileClientId}://auth`** (+ **`http://localhost`** for WinUI dev). |
+| 4 | Grant mobile app **delegated** permission to the API scope; **admin consent**. |
+| 5 | Configure **API** `Entra` (Authority, TenantId, Audience, …). |
+| 6 | Configure **Mobile** `Entra` + **`Api:BaseAddress`**. |
+| 7 | Sign in on mobile; verify API calls succeed and roles allow the intended controllers. |
 
-You need **2 applications** registered in Azure: **RaphCare API** and **RaphCare Mobile**. User “registration” in your system is either (1) creating users in Entra and then having them log in (standard Entra), or (2) using B2C/External ID for self-service sign-up with the same two app registrations in that tenant.
+---
+
+*Older duplicate material was consolidated from `azure-identity-setup.md` into this guide; patient OTP architecture remains in [04_Authentication_Authorization.md](./04_Authentication_Authorization.md).*

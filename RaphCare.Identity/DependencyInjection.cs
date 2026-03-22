@@ -30,6 +30,10 @@ public static class DependencyInjection
                 if (validIssuers == null || validIssuers.Length == 0)
                     validIssuers = new[] { $"{authority}/", authority };
 
+                // Required so the handler loads OIDC metadata and signing keys from Entra.
+                options.Authority = authority;
+                options.Audience = audience;
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidAudience = audience,

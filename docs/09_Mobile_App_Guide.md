@@ -25,6 +25,10 @@ Loaded in `MauiProgram` for the MAUI host:
 
 Later sources override earlier ones for the same keys.
 
+### Azure Entra (API + mobile)
+
+End-to-end portal and config steps: **[Azure_Entra_Registration_Guide.md](./Azure_Entra_Registration_Guide.md)**.
+
 ### User Secrets (Entra / API / flags)
 
 ```bash

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using RaphCare.API.App.Extensions;
 using RaphCare.API.Services;
 using RaphCare.API.App.Services;
@@ -22,7 +21,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IFhirExportAuditLogger, FhirExportAuditLogger>();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Administrator"));
