@@ -1,14 +1,14 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using RaphCare.Domain.Common.Interfaces;
-using RaphCare.Domain.Patients;
 
 namespace RaphCare.Persistence;
 
 /// <summary>
 /// Shared EF Core model conventions for all Persistence DbContexts:
-/// global DeleteBehavior.Restrict, ISoftDelete query filters, patient-principal alignment, default string length.
+/// global DeleteBehavior.Restrict, ISoftDelete query filters, soft-delete principal alignment, default string length.
 /// </summary>
 public static class DbContextModelBuilderExtensions
 {
@@ -18,7 +18,7 @@ public static class DbContextModelBuilderExtensions
     {
         ApplyGlobalRestrictDeleteBehavior(modelBuilder);
         ApplySoftDeleteQueryFilters(modelBuilder);
-        ApplyPatientPrincipalQueryFilters(modelBuilder);
+        ApplySoftDeletePrincipalQueryFilters(modelBuilder);
         ApplyDefaultStringLength(modelBuilder);
     }
 
@@ -44,50 +44,64 @@ public static class DbContextModelBuilderExtensions
     }
 
     /// <summary>
-    /// Aligns dependents with <see cref="Patient"/> soft-delete: when <see cref="Patient"/> has a query filter,
-    /// required relationships to it otherwise trigger EF Core validation warning 10622. Dependents with a navigation
-    /// to <see cref="Patient"/> get <c>!Patient.IsDeleted</c> (combined with any existing filter).
+    /// Aligns dependents with any <see cref="ISoftDelete"/> principal that has a global query filter (Patient, Clinic,
+    /// Provider, etc.). Otherwise EF Core validation warning 10622 applies. Optional foreign keys use
+    /// <c>FK == null || !Principal.IsDeleted</c>.
     /// </summary>
-    private static void ApplyPatientPrincipalQueryFilters(ModelBuilder modelBuilder)
+    private static void ApplySoftDeletePrincipalQueryFilters(ModelBuilder modelBuilder)
     {
-        var patientEntity = modelBuilder.Model.FindEntityType(typeof(Patient));
-        if (patientEntity?.GetQueryFilter() is null) return;
-
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             if (entityType.IsOwned()) continue;
-            if (entityType.ClrType == typeof(Patient)) continue;
 
-            var patientFks = entityType.GetForeignKeys()
-                .Where(fk => fk.PrincipalEntityType.ClrType == typeof(Patient) && !fk.IsOwnership && fk.DependentToPrincipal is not null)
+            var principalFks = entityType.GetForeignKeys()
+                .Where(fk =>
+                    !fk.IsOwnership &&
+                    fk.DependentToPrincipal is not null &&
+                    typeof(ISoftDelete).IsAssignableFrom(fk.PrincipalEntityType.ClrType) &&
+                    fk.PrincipalEntityType.GetQueryFilter() is not null)
                 .ToList();
-            if (patientFks.Count == 0) continue;
+            if (principalFks.Count == 0) continue;
 
             var clrType = entityType.ClrType;
             var parameter = Expression.Parameter(clrType, "e");
 
-            Expression? patientAliveChain = null;
-            foreach (var fk in patientFks)
+            Expression? principalAliveChain = null;
+            foreach (var fk in principalFks)
             {
-                var navigation = fk.DependentToPrincipal!;
-                var navProperty = Expression.Property(parameter, navigation.Name);
-                var isDeleted = Expression.Property(navProperty, nameof(Patient.IsDeleted));
-                var notDeleted = Expression.Equal(isDeleted, Expression.Constant(false));
-                patientAliveChain = patientAliveChain is null ? notDeleted : Expression.AndAlso(patientAliveChain, notDeleted);
+                var expr = BuildPrincipalNotSoftDeleted(parameter, fk);
+                principalAliveChain = principalAliveChain is null ? expr : Expression.AndAlso(principalAliveChain, expr);
             }
 
             var existingFilter = entityType.GetQueryFilter();
-            Expression body = patientAliveChain!;
+            Expression body = principalAliveChain!;
             if (existingFilter is not null)
             {
                 var oldParam = existingFilter.Parameters[0];
                 var visitor = new ReplaceParameterVisitor(oldParam, parameter);
                 var existingBody = visitor.Visit(existingFilter.Body);
-                body = Expression.AndAlso(existingBody!, patientAliveChain!);
+                body = Expression.AndAlso(existingBody!, principalAliveChain!);
             }
 
             modelBuilder.Entity(clrType).HasQueryFilter(Expression.Lambda(body, parameter));
         }
+    }
+
+    private static Expression BuildPrincipalNotSoftDeleted(ParameterExpression parameter, IMutableForeignKey fk)
+    {
+        var navigation = fk.DependentToPrincipal!;
+        var navProperty = Expression.Property(parameter, navigation.Name);
+        var isDeleted = Expression.Property(navProperty, nameof(ISoftDelete.IsDeleted));
+        var notDeleted = Expression.Equal(isDeleted, Expression.Constant(false));
+
+        if (fk.IsRequired)
+            return notDeleted;
+
+        var fkProperty = fk.Properties[0];
+        var fkValue = Expression.Property(parameter, fkProperty.Name);
+        var nullConst = Expression.Constant(null, fkProperty.ClrType);
+        var fkIsNull = Expression.Equal(fkValue, nullConst);
+        return Expression.OrElse(fkIsNull, notDeleted);
     }
 
     private static void ApplyDefaultStringLength(ModelBuilder modelBuilder)
