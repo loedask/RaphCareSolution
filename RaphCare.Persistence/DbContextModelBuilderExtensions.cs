@@ -8,7 +8,7 @@ namespace RaphCare.Persistence;
 
 /// <summary>
 /// Shared EF Core model conventions for all Persistence DbContexts:
-/// global DeleteBehavior.Restrict, ISoftDelete query filters, soft-delete principal alignment, default string length.
+/// global DeleteBehavior.Restrict, ISoftDelete query filters, principal query-filter alignment, default string length.
 /// </summary>
 public static class DbContextModelBuilderExtensions
 {
@@ -18,7 +18,7 @@ public static class DbContextModelBuilderExtensions
     {
         ApplyGlobalRestrictDeleteBehavior(modelBuilder);
         ApplySoftDeleteQueryFilters(modelBuilder);
-        ApplySoftDeletePrincipalQueryFilters(modelBuilder);
+        ApplyPrincipalQueryFilterAlignment(modelBuilder);
         ApplyDefaultStringLength(modelBuilder);
     }
 
@@ -44,47 +44,71 @@ public static class DbContextModelBuilderExtensions
     }
 
     /// <summary>
-    /// Aligns dependents with any <see cref="ISoftDelete"/> principal that has a global query filter (Patient, Clinic,
-    /// Provider, etc.). Otherwise EF Core validation warning 10622 applies. Optional foreign keys use
-    /// <c>FK == null || !Principal.IsDeleted</c>.
+    /// Two-pass alignment so EF Core warning 10622 is satisfied: (1) <see cref="ISoftDelete"/> principals; (2) any other
+    /// principal that already has a global filter (e.g. <see cref="Organization.ProviderSchedule"/> after pass 1).
+    /// Pass 2 rewrites the principal's filter by substituting its parameter with the dependent→principal navigation.
+    /// Optional foreign keys use <c>FK == null || (principal visibility)</c>.
     /// </summary>
-    private static void ApplySoftDeletePrincipalQueryFilters(ModelBuilder modelBuilder)
+    private static void ApplyPrincipalQueryFilterAlignment(ModelBuilder modelBuilder)
     {
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             if (entityType.IsOwned()) continue;
-
-            var principalFks = entityType.GetForeignKeys()
-                .Where(fk =>
-                    !fk.IsOwnership &&
-                    fk.DependentToPrincipal is not null &&
-                    typeof(ISoftDelete).IsAssignableFrom(fk.PrincipalEntityType.ClrType) &&
-                    fk.PrincipalEntityType.GetQueryFilter() is not null)
-                .ToList();
-            if (principalFks.Count == 0) continue;
-
-            var clrType = entityType.ClrType;
-            var parameter = Expression.Parameter(clrType, "e");
-
-            Expression? principalAliveChain = null;
-            foreach (var fk in principalFks)
-            {
-                var expr = BuildPrincipalNotSoftDeleted(parameter, fk);
-                principalAliveChain = principalAliveChain is null ? expr : Expression.AndAlso(principalAliveChain, expr);
-            }
-
-            var existingFilter = entityType.GetQueryFilter();
-            Expression body = principalAliveChain!;
-            if (existingFilter is not null)
-            {
-                var oldParam = existingFilter.Parameters[0];
-                var visitor = new ReplaceParameterVisitor(oldParam, parameter);
-                var existingBody = visitor.Visit(existingFilter.Body);
-                body = Expression.AndAlso(existingBody!, principalAliveChain!);
-            }
-
-            modelBuilder.Entity(clrType).HasQueryFilter(Expression.Lambda(body, parameter));
+            ApplyPrincipalQueryFilterAlignmentForEntity(modelBuilder, entityType, softDeletePrincipalsOnly: true);
         }
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (entityType.IsOwned()) continue;
+            ApplyPrincipalQueryFilterAlignmentForEntity(modelBuilder, entityType, softDeletePrincipalsOnly: false);
+        }
+    }
+
+    private static void ApplyPrincipalQueryFilterAlignmentForEntity(
+        ModelBuilder modelBuilder,
+        IMutableEntityType entityType,
+        bool softDeletePrincipalsOnly)
+    {
+        var principalFks = entityType.GetForeignKeys()
+            .Where(fk =>
+            {
+                if (fk.IsOwnership || fk.DependentToPrincipal is null) return false;
+                if (fk.PrincipalEntityType.GetQueryFilter() is null) return false;
+                var principalClr = fk.PrincipalEntityType.ClrType;
+                var isSoftPrincipal = typeof(ISoftDelete).IsAssignableFrom(principalClr);
+                return softDeletePrincipalsOnly ? isSoftPrincipal : !isSoftPrincipal;
+            })
+            .ToList();
+        if (principalFks.Count == 0) return;
+
+        var clrType = entityType.ClrType;
+        var parameter = Expression.Parameter(clrType, "e");
+
+        Expression? principalAliveChain = null;
+        foreach (var fk in principalFks)
+        {
+            var principalFilter = fk.PrincipalEntityType.GetQueryFilter();
+            if (principalFilter is null) continue;
+
+            Expression expr = softDeletePrincipalsOnly
+                ? BuildPrincipalNotSoftDeleted(parameter, fk)
+                : ComposePrincipalFilterThroughNavigation(parameter, fk, principalFilter);
+            principalAliveChain = principalAliveChain is null ? expr : Expression.AndAlso(principalAliveChain, expr);
+        }
+
+        if (principalAliveChain is null) return;
+
+        var existingFilter = entityType.GetQueryFilter();
+        Expression body = principalAliveChain;
+        if (existingFilter is not null)
+        {
+            var oldParam = existingFilter.Parameters[0];
+            var visitor = new ReplaceParameterVisitor(oldParam, parameter);
+            var existingBody = visitor.Visit(existingFilter.Body);
+            body = Expression.AndAlso(existingBody!, principalAliveChain);
+        }
+
+        modelBuilder.Entity(clrType).HasQueryFilter(Expression.Lambda(body, parameter));
     }
 
     private static Expression BuildPrincipalNotSoftDeleted(ParameterExpression parameter, IMutableForeignKey fk)
@@ -102,6 +126,31 @@ public static class DbContextModelBuilderExtensions
         var nullConst = Expression.Constant(null, fkProperty.ClrType);
         var fkIsNull = Expression.Equal(fkValue, nullConst);
         return Expression.OrElse(fkIsNull, notDeleted);
+    }
+
+    private static Expression ComposePrincipalFilterThroughNavigation(
+        ParameterExpression dependentParameter,
+        IMutableForeignKey fk,
+        LambdaExpression principalFilter)
+    {
+        if (principalFilter.Parameters.Count != 1)
+            throw new InvalidOperationException(
+                $"Global query filter for principal {fk.PrincipalEntityType.Name} must have a single parameter to compose with dependents.");
+
+        var navigation = fk.DependentToPrincipal!;
+        var navigatedPrincipal = Expression.Property(dependentParameter, navigation.Name);
+        var principalParam = principalFilter.Parameters[0];
+        var visitor = new ReplaceParameterWithExpressionVisitor(principalParam, navigatedPrincipal);
+        var rewritten = visitor.Visit(principalFilter.Body);
+
+        if (fk.IsRequired)
+            return rewritten!;
+
+        var fkProperty = fk.Properties[0];
+        var fkValue = Expression.Property(dependentParameter, fkProperty.Name);
+        var nullConst = Expression.Constant(null, fkProperty.ClrType);
+        var fkIsNull = Expression.Equal(fkValue, nullConst);
+        return Expression.OrElse(fkIsNull, rewritten!);
     }
 
     private static void ApplyDefaultStringLength(ModelBuilder modelBuilder)
@@ -128,5 +177,19 @@ public static class DbContextModelBuilderExtensions
         }
 
         protected override Expression VisitParameter(ParameterExpression node) => node == _old ? _new : node;
+    }
+
+    private sealed class ReplaceParameterWithExpressionVisitor : ExpressionVisitor
+    {
+        private readonly ParameterExpression _param;
+        private readonly Expression _replacement;
+
+        public ReplaceParameterWithExpressionVisitor(ParameterExpression param, Expression replacement)
+        {
+            _param = param;
+            _replacement = replacement;
+        }
+
+        protected override Expression VisitParameter(ParameterExpression node) => node == _param ? _replacement : node;
     }
 }
