@@ -1,6 +1,6 @@
 [
   {
-    "Name": "New Profile",
+    "Name": "API-Mobile-Web",
     "Projects": [
       {
         "Path": "RaphCare.API\\RaphCare.API.csproj",
@@ -17,7 +17,7 @@
     ]
   },
   {
-    "Name": "New Profile (1)",
+    "Name": "API-Mobile",
     "Projects": [
       {
         "Path": "RaphCare.API\\RaphCare.API.csproj",
