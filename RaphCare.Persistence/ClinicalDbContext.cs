@@ -38,6 +38,8 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new PatientMergeHistoryConfiguration());
         modelBuilder.ApplyConfiguration(new PatientIdentityEventConfiguration());
         modelBuilder.ApplyConfiguration(new PatientClinicAccessConfiguration());
+        modelBuilder.ApplyConfiguration(new VitalSignRecordConfiguration());
+        modelBuilder.ApplyConfiguration(new ServiceOfferingConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }
