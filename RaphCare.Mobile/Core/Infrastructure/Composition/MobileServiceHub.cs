@@ -1,6 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.Controls;
-
 namespace RaphCare.Mobile.Core.Infrastructure.Composition;
 
 /// <summary>
