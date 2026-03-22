@@ -1,6 +1,6 @@
 using System.Windows.Input;
 using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.ViewModels;
+using RaphCare.Mobile.Core.Shared.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Records.ViewModels;
 
