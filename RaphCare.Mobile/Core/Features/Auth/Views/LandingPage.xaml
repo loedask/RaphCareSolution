@@ -63,7 +63,7 @@
                 BackgroundColor="#19FFFFFF"
                 HorizontalOptions="End"
                 VerticalOptions="Start"
-                Margin="0,48,16,0">
+                Margin="0,28,16,0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="20" />
             </Border.StrokeShape>
