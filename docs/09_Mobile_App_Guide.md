@@ -11,6 +11,10 @@
 | **`RaphCare.Mobile.Kernel`** | Small **net10.0** library: `AuthResult`, feature flags types—no MAUI references. Keeps logic unit-testable without pulling MAUI workloads into test projects. |
 | **`RaphCare.Client`** | HTTP, API contracts, DTOs, `IAccessTokenProvider` consumption from the app—**not** duplicated in Mobile. |
 
+## Design port (React concept)
+
+The UI design target is the **React + Vite** app at **`C:\laragon\www\raphcare-mobile-app-concept`**. **Match its look** (colors, type, spacing, radii, shadows, layout) in MAUI—see **`docs/Mobile_Concept_Port.md`** for tokens, fonts, route mapping, and a parity checklist. Cursor: **`.cursor/rules/raphcare-mobile-concept-template.mdc`**.
+
 ## Configuration layers (order)
 
 Loaded in `MauiProgram` for the MAUI host:
