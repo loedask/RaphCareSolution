@@ -24,6 +24,11 @@ public interface IAuthService
     Task<AuthResult> AcquireTokenInteractiveAsync(string authority, IReadOnlyList<string> scopes, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Persists an API-issued JWT (e.g. after OTP verify). Same storage as Entra tokens for <see cref="IAccessTokenProvider"/>.
+    /// </summary>
+    Task StoreApiSessionAsync(string accessToken, DateTimeOffset expiresOnUtc, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Signs out and clears stored tokens.
     /// </summary>
     Task SignOutAsync(CancellationToken cancellationToken = default);

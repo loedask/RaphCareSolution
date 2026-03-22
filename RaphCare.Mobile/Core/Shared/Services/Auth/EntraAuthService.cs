@@ -97,6 +97,20 @@ public class EntraAuthService : IAuthService
         }
     }
 
+    /// <inheritdoc />
+    public Task StoreApiSessionAsync(string accessToken, DateTimeOffset expiresOnUtc, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(accessToken))
+            return Task.CompletedTask;
+        return StoreTokensFromApiAsync(accessToken, expiresOnUtc);
+    }
+
+    private static async Task StoreTokensFromApiAsync(string accessToken, DateTimeOffset expiresOnUtc)
+    {
+        await SecureStorage.Default.SetAsync(AccessTokenKey, accessToken).ConfigureAwait(false);
+        await SecureStorage.Default.SetAsync(ExpiresOnKey, expiresOnUtc.ToString("O")).ConfigureAwait(false);
+    }
+
     public async Task SignOutAsync(CancellationToken cancellationToken = default)
     {
         var accounts = await _msalClient.GetAccountsAsync().ConfigureAwait(false);

@@ -13,12 +13,13 @@
                         Text="←" FontSize="20" />
             </HorizontalStackLayout>
 
-            <Label Text="Create account" Style="{StaticResource TitleLarge}" Margin="0,0,0,8" />
-            <Label Text="Choose how you'd like to sign up."
+            <Label Text="{Binding PageTitle}" Style="{StaticResource TitleLarge}" Margin="0,0,0,8" />
+            <Label Text="{Binding Subtitle}"
                    Style="{StaticResource BodyMedium}"
                    TextColor="{StaticResource MutedForegroundColor}"
                    Margin="0,0,0,32" />
 
+            <!-- Email -->
             <Border Style="{StaticResource CardBorder}" Padding="20" Margin="0,0,0,12">
                 <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                 <Border.GestureRecognizers>
@@ -36,15 +37,63 @@
                         <Label Text="✉" FontSize="22" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                        <Label Text="Email" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-                        <Label Text="Register with email" Style="{StaticResource BodySmall}" />
+                        <Label Text="{Binding EmailTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                        <Label Text="{Binding EmailSubtitle}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Phone -->
+            <Border Style="{StaticResource CardBorder}" Padding="20" Margin="0,0,0,12">
+                <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CreateWithPhoneCommand}" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
+                    <Border WidthRequest="56" HeightRequest="56" StrokeThickness="0" Padding="0" VerticalOptions="Center">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Label Text="📞" FontSize="22" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                        <Label Text="{Binding PhoneTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                        <Label Text="{Binding PhoneSubtitle}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Voice -->
+            <Border Style="{StaticResource CardBorder}" Padding="20" Margin="0,0,0,12">
+                <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CreateWithVoiceCommand}" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
+                    <Border WidthRequest="56" HeightRequest="56" StrokeThickness="0" Padding="0" VerticalOptions="Center">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Label Text="🎤" FontSize="22" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                        <Label Text="{Binding VoiceTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                        <Label Text="{Binding VoiceSubtitle}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
                     </VerticalStackLayout>
                 </HorizontalStackLayout>
             </Border>
 
             <HorizontalStackLayout Margin="0,32,0,0" HorizontalOptions="Center" Spacing="4">
-                <Label Text="Already have an account?" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
-                <Button Text="Sign in" Style="{StaticResource TextButton}" Padding="0" Command="{Binding SignInCommand}" />
+                <Label Text="{Binding AlreadyHaveAccount}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Button Text="{Binding SignInText}" Style="{StaticResource TextButton}" Padding="0" Command="{Binding SignInCommand}" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

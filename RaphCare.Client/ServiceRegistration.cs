@@ -37,6 +37,9 @@ public static class ServiceRegistration
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName),
             sp.GetRequiredService<IMapper>()!));
 
+        services.AddScoped<IOtpAuthService, OtpAuthService>();
+        services.AddScoped<IVoiceOnboardingService, VoiceOnboardingService>();
+
         return services;
     }
 }

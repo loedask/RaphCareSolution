@@ -9,6 +9,7 @@ using RaphCare.Mobile.Core.Features.Hybrid.Views;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
 using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Views;
+using RaphCare.Mobile.Core.Shared.Configuration;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
 using RaphCare.Mobile.Core.Shared.Views;
@@ -23,6 +24,7 @@ public static class MobileServiceCollectionExtensions
     public static IServiceCollection AddRaphCareMobile(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EntraAuthOptions>(configuration.GetSection(EntraAuthOptions.SectionName));
+        services.Configure<OnboardingOptions>(configuration.GetSection(OnboardingOptions.SectionName));
         services.Configure<FeatureFlagOptions>(configuration.GetSection(FeatureFlagOptions.SectionName));
 
         services.AddSingleton<IAuthService, EntraAuthService>();
@@ -31,12 +33,20 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<LandingViewModel>();
         services.AddTransient<RegisterOptionsViewModel>();
         services.AddTransient<RegisterEmailViewModel>();
+        services.AddTransient<RegisterPhoneViewModel>();
+        services.AddTransient<VerifyPhoneViewModel>();
+        services.AddTransient<RegisterVoiceIntroViewModel>();
+        services.AddTransient<VoiceSubmitViewModel>();
         services.AddTransient<VerifyEmailViewModel>();
         services.AddTransient<SignInViewModel>();
 
         services.AddTransient<LandingPage>();
         services.AddTransient<RegisterOptionsPage>();
         services.AddTransient<RegisterEmailPage>();
+        services.AddTransient<RegisterPhonePage>();
+        services.AddTransient<VerifyPhonePage>();
+        services.AddTransient<RegisterVoiceIntroPage>();
+        services.AddTransient<VoiceSubmitPage>();
         services.AddTransient<VerifyEmailPage>();
         services.AddTransient<SignInPage>();
         services.AddTransient<HomePage>();

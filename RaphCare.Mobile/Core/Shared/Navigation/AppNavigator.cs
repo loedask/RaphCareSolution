@@ -18,6 +18,10 @@ public static class AppNavigator
     public const string Landing = "LandingPage";
     public const string RegisterOptions = "RegisterOptionsPage";
     public const string RegisterEmail = "RegisterEmailPage";
+    public const string RegisterPhone = "RegisterPhonePage";
+    public const string VerifyPhone = "VerifyPhonePage";
+    public const string RegisterVoiceIntro = "RegisterVoiceIntroPage";
+    public const string VoiceSubmit = "VoiceSubmitPage";
     public const string VerifyEmail = "VerifyEmailPage";
     public const string SignIn = "SignInPage";
     public const string Home = "HomePage";
@@ -37,6 +41,10 @@ public static class AppNavigator
         Routing.RegisterRoute(Landing, typeof(LandingPage));
         Routing.RegisterRoute(RegisterOptions, typeof(RegisterOptionsPage));
         Routing.RegisterRoute(RegisterEmail, typeof(RegisterEmailPage));
+        Routing.RegisterRoute(RegisterPhone, typeof(RegisterPhonePage));
+        Routing.RegisterRoute(VerifyPhone, typeof(VerifyPhonePage));
+        Routing.RegisterRoute(RegisterVoiceIntro, typeof(RegisterVoiceIntroPage));
+        Routing.RegisterRoute(VoiceSubmit, typeof(VoiceSubmitPage));
         Routing.RegisterRoute(VerifyEmail, typeof(VerifyEmailPage));
         Routing.RegisterRoute(SignIn, typeof(SignInPage));
 

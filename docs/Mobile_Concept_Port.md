@@ -147,7 +147,11 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 |--------|----------------|-------------|------|
 | Welcome | `Welcome.tsx` | | ☐ |
 | Home | `Home.tsx` | `HomePage` | ☐ |
-| Login / Register / … | `Login.tsx`, … | Auth feature | ☐ |
+| Register (3 methods) | `Register.tsx` | `RegisterOptionsPage` (Email / Phone / Voice cards) | ☑ |
+| Email register | `EmailRegister.tsx` | `RegisterEmailPage` | ☐ |
+| Phone register / verify | `PhoneRegister.tsx`, verify | `RegisterPhonePage`, `VerifyPhonePage` | ☐ |
+| Voice register | `VoiceRegister.tsx` (full animated mock) | `RegisterVoiceIntroPage` → phone → `VoiceSubmitPage` (file picker + API) | ☐ |
+| Login / … | `Login.tsx`, … | Auth feature | ☐ |
 | … | … | … | ☐ |
 
 *(Extend the table as you implement each flow.)*

@@ -12,7 +12,7 @@ alwaysApply: false
 
 - **`Contracts/`** — **`Response<T>`**, **`ApiException`** (client-facing wrapper), **`IAccessTokenProvider`** (host supplies tokens for Bearer auth). **`Contracts/Interfaces/`** — service facades (**`IPatientService`**, etc.).
 - **`Services/Base/`** — **`IClient`** + partial **`Client`** (extends NSwag output), **`BaseHttpService`**, **`BearerTokenHandler`**. **`Services/Base/NSwag/ClientService.cs`** and **`Services/Base/NSwag/clientsettings.nswag`** — **generated / human-owned**. **AI must not** create, overwrite, or hand-edit them; only the **repository owner** runs NSwag to refresh them.
-- **`Services/`** — Feature classes (**`PatientService`**) that call **`IClient`**, map to view models, and return **`Response<T>`**.
+- **`Services/`** — Feature classes (**`PatientService`**, **`OtpAuthService`**, **`VoiceOnboardingService`**) that call **`IClient`** or the shared **`HttpClient`** (OTP verify must read the JWT body; generated **`VerifyAsync`** discards it), map to view models, and return **`Response<T>`**.
 - **`Models/`** — View models and request types for app/UI consumers (e.g. **`PatientViewModel`**, **`CreatePatientRequest`**).
 - **`Mappings/`** — AutoMapper profiles (e.g. **`PatientMappings`**) mapping generated DTOs → **`Models`**.
 - **`ServiceRegistration.cs`** — **`AddRaphCareClient`**: AutoMapper, typed **`HttpClient`** (**`HttpClientName`** = **`RaphCare`**), optional **`BearerTokenHandler`**, feature service registration.

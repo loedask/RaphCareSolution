@@ -48,5 +48,10 @@
 ## Mobile App Flow
 
 - **Startup:** AppShell registers all routes via AppNavigator.RegisterAllRoutes(). Shell shows LandingPage (auth) or HomePage (main) based on navigation.
-- **Auth:** User lands on LandingPage; can go to Register (RegisterOptions → RegisterEmail → VerifyEmail) or SignIn. After successful Entra sign-in, app navigates to Home. SecureStorageAccessTokenProvider stores token and supplies it to RaphCare.Client via IAccessTokenProvider; all API calls use Bearer token.
+- **Auth:** User lands on LandingPage; can go to Register (**RegisterOptions** offers **Email**, **Phone**, **Voice**—matching the React concept) or SignIn.
+  - **Email:** RegisterEmail → VerifyEmail → Entra sign-in → Home (same as before).
+  - **Phone:** RegisterPhone (E.164 + OTP send) → VerifyPhone → `api/auth/otp/verify` returns a **patient JWT**; mobile stores it via `IAuthService.StoreApiSessionAsync` (same secure storage as Entra for `IAccessTokenProvider`) → Home.
+  - **Voice:** RegisterVoiceIntro → RegisterPhone with `ContinueWith=Voice` → VerifyPhone → VoiceSubmit (pick audio file) → `api/onboarding/voice` (multipart). Requires **`Onboarding:VoiceRegistrationClinicId`** in mobile configuration (Guid of a clinic in your environment, e.g. after ClinicalSeeder).
+- **Client layer:** `IOtpAuthService` posts JSON to `api/auth/otp/*` and reads the verify response body (JWT). The generated NSwag `VerifyAsync` does not surface that body—use `IOtpAuthService` from **RaphCare.Client** for OTP on mobile. `IVoiceOnboardingService` wraps the generated `IClient.VoiceAsync` multipart call.
+- **Backend readiness:** OTP and voice endpoints are implemented (`AuthController`, `VoiceOnboardingController`). For real SMS you must configure **`ISmsService`** / **`IOtpService`** in Infrastructure and Persistence as per your environment; voice upload depends on **`ISpeechToTextService`** and related handlers.
 - **Feature navigation:** AppNavigator.GoToFeatureAsync(route, featureDisplayName) navigates to a feature page; if the feature is disabled (FeatureFlags), shows UnderConstructionPage instead. Routes: Home, Records, Appointments, Insurance, Settings (and auth routes).

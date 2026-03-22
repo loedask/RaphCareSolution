@@ -1,29 +1,49 @@
 using System.Windows.Input;
 using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
-/// <summary>
-/// Create Account options: choose Email or other providers. Navigates to RegisterEmailPage for email.
-/// </summary>
+/// <summary>Create account: Email (Entra), Phone (OTP + API JWT), or Voice (phone OTP then multipart upload).</summary>
 public class RegisterOptionsViewModel : BaseViewModel
 {
-    public ICommand CreateWithEmailCommand { get; }
-    public ICommand BackCommand { get; }
-    public ICommand SignInCommand { get; }
-
     public RegisterOptionsViewModel()
     {
-        Title = "Create Account";
-        CreateWithEmailCommand = new Command(async () => await GoToRegisterEmailAsync());
+        Title = AppResources.T("RegisterCreateAccountTitle");
+        PageTitle = AppResources.T("RegisterCreateAccountTitle");
+        Subtitle = AppResources.T("RegisterChooseHowSubtitle");
+        EmailTitle = AppResources.T("RegisterOptionEmailTitle");
+        EmailSubtitle = AppResources.T("RegisterOptionEmailSubtitle");
+        PhoneTitle = AppResources.T("RegisterOptionPhoneTitle");
+        PhoneSubtitle = AppResources.T("RegisterOptionPhoneSubtitle");
+        VoiceTitle = AppResources.T("RegisterOptionVoiceTitle");
+        VoiceSubtitle = AppResources.T("RegisterOptionVoiceSubtitle");
+        AlreadyHaveAccount = AppResources.T("RegisterAlreadyHaveAccount");
+        SignInText = AppResources.T("AuthSignIn");
+
+        CreateWithEmailCommand = new Command(async () => await Shell.Current.GoToAsync("RegisterEmailPage").ConfigureAwait(false));
+        CreateWithPhoneCommand = new Command(async () => await Shell.Current.GoToAsync("RegisterPhonePage").ConfigureAwait(false));
+        CreateWithVoiceCommand = new Command(async () => await Shell.Current.GoToAsync("RegisterVoiceIntroPage").ConfigureAwait(false));
         BackCommand = new Command(async () => await GoBackAsync());
         SignInCommand = new Command(async () => await Shell.Current.GoToAsync("SignInPage").ConfigureAwait(false));
     }
 
-    private async Task GoToRegisterEmailAsync()
-    {
-        await Shell.Current.GoToAsync("RegisterEmailPage").ConfigureAwait(false);
-    }
+    public string PageTitle { get; }
+    public string Subtitle { get; }
+    public string EmailTitle { get; }
+    public string EmailSubtitle { get; }
+    public string PhoneTitle { get; }
+    public string PhoneSubtitle { get; }
+    public string VoiceTitle { get; }
+    public string VoiceSubtitle { get; }
+    public string AlreadyHaveAccount { get; }
+    public string SignInText { get; }
+
+    public ICommand CreateWithEmailCommand { get; }
+    public ICommand CreateWithPhoneCommand { get; }
+    public ICommand CreateWithVoiceCommand { get; }
+    public ICommand BackCommand { get; }
+    public ICommand SignInCommand { get; }
 
     private async Task GoBackAsync()
     {

@@ -1,0 +1,113 @@
+using System.Windows.Input;
+using Microsoft.Maui.Controls;
+using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Features.Auth.Models;
+using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Resources.Strings;
+
+namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
+
+/// <summary>Collect phone number and request OTP (<c>api/auth/otp/send</c>).</summary>
+public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
+{
+    private readonly IOtpAuthService _otpAuth;
+
+    private CountryDialOption _selectedCountry = CountryDialOption.DefaultList[3];
+    private string _localNumber = string.Empty;
+    private string? _errorMessage;
+    private string _continueWith = string.Empty;
+
+    public string Subtitle { get; } = AppResources.T("RegisterPhoneSubtitle");
+    public string PhoneFieldLabel { get; } = AppResources.T("RegisterPhoneFieldLabel");
+    public string ContinueText { get; } = AppResources.T("RegisterPhoneContinue");
+
+    public RegisterPhoneViewModel(IOtpAuthService otpAuth)
+    {
+        _otpAuth = otpAuth ?? throw new ArgumentNullException(nameof(otpAuth));
+        Title = AppResources.T("RegisterPhoneTitle");
+        ContinueCommand = new Command(async () => await SendAndContinueAsync(), () => !IsBusy);
+        BackCommand = new Command(async () => await GoBackAsync());
+    }
+
+    public IReadOnlyList<CountryDialOption> Countries => CountryDialOption.DefaultList;
+
+    public CountryDialOption SelectedCountry
+    {
+        get => _selectedCountry;
+        set => SetProperty(ref _selectedCountry, value);
+    }
+
+    public string LocalNumber
+    {
+        get => _localNumber;
+        set => SetProperty(ref _localNumber, value ?? string.Empty);
+    }
+
+    public string? ErrorMessage
+    {
+        get => _errorMessage;
+        set => SetProperty(ref _errorMessage, value);
+    }
+
+    public ICommand ContinueCommand { get; }
+    public ICommand BackCommand { get; }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("ContinueWith", out var v) && v != null)
+            _continueWith = v.ToString() ?? string.Empty;
+    }
+
+    private string BuildE164()
+    {
+        var digits = new string((LocalNumber ?? string.Empty).Where(char.IsDigit).ToArray());
+        var code = (SelectedCountry?.DialCode ?? string.Empty).Trim();
+        if (string.IsNullOrEmpty(code))
+            return digits.Length > 0 ? "+" + digits : string.Empty;
+        if (!code.StartsWith('+'))
+            code = "+" + code;
+        return code + digits;
+    }
+
+    private async Task SendAndContinueAsync()
+    {
+        if (IsBusy) return;
+
+        ErrorMessage = null;
+        var phone = BuildE164();
+        if (phone.Length < 10)
+        {
+            ErrorMessage = AppResources.T("RegisterPhoneInvalid");
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var result = await _otpAuth.SendOtpAsync(phone, CancellationToken.None).ConfigureAwait(false);
+            if (!result.IsSuccess)
+            {
+                ErrorMessage = result.ErrorMessage ?? AppResources.T("RegisterPhoneSendFailed");
+                return;
+            }
+
+            var qContinue = Uri.EscapeDataString(_continueWith);
+            var qPhone = Uri.EscapeDataString(phone);
+            await Shell.Current.GoToAsync($"VerifyPhonePage?Phone={qPhone}&ContinueWith={qContinue}").ConfigureAwait(false);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task GoBackAsync()
+    {
+        if (Shell.Current.Navigation.NavigationStack.Count > 1)
+            await Shell.Current.GoToAsync("..").ConfigureAwait(false);
+        else if (string.Equals(_continueWith, "Voice", StringComparison.OrdinalIgnoreCase))
+            await Shell.Current.GoToAsync("RegisterVoiceIntroPage").ConfigureAwait(false);
+        else
+            await Shell.Current.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
+    }
+}

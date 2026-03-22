@@ -37,6 +37,20 @@ dotnet user-secrets set "Api:BaseAddress" "https://localhost:7001/" --project Ra
 dotnet user-secrets set "FeatureFlags:RecordsEnabled" "true" --project RaphCare.Mobile
 ```
 
+### Voice onboarding (optional)
+
+`POST api/onboarding/voice` requires a **clinic id**. After seeding (e.g. **ClinicalSeeder**), copy the demo clinic’s `Id` from the database and set:
+
+```bash
+dotnet user-secrets set "Onboarding:VoiceRegistrationClinicId" "<guid>" --project RaphCare.Mobile
+```
+
+Optional: `Onboarding:DefaultVoiceLanguage` (default `en-ZA` in **appsettings.json**). Without a valid clinic Guid, **VoiceSubmit** shows a configuration error instead of calling the API.
+
+### Create account (design parity)
+
+**RegisterOptions** matches the React concept: **Email** (Entra), **Phone** (SMS OTP + API JWT), **Voice** (phone verification first, then audio file upload). Phone/voice use **RaphCare.Client** `IOtpAuthService` / `IVoiceOnboardingService`.
+
 Do **not** commit production secrets. Prefer User Secrets or your pipeline’s secret store for sensitive values.
 
 ### Feature flags
