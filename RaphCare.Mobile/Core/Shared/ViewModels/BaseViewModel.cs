@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.Maui.ApplicationModel;
 
 namespace RaphCare.Mobile.Core.Shared.ViewModels;
 
@@ -33,6 +34,19 @@ public abstract class BaseViewModel : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
     }
 
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    /// <summary>
+    /// Raises <see cref="PropertyChanged"/> on the main thread so bindings stay valid after
+    /// <c>await</c> with <c>ConfigureAwait(false)</c> (common in ViewModels).
+    /// </summary>
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        var handler = PropertyChanged;
+        if (handler is null)
+            return;
+
+        if (MainThread.IsMainThread)
+            handler(this, new PropertyChangedEventArgs(propertyName));
+        else
+            MainThread.BeginInvokeOnMainThread(() => handler(this, new PropertyChangedEventArgs(propertyName)));
+    }
 }
