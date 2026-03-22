@@ -12,56 +12,21 @@
             <VerticalStackLayout Padding="24,56,24,32" Spacing="0">
                 <Grid HeightRequest="8" />
 
-                <!-- Logo card (concept); add raphcare_logo.png under Resources/Images to swap for bitmap -->
+                <!-- Branding: replace Resources/Images/raphcare_logo.png with your production asset (same key). -->
                 <Border BackgroundColor="{StaticResource CardColor}"
                         Stroke="{StaticResource BorderColor}"
                         StrokeThickness="1"
-                        Padding="18,20"
+                        Padding="16,18"
                         Margin="0,0,0,28"
                         HorizontalOptions="Center"
-                        MaximumWidthRequest="320">
+                        MaximumWidthRequest="300">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
-                    <HorizontalStackLayout Spacing="14" VerticalOptions="Center">
-                        <Border WidthRequest="52"
-                                HeightRequest="52"
-                                BackgroundColor="{StaticResource NavyColor}"
-                                VerticalOptions="Center">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="12" />
-                            </Border.StrokeShape>
-                            <Grid>
-                                <Label Text="R"
-                                       TextColor="White"
-                                       FontFamily="SpaceGrotesk"
-                                       FontSize="28"
-                                       FontAttributes="Bold"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                                <Label Text="+"
-                                       TextColor="{StaticResource TealLightColor}"
-                                       FontSize="11"
-                                       FontAttributes="Bold"
-                                       Margin="6,0,0,8"
-                                       HorizontalOptions="Start"
-                                       VerticalOptions="End" />
-                            </Grid>
-                        </Border>
-                        <VerticalStackLayout Spacing="6" VerticalOptions="Center">
-                            <Label Text="RaphCare"
-                                   FontFamily="SpaceGrotesk"
-                                   FontSize="22"
-                                   FontAttributes="Bold"
-                                   TextColor="{StaticResource NavyColor}" />
-                            <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" />
-                            <Label Text="{Binding LogoCardTagline}"
-                                   FontSize="11"
-                                   TextColor="{StaticResource MutedForegroundColor}"
-                                   LineBreakMode="WordWrap"
-                                   MaxLines="2" />
-                        </VerticalStackLayout>
-                    </HorizontalStackLayout>
+                    <Image Source="raphcare_logo.png"
+                           Aspect="AspectFit"
+                           HeightRequest="104"
+                           SemanticProperties.Description="RaphCare logo" />
                 </Border>
 
                 <Label Text="{Binding WelcomeTagline}"

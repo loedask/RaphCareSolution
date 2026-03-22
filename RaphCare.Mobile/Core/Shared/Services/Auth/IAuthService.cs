@@ -19,6 +19,11 @@ public interface IAuthService
     Task<AuthResult> SignInAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Interactive token acquisition using a specific authority (e.g. B2C password reset policy). Stores tokens on success.
+    /// </summary>
+    Task<AuthResult> AcquireTokenInteractiveAsync(string authority, IReadOnlyList<string> scopes, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Signs out and clears stored tokens.
     /// </summary>
     Task SignOutAsync(CancellationToken cancellationToken = default);

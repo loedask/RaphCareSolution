@@ -66,6 +66,37 @@ public class EntraAuthService : IAuthService
         }
     }
 
+    /// <inheritdoc />
+    public async Task<AuthResult> AcquireTokenInteractiveAsync(string authority, IReadOnlyList<string> scopes, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(authority))
+            return AuthResult.Fail("Authority is required.");
+
+        var scopeArray = scopes is { Count: > 0 }
+            ? scopes.ToArray()
+            : new[] { "openid" };
+
+        try
+        {
+            var authorityString = authority.Trim();
+#pragma warning disable CS0618 // B2C per-policy authority; string WithAuthority still required for user-flow hosts until we adopt a single CIAM authority model.
+            var builder = _msalClient
+                .AcquireTokenInteractive(scopeArray)
+                .WithAuthority(authorityString);
+#pragma warning restore CS0618
+            var result = await builder
+                .ExecuteAsync(cancellationToken)
+                .ConfigureAwait(false);
+            await StoreTokensAsync(result).ConfigureAwait(false);
+            return AuthResult.Ok(result.AccessToken, null, result.ExpiresOn);
+        }
+        catch (MsalException ex)
+        {
+            _logger.LogWarning(ex, "Interactive acquire failed for authority {Authority}", authority);
+            return AuthResult.Fail(ex.Message);
+        }
+    }
+
     public async Task SignOutAsync(CancellationToken cancellationToken = default)
     {
         var accounts = await _msalClient.GetAccountsAsync().ConfigureAwait(false);

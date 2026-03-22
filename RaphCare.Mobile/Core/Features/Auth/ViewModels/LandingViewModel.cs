@@ -3,8 +3,11 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Microsoft.Extensions.Options;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
 using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
@@ -51,11 +54,14 @@ public class LandingViewModel : BaseViewModel
 {
     private const string LanguagePreferenceKey = "auth_language";
 
+    private readonly EntraAuthOptions _entra;
+
     private string _languageCode = "en";
     private bool _isLanguageSheetOpen;
 
-    public LandingViewModel()
+    public LandingViewModel(IOptions<EntraAuthOptions> entraOptions)
     {
+        _entra = entraOptions?.Value ?? throw new ArgumentNullException(nameof(entraOptions));
         Title = "Welcome";
         Languages = new ObservableCollection<LanguageOption>(new[]
         {
@@ -94,8 +100,6 @@ public class LandingViewModel : BaseViewModel
     public string WelcomeTagline => AppResources.T("AuthWelcomeTagline");
 
     public string FooterTagline => AppResources.T("AuthHealthcareBarriers");
-
-    public string LogoCardTagline => AppResources.T("AuthLogoCardTagline");
 
     public string SignInText => AppResources.T("AuthSignIn");
 
@@ -151,7 +155,6 @@ public class LandingViewModel : BaseViewModel
     {
         OnPropertyChanged(nameof(WelcomeTagline));
         OnPropertyChanged(nameof(FooterTagline));
-        OnPropertyChanged(nameof(LogoCardTagline));
         OnPropertyChanged(nameof(SignInText));
         OnPropertyChanged(nameof(CreateAccountText));
         OnPropertyChanged(nameof(ChooseLanguageTitle));
@@ -159,7 +162,11 @@ public class LandingViewModel : BaseViewModel
 
     private async Task GoToRegisterOptionsAsync()
     {
-        await Shell.Current.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
+        var url = _entra.ExternalSignUpUrl;
+        if (!string.IsNullOrWhiteSpace(url))
+            await Launcher.Default.OpenAsync(new Uri(url.Trim(), UriKind.Absolute)).ConfigureAwait(false);
+        else
+            await Shell.Current.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
     }
 
     private async Task SignInAsync()
