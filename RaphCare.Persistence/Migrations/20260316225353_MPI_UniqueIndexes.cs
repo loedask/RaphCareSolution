@@ -10,9 +10,9 @@ namespace RaphCare.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Patients_NationalHealthId",
-                table: "Patients");
+            // Index may be missing if an earlier migration was skipped or the DB was created out of band.
+            migrationBuilder.Sql(
+                "DROP INDEX IF EXISTS [IX_Patients_NationalHealthId] ON [Patients];");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Patients_NationalHealthId",
@@ -21,9 +21,8 @@ namespace RaphCare.Persistence.Migrations
                 unique: true,
                 filter: "[NationalHealthId] IS NOT NULL");
 
-            migrationBuilder.DropIndex(
-                name: "IX_PatientExternalIds_SourceSystem_ExternalId",
-                table: "PatientExternalIds");
+            migrationBuilder.Sql(
+                "DROP INDEX IF EXISTS [IX_PatientExternalIds_SourceSystem_ExternalId] ON [PatientExternalIds];");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PatientExternalIds_SourceSystem_ExternalId",
@@ -35,18 +34,16 @@ namespace RaphCare.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Patients_NationalHealthId",
-                table: "Patients");
+            migrationBuilder.Sql(
+                "DROP INDEX IF EXISTS [IX_Patients_NationalHealthId] ON [Patients];");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Patients_NationalHealthId",
                 table: "Patients",
                 column: "NationalHealthId");
 
-            migrationBuilder.DropIndex(
-                name: "IX_PatientExternalIds_SourceSystem_ExternalId",
-                table: "PatientExternalIds");
+            migrationBuilder.Sql(
+                "DROP INDEX IF EXISTS [IX_PatientExternalIds_SourceSystem_ExternalId] ON [PatientExternalIds];");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PatientExternalIds_SourceSystem_ExternalId",

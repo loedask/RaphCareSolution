@@ -1,6 +1,8 @@
 using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
+#nullable disable
+
 namespace RaphCare.Persistence.Migrations
 {
     public partial class GlobalPatientIdentity : Migration
