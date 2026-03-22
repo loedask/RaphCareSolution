@@ -1,73 +1,39 @@
-# Feature Conventions
+# RaphCare.Application — feature conventions
 
-## Conventions To Reuse For Every New Feature
+Conventions for **RaphCare.Application** (MediatR, features, shared `Common/`). Cursor rule: **`.cursor/rules/raphcare-application.mdc`**.
 
-- Keep feature folder singular if entity is singular (`AssignedConsultant`, `CustomerService`).
-- Commands use verbs: `Create`, `Update`, `Remove`.
-- Queries use `FetchAll{EntityPlural}`, `FetchPaged{EntityPlural}`, `Retrieve{Entity}ById`.
-- Example: `FetchPagedWorkRequestsQuery` and `FetchPagedWorkRequestsResponseDto`.
-- Repository stays entity-focused (`I{Entity}Repository`) with domain-specific methods only.
-- Avoid `CommandRepository` / `QueryRepository` split unless CQRS read/write storage really diverges.
+## Folder layout
 
-## Applied Example
+- **`Features/{Feature}/Commands/{Action}/`** — `{Action}Command`, `{Action}Handler`, `{Action}Validator` (validator typical for writes).
+- **`Features/{Feature}/Queries/{QueryName}/`** — `{QueryName}Query`, `{QueryName}Handler`; namespace matches folders (e.g. `RaphCare.Application.Features.Patients.Queries.GetPatients`).
+- **`Features/{Feature}/DTOs/`** — Feature DTOs returned by queries or shared within the feature.
+- **`Common/Behaviors`**, **`Common/Interfaces`**, **`Common/DTOs`**, etc. — Cross-cutting pipeline behaviors, abstractions (`IRepository<T>`, `IUnitOfWork`), **`PagedResult<T>`**, security helpers.
 
-The `WorkRequest` feature follows this structure and naming pattern.
+Handlers use **`IRepository<TEntity>`** from **`Common/Interfaces`** (implemented in Persistence)—not per-entity repository interfaces in Application unless you introduce them for a specific bounded context.
 
-## Folder Conventions
+## Naming
 
-- `Features/{EntitySingular}/Commands/{Action}`
-- `Features/{EntitySingular}/Queries/{QueryType}`
-- `Features/{EntitySingular}/Validation`
-- `Features/{EntitySingular}/Mappings`
-- `Features/{EntitySingular}/Shared`
-- `Contracts/Persistence/I{Entity}Repository.cs` (or split query/command contracts only when needed)
+- **Feature folders:** Match existing areas (`Patients`, `Appointments`, `Auth`, `Billing`, `Clinical`, …).
+- **Commands:** `Create*`, `Update*`, `Remove*` for CRUD; domain verbs otherwise (`SendOtp`, `VerifyOtp`, `GenerateSummary`).
+- **Queries:** **`Get{Plural}`** for collections (often paged), **`Get{Singular}ById`** for one entity—e.g. `GetPatientsQuery`, `GetPatientByIdQuery`, `GetAppointmentsQuery`.
 
-For query names (`FetchAll{EntityPlural}`, `FetchPaged{EntityPlural}`, `Retrieve{Entity}ById`), use:
+## Validation and mapping
 
-- `Queries/GetAll` for `FetchAll{EntityPlural}...`
-- `Queries/GetPaged` for `FetchPaged{EntityPlural}...`
-- `Queries/Read` for `Retrieve{Entity}ById...`
+- Colocate **`*Validator`** with the command when it is operation-specific.
+- Use **FluentValidation**; register validators with the same assembly MediatR uses.
+- Prefer explicit mapping in handlers or centralized profiles only where the codebase already does; many features rely on feature **DTOs** and straightforward projections.
 
-Example:
+## API (RaphCare.API)
 
-```text
-Features/WorkRequest
-├─ Commands
-│  ├─ Create
-│  ├─ Update
-│  └─ Remove
-├─ Queries
-│  ├─ GetAll
-│  ├─ GetPaged
-│  └─ Read
-├─ Validation
-├─ Mappings
-└─ Shared
-```
+- Controllers call **`IMediator`** with application **commands/queries**.
+- This solution often binds **`[FromBody]`** directly to **`*Command`** types—acceptable and established; optional `*RequestDto` is not required unless you add a dedicated API contract layer.
+- Keep controllers thin: no business logic.
 
-Practical rules:
+## Pragmatic rules
 
-- Keep feature folder singular (`WorkRequest`, `CustomerService`).
-- Keep command subfolders verb-based (`Create`, `Update`, `Remove`, plus domain actions like `Approve`).
-- Keep query subfolders intent-based (`GetAll`, `GetPaged`, `Read`).
-- Keep validators either in `Validation` (shared/cross-command) or next to command/query when specific.
-- Keep feature mappings in `Mappings` when they are feature-specific.
-- Handlers consume application DTO/command models and delegate entity transformation to AutoMapper.
-- Map DTO/command -> Domain entity in mapping profiles (do not hand-map domain entities inside handlers).
-- Example: `CreateWorkRequestCommand` -> `WorkRequest` is defined in `WorkRequestMappingProfile`.
-- Mapping file names in `Mappings` must use `{Feature}MappingProfile.cs` (for example `WorkRequestMappingProfile.cs`).
-- Add feature tests based on the `WorkRequest` test shape.
-- Include command handler tests under `TCSA.Solution.UnitTests/Features/{Feature}/Commands`.
-- Include query handler tests under `TCSA.Solution.UnitTests/Features/{Feature}/Queries`.
-- Include validator tests under `TCSA.Solution.UnitTests/Features/{Feature}/Validators`.
-- Add/update architecture convention tests to ensure each command has a handler and validator, and each handler has a corresponding test class.
-- Controllers accept Web/API transport contracts only: `*RequestDto` for input and `*ResponseDto` for output.
-- Controllers map DTOs to application `Command`/`Query` objects and send them via `IMediator`.
-- Do not bind controller actions directly to application commands or domain entities.
-- Do not put domain/business logic in controllers; keep controllers orchestration-only.
-- For list endpoints, map application DTOs to response DTOs before returning.
-- If a folder has only one tiny file long-term, flatten it later (do not force deep nesting).
+- If a folder holds a single small file long-term, consider flattening—do not add depth for its own sake.
+- New features should mirror **Patients** or **Appointments** structure unless there is a strong reason to differ.
 
-## Optional Next Step
+## Tests
 
-If needed, generate the same template for a new feature (for example `Engagement` or `CaseNote`) with pre-filled class names.
+- Add unit tests in a dedicated test project when present, mirroring **`Features/{Feature}/...`**. Naming: `*HandlerTests`, `*ValidatorTests`.

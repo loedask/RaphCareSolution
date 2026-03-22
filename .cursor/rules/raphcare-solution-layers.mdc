@@ -1,0 +1,55 @@
+---
+description: RaphCare solution — all projects, layer boundaries, and dependency direction
+alwaysApply: true
+---
+
+# RaphCare — solution layers (easy map)
+
+Use this as the **north star** for where code belongs. Deeper rules: **`.cursor/rules/raphcare-api.mdc`**, **`.cursor/rules/raphcare-application.mdc`**, **`.cursor/rules/raphcare-identity.mdc`**, **`.cursor/rules/raphcare-infrastructure.mdc`**, **`.cursor/rules/raphcare-persistence.mdc`**, **`.cursor/rules/raphcare-mobile.mdc`**, **docs/02_Solution_Structure.md**, **docs/07_Coding_Conventions.md**, **docs/09_Mobile_App_Guide.md**.
+
+## Dependency direction (who may reference whom)
+
+```
+Domain  ←  Application  ←  Infrastructure, Persistence, Identity
+                ↑
+           API, Web, Mobile  (hosts; orchestrate use cases)
+Client  ←  referenced by Web / Mobile (HTTP + DTOs only; not a vertical “layer” above Domain)
+```
+
+- **Domain** sits at the bottom: **no** references to Application, Infrastructure, Persistence, Identity, or API.
+- **Application** defines use cases and **abstractions** (`IRepository<T>`, `IUnitOfWork`, external service interfaces). It references **Domain only**—no EF, no HttpClient implementations, no controllers.
+- **Persistence** implements data access (DbContexts, `EfRepository`, migrations, seed, **`IApplicationUserStore`** implementation). References **Domain + Application (interfaces)**. **No** API or Identity project references.
+- **Infrastructure** implements **Application** interfaces (e.g. AI, OTP, speech, interceptors). References **Application** (and **Domain** when needed). **`IApplicationUserStore`** is **not** here—it is in **Persistence**.
+- **Identity** — Entra JWT validation, provisioning, role mapping. References **Application + Domain**. Does **not** reference **Persistence** (store implementation lives in Persistence).
+- **API** — Controllers, middleware, Swagger, startup. References **Application, Infrastructure, Persistence, Identity**. **No business rules** in controllers—**`IMediator`** only.
+- **Client** — Shared HTTP client, generated API surface, **`IAccessTokenProvider`** hook for Bearer. Used by **Web** and **Mobile**; do **not** duplicate API contracts inside Mobile beyond UI state.
+- **Web** — Blazor WASM UI; uses **Client** (and typically auth like the rest of the stack).
+- **Mobile** — MAUI app; **Kernel** (flags, `AuthResult`) + **Client** for API; see **raphcare-mobile** rule and **docs/09_Mobile_App_Guide.md**.
+
+## One-line responsibilities
+
+| Project | Put here | Do **not** put here |
+|--------|----------|---------------------|
+| **Domain** | Entities, value objects, domain events, pure domain rules | Application services, EF, HTTP, UI |
+| **Application** | Commands/queries/handlers, validators, behaviors, feature DTOs, **`Common/Interfaces`** | DbContext, `SaveChanges` wiring in handlers beyond `IUnitOfWork`, controller code |
+| **Persistence** | DbContexts, configurations, repositories, migrations, seed, **ApplicationUserStore** | Business use-case orchestration |
+| **Infrastructure** | Concrete external services, EF **interceptors** living here, infra cross-cutting | Feature use-case handlers (those stay in Application) |
+| **Identity** | Entra/JWT options, token validation, provisioning pipeline | EF mappings for clinical data |
+| **API** | REST surface, middleware, DI composition entry for the host | MediatR handler bodies; domain rules |
+| **Client** | Generated + hand-written API access, **`AddRaphCareClient`** | Domain entities; app use cases |
+| **Web** | Blazor UI, WASM host concerns | Duplicating Application handlers |
+| **Mobile** | Shell, pages, VMs, platform auth bridge to **`IAccessTokenProvider`** | Hand-rolled duplicate of **Client** API types |
+| **Mobile.Kernel** | Small **net10.0** types shared with tests (flags, auth result) | MAUI or HTTP |
+
+## API startup (typical registration order)
+
+Roughly: **AddApplication** → **AddInfrastructure** → **AddPersistence** → **AddIdentity** → controllers, auth, Swagger—keep **new** registrations consistent with **Program.cs** and existing extension methods.
+
+## When unsure
+
+1. Is it a **business rule** about a domain concept? → **Domain**.  
+2. Is it a **use case** (command/query) or **port** (interface)? → **Application**.  
+3. Is it **EF/SQL/migrations**? → **Persistence**.  
+4. Is it **external system / cross-cutting tech**? → **Infrastructure** (or **Identity** for auth).  
+5. Is it **HTTP entry**? → **API**.  
+6. Is it **calling the API from UI**? → **Client** + host (**Web** / **Mobile**).

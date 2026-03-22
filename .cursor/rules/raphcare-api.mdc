@@ -1,0 +1,40 @@
+---
+description: RaphCare.API — controllers, middleware, host DI, Swagger, HTTP-only services
+globs: RaphCare.API/**/*.cs
+alwaysApply: false
+---
+
+# RaphCare.API
+
+ASP.NET Core **host** for the solution: HTTP surface, pipeline, and wiring **Application** use cases via **MediatR**. See **`.cursor/rules/raphcare-solution-layers.mdc`** and **`.cursor/rules/raphcare-application.mdc`**.
+
+## Startup (`Program.cs`)
+
+Registration order today: **`AddApplication`** → **`AddInfrastructure`** → **`AddPersistence`** → **`AddIdentity`** → **`AddHttpContextAccessor`** → host-only services (**`IClinicContext`**, **`IFhirExportAuditLogger`**) → **`AddControllers`** → auth policies → **`AddRaphCareSwagger`**. Pipeline: **`ExceptionHandlingMiddleware`** → HTTPS → auth → **`TenantResolutionMiddleware`** → **`AuditMiddleware`** → **`MapControllers`**. Keep new registrations consistent with this flow.
+
+## Controllers (`Controllers/`)
+
+- **`[ApiController]`**, route **`api/[controller]`** unless a resource needs a fixed path (e.g. **`AuthController`** → **`api/auth/otp`**).
+- **Orchestration only:** inject **`IMediator`** (and minimal HTTP helpers); call **`mediator.Send`** with **Commands** / **Queries**. This codebase often binds **`[FromBody]`** directly to **`*Command`** types—follow existing controllers for that resource.
+- Use **`[Authorize(Policy = "...")]`** / **`[AllowAnonymous]`** explicitly. Name actions for Swagger when useful (**`Name = "GetPatientById"`**).
+- **`ProducesResponseType`** for OpenAPI clarity. Prefer returning **Application DTOs** / **`PagedResult<T>`** / **`IActionResult`** patterns already used on the controller you mirror.
+
+## `App/` folder
+
+- **`App/Middleware/`** — **`ExceptionHandlingMiddleware`**, **`TenantResolutionMiddleware`**, **`AuditMiddleware`** (order matters in **`Program.cs`**).
+- **`App/Extensions/`** — **`DatabaseMigrationExtensions`**, **`SwaggerExtensions`** (`AddRaphCareSwagger` / `UseRaphCareSwagger`).
+- **`App/Contracts/`** — Small HTTP/OpenAPI-specific shapes (e.g. **`CreatePatientResponse`**) when the controller should not use a raw anonymous object.
+- **`App/Services/`** — HTTP-scoped implementations of **Application** abstractions used only at the edge (e.g. **`HttpClinicContext`**, **`FhirExportAuditLogger`**).
+
+## Root `Services/`
+
+- **`ClinicContext`** implements **`IClinicContext`** and is registered in **`Program.cs`**. If you add another HTTP-bound helper, prefer **`App/Services/`** for consistency and register once—avoid duplicate **`IClinicContext`** implementations.
+
+## References
+
+- May reference **Application**, **Identity**, **Infrastructure**, **Persistence** only through **DI** and **MediatR**—not by embedding use-case logic or **`DbContext`** in controllers.
+
+## Conventions
+
+- No business rules or validation logic in controllers beyond HTTP mapping; validation lives in **Application** (FluentValidation + pipeline behaviors).
+- New endpoints: add or extend a controller under **`Controllers/`**; add MediatR types in **Application**; register new policies in **`Program.cs`** if roles change.

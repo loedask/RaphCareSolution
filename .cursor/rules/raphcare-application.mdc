@@ -1,0 +1,43 @@
+---
+description: RaphCare.Application MediatR features, naming, and folder layout
+globs: RaphCare.Application/**/*.cs
+alwaysApply: false
+---
+
+# RaphCare.Application conventions
+
+Applies to **`RaphCare.Application`**. Cross-cutting doc: **`RaphCare.Application/FEATURE_CONVENTIONS.md`**.
+
+## Layout
+
+- **`Features/{Feature}/Commands/{Action}/`** — `{Action}Command`, `{Action}Handler`, `{Action}Validator` (validator optional but typical for writes).
+- **`Features/{Feature}/Queries/{QueryName}/`** — `{QueryName}Query`, `{QueryName}Handler`; namespace matches folder path (e.g. `...Queries.GetPatients`).
+- **`Features/{Feature}/DTOs/`** — Application read models / feature DTOs (e.g. `PatientDto`, `AppointmentDto`).
+- **`Common/`** — MediatR `IPipelineBehavior`s, shared interfaces (`IRepository<T>`, `IUnitOfWork`, `ICurrentUserService`, …), cross-feature DTOs like **`PagedResult<T>`** in `Common/DTOs/`.
+- Do **not** assume a `Contracts/Persistence` tree or per-entity `I{Entity}Repository` unless the solution already uses it for that feature—handlers use **`IRepository<TEntity>`** from **`Common/Interfaces`** today.
+
+## Naming
+
+- **Feature folder:** area name as in the repo (`Patients`, `Appointments`, `Auth`, `Billing`, …)—singular or plural as already established per domain.
+- **Commands:** verb + entity context: `CreatePatient`, `UpdateAppointment`, `VerifyOtp`. Prefer **`Create` / `Update` / `Remove`** for CRUD; domain verbs (`Send`, `Verify`, `Generate`) when they read better.
+- **Queries:** **`Get{Plural}`** for lists (often paged), **`Get{Entity}ById`** for single aggregate—see existing **`GetPatientsQuery`**, **`GetPatientByIdQuery`**, **`GetAppointmentsQuery`**. Do not introduce alternate prefixes like `FetchPaged` unless aligning an entire feature.
+- **Types:** `Command` / `Query` / `Handler` suffixes; validators named `{Command}Validator`.
+
+## Handlers and data access
+
+- Handlers depend on **`IRepository<T>`** (and **`IUnitOfWork`** when committing) registered from Persistence—not DbContext in Application.
+- Keep domain mapping and persistence orchestration in handlers; avoid duplicating API-specific shapes inside Application (use feature DTOs for `IRequest` results where applicable).
+
+## API layer (RaphCare.API) — how this solution works
+
+- Controllers send **`IMediator.Send`** with **`Command`** / **`Query`** types; many endpoints **`[FromBody]` bind directly to `*Command`** (e.g. `CreatePatientCommand`). That is an intentional pattern here—do not force a separate `*RequestDto` layer unless you are introducing a deliberate API contract split.
+- Prefer **orchestration-only** controllers: no business rules; validate via FluentValidation + behaviors as today.
+- List/detail responses often return **Application DTOs** or **`PagedResult<T>`** directly—follow existing controller for each resource.
+
+## Optional folders
+
+- Add **`Validation`** or **`Mappings`** under a feature only when multiple cross-cutting validators or profiles justify it. Many features use colocated validators and **feature `DTOs/`** only—match the nearest existing feature (e.g. **Patients**, **Appointments**).
+
+## Tests
+
+- When adding a unit-test project for Application, mirror paths under **`Features/{Feature}/Commands|Queries`** and name `*HandlerTests` / `*ValidatorTests`. This repo may not yet have that project; do not reference removed template paths like `TCSA.Solution.UnitTests`.

@@ -1,0 +1,35 @@
+---
+description: RaphCare.Persistence — DbContexts, repositories, migrations, seed, DB-backed services
+globs: RaphCare.Persistence/**/*.cs
+alwaysApply: false
+---
+
+# RaphCare.Persistence
+
+All **EF Core** hosting: contexts, migrations, **`EfRepository<T>`**, **`IUnitOfWork`**, **`IApplicationUserStore`**, and **Application** interfaces that **require `DbContext`** or SQL-specific behavior.
+
+## What belongs here
+
+- **`*DbContext.cs`** at project root — e.g. **`IdentityDbContext`**, **`ClinicalDbContext`**, **`DeviceDbContext`**, **`InsuranceDbContext`**, **`BillingDbContext`**, **`AIDbContext`**. Each uses connection strings and **`MigrationsAssembly`** = **`RaphCare.Persistence`**.
+- **`Repositories/EfRepository.cs`** — Generic repository used via **`DependencyInjection`** registrations **`IRepository<TEntity>`** → **`EfRepository<TEntity, TContext>`** per aggregate/context.
+- **`PersistenceUnitOfWork.cs`** — **`IUnitOfWork`** implementation.
+- **`ApplicationUserStore.cs`** — **`IApplicationUserStore`** (Identity store; **not** in **RaphCare.Identity**).
+- **DB-backed Application services** — e.g. **`OtpService`** (`IOtpService`), **`MasterPatientIndexService`**, merge/timeline/access services, **`IdentityOtpProvisioningService`**, FHIR mapper implementations under **`FhirMappers/`** when they depend on data access.
+- **`Migrations/`** — EF migrations (per-context folders where used: **IdentityDb**, **BillingDb**, **InsuranceDb**, **AIDb**, plus clinical root migrations).
+- **`Seed/`** — **`DatabaseSeeder`** and context seeders.
+- **`Utilities/`** — SQL Server–specific helpers (e.g. unique constraint detection) used by persistence services.
+- **`DbContextModelBuilderExtensions.cs`** — shared model setup if present.
+
+## Registration
+
+- **`DependencyInjection.AddPersistence`** — Registers all DbContexts with **Infrastructure** interceptors (**`AuditableEntityInterceptor`**, **`SoftDeleteInterceptor`**, **`DomainEventDispatcherInterceptor`**), **`IUnitOfWork`**, **`IApplicationUserStore`**, **`IOtpService`**, repositories, and persistence-scoped application services. **Order:** **`AddInfrastructure`** then **`AddPersistence`**.
+
+## References
+
+- **Domain** (entities), **Application** (interfaces), **Infrastructure** (interceptor/configuration types). **No** reference to **API** or **Identity** projects.
+
+## Conventions
+
+- Add new **`IRepository<T>`** registration in **`DependencyInjection`** next to entities using the same **`DbContext`**.
+- New migration: use EF tools against the correct context; keep migration output under **`Migrations/`** consistent with existing per-database layout.
+- If a service needs **`DbContext`** or raw SQL for a use case, implement it here—not in **Infrastructure** or **Identity**.
