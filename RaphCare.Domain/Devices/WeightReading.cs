@@ -1,5 +1,3 @@
-using RaphCare.Domain.Common;
-
 namespace RaphCare.Domain.Devices;
 
 /// <summary>
