@@ -33,6 +33,7 @@
 
 - **Send:** POST api/auth/otp/send with phone number. SendOtpHandler: IOtpService.GenerateOtpAsync (rate limit per phone), ISmsService sends code; returns 204 or 429.
 - **Verify:** POST api/auth/otp/verify with phone and code. VerifyOtpHandler: validate OTP, find or create ApplicationUser (Email = phone), assign Patient role, LoginAudit, ITokenService.GeneratePatientToken; returns 200 with token or 400.
+- **Local development:** `SmsService` is a placeholder (no real SMS). When **`IHostEnvironment.IsDevelopment()`** is true, the API logs a **warning** with prefix **`[Development] SMS not sent. OTP for testing`** including the phone number and full message (which contains the six-digit code). Run the API with `dotnet run` and watch the console (or Visual Studio / Cursor output) to copy the OTP into the mobile **Verify phone** screen.
 
 ## Voice Onboarding Flow
 

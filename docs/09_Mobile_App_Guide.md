@@ -51,6 +51,8 @@ Optional: `Onboarding:DefaultVoiceLanguage` (default `en-ZA` in **appsettings.js
 
 **RegisterOptions** matches the React concept: **Email** (Entra), **Phone** (SMS OTP + API JWT), **Voice** (phone verification first, then **in-app microphone recording** with waveform-style motion, then upload). Phone/voice use **RaphCare.Client** `IOtpAuthService` / `IVoiceOnboardingService`. Recording uses **Plugin.Maui.Audio** (`IAudioManager` / `IAudioRecorder`), registered in `MauiProgram` via `AddAudio()`. Microphone permission is requested at runtime; platform manifests include the required declarations (Android `RECORD_AUDIO`, iOS/Mac `NSMicrophoneUsageDescription`, Mac Catalyst sandbox **audio-input** entitlement, Windows **microphone** capability).
 
+**Phone OTP in development:** The API does not send real SMS yet. With **`ASPNETCORE_ENVIRONMENT=Development`**, **`SmsService`** logs a **warning** containing the full text `Your RaphCare verification code is: …` (search the API console output for **`[Development] SMS not sent. OTP for testing`**). Use that code on **Verify phone** in the app. See **`docs/06_Key_Workflows.md`** (OTP Auth Flow).
+
 Do **not** commit production secrets. Prefer User Secrets or your pipeline’s secret store for sensitive values.
 
 ### Feature flags
