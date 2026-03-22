@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Features.Settings.Views;
+namespace RaphCare.Mobile.Core.Features.Settings.Views;
 
 public partial class SettingsPage : ContentPage
 {

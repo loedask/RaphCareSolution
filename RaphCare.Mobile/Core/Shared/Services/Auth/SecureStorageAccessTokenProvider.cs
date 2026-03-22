@@ -1,6 +1,6 @@
 using RaphCare.Client.Contracts;
 
-namespace RaphCare.Mobile.Core.Features.Auth.Services;
+namespace RaphCare.Mobile.Core.Shared.Services.Auth;
 
 /// <summary>
 /// Provides the current access token for API requests. Uses <see cref="IAuthService"/> which reads from secure storage and handles silent refresh.

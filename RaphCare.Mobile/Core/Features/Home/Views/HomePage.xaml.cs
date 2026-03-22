@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Features.Home.Views;
+namespace RaphCare.Mobile.Core.Features.Home.Views;
 
 public partial class HomePage : ContentPage
 {

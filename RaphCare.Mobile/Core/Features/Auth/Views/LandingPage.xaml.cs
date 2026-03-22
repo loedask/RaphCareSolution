@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
-namespace RaphCare.Mobile.Features.Auth.Views;
+namespace RaphCare.Mobile.Core.Features.Auth.Views;
 
 public partial class LandingPage : ContentPage
 {

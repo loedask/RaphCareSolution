@@ -1,11 +1,11 @@
 using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
-using RaphCare.Mobile.Features.Appointments.Views;
-using RaphCare.Mobile.Features.Auth.Views;
-using RaphCare.Mobile.Features.Home.Views;
-using RaphCare.Mobile.Features.Insurance.Views;
-using RaphCare.Mobile.Features.Records.Views;
-using RaphCare.Mobile.Features.Settings.Views;
-using RaphCare.Mobile.Shared.Views;
+using RaphCare.Mobile.Core.Features.Appointments.Views;
+using RaphCare.Mobile.Core.Features.Auth.Views;
+using RaphCare.Mobile.Core.Features.Home.Views;
+using RaphCare.Mobile.Core.Features.Insurance.Views;
+using RaphCare.Mobile.Core.Features.Records.Views;
+using RaphCare.Mobile.Core.Features.Settings.Views;
+using RaphCare.Mobile.Core.Shared.Views;
 
 namespace RaphCare.Mobile.Core.Shared.Navigation;
 

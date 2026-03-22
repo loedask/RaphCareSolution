@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Shared.Components;
+namespace RaphCare.Mobile.Core.Shared.Components;
 
 public partial class GradientButton : Button
 {

@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using RaphCare.Mobile.Features.Auth.Views;
-using RaphCare.Mobile.Features.Home.Views;
+using RaphCare.Mobile.Core.Features.Auth.Views;
+using RaphCare.Mobile.Core.Features.Home.Views;
 using RaphCare.Client;
-using RaphCare.Mobile.Core.Features.Auth.Services;
 using RaphCare.Mobile.Core.Features.Auth.ViewModels;
+using RaphCare.Mobile.Core.Shared.Services.Auth;
 
 namespace RaphCare.Mobile
 {
@@ -47,11 +47,11 @@ namespace RaphCare.Mobile
             builder.Services.AddTransient<VerifyEmailPage>();
             builder.Services.AddTransient<SignInPage>();
             builder.Services.AddTransient<HomePage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Features.Records.Views.RecordsPage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Features.Appointments.Views.AppointmentsPage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Features.Insurance.Views.InsurancePage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Features.Settings.Views.SettingsPage>();
-            builder.Services.AddTransient<RaphCare.Mobile.Shared.Views.UnderConstructionPage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Core.Features.Records.Views.RecordsPage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Core.Features.Appointments.Views.AppointmentsPage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Core.Features.Insurance.Views.InsurancePage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Core.Features.Settings.Views.SettingsPage>();
+            builder.Services.AddTransient<RaphCare.Mobile.Core.Shared.Views.UnderConstructionPage>();
             builder.Services.AddTransient<AppShell>();
 
             // API client with bearer token (base URL from config, with fallback)

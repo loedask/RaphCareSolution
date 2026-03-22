@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Features.Records.Views;
+namespace RaphCare.Mobile.Core.Features.Records.Views;
 
 public partial class RecordsPage : ContentPage
 {
