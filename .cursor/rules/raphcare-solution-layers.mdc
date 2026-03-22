@@ -7,6 +7,17 @@ alwaysApply: true
 
 Use this as the **north star** for where code belongs. Deeper rules: **`.cursor/rules/raphcare-api.mdc`**, **`.cursor/rules/raphcare-application.mdc`**, **`.cursor/rules/raphcare-client.mdc`**, **`.cursor/rules/raphcare-identity.mdc`**, **`.cursor/rules/raphcare-infrastructure.mdc`**, **`.cursor/rules/raphcare-persistence.mdc`**, **`.cursor/rules/raphcare-mobile.mdc`**, **`.cursor/rules/raphcare-mobile-concept-template.mdc`**, **`docs/Mobile_Concept_Port.md`** (React concept — design parity for MAUI), **docs/02_Solution_Structure.md**, **docs/07_Coding_Conventions.md**, **docs/09_Mobile_App_Guide.md**.
 
+## Full-stack feature workflow (order + human-owned NSwag)
+
+For **new or changed HTTP contracts**, follow this sequence. **Do not** skip ahead or regenerate the API client from AI.
+
+1. **Backend first** — **API**, **Application**, **Persistence**, **Identity**, **Infrastructure** as needed (controllers, MediatR, validators, EF, etc.). Server-side OpenAPI/Swagger host setup (**`SwaggerExtensions`**, attributes on actions) is normal work here.
+2. **Human: NSwag / OpenAPI client** — The **repository owner** regenerates or updates **`RaphCare.Client/Services/Base/NSwag/ClientService.cs`** and **`RaphCare.Client/Services/Base/NSwag/clientsettings.nswag`** (and any related NSwag settings they maintain). **AI must not** create, overwrite, or hand-edit those generated client types or NSwag config files.
+3. **RaphCare.Client** — After the human has refreshed the generated surface, implement or extend **`Contracts/`**, **`Services/`**, **`Models/`**, **`Mappings/`**, **`ServiceRegistration`** using the **current** **`IClient`** / generated DTOs.
+4. **RaphCare.Mobile** and **Web** — Consume **Client** only; no duplicate HTTP contracts in Mobile.
+
+If generated **`IClient`** members are missing for a new endpoint, **stop** and ask the human to run NSwag—do not fabricate **`ClientService.cs`**.
+
 ## Dependency direction (who may reference whom)
 
 ```

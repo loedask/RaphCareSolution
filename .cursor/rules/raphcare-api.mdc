@@ -34,6 +34,10 @@ Registration order today: **`AddApplication`** → **`AddInfrastructure`** → *
 
 - May reference **Application**, **Identity**, **Infrastructure**, **Persistence** only through **DI** and **MediatR**—not by embedding use-case logic or **`DbContext`** in controllers.
 
+## OpenAPI client boundary (NSwag)
+
+You may adjust **server** Swagger/OpenAPI (**`App/Extensions/SwaggerExtensions`**, **`ProducesResponseType`**, action names) so the spec stays accurate. **Do not** generate, overwrite, or edit **`RaphCare.Client`** NSwag artifacts: **`Services/Base/NSwag/ClientService.cs`**, **`clientsettings.nswag`**. Those are **human-owned**. After you add or change endpoints, the human regenerates the client; **Client** / **Mobile** / **Web** work continues only **after** that step. See **`.cursor/rules/raphcare-solution-layers.mdc`** (full-stack workflow).
+
 ## Conventions
 
 - No business rules or validation logic in controllers beyond HTTP mapping; validation lives in **Application** (FluentValidation + pipeline behaviors).

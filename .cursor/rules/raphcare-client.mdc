@@ -11,7 +11,7 @@ alwaysApply: false
 ## Layout
 
 - **`Contracts/`** — **`Response<T>`**, **`ApiException`** (client-facing wrapper), **`IAccessTokenProvider`** (host supplies tokens for Bearer auth). **`Contracts/Interfaces/`** — service facades (**`IPatientService`**, etc.).
-- **`Services/Base/`** — **`IClient`** + partial **`Client`** (extends NSwag output), **`BaseHttpService`**, **`BearerTokenHandler`**. **`Services/Base/NSwag/ClientService.cs`** — **generated**; do not hand-edit except by regenerating from OpenAPI/NSwag.
+- **`Services/Base/`** — **`IClient`** + partial **`Client`** (extends NSwag output), **`BaseHttpService`**, **`BearerTokenHandler`**. **`Services/Base/NSwag/ClientService.cs`** and **`Services/Base/NSwag/clientsettings.nswag`** — **generated / human-owned**. **AI must not** create, overwrite, or hand-edit them; only the **repository owner** runs NSwag to refresh them.
 - **`Services/`** — Feature classes (**`PatientService`**) that call **`IClient`**, map to view models, and return **`Response<T>`**.
 - **`Models/`** — View models and request types for app/UI consumers (e.g. **`PatientViewModel`**, **`CreatePatientRequest`**).
 - **`Mappings/`** — AutoMapper profiles (e.g. **`PatientMappings`**) mapping generated DTOs → **`Models`**.
@@ -24,10 +24,12 @@ alwaysApply: false
 
 ## Adding a new API area
 
-1. Regenerate or extend **`IClient`** / DTOs in **`NSwag/ClientService.cs`** from the API contract when endpoints change.
+1. **Human only:** After backend endpoints exist, regenerate **`IClient`** / DTOs via NSwag into **`NSwag/ClientService.cs`** (and adjust **`clientsettings.nswag`** if needed). **AI does not** perform this step or edit those files—if types are missing, ask the human to regenerate first.
 2. Add or extend **`Contracts/Interfaces/I*Service`** and implement in **`Services/`**, typically inheriting **`BaseHttpService`** where shared HTTP helpers help.
 3. Add **`Models/`** and **`Mappings/`** so UI layers do not consume raw generated DTOs directly (keeps Mobile/Web decoupled from NSwag type churn).
 4. Register the new service in **`ServiceRegistration.AddRaphCareClient`** (same pattern as **`IPatientService`**).
+
+Order for vertical features: **backend (API + Application, …) → human NSwag → RaphCare.Client → RaphCare.Mobile / Web** (see **raphcare-solution-layers**).
 
 ## Conventions
 
