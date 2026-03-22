@@ -1,6 +1,7 @@
 using System.Windows.Input;
 using Microsoft.Extensions.Options;
 using Microsoft.Maui.ApplicationModel;
+using RaphCare.Mobile.Core.Features.Auth;
 using RaphCare.Mobile.Resources.Strings;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
@@ -75,7 +76,7 @@ public class SignInViewModel : BaseViewModel
                     .AcquireTokenInteractiveAsync(_options.B2CPasswordResetAuthority.Trim(), scopes, CancellationToken.None)
                     .ConfigureAwait(false);
                 if (result.Success)
-                    await Shell.Current.GoToAsync("//HomePage").ConfigureAwait(false);
+                    await AuthShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
                 else
                     ErrorMessage = result.ErrorMessage;
             }
@@ -105,7 +106,7 @@ public class SignInViewModel : BaseViewModel
 
             if (result.Success)
             {
-                await Shell.Current.GoToAsync("//HomePage").ConfigureAwait(false);
+                await AuthShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
             }
             else
             {

@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using RaphCare.Mobile.Core.Features.Auth;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 
@@ -42,7 +43,7 @@ public class VerifyEmailViewModel : BaseViewModel
 
             if (result.Success)
             {
-                await Shell.Current.GoToAsync("//HomePage").ConfigureAwait(false);
+                await AuthShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
             }
             else
             {

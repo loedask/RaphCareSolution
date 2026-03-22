@@ -1,6 +1,7 @@
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Features.Auth;
 using RaphCare.Mobile.Core.Features.Auth.Models;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
@@ -93,7 +94,7 @@ public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
 
             var qContinue = Uri.EscapeDataString(_continueWith);
             var qPhone = Uri.EscapeDataString(phone);
-            await Shell.Current.GoToAsync($"VerifyPhonePage?Phone={qPhone}&ContinueWith={qContinue}").ConfigureAwait(false);
+            await AuthShellNavigator.GoToAsync($"VerifyPhonePage?Phone={qPhone}&ContinueWith={qContinue}").ConfigureAwait(false);
         }
         finally
         {
