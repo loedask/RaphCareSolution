@@ -11,6 +11,7 @@ public class RiskScoreConfiguration : IEntityTypeConfiguration<RiskScore>
     {
         builder.ToTable("RiskScores");
         builder.HasKey(e => e.Id);
+        builder.Property(e => e.Score).HasPrecision(18, 2);
         builder.Property(e => e.RiskCategory).IsRequired().HasMaxLength(100);
         builder.HasIndex(e => e.ClinicId);
         builder.HasIndex(e => e.PatientId);

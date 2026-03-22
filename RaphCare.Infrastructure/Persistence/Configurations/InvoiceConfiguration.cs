@@ -13,6 +13,9 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 
         builder.HasKey(e => e.Id);
 
+        builder.Property(e => e.Amount)
+            .HasPrecision(18, 2);
+
         builder.Property(e => e.Currency)
             .IsRequired()
             .HasMaxLength(10);
