@@ -54,22 +54,51 @@ Use these as the target for **MAUI styles** (convert `rem` → device-independen
 
 ## Color tokens — `:root` (light) in `src/index.css`
 
-Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. For **MAUI**, define matching **`Color`** resources in `Resources/Styles/Colors.xaml` (convert to hex/RGB as needed).
+Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. **MAUI** mirrors them in `RaphCare.Mobile/Resources/Styles/Colors.xaml` as **`Color`** resources. Hex below is **sRGB** from the same HSL components (standard `hsl()` conversion); use these literals in XAML.
 
-| Semantic token | CSS variable (light) | MAUI resource (fill when locked) |
-|----------------|----------------------|----------------------------------|
-| Background | `--background: 210 20% 98%` | |
-| Foreground | `--foreground: 220 40% 13%` | |
-| Primary | `--primary: 192 75% 42%` | |
-| Primary foreground | `--primary-foreground: 0 0% 100%` | |
-| Muted / muted fg | `--muted`, `--muted-foreground` | |
-| Accent | `--accent: 168 55% 46%` | |
-| Destructive | `--destructive: 0 68% 56%` | |
-| Border / input / ring | `--border`, `--input`, `--ring` | |
-| Card | `--card`, `--card-foreground` | |
-| Navy / teal (brand) | `--navy`, `--navy-light`, `--teal`, `--teal-light`, `--teal-glow` | |
-| Calm (mental health) | `--calm`, `--calm-accent`, `--calm-soft` | |
-| Health status | `--health-normal`, `--health-attention`, `--health-critical` | |
+| Semantic token | CSS variable (light) | MAUI `x:Key` | Hex |
+|----------------|----------------------|--------------|-----|
+| Background | `--background` | `BackgroundColor` | `#F9FAFB` |
+| Foreground | `--foreground` | `ForegroundColor` | `#141D2E` |
+| Card | `--card` | `CardColor` | `#FFFFFF` |
+| Card foreground | `--card-foreground` | `CardForegroundColor` | `#141D2E` |
+| Popover | `--popover` | `PopoverColor` | `#FFFFFF` |
+| Popover foreground | `--popover-foreground` | `PopoverForegroundColor` | `#141D2E` |
+| Primary | `--primary` | `PrimaryColor`, `TealColor`, `RingColor` | `#1B9BBB` |
+| Primary foreground | `--primary-foreground` | `PrimaryForegroundColor` | `#FFFFFF` |
+| Primary (pressed / darker) | *(derived for MAUI)* | `PrimaryDarkColor` | `#16819C` |
+| Teal light / focus accents | `--teal-light` | `PrimaryLightColor`, `TealLightColor` | `#41C8C8` |
+| Secondary | `--secondary` | `SecondaryColor` | `#F2F5F8` |
+| Secondary foreground | `--secondary-foreground` | `SecondaryForegroundColor` | `#242E42` |
+| Muted | `--muted` | `MutedColor` | `#EDF0F2` |
+| Muted foreground | `--muted-foreground` | `MutedForegroundColor`, `TextSecondaryColor` | `#768293` |
+| Accent | `--accent` | `AccentColor` | `#35B69C` |
+| Accent foreground | `--accent-foreground` | `AccentForegroundColor` | `#FFFFFF` |
+| Destructive | `--destructive` | `DestructiveColor`, `ErrorColor`, `HealthCriticalColor` | `#DB4343` |
+| Destructive foreground | `--destructive-foreground` | `DestructiveForegroundColor` | `#FFFFFF` |
+| Border | `--border` | `BorderColor` | `#E7EBEE` |
+| Input | `--input` | `InputColor` | `#E7EBEE` |
+| Navy | `--navy` | `NavyColor`, `GradientStartColor` | `#121C30` |
+| Navy light | `--navy-light` | `NavyLightColor`, `GradientMidColor` | `#23324D` |
+| Teal glow | `--teal-glow` | `TealGlowColor` | `#78E2DF` |
+| Calm | `--calm` | `CalmColor` | `#F2F4F7` |
+| Calm accent | `--calm-accent` | `CalmAccentColor` | `#7B6EB9` |
+| Calm soft | `--calm-soft` | `CalmSoftColor` | `#ECE9F2` |
+| Health normal | `--health-normal` | `HealthNormalColor`, `SuccessColor` | `#37BE7F` |
+| Health attention | `--health-attention` | `HealthAttentionColor`, `WarningColor` | `#F6A823` |
+| Health critical | `--health-critical` | `HealthCriticalColor` | `#DB4343` |
+| Sidebar background | `--sidebar-background` | `SidebarBackgroundColor` | `#FAFAFA` |
+| Sidebar foreground | `--sidebar-foreground` | `SidebarForegroundColor` | `#3F3F46` |
+| Sidebar primary | `--sidebar-primary` | `SidebarPrimaryColor` | `#18181B` |
+| Sidebar primary fg | `--sidebar-primary-foreground` | `SidebarPrimaryForegroundColor` | `#FAFAFA` |
+| Sidebar accent | `--sidebar-accent` | `SidebarAccentColor` | `#F4F4F5` |
+| Sidebar accent fg | `--sidebar-accent-foreground` | `SidebarAccentForegroundColor` | `#18181B` |
+| Sidebar border | `--sidebar-border` | `SidebarBorderColor` | `#E5E7EB` |
+| Sidebar ring | `--sidebar-ring` | `SidebarRingColor` | `#3B82F6` |
+| Gradient brand end | `--teal` (with navy stops) | `GradientEndColor` | `#1B9BBB` |
+| Gradient card | `--gradient-card` stops | `GradientCardStartColor`, `GradientCardEndColor` | `#FFFFFF`, `#F9FAFB` |
+
+**Also in XAML (no separate CSS variable):** `SurfaceColor` → `#FFFFFF`; `TextPrimaryColor` → `#141D2E`; `TextMutedColor` → `#929CAA` (lighter muted tier for captions; HSL `215 12% 62%`).
 
 **Corner radius:** `--radius: 0.875rem` (**14px** at 16px/rem). Tailwind `rounded-lg` etc. derive from this (`md` = radius − 4px, …).
 
