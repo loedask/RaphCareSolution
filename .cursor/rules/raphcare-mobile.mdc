@@ -1,0 +1,46 @@
+---
+description: RaphCare.Mobile MAUI structure, DI, Kernel, Client API, config, and tests
+globs: RaphCare.Mobile/**/*.cs,RaphCare.Mobile/**/*.xaml,RaphCare.Mobile/**/*.razor,RaphCare.Mobile.Kernel/**/*.cs,RaphCare.Mobile.Tests/**/*.cs
+alwaysApply: false
+---
+
+# RaphCare.Mobile rules
+
+Apply when editing **RaphCare.Mobile**, **RaphCare.Mobile.Kernel**, or **RaphCare.Mobile.Tests**. Human-oriented detail: `docs/09_Mobile_App_Guide.md`.
+
+## Where code lives
+
+- **`Core/Features/<Feature>/`**: Screens (Views), feature view models, feature-only types. Namespaces: `RaphCare.Mobile.Core.Features.<Feature>.Views` / `.ViewModels` (and `.Services` / `.Models` only when truly feature-scoped).
+- **`Core/Shared/`**: Cross-feature reuse—navigation (`AppNavigator`), auth (`Core.Shared.Services.Auth`), **Controls** (MAUI XAML; namespace `RaphCare.Mobile.Core.Shared.Controls`), **ViewModels** (`BaseViewModel` in `Core.Shared.ViewModels`), shared pages (`UnderConstructionPage`). Do **not** name this folder `Components` for MAUI controls (that name is reserved for confusion with Blazor).
+- **`Core/Infrastructure/`**: Composition only—`MobileServiceCollectionExtensions.AddRaphCareMobile`, `MobileServiceHub`. New service registrations go into `AddRaphCareMobile` (or a focused extension called from there), not scattered in `MauiProgram` unless there is a strong reason.
+- **`Core/Converters/`**: `IValueConverter` types; register in `App.xaml` resource dictionary.
+- **`Blazor/`**: Razor UI for **BlazorWebView** only (`Routes.razor`, `Layout/`, `Pages/`). Namespace `RaphCare.Mobile.Blazor`. Hybrid host page: `Core/Features/Hybrid/Views/BlazorHostPage`.
+- **`RaphCare.Mobile.Kernel`**: **net10.0**, **no MAUI**. Holds `AuthResult`, `FeatureFlags`, `FeatureFlagOptions`—same CLR namespaces (`RaphCare.Mobile.Core.Shared.*`) as before the split. Add here only types that must be unit-tested without the MAUI workload.
+- **`RaphCare.Client`**: All HTTP, API DTOs, `IPatientService`-style interfaces, `AddRaphCareClient`. **Do not** duplicate API models or hand-rolled HTTP in Mobile.
+
+## Namespaces
+
+- Keep **folder path aligned** with namespace under `Core/` (e.g. `Core/Shared/Controls` → `RaphCare.Mobile.Core.Shared.Controls`).
+- Root app types (`App`, `MauiProgram`, `AppShell`) stay in `RaphCare.Mobile`.
+
+## Dependency injection and Shell
+
+- Shell `DataTemplate` pages need a **parameterless** constructor; resolve VMs with **`MobileServiceHub.GetRequiredService<T>()`**—do not reintroduce `MauiProgram.ServiceProvider` as the pattern.
+- Register pages and view models in **`AddRaphCareMobile`** (`Core/Infrastructure/DependencyInjection/`).
+
+## Configuration and feature flags
+
+- Layers: `appsettings.json` → (DEBUG) `appsettings.Development.json` → User Secrets (`UserSecretsId` on Mobile project). Do not commit production secrets; document overrides in `docs/09_Mobile_App_Guide.md` when behavior changes.
+- Feature toggles: **`FeatureFlagOptions`** section **`FeatureFlags`** in config; **`FeatureFlags.Initialize`** runs after `MauiApp` build. **`AppNavigator.GoToFeatureAsync`** respects flags—keep that behavior when adding routes.
+
+## Localization
+
+- Default strings: **`Resources/Strings/AppResources.resx`**; access via **`RaphCare.Mobile.Resources.Strings.AppResources`**. Add new user-visible strings there (and satellite `.resx` for locales when needed), not hard-coded in XAML except trivial placeholders.
+
+## Testing
+
+- **`RaphCare.Mobile.Tests`** references **`RaphCare.Mobile.Kernel` only**—do not reference the MAUI app project from tests (Resizetizer / multi-target issues). Test logic in Kernel or extract testable pieces to Kernel when you need `dotnet test` without MAUI.
+
+## Release quality
+
+- Mobile **Release** uses **`TreatWarningsAsErrors`**. Prefer fixing new warnings over suppressing them; XAML compiled-binding (`x:DataType`) warnings are known tech debt.
