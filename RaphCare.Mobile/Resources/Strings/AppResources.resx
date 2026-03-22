@@ -186,7 +186,7 @@ Accessible. Intelligent. Human.</value>
     <value>Upload voice sample</value>
   </data>
   <data name="VoiceSubmitSubtitle" xml:space="preserve">
-    <value>Choose an audio file (e.g. WAV). The API transcribes it and creates your patient record.</value>
+    <value>Record a short message with your details. We transcribe it and create your patient record.</value>
   </data>
   <data name="VoiceSubmitPhoneLabel" xml:space="preserve">
     <value>Verified phone</value>
@@ -194,17 +194,32 @@ Accessible. Intelligent. Human.</value>
   <data name="VoiceSubmitLanguageLabel" xml:space="preserve">
     <value>Language</value>
   </data>
-  <data name="VoiceSubmitPickFile" xml:space="preserve">
-    <value>Choose audio file</value>
+  <data name="VoiceRecordStart" xml:space="preserve">
+    <value>Start recording</value>
   </data>
-  <data name="VoiceSubmitPickTitle" xml:space="preserve">
-    <value>Select audio</value>
+  <data name="VoiceRecordStop" xml:space="preserve">
+    <value>Done speaking</value>
   </data>
-  <data name="VoiceSubmitSubmit" xml:space="preserve">
-    <value>Submit</value>
+  <data name="VoiceRecordListeningTitle" xml:space="preserve">
+    <value>Listening…</value>
   </data>
-  <data name="VoiceSubmitNoFile" xml:space="preserve">
-    <value>Choose an audio file first.</value>
+  <data name="VoiceRecordListeningHint" xml:space="preserve">
+    <value>Say your name, date of birth, and phone number clearly.</value>
+  </data>
+  <data name="VoiceRecordProcessingTitle" xml:space="preserve">
+    <value>Processing…</value>
+  </data>
+  <data name="VoiceRecordProcessingHint" xml:space="preserve">
+    <value>Creating your profile from your voice…</value>
+  </data>
+  <data name="VoiceRecordNotAvailable" xml:space="preserve">
+    <value>This device cannot record audio.</value>
+  </data>
+  <data name="VoiceRecordPermissionDenied" xml:space="preserve">
+    <value>Microphone access is required. Enable it in system settings.</value>
+  </data>
+  <data name="VoiceRecordStopFailed" xml:space="preserve">
+    <value>Could not finish recording. Try again.</value>
   </data>
   <data name="VoiceSubmitNoClinic" xml:space="preserve">
     <value>Set Onboarding:VoiceRegistrationClinicId in appsettings (or User Secrets) to your demo clinic Guid.</value>

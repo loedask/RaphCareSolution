@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:RaphCare.Mobile.Core.Features.Auth.Models"
              xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Shared.Controls"
              x:Class="RaphCare.Mobile.Core.Features.Auth.Views.VoiceSubmitPage"
              Shell.NavBarIsVisible="False"
@@ -12,30 +13,83 @@
                 <Button Style="{StaticResource IconBackButton}" Text="←" FontSize="20" Command="{Binding BackCommand}" />
             </HorizontalStackLayout>
 
-            <Label Text="{Binding Title}" Style="{StaticResource TitleLarge}" Margin="0,0,0,4" />
-            <Label Text="{Binding Subtitle}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" Margin="0,0,0,16" />
+            <!-- Intro: phone + language + start -->
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding ShowIntroChrome}">
+                <Label Text="{Binding Title}" Style="{StaticResource TitleLarge}" Margin="0,0,0,4" />
+                <Label Text="{Binding Subtitle}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
 
-            <VerticalStackLayout Spacing="8" IsVisible="{Binding ShowSuccess, Converter={StaticResource InvertedBoolConverter}}">
-                <Label Text="{Binding PhoneLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <Label Text="{Binding PhoneLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,12,0,0" />
                 <Label Text="{Binding PhoneE164}" Style="{StaticResource BodySmall}" />
 
-                <Label Text="{Binding LanguageLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,12,0,0" />
+                <Label Text="{Binding LanguageLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
                 <Entry Text="{Binding Language}" Style="{StaticResource DefaultEntry}" />
 
-                <Button Text="{Binding PickFileText}"
-                        Style="{StaticResource AuthSecondaryButton}"
-                        Command="{Binding PickFileCommand}"
-                        Margin="0,12,0,0" />
-                <Label Text="{Binding PickedFileName}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" FontSize="12" Margin="0,8,0,0" />
 
-                <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" FontSize="12" />
-
-                <shared:GradientButton Text="{Binding SubmitText}"
-                                       Command="{Binding SubmitCommand}"
-                                       IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                                       Margin="0,16,0,0" />
+                <shared:GradientButton Text="{Binding StartRecordingText}"
+                                         Command="{Binding StartRecordingCommand}"
+                                         IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                         Margin="0,16,0,0" />
             </VerticalStackLayout>
 
+            <!-- Recording: concept-style mic + level bars -->
+            <VerticalStackLayout Spacing="20" IsVisible="{Binding IsRecording}" HorizontalOptions="Fill">
+                <Label Text="{Binding ListeningTitle}" Style="{StaticResource TitleLarge}" HorizontalTextAlignment="Center" />
+                <Label Text="{Binding ListeningHint}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" HorizontalTextAlignment="Center" />
+
+                <Grid HorizontalOptions="Center" Margin="0,16,0,24" WidthRequest="200" HeightRequest="200">
+                    <Border StrokeThickness="0" WidthRequest="180" HeightRequest="180" HorizontalOptions="Center" VerticalOptions="Center"
+                            Opacity="0.35" Scale="{Binding PulseScale}">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="90" /></Border.StrokeShape>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+                    <Border WidthRequest="112" HeightRequest="112" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center" Scale="{Binding PulseScale}">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="56" /></Border.StrokeShape>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Label Text="🎤" FontSize="40" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                </Grid>
+
+                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding WaveBars}"
+                                       HorizontalOptions="Center"
+                                       HeightRequest="40"
+                                       VerticalOptions="End"
+                                       Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:WaveBarItem">
+                            <BoxView WidthRequest="4"
+                                     HeightRequest="{Binding Height}"
+                                     Color="{StaticResource TealColor}"
+                                     CornerRadius="2"
+                                     VerticalOptions="End"
+                                     Margin="0,0,3,0" />
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+
+                <shared:GradientButton Text="{Binding StopRecordingText}"
+                                         Command="{Binding StopRecordingCommand}"
+                                         Margin="0,8,0,0" />
+            </VerticalStackLayout>
+
+            <!-- Processing -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsProcessing}" HorizontalOptions="Center">
+                <ActivityIndicator IsRunning="True" Color="{StaticResource TealColor}" />
+                <Label Text="{Binding ProcessingTitle}" Style="{StaticResource TitleLarge}" HorizontalTextAlignment="Center" />
+                <Label Text="{Binding ProcessingHint}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <!-- Success -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding ShowSuccess}">
                 <Label Text="{Binding SuccessTitle}" Style="{StaticResource TitleLarge}" />
                 <Label Text="{Binding SuccessTranscription}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />

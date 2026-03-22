@@ -49,7 +49,7 @@ Optional: `Onboarding:DefaultVoiceLanguage` (default `en-ZA` in **appsettings.js
 
 ### Create account (design parity)
 
-**RegisterOptions** matches the React concept: **Email** (Entra), **Phone** (SMS OTP + API JWT), **Voice** (phone verification first, then audio file upload). Phone/voice use **RaphCare.Client** `IOtpAuthService` / `IVoiceOnboardingService`.
+**RegisterOptions** matches the React concept: **Email** (Entra), **Phone** (SMS OTP + API JWT), **Voice** (phone verification first, then **in-app microphone recording** with waveform-style motion, then upload). Phone/voice use **RaphCare.Client** `IOtpAuthService` / `IVoiceOnboardingService`. Recording uses **Plugin.Maui.Audio** (`IAudioManager` / `IAudioRecorder`), registered in `MauiProgram` via `AddAudio()`. Microphone permission is requested at runtime; platform manifests include the required declarations (Android `RECORD_AUDIO`, iOS/Mac `NSMicrophoneUsageDescription`, Mac Catalyst sandbox **audio-input** entitlement, Windows **microphone** capability).
 
 Do **not** commit production secrets. Prefer User Secrets or your pipeline’s secret store for sensitive values.
 

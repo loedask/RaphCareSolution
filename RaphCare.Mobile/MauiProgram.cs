@@ -2,7 +2,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Plugin.Maui.Audio;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
+#if IOS || MACCATALYST
+using AVFoundation;
+#endif
 using RaphCare.Mobile.Core.Infrastructure.DependencyInjection;
 using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
 
@@ -31,6 +35,14 @@ public static class MauiProgram
                 fonts.AddFont("SpaceGrotesk-VariableFont_wght.ttf", "SpaceGrotesk");
                 fonts.AddFont("DMSans-VariableFont_opsz_wght.ttf", "DMSans");
                 fonts.AddFont("DMSans-Italic-VariableFont_opsz_wght.ttf", "DMSansItalic");
+            })
+            .AddAudio(configureRecordingOptions: static ro =>
+            {
+#if IOS || MACCATALYST
+                ro.Category = AVAudioSessionCategory.PlayAndRecord;
+                ro.Mode = AVAudioSessionMode.Default;
+                ro.CategoryOptions = AVAudioSessionCategoryOptions.DefaultToSpeaker;
+#endif
             });
 
         builder.Services.AddRaphCareMobile(builder.Configuration);

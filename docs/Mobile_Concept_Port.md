@@ -150,7 +150,7 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Register (3 methods) | `Register.tsx` | `RegisterOptionsPage` (Email / Phone / Voice cards) | ☑ |
 | Email register | `EmailRegister.tsx` | `RegisterEmailPage` | ☐ |
 | Phone register / verify | `PhoneRegister.tsx`, verify | `RegisterPhonePage`, `VerifyPhonePage` | ☐ |
-| Voice register | `VoiceRegister.tsx` (full animated mock) | `RegisterVoiceIntroPage` → phone → `VoiceSubmitPage` (file picker + API) | ☐ |
+| Voice register | `VoiceRegister.tsx` (full animated mock) | `RegisterVoiceIntroPage` → phone → `VoiceSubmitPage` (mic record + level bars + API) | ☐ |
 | Login / … | `Login.tsx`, … | Auth feature | ☐ |
 | … | … | … | ☐ |
 

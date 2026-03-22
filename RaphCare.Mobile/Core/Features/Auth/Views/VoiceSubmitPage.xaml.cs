@@ -12,4 +12,11 @@ public partial class VoiceSubmitPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override async void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        base.OnNavigatedFrom(args);
+        if (BindingContext is VoiceSubmitViewModel vm)
+            await vm.CancelAsync().ConfigureAwait(false);
+    }
 }

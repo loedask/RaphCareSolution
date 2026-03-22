@@ -28,5 +28,7 @@
     </array>
     <key>XSAppIconAssets</key>
     <string>Assets.xcassets/appicon.appiconset</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>RaphCare records your voice to register your profile and transcribe your details.</string>
 </dict>
 </plist>
