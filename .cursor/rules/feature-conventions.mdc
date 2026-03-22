@@ -1,0 +1,69 @@
+---
+description: Application feature naming and folder conventions
+alwaysApply: true
+---
+
+# Feature Conventions
+
+Apply these conventions when creating or updating application features.
+
+## Naming
+
+- Use singular feature folder names: `WorkRequest`, `CustomerService`.
+- Commands use verbs: `Create`, `Update`, `Remove` (domain verbs like `Approve` are allowed).
+- Use `Create` for primary entity creation commands.
+- Keep `Add` only for sub-actions where it reads naturally.
+- `AddWorkRequestCommentCommand` (good)
+- `CreateWorkRequestCommand` (good)
+- Primary CRUD verbs: `Create`, `Update`, `Remove`
+- Domain-specific verbs: `Approve`, `Reject`, `Assign`, `AddComment` (as needed)
+- Application layer: `Command` / `Query`
+- Web/API transport layer: must use `RequestDto` / `ResponseDto`
+- Example: `CreateWorkRequestRequestDto` (Web/API) -> `CreateWorkRequestCommand` (Application)
+- Example: `AssignWorkRequestToDeveloperRequestDto` (Web/API) -> `AssignWorkRequestToDeveloperCommand` (Application)
+- Example: `FetchPagedWorkRequestsResponseDto` (Web/API response contract)
+- Queries use:
+  - `FetchAll{EntityPlural}`
+  - `FetchPaged{EntityPlural}`
+  - `Retrieve{Entity}ById`
+
+## Folder Structure
+
+- `Features/{EntitySingular}/Commands/{Action}`
+- `Features/{EntitySingular}/Queries/{QueryType}`
+- `Features/{EntitySingular}/Validation`
+- `Features/{EntitySingular}/Mappings`
+- `Features/{EntitySingular}/Shared`
+- `Contracts/Persistence/I{Entity}Repository.cs` (or split query/command contracts only when needed)
+
+## Query Folder Mapping
+
+- `Queries/GetAll` for `FetchAll{EntityPlural}...`
+- `Queries/GetPaged` for `FetchPaged{EntityPlural}...`
+- `Queries/Read` for `Retrieve{Entity}ById...`
+
+## Validation and Mappings
+
+- Put cross-command/query validators in `Validation`.
+- Keep validator files next to command/query when they are specific to one operation.
+- Keep feature-specific mapping profiles in `Mappings`.
+- Handlers consume application DTO/command models and delegate entity transformation to AutoMapper.
+- Map DTO/command -> Domain entity in mapping profiles (do not hand-map domain entities inside handlers).
+- Example: `CreateWorkRequestCommand` -> `WorkRequest` is defined in `WorkRequestMappingProfile`.
+- Mapping file names in `Mappings` must use `{Feature}MappingProfile.cs` (for example `WorkRequestMappingProfile.cs`).
+
+## Testing Conventions
+
+- Add feature tests based on the `WorkRequest` test shape.
+- Include command handler tests under `TCSA.Solution.UnitTests/Features/{Feature}/Commands`.
+- Include query handler tests under `TCSA.Solution.UnitTests/Features/{Feature}/Queries`.
+- Include validator tests under `TCSA.Solution.UnitTests/Features/{Feature}/Validators`.
+- Add/update architecture convention tests to ensure each command has a handler and validator, and each handler has a corresponding test class.
+
+## Controller Rules
+
+- Controllers accept Web/API transport contracts only: `*RequestDto` for input and `*ResponseDto` for output.
+- Controllers map DTOs to application `Command`/`Query` objects and send them via `IMediator`.
+- Do not bind controller actions directly to application commands or domain entities.
+- Do not put domain/business logic in controllers; keep controllers orchestration-only.
+- For list endpoints, map application DTOs to response DTOs before returning.
