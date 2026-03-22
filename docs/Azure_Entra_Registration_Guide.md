@@ -211,4 +211,4 @@ Decode a sample access token at [jwt.ms](https://jwt.ms): confirm **`aud`** equa
 
 ---
 
-*Older duplicate material was consolidated from `azure-identity-setup.md` into this guide; patient OTP architecture remains in [04_Authentication_Authorization.md](./04_Authentication_Authorization.md).*
+Patient OTP / API-issued JWT (non-Entra) flows: [04_Authentication_Authorization.md](./04_Authentication_Authorization.md).
