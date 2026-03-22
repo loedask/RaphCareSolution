@@ -45,7 +45,7 @@ public static class DbContextModelBuilderExtensions
 
     /// <summary>
     /// Two-pass alignment so EF Core warning 10622 is satisfied: (1) <see cref="ISoftDelete"/> principals; (2) any other
-    /// principal that already has a global filter (e.g. <see cref="Organization.ProviderSchedule"/> after pass 1).
+    /// principal that already has a global filter (e.g. ProviderSchedule after pass 1).
     /// Pass 2 rewrites the principal's filter by substituting its parameter with the dependent→principal navigation.
     /// Optional foreign keys use <c>FK == null || (principal visibility)</c>.
     /// </summary>
@@ -89,6 +89,8 @@ public static class DbContextModelBuilderExtensions
         {
             var principalFilter = fk.PrincipalEntityType.GetQueryFilter();
             if (principalFilter is null) continue;
+            if (!softDeletePrincipalsOnly && principalFilter.Parameters.Count != 1)
+                continue;
 
             Expression expr = softDeletePrincipalsOnly
                 ? BuildPrincipalNotSoftDeleted(parameter, fk)
@@ -133,10 +135,6 @@ public static class DbContextModelBuilderExtensions
         IMutableForeignKey fk,
         LambdaExpression principalFilter)
     {
-        if (principalFilter.Parameters.Count != 1)
-            throw new InvalidOperationException(
-                $"Global query filter for principal {fk.PrincipalEntityType.Name} must have a single parameter to compose with dependents.");
-
         var navigation = fk.DependentToPrincipal!;
         var navigatedPrincipal = Expression.Property(dependentParameter, navigation.Name);
         var principalParam = principalFilter.Parameters[0];
