@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace RaphCare.Mobile.Core.Shared.Components;
+namespace RaphCare.Mobile.Core.Shared.Controls;
 
 public partial class InputField : VerticalStackLayout
 {

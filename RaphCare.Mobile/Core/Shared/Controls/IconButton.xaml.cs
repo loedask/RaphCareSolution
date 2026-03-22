@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Core.Shared.Components;
+namespace RaphCare.Mobile.Core.Shared.Controls;
 
 public partial class IconButton : Button
 {

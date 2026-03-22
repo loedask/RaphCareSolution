@@ -75,7 +75,8 @@
 
 ### RaphCare.Mobile
 - **Core/Features/** — Feature-specific Views, ViewModels, Services, Models: Auth (Landing, RegisterOptions, RegisterEmail, VerifyEmail, SignIn; EntraAuthService, EntraAuthOptions, IAuthService, SecureStorageAccessTokenProvider), Home, Records, Appointments, Insurance, Settings. View namespaces: RaphCare.Mobile.Features.*.Views for Shell/routing; ViewModels/Services use RaphCare.Mobile.Core.Features.*.
-- **Core/Shared/** — AppNavigator (Navigation; RegisterAllRoutes, GoToFeatureAsync for feature-flag aware navigation), Services/Auth (EntraAuthOptions, IAuthService, EntraAuthService used by MauiProgram), Services/FeatureFlags (FeatureFlags), Views/UnderConstructionPage (RaphCare.Mobile.Shared.Views), Components (GradientButton, CardView, InputField, IconButton).
+- **Core/Shared/** — AppNavigator (Navigation; RegisterAllRoutes, GoToFeatureAsync for feature-flag aware navigation), Services/Auth (EntraAuthOptions, IAuthService, EntraAuthService used by MauiProgram), Services/FeatureFlags (FeatureFlags), Views/UnderConstructionPage, **Controls** (MAUI XAML: GradientButton, CardView, InputField, IconButton; namespace `RaphCare.Mobile.Core.Shared.Controls`).
+- **Blazor/** — Razor UI for optional BlazorWebView (`Routes.razor`, `Layout/`, `Pages/`; namespace `RaphCare.Mobile.Blazor`).
 - **Core/Converters/** — InvertedBoolConverter, StringNotEmptyConverter (namespace RaphCare.Mobile.Core.Converters; referenced in App.xaml).
 - **Core/ViewModels/** — BaseViewModel.
 - **AppShell** — Shell with FlyoutBehavior Disabled; routes LandingPage (auth) and HomePage (main); AppNavigator.RegisterAllRoutes() for all feature routes. References RaphCare.Mobile.Features.Auth.Views, RaphCare.Mobile.Features.Home.Views.
