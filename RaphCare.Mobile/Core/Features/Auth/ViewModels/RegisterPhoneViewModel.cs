@@ -1,8 +1,8 @@
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
-using RaphCare.Mobile.Core.Features.Auth;
 using RaphCare.Mobile.Core.Features.Auth.Models;
+using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
@@ -94,7 +94,7 @@ public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
 
             var qContinue = Uri.EscapeDataString(_continueWith);
             var qPhone = Uri.EscapeDataString(phone);
-            await AuthShellNavigator.GoToAsync($"VerifyPhonePage?Phone={qPhone}&ContinueWith={qContinue}").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync($"VerifyPhonePage?Phone={qPhone}&ContinueWith={qContinue}").ConfigureAwait(false);
         }
         finally
         {
@@ -105,10 +105,10 @@ public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
     private async Task GoBackAsync()
     {
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
-            await Shell.Current.GoToAsync("..").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("..");
         else if (string.Equals(_continueWith, "Voice", StringComparison.OrdinalIgnoreCase))
-            await Shell.Current.GoToAsync("RegisterVoiceIntroPage").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("RegisterVoiceIntroPage");
         else
-            await Shell.Current.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("RegisterOptionsPage");
     }
 }

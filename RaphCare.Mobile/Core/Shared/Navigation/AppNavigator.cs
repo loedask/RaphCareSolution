@@ -69,12 +69,12 @@ public static class AppNavigator
         if (enabled)
         {
             var path = absolute ? "//" + pageRoute : pageRoute;
-            await Shell.Current.GoToAsync(path);
+            await SafeShellNavigator.GoToAsync(path);
         }
         else
         {
             var uri = $"{UnderConstruction}?featureName={Uri.EscapeDataString(featureDisplayName ?? route)}";
-            await Shell.Current.GoToAsync(uri);
+            await SafeShellNavigator.GoToAsync(uri);
         }
     }
 

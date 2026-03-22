@@ -1,5 +1,5 @@
 using System.Windows.Input;
-using RaphCare.Mobile.Core.Features.Auth;
+using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 
@@ -58,7 +58,7 @@ public class RegisterEmailViewModel : BaseViewModel
         Title = "Create with Email";
         RegisterCommand = new Command(async () => await RegisterAsync(), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync());
-        SignInCommand = new Command(async () => await Shell.Current.GoToAsync("SignInPage").ConfigureAwait(false));
+        SignInCommand = new Command(async () => await SafeShellNavigator.GoToAsync("SignInPage"));
     }
 
     private async Task RegisterAsync()
@@ -84,7 +84,7 @@ public class RegisterEmailViewModel : BaseViewModel
 
             if (result.Success)
             {
-                await AuthShellNavigator.GoToAsync("//VerifyEmailPage").ConfigureAwait(false);
+                await SafeShellNavigator.GoToAsync("//VerifyEmailPage").ConfigureAwait(false);
             }
             else
             {
@@ -100,8 +100,8 @@ public class RegisterEmailViewModel : BaseViewModel
     private async Task GoBackAsync()
     {
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
-            await Shell.Current.GoToAsync("..").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("..");
         else
-            await Shell.Current.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("RegisterOptionsPage");
     }
 }

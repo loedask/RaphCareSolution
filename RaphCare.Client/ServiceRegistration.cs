@@ -37,8 +37,10 @@ public static class ServiceRegistration
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName),
             sp.GetRequiredService<IMapper>()!));
 
-        services.AddScoped<IOtpAuthService, OtpAuthService>();
-        services.AddScoped<IVoiceOnboardingService, VoiceOnboardingService>();
+        // Transient: MAUI Shell-created pages often resolve VMs via root IServiceProvider (no scope);
+        // scoped registration throws when resolved outside a scope.
+        services.AddTransient<IOtpAuthService, OtpAuthService>();
+        services.AddTransient<IVoiceOnboardingService, VoiceOnboardingService>();
 
         return services;
     }

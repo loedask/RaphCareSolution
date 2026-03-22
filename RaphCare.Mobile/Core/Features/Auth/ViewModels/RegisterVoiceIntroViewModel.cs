@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
@@ -13,7 +14,7 @@ public class RegisterVoiceIntroViewModel : BaseViewModel
         IntroBody = AppResources.T("RegisterVoiceIntroBody");
         ContinueLabel = AppResources.T("RegisterVoiceContinue");
 
-        ContinueCommand = new Command(async () => await Shell.Current.GoToAsync("RegisterPhonePage?ContinueWith=Voice").ConfigureAwait(false));
+        ContinueCommand = new Command(async () => await SafeShellNavigator.GoToAsync("RegisterPhonePage?ContinueWith=Voice"));
         BackCommand = new Command(async () => await GoBackAsync());
     }
 
@@ -24,5 +25,5 @@ public class RegisterVoiceIntroViewModel : BaseViewModel
     public ICommand BackCommand { get; }
 
     private static async Task GoBackAsync() =>
-        await Shell.Current.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
+        await SafeShellNavigator.GoToAsync("RegisterOptionsPage");
 }

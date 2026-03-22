@@ -7,6 +7,7 @@ using Plugin.Maui.Audio;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Auth.Models;
 using RaphCare.Mobile.Core.Shared.Configuration;
+using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
@@ -60,7 +61,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
 
         StartRecordingCommand = new Command(async () => await StartRecordingAsync(), () => !IsBusy && !IsRecording && !IsProcessing && !ShowSuccess);
         StopRecordingCommand = new Command(async () => await StopRecordingAndSubmitAsync(), () => !IsBusy && IsRecording);
-        ContinueHomeCommand = new Command(async () => await Shell.Current.GoToAsync("//HomePage").ConfigureAwait(false));
+        ContinueHomeCommand = new Command(async () => await SafeShellNavigator.GoToAsync("//HomePage"));
         BackCommand = new Command(async () => await GoBackAsync());
     }
 
@@ -186,7 +187,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
     private async Task GoBackAsync()
     {
         await CancelAsync().ConfigureAwait(false);
-        await Shell.Current.GoToAsync("..").ConfigureAwait(false);
+        await SafeShellNavigator.GoToAsync("..");
     }
 
     private static AudioRecorderOptions BuildRecorderStartOptions() =>

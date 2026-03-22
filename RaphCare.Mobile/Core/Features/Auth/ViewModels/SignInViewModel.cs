@@ -1,7 +1,7 @@
 using System.Windows.Input;
 using Microsoft.Extensions.Options;
 using Microsoft.Maui.ApplicationModel;
-using RaphCare.Mobile.Core.Features.Auth;
+using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Resources.Strings;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
@@ -60,7 +60,7 @@ public class SignInViewModel : BaseViewModel
         if (!string.IsNullOrWhiteSpace(url))
             await Launcher.Default.OpenAsync(new Uri(url.Trim(), UriKind.Absolute)).ConfigureAwait(false);
         else
-            await Shell.Current.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("RegisterOptionsPage");
     }
 
     private async Task OpenPasswordResetAsync()
@@ -76,7 +76,7 @@ public class SignInViewModel : BaseViewModel
                     .AcquireTokenInteractiveAsync(_options.B2CPasswordResetAuthority.Trim(), scopes, CancellationToken.None)
                     .ConfigureAwait(false);
                 if (result.Success)
-                    await AuthShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
+                    await SafeShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
                 else
                     ErrorMessage = result.ErrorMessage;
             }
@@ -106,7 +106,7 @@ public class SignInViewModel : BaseViewModel
 
             if (result.Success)
             {
-                await AuthShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
+                await SafeShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
             }
             else
             {
@@ -122,8 +122,8 @@ public class SignInViewModel : BaseViewModel
     private async Task GoBackAsync()
     {
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
-            await Shell.Current.GoToAsync("..").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("..");
         else
-            await Shell.Current.GoToAsync("//LandingPage").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("//LandingPage");
     }
 }

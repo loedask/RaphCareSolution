@@ -15,6 +15,6 @@ public partial class HomePage : ContentPage
 
     private async void OnOpenBlazorClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(AppNavigator.BlazorHost).ConfigureAwait(false);
+        await SafeShellNavigator.GoToAsync(AppNavigator.BlazorHost);
     }
 }

@@ -1,7 +1,7 @@
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
-using RaphCare.Mobile.Core.Features.Auth;
+using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
@@ -109,11 +109,11 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
             if (string.Equals(_continueWith, "Voice", StringComparison.OrdinalIgnoreCase))
             {
                 var q = Uri.EscapeDataString(PhoneE164);
-                await AuthShellNavigator.GoToAsync($"VoiceSubmitPage?Phone={q}").ConfigureAwait(false);
+                await SafeShellNavigator.GoToAsync($"VoiceSubmitPage?Phone={q}").ConfigureAwait(false);
             }
             else
             {
-                await AuthShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
+                await SafeShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
             }
         }
         finally
@@ -142,6 +142,6 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
 
     private async Task GoBackAsync()
     {
-        await AuthShellNavigator.GoToAsync("..").ConfigureAwait(false);
+        await SafeShellNavigator.GoToAsync("..").ConfigureAwait(false);
     }
 }

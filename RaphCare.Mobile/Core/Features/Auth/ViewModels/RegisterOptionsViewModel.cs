@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
@@ -21,11 +22,11 @@ public class RegisterOptionsViewModel : BaseViewModel
         AlreadyHaveAccount = AppResources.T("RegisterAlreadyHaveAccount");
         SignInText = AppResources.T("AuthSignIn");
 
-        CreateWithEmailCommand = new Command(async () => await Shell.Current.GoToAsync("RegisterEmailPage").ConfigureAwait(false));
-        CreateWithPhoneCommand = new Command(async () => await Shell.Current.GoToAsync("RegisterPhonePage").ConfigureAwait(false));
-        CreateWithVoiceCommand = new Command(async () => await Shell.Current.GoToAsync("RegisterVoiceIntroPage").ConfigureAwait(false));
+        CreateWithEmailCommand = new Command(async () => await SafeShellNavigator.GoToAsync("RegisterEmailPage"));
+        CreateWithPhoneCommand = new Command(async () => await SafeShellNavigator.GoToAsync("RegisterPhonePage"));
+        CreateWithVoiceCommand = new Command(async () => await SafeShellNavigator.GoToAsync("RegisterVoiceIntroPage"));
         BackCommand = new Command(async () => await GoBackAsync());
-        SignInCommand = new Command(async () => await Shell.Current.GoToAsync("SignInPage").ConfigureAwait(false));
+        SignInCommand = new Command(async () => await SafeShellNavigator.GoToAsync("SignInPage"));
     }
 
     public string PageTitle { get; }
@@ -48,8 +49,8 @@ public class RegisterOptionsViewModel : BaseViewModel
     private async Task GoBackAsync()
     {
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
-            await Shell.Current.GoToAsync("..").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("..");
         else
-            await Shell.Current.GoToAsync("LandingPage").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("LandingPage");
     }
 }

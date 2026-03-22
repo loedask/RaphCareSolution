@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
 using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 
@@ -166,11 +167,11 @@ public class LandingViewModel : BaseViewModel
         if (!string.IsNullOrWhiteSpace(url))
             await Launcher.Default.OpenAsync(new Uri(url.Trim(), UriKind.Absolute)).ConfigureAwait(false);
         else
-            await Shell.Current.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("RegisterOptionsPage");
     }
 
     private async Task SignInAsync()
     {
-        await Shell.Current.GoToAsync("SignInPage").ConfigureAwait(false);
+        await SafeShellNavigator.GoToAsync("SignInPage");
     }
 }
