@@ -1,0 +1,37 @@
+---
+description: Lovable React+Vite concept — design must match exactly when porting to RaphCare.Mobile (MAUI)
+globs: RaphCare.Mobile/**/*,RaphCare.Mobile/**/*.xaml,RaphCare.Mobile.Kernel/**/*.cs,RaphCare.Client/**/*.cs
+alwaysApply: false
+---
+
+# Mobile concept — design source (Lovable / React + Vite)
+
+## What the concept is
+
+The reference app at **`C:\laragon\www\raphcare-mobile-app-concept`** is built with **Lovable** as a **React + Vite** web app. **Do not** port React patterns, hooks, or routing literally into MAUI.
+
+**What must carry over:** the **visual design** — as close to **exact** as MAUI allows: **colors, typography (families, sizes, weights, line height), spacing, radii, shadows, borders, iconography, layout (grids, stacks, alignment), component states** (default, pressed, disabled), and **screen composition** (what appears where). Treat the concept as the **design spec**, not the architecture spec.
+
+## Fidelity rules for RaphCare.Mobile
+
+- **Match the concept first** on each screen or shared control; then wire **Shell**, **ViewModels**, **Client**, and **Kernel** per **`.cursor/rules/raphcare-mobile.mdc`**.
+- Centralize tokens: map concept **CSS/Tailwind/theme** values into **`Resources/Styles/`** (`Colors.xaml`, `Typography.xaml`, `Buttons.xaml`, etc.) and **`App.xaml`** merged dictionaries—avoid one-off hex in page XAML unless fixing a gap.
+- Reuse **`Core/Shared/Controls/`** for controls that repeat in the concept (cards, inputs, buttons) so spacing and corners stay **consistent** with the React UI.
+- When the concept and MAUI differ (safe areas, fonts, blur), **document the delta** in a short comment or **`docs/Mobile_Concept_Port.md`**—default is still **closest visual match**, not “MAUI default.”
+
+## Architecture vs design
+
+- **Structure** (folders, namespaces, DI, **`MobileServiceHub`**, features vs shared): follow **this solution’s** rules.
+- **Look and feel**: follow the **Lovable/React** concept **exactly** unless the user approves a deviation.
+
+## Making the concept visible to Cursor
+
+The concept path is **outside** **`RaphCareSolution`** unless added to the workspace:
+
+1. **Multi-root workspace** — Add **`C:\laragon\www\raphcare-mobile-app-concept`** so you can **`@`** component/CSS files when porting.
+2. **Paste / attach** — Screenshots, **`tailwind.config`**, theme CSS, or key component snippets for the screen being built.
+3. **`docs/Mobile_Concept_Port.md`** — Token table (hex, rem → dp, font names) and per-screen checklist for parity.
+
+## Optional
+
+A **`.cursor/rules/`** inside the concept repo applies only when that folder is opened alone; RaphCare rules still govern **`RaphCare.Mobile`** layout and wiring.
