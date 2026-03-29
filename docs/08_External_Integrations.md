@@ -14,8 +14,8 @@
 ## Messaging Services
 
 - **Application:** Interfaces `IEmailService` and `ISmsService` exist.
-- **Infrastructure:** Placeholder implementations EmailService and SmsService (no Twilio, SendGrid, or similar packages in .csproj).
-- **Domain:** EmailLog, SMSLog, Notification, Message (in-app) exist. No external messaging integration wired.
+- **Infrastructure:** **Twilio** is wired for SMS when `Twilio:AccountSid`, `Twilio:AuthToken`, and `Twilio:FromPhoneE164` are all set (`TwilioSmsService`); otherwise **`SmsService`** is a dev placeholder (logs only). **Email** remains **`EmailService`** (placeholder-style unless extended). See **`docs/10_Agora_Twilio_Setup.md`** for Twilio (and Agora) configuration.
+- **Domain:** EmailLog, SMSLog, Notification, Message (in-app) exist.
 
 ## AI Services
 
@@ -35,5 +35,5 @@
 ## Summary
 
 - **Implemented:** Entra ID for JWT validation and user provisioning; API-issued JWT for OTP-verified patients (ITokenService, JwtOptions); OTP generation/validation (IOtpService, OtpCodes in IdentityDbContext).
-- **Placeholder implementations in Infrastructure (no external SDKs):** IPaymentGatewayService, IEmailService, ISmsService, IAIService, IDeviceIntegrationService, ITeleSessionService, ISpeechToTextService (AzureSpeechToTextService).
-- **Not present:** Payment gateways, device SDKs, messaging providers, AI SDKs, or Speech SDK as NuGet or wired code.
+- **Placeholder or partial implementations:** IPaymentGatewayService, IEmailService, IAIService, IDeviceIntegrationService, ITeleSessionService, ISpeechToTextService (AzureSpeechToTextService). **SMS:** Twilio when configured (`docs/10_Agora_Twilio_Setup.md`). **Telehealth RTC tokens:** Agora (`AgoraRtcTokenService`, `docs/10_Agora_Twilio_Setup.md`).
+- **Not fully wired:** Payment gateways, device SDKs, production AI SDKs, production Speech SDK (stubs exist).
