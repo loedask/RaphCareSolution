@@ -3,7 +3,7 @@ using RaphCare.Client.Models.Insurance;
 
 namespace RaphCare.Client.Contracts.Interfaces;
 
-/// <summary>Patient insurance API (<c>api/patient/insurance/...</c>). Uses HttpClient until NSwag includes these routes.</summary>
+/// <summary>Patient insurance API (<c>api/patient/insurance/...</c>) via generated <see cref="Services.Base.IClient"/>.</summary>
 public interface IPatientInsuranceService
 {
     Task<Response<IReadOnlyList<InsurancePlanOptionViewModel>>> GetActivePlansAsync(CancellationToken cancellationToken = default);
