@@ -8,7 +8,7 @@ using Twilio.Types;
 
 namespace RaphCare.Infrastructure.Services;
 
-/// <summary>Twilio Programmable SMS. Registered when <see cref="TwilioSmsOptions"/> is populated.</summary>
+/// <summary>Twilio Programmable SMS for all <see cref="ISmsService"/> use (e.g. OTP, telehealth). Registered when <see cref="TwilioSmsOptions.IsEnabled"/>.</summary>
 public sealed class TwilioSmsService(
     IOptionsMonitor<TwilioSmsOptions> options,
     ILogger<TwilioSmsService> logger) : ISmsService

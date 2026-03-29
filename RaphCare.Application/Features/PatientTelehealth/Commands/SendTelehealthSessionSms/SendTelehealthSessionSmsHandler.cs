@@ -41,7 +41,7 @@ public class SendTelehealthSessionSmsHandler : IRequestHandler<SendTelehealthSes
         {
             throw new ValidationException(new[]
             {
-                new ValidationFailure(nameof(TwilioSmsOptions), "SMS is not configured (Twilio:AccountSid).")
+                new ValidationFailure(nameof(TwilioSmsOptions), "SMS is not configured. Set Twilio:AccountSid, Twilio:AuthToken, and Twilio:FromPhoneE164.")
             });
         }
 

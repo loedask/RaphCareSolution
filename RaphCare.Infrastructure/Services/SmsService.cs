@@ -4,7 +4,7 @@ using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Infrastructure.Services;
 
-/// <summary>Outbound SMS integration. Placeholder for Twilio, Africa's Talking, or similar.</summary>
+/// <summary>Outbound SMS placeholder when Twilio is not fully configured (<see cref="TwilioSmsOptions.IsEnabled"/> is false). Use <see cref="TwilioSmsService"/> in environments with valid Twilio settings.</summary>
 public class SmsService(ILogger<SmsService> logger, IHostEnvironment hostEnvironment) : ISmsService
 {
     private readonly ILogger<SmsService> _logger = logger;

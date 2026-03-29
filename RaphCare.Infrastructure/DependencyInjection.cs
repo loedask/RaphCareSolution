@@ -32,7 +32,9 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
 
         services.Configure<TwilioSmsOptions>(configuration.GetSection(TwilioSmsOptions.SectionName));
-        if (!string.IsNullOrWhiteSpace(configuration["Twilio:AccountSid"]))
+        // One ISmsService for the API: OTP, telehealth reminders, and any future SMS. Twilio when fully configured.
+        var twilio = configuration.GetSection(TwilioSmsOptions.SectionName).Get<TwilioSmsOptions>();
+        if (twilio?.IsEnabled == true)
             services.AddScoped<ISmsService, TwilioSmsService>();
         else
             services.AddScoped<ISmsService, SmsService>();
