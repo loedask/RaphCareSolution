@@ -2,6 +2,8 @@
 
 This document describes how **RaphCare.Mobile** integrates **Bluetooth Low Energy** for OEM bracelets commonly marketed as **E580** / **E585** (elder-care smart bands), and what is required to extend decoding or sync readings to the API.
 
+**Vendor SDK (HBand):** Many of these bands match the **[HBandSDK](https://github.com/HBandSDK)** Android/iOS SDKs (`VPOperateManager`, password + personal-info handshake). That path is **not** fully implemented in C# yet; see **`docs/12_HBand_SDK_Integration.md`** for repositories, optional embedded AARs, and the recommended **binding-project** next step. Code references: `HBandSdkInfo` in the mobile app.
+
 ## REST API, generated client, and GitHub
 
 | Topic | Status |
