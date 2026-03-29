@@ -1,12 +1,17 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Client;
+using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Appointments.ViewModels;
 using RaphCare.Mobile.Core.Features.Appointments.Views;
 using RaphCare.Mobile.Core.Features.Auth.ViewModels;
 using RaphCare.Mobile.Core.Features.Auth.Views;
+using RaphCare.Mobile.Core.Features.CareTelehealth.Rtc;
 using RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Views;
+#if ANDROID
+using RaphCare.Mobile.Platforms.Android.Telehealth;
+#endif
 using RaphCare.Mobile.Core.Features.Home.ViewModels;
 using RaphCare.Mobile.Core.Features.Home.Views;
 using RaphCare.Mobile.Core.Features.Hybrid.Views;
@@ -37,6 +42,12 @@ public static class MobileServiceCollectionExtensions
         services.AddSingleton<IAuthService, EntraAuthService>();
         services.AddSingleton<RaphCare.Client.Contracts.IAccessTokenProvider, SecureStorageAccessTokenProvider>();
 
+#if ANDROID
+        services.AddSingleton<ITelehealthRtcSession, AgoraAndroidTelehealthRtcSession>();
+#else
+        services.AddSingleton<ITelehealthRtcSession, NoOpTelehealthRtcSession>();
+#endif
+
         services.AddTransient<LandingViewModel>();
         services.AddTransient<RegisterOptionsViewModel>();
         services.AddTransient<RegisterEmailViewModel>();
@@ -57,7 +68,9 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AddInsuranceProfileViewModel>();
         services.AddTransient<InsuranceProfileDetailViewModel>();
         services.AddTransient<CareTelehealthViewModel>();
-        services.AddTransient<TelehealthJoinViewModel>();
+        services.AddTransient<TelehealthJoinViewModel>(sp => new TelehealthJoinViewModel(
+            sp.GetRequiredService<IPatientTelehealthService>(),
+            sp.GetRequiredService<ITelehealthRtcSession>()));
 
         services.AddTransient<LandingPage>();
         services.AddTransient<RegisterOptionsPage>();

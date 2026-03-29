@@ -9,6 +9,30 @@
 - **Interfaces:** I-prefix (IRepository, IUnitOfWork, ICurrentUserService, IAIService). Implementations: descriptive name (EfRepository, EntraUserProvisioningService).
 - **Middleware:** Suffix Middleware (TenantResolutionMiddleware, ExceptionHandlingMiddleware).
 
+## Documentation and comments
+
+Aligned with **`.cursor/rules/raphcare-comments.mdc`** (same expectations for tooling and people).
+
+### Generated code
+
+- Do not add, edit, or remove XML doc comments (or block comments) by hand in **NSwag-generated** output (**`RaphCare.Client/Services/Base/NSwag/ClientService.cs`**, related generated DTOs) or other **machine-owned** artifacts. Improve descriptions via **OpenAPI/Swagger** or **NSwag** settings or templates, or accept generator output.
+- **EF migrations** and similar generated files: do not hand-annotate for “documentation coverage.”
+
+### Hand-written code
+
+- Prefer **clear names and structure** over comments that restate the code.
+- Use **`///` XML documentation** on **public** types and members when it adds value: purpose, non-obvious behavior, invariants; use **`param`**, **`returns`**, and **`exception`** (or equivalent) when callers need them. **Application** ports and **Domain** public surface benefit most.
+- **Avoid** redundant `///` on trivial members, obvious properties, or boilerplate that duplicates the name.
+- Use **`//`** sparingly for **why** (not **what**) when the logic is non-obvious; keep comments short and update them when code changes.
+
+### API (HTTP surface)
+
+- **RaphCare.API** enables XML documentation for the host assembly: prefer accurate **OpenAPI** via **`ProducesResponseType`**, action **`Name`**, and Swagger-friendly DTOs. Optional `///` on controllers when it helps IDE users; **OpenAPI** is the contract for **RaphCare.Client** consumers.
+
+### Pull requests and refactors
+
+- Avoid change sets whose only goal is blanket comment coverage. Do not hand-edit **NSwag** client files to add XML documentation.
+
 ## Dependency Injection Patterns
 
 - **Registration:** Each layer exposes a static `DependencyInjection` class (or similar) with extension method(s) on IServiceCollection (AddApplication, AddPersistence, AddIdentity, AddInfrastructure, AddRaphCareClient). API Program.cs calls these in order: AddApplication → AddInfrastructure → AddPersistence → AddIdentity → AddControllers, then auth and Swagger.

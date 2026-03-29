@@ -12,6 +12,8 @@ public partial class TelehealthJoinPage : ContentPage, IQueryAttributable
     {
         InitializeComponent();
         BindingContext = viewModel;
+        LocalPreview.HandlerChanged += (_, _) => TryBindRtcSurfaces();
+        RemotePreview.HandlerChanged += (_, _) => TryBindRtcSurfaces();
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -24,6 +26,26 @@ public partial class TelehealthJoinPage : ContentPage, IQueryAttributable
     {
         base.OnAppearing();
         if (BindingContext is TelehealthJoinViewModel vm)
+        {
             await vm.LoadAsync();
+            TryBindRtcSurfaces();
+            await Task.Delay(250).ConfigureAwait(true);
+            TryBindRtcSurfaces();
+        }
+    }
+
+    protected override async void OnDisappearing()
+    {
+        base.OnDisappearing();
+        if (BindingContext is TelehealthJoinViewModel vm)
+            await vm.StopRtcAsync().ConfigureAwait(false);
+    }
+
+    private void TryBindRtcSurfaces()
+    {
+        if (BindingContext is not TelehealthJoinViewModel vm)
+            return;
+
+        vm.BindRtcSurfaces(LocalPreview.Handler?.PlatformView, RemotePreview.Handler?.PlatformView);
     }
 }

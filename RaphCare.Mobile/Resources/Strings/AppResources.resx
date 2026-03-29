@@ -665,4 +665,25 @@ Accessible. Intelligent. Human.</value>
   <data name="CareTelehealthSmsSent" xml:space="preserve">
     <value>SMS sent.</value>
   </data>
+  <data name="CareTelehealthStartVideo" xml:space="preserve">
+    <value>Start video call</value>
+  </data>
+  <data name="CareTelehealthEndVideo" xml:space="preserve">
+    <value>End video call</value>
+  </data>
+  <data name="CareTelehealthLocalVideo" xml:space="preserve">
+    <value>You (local)</value>
+  </data>
+  <data name="CareTelehealthRemoteVideo" xml:space="preserve">
+    <value>Clinician (remote)</value>
+  </data>
+  <data name="CareTelehealthVideoHintAndroid" xml:space="preserve">
+    <value>Native Agora RTC uses your camera and microphone. Grant permissions when prompted.</value>
+  </data>
+  <data name="CareTelehealthVideoHintOther" xml:space="preserve">
+    <value>Native Agora video is enabled on Android in this build. You can still use token copy and SMS on this device.</value>
+  </data>
+  <data name="CareTelehealthVideoStartFailed" xml:space="preserve">
+    <value>Could not start the video session.</value>
+  </data>
 </root>

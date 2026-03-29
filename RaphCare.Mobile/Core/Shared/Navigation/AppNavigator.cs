@@ -38,16 +38,16 @@ public static class AppNavigator
     public const string Settings = "SettingsPage";
     public const string UnderConstruction = "UnderConstructionPage";
 
-    /// <summary>Care & telehealth: session list (Agora join info + Twilio SMS from API).</summary>
+    /// <summary>Care and telehealth: session list (Agora join info + Twilio SMS from API).</summary>
     public const string CareTelehealth = "CareTelehealthPage";
 
     /// <summary>Telehealth join details for a session (query: <c>sessionId</c>).</summary>
     public const string TelehealthJoin = "TelehealthJoinPage";
 
-    /// <summary>Connected devices / BLE wearables (concept /devices). Stub until vertical ships.</summary>
+    /// <summary>Connected devices and BLE wearables (devices route). Stub until vertical ships.</summary>
     public const string Devices = "DevicesPage";
 
-    /// <summary>Billing & plans (concept payment / billing / upgrade). Stub until vertical ships.</summary>
+    /// <summary>Billing and plans (payment, billing, upgrade). Stub until vertical ships.</summary>
     public const string Billing = "BillingPage";
 
     public const string MentalHealth = "MentalHealthPage";

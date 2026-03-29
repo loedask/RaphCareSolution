@@ -47,7 +47,7 @@ public static class ServiceRegistration
 
         services.AddTransient<IPatientTelehealthService>(sp => new PatientTelehealthService(
             sp.GetRequiredService<IClient>(),
-            sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
+            sp.GetRequiredService<IMapper>()!));
 
         // Transient: MAUI Shell-created pages often resolve VMs via root IServiceProvider (no scope);
         // scoped registration throws when resolved outside a scope.

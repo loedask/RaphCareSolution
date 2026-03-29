@@ -1,6 +1,8 @@
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Devices;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Features.CareTelehealth.Rtc;
 using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
@@ -10,6 +12,7 @@ namespace RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 public sealed class TelehealthJoinViewModel : BaseViewModel
 {
     private readonly IPatientTelehealthService _telehealth;
+    private readonly ITelehealthRtcSession _rtc;
     private string _fullToken = string.Empty;
     private Guid _sessionId;
     private string _channel = string.Empty;
@@ -18,10 +21,16 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     private string _tokenPreview = string.Empty;
     private string _rtcStatus = string.Empty;
     private string? _errorMessage;
+    private string _joinChannel = string.Empty;
+    private string _joinAppId = string.Empty;
+    private int _joinUid;
+    private bool _rtcConfigured;
+    private bool _inCall;
 
-    public TelehealthJoinViewModel(IPatientTelehealthService telehealth)
+    public TelehealthJoinViewModel(IPatientTelehealthService telehealth, ITelehealthRtcSession rtc)
     {
         _telehealth = telehealth ?? throw new ArgumentNullException(nameof(telehealth));
+        _rtc = rtc ?? throw new ArgumentNullException(nameof(rtc));
         Title = AppResources.T("CareTelehealthJoinTitle");
         ChannelLabel = AppResources.T("CareTelehealthChannel");
         UidLabel = AppResources.T("CareTelehealthUid");
@@ -30,11 +39,17 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
         CopyTokenLabel = AppResources.T("CareTelehealthCopyToken");
         SmsLabel = AppResources.T("CareTelehealthSendSms");
         BackLabel = AppResources.T("CareTelehealthBack");
+        StartVideoLabel = AppResources.T("CareTelehealthStartVideo");
+        EndVideoLabel = AppResources.T("CareTelehealthEndVideo");
+        LocalVideoLabel = AppResources.T("CareTelehealthLocalVideo");
+        RemoteVideoLabel = AppResources.T("CareTelehealthRemoteVideo");
 
         RefreshCommand = new Command(async () => await LoadAsync());
         CopyTokenCommand = new Command(async () => await CopyTokenAsync());
         SmsCommand = new Command(async () => await SendSmsAsync());
-        BackCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
+        BackCommand = new Command(async () => await GoBackAsync());
+        StartVideoCommand = new Command(async () => await StartVideoAsync(), () => CanStartVideo && !InCall);
+        EndVideoCommand = new Command(async () => await EndVideoAsync(), () => InCall);
     }
 
     public string ChannelLabel { get; }
@@ -44,6 +59,17 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     public string CopyTokenLabel { get; }
     public string SmsLabel { get; }
     public string BackLabel { get; }
+    public string StartVideoLabel { get; }
+    public string EndVideoLabel { get; }
+    public string LocalVideoLabel { get; }
+    public string RemoteVideoLabel { get; }
+
+    public string VideoHintText =>
+        DeviceInfo.Current.Platform == DevicePlatform.Android
+            ? AppResources.T("CareTelehealthVideoHintAndroid")
+            : AppResources.T("CareTelehealthVideoHintOther");
+
+    public bool ShowVideoSection => DeviceInfo.Current.Platform == DevicePlatform.Android;
 
     public string ChannelText
     {
@@ -81,16 +107,48 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
         set => SetProperty(ref _errorMessage, value);
     }
 
+    public bool InCall
+    {
+        get => _inCall;
+        set
+        {
+            if (_inCall == value)
+                return;
+            _inCall = value;
+            OnPropertyChanged(nameof(InCall));
+            (StartVideoCommand as Command)?.ChangeCanExecute();
+            (EndVideoCommand as Command)?.ChangeCanExecute();
+            OnPropertyChanged(nameof(ShowStartVideo));
+            OnPropertyChanged(nameof(ShowEndVideo));
+        }
+    }
+
+    public bool CanStartVideo => _rtcConfigured
+        && !string.IsNullOrWhiteSpace(_joinAppId)
+        && !string.IsNullOrWhiteSpace(_joinChannel)
+        && !string.IsNullOrWhiteSpace(_fullToken);
+
+    public bool ShowStartVideo => CanStartVideo && !InCall;
+    public bool ShowEndVideo => InCall;
+
     public ICommand RefreshCommand { get; }
     public ICommand CopyTokenCommand { get; }
     public ICommand SmsCommand { get; }
     public ICommand BackCommand { get; }
+    public ICommand StartVideoCommand { get; }
+    public ICommand EndVideoCommand { get; }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("sessionId", out var v) && v != null && Guid.TryParse(v.ToString(), out var id))
             _sessionId = id;
     }
+
+    /// <summary>Called from the join page when native preview surfaces are ready (Android: TextureView).</summary>
+    public void BindRtcSurfaces(object? localPlatformView, object? remotePlatformView) =>
+        _rtc.BindVideoSurfaces(localPlatformView, remotePlatformView);
+
+    public async Task StopRtcAsync() => await _rtc.StopAsync(CancellationToken.None).ConfigureAwait(false);
 
     public async Task LoadAsync()
     {
@@ -124,11 +182,65 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
                 ? AppResources.T("CareTelehealthRtcReady")
                 : AppResources.T("CareTelehealthRtcNotConfigured");
             _fullToken = j.RtcToken ?? string.Empty;
+            _joinChannel = j.ChannelName;
+            _joinAppId = j.AppId ?? string.Empty;
+            _joinUid = unchecked((int)j.Uid);
+            _rtcConfigured = j.RtcConfigured;
+            OnPropertyChanged(nameof(CanStartVideo));
+            OnPropertyChanged(nameof(ShowStartVideo));
+            (StartVideoCommand as Command)?.ChangeCanExecute();
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    private async Task StartVideoAsync()
+    {
+        if (!CanStartVideo)
+            return;
+
+        IsBusy = true;
+        try
+        {
+            var result = await _rtc.StartAsync(
+                new TelehealthRtcJoinParameters(_joinAppId, _joinChannel, _fullToken, _joinUid),
+                CancellationToken.None).ConfigureAwait(false);
+
+            if (!result.Success)
+            {
+                await Shell.Current.DisplayAlertAsync(Title, result.ErrorMessage ?? AppResources.T("CareTelehealthVideoStartFailed"), "OK");
+                return;
+            }
+
+            InCall = true;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task EndVideoAsync()
+    {
+        IsBusy = true;
+        try
+        {
+            await _rtc.StopAsync(CancellationToken.None).ConfigureAwait(false);
+            InCall = false;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task GoBackAsync()
+    {
+        await _rtc.StopAsync(CancellationToken.None).ConfigureAwait(false);
+        InCall = false;
+        await SafeShellNavigator.GoToAsync("..");
     }
 
     private async Task CopyTokenAsync()

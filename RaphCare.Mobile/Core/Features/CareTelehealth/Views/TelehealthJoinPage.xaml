@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:care="clr-namespace:RaphCare.Mobile.Core.Features.CareTelehealth.Views"
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels"
              x:Class="RaphCare.Mobile.Core.Features.CareTelehealth.Views.TelehealthJoinPage"
              x:DataType="vm:TelehealthJoinViewModel"
@@ -35,6 +36,33 @@
                 <Label Text="{Binding TokenLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
                 <Label Text="{Binding TokenPreview}" Style="{StaticResource BodyMedium}" LineBreakMode="WordWrap" />
             </VerticalStackLayout>
+
+            <Label Text="{Binding VideoHintText}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   LineBreakMode="WordWrap"
+                   IsVisible="{Binding ShowVideoSection}" />
+
+            <VerticalStackLayout Spacing="8" IsVisible="{Binding ShowVideoSection}">
+                <Label Text="{Binding LocalVideoLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Border Style="{StaticResource CardBorder}" Padding="0" HeightRequest="200">
+                    <care:TelehealthVideoView x:Name="LocalPreview" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                </Border>
+                <Label Text="{Binding RemoteVideoLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Border Style="{StaticResource CardBorder}" Padding="0" HeightRequest="200">
+                    <care:TelehealthVideoView x:Name="RemotePreview" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                </Border>
+            </VerticalStackLayout>
+
+            <Button Text="{Binding StartVideoLabel}"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding StartVideoCommand}"
+                    IsVisible="{Binding ShowStartVideo}" />
+
+            <Button Text="{Binding EndVideoLabel}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding EndVideoCommand}"
+                    IsVisible="{Binding ShowEndVideo}" />
 
             <Button Text="{Binding CopyTokenLabel}"
                     Style="{StaticResource SecondaryButton}"

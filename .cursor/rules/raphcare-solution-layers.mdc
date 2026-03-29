@@ -5,7 +5,7 @@ alwaysApply: true
 
 # RaphCare — solution layers (easy map)
 
-Use this as the **north star** for where code belongs. Deeper rules: **`.cursor/rules/raphcare-api.mdc`**, **`.cursor/rules/raphcare-application.mdc`**, **`.cursor/rules/raphcare-client.mdc`**, **`.cursor/rules/raphcare-identity.mdc`**, **`.cursor/rules/raphcare-infrastructure.mdc`**, **`.cursor/rules/raphcare-persistence.mdc`**, **`.cursor/rules/raphcare-mobile.mdc`**, **`.cursor/rules/raphcare-mobile-concept-template.mdc`**, **`docs/Mobile_Concept_Port.md`** (React concept — design parity for MAUI), **docs/02_Solution_Structure.md**, **docs/07_Coding_Conventions.md**, **docs/09_Mobile_App_Guide.md**.
+Use this as the **north star** for where code belongs. Deeper rules: **`.cursor/rules/raphcare-api.mdc`**, **`.cursor/rules/raphcare-application.mdc`**, **`.cursor/rules/raphcare-client.mdc`**, **`.cursor/rules/raphcare-comments.mdc`** (comments / XML docs), **`.cursor/rules/raphcare-identity.mdc`**, **`.cursor/rules/raphcare-infrastructure.mdc`**, **`.cursor/rules/raphcare-persistence.mdc`**, **`.cursor/rules/raphcare-mobile.mdc`**, **`.cursor/rules/raphcare-mobile-concept-template.mdc`**, **`docs/Mobile_Concept_Port.md`** (React concept — design parity for MAUI), **docs/02_Solution_Structure.md**, **docs/07_Coding_Conventions.md**, **docs/09_Mobile_App_Guide.md**.
 
 ## Full-stack feature workflow (order + human-owned NSwag)
 

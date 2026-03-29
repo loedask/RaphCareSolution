@@ -1,3 +1,4 @@
+using AutoMapper;
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Telehealth;
@@ -5,28 +6,50 @@ using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-public class PatientTelehealthService(IClient client, HttpClient httpClient) : BaseHttpService(client, httpClient), IPatientTelehealthService
+/// <summary>Patient telehealth API via generated <see cref="IClient"/>.</summary>
+public class PatientTelehealthService(IClient client, IMapper mapper) : IPatientTelehealthService
 {
-    public Task<Response<PagedPatientTeleSessionsViewModel>> GetMySessionsAsync(int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default) =>
-        GetAsync<PagedPatientTeleSessionsViewModel>($"api/patient/telehealth/sessions?pageNumber={pageNumber}&pageSize={pageSize}", cancellationToken);
+    private readonly IClient _client = client ?? throw new ArgumentNullException(nameof(client));
+    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
-    public Task<Response<TelehealthJoinInfoViewModel?>> GetJoinInfoAsync(Guid teleSessionId, uint? uid = null, CancellationToken cancellationToken = default)
+    public async Task<Response<PagedPatientTeleSessionsViewModel>> GetMySessionsAsync(int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
     {
-        var uri = uid is null
-            ? $"api/patient/telehealth/sessions/{teleSessionId}/join-info"
-            : $"api/patient/telehealth/sessions/{teleSessionId}/join-info?uid={uid.Value}";
-        return GetAsync<TelehealthJoinInfoViewModel?>(uri, cancellationToken);
+        try
+        {
+            var dto = await _client.GetMyTeleSessionsAsync(pageNumber, pageSize, cancellationToken).ConfigureAwait(false);
+            var vm = _mapper.Map<PagedPatientTeleSessionsViewModel>(dto);
+            return Response<PagedPatientTeleSessionsViewModel>.Success(vm);
+        }
+        catch (RaphCare.Client.Services.Base.ApiException ex)
+        {
+            return Response<PagedPatientTeleSessionsViewModel>.Failure(ex.Message, ex.StatusCode);
+        }
+    }
+
+    public async Task<Response<TelehealthJoinInfoViewModel?>> GetJoinInfoAsync(Guid teleSessionId, int? uid = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var dto = await _client.GetTelehealthJoinInfoAsync(teleSessionId, uid, cancellationToken).ConfigureAwait(false);
+            var vm = _mapper.Map<TelehealthJoinInfoViewModel>(dto);
+            return Response<TelehealthJoinInfoViewModel?>.Success(vm);
+        }
+        catch (RaphCare.Client.Services.Base.ApiException ex)
+        {
+            return Response<TelehealthJoinInfoViewModel?>.Failure(ex.Message, ex.StatusCode);
+        }
     }
 
     public async Task<Response<bool>> SendSessionSmsAsync(Guid teleSessionId, CancellationToken cancellationToken = default)
     {
-        using var response = await HttpClient.PostAsync($"api/patient/telehealth/sessions/{teleSessionId}/notify-sms", null, cancellationToken).ConfigureAwait(false);
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Failure(string.IsNullOrEmpty(body) ? $"SMS request failed: {response.StatusCode}" : body, (int)response.StatusCode);
+            await _client.SendTelehealthSessionSmsAsync(teleSessionId, cancellationToken).ConfigureAwait(false);
+            return Response<bool>.Success(true);
         }
-
-        return Response<bool>.Success(true);
+        catch (RaphCare.Client.Services.Base.ApiException ex)
+        {
+            return Response<bool>.Failure(ex.Message, ex.StatusCode);
+        }
     }
 }

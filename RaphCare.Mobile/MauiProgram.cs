@@ -7,8 +7,18 @@ using RaphCare.Mobile.Core.Infrastructure.Composition;
 #if IOS || MACCATALYST
 using AVFoundation;
 #endif
+using RaphCare.Mobile.Core.Features.CareTelehealth.Views;
 using RaphCare.Mobile.Core.Infrastructure.DependencyInjection;
 using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
+#if ANDROID
+using RaphCare.Mobile.Platforms.Android.Telehealth;
+#elif IOS
+using RaphCare.Mobile.Platforms.iOS.Telehealth;
+#elif MACCATALYST
+using RaphCare.Mobile.Platforms.MacCatalyst.Telehealth;
+#elif WINDOWS
+using RaphCare.Mobile.Platforms.Windows.Telehealth;
+#endif
 
 namespace RaphCare.Mobile;
 
@@ -29,6 +39,18 @@ public static class MauiProgram
 
         builder
             .UseMauiApp<App>()
+            .ConfigureMauiHandlers(static handlers =>
+            {
+#if ANDROID
+                handlers.AddHandler<TelehealthVideoView, TelehealthVideoViewHandler>();
+#elif IOS
+                handlers.AddHandler<TelehealthVideoView, TelehealthVideoViewHandler>();
+#elif MACCATALYST
+                handlers.AddHandler<TelehealthVideoView, TelehealthVideoViewHandler>();
+#elif WINDOWS
+                handlers.AddHandler<TelehealthVideoView, TelehealthVideoViewHandler>();
+#endif
+            })
             .ConfigureFonts(fonts =>
             {
                 // Concept: display = Space Grotesk, body = DM Sans (google/fonts OFL variable TTFs under Resources/Fonts).
