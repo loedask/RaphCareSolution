@@ -7,6 +7,7 @@ using RaphCare.Mobile.Core.Features.CareTelehealth.Views;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
 using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Views;
+using RaphCare.Mobile.Core.Features.Devices.Views;
 using RaphCare.Mobile.Core.Shared.Views;
 
 namespace RaphCare.Mobile.Core.Shared.Navigation;
@@ -44,7 +45,7 @@ public static class AppNavigator
     /// <summary>Telehealth join details for a session (query: <c>sessionId</c>).</summary>
     public const string TelehealthJoin = "TelehealthJoinPage";
 
-    /// <summary>Connected devices and BLE wearables (devices route). Stub until vertical ships.</summary>
+    /// <summary>Connected devices and BLE wearables (E580/E585-class scan and connect).</summary>
     public const string Devices = "DevicesPage";
 
     /// <summary>Billing and plans (payment, billing, upgrade). Stub until vertical ships.</summary>
@@ -62,7 +63,6 @@ public static class AppNavigator
     /// </summary>
     private static readonly HashSet<string> StubRoutes =
     [
-        Devices,
         Billing,
         MentalHealth,
         FamilyMembers,
@@ -102,8 +102,9 @@ public static class AppNavigator
         Routing.RegisterRoute(CareTelehealth, typeof(CareTelehealthPage));
         Routing.RegisterRoute(TelehealthJoin, typeof(TelehealthJoinPage));
 
+        Routing.RegisterRoute(Devices, typeof(DevicesPage));
+
         // Concept areas (stubs → same page type; query <c>featureName</c> set by <see cref="GoToFeatureAsync"/> when flag is on)
-        Routing.RegisterRoute(Devices, typeof(UnderConstructionPage));
         Routing.RegisterRoute(Billing, typeof(UnderConstructionPage));
         Routing.RegisterRoute(MentalHealth, typeof(UnderConstructionPage));
         Routing.RegisterRoute(FamilyMembers, typeof(UnderConstructionPage));

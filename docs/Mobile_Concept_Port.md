@@ -126,7 +126,7 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/appointments`, `/book-appointment`, `/appointment-details` | Appointments, BookAppointment, AppointmentDetails | `AppointmentsPage`, `BookAppointmentPage`, `AppointmentDetailPage` (patient API) |
 | `/request-call`, `/consultation` | RequestCall, Consultation | Care / telehealth |
 | `/records`, `/health-record-details` | HealthRecords, HealthRecordDetails | Records |
-| `/devices` | ConnectedDevices | Devices |
+| `/devices` | ConnectedDevices | `DevicesPage` (BLE E580/E585-class — see `docs/11_Devices_BLE_E580_E585.md`) |
 | `/insurance` | Insurance | Insurance |
 | `/family-members` | FamilyMembers | Profile / account |
 | `/payment-methods`, `/billing-history`, `/upgrade-plan` | Payment*, Billing*, UpgradePlan | Billing |
@@ -154,7 +154,7 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Voice register | `VoiceRegister.tsx` (full animated mock) | `RegisterVoiceIntroPage` → phone → `VoiceSubmitPage` (mic record + level bars + API) | ☑ |
 | Account created | `AccountCreated.tsx` | `AccountCreatedPage` (shared welcome after phone OTP, email verify sign-in, or voice profile success) | ☑ |
 | Login / … | `Login.tsx`, … | `SignInPage`, `VerifyEmailPage` | ☑ |
-| … | … | … | ☐ |
+| Devices | `ConnectedDevices.tsx` | `DevicesPage` | ☑ |
 
 *(Extend the table as you implement each flow.)*
 

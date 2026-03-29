@@ -686,4 +686,67 @@ Accessible. Intelligent. Human.</value>
   <data name="CareTelehealthVideoStartFailed" xml:space="preserve">
     <value>Could not start the video session.</value>
   </data>
+  <data name="DevicesPageTitle" xml:space="preserve">
+    <value>Devices &amp; wearables</value>
+  </data>
+  <data name="DevicesScan" xml:space="preserve">
+    <value>Scan</value>
+  </data>
+  <data name="DevicesStopScan" xml:space="preserve">
+    <value>Stop scan</value>
+  </data>
+  <data name="DevicesShowAllBle" xml:space="preserve">
+    <value>Showing: all BLE devices</value>
+  </data>
+  <data name="DevicesE580E585Filter" xml:space="preserve">
+    <value>Showing: E580 / E585-style names only</value>
+  </data>
+  <data name="DevicesConnectHint" xml:space="preserve">
+    <value>Put your bracelet in pairing range, then tap Scan. Connect to stream notifications (heart rate if the device exposes standard GATT).</value>
+  </data>
+  <data name="DevicesConnectButton" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="DevicesDisconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="DevicesLastReading" xml:space="preserve">
+    <value>Last reading</value>
+  </data>
+  <data name="DevicesUnnamedPeripheral" xml:space="preserve">
+    <value>Unknown device</value>
+  </data>
+  <data name="DevicesPermissionChecking" xml:space="preserve">
+    <value>Checking Bluetooth permission…</value>
+  </data>
+  <data name="DevicesPermissionDenied" xml:space="preserve">
+    <value>Bluetooth permission was denied. Enable it in system settings.</value>
+  </data>
+  <data name="DevicesBluetoothOff" xml:space="preserve">
+    <value>Bluetooth is off. Turn it on and try again.</value>
+  </data>
+  <data name="DevicesScanning" xml:space="preserve">
+    <value>Scanning for wearables…</value>
+  </data>
+  <data name="DevicesScanComplete" xml:space="preserve">
+    <value>Scan finished.</value>
+  </data>
+  <data name="DevicesScanStopped" xml:space="preserve">
+    <value>Scan stopped.</value>
+  </data>
+  <data name="DevicesConnected" xml:space="preserve">
+    <value>Connected.</value>
+  </data>
+  <data name="DevicesDisconnected" xml:space="preserve">
+    <value>Disconnected.</value>
+  </data>
+  <data name="DevicesBleUnsupported" xml:space="preserve">
+    <value>Bluetooth Low Energy for wearables is not enabled on this Windows build. Use Android or iOS to pair E580/E585-class devices.</value>
+  </data>
+  <data name="DevicesHeartRateFormat" xml:space="preserve">
+    <value>Heart rate: {0} bpm</value>
+  </data>
+  <data name="DevicesRawHexFormat" xml:space="preserve">
+    <value>Raw: {0}</value>
+  </data>
 </root>

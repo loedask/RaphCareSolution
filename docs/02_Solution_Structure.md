@@ -90,7 +90,7 @@
 - **MauiProgram** — Configuration: `appsettings.json`, optional `appsettings.Development.json` (DEBUG), User Secrets; `AddRaphCareMobile`; `FeatureFlags.Initialize` after build; `AddRaphCareClient(..., useBearerToken: true)`; `AddMauiBlazorWebView`.
 - References **RaphCare.Mobile.Kernel**, **RaphCare.Client**; bearer-token auth via `IAccessTokenProvider`.
 
-See **docs/09_Mobile_App_Guide.md** for configuration, secrets, flags, and testing. For **Agora** (telehealth RTC) and **Twilio** (SMS) setup on the API, see **docs/10_Agora_Twilio_Setup.md**.
+See **docs/09_Mobile_App_Guide.md** for configuration, secrets, flags, and testing. For **Agora** (telehealth RTC) and **Twilio** (SMS) setup on the API, see **docs/10_Agora_Twilio_Setup.md**. For **BLE wearables** (E580/E585-class) on the mobile app, see **docs/11_Devices_BLE_E580_E585.md**.
 
 ## Responsibilities Summary
 

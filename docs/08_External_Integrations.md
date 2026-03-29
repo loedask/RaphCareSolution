@@ -8,8 +8,9 @@
 
 ## Device SDKs
 
-- **Domain:** Device, DeviceType, DeviceAssignment, and reading types (HeartRateReading, BloodPressureReading, GlucoseReading, etc.) are defined. DeviceDbContext and DevicesController provide CRUD for devices.
-- **Infrastructure:** IDeviceIntegrationService has a placeholder implementation (DeviceIntegrationService). No third-party device SDKs or device-cloud packages in the solution. No ingestion pipeline or background worker for device readings. DeviceSeeder is a placeholder.
+- **Domain:** Device, DeviceType, DeviceAssignment, and reading types (HeartRateReading, BloodPressureReading, GlucoseReading, etc.) are defined. DeviceDbContext and DevicesController provide CRUD for devices (staff/provider API).
+- **Mobile (patient BLE):** `RaphCare.Mobile` uses **Plugin.BLE** for E580/E585-class wearables — scan, connect, GATT notify subscription, standard heart-rate parsing where available. See **`docs/11_Devices_BLE_E580_E585.md`**. Cloud sync of readings is not wired yet.
+- **Infrastructure:** IDeviceIntegrationService has a placeholder implementation (DeviceIntegrationService). No server-side device-cloud ingestion pipeline yet. DeviceSeeder is a placeholder.
 
 ## Messaging Services
 

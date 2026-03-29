@@ -9,6 +9,9 @@ using RaphCare.Mobile.Core.Features.Auth.Views;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Rtc;
 using RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Views;
+using RaphCare.Mobile.Core.Features.Devices.Services;
+using RaphCare.Mobile.Core.Features.Devices.ViewModels;
+using RaphCare.Mobile.Core.Features.Devices.Views;
 #if ANDROID
 using RaphCare.Mobile.Platforms.Android.Telehealth;
 #endif
@@ -47,6 +50,8 @@ public static class MobileServiceCollectionExtensions
 #else
         services.AddSingleton<ITelehealthRtcSession, NoOpTelehealthRtcSession>();
 #endif
+
+        services.AddSingleton<IWearableBleCoordinator, WearableBleCoordinator>();
 
         services.AddTransient<LandingViewModel>();
         services.AddTransient<RegisterOptionsViewModel>();
@@ -93,6 +98,8 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AddInsuranceProfilePage>();
         services.AddTransient<CareTelehealthPage>();
         services.AddTransient<TelehealthJoinPage>();
+        services.AddTransient<DevicesViewModel>();
+        services.AddTransient<DevicesPage>();
         services.AddTransient<SettingsPage>();
         services.AddTransient<UnderConstructionPage>();
         services.AddTransient<BlazorHostPage>();

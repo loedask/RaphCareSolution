@@ -5,14 +5,14 @@ using RaphCare.Mobile.Core.Features.CareTelehealth.Views;
 
 namespace RaphCare.Mobile.Platforms.Windows.Telehealth;
 
-public sealed class TelehealthVideoViewHandler : ViewHandler<TelehealthVideoView, Border>
+public sealed class TelehealthVideoViewHandler : ViewHandler<TelehealthVideoView, Microsoft.UI.Xaml.Controls.Border>
 {
     public TelehealthVideoViewHandler() : base(ViewHandler.ViewMapper)
     {
     }
 
-    protected override Border CreatePlatformView() => new()
+    protected override Microsoft.UI.Xaml.Controls.Border CreatePlatformView() => new()
     {
-        Background = new SolidColorBrush(Microsoft.UI.Colors.DimGray)
+        Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.DimGray)
     };
 }

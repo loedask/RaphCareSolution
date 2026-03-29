@@ -32,5 +32,7 @@
     <string>RaphCare records your voice to register your profile and transcribe your details.</string>
     <key>NSCameraUsageDescription</key>
     <string>RaphCare uses the camera for telehealth video visits.</string>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>RaphCare uses Bluetooth to find and connect to your wearable (E580/E585-class) for health data.</string>
 </dict>
 </plist>
