@@ -22,6 +22,13 @@ public class FeatureFlagsTests
         Assert.False(FeatureFlags.AppointmentsEnabled);
         Assert.True(FeatureFlags.InsuranceEnabled);
         Assert.False(FeatureFlags.SettingsEnabled);
+        Assert.False(FeatureFlags.CareTelehealthEnabled);
+        Assert.False(FeatureFlags.DevicesEnabled);
+        Assert.False(FeatureFlags.BillingEnabled);
+        Assert.False(FeatureFlags.MentalHealthEnabled);
+        Assert.False(FeatureFlags.FamilyMembersEnabled);
+        Assert.False(FeatureFlags.AiAssistantEnabled);
+        Assert.False(FeatureFlags.NotificationsEnabled);
     }
 
     [Fact]

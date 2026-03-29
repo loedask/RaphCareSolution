@@ -30,7 +30,36 @@ public static class AppNavigator
     public const string Insurance = "InsurancePage";
     public const string Settings = "SettingsPage";
     public const string UnderConstruction = "UnderConstructionPage";
+
+    /// <summary>Care: request call, consultation (concept /request-call, /consultation). Stub until vertical ships.</summary>
+    public const string CareTelehealth = "CareTelehealthPage";
+
+    /// <summary>Connected devices / BLE wearables (concept /devices). Stub until vertical ships.</summary>
+    public const string Devices = "DevicesPage";
+
+    /// <summary>Billing & plans (concept payment / billing / upgrade). Stub until vertical ships.</summary>
+    public const string Billing = "BillingPage";
+
+    public const string MentalHealth = "MentalHealthPage";
+    public const string FamilyMembers = "FamilyMembersPage";
+    public const string AiAssistant = "AiAssistantPage";
+    public const string Notifications = "NotificationsPage";
     public const string BlazorHost = "BlazorHostPage";
+
+    /// <summary>
+    /// Routes that resolve to <see cref="UnderConstructionPage"/> with a display name until the vertical is implemented.
+    /// Remove a route from this set when replacing registration with a real page type.
+    /// </summary>
+    private static readonly HashSet<string> StubRoutes =
+    [
+        CareTelehealth,
+        Devices,
+        Billing,
+        MentalHealth,
+        FamilyMembers,
+        AiAssistant,
+        Notifications,
+    ];
 
     /// <summary>
     /// Call once at app startup (e.g. from AppShell or MauiProgram) to register every route.
@@ -55,7 +84,15 @@ public static class AppNavigator
         Routing.RegisterRoute(Insurance, typeof(InsurancePage));
         Routing.RegisterRoute(Settings, typeof(SettingsPage));
 
-        // Shared / hybrid
+        // Concept areas (stubs → same page type; query <c>featureName</c> set by <see cref="GoToFeatureAsync"/> when flag is on)
+        Routing.RegisterRoute(CareTelehealth, typeof(UnderConstructionPage));
+        Routing.RegisterRoute(Devices, typeof(UnderConstructionPage));
+        Routing.RegisterRoute(Billing, typeof(UnderConstructionPage));
+        Routing.RegisterRoute(MentalHealth, typeof(UnderConstructionPage));
+        Routing.RegisterRoute(FamilyMembers, typeof(UnderConstructionPage));
+        Routing.RegisterRoute(AiAssistant, typeof(UnderConstructionPage));
+        Routing.RegisterRoute(Notifications, typeof(UnderConstructionPage));
+
         Routing.RegisterRoute(UnderConstruction, typeof(UnderConstructionPage));
         Routing.RegisterRoute(BlazorHost, typeof(BlazorHostPage));
     }
@@ -65,17 +102,25 @@ public static class AppNavigator
     /// </summary>
     public static async Task GoToFeatureAsync(string route, string? featureDisplayName = null, bool absolute = false)
     {
+        var display = featureDisplayName ?? route;
         var (enabled, pageRoute) = GetFeatureRoute(route);
-        if (enabled)
+        if (!enabled)
         {
-            var path = absolute ? "//" + pageRoute : pageRoute;
-            await SafeShellNavigator.GoToAsync(path);
-        }
-        else
-        {
-            var uri = $"{UnderConstruction}?featureName={Uri.EscapeDataString(featureDisplayName ?? route)}";
+            var uri = $"{UnderConstruction}?featureName={Uri.EscapeDataString(display)}";
             await SafeShellNavigator.GoToAsync(uri);
+            return;
         }
+
+        if (StubRoutes.Contains(pageRoute))
+        {
+            var q = $"featureName={Uri.EscapeDataString(display)}";
+            var path = absolute ? $"//{pageRoute}?{q}" : $"{pageRoute}?{q}";
+            await SafeShellNavigator.GoToAsync(path);
+            return;
+        }
+
+        var normalPath = absolute ? "//" + pageRoute : pageRoute;
+        await SafeShellNavigator.GoToAsync(normalPath);
     }
 
     private static (bool enabled, string route) GetFeatureRoute(string route)
@@ -86,6 +131,13 @@ public static class AppNavigator
             Appointments => (FeatureFlags.AppointmentsEnabled, Appointments),
             Insurance => (FeatureFlags.InsuranceEnabled, Insurance),
             Settings => (FeatureFlags.SettingsEnabled, Settings),
+            CareTelehealth => (FeatureFlags.CareTelehealthEnabled, CareTelehealth),
+            Devices => (FeatureFlags.DevicesEnabled, Devices),
+            Billing => (FeatureFlags.BillingEnabled, Billing),
+            MentalHealth => (FeatureFlags.MentalHealthEnabled, MentalHealth),
+            FamilyMembers => (FeatureFlags.FamilyMembersEnabled, FamilyMembers),
+            AiAssistant => (FeatureFlags.AiAssistantEnabled, AiAssistant),
+            Notifications => (FeatureFlags.NotificationsEnabled, Notifications),
             _ => (true, route)
         };
     }

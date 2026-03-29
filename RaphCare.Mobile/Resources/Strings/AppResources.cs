@@ -28,6 +28,20 @@ public static class AppResources
     public static string HomeWelcome => Get(nameof(HomeWelcome), "Welcome to RaphCare");
     public static string HomeSignedIn => Get(nameof(HomeSignedIn), "You're signed in.");
     public static string OpenBlazorSample => Get(nameof(OpenBlazorSample), "Open Blazor sample UI");
+    public static string HomeHubSectionCare => Get(nameof(HomeHubSectionCare), "Your care");
+    public static string HomeHubSectionMore => Get(nameof(HomeHubSectionMore), "More");
+    public static string HomeHubHealthRecords => Get(nameof(HomeHubHealthRecords), "Health records");
+    public static string HomeHubAppointments => Get(nameof(HomeHubAppointments), "Appointments");
+    public static string HomeHubInsurance => Get(nameof(HomeHubInsurance), "Insurance");
+    public static string HomeHubCareTelehealth => Get(nameof(HomeHubCareTelehealth), "Care & telehealth");
+    public static string HomeHubDevices => Get(nameof(HomeHubDevices), "Devices & wearables");
+    public static string HomeHubBilling => Get(nameof(HomeHubBilling), "Billing & plans");
+    public static string HomeHubMentalHealth => Get(nameof(HomeHubMentalHealth), "Mental health");
+    public static string HomeHubFamily => Get(nameof(HomeHubFamily), "Family members");
+    public static string HomeHubAiAssistant => Get(nameof(HomeHubAiAssistant), "AI assistant");
+    public static string HomeHubNotifications => Get(nameof(HomeHubNotifications), "Notifications");
+    public static string HomeHubSettings => Get(nameof(HomeHubSettings), "Settings");
+    public static string HomeHubSamples => Get(nameof(HomeHubSamples), "Developer samples");
 
     private static string Get(string name, string fallback) =>
         Manager.GetString(name, CultureInfo.CurrentUICulture) ?? fallback;

@@ -6,12 +6,27 @@
              BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" VerticalOptions="Center" Spacing="16">
+        <VerticalStackLayout Padding="24" Spacing="12">
             <Label x:Name="WelcomeLabel" Style="{StaticResource TitleLarge}" />
             <Label x:Name="SignedInLabel" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
-            <Button x:Name="OpenBlazorButton"
-                    Style="{StaticResource PrimaryButton}"
-                    Clicked="OnOpenBlazorClicked" />
+
+            <Label x:Name="SectionCareLabel" Margin="0,16,0,0" Style="{StaticResource SectionTitle}" TextColor="{StaticResource ForegroundColor}" />
+            <Button x:Name="HealthRecordsButton" Style="{StaticResource SecondaryButton}" Clicked="OnHealthRecordsClicked" />
+            <Button x:Name="AppointmentsButton" Style="{StaticResource SecondaryButton}" Clicked="OnAppointmentsClicked" />
+            <Button x:Name="InsuranceButton" Style="{StaticResource SecondaryButton}" Clicked="OnInsuranceClicked" />
+            <Button x:Name="CareTelehealthButton" Style="{StaticResource SecondaryButton}" Clicked="OnCareTelehealthClicked" />
+            <Button x:Name="DevicesButton" Style="{StaticResource SecondaryButton}" Clicked="OnDevicesClicked" />
+
+            <Label x:Name="SectionMoreLabel" Margin="0,16,0,0" Style="{StaticResource SectionTitle}" TextColor="{StaticResource ForegroundColor}" />
+            <Button x:Name="BillingButton" Style="{StaticResource SecondaryButton}" Clicked="OnBillingClicked" />
+            <Button x:Name="MentalHealthButton" Style="{StaticResource SecondaryButton}" Clicked="OnMentalHealthClicked" />
+            <Button x:Name="FamilyMembersButton" Style="{StaticResource SecondaryButton}" Clicked="OnFamilyMembersClicked" />
+            <Button x:Name="AiAssistantButton" Style="{StaticResource SecondaryButton}" Clicked="OnAiAssistantClicked" />
+            <Button x:Name="NotificationsButton" Style="{StaticResource SecondaryButton}" Clicked="OnNotificationsClicked" />
+            <Button x:Name="SettingsButton" Style="{StaticResource SecondaryButton}" Clicked="OnSettingsClicked" />
+
+            <Label x:Name="SectionSamplesLabel" Margin="0,24,0,0" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+            <Button x:Name="OpenBlazorButton" Style="{StaticResource OutlineTealButton}" Clicked="OnOpenBlazorClicked" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
