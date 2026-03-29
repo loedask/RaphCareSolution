@@ -1,32 +1,155 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:RaphCare.Mobile.Core.Features.Home.Models"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Home.ViewModels"
              x:Class="RaphCare.Mobile.Core.Features.Home.Views.HomePage"
-             Title="Home"
+             x:DataType="vm:HomeViewModel"
+             Title="{Binding Title}"
              BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="12">
-            <Label x:Name="WelcomeLabel" Style="{StaticResource TitleLarge}" />
-            <Label x:Name="SignedInLabel" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
+        <VerticalStackLayout Padding="24" Spacing="0">
+            <Label Text="{Binding Greeting}"
+                   Style="{StaticResource TitleLarge}"
+                   TextColor="{StaticResource ForegroundColor}"
+                   Margin="0,8,0,4" />
+            <Label Text="{Binding Tagline}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   Margin="0,0,0,20" />
 
-            <Label x:Name="SectionCareLabel" Margin="0,16,0,0" Style="{StaticResource SectionTitle}" TextColor="{StaticResource ForegroundColor}" />
-            <Button x:Name="HealthRecordsButton" Style="{StaticResource SecondaryButton}" Clicked="OnHealthRecordsClicked" />
-            <Button x:Name="AppointmentsButton" Style="{StaticResource SecondaryButton}" Clicked="OnAppointmentsClicked" />
-            <Button x:Name="InsuranceButton" Style="{StaticResource SecondaryButton}" Clicked="OnInsuranceClicked" />
-            <Button x:Name="CareTelehealthButton" Style="{StaticResource SecondaryButton}" Clicked="OnCareTelehealthClicked" />
-            <Button x:Name="DevicesButton" Style="{StaticResource SecondaryButton}" Clicked="OnDevicesClicked" />
+            <Border Padding="22,20"
+                    StrokeThickness="0"
+                    Margin="0,0,0,24">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="{StaticResource GradientStartColor}" Offset="0" />
+                        <GradientStop Color="{StaticResource GradientMidColor}" Offset="0.55" />
+                        <GradientStop Color="{StaticResource PrimaryColor}" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{Binding HeroTitle}"
+                           FontFamily="SpaceGrotesk"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="White" />
+                    <Label Text="{Binding HeroSubtitle}"
+                           FontSize="13"
+                           LineHeight="1.35"
+                           TextColor="{StaticResource TealGlowColor}"
+                           Opacity="0.95" />
+                </VerticalStackLayout>
+            </Border>
 
-            <Label x:Name="SectionMoreLabel" Margin="0,16,0,0" Style="{StaticResource SectionTitle}" TextColor="{StaticResource ForegroundColor}" />
-            <Button x:Name="BillingButton" Style="{StaticResource SecondaryButton}" Clicked="OnBillingClicked" />
-            <Button x:Name="MentalHealthButton" Style="{StaticResource SecondaryButton}" Clicked="OnMentalHealthClicked" />
-            <Button x:Name="FamilyMembersButton" Style="{StaticResource SecondaryButton}" Clicked="OnFamilyMembersClicked" />
-            <Button x:Name="AiAssistantButton" Style="{StaticResource SecondaryButton}" Clicked="OnAiAssistantClicked" />
-            <Button x:Name="NotificationsButton" Style="{StaticResource SecondaryButton}" Clicked="OnNotificationsClicked" />
-            <Button x:Name="SettingsButton" Style="{StaticResource SecondaryButton}" Clicked="OnSettingsClicked" />
+            <Label Text="{Binding SectionCare}" Style="{StaticResource SectionTitle}" TextColor="{StaticResource ForegroundColor}" Margin="0,0,0,12" />
 
-            <Label x:Name="SectionSamplesLabel" Margin="0,24,0,0" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
-            <Button x:Name="OpenBlazorButton" Style="{StaticResource OutlineTealButton}" Clicked="OnOpenBlazorClicked" />
+            <VerticalStackLayout Spacing="0"
+                                 BindableLayout.ItemsSource="{Binding CareItems}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:HomeQuickLinkItem">
+                        <Grid Margin="0,0,0,12">
+                            <Border Style="{StaticResource CardBorder}" Padding="18" Margin="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" InputTransparent="True">
+                                    <Border Grid.Column="0"
+                                            WidthRequest="52"
+                                            HeightRequest="52"
+                                            StrokeThickness="0"
+                                            VerticalOptions="Center">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="14" />
+                                        </Border.StrokeShape>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <Label Text="{Binding IconGlyph}"
+                                               FontSize="22"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                        <Label Text="{Binding Subtitle}"
+                                               Style="{StaticResource BodySmall}"
+                                               TextColor="{StaticResource MutedForegroundColor}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                            <Button BackgroundColor="Transparent"
+                                    Opacity="0.02"
+                                    Command="{Binding NavigateCommand}" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Label Text="{Binding SectionMore}"
+                   Style="{StaticResource SectionTitle}"
+                   TextColor="{StaticResource ForegroundColor}"
+                   Margin="0,8,0,12" />
+
+            <VerticalStackLayout Spacing="0"
+                                 BindableLayout.ItemsSource="{Binding MoreItems}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:HomeQuickLinkItem">
+                        <Grid Margin="0,0,0,12">
+                            <Border Style="{StaticResource CardBorder}" Padding="18" Margin="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" InputTransparent="True">
+                                    <Border Grid.Column="0"
+                                            WidthRequest="52"
+                                            HeightRequest="52"
+                                            StrokeThickness="0"
+                                            VerticalOptions="Center">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="14" />
+                                        </Border.StrokeShape>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <Label Text="{Binding IconGlyph}"
+                                               FontSize="22"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                        <Label Text="{Binding Subtitle}"
+                                               Style="{StaticResource BodySmall}"
+                                               TextColor="{StaticResource MutedForegroundColor}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                            <Button BackgroundColor="Transparent"
+                                    Opacity="0.02"
+                                    Command="{Binding NavigateCommand}" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Label Text="{Binding SectionSamples}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   Margin="0,16,0,8" />
+            <Button Text="{Binding OpenBlazorText}"
+                    Style="{StaticResource OutlineTealButton}"
+                    Command="{Binding OpenBlazorCommand}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

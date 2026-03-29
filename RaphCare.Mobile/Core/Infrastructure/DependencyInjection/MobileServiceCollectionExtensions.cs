@@ -4,6 +4,7 @@ using RaphCare.Client;
 using RaphCare.Mobile.Core.Features.Appointments.Views;
 using RaphCare.Mobile.Core.Features.Auth.ViewModels;
 using RaphCare.Mobile.Core.Features.Auth.Views;
+using RaphCare.Mobile.Core.Features.Home.ViewModels;
 using RaphCare.Mobile.Core.Features.Home.Views;
 using RaphCare.Mobile.Core.Features.Hybrid.Views;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
@@ -40,6 +41,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<VerifyEmailViewModel>();
         services.AddTransient<AccountCreatedViewModel>();
         services.AddTransient<SignInViewModel>();
+        services.AddTransient<HomeViewModel>();
 
         services.AddTransient<LandingPage>();
         services.AddTransient<RegisterOptionsPage>();

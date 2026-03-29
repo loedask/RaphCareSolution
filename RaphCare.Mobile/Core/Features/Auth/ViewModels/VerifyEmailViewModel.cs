@@ -7,7 +7,7 @@ using RaphCare.Mobile.Resources.Strings;
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
 /// <summary>
-/// Email verification prompt. User verifies via Entra; then Sign In navigates to sign-in and then Home.
+/// Email verification prompt. User verifies via Entra; Sign In on success goes to <c>AccountCreatedPage</c>, then home.
 /// </summary>
 public class VerifyEmailViewModel : BaseViewModel
 {
@@ -62,7 +62,7 @@ public class VerifyEmailViewModel : BaseViewModel
 
             if (result.Success)
             {
-                await SafeShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
+                await SafeShellNavigator.GoToAsync($"//{AppNavigator.AccountCreated}").ConfigureAwait(false);
             }
             else
             {

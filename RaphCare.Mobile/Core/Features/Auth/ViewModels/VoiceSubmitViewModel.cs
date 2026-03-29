@@ -54,14 +54,14 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
         ProcessingTitle = AppResources.T("VoiceRecordProcessingTitle");
         ProcessingHint = AppResources.T("VoiceRecordProcessingHint");
         SuccessTitle = AppResources.T("VoiceSubmitSuccessTitle");
-        ContinueHomeText = AppResources.T("VoiceSubmitContinueHome");
+        ContinueHomeText = AppResources.T("VoiceSubmitContinueWelcome");
 
         for (var i = 0; i < 20; i++)
             WaveBars.Add(new WaveBarItem());
 
         StartRecordingCommand = new Command(async () => await StartRecordingAsync(), () => !IsBusy && !IsRecording && !IsProcessing && !ShowSuccess);
         StopRecordingCommand = new Command(async () => await StopRecordingAndSubmitAsync(), () => !IsBusy && IsRecording);
-        ContinueHomeCommand = new Command(async () => await SafeShellNavigator.GoToAsync("//HomePage"));
+        ContinueHomeCommand = new Command(async () => await SafeShellNavigator.GoToAsync($"//{AppNavigator.AccountCreated}"));
         BackCommand = new Command(async () => await GoBackAsync());
     }
 

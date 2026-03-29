@@ -147,12 +147,12 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Screen | Concept file | MAUI target | Done |
 |--------|----------------|-------------|------|
 | Welcome | `Welcome.tsx` | `LandingPage` | ☑ |
-| Home | `Home.tsx` | `HomePage` | ☐ |
+| Home | `Home.tsx` | `HomePage` (dashboard hero + quick-link cards) | ☑ |
 | Register (3 methods) | `Register.tsx` | `RegisterOptionsPage` (Email / Phone / Voice cards) | ☑ |
 | Email register | `EmailRegister.tsx` | `RegisterEmailPage` | ☑ |
 | Phone register / verify | `PhoneRegister.tsx`, verify | `RegisterPhonePage`, `VerifyPhonePage` | ☑ |
 | Voice register | `VoiceRegister.tsx` (full animated mock) | `RegisterVoiceIntroPage` → phone → `VoiceSubmitPage` (mic record + level bars + API) | ☑ |
-| Account created | `AccountCreated.tsx` | `AccountCreatedPage` (after phone OTP; not voice path) | ☑ |
+| Account created | `AccountCreated.tsx` | `AccountCreatedPage` (shared welcome after phone OTP, email verify sign-in, or voice profile success) | ☑ |
 | Login / … | `Login.tsx`, … | `SignInPage`, `VerifyEmailPage` | ☑ |
 | … | … | … | ☐ |
 
