@@ -1,9 +1,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RaphCare.Application.Common.Configuration;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Infrastructure.Configuration;
 using RaphCare.Infrastructure.Persistence;
 using RaphCare.Infrastructure.Persistence.Interceptors;
 using RaphCare.Infrastructure.Services;
+using RaphCare.Infrastructure.Telehealth;
 
 namespace RaphCare.Infrastructure;
 
@@ -27,7 +30,15 @@ public static class DependencyInjection
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
         services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<ISmsService, SmsService>();
+
+        services.Configure<TwilioSmsOptions>(configuration.GetSection(TwilioSmsOptions.SectionName));
+        if (!string.IsNullOrWhiteSpace(configuration["Twilio:AccountSid"]))
+            services.AddScoped<ISmsService, TwilioSmsService>();
+        else
+            services.AddScoped<ISmsService, SmsService>();
+
+        services.Configure<AgoraRtcOptions>(configuration.GetSection(AgoraRtcOptions.SectionName));
+        services.AddSingleton<ITelehealthRtcTokenGenerator, AgoraRtcTokenService>();
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPaymentGatewayService, PaymentGatewayService>();

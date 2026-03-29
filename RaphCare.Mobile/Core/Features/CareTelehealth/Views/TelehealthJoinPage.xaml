@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels"
+             x:Class="RaphCare.Mobile.Core.Features.CareTelehealth.Views.TelehealthJoinPage"
+             x:DataType="vm:TelehealthJoinViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource PrimaryColor}" />
+
+            <Label Text="{Binding RtcStatusText}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                <Label Text="{Binding ChannelLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Label Text="{Binding ChannelText}" Style="{StaticResource BodyMedium}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                <Label Text="{Binding UidLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Label Text="{Binding UidText}" Style="{StaticResource BodyMedium}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                <Label Text="{Binding AppIdLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Label Text="{Binding AppIdText}" Style="{StaticResource BodyMedium}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                <Label Text="{Binding TokenLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Label Text="{Binding TokenPreview}" Style="{StaticResource BodyMedium}" LineBreakMode="WordWrap" />
+            </VerticalStackLayout>
+
+            <Button Text="{Binding CopyTokenLabel}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding CopyTokenCommand}"
+                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+            <Button Text="{Binding SmsLabel}"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding SmsCommand}"
+                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+            <Button Text="{Binding BackLabel}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding BackCommand}" />
+
+            <Label Text="{Binding ErrorMessage}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource ErrorColor}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -3,6 +3,7 @@ using RaphCare.Mobile.Core.Features.Appointments.Views;
 using RaphCare.Mobile.Core.Features.Auth.Views;
 using RaphCare.Mobile.Core.Features.Home.Views;
 using RaphCare.Mobile.Core.Features.Hybrid.Views;
+using RaphCare.Mobile.Core.Features.CareTelehealth.Views;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
 using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Views;
@@ -37,8 +38,11 @@ public static class AppNavigator
     public const string Settings = "SettingsPage";
     public const string UnderConstruction = "UnderConstructionPage";
 
-    /// <summary>Care: request call, consultation (concept /request-call, /consultation). Stub until vertical ships.</summary>
+    /// <summary>Care & telehealth: session list (Agora join info + Twilio SMS from API).</summary>
     public const string CareTelehealth = "CareTelehealthPage";
+
+    /// <summary>Telehealth join details for a session (query: <c>sessionId</c>).</summary>
+    public const string TelehealthJoin = "TelehealthJoinPage";
 
     /// <summary>Connected devices / BLE wearables (concept /devices). Stub until vertical ships.</summary>
     public const string Devices = "DevicesPage";
@@ -58,7 +62,6 @@ public static class AppNavigator
     /// </summary>
     private static readonly HashSet<string> StubRoutes =
     [
-        CareTelehealth,
         Devices,
         Billing,
         MentalHealth,
@@ -96,8 +99,10 @@ public static class AppNavigator
         Routing.RegisterRoute(AddInsuranceProfile, typeof(AddInsuranceProfilePage));
         Routing.RegisterRoute(Settings, typeof(SettingsPage));
 
+        Routing.RegisterRoute(CareTelehealth, typeof(CareTelehealthPage));
+        Routing.RegisterRoute(TelehealthJoin, typeof(TelehealthJoinPage));
+
         // Concept areas (stubs → same page type; query <c>featureName</c> set by <see cref="GoToFeatureAsync"/> when flag is on)
-        Routing.RegisterRoute(CareTelehealth, typeof(UnderConstructionPage));
         Routing.RegisterRoute(Devices, typeof(UnderConstructionPage));
         Routing.RegisterRoute(Billing, typeof(UnderConstructionPage));
         Routing.RegisterRoute(MentalHealth, typeof(UnderConstructionPage));

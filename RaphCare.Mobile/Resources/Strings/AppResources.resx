@@ -602,4 +602,67 @@ Accessible. Intelligent. Human.</value>
   <data name="InsuranceSaveFailed" xml:space="preserve">
     <value>Could not save changes.</value>
   </data>
+  <data name="CareTelehealthTitle" xml:space="preserve">
+    <value>Care &amp; telehealth</value>
+  </data>
+  <data name="CareTelehealthRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="CareTelehealthEmpty" xml:space="preserve">
+    <value>No telehealth sessions yet.</value>
+  </data>
+  <data name="CareTelehealthHint" xml:space="preserve">
+    <value>Tap a session to open join details (channel, Agora token when configured).</value>
+  </data>
+  <data name="CareTelehealthLoadFailed" xml:space="preserve">
+    <value>Could not load telehealth sessions.</value>
+  </data>
+  <data name="CareTelehealthPlatformUnknown" xml:space="preserve">
+    <value>Platform not set</value>
+  </data>
+  <data name="CareTelehealthJoinTitle" xml:space="preserve">
+    <value>Join session</value>
+  </data>
+  <data name="CareTelehealthChannel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="CareTelehealthUid" xml:space="preserve">
+    <value>UID</value>
+  </data>
+  <data name="CareTelehealthAppId" xml:space="preserve">
+    <value>Agora app ID</value>
+  </data>
+  <data name="CareTelehealthToken" xml:space="preserve">
+    <value>Token</value>
+  </data>
+  <data name="CareTelehealthCopyToken" xml:space="preserve">
+    <value>Copy token</value>
+  </data>
+  <data name="CareTelehealthSendSms" xml:space="preserve">
+    <value>Send SMS reminder</value>
+  </data>
+  <data name="CareTelehealthBack" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="CareTelehealthJoinFailed" xml:space="preserve">
+    <value>Could not load join information.</value>
+  </data>
+  <data name="CareTelehealthTokenUnset" xml:space="preserve">
+    <value>No RTC token (server not configured or session not ready).</value>
+  </data>
+  <data name="CareTelehealthRtcReady" xml:space="preserve">
+    <value>Video call credentials are available.</value>
+  </data>
+  <data name="CareTelehealthRtcNotConfigured" xml:space="preserve">
+    <value>RTC is not configured on the server; channel and UID are still shown.</value>
+  </data>
+  <data name="CareTelehealthCopied" xml:space="preserve">
+    <value>Token copied to clipboard.</value>
+  </data>
+  <data name="CareTelehealthSmsFailed" xml:space="preserve">
+    <value>Could not send SMS.</value>
+  </data>
+  <data name="CareTelehealthSmsSent" xml:space="preserve">
+    <value>SMS sent.</value>
+  </data>
 </root>
