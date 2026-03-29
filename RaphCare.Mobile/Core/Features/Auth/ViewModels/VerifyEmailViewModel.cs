@@ -2,6 +2,7 @@ using System.Windows.Input;
 using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
@@ -13,6 +14,25 @@ public class VerifyEmailViewModel : BaseViewModel
     private readonly IAuthService _authService;
 
     private string? _errorMessage;
+    private string? _statusMessage;
+
+    public VerifyEmailViewModel(IAuthService authService)
+    {
+        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+        Title = AppResources.T("VerifyEmailPageTitle");
+        Headline = AppResources.T("VerifyEmailTitle");
+        Subtitle = AppResources.T("VerifyEmailSubtitle");
+        SignInButtonText = AppResources.T("VerifyEmailSignIn");
+        ResendButtonText = AppResources.T("VerifyEmailResend");
+
+        SignInCommand = new Command(async () => await SignInAsync(), () => !IsBusy);
+        ResendCommand = new Command(async () => await ResendAsync(), () => !IsBusy);
+    }
+
+    public string Headline { get; }
+    public string Subtitle { get; }
+    public string SignInButtonText { get; }
+    public string ResendButtonText { get; }
 
     public string? ErrorMessage
     {
@@ -20,22 +40,21 @@ public class VerifyEmailViewModel : BaseViewModel
         set => SetProperty(ref _errorMessage, value);
     }
 
+    public string? StatusMessage
+    {
+        get => _statusMessage;
+        set => SetProperty(ref _statusMessage, value);
+    }
+
     public ICommand SignInCommand { get; }
     public ICommand ResendCommand { get; }
-
-    public VerifyEmailViewModel(IAuthService authService)
-    {
-        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
-        Title = "Verify Email";
-        SignInCommand = new Command(async () => await SignInAsync(), () => !IsBusy);
-        ResendCommand = new Command(async () => await ResendAsync(), () => !IsBusy);
-    }
 
     private async Task SignInAsync()
     {
         if (IsBusy) return;
 
         ErrorMessage = null;
+        StatusMessage = null;
         IsBusy = true;
         try
         {
@@ -47,7 +66,7 @@ public class VerifyEmailViewModel : BaseViewModel
             }
             else
             {
-                ErrorMessage = result.ErrorMessage ?? "Sign-in failed.";
+                ErrorMessage = result.ErrorMessage ?? AppResources.T("AuthSignInFailed");
             }
         }
         finally
@@ -59,11 +78,11 @@ public class VerifyEmailViewModel : BaseViewModel
     private async Task ResendAsync()
     {
         if (IsBusy) return;
+        ErrorMessage = null;
         IsBusy = true;
         try
         {
-            // Entra handles verification; resend is typically done from the verification email link.
-            ErrorMessage = null;
+            StatusMessage = AppResources.T("VerifyEmailResendHint");
             await Task.CompletedTask.ConfigureAwait(false);
         }
         finally

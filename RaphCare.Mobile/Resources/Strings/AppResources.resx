@@ -89,6 +89,9 @@ Accessible. Intelligent. Human.</value>
   <data name="AuthChooseLanguage" xml:space="preserve">
     <value>Choose your language</value>
   </data>
+  <data name="AuthLandingPageTitle" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
   <data name="AuthWelcomeBack" xml:space="preserve">
     <value>Welcome back</value>
   </data>
@@ -274,5 +277,95 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="HomeHubSamples" xml:space="preserve">
     <value>Developer samples</value>
+  </data>
+  <data name="AuthSignInPageTitle" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="AuthSignInFailed" xml:space="preserve">
+    <value>Sign-in failed.</value>
+  </data>
+  <data name="RegisterEmailTitle" xml:space="preserve">
+    <value>Create with email</value>
+  </data>
+  <data name="RegisterEmailSubtitle" xml:space="preserve">
+    <value>Fill in your details to get started.</value>
+  </data>
+  <data name="RegisterEmailFirstName" xml:space="preserve">
+    <value>First name</value>
+  </data>
+  <data name="RegisterEmailLastName" xml:space="preserve">
+    <value>Last name</value>
+  </data>
+  <data name="RegisterEmailEmail" xml:space="preserve">
+    <value>Email address</value>
+  </data>
+  <data name="RegisterEmailPassword" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="RegisterEmailPlaceholderFirst" xml:space="preserve">
+    <value>John</value>
+  </data>
+  <data name="RegisterEmailPlaceholderLast" xml:space="preserve">
+    <value>Doe</value>
+  </data>
+  <data name="RegisterEmailPlaceholderEmail" xml:space="preserve">
+    <value>john@example.com</value>
+  </data>
+  <data name="RegisterEmailPlaceholderPassword" xml:space="preserve">
+    <value>Min 8 characters</value>
+  </data>
+  <data name="RegisterEmailContinue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="RegisterEmailAlreadyHave" xml:space="preserve">
+    <value>Already have an account?</value>
+  </data>
+  <data name="RegisterEmailSignIn" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="RegisterEmailErrorFirstName" xml:space="preserve">
+    <value>Please enter your first name.</value>
+  </data>
+  <data name="RegisterEmailErrorLastName" xml:space="preserve">
+    <value>Please enter your last name.</value>
+  </data>
+  <data name="RegisterEmailErrorEmail" xml:space="preserve">
+    <value>Please enter your email.</value>
+  </data>
+  <data name="RegisterEmailErrorPassword" xml:space="preserve">
+    <value>Please enter a password.</value>
+  </data>
+  <data name="RegisterEmailFailed" xml:space="preserve">
+    <value>Registration failed.</value>
+  </data>
+  <data name="VerifyEmailTitle" xml:space="preserve">
+    <value>Verify your email</value>
+  </data>
+  <data name="VerifyEmailSubtitle" xml:space="preserve">
+    <value>We sent a verification link to your email. Open it to verify your account, then sign in below.</value>
+  </data>
+  <data name="VerifyEmailSignIn" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="VerifyEmailResend" xml:space="preserve">
+    <value>Resend verification</value>
+  </data>
+  <data name="VerifyEmailResendHint" xml:space="preserve">
+    <value>If you did not receive an email, check spam or use the link in your original invitation. Resend is not available for all tenants—use Microsoft’s sign-in help if needed.</value>
+  </data>
+  <data name="VerifyEmailPageTitle" xml:space="preserve">
+    <value>Verify email</value>
+  </data>
+  <data name="AccountCreatedTitle" xml:space="preserve">
+    <value>Account created</value>
+  </data>
+  <data name="AccountCreatedSubtitle" xml:space="preserve">
+    <value>Welcome to RaphCare. You’re ready to explore your care hub.</value>
+  </data>
+  <data name="AccountCreatedContinue" xml:space="preserve">
+    <value>Continue to home</value>
+  </data>
+  <data name="AccountCreatedPageTitle" xml:space="preserve">
+    <value>Welcome</value>
   </data>
 </root>

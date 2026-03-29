@@ -38,6 +38,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<RegisterVoiceIntroViewModel>();
         services.AddTransient<VoiceSubmitViewModel>();
         services.AddTransient<VerifyEmailViewModel>();
+        services.AddTransient<AccountCreatedViewModel>();
         services.AddTransient<SignInViewModel>();
 
         services.AddTransient<LandingPage>();
@@ -48,6 +49,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<RegisterVoiceIntroPage>();
         services.AddTransient<VoiceSubmitPage>();
         services.AddTransient<VerifyEmailPage>();
+        services.AddTransient<AccountCreatedPage>();
         services.AddTransient<SignInPage>();
         services.AddTransient<HomePage>();
         services.AddTransient<RecordsPage>();

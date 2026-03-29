@@ -121,6 +121,7 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/phone-register`, `/phone-verify` | PhoneRegister, PhoneVerify | Auth |
 | `/account-created` | AccountCreated | Auth |
 | `/voice-register` | VoiceRegister | Auth / onboarding |
+| `/account-created` | AccountCreated | `AccountCreatedPage` |
 | `/home` | Home | `HomePage` |
 | `/appointments`, `/book-appointment`, `/appointment-details` | Appointments, BookAppointment, AppointmentDetails | Appointments feature |
 | `/request-call`, `/consultation` | RequestCall, Consultation | Care / telehealth |
@@ -145,13 +146,14 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 
 | Screen | Concept file | MAUI target | Done |
 |--------|----------------|-------------|------|
-| Welcome | `Welcome.tsx` | | ☐ |
+| Welcome | `Welcome.tsx` | `LandingPage` | ☑ |
 | Home | `Home.tsx` | `HomePage` | ☐ |
 | Register (3 methods) | `Register.tsx` | `RegisterOptionsPage` (Email / Phone / Voice cards) | ☑ |
-| Email register | `EmailRegister.tsx` | `RegisterEmailPage` | ☐ |
-| Phone register / verify | `PhoneRegister.tsx`, verify | `RegisterPhonePage`, `VerifyPhonePage` | ☐ |
-| Voice register | `VoiceRegister.tsx` (full animated mock) | `RegisterVoiceIntroPage` → phone → `VoiceSubmitPage` (mic record + level bars + API) | ☐ |
-| Login / … | `Login.tsx`, … | Auth feature | ☐ |
+| Email register | `EmailRegister.tsx` | `RegisterEmailPage` | ☑ |
+| Phone register / verify | `PhoneRegister.tsx`, verify | `RegisterPhonePage`, `VerifyPhonePage` | ☑ |
+| Voice register | `VoiceRegister.tsx` (full animated mock) | `RegisterVoiceIntroPage` → phone → `VoiceSubmitPage` (mic record + level bars + API) | ☑ |
+| Account created | `AccountCreated.tsx` | `AccountCreatedPage` (after phone OTP; not voice path) | ☑ |
+| Login / … | `Login.tsx`, … | `SignInPage`, `VerifyEmailPage` | ☑ |
 | … | … | … | ☐ |
 
 *(Extend the table as you implement each flow.)*

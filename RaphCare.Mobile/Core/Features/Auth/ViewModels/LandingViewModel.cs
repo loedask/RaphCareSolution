@@ -63,7 +63,7 @@ public class LandingViewModel : BaseViewModel
     public LandingViewModel(IOptions<EntraAuthOptions> entraOptions)
     {
         _entra = entraOptions?.Value ?? throw new ArgumentNullException(nameof(entraOptions));
-        Title = "Welcome";
+        Title = AppResources.T("AuthLandingPageTitle");
         Languages = new ObservableCollection<LanguageOption>(new[]
         {
             new LanguageOption("en", "English", "English", CultureInfo.GetCultureInfo("en-US")),

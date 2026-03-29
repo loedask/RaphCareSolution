@@ -16,11 +16,8 @@
             </HorizontalStackLayout>
 
             <Label Text="{Binding WelcomeBack}"
-                   FontFamily="SpaceGrotesk"
-                   FontSize="28"
-                   FontAttributes="Bold"
-                   TextColor="{StaticResource ForegroundColor}"
-                   Margin="0,0,0,8" />
+                   Style="{StaticResource TitleLarge}"
+                   TextColor="{StaticResource ForegroundColor}" />
 
             <Label Text="{Binding SignInSubtitle}"
                    FontSize="14"

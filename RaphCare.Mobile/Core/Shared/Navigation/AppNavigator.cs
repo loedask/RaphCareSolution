@@ -23,6 +23,7 @@ public static class AppNavigator
     public const string RegisterVoiceIntro = "RegisterVoiceIntroPage";
     public const string VoiceSubmit = "VoiceSubmitPage";
     public const string VerifyEmail = "VerifyEmailPage";
+    public const string AccountCreated = "AccountCreatedPage";
     public const string SignIn = "SignInPage";
     public const string Home = "HomePage";
     public const string Records = "RecordsPage";
@@ -75,6 +76,7 @@ public static class AppNavigator
         Routing.RegisterRoute(RegisterVoiceIntro, typeof(RegisterVoiceIntroPage));
         Routing.RegisterRoute(VoiceSubmit, typeof(VoiceSubmitPage));
         Routing.RegisterRoute(VerifyEmail, typeof(VerifyEmailPage));
+        Routing.RegisterRoute(AccountCreated, typeof(AccountCreatedPage));
         Routing.RegisterRoute(SignIn, typeof(SignInPage));
 
         // Main

@@ -2,6 +2,7 @@ using System.Windows.Input;
 using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
@@ -17,6 +18,43 @@ public class RegisterEmailViewModel : BaseViewModel
     private string _email = string.Empty;
     private string _password = string.Empty;
     private string? _errorMessage;
+
+    public RegisterEmailViewModel(IAuthService authService)
+    {
+        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+        Title = AppResources.T("RegisterEmailTitle");
+        PageTitle = AppResources.T("RegisterEmailTitle");
+        Subtitle = AppResources.T("RegisterEmailSubtitle");
+        FirstNameLabel = AppResources.T("RegisterEmailFirstName");
+        LastNameLabel = AppResources.T("RegisterEmailLastName");
+        EmailLabel = AppResources.T("RegisterEmailEmail");
+        PasswordLabel = AppResources.T("RegisterEmailPassword");
+        PlaceholderFirst = AppResources.T("RegisterEmailPlaceholderFirst");
+        PlaceholderLast = AppResources.T("RegisterEmailPlaceholderLast");
+        PlaceholderEmail = AppResources.T("RegisterEmailPlaceholderEmail");
+        PlaceholderPassword = AppResources.T("RegisterEmailPlaceholderPassword");
+        ContinueText = AppResources.T("RegisterEmailContinue");
+        AlreadyHaveText = AppResources.T("RegisterEmailAlreadyHave");
+        SignInLinkText = AppResources.T("RegisterEmailSignIn");
+
+        RegisterCommand = new Command(async () => await RegisterAsync(), () => !IsBusy);
+        BackCommand = new Command(async () => await GoBackAsync());
+        SignInCommand = new Command(async () => await SafeShellNavigator.GoToAsync("SignInPage"));
+    }
+
+    public string PageTitle { get; }
+    public string Subtitle { get; }
+    public string FirstNameLabel { get; }
+    public string LastNameLabel { get; }
+    public string EmailLabel { get; }
+    public string PasswordLabel { get; }
+    public string PlaceholderFirst { get; }
+    public string PlaceholderLast { get; }
+    public string PlaceholderEmail { get; }
+    public string PlaceholderPassword { get; }
+    public string ContinueText { get; }
+    public string AlreadyHaveText { get; }
+    public string SignInLinkText { get; }
 
     public string FirstName
     {
@@ -52,34 +90,39 @@ public class RegisterEmailViewModel : BaseViewModel
     public ICommand BackCommand { get; }
     public ICommand SignInCommand { get; }
 
-    public RegisterEmailViewModel(IAuthService authService)
-    {
-        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
-        Title = "Create with Email";
-        RegisterCommand = new Command(async () => await RegisterAsync(), () => !IsBusy);
-        BackCommand = new Command(async () => await GoBackAsync());
-        SignInCommand = new Command(async () => await SafeShellNavigator.GoToAsync("SignInPage"));
-    }
-
     private async Task RegisterAsync()
     {
         if (IsBusy) return;
 
         ErrorMessage = null;
-        if (string.IsNullOrWhiteSpace(Email))
+        if (string.IsNullOrWhiteSpace(FirstName))
         {
-            ErrorMessage = "Please enter your email.";
+            ErrorMessage = AppResources.T("RegisterEmailErrorFirstName");
             return;
         }
+
+        if (string.IsNullOrWhiteSpace(LastName))
+        {
+            ErrorMessage = AppResources.T("RegisterEmailErrorLastName");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Email))
+        {
+            ErrorMessage = AppResources.T("RegisterEmailErrorEmail");
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(Password))
         {
-            ErrorMessage = "Please enter a password.";
+            ErrorMessage = AppResources.T("RegisterEmailErrorPassword");
             return;
         }
 
         IsBusy = true;
         try
         {
+            // Names are collected for UX parity; Entra interactive sign-up may collect profile in the browser.
             var result = await _authService.SignUpWithEmailAsync(Email.Trim(), Password, CancellationToken.None).ConfigureAwait(false);
 
             if (result.Success)
@@ -88,7 +131,7 @@ public class RegisterEmailViewModel : BaseViewModel
             }
             else
             {
-                ErrorMessage = result.ErrorMessage ?? "Registration failed.";
+                ErrorMessage = result.ErrorMessage ?? AppResources.T("RegisterEmailFailed");
             }
         }
         finally

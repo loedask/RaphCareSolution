@@ -12,29 +12,29 @@
                 <Button Style="{StaticResource IconBackButton}" Text="←" FontSize="20" Command="{Binding BackCommand}" />
             </HorizontalStackLayout>
 
-            <Label Text="Create with Email" Style="{StaticResource TitleLarge}" Margin="0,0,0,4" />
-            <Label Text="Fill in your details to get started."
+            <Label Text="{Binding PageTitle}" Style="{StaticResource TitleLarge}" Margin="0,0,0,4" />
+            <Label Text="{Binding Subtitle}"
                    Style="{StaticResource BodyMedium}"
                    TextColor="{StaticResource MutedForegroundColor}"
                    Margin="0,0,0,32" />
 
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                <shared:InputField Grid.Column="0" LabelText="First name" Placeholder="John" Text="{Binding FirstName}" />
-                <shared:InputField Grid.Column="1" LabelText="Last name" Placeholder="Doe" Text="{Binding LastName}" />
+                <shared:InputField Grid.Column="0" LabelText="{Binding FirstNameLabel}" Placeholder="{Binding PlaceholderFirst}" Text="{Binding FirstName}" />
+                <shared:InputField Grid.Column="1" LabelText="{Binding LastNameLabel}" Placeholder="{Binding PlaceholderLast}" Text="{Binding LastName}" />
             </Grid>
-            <shared:InputField LabelText="Email address" Placeholder="john@example.com" Keyboard="Email" Text="{Binding Email}" />
-            <shared:InputField LabelText="Password" Placeholder="Min 8 characters" IsPassword="True" Text="{Binding Password}" />
+            <shared:InputField LabelText="{Binding EmailLabel}" Placeholder="{Binding PlaceholderEmail}" Keyboard="Email" Text="{Binding Email}" />
+            <shared:InputField LabelText="{Binding PasswordLabel}" Placeholder="{Binding PlaceholderPassword}" IsPassword="True" Text="{Binding Password}" />
 
             <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" FontSize="12" Margin="0,-8,0,0" />
 
-            <shared:GradientButton Text="Continue"
+            <shared:GradientButton Text="{Binding ContinueText}"
                     Command="{Binding RegisterCommand}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                     Margin="0,32,0,0" />
 
             <HorizontalStackLayout Margin="0,24,0,0" HorizontalOptions="Center" Spacing="4">
-                <Label Text="Already have an account?" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
-                <Button Text="Sign in" Style="{StaticResource TextButton}" Padding="0" Command="{Binding SignInCommand}" />
+                <Label Text="{Binding AlreadyHaveText}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
+                <Button Text="{Binding SignInLinkText}" Style="{StaticResource TextButton}" Padding="0" Command="{Binding SignInCommand}" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

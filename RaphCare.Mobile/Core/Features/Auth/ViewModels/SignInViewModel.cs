@@ -47,7 +47,7 @@ public class SignInViewModel : BaseViewModel
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-        Title = "Sign In";
+        Title = AppResources.T("AuthSignInPageTitle");
         SignInCommand = new Command(async () => await SignInAsync().ConfigureAwait(false), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync().ConfigureAwait(false));
         SignUpCommand = new Command(async () => await OpenSignUpAsync().ConfigureAwait(false));
@@ -110,7 +110,7 @@ public class SignInViewModel : BaseViewModel
             }
             else
             {
-                ErrorMessage = result.ErrorMessage ?? "Sign-in failed.";
+                ErrorMessage = result.ErrorMessage ?? AppResources.T("AuthSignInFailed");
             }
         }
         finally
