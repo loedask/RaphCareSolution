@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Client;
+using RaphCare.Mobile.Core.Features.Appointments.ViewModels;
 using RaphCare.Mobile.Core.Features.Appointments.Views;
 using RaphCare.Mobile.Core.Features.Auth.ViewModels;
 using RaphCare.Mobile.Core.Features.Auth.Views;
@@ -26,6 +27,7 @@ public static class MobileServiceCollectionExtensions
     {
         services.Configure<EntraAuthOptions>(configuration.GetSection(EntraAuthOptions.SectionName));
         services.Configure<OnboardingOptions>(configuration.GetSection(OnboardingOptions.SectionName));
+        services.Configure<AppointmentsMobileOptions>(configuration.GetSection(AppointmentsMobileOptions.SectionName));
         services.Configure<FeatureFlagOptions>(configuration.GetSection(FeatureFlagOptions.SectionName));
 
         services.AddSingleton<IAuthService, EntraAuthService>();
@@ -42,6 +44,9 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AccountCreatedViewModel>();
         services.AddTransient<SignInViewModel>();
         services.AddTransient<HomeViewModel>();
+        services.AddTransient<AppointmentsViewModel>();
+        services.AddTransient<AppointmentDetailViewModel>();
+        services.AddTransient<BookAppointmentViewModel>();
 
         services.AddTransient<LandingPage>();
         services.AddTransient<RegisterOptionsPage>();
@@ -56,6 +61,8 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<HomePage>();
         services.AddTransient<RecordsPage>();
         services.AddTransient<AppointmentsPage>();
+        services.AddTransient<AppointmentDetailPage>();
+        services.AddTransient<BookAppointmentPage>();
         services.AddTransient<InsurancePage>();
         services.AddTransient<SettingsPage>();
         services.AddTransient<UnderConstructionPage>();

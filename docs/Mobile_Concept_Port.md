@@ -123,7 +123,7 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/voice-register` | VoiceRegister | Auth / onboarding |
 | `/account-created` | AccountCreated | `AccountCreatedPage` |
 | `/home` | Home | `HomePage` |
-| `/appointments`, `/book-appointment`, `/appointment-details` | Appointments, BookAppointment, AppointmentDetails | Appointments feature |
+| `/appointments`, `/book-appointment`, `/appointment-details` | Appointments, BookAppointment, AppointmentDetails | `AppointmentsPage`, `BookAppointmentPage`, `AppointmentDetailPage` (patient API) |
 | `/request-call`, `/consultation` | RequestCall, Consultation | Care / telehealth |
 | `/records`, `/health-record-details` | HealthRecords, HealthRecordDetails | Records |
 | `/devices` | ConnectedDevices | Devices |

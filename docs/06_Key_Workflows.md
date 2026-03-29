@@ -6,10 +6,10 @@
 
 ## Appointment Flow
 
-- **Create:** Client POSTs to api/appointments with body; AppointmentsController sends CreateAppointmentCommand via MediatR. Handler uses repository to add Appointment (linked to Patient/Clinic). Returns created resource or id.
-- **Read:** GET api/appointments (list with pagination) or GET api/appointments/{id}. Handlers: GetAppointmentsQuery, GetAppointmentByIdQuery; return DTOs.
-- **Update:** PUT api/appointments/{id} with body; UpdateAppointmentCommand and handler update entity and save.
-- **Conventions:** Same CQRS pattern across: command/query, validator, handler, repository. No business logic in controller.
+- **Provider / admin:** `api/Appointments` — `[Authorize(Policy = "RequireProvider")]`. Create/read/update as before (MediatR, CQRS).
+- **Patient (mobile JWT with `patientId` claim):** `api/patient/appointments` — list (paged, newest first), GET by id (only own rows), POST to book (`CreatePatientAppointmentCommand`; patient id from token, not body).
+- **Client:** `IAppointmentService` calls `api/patient/appointments` via `HttpClient` until NSwag is regenerated to include these routes.
+- **Conventions:** Same CQRS pattern; no business logic in controllers.
 
 ## Visit Flow
 

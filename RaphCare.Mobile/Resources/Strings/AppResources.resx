@@ -425,4 +425,76 @@ Accessible. Intelligent. Human.</value>
   <data name="HomeDashHintSettings" xml:space="preserve">
     <value>Account &amp; app</value>
   </data>
+  <data name="AppointmentsListTitle" xml:space="preserve">
+    <value>Appointments</value>
+  </data>
+  <data name="AppointmentsBook" xml:space="preserve">
+    <value>Book</value>
+  </data>
+  <data name="AppointmentsRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="AppointmentsEmpty" xml:space="preserve">
+    <value>No appointments yet. Book one to get started.</value>
+  </data>
+  <data name="AppointmentsLoadFailed" xml:space="preserve">
+    <value>Could not load appointments.</value>
+  </data>
+  <data name="AppointmentsDetailTitle" xml:space="preserve">
+    <value>Appointment</value>
+  </data>
+  <data name="AppointmentsWhen" xml:space="preserve">
+    <value>When</value>
+  </data>
+  <data name="AppointmentsStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="AppointmentsType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="AppointmentsReason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="AppointmentsClinicId" xml:space="preserve">
+    <value>Clinic ID</value>
+  </data>
+  <data name="AppointmentsProviderId" xml:space="preserve">
+    <value>Provider ID</value>
+  </data>
+  <data name="AppointmentsBookTitle" xml:space="preserve">
+    <value>Book appointment</value>
+  </data>
+  <data name="AppointmentsBookSubtitle" xml:space="preserve">
+    <value>Enter clinic and provider identifiers from your care team, then choose date and times.</value>
+  </data>
+  <data name="AppointmentsDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="AppointmentsStartTime" xml:space="preserve">
+    <value>Start time</value>
+  </data>
+  <data name="AppointmentsEndTime" xml:space="preserve">
+    <value>End time</value>
+  </data>
+  <data name="AppointmentsSubmit" xml:space="preserve">
+    <value>Request appointment</value>
+  </data>
+  <data name="AppointmentsCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="AppointmentsInvalidGuid" xml:space="preserve">
+    <value>Enter valid clinic and provider IDs (GUIDs).</value>
+  </data>
+  <data name="AppointmentsEndBeforeStart" xml:space="preserve">
+    <value>End time must be after start time.</value>
+  </data>
+  <data name="AppointmentsBookingFailed" xml:space="preserve">
+    <value>Booking failed.</value>
+  </data>
+  <data name="AppointmentsBookingOk" xml:space="preserve">
+    <value>Your appointment was requested.</value>
+  </data>
+  <data name="AppointmentsDetailFailed" xml:space="preserve">
+    <value>Could not load this appointment.</value>
+  </data>
 </root>

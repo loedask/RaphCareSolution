@@ -32,7 +32,9 @@ public class GetAppointmentsHandler : IRequestHandler<GetAppointmentsQuery, Page
                 ProviderId = a.ProviderId,
                 ScheduledStart = a.ScheduledStart,
                 ScheduledEnd = a.ScheduledEnd,
-                Status = a.Status
+                Status = a.Status,
+                Type = a.Type,
+                Reason = a.Reason
             })
             .ToList();
 

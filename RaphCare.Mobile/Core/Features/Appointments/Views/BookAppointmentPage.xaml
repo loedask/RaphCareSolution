@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Shared.Controls"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Appointments.ViewModels"
+             x:Class="RaphCare.Mobile.Core.Features.Appointments.Views.BookAppointmentPage"
+             x:DataType="vm:BookAppointmentViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="14">
+            <Label Text="{Binding PageSubtitle}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   Margin="0,0,0,8" />
+
+            <shared:InputField LabelText="{Binding ClinicIdLabel}" Text="{Binding ClinicIdText}" />
+            <shared:InputField LabelText="{Binding ProviderIdLabel}" Text="{Binding ProviderIdText}" />
+
+            <Label Text="{Binding DateLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+            <DatePicker Date="{Binding AppointmentDate}" TextColor="{StaticResource ForegroundColor}" />
+
+            <Label Text="{Binding StartLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+            <TimePicker Time="{Binding StartTime}" TextColor="{StaticResource ForegroundColor}" />
+
+            <Label Text="{Binding EndLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+            <TimePicker Time="{Binding EndTime}" TextColor="{StaticResource ForegroundColor}" />
+
+            <Label Text="{Binding TypeLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+            <Picker Title="{Binding TypeLabel}"
+                    ItemsSource="{Binding VisitTypes}"
+                    SelectedItem="{Binding SelectedType}"
+                    TextColor="{StaticResource ForegroundColor}"
+                    BackgroundColor="{StaticResource CardColor}" />
+
+            <Label Text="{Binding ReasonLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+            <Editor Text="{Binding Reason}"
+                    Placeholder="Optional"
+                    AutoSize="TextChanges"
+                    MinimumHeightRequest="80"
+                    TextColor="{StaticResource ForegroundColor}"
+                    BackgroundColor="{StaticResource CardColor}" />
+
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="{StaticResource ErrorColor}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   Style="{StaticResource BodySmall}" />
+
+            <shared:GradientButton Text="{Binding SubmitLabel}"
+                                   Command="{Binding SubmitCommand}"
+                                   IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                   Margin="0,16,0,0" />
+
+            <Button Text="{Binding CancelLabel}"
+                    Style="{StaticResource TextButton}"
+                    Command="{Binding CancelCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -38,6 +38,7 @@ public class EfRepository<TEntity, TContext> : IRepository<TEntity>
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper,
         int pageNumber,
         int pageSize,
+        bool applyDefaultIdOrdering = true,
         CancellationToken cancellationToken = default)
     {
         if (pageNumber < 1)
@@ -54,8 +55,10 @@ public class EfRepository<TEntity, TContext> : IRepository<TEntity>
 
         var skip = (pageNumber - 1) * pageSize;
 
+        if (applyDefaultIdOrdering)
+            query = query.OrderBy(e => EF.Property<Guid>(e, "Id"));
+
         var items = await query
-            .OrderBy(e => EF.Property<Guid>(e, "Id"))
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(cancellationToken)
