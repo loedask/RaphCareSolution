@@ -8,6 +8,7 @@ using RaphCare.Domain.Billing;
 using RaphCare.Domain.Clinical;
 using RaphCare.Domain.Communication;
 using RaphCare.Domain.Devices;
+using RaphCare.Domain.Insurance;
 using RaphCare.Domain.Organization;
 using RaphCare.Domain.Patients;
 using RaphCare.Domain.Telemedicine;
@@ -171,6 +172,7 @@ public static class DependencyInjection
 
         services.AddScoped<IRepository<Invoice>>(sp => new EfRepository<Invoice, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
         services.AddScoped<IRepository<Device>>(sp => new EfRepository<Device, DeviceDbContext>(sp.GetRequiredService<DeviceDbContext>()));
+        services.AddScoped<IRepository<InsurancePlan>>(sp => new EfRepository<InsurancePlan, InsuranceDbContext>(sp.GetRequiredService<InsuranceDbContext>()));
         services.AddScoped<IRepository<InsuranceProfile>>(sp => new EfRepository<InsuranceProfile, InsuranceDbContext>(sp.GetRequiredService<InsuranceDbContext>()));
         services.AddScoped<IRepository<DashboardSnapshot>>(sp => new EfRepository<DashboardSnapshot, AIDbContext>(sp.GetRequiredService<AIDbContext>()));
 

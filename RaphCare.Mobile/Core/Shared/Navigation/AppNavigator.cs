@@ -32,6 +32,8 @@ public static class AppNavigator
     public const string AppointmentDetail = "AppointmentDetailPage";
     public const string BookAppointment = "BookAppointmentPage";
     public const string Insurance = "InsurancePage";
+    public const string InsuranceProfileDetail = "InsuranceProfileDetailPage";
+    public const string AddInsuranceProfile = "AddInsuranceProfilePage";
     public const string Settings = "SettingsPage";
     public const string UnderConstruction = "UnderConstructionPage";
 
@@ -90,6 +92,8 @@ public static class AppNavigator
         Routing.RegisterRoute(AppointmentDetail, typeof(AppointmentDetailPage));
         Routing.RegisterRoute(BookAppointment, typeof(BookAppointmentPage));
         Routing.RegisterRoute(Insurance, typeof(InsurancePage));
+        Routing.RegisterRoute(InsuranceProfileDetail, typeof(InsuranceProfileDetailPage));
+        Routing.RegisterRoute(AddInsuranceProfile, typeof(AddInsuranceProfilePage));
         Routing.RegisterRoute(Settings, typeof(SettingsPage));
 
         // Concept areas (stubs → same page type; query <c>featureName</c> set by <see cref="GoToFeatureAsync"/> when flag is on)

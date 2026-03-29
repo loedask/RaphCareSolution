@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Insurance.ViewModels"
+             x:Class="RaphCare.Mobile.Core.Features.Insurance.Views.AddInsuranceProfilePage"
+             x:DataType="vm:AddInsuranceProfileViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource PrimaryColor}" />
+
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="{StaticResource ErrorColor}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   Style="{StaticResource BodyMedium}" />
+
+            <VerticalStackLayout Spacing="8" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                <Label Text="{Binding PlanLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <Picker ItemsSource="{Binding Plans}"
+                        ItemDisplayBinding="{Binding DisplayName}"
+                        SelectedItem="{Binding SelectedPlan}"
+                        Title="{Binding PlanLabel}" />
+
+                <Label Text="{Binding MembershipLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,12,0,0" />
+                <Entry Text="{Binding MembershipNumber}" Placeholder="{Binding MembershipLabel}" />
+
+                <Label Text="{Binding StartDateLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,12,0,0" />
+                <DatePicker Date="{Binding StartDate}" />
+
+                <Button Text="{Binding SubmitLabel}"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding SubmitCommand}"
+                        Margin="0,16,0,0" />
+                <Button Text="{Binding CancelLabel}"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding CancelCommand}" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

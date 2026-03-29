@@ -530,4 +530,76 @@ Accessible. Intelligent. Human.</value>
   <data name="RecordsDetailFailed" xml:space="preserve">
     <value>Could not load this record.</value>
   </data>
+  <data name="InsuranceListTitle" xml:space="preserve">
+    <value>Insurance</value>
+  </data>
+  <data name="InsuranceRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="InsuranceAdd" xml:space="preserve">
+    <value>Add plan</value>
+  </data>
+  <data name="InsuranceEmpty" xml:space="preserve">
+    <value>No insurance profiles yet.</value>
+  </data>
+  <data name="InsuranceLoadFailed" xml:space="preserve">
+    <value>Could not load insurance profiles.</value>
+  </data>
+  <data name="InsuranceStatusActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="InsuranceStatusInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="InsuranceAddTitle" xml:space="preserve">
+    <value>Add insurance</value>
+  </data>
+  <data name="InsurancePlanLabel" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="InsuranceMembershipLabel" xml:space="preserve">
+    <value>Membership number</value>
+  </data>
+  <data name="InsuranceStartDateLabel" xml:space="preserve">
+    <value>Start date</value>
+  </data>
+  <data name="InsuranceSubmit" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="InsuranceCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="InsurancePlansLoadFailed" xml:space="preserve">
+    <value>Could not load insurance plans.</value>
+  </data>
+  <data name="InsuranceCreateFailed" xml:space="preserve">
+    <value>Could not save this profile.</value>
+  </data>
+  <data name="InsuranceSelectPlan" xml:space="preserve">
+    <value>Select a plan.</value>
+  </data>
+  <data name="InsuranceMembershipRequired" xml:space="preserve">
+    <value>Enter your membership number.</value>
+  </data>
+  <data name="InsuranceDetailTitle" xml:space="preserve">
+    <value>Insurance details</value>
+  </data>
+  <data name="InsuranceDetailPlan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="InsuranceEndDateLabel" xml:space="preserve">
+    <value>End date</value>
+  </data>
+  <data name="InsuranceActiveLabel" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="InsuranceSave" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="InsuranceDetailFailed" xml:space="preserve">
+    <value>Could not load this profile.</value>
+  </data>
+  <data name="InsuranceSaveFailed" xml:space="preserve">
+    <value>Could not save changes.</value>
+  </data>
 </root>

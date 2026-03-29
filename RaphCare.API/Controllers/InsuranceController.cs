@@ -8,7 +8,7 @@ using RaphCare.Application.Features.Insurance.Queries.GetInsuranceProfiles;
 
 namespace RaphCare.API.Controllers;
 
-/// <summary>Insurance profiles and plans. Thin API; delegates to MediatR. Roles: Admin, Provider, Patient.</summary>
+/// <summary>Insurance profiles (provider/admin). Patient self-service uses <c>api/patient/insurance</c>.</summary>
 [Authorize(Policy = "RequireProvider")]
 [ApiController]
 [Route("api/[controller]")]

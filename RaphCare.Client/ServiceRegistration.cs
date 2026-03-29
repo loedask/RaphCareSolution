@@ -43,6 +43,10 @@ public static class ServiceRegistration
 
         services.AddTransient<IHealthRecordService>(sp => new HealthRecordService(sp.GetRequiredService<IClient>()));
 
+        services.AddTransient<IPatientInsuranceService>(sp => new PatientInsuranceService(
+            sp.GetRequiredService<IClient>(),
+            sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
+
         // Transient: MAUI Shell-created pages often resolve VMs via root IServiceProvider (no scope);
         // scoped registration throws when resolved outside a scope.
         services.AddTransient<IOtpAuthService, OtpAuthService>();
