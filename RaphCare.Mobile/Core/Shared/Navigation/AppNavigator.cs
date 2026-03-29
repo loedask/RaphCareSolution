@@ -27,6 +27,7 @@ public static class AppNavigator
     public const string SignIn = "SignInPage";
     public const string Home = "HomePage";
     public const string Records = "RecordsPage";
+    public const string HealthRecordDetail = "HealthRecordDetailPage";
     public const string Appointments = "AppointmentsPage";
     public const string AppointmentDetail = "AppointmentDetailPage";
     public const string BookAppointment = "BookAppointmentPage";
@@ -84,6 +85,7 @@ public static class AppNavigator
         // Main
         Routing.RegisterRoute(Home, typeof(HomePage));
         Routing.RegisterRoute(Records, typeof(RecordsPage));
+        Routing.RegisterRoute(HealthRecordDetail, typeof(HealthRecordDetailPage));
         Routing.RegisterRoute(Appointments, typeof(AppointmentsPage));
         Routing.RegisterRoute(AppointmentDetail, typeof(AppointmentDetailPage));
         Routing.RegisterRoute(BookAppointment, typeof(BookAppointmentPage));

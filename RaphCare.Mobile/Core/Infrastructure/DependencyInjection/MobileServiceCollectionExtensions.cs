@@ -9,6 +9,7 @@ using RaphCare.Mobile.Core.Features.Home.ViewModels;
 using RaphCare.Mobile.Core.Features.Home.Views;
 using RaphCare.Mobile.Core.Features.Hybrid.Views;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
+using RaphCare.Mobile.Core.Features.Records.ViewModels;
 using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Views;
 using RaphCare.Mobile.Core.Shared.Configuration;
@@ -47,6 +48,8 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AppointmentsViewModel>();
         services.AddTransient<AppointmentDetailViewModel>();
         services.AddTransient<BookAppointmentViewModel>();
+        services.AddTransient<RecordsViewModel>();
+        services.AddTransient<HealthRecordDetailViewModel>();
 
         services.AddTransient<LandingPage>();
         services.AddTransient<RegisterOptionsPage>();
@@ -60,6 +63,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<SignInPage>();
         services.AddTransient<HomePage>();
         services.AddTransient<RecordsPage>();
+        services.AddTransient<HealthRecordDetailPage>();
         services.AddTransient<AppointmentsPage>();
         services.AddTransient<AppointmentDetailPage>();
         services.AddTransient<BookAppointmentPage>();
