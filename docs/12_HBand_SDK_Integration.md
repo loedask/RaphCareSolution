@@ -1,6 +1,6 @@
 # HBand SDK (E580 / E585–class bands) — integration guide
 
-The OEM ecosystem behind many **E580 / E585** bracelets is often documented through the public **[HBandSDK](https://github.com/HBandSDK)** GitHub organization. RaphCare can use **two** approaches:
+The OEM ecosystem behind many **E580 / E585** bracelets is often documented through the public **[HBandSDK](https://github.com/HBandSDK)** GitHub organization. For **commercial packages** (which patients receive) and how **Y6 Pro** differs from BLE fleet, see **`docs/13_Patient_Device_Packages_and_Fleet.md`**. RaphCare can use **two** approaches:
 
 | Approach | Use when |
 |----------|----------|

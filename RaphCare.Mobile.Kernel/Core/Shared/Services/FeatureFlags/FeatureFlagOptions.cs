@@ -15,7 +15,7 @@ public class FeatureFlagOptions
     /// <summary>Request call, consultation, in-app / PSTN care (concept: /request-call, /consultation).</summary>
     public bool CareTelehealthEnabled { get; set; }
 
-    /// <summary>Connected wearables — BLE (e.g. E585/E580) and related device UX (concept: /devices).</summary>
+    /// <summary>Connected wearables — BLE fleet (E580, E585; HBand SDK). See docs/13_Patient_Device_Packages_and_Fleet.md. Y6 Pro (4G emergency) uses a different integration path.</summary>
     public bool DevicesEnabled { get; set; }
 
     /// <summary>Payment methods, billing history, plan upgrade (concept billing routes).</summary>

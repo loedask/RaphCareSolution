@@ -126,7 +126,7 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/appointments`, `/book-appointment`, `/appointment-details` | Appointments, BookAppointment, AppointmentDetails | `AppointmentsPage`, `BookAppointmentPage`, `AppointmentDetailPage` (patient API) |
 | `/request-call`, `/consultation` | RequestCall, Consultation | Care / telehealth |
 | `/records`, `/health-record-details` | HealthRecords, HealthRecordDetails | Records |
-| `/devices` | ConnectedDevices | `DevicesPage` (BLE E580/E585-class — see `docs/11_Devices_BLE_E580_E585.md`) |
+| `/devices` | ConnectedDevices | `DevicesPage` (BLE E580/E585-class — see `docs/11_Devices_BLE_E580_E585.md`; fleet/packages — `docs/13_Patient_Device_Packages_and_Fleet.md`) |
 | `/insurance` | Insurance | Insurance |
 | `/family-members` | FamilyMembers | Profile / account |
 | `/payment-methods`, `/billing-history`, `/upgrade-plan` | Payment*, Billing*, UpgradePlan | Billing |
