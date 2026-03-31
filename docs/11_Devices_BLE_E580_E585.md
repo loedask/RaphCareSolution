@@ -12,7 +12,7 @@ This document describes how **RaphCare.Mobile** integrates **Bluetooth Low Energ
 |--------|--------|
 | **Compare with GitHub** | Automated tools **cannot** read a **private** repository (e.g. `https://github.com/loedask/RaphCareSolution`). Use `git fetch origin` and `git log` / `git diff origin/develop` locally to compare your clone with GitHub. |
 | **Staff device registry** | `GET/POST/PUT api/Devices` — **`DevicesController`**, policy **`RequireProvider`** (staff JWT, not the patient app). Returns `DeviceDto` / `PagedResult<DeviceDto>`. |
-| **Patient app + BLE** | The MAUI **Devices** flow is **local BLE only** today. There is **no** `api/patient/...` endpoint yet for pairing uploads or vitals sync; that would be a separate backend + NSwag + Client vertical. |
+| **Patient app + BLE** | **Vertical 5b:** Patient JWT endpoints **`GET/POST api/patient/devices`**, **`POST api/patient/devices/{deviceId}/readings`** — register serial + SKU, batch-upload HR / SpO₂ (`Application` → `DeviceDbContext`). After **NSwag**, wire **`RaphCare.Client`** and call from MAUI (do not duplicate DTOs in Mobile). BLE pairing remains on-device via **`WearableBleCoordinator`**. |
 | **RaphCare.Client (`IClient`)** | NSwag-generated methods (`DevicesGETAsync`, `DevicesGET2Async`, …) must match OpenAPI. **`DevicesController`** now declares **`[ProducesResponseType]`** for GET responses so the next NSwag run can emit **typed** return values (previously the spec lacked response schemas and the generated client effectively discarded JSON bodies). |
 | **Regenerate NSwag** | After pulling API changes, the **repository owner** regenerates **`ClientService.cs`** per solution rules — **do not** hand-edit the generated file. |
 

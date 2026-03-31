@@ -16,10 +16,12 @@ public class DeviceDbContext : DbContext
     public DbSet<DeviceManufacturer> DeviceManufacturers => Set<DeviceManufacturer>();
     public DbSet<DeviceFirmware> DeviceFirmwares => Set<DeviceFirmware>();
     public DbSet<DeviceAssignment> DeviceAssignments => Set<DeviceAssignment>();
+    public DbSet<DeviceReading> DeviceReadings => Set<DeviceReading>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new DeviceConfiguration());
+        modelBuilder.ApplyConfiguration(new DeviceReadingConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

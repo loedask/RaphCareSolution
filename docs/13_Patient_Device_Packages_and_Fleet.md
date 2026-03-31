@@ -90,7 +90,7 @@ Sensor reading on device
 | Area | Status |
 |------|--------|
 | **Mobile** | **In progress** — `DevicesPage`, `WearableBleCoordinator` (Plugin.BLE), name filter includes **E585**; optional **HBand** native SDK path documented in **`docs/12_HBand_SDK_Integration.md`**. |
-| **API** | **Patient vitals upload** — not wired yet; staff **`api/Devices`** registry is separate. See **`docs/11_Devices_BLE_E580_E585.md`**. |
+| **API** | **Patient vitals upload** — **`api/patient/devices`** (register + **`POST …/readings`**). Regenerate **NSwag**, then extend **Client** + MAUI sync. Staff **`api/Devices`** registry remains separate. |
 
 ---
 
