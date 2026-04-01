@@ -1,10 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
+using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.Devices;
 using RaphCare.Mobile.Core.Features.Devices.Models;
 using RaphCare.Mobile.Core.Features.Devices.Services;
 using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Kernel.Core.Shared.Devices;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Devices.ViewModels;
@@ -13,21 +16,29 @@ namespace RaphCare.Mobile.Core.Features.Devices.ViewModels;
 public sealed class DevicesViewModel : BaseViewModel
 {
     private readonly IWearableBleCoordinator _ble;
+    private readonly IPatientDevicesService _patientDevices;
     private bool _showAllDevices;
     private bool _isScanningUi;
     private string? _errorMessage;
     private string? _statusHint;
     private WearableVitalsSnapshot? _lastVitals;
+    private string _serialNumber = "";
+    private string _modelSku = PatientProvisionedDeviceSkus.E585;
+    private Guid? _registeredDeviceId;
+    private string? _syncResultText;
 
-    public DevicesViewModel(IWearableBleCoordinator ble)
+    public DevicesViewModel(IWearableBleCoordinator ble, IPatientDevicesService patientDevices)
     {
         _ble = ble ?? throw new ArgumentNullException(nameof(ble));
+        _patientDevices = patientDevices ?? throw new ArgumentNullException(nameof(patientDevices));
         Title = AppResources.T("DevicesPageTitle");
 
         ScanCommand = new Command(async () => await ScanAsync().ConfigureAwait(false), () => !IsBusy && _ble.IsBleSupported);
         StopScanCommand = new Command(async () => await StopScanAsync().ConfigureAwait(false), () => _ble.IsScanning);
         ConnectCommand = new Command<Guid>(async id => await ConnectAsync(id).ConfigureAwait(false), _ => !IsBusy);
         DisconnectCommand = new Command(async () => await DisconnectAsync().ConfigureAwait(false), () => _ble.ConnectedDeviceId.HasValue && !IsBusy);
+        RegisterCommand = new Command(async () => await RegisterAsync().ConfigureAwait(false), () => !IsBusy);
+        SyncLastReadingCommand = new Command(async () => await SyncLastReadingAsync().ConfigureAwait(false), () => !IsBusy);
         BackCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
         ToggleShowAllCommand = new Command(() =>
         {
@@ -120,10 +131,39 @@ public sealed class DevicesViewModel : BaseViewModel
 
     public ObservableCollection<WearableDeviceRowViewModel> Items { get; } = new();
 
+    public ObservableCollection<string> ModelSkuOptions { get; } =
+        new() { PatientProvisionedDeviceSkus.E585, PatientProvisionedDeviceSkus.E580 };
+
+    public string SerialNumber
+    {
+        get => _serialNumber;
+        set => SetProperty(ref _serialNumber, value);
+    }
+
+    public string ModelSku
+    {
+        get => _modelSku;
+        set => SetProperty(ref _modelSku, value);
+    }
+
+    public Guid? RegisteredDeviceId
+    {
+        get => _registeredDeviceId;
+        private set => SetProperty(ref _registeredDeviceId, value);
+    }
+
+    public string? SyncResultText
+    {
+        get => _syncResultText;
+        private set => SetProperty(ref _syncResultText, value);
+    }
+
     public ICommand ScanCommand { get; }
     public ICommand StopScanCommand { get; }
     public ICommand ConnectCommand { get; }
     public ICommand DisconnectCommand { get; }
+    public ICommand RegisterCommand { get; }
+    public ICommand SyncLastReadingCommand { get; }
     public ICommand BackCommand { get; }
     public ICommand ToggleShowAllCommand { get; }
 
@@ -237,6 +277,16 @@ public sealed class DevicesViewModel : BaseViewModel
             await _ble.ConnectAsync(deviceId).ConfigureAwait(false);
             OnPropertyChanged(nameof(ConnectedDeviceId));
             StatusHint = AppResources.T("DevicesConnected");
+            SyncResultText = null;
+
+            // Best-effort default SKU from advertised name
+            var connected = _ble.DiscoveredDevices.FirstOrDefault(d => d.Id == deviceId);
+            var name = connected?.Name ?? "";
+            if (name.Contains("E580", StringComparison.OrdinalIgnoreCase))
+                ModelSku = PatientProvisionedDeviceSkus.E580;
+            else if (name.Contains("E585", StringComparison.OrdinalIgnoreCase))
+                ModelSku = PatientProvisionedDeviceSkus.E585;
+
             if (DisconnectCommand is Command d)
                 d.ChangeCanExecute();
         }
@@ -258,9 +308,95 @@ public sealed class DevicesViewModel : BaseViewModel
             await _ble.DisconnectAsync().ConfigureAwait(false);
             OnPropertyChanged(nameof(ConnectedDeviceId));
             LastVitals = null;
+            SyncResultText = null;
             StatusHint = AppResources.T("DevicesDisconnected");
             if (DisconnectCommand is Command d)
                 d.ChangeCanExecute();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task RegisterAsync()
+    {
+        ErrorMessage = null;
+        SyncResultText = null;
+        IsBusy = true;
+        try
+        {
+            var serial = (SerialNumber ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(serial))
+            {
+                ErrorMessage = "Enter the device serial number first.";
+                return;
+            }
+
+            var sku = (ModelSku ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(sku))
+            {
+                ErrorMessage = "Select a model SKU (E580 / E585).";
+                return;
+            }
+
+            var resp = await _patientDevices.RegisterMyDeviceAsync(serial, sku).ConfigureAwait(false);
+            if (!resp.IsSuccess)
+            {
+                ErrorMessage = resp.ErrorMessage ?? "Device registration failed.";
+                return;
+            }
+
+            RegisteredDeviceId = resp.Data?.DeviceId;
+            SyncResultText = RegisteredDeviceId is { } id ? $"Registered: {id}" : "Registered.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task SyncLastReadingAsync()
+    {
+        ErrorMessage = null;
+        SyncResultText = null;
+        IsBusy = true;
+        try
+        {
+            if (RegisteredDeviceId is not { } deviceId)
+            {
+                ErrorMessage = "Register the device first.";
+                return;
+            }
+
+            var last = LastVitals;
+            if (last?.HeartRateBpm is not int bpm)
+            {
+                ErrorMessage = "No heart rate reading yet. Connect and wait for a reading.";
+                return;
+            }
+
+            var hr = new List<HeartRateReadingInput>
+            {
+                new() { RecordedAt = last.At.UtcDateTime, BeatsPerMinute = bpm }
+            };
+
+            var resp = await _patientDevices.SyncReadingsAsync(
+                deviceId,
+                hr,
+                Array.Empty<Spo2ReadingInput>(),
+                CancellationToken.None).ConfigureAwait(false);
+
+            if (!resp.IsSuccess)
+            {
+                ErrorMessage = resp.ErrorMessage ?? "Sync failed.";
+                return;
+            }
+
+            var dto = resp.Data;
+            SyncResultText = dto is null
+                ? "Synced."
+                : $"Synced HR={dto.HeartRateCount}, SpO₂={dto.SpO2Count}";
         }
         finally
         {

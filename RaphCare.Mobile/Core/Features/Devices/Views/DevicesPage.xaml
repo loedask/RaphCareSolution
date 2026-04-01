@@ -100,6 +100,47 @@
                            TextColor="{StaticResource MutedForegroundColor}"
                            IsVisible="{Binding VitalsRawLine, Converter={StaticResource StringNotEmptyConverter}}" />
                 </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cloud sync (Vertical 5b)"
+                           Style="{StaticResource SectionTitle}"
+                           TextColor="{StaticResource ForegroundColor}" />
+
+                    <Label Text="Enter the bracelet serial (from packaging) and register once. Then you can sync readings."
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}" />
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Entry Grid.Column="0"
+                               Placeholder="Serial number"
+                               Text="{Binding SerialNumber}"
+                               Style="{StaticResource TextEntry}" />
+                        <Picker Grid.Column="1"
+                                WidthRequest="110"
+                                Title="SKU"
+                                ItemsSource="{Binding ModelSkuOptions}"
+                                SelectedItem="{Binding ModelSku}" />
+                    </Grid>
+
+                    <HorizontalStackLayout Spacing="12">
+                        <Button Text="Register"
+                                Style="{StaticResource PrimaryButton}"
+                                Command="{Binding RegisterCommand}" />
+                        <Button Text="Sync last HR"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding SyncLastReadingCommand}" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="{Binding RegisteredDeviceId, StringFormat='Registered device id: {0}'}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           IsVisible="{Binding RegisteredDeviceId, Converter={StaticResource NotNullConverter}}" />
+
+                    <Label Text="{Binding SyncResultText}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           IsVisible="{Binding SyncResultText, Converter={StaticResource StringNotEmptyConverter}}" />
+                </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

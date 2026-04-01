@@ -29,6 +29,7 @@
             </Style>
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+            <converters:NotNullConverter x:Key="NotNullConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
