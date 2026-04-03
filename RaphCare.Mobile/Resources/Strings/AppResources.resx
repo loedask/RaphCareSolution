@@ -746,6 +746,12 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesHeartRateFormat" xml:space="preserve">
     <value>Heart rate: {0} bpm</value>
   </data>
+  <data name="DevicesSpO2Format" xml:space="preserve">
+    <value>SpO₂: {0} %</value>
+  </data>
+  <data name="DevicesSyncReadings" xml:space="preserve">
+    <value>Sync readings</value>
+  </data>
   <data name="DevicesRawHexFormat" xml:space="preserve">
     <value>Raw: {0}</value>
   </data>

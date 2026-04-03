@@ -45,6 +45,7 @@ These bands are **BLE peripherals**. RaphCare does not replace the manufacturer�
 3. **Filtered list (default):** Only peripherals whose **advertised name** matches the patterns in `E585E580DeviceFilter` (e.g. names containing `E580`, `E585`, `YSC`, `Bracelet`, `SmartBand`) appear. If your band uses a different name, use the on-screen control to switch to **show all BLE devices**, then identify your device by name or signal strength (RSSI).
 4. Tap **Connect** on the row for your device. The app connects over GATT and subscribes to **notifications** on all characteristics that support them.
 5. **Heart rate:** If the firmware exposes the standard **Heart Rate** service (`0x180D`) and **Heart Rate Measurement** (`0x2A37`), the UI shows **Heart rate: N bpm**. Otherwise you will see **Raw: …** hex for engineering analysis.
+6. **SpO₂ (when standard PLX is exposed):** If the band notifies **PLX Continuous Measurement** (`0x2A60`) or **PLX Spot-check** (`0x2A5F`) under the Pulse Oximeter service (`0x1822`), the app parses **IEEE-11073 SFLOAT** SpO₂ (and optional pulse) and shows **SpO₂: N %**. Many OEM bracelets use **proprietary** characteristics instead — then only **Raw** appears until you add a vendor parser or HBand SDK.
 
 ### If something does not work
 

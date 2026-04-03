@@ -11,7 +11,7 @@ namespace RaphCare.Mobile.Core.Features.Devices.Services;
 
 /// <summary>
 /// BLE scan or connect for E580/E585-class bracelets via Plugin.BLE.
-/// Subscribes to all notify characteristics; parses standard Heart Rate (0x2A37) when present, otherwise surfaces raw hex for OEM analysis.
+/// Subscribes to all notify characteristics; parses standard Heart Rate (0x2A37) and PLX SpO₂ (0x2A60 / 0x2A5F) when present, otherwise surfaces raw hex for OEM analysis.
 /// </summary>
 public sealed class WearableBleCoordinator : IWearableBleCoordinator
 {
@@ -219,10 +219,26 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
         if (IsHeartRateMeasurement(uuidText) && BleGattHeartRateParser.TryParseHeartRateMeasurement(value.AsSpan(), out var bpm))
             hr = bpm;
 
+        decimal? spo2 = null;
+        int? spo2Pulse = null;
+        var span = value.AsSpan();
+        if (IsPlxContinuous(uuidText) && BleGattPulseOximeterParser.TryParsePlxContinuousMeasurement(span, out var spC, out var pulseC))
+        {
+            spo2 = spC;
+            spo2Pulse = pulseC;
+        }
+        else if (IsPlxSpotCheck(uuidText) && BleGattPulseOximeterParser.TryParsePlxSpotCheckMeasurement(span, out var spS, out var pulseS))
+        {
+            spo2 = spS;
+            spo2Pulse = pulseS;
+        }
+
         var snap = new WearableVitalsSnapshot
         {
             At = DateTimeOffset.UtcNow,
             HeartRateBpm = hr,
+            SpO2Percent = spo2,
+            SpO2PulseBpm = spo2Pulse,
             CharacteristicUuid = uuidText,
             RawHex = hex,
         };
@@ -232,6 +248,12 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
 
     private static bool IsHeartRateMeasurement(string uuidText) =>
         uuidText.Contains("2a37", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsPlxContinuous(string uuidText) =>
+        uuidText.Contains("2a60", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsPlxSpotCheck(string uuidText) =>
+        uuidText.Contains("2a5f", StringComparison.OrdinalIgnoreCase);
 
     private async Task CleanupNotificationsAsync()
     {

@@ -22,6 +22,8 @@ public sealed class DevicesViewModel : BaseViewModel
     private string? _errorMessage;
     private string? _statusHint;
     private WearableVitalsSnapshot? _lastVitals;
+    private DateTimeOffset? _lastHeartAt;
+    private DateTimeOffset? _lastSpo2At;
     private string _serialNumber = "";
     private string _modelSku = PatientProvisionedDeviceSkus.E585;
     private Guid? _registeredDeviceId;
@@ -60,6 +62,8 @@ public sealed class DevicesViewModel : BaseViewModel
     public string LastReadingLabel => AppResources.T("DevicesLastReading");
     public string BleUnsupportedMessage => AppResources.T("DevicesBleUnsupported");
     public string DevicesConnectLabel => AppResources.T("DevicesConnectButton");
+
+    public string SyncReadingsButtonText => AppResources.T("DevicesSyncReadings");
 
     public string ShowAllToggleText => ShowAllDevices ? ShowAllLabel : E580E585FilterLabel;
 
@@ -115,6 +119,7 @@ public sealed class DevicesViewModel : BaseViewModel
             _lastVitals = value;
             OnPropertyChanged(nameof(LastVitals));
             OnPropertyChanged(nameof(VitalsHeartLine));
+            OnPropertyChanged(nameof(VitalsSpo2Line));
             OnPropertyChanged(nameof(VitalsRawLine));
         }
     }
@@ -122,6 +127,11 @@ public sealed class DevicesViewModel : BaseViewModel
     public string? VitalsHeartLine =>
         LastVitals?.HeartRateBpm is int b
             ? string.Format(AppResources.T("DevicesHeartRateFormat"), b)
+            : null;
+
+    public string? VitalsSpo2Line =>
+        LastVitals?.SpO2Percent is decimal sp
+            ? string.Format(AppResources.T("DevicesSpO2Format"), sp)
             : null;
 
     public string? VitalsRawLine =>
@@ -191,7 +201,26 @@ public sealed class DevicesViewModel : BaseViewModel
         MainThread.BeginInvokeOnMainThread(RefreshItems);
 
     private void OnVitalsUpdated(object? sender, WearableVitalsSnapshot e) =>
-        MainThread.BeginInvokeOnMainThread(() => LastVitals = e);
+        MainThread.BeginInvokeOnMainThread(() => MergeVitals(e));
+
+    private void MergeVitals(WearableVitalsSnapshot incoming)
+    {
+        if (incoming.HeartRateBpm.HasValue)
+            _lastHeartAt = incoming.At;
+        if (incoming.SpO2Percent.HasValue)
+            _lastSpo2At = incoming.At;
+
+        var prev = LastVitals;
+        LastVitals = new WearableVitalsSnapshot
+        {
+            At = incoming.At,
+            HeartRateBpm = incoming.HeartRateBpm ?? prev?.HeartRateBpm,
+            SpO2Percent = incoming.SpO2Percent ?? prev?.SpO2Percent,
+            SpO2PulseBpm = incoming.SpO2PulseBpm ?? prev?.SpO2PulseBpm,
+            CharacteristicUuid = incoming.CharacteristicUuid,
+            RawHex = incoming.RawHex,
+        };
+    }
 
     private void OnBleError(object? sender, string? message) =>
         MainThread.BeginInvokeOnMainThread(() => ErrorMessage = message);
@@ -308,6 +337,8 @@ public sealed class DevicesViewModel : BaseViewModel
             await _ble.DisconnectAsync().ConfigureAwait(false);
             OnPropertyChanged(nameof(ConnectedDeviceId));
             LastVitals = null;
+            _lastHeartAt = null;
+            _lastSpo2At = null;
             SyncResultText = null;
             StatusHint = AppResources.T("DevicesDisconnected");
             if (DisconnectCommand is Command d)
@@ -370,21 +401,34 @@ public sealed class DevicesViewModel : BaseViewModel
             }
 
             var last = LastVitals;
-            if (last?.HeartRateBpm is not int bpm)
+            var hasHr = last?.HeartRateBpm is int;
+            var hasSpo2 = last?.SpO2Percent is decimal;
+
+            if (!hasHr && !hasSpo2)
             {
-                ErrorMessage = "No heart rate reading yet. Connect and wait for a reading.";
+                ErrorMessage = "No heart rate or SpO₂ yet. Connect and wait for BLE notifications.";
                 return;
             }
 
-            var hr = new List<HeartRateReadingInput>
+            var hrList = new List<HeartRateReadingInput>();
+            if (hasHr && _lastHeartAt is { } hrAt && last!.HeartRateBpm is int bpm)
+                hrList.Add(new HeartRateReadingInput { RecordedAt = hrAt.UtcDateTime, BeatsPerMinute = bpm });
+
+            var spo2List = new List<Spo2ReadingInput>();
+            if (hasSpo2 && _lastSpo2At is { } spo2At && last!.SpO2Percent is decimal spo2Pct)
             {
-                new() { RecordedAt = last.At.UtcDateTime, BeatsPerMinute = bpm }
-            };
+                spo2List.Add(new Spo2ReadingInput
+                {
+                    RecordedAt = spo2At.UtcDateTime,
+                    SpO2 = spo2Pct,
+                    PulseRate = last.SpO2PulseBpm.HasValue ? (decimal)last.SpO2PulseBpm.Value : null
+                });
+            }
 
             var resp = await _patientDevices.SyncReadingsAsync(
                 deviceId,
-                hr,
-                Array.Empty<Spo2ReadingInput>(),
+                hrList,
+                spo2List,
                 CancellationToken.None).ConfigureAwait(false);
 
             if (!resp.IsSuccess)

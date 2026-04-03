@@ -95,6 +95,9 @@
                     <Label Text="{Binding VitalsHeartLine}"
                            Style="{StaticResource BodyMedium}"
                            IsVisible="{Binding VitalsHeartLine, Converter={StaticResource StringNotEmptyConverter}}" />
+                    <Label Text="{Binding VitalsSpo2Line}"
+                           Style="{StaticResource BodyMedium}"
+                           IsVisible="{Binding VitalsSpo2Line, Converter={StaticResource StringNotEmptyConverter}}" />
                     <Label Text="{Binding VitalsRawLine}"
                            Style="{StaticResource BodySmall}"
                            TextColor="{StaticResource MutedForegroundColor}"
@@ -126,7 +129,7 @@
                         <Button Text="Register"
                                 Style="{StaticResource PrimaryButton}"
                                 Command="{Binding RegisterCommand}" />
-                        <Button Text="Sync last HR"
+                        <Button Text="{Binding SyncReadingsButtonText}"
                                 Style="{StaticResource SecondaryButton}"
                                 Command="{Binding SyncLastReadingCommand}" />
                     </HorizontalStackLayout>
