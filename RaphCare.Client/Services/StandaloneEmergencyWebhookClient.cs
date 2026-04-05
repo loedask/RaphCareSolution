@@ -4,6 +4,7 @@ using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Integrations;
 using RaphCare.Client.Services.Base;
+using ApiClient = RaphCare.Client.Services.Base.Client;
 
 namespace RaphCare.Client.Services;
 
@@ -21,7 +22,7 @@ public sealed class StandaloneEmergencyWebhookClient(IHttpClientFactory httpClie
             return Response<IngestDeviceEmergencyEventResultViewModel>.Failure("Body is required.");
 
         var http = _httpClientFactory.CreateClient(ServiceRegistration.WebhookHttpClientName);
-        var client = new Client(http);
+        var client = new ApiClient(http);
 
         var command = new IngestDeviceEmergencyEventCommand
         {
@@ -52,7 +53,7 @@ public sealed class StandaloneEmergencyWebhookClient(IHttpClientFactory httpClie
                     WasDuplicate = dto.WasDuplicate
                 });
         }
-        catch (ApiException ex)
+        catch (global::RaphCare.Client.Services.Base.ApiException ex)
         {
             return Response<IngestDeviceEmergencyEventResultViewModel>.Failure(ex.Message, ex.StatusCode);
         }
