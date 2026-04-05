@@ -1,0 +1,41 @@
+---
+description: Mental health vertical — patient hub (/mental-health), API routes, and configurable content
+globs: RaphCare.API/Controllers/*MentalHealth*.cs,RaphCare.Application/Features/PatientMentalHealth/**/*,RaphCare.Application/Features/MentalHealth/**/*,RaphCare.Client/**/MentalHealth/**/*,RaphCare.Client/**/PatientMentalHealth*.cs,RaphCare.Mobile/**/MentalHealth/**/*,RaphCare.Infrastructure/**/PatientMentalHealth*.cs,RaphCare.Infrastructure/**/MoodLog*.cs,RaphCare.Persistence/**/MoodLog*.cs,docs/Mobile_Concept_Port.md
+alwaysApply: false
+---
+
+# RaphCare — mental health (Vertical 11)
+
+Human mirror: **`docs/Mobile_Concept_Port.md`** (route `/mental-health` ↔ `MentalHealthPage`).
+
+## Two HTTP surfaces
+
+| Audience | Base route | Purpose |
+|----------|------------|---------|
+| **Patient app** | `api/patient/mental-health` | Hub: **GET** `content` (config-driven copy, no PHI), **POST** `mood-checkin` (persists `MoodLog` in Clinical). **Policy:** `RequirePatient`. |
+| **Staff** | `api/MentalHealth` | **GET** `assessments` (paginated; placeholder data until persistence). **Policy:** `RequireProvider`. Operation name: `GetMentalHealthAssessments`. |
+
+Do not move patient mood or hub copy onto the staff controller. New patient features stay under **`PatientMentalHealthController`**.
+
+## Content rules (patient hub)
+
+- **Insight title/body** and **medical / crisis disclaimer** come from **`PatientMentalHealth:Content`** in the **API host** (`appsettings` / environment). Implemented via **`IPatientMentalHealthContentProvider`** (Infrastructure: **`OptionsPatientMentalHealthContentProvider`**).
+- **Do not** embed clinical PHI in this DTO. Marketing or AI-style copy belongs in configuration, not hard-coded only in Mobile (MAUI still localizes **labels** for mood buttons and CTAs via **`AppResources`**).
+- When changing default copy, update **API** `appsettings.json` defaults and keep **`docs/Mobile_Concept_Port.md`** aligned if the concept’s `translations.ts` changes.
+
+## Mood check-in
+
+- **Scores:** `0` = great, `1` = good, `2` = okay, `3` = low (matches concept order).
+- **Persistence:** **`MoodLog`** in **Clinical** (`MoodLogs` table). **`IsFlagged`** when score ≥ 3 for downstream alerting (future).
+- **MPI merge:** **`PatientMergeService`** must reassign **`MoodLogs.PatientId`** when merging duplicates (same pattern as family members).
+
+## Client / NSwag
+
+- After adding or renaming patient mental health endpoints, the **owner regenerates NSwag**; then replace **`PatientMentalHealthService`**’s **HttpClient** implementation with **`IClient`** wrappers like other patient services.
+- **Do not** hand-edit **`ClientService.cs`** / **`clientsettings.nswag`**.
+
+## MAUI
+
+- **Feature flag:** **`FeatureFlags.MentalHealthEnabled`** (`appsettings`: `FeatureFlags:MentalHealthEnabled`). **DEBUG** dev file may set `true` for parity work.
+- **Navigation:** **`AppNavigator.MentalHealth`** → **`MentalHealthPage`** (not **`UnderConstructionPage`** when the vertical is on).
+- **Design:** Match concept **`MentalHealth.tsx`**: calm card (mood row), insight card, gradient CTA to book, secondary card to appointments.

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RaphCare.Domain.Clinical;
 using RaphCare.Domain.Communication;
 using RaphCare.Domain.Organization;
+using RaphCare.Domain.MentalHealth;
 using RaphCare.Domain.Patients;
 using RaphCare.Domain.Telemedicine;
 using RaphCare.Infrastructure.Persistence.Configurations;
@@ -26,6 +27,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<PatientIdentityEvent> PatientIdentityEvents => Set<PatientIdentityEvent>();
     public DbSet<PatientClinicAccess> PatientClinicAccesses => Set<PatientClinicAccess>();
     public DbSet<PatientFamilyMember> PatientFamilyMembers => Set<PatientFamilyMember>();
+    public DbSet<MoodLog> MoodLogs => Set<MoodLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,6 +42,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new PatientIdentityEventConfiguration());
         modelBuilder.ApplyConfiguration(new PatientClinicAccessConfiguration());
         modelBuilder.ApplyConfiguration(new PatientFamilyMemberConfiguration());
+        modelBuilder.ApplyConfiguration(new MoodLogConfiguration());
         modelBuilder.ApplyConfiguration(new VitalSignRecordConfiguration());
         modelBuilder.ApplyConfiguration(new ServiceOfferingConfiguration());
         modelBuilder.ApplyPersistenceConventions();

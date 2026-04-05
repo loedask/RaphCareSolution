@@ -890,4 +890,43 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesRawHexFormat" xml:space="preserve">
     <value>Raw: {0}</value>
   </data>
+  <data name="MentalHealthTitle" xml:space="preserve">
+    <value>Mental health</value>
+  </data>
+  <data name="MentalHealthHowAreYou" xml:space="preserve">
+    <value>How are you feeling?</value>
+  </data>
+  <data name="MentalHealthDailyCheckIn" xml:space="preserve">
+    <value>Take a moment to check in with yourself.</value>
+  </data>
+  <data name="MentalHealthMoodGreat" xml:space="preserve">
+    <value>Great</value>
+  </data>
+  <data name="MentalHealthMoodGood" xml:space="preserve">
+    <value>Good</value>
+  </data>
+  <data name="MentalHealthMoodOkay" xml:space="preserve">
+    <value>Okay</value>
+  </data>
+  <data name="MentalHealthMoodLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="MentalHealthBookTherapy" xml:space="preserve">
+    <value>Book therapy session</value>
+  </data>
+  <data name="MentalHealthConnectTherapist" xml:space="preserve">
+    <value>Connect with a licensed therapist</value>
+  </data>
+  <data name="MentalHealthSessionHistory" xml:space="preserve">
+    <value>Session history</value>
+  </data>
+  <data name="MentalHealthSessionsThisMonth" xml:space="preserve">
+    <value>View your appointments and past sessions</value>
+  </data>
+  <data name="MentalHealthLoadFailed" xml:space="preserve">
+    <value>Could not load wellness content. Pull to refresh or try again later.</value>
+  </data>
+  <data name="MentalHealthMoodSaveFailed" xml:space="preserve">
+    <value>Could not save your check-in. Please try again.</value>
+  </data>
 </root>

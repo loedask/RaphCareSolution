@@ -16,6 +16,8 @@ using RaphCare.Mobile.Core.Features.Billing.ViewModels;
 using RaphCare.Mobile.Core.Features.Billing.Views;
 using RaphCare.Mobile.Core.Features.Family.ViewModels;
 using RaphCare.Mobile.Core.Features.Family.Views;
+using RaphCare.Mobile.Core.Features.MentalHealth.ViewModels;
+using RaphCare.Mobile.Core.Features.MentalHealth.Views;
 #if ANDROID
 using RaphCare.Mobile.Platforms.Android.Telehealth;
 #endif
@@ -114,6 +116,8 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<FamilyMembersPage>();
         services.AddTransient<AddFamilyMemberPage>();
         services.AddTransient<FamilyMemberDetailPage>();
+        services.AddTransient<MentalHealthViewModel>();
+        services.AddTransient<MentalHealthPage>();
         services.AddTransient<SettingsPage>();
         services.AddTransient<UnderConstructionPage>();
         services.AddTransient<BlazorHostPage>();

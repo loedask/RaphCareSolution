@@ -98,12 +98,12 @@
 
 ## Mental Health
 
-- **Purpose:** Assessments and therapy-related data.
+- **Purpose:** Assessments and therapy-related data; patient hub mood check-ins.
 - **Entities:** MentalHealthAssessment, AssessmentQuestion, AssessmentResponse, TherapySession, TherapyNote, MoodLog, WellnessCheckIn, etc.
-- **Application:** GetMentalHealthAssessments (query by clinicId, pagination).
-- **Controllers:** MentalHealthController — GET assessments (clinicId, pageNumber, pageSize).
-- **Persistence:** Likely Clinical or dedicated; domain entities exist.
-- **Relationships:** Assessments tied to clinic/patient.
+- **Application:** GetMentalHealthAssessments (clinicId, pagination); patient hub **GetMyPatientMentalHealthContent**, **LogMyPatientMoodCheckIn** (config-driven copy + `MoodLog` in Clinical).
+- **Controllers:** `MentalHealthController` — GET `api/MentalHealth/assessments` (staff). **`PatientMentalHealthController`** — GET `api/patient/mental-health/content`, POST `api/patient/mental-health/mood-checkin` (patient JWT).
+- **Persistence:** `MoodLogs` on **ClinicalDbContext**; other mental health entities TBD.
+- **Relationships:** Assessments tied to clinic/patient; mood logs tied to patient (cascade delete).
 
 ---
 

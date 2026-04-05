@@ -156,6 +156,7 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Login / … | `Login.tsx`, … | `SignInPage`, `VerifyEmailPage` | ☑ |
 | Devices | `ConnectedDevices.tsx` | `DevicesPage` | ☑ |
 | Family members | `FamilyMembers.tsx` | `FamilyMembersPage` (+ add / detail) | ☑ |
+| Mental health | `MentalHealth.tsx` | `MentalHealthPage` (API content + mood check-in) | ☑ |
 
 *(Extend the table as you implement each flow.)*
 
