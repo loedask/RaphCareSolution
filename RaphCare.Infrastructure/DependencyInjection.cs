@@ -6,6 +6,7 @@ using RaphCare.Infrastructure.Configuration;
 using RaphCare.Infrastructure.Persistence;
 using RaphCare.Infrastructure.Persistence.Interceptors;
 using RaphCare.Infrastructure.Services;
+using RaphCare.Infrastructure.StandaloneEmergency;
 using RaphCare.Infrastructure.Telehealth;
 
 namespace RaphCare.Infrastructure;
@@ -30,6 +31,9 @@ public static class DependencyInjection
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
         services.AddScoped<IEmailService, EmailService>();
+
+        services.Configure<StandaloneEmergencyOptions>(configuration.GetSection(StandaloneEmergencyOptions.SectionName));
+        services.AddSingleton<IStandaloneEmergencyWebhookSignatureValidator, StandaloneEmergencyWebhookSignatureValidator>();
 
         services.Configure<TwilioSmsOptions>(configuration.GetSection(TwilioSmsOptions.SectionName));
         // One ISmsService for the API: OTP, telehealth reminders, and any future SMS. Twilio when fully configured.

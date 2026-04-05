@@ -24,6 +24,7 @@ public class Device : AggregateRoot
     public DeviceFirmware? DeviceFirmware { get; set; }
     public ICollection<DeviceAssignment> DeviceAssignments { get; set; } = new List<DeviceAssignment>();
     public ICollection<DeviceReading> DeviceReadings { get; set; } = new List<DeviceReading>();
+    public ICollection<DeviceEmergencyEvent> DeviceEmergencyEvents { get; set; } = new List<DeviceEmergencyEvent>();
     public ICollection<DeviceAlert> DeviceAlerts { get; set; } = new List<DeviceAlert>();
     public ICollection<DeviceCalibrationRecord> DeviceCalibrationRecords { get; set; } = new List<DeviceCalibrationRecord>();
 }

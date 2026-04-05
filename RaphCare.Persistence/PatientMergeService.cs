@@ -118,6 +118,10 @@ public class PatientMergeService(
             .Where(r => r.PatientId == duplicatePatientId)
             .ExecuteUpdateAsync(s => s.SetProperty(r => r.PatientId, primaryPatientId), ct).ConfigureAwait(false);
 
+        await _device.DeviceEmergencyEvents
+            .Where(e => e.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(e => e.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
         // 5. Soft delete the duplicate patient
         duplicate.IsDeleted = true;
         duplicate.DeletedAt = DateTime.UtcNow;

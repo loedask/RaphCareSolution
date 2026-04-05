@@ -17,10 +17,12 @@ public class DeviceDbContext : DbContext
     public DbSet<DeviceFirmware> DeviceFirmwares => Set<DeviceFirmware>();
     public DbSet<DeviceAssignment> DeviceAssignments => Set<DeviceAssignment>();
     public DbSet<DeviceReading> DeviceReadings => Set<DeviceReading>();
+    public DbSet<DeviceEmergencyEvent> DeviceEmergencyEvents => Set<DeviceEmergencyEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new DeviceConfiguration());
+        modelBuilder.ApplyConfiguration(new DeviceEmergencyEventConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceReadingConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }

@@ -7,6 +7,8 @@ using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.Clinical.DTOs;
 using RaphCare.Application.Features.Clinical.Queries.GetPatientDeviceReadings;
 using RaphCare.Application.Features.Clinical.Queries.GetPatientDeviceReadingDailyRollups;
+using RaphCare.Application.Features.StandaloneEmergency.DTOs;
+using RaphCare.Application.Features.StandaloneEmergency.Queries.GetPatientDeviceEmergencyEvents;
 using RaphCare.Application.Features.Clinical.Queries.GetVisitById;
 using RaphCare.Application.Features.Clinical.Queries.GetVisits;
 
@@ -90,6 +92,30 @@ public class ClinicalController(IMediator mediator) : ControllerBase
                 PatientId = patientId,
                 FromUtc = fromUtc,
                 ToUtc = toUtc
+            },
+            cancellationToken).ConfigureAwait(false);
+        return Ok(result);
+    }
+
+    /// <summary>4G / standalone emergency events (SOS, fall, etc.) for a patient in the current clinic.</summary>
+    [HttpGet("patients/{patientId:guid}/emergency-events", Name = "GetPatientDeviceEmergencyEvents")]
+    [ProducesResponseType(typeof(PagedResult<PatientDeviceEmergencyEventListItemDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPatientDeviceEmergencyEvents(
+        Guid patientId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] DateTime? occurredFromUtc = null,
+        [FromQuery] DateTime? occurredToUtc = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(
+            new GetPatientDeviceEmergencyEventsQuery
+            {
+                PatientId = patientId,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                OccurredFromUtc = occurredFromUtc,
+                OccurredToUtc = occurredToUtc
             },
             cancellationToken).ConfigureAwait(false);
         return Ok(result);
