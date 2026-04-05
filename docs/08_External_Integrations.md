@@ -9,7 +9,9 @@
 ## Device SDKs
 
 - **Domain:** Device, DeviceType, DeviceAssignment, and reading types (HeartRateReading, BloodPressureReading, GlucoseReading, etc.) are defined. DeviceDbContext and DevicesController provide CRUD for devices (staff/provider API).
-- **Mobile (patient BLE):** `RaphCare.Mobile` uses **Plugin.BLE** for E580/E585-class wearables — scan, connect, GATT notify subscription, standard heart-rate parsing where available. See **`docs/11_Devices_BLE_E580_E585.md`**. Cloud sync of readings is not wired yet.
+- **Mobile (patient BLE):** `RaphCare.Mobile` uses **Plugin.BLE** for E580/E585-class wearables — scan, connect, GATT notify subscription; optional PLX SpO₂; sync via **`api/patient/devices`**. See **`docs/11_Devices_BLE_E580_E585.md`**.
+- **Provider dashboard:** **`GET api/clinical/patients/{patientId}/device-readings`** — paged vitals for the current clinic (`IClinicContext`).
+- **FHIR export:** **`GET api/fhir/observations`** (search by `patientId`) and **`GET api/fhir/observations/{id}`** — minimal **Observation** bundle (LOINC heart rate / SpO₂). Same **RequireProvider** + audit pattern as other FHIR routes.
 - **Infrastructure:** IDeviceIntegrationService has a placeholder implementation (DeviceIntegrationService). No server-side device-cloud ingestion pipeline yet. DeviceSeeder is a placeholder.
 
 ## Messaging Services

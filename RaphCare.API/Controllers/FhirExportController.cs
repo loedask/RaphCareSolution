@@ -10,6 +10,8 @@ using RaphCare.Application.Features.Interoperability.Queries.GetFhirAppointmentB
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirPatients;
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirOrganizations;
 using RaphCare.Application.Features.Interoperability.Queries.GetFhirOrganizationById;
+using RaphCare.Application.Features.Interoperability.Queries.GetFhirObservationById;
+using RaphCare.Application.Features.Interoperability.Queries.GetFhirObservations;
 
 namespace RaphCare.API.Controllers;
 
@@ -360,6 +362,100 @@ public class FhirExportController(
         {
             auditLogger.LogExportAttempt(
                 resourceType: "Organization",
+                resourceId: Guid.Empty,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: false,
+                errorMessage: ex.Message);
+            throw;
+        }
+    }
+
+    [HttpGet("observations/{id:guid}", Name = "GetFhirObservationById")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetObservation([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        ApplyFhirJsonContentTypeIfRequested();
+        var requestedAtUtc = DateTime.UtcNow;
+        var clinicId = clinicContext.ClinicId;
+        var requestedByUserId = currentUserService.CurrentUserId;
+        try
+        {
+            var result = await mediator.Send(new GetFhirObservationByIdQuery { Id = id }, cancellationToken).ConfigureAwait(false);
+            auditLogger.LogExportAttempt(
+                resourceType: "Observation",
+                resourceId: id,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: true,
+                errorMessage: null);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            auditLogger.LogExportAttempt(
+                resourceType: "Observation",
+                resourceId: id,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: false,
+                errorMessage: ex.Message);
+            throw;
+        }
+    }
+
+    [HttpGet("observations", Name = "SearchFhirObservations")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SearchObservations(
+        [FromQuery] Guid patientId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? readingType = null,
+        [FromQuery] DateTime? recordedFromUtc = null,
+        [FromQuery] DateTime? recordedToUtc = null,
+        CancellationToken cancellationToken = default)
+    {
+        ApplyFhirJsonContentTypeIfRequested();
+        var requestedAtUtc = DateTime.UtcNow;
+        var clinicId = clinicContext.ClinicId;
+        var requestedByUserId = currentUserService.CurrentUserId;
+        pageNumber = pageNumber < 1 ? 1 : pageNumber;
+        pageSize = pageSize < 1 ? 20 : Math.Min(pageSize, 100);
+
+        try
+        {
+            var result = await mediator.Send(
+                new GetFhirObservationsQuery
+                {
+                    PatientId = patientId,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    ReadingType = readingType,
+                    RecordedFromUtc = recordedFromUtc,
+                    RecordedToUtc = recordedToUtc
+                },
+                cancellationToken).ConfigureAwait(false);
+
+            auditLogger.LogExportAttempt(
+                resourceType: "Observation",
+                resourceId: Guid.Empty,
+                requestedByUserId: requestedByUserId,
+                requestedAtUtc: requestedAtUtc,
+                clinicId: clinicId,
+                success: true,
+                errorMessage: null);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            auditLogger.LogExportAttempt(
+                resourceType: "Observation",
                 resourceId: Guid.Empty,
                 requestedByUserId: requestedByUserId,
                 requestedAtUtc: requestedAtUtc,

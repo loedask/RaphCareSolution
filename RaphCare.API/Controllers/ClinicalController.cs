@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.Clinical.Commands.CreateVisit;
 using RaphCare.Application.Features.Clinical.Commands.UpdateVisit;
+using RaphCare.Application.Common.DTOs;
+using RaphCare.Application.Features.Clinical.DTOs;
+using RaphCare.Application.Features.Clinical.Queries.GetPatientDeviceReadings;
 using RaphCare.Application.Features.Clinical.Queries.GetVisitById;
 using RaphCare.Application.Features.Clinical.Queries.GetVisits;
 
@@ -43,5 +46,31 @@ public class ClinicalController(IMediator mediator) : ControllerBase
         if (id != command.Id) return BadRequest();
         await _mediator.Send(command, cancellationToken);
         return NoContent();
+    }
+
+    /// <summary>Wearable vitals synced from patient devices (current clinic). For charts and dashboards.</summary>
+    [HttpGet("patients/{patientId:guid}/device-readings", Name = "GetPatientDeviceReadings")]
+    [ProducesResponseType(typeof(PagedResult<PatientDeviceReadingListItemDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPatientDeviceReadings(
+        Guid patientId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? readingType = null,
+        [FromQuery] DateTime? recordedFromUtc = null,
+        [FromQuery] DateTime? recordedToUtc = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(
+            new GetPatientDeviceReadingsQuery
+            {
+                PatientId = patientId,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                ReadingType = readingType,
+                RecordedFromUtc = recordedFromUtc,
+                RecordedToUtc = recordedToUtc
+            },
+            cancellationToken).ConfigureAwait(false);
+        return Ok(result);
     }
 }
