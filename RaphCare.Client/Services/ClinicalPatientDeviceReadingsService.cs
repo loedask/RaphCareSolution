@@ -44,7 +44,7 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
                     PageSize = dto.PageSize
                 });
         }
-        catch (ApiException ex)
+        catch (global::RaphCare.Client.Services.Base.ApiException ex)
         {
             return Response<PagedPatientDeviceReadingsViewModel>.Failure(ex.Message, ex.StatusCode);
         }
@@ -68,7 +68,7 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
 
             return Response<IReadOnlyList<DeviceReadingDailyRollupViewModel>>.Success(list);
         }
-        catch (ApiException ex)
+        catch (global::RaphCare.Client.Services.Base.ApiException ex)
         {
             return Response<IReadOnlyList<DeviceReadingDailyRollupViewModel>>.Failure(ex.Message, ex.StatusCode);
         }
@@ -94,9 +94,7 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
 
     private static DeviceReadingDailyRollupViewModel MapRollup(DeviceReadingDailyRollupDto d)
     {
-        var day = DateOnly.FromDateTime(d.Date.Kind == DateTimeKind.Unspecified
-            ? DateTime.SpecifyKind(d.Date, DateTimeKind.Utc)
-            : d.Date.ToUniversalTime());
+        var day = DateOnly.FromDateTime(d.Date);
 
         return new DeviceReadingDailyRollupViewModel
         {
