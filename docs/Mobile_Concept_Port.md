@@ -155,6 +155,7 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Account created | `AccountCreated.tsx` | `AccountCreatedPage` (shared welcome after phone OTP, email verify sign-in, or voice profile success) | ☑ |
 | Login / … | `Login.tsx`, … | `SignInPage`, `VerifyEmailPage` | ☑ |
 | Devices | `ConnectedDevices.tsx` | `DevicesPage` | ☑ |
+| Family members | `FamilyMembers.tsx` | `FamilyMembersPage` (+ add / detail) | ☑ |
 
 *(Extend the table as you implement each flow.)*
 

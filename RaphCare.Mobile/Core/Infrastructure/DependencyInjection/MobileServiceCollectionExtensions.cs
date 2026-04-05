@@ -14,6 +14,8 @@ using RaphCare.Mobile.Core.Features.Devices.ViewModels;
 using RaphCare.Mobile.Core.Features.Devices.Views;
 using RaphCare.Mobile.Core.Features.Billing.ViewModels;
 using RaphCare.Mobile.Core.Features.Billing.Views;
+using RaphCare.Mobile.Core.Features.Family.ViewModels;
+using RaphCare.Mobile.Core.Features.Family.Views;
 #if ANDROID
 using RaphCare.Mobile.Platforms.Android.Telehealth;
 #endif
@@ -106,6 +108,12 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AddPaymentMethodViewModel>();
         services.AddTransient<BillingPage>();
         services.AddTransient<AddPaymentMethodPage>();
+        services.AddTransient<FamilyMembersViewModel>();
+        services.AddTransient<AddFamilyMemberViewModel>();
+        services.AddTransient<FamilyMemberDetailViewModel>();
+        services.AddTransient<FamilyMembersPage>();
+        services.AddTransient<AddFamilyMemberPage>();
+        services.AddTransient<FamilyMemberDetailPage>();
         services.AddTransient<SettingsPage>();
         services.AddTransient<UnderConstructionPage>();
         services.AddTransient<BlazorHostPage>();

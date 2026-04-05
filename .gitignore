@@ -28,3 +28,4 @@ _agoraProbe/AgoraProbe/obj/
 # HBand Android SDK binaries (download with tools/download-hband-android-libs.ps1; see Platforms/Android/libs/README.md)
 RaphCare.Mobile/Platforms/Android/libs/*.aar
 RaphCare.Mobile/Platforms/Android/libs/*.jar
+obj/

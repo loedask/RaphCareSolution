@@ -9,6 +9,7 @@ using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Views;
 using RaphCare.Mobile.Core.Features.Devices.Views;
 using RaphCare.Mobile.Core.Features.Billing.Views;
+using RaphCare.Mobile.Core.Features.Family.Views;
 using RaphCare.Mobile.Core.Shared.Views;
 
 namespace RaphCare.Mobile.Core.Shared.Navigation;
@@ -56,7 +57,14 @@ public static class AppNavigator
     public const string AddBillingPaymentMethod = "AddBillingPaymentMethodPage";
 
     public const string MentalHealth = "MentalHealthPage";
+
+    /// <summary>Family members (concept <c>/family-members</c>).</summary>
     public const string FamilyMembers = "FamilyMembersPage";
+
+    public const string AddFamilyMember = "AddFamilyMemberPage";
+
+    /// <summary>Query: <c>memberId</c>.</summary>
+    public const string FamilyMemberDetail = "FamilyMemberDetailPage";
     public const string AiAssistant = "AiAssistantPage";
     public const string Notifications = "NotificationsPage";
     public const string BlazorHost = "BlazorHostPage";
@@ -68,7 +76,6 @@ public static class AppNavigator
     private static readonly HashSet<string> StubRoutes =
     [
         MentalHealth,
-        FamilyMembers,
         AiAssistant,
         Notifications,
     ];
@@ -110,9 +117,12 @@ public static class AppNavigator
         Routing.RegisterRoute(Billing, typeof(BillingPage));
         Routing.RegisterRoute(AddBillingPaymentMethod, typeof(AddPaymentMethodPage));
 
+        Routing.RegisterRoute(FamilyMembers, typeof(FamilyMembersPage));
+        Routing.RegisterRoute(AddFamilyMember, typeof(AddFamilyMemberPage));
+        Routing.RegisterRoute(FamilyMemberDetail, typeof(FamilyMemberDetailPage));
+
         // Concept areas (stubs → same page type; query <c>featureName</c> set by <see cref="GoToFeatureAsync"/> when flag is on)
         Routing.RegisterRoute(MentalHealth, typeof(UnderConstructionPage));
-        Routing.RegisterRoute(FamilyMembers, typeof(UnderConstructionPage));
         Routing.RegisterRoute(AiAssistant, typeof(UnderConstructionPage));
         Routing.RegisterRoute(Notifications, typeof(UnderConstructionPage));
 

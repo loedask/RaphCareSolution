@@ -491,6 +491,66 @@ Accessible. Intelligent. Human.</value>
   <data name="HomeDashHintFamily" xml:space="preserve">
     <value>People you support</value>
   </data>
+  <data name="FamilyTitle" xml:space="preserve">
+    <value>Family members</value>
+  </data>
+  <data name="FamilyRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="FamilyAddMember" xml:space="preserve">
+    <value>Add member</value>
+  </data>
+  <data name="FamilyEmpty" xml:space="preserve">
+    <value>No family members yet. Add someone you care for or manage.</value>
+  </data>
+  <data name="FamilyLoadFailed" xml:space="preserve">
+    <value>Could not load family members.</value>
+  </data>
+  <data name="FamilyAddTitle" xml:space="preserve">
+    <value>Add family member</value>
+  </data>
+  <data name="FamilyDetailTitle" xml:space="preserve">
+    <value>Family member</value>
+  </data>
+  <data name="FamilyFieldFirstName" xml:space="preserve">
+    <value>First name</value>
+  </data>
+  <data name="FamilyFieldLastName" xml:space="preserve">
+    <value>Last name</value>
+  </data>
+  <data name="FamilyFieldRelationship" xml:space="preserve">
+    <value>Relationship</value>
+  </data>
+  <data name="FamilyFieldDob" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="FamilyDobHint" xml:space="preserve">
+    <value>Include date of birth</value>
+  </data>
+  <data name="FamilyFieldPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="FamilyFieldEmail" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="FamilySave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="FamilyCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="FamilySaveFailed" xml:space="preserve">
+    <value>Could not save. Check your details and try again.</value>
+  </data>
+  <data name="FamilyDetailFailed" xml:space="preserve">
+    <value>Could not load this member.</value>
+  </data>
+  <data name="FamilyRemove" xml:space="preserve">
+    <value>Remove from list</value>
+  </data>
+  <data name="FamilyRemoveFailed" xml:space="preserve">
+    <value>Could not remove this member.</value>
+  </data>
   <data name="HomeDashHintAiAssistant" xml:space="preserve">
     <value>Guidance &amp; answers</value>
   </data>

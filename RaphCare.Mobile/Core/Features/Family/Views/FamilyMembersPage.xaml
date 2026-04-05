@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Family.ViewModels"
+             xmlns:fm="clr-namespace:RaphCare.Client.Models.Family;assembly=RaphCare.Client"
+             x:Class="RaphCare.Mobile.Core.Features.Family.Views.FamilyMembersPage"
+             x:DataType="vm:FamilyMembersViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <Grid RowDefinitions="Auto,*" Padding="24" RowSpacing="12">
+        <HorizontalStackLayout Grid.Row="0" Spacing="12">
+            <Button Text="{Binding RefreshButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding RefreshCommand}"
+                    HorizontalOptions="Start" />
+            <Button Text="{Binding AddButtonText}"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding AddCommand}"
+                    HorizontalOptions="End" />
+        </HorizontalStackLayout>
+
+        <Grid Grid.Row="1">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" Color="{StaticResource PrimaryColor}" />
+
+            <CollectionView ItemsSource="{Binding Items}"
+                            SelectionMode="None"
+                            IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="fm:PatientFamilyMemberViewModel">
+                        <Grid Margin="0,0,0,12">
+                            <Border Style="{StaticResource CardBorder}" Padding="16" Margin="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="4" InputTransparent="True">
+                                    <Label Text="{Binding DisplayName}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                    <Label Text="{Binding Relationship}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Button BackgroundColor="Transparent"
+                                    Opacity="0.02"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenDetailCommand}"
+                                    CommandParameter="{Binding Id}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label Text="{Binding EmptyStateText}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   HorizontalTextAlignment="Center"
+                   VerticalOptions="Center"
+                   IsVisible="{Binding ShowEmpty}"
+                   InputTransparent="True" />
+
+            <Label Text="{Binding ErrorMessage}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource ErrorColor}"
+                   VerticalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   InputTransparent="True" />
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -25,6 +25,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<PatientMergeHistory> PatientMergeHistory => Set<PatientMergeHistory>();
     public DbSet<PatientIdentityEvent> PatientIdentityEvents => Set<PatientIdentityEvent>();
     public DbSet<PatientClinicAccess> PatientClinicAccesses => Set<PatientClinicAccess>();
+    public DbSet<PatientFamilyMember> PatientFamilyMembers => Set<PatientFamilyMember>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,6 +39,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new PatientMergeHistoryConfiguration());
         modelBuilder.ApplyConfiguration(new PatientIdentityEventConfiguration());
         modelBuilder.ApplyConfiguration(new PatientClinicAccessConfiguration());
+        modelBuilder.ApplyConfiguration(new PatientFamilyMemberConfiguration());
         modelBuilder.ApplyConfiguration(new VitalSignRecordConfiguration());
         modelBuilder.ApplyConfiguration(new ServiceOfferingConfiguration());
         modelBuilder.ApplyPersistenceConventions();

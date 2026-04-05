@@ -1637,6 +1637,64 @@ namespace RaphCare.Persistence.Migrations
                     b.ToTable("PatientExternalIds", (string)null);
                 });
 
+            modelBuilder.Entity("RaphCare.Domain.Patients.PatientFamilyMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("LinkedPatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OwnerPatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Relationship")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LinkedPatientId");
+
+                    b.HasIndex("OwnerPatientId");
+
+                    b.HasIndex("OwnerPatientId", "IsActive");
+
+                    b.ToTable("PatientFamilyMembers", (string)null);
+                });
+
             modelBuilder.Entity("RaphCare.Domain.Patients.PatientIdentityEvent", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2594,6 +2652,20 @@ namespace RaphCare.Persistence.Migrations
                         .WithMany("ExternalIds")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Patients.PatientFamilyMember", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Patients.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("LinkedPatientId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RaphCare.Domain.Patients.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerPatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

@@ -70,6 +70,13 @@ public class PatientMergeService(
             .Where(c => c.PatientId == duplicatePatientId)
             .ExecuteUpdateAsync(s => s.SetProperty(c => c.PatientId, primaryPatientId), ct).ConfigureAwait(false);
 
+        await _clinical.PatientFamilyMembers
+            .Where(m => m.OwnerPatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(m => m.OwnerPatientId, primaryPatientId), ct).ConfigureAwait(false);
+        await _clinical.PatientFamilyMembers
+            .Where(m => m.LinkedPatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(m => m.LinkedPatientId, primaryPatientId), ct).ConfigureAwait(false);
+
         // Clinical DB: entities exposed via Set<> (same database as per InitialClinical migration)
         await _clinical.Set<MedicalHistory>()
             .Where(m => m.PatientId == duplicatePatientId)
