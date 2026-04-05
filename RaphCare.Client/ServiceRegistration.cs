@@ -60,7 +60,7 @@ public static class ServiceRegistration
             sp.GetRequiredService<IClient>()));
 
         services.AddTransient<IPatientMentalHealthService>(sp => new PatientMentalHealthService(
-            sp.GetRequiredService<IHttpClientFactory>()));
+            sp.GetRequiredService<IClient>()));
 
         services.AddTransient<IPatientTelehealthService>(sp => new PatientTelehealthService(
             sp.GetRequiredService<IClient>(),

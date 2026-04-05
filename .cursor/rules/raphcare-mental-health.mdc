@@ -31,8 +31,8 @@ Do not move patient mood or hub copy onto the staff controller. New patient feat
 
 ## Client / NSwag
 
-- After adding or renaming patient mental health endpoints, the **owner regenerates NSwag**; then replace **`PatientMentalHealthService`**’s **HttpClient** implementation with **`IClient`** wrappers like other patient services.
-- **Do not** hand-edit **`ClientService.cs`** / **`clientsettings.nswag`**.
+- **`PatientMentalHealthService`** wraps generated **`IClient`** (**`GetMyPatientMentalHealthContentAsync`**, **`LogMyPatientMoodCheckInAsync`**) like other patient feature services.
+- After adding or renaming endpoints, **regenerate NSwag**; **do not** hand-edit **`ClientService.cs`** / **`clientsettings.nswag`**.
 
 ## MAUI
 
