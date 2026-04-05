@@ -12,6 +12,9 @@ public static class ServiceRegistration
 {
     public const string HttpClientName = "RaphCare";
 
+    /// <summary>Same base URL as <see cref="HttpClientName"/> but no bearer handler — for anonymous integration endpoints (e.g. standalone emergency webhook).</summary>
+    public const string WebhookHttpClientName = "RaphCareWebhook";
+
     /// <summary>
     /// Registers the RaphCare API client layer: NSwag client, HttpClient, AutoMapper, and feature services.
     /// Configure base address via HttpClient (e.g. from options) — do not hardcode BaseUrl.
@@ -31,6 +34,11 @@ public static class ServiceRegistration
 
         if (useBearerToken)
             httpClientBuilder.AddHttpMessageHandler<BearerTokenHandler>();
+
+        services.AddHttpClient(WebhookHttpClientName, client =>
+        {
+            configureHttpClient?.Invoke(client);
+        });
 
         services.AddScoped<IPatientService>(sp => new PatientService(
             sp.GetRequiredService<IClient>(),
@@ -54,6 +62,9 @@ public static class ServiceRegistration
 
         services.AddTransient<IClinicalPatientDeviceReadingsService>(sp => new ClinicalPatientDeviceReadingsService(
             sp.GetRequiredService<IClient>()));
+
+        services.AddTransient<IStandaloneEmergencyWebhookClient>(sp => new StandaloneEmergencyWebhookClient(
+            sp.GetRequiredService<IHttpClientFactory>()));
 
         // Transient: MAUI Shell-created pages often resolve VMs via root IServiceProvider (no scope);
         // scoped registration throws when resolved outside a scope.

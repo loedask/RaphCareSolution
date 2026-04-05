@@ -3,7 +3,7 @@ using RaphCare.Client.Models.Clinical;
 
 namespace RaphCare.Client.Contracts.Interfaces;
 
-/// <summary>Provider/clinic wearable vitals (<c>api/clinical/patients/{{id}}/device-readings</c> and daily rollup). Requires staff bearer token.</summary>
+/// <summary>Provider/clinic wearable vitals and standalone emergency events. Requires staff bearer token.</summary>
 public interface IClinicalPatientDeviceReadingsService
 {
     Task<Response<PagedPatientDeviceReadingsViewModel>> GetReadingsAsync(
@@ -19,5 +19,13 @@ public interface IClinicalPatientDeviceReadingsService
         Guid patientId,
         DateTime fromUtc,
         DateTime toUtc,
+        CancellationToken cancellationToken = default);
+
+    Task<Response<PagedPatientDeviceEmergencyEventsViewModel>> GetEmergencyEventsAsync(
+        Guid patientId,
+        int pageNumber = 1,
+        int pageSize = 20,
+        DateTime? occurredFromUtc = null,
+        DateTime? occurredToUtc = null,
         CancellationToken cancellationToken = default);
 }

@@ -74,6 +74,44 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
         }
     }
 
+    public async Task<Response<PagedPatientDeviceEmergencyEventsViewModel>> GetEmergencyEventsAsync(
+        Guid patientId,
+        int pageNumber = 1,
+        int pageSize = 20,
+        DateTime? occurredFromUtc = null,
+        DateTime? occurredToUtc = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var dto = await _client.GetPatientDeviceEmergencyEventsAsync(
+                    patientId,
+                    pageNumber,
+                    pageSize,
+                    occurredFromUtc,
+                    occurredToUtc,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            var items = (dto.Items ?? Array.Empty<PatientDeviceEmergencyEventListItemDto>())
+                .Select(MapEmergency)
+                .ToList();
+
+            return Response<PagedPatientDeviceEmergencyEventsViewModel>.Success(
+                new PagedPatientDeviceEmergencyEventsViewModel
+                {
+                    Items = items,
+                    TotalCount = dto.TotalCount,
+                    PageNumber = dto.PageNumber,
+                    PageSize = dto.PageSize
+                });
+        }
+        catch (global::RaphCare.Client.Services.Base.ApiException ex)
+        {
+            return Response<PagedPatientDeviceEmergencyEventsViewModel>.Failure(ex.Message, ex.StatusCode);
+        }
+    }
+
     private static PatientDeviceReadingListItemViewModel MapReading(PatientDeviceReadingListItemDto d) =>
         new()
         {
@@ -113,4 +151,23 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
             MaxSpO2Percent = d.MaxSpO2Percent.HasValue ? (decimal)d.MaxSpO2Percent.Value : null
         };
     }
+
+    private static PatientDeviceEmergencyEventViewModel MapEmergency(PatientDeviceEmergencyEventListItemDto d) =>
+        new()
+        {
+            Id = d.Id,
+            DeviceId = d.DeviceId,
+            SerialNumber = d.SerialNumber ?? string.Empty,
+            Model = d.Model ?? string.Empty,
+            EventType = d.EventType ?? string.Empty,
+            OccurredAtUtc = d.OccurredAtUtc,
+            ReceivedAtUtc = d.ReceivedAtUtc,
+            Latitude = d.Latitude,
+            Longitude = d.Longitude,
+            HorizontalAccuracyMeters = d.HorizontalAccuracyMeters,
+            ExternalCorrelationId = d.ExternalCorrelationId,
+            CaregiversNotified = d.CaregiversNotified,
+            CaregiversNotifiedAtUtc = d.CaregiversNotifiedAtUtc,
+            CaregiverNotificationSummary = d.CaregiverNotificationSummary
+        };
 }
