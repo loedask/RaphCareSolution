@@ -53,6 +53,9 @@ public static class ServiceRegistration
 
         services.AddTransient<IPatientInsuranceService>(sp => new PatientInsuranceService(sp.GetRequiredService<IClient>()));
 
+        services.AddTransient<IPatientBillingService>(sp => new PatientBillingService(
+            sp.GetRequiredService<IHttpClientFactory>()));
+
         services.AddTransient<IPatientTelehealthService>(sp => new PatientTelehealthService(
             sp.GetRequiredService<IClient>(),
             sp.GetRequiredService<IMapper>()!));

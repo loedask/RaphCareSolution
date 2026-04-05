@@ -410,6 +410,81 @@ Accessible. Intelligent. Human.</value>
   <data name="HomeDashHintBilling" xml:space="preserve">
     <value>Plans &amp; payments</value>
   </data>
+  <data name="BillingTitle" xml:space="preserve">
+    <value>Billing &amp; plans</value>
+  </data>
+  <data name="BillingRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="BillingAddPayment" xml:space="preserve">
+    <value>Add payment</value>
+  </data>
+  <data name="BillingLoadFailed" xml:space="preserve">
+    <value>Could not load billing information.</value>
+  </data>
+  <data name="BillingCurrentPlanLabel" xml:space="preserve">
+    <value>Current plan</value>
+  </data>
+  <data name="BillingCurrentPlanFormat" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="BillingRenewsFormat" xml:space="preserve">
+    <value>Renews {0}</value>
+  </data>
+  <data name="BillingSectionUpgrade" xml:space="preserve">
+    <value>Change plan</value>
+  </data>
+  <data name="BillingPickerUpgradePlan" xml:space="preserve">
+    <value>Choose a plan</value>
+  </data>
+  <data name="BillingUpgradeButton" xml:space="preserve">
+    <value>Upgrade</value>
+  </data>
+  <data name="BillingUpgradeFailed" xml:space="preserve">
+    <value>Could not change your plan.</value>
+  </data>
+  <data name="BillingSectionPaymentMethods" xml:space="preserve">
+    <value>Payment methods</value>
+  </data>
+  <data name="BillingSectionHistory" xml:space="preserve">
+    <value>Billing history</value>
+  </data>
+  <data name="BillingSetDefault" xml:space="preserve">
+    <value>Set default</value>
+  </data>
+  <data name="BillingRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="BillingEmptyPayments" xml:space="preserve">
+    <value>No payment methods yet. Add one to get started.</value>
+  </data>
+  <data name="BillingEmptyInvoices" xml:space="preserve">
+    <value>No invoices yet.</value>
+  </data>
+  <data name="BillingAddPaymentTitle" xml:space="preserve">
+    <value>Add payment method</value>
+  </data>
+  <data name="BillingFieldMethodType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="BillingFieldProvider" xml:space="preserve">
+    <value>Provider</value>
+  </data>
+  <data name="BillingFieldMasked" xml:space="preserve">
+    <value>Masked details</value>
+  </data>
+  <data name="BillingFieldDefault" xml:space="preserve">
+    <value>Use as default</value>
+  </data>
+  <data name="BillingSubmitPayment" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="BillingCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="BillingAddPaymentFailed" xml:space="preserve">
+    <value>Could not save this payment method.</value>
+  </data>
   <data name="HomeDashHintMentalHealth" xml:space="preserve">
     <value>Support &amp; resources</value>
   </data>

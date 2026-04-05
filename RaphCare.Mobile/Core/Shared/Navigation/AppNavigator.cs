@@ -8,6 +8,7 @@ using RaphCare.Mobile.Core.Features.Insurance.Views;
 using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Views;
 using RaphCare.Mobile.Core.Features.Devices.Views;
+using RaphCare.Mobile.Core.Features.Billing.Views;
 using RaphCare.Mobile.Core.Shared.Views;
 
 namespace RaphCare.Mobile.Core.Shared.Navigation;
@@ -48,8 +49,11 @@ public static class AppNavigator
     /// <summary>Connected devices and BLE wearables (E580/E585-class scan and connect).</summary>
     public const string Devices = "DevicesPage";
 
-    /// <summary>Billing and plans (payment, billing, upgrade). Stub until vertical ships.</summary>
+    /// <summary>Billing and plans (payment methods, invoices, plan upgrade).</summary>
     public const string Billing = "BillingPage";
+
+    /// <summary>Add a saved payment method (demo-style; not card tokenization).</summary>
+    public const string AddBillingPaymentMethod = "AddBillingPaymentMethodPage";
 
     public const string MentalHealth = "MentalHealthPage";
     public const string FamilyMembers = "FamilyMembersPage";
@@ -63,7 +67,6 @@ public static class AppNavigator
     /// </summary>
     private static readonly HashSet<string> StubRoutes =
     [
-        Billing,
         MentalHealth,
         FamilyMembers,
         AiAssistant,
@@ -104,8 +107,10 @@ public static class AppNavigator
 
         Routing.RegisterRoute(Devices, typeof(DevicesPage));
 
+        Routing.RegisterRoute(Billing, typeof(BillingPage));
+        Routing.RegisterRoute(AddBillingPaymentMethod, typeof(AddPaymentMethodPage));
+
         // Concept areas (stubs → same page type; query <c>featureName</c> set by <see cref="GoToFeatureAsync"/> when flag is on)
-        Routing.RegisterRoute(Billing, typeof(UnderConstructionPage));
         Routing.RegisterRoute(MentalHealth, typeof(UnderConstructionPage));
         Routing.RegisterRoute(FamilyMembers, typeof(UnderConstructionPage));
         Routing.RegisterRoute(AiAssistant, typeof(UnderConstructionPage));

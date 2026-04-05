@@ -15,6 +15,7 @@ public class PatientMergeService(
     ClinicalDbContext clinical,
     InsuranceDbContext insurance,
     DeviceDbContext device,
+    BillingDbContext billing,
     IUnitOfWork unitOfWork,
     ICurrentUserService currentUserService,
     IMediator mediator,
@@ -23,6 +24,7 @@ public class PatientMergeService(
     private readonly ClinicalDbContext _clinical = clinical ?? throw new ArgumentNullException(nameof(clinical));
     private readonly InsuranceDbContext _insurance = insurance ?? throw new ArgumentNullException(nameof(insurance));
     private readonly DeviceDbContext _device = device ?? throw new ArgumentNullException(nameof(device));
+    private readonly BillingDbContext _billing = billing ?? throw new ArgumentNullException(nameof(billing));
     private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     private readonly ICurrentUserService _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -121,6 +123,33 @@ public class PatientMergeService(
         await _device.DeviceEmergencyEvents
             .Where(e => e.PatientId == duplicatePatientId)
             .ExecuteUpdateAsync(s => s.SetProperty(e => e.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        await _billing.PaymentMethods
+            .Where(m => m.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(m => m.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        var primaryHasCarePlan = await _billing.PatientCarePlans
+            .AnyAsync(p => p.PatientId == primaryPatientId, ct).ConfigureAwait(false);
+        if (primaryHasCarePlan)
+        {
+            await _billing.PatientCarePlans
+                .Where(p => p.PatientId == duplicatePatientId)
+                .ExecuteDeleteAsync(ct).ConfigureAwait(false);
+        }
+        else
+        {
+            await _billing.PatientCarePlans
+                .Where(p => p.PatientId == duplicatePatientId)
+                .ExecuteUpdateAsync(s => s.SetProperty(p => p.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+        }
+
+        await _billing.Invoices
+            .Where(i => i.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(i => i.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        await _billing.PaymentTransactions
+            .Where(t => t.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(t => t.PatientId, primaryPatientId), ct).ConfigureAwait(false);
 
         // 5. Soft delete the duplicate patient
         duplicate.IsDeleted = true;
