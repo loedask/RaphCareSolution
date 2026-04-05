@@ -367,9 +367,14 @@ namespace RaphCare.Client.Services.Base
         /// <summary>
         /// Accepts JSON body; validates `X-RaphCare-Emergency-Signature` (hex HMAC-SHA256 of raw UTF-8 bytes) when a shared secret is configured.
         /// </summary>
+        /// <remarks>
+        /// OpenAPI request schema: RaphCare.Application.Features.StandaloneEmergency.Commands.IngestDeviceEmergencyEvent.IngestDeviceEmergencyEventCommand (see also `StandaloneEmergencyWebhookOperationFilter`).
+        /// </remarks>
+        /// <param name="body">JSON payload. HMAC must be computed over the exact UTF-8 bytes sent as this body.</param>
+        /// <param name="x_RaphCare_Emergency_Signature">Hex-encoded HMAC-SHA256 of the raw UTF-8 request body. Optional prefix `sha256=` is accepted. Required when StandaloneEmergency:WebhookSharedSecret is set (unless Development unsigned mode).</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<IngestDeviceEmergencyEventResult> EventsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<IngestDeviceEmergencyEventResult> EventsAsync(IngestDeviceEmergencyEventCommand body, string x_RaphCare_Emergency_Signature = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
@@ -5097,17 +5102,31 @@ namespace RaphCare.Client.Services.Base
         /// <summary>
         /// Accepts JSON body; validates `X-RaphCare-Emergency-Signature` (hex HMAC-SHA256 of raw UTF-8 bytes) when a shared secret is configured.
         /// </summary>
+        /// <remarks>
+        /// OpenAPI request schema: RaphCare.Application.Features.StandaloneEmergency.Commands.IngestDeviceEmergencyEvent.IngestDeviceEmergencyEventCommand (see also `StandaloneEmergencyWebhookOperationFilter`).
+        /// </remarks>
+        /// <param name="body">JSON payload. HMAC must be computed over the exact UTF-8 bytes sent as this body.</param>
+        /// <param name="x_RaphCare_Emergency_Signature">Hex-encoded HMAC-SHA256 of the raw UTF-8 request body. Optional prefix `sha256=` is accepted. Required when StandaloneEmergency:WebhookSharedSecret is set (unless Development unsigned mode).</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<IngestDeviceEmergencyEventResult> EventsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<IngestDeviceEmergencyEventResult> EventsAsync(IngestDeviceEmergencyEventCommand body, string x_RaphCare_Emergency_Signature = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (body == null)
+                throw new System.ArgumentNullException("body");
+
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+
+                    if (x_RaphCare_Emergency_Signature != null)
+                        request_.Headers.TryAddWithoutValidation("X-RaphCare-Emergency-Signature", ConvertToString(x_RaphCare_Emergency_Signature, System.Globalization.CultureInfo.InvariantCulture));
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -5979,6 +5998,33 @@ namespace RaphCare.Client.Services.Base
 
         [System.Text.Json.Serialization.JsonPropertyName("beatsPerMinute")]
         public int BeatsPerMinute { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class IngestDeviceEmergencyEventCommand
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("serialNumber")]
+        public string SerialNumber { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("eventType")]
+        public string EventType { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("occurredAtUtc")]
+        public System.DateTime OccurredAtUtc { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("externalEventId")]
+        public string ExternalEventId { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("latitude")]
+        public double? Latitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("longitude")]
+        public double? Longitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("horizontalAccuracyMeters")]
+        public double? HorizontalAccuracyMeters { get; set; }
 
     }
 
