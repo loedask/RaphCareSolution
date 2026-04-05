@@ -6,6 +6,7 @@ using RaphCare.Application.Features.Clinical.Commands.UpdateVisit;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.Clinical.DTOs;
 using RaphCare.Application.Features.Clinical.Queries.GetPatientDeviceReadings;
+using RaphCare.Application.Features.Clinical.Queries.GetPatientDeviceReadingDailyRollups;
 using RaphCare.Application.Features.Clinical.Queries.GetVisitById;
 using RaphCare.Application.Features.Clinical.Queries.GetVisits;
 
@@ -69,6 +70,26 @@ public class ClinicalController(IMediator mediator) : ControllerBase
                 ReadingType = readingType,
                 RecordedFromUtc = recordedFromUtc,
                 RecordedToUtc = recordedToUtc
+            },
+            cancellationToken).ConfigureAwait(false);
+        return Ok(result);
+    }
+
+    /// <summary>Daily min/max/avg heart rate and SpO₂ for chart rollups (current clinic). Range inclusive; max 366 days.</summary>
+    [HttpGet("patients/{patientId:guid}/device-readings/daily-rollup", Name = "GetPatientDeviceReadingDailyRollup")]
+    [ProducesResponseType(typeof(IReadOnlyList<DeviceReadingDailyRollupDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPatientDeviceReadingDailyRollup(
+        Guid patientId,
+        [FromQuery] DateTime fromUtc,
+        [FromQuery] DateTime toUtc,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(
+            new GetPatientDeviceReadingDailyRollupsQuery
+            {
+                PatientId = patientId,
+                FromUtc = fromUtc,
+                ToUtc = toUtc
             },
             cancellationToken).ConfigureAwait(false);
         return Ok(result);
