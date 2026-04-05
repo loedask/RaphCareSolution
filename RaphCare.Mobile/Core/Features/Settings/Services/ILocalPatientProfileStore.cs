@@ -1,6 +1,6 @@
 namespace RaphCare.Mobile.Core.Features.Settings.Services;
 
-/// <summary>Device-local patient profile and privacy toggles until a dedicated profile API ships (Vertical 12).</summary>
+/// <summary>Device-local cache for profile demographics (synced after API success) and privacy toggles.</summary>
 public interface ILocalPatientProfileStore
 {
     string FirstName { get; set; }

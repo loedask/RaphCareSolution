@@ -1080,7 +1080,10 @@ Accessible. Intelligent. Human.</value>
     <value>Save changes</value>
   </data>
   <data name="EditProfileSaved" xml:space="preserve">
-    <value>Your profile was saved on this device.</value>
+    <value>Your profile was updated.</value>
+  </data>
+  <data name="EditProfileSaveFailed" xml:space="preserve">
+    <value>We couldn't save your profile. Check your connection and try again.</value>
   </data>
   <data name="ProfileGenderFemale" xml:space="preserve">
     <value>Female</value>

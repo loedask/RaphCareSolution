@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
+using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Settings.Models;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Shared.Navigation;
@@ -17,14 +18,16 @@ namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 public sealed class ProfileHubViewModel : BaseViewModel
 {
     private readonly IAuthService _auth;
-    private readonly ILocalPatientProfileStore _profile;
+    private readonly IPatientProfileService _profileApi;
+    private readonly ILocalPatientProfileStore _localProfile;
     private string _displayName = string.Empty;
     private string _emailLine = string.Empty;
 
-    public ProfileHubViewModel(IAuthService auth, ILocalPatientProfileStore profile)
+    public ProfileHubViewModel(IAuthService auth, IPatientProfileService profileApi, ILocalPatientProfileStore localProfile)
     {
         _auth = auth ?? throw new ArgumentNullException(nameof(auth));
-        _profile = profile ?? throw new ArgumentNullException(nameof(profile));
+        _profileApi = profileApi ?? throw new ArgumentNullException(nameof(profileApi));
+        _localProfile = localProfile ?? throw new ArgumentNullException(nameof(localProfile));
 
         Title = AppResources.T("ProfileHubTitle");
         EditProfileCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.EditProfile));
@@ -65,22 +68,45 @@ public sealed class ProfileHubViewModel : BaseViewModel
 
     public async Task LoadAsync()
     {
+        var response = await _profileApi.GetMyProfileAsync(CancellationToken.None).ConfigureAwait(false);
+        if (response.IsSuccess && response.Data is { } data)
+        {
+            _localProfile.FirstName = data.FirstName;
+            _localProfile.LastName = data.LastName;
+            _localProfile.Email = data.Email ?? string.Empty;
+            _localProfile.Phone = data.PhoneNumber ?? string.Empty;
+            _localProfile.DateOfBirth = data.DateOfBirth;
+            _localProfile.Gender = data.Gender;
+            SetDisplayFromNames(data.FirstName, data.LastName, data.Email);
+            BuildSections();
+            return;
+        }
+
         var token = await _auth.GetAccessTokenAsync(CancellationToken.None).ConfigureAwait(false);
         var (claimName, claimEmail) = JwtClaimsReader.ReadDisplayClaims(token);
 
-        var first = _profile.FirstName.Trim();
-        var last = _profile.LastName.Trim();
-        var combined = string.Join(" ", new[] { first, last }.Where(s => s.Length > 0));
+        var first = _localProfile.FirstName.Trim();
+        var last = _localProfile.LastName.Trim();
+        SetDisplayFromNames(first, last, _localProfile.Email.Trim(), claimName, claimEmail);
+        BuildSections();
+    }
+
+    private void SetDisplayFromNames(
+        string firstName,
+        string lastName,
+        string? profileEmail,
+        string? claimNameFallback = null,
+        string? claimEmailFallback = null)
+    {
+        var combined = string.Join(" ", new[] { firstName.Trim(), lastName.Trim() }.Where(s => s.Length > 0));
         DisplayName = !string.IsNullOrEmpty(combined)
             ? combined
-            : (!string.IsNullOrEmpty(claimName) ? claimName : AppResources.T("ProfileDefaultName"));
+            : (!string.IsNullOrEmpty(claimNameFallback) ? claimNameFallback : AppResources.T("ProfileDefaultName"));
 
-        var email = _profile.Email.Trim();
+        var email = profileEmail?.Trim() ?? string.Empty;
         EmailLine = !string.IsNullOrEmpty(email)
             ? email
-            : (!string.IsNullOrEmpty(claimEmail) ? claimEmail : AppResources.T("ProfileNoEmail"));
-
-        BuildSections();
+            : (!string.IsNullOrEmpty(claimEmailFallback) ? claimEmailFallback : AppResources.T("ProfileNoEmail"));
     }
 
     private void BuildSections()

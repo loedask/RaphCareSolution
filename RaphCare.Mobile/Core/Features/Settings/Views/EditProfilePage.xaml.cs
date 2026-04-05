@@ -13,10 +13,10 @@ public partial class EditProfilePage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         if (BindingContext is EditProfileViewModel vm)
-            vm.LoadFromStore();
+            await vm.LoadAsync();
     }
 }

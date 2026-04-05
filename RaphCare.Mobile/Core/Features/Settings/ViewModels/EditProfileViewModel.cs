@@ -1,16 +1,19 @@
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
+using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.Profile;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
-/// <summary>Edit profile (concept <c>EditProfile.tsx</c>). Persists to <see cref="ILocalPatientProfileStore"/>.</summary>
+/// <summary>Edit profile (concept <c>EditProfile.tsx</c>). Loads/saves via <c>api/patient/profile</c>; local store is a cache.</summary>
 public sealed class EditProfileViewModel : BaseViewModel
 {
-    private readonly ILocalPatientProfileStore _profile;
+    private readonly IPatientProfileService _profileApi;
+    private readonly ILocalPatientProfileStore _localProfile;
     private string _firstName = string.Empty;
     private string _lastName = string.Empty;
     private string _email = string.Empty;
@@ -18,9 +21,10 @@ public sealed class EditProfileViewModel : BaseViewModel
     private DateTime _dob = DateTime.Today.AddYears(-30);
     private int _genderIndex;
 
-    public EditProfileViewModel(ILocalPatientProfileStore profile)
+    public EditProfileViewModel(IPatientProfileService profileApi, ILocalPatientProfileStore localProfile)
     {
-        _profile = profile ?? throw new ArgumentNullException(nameof(profile));
+        _profileApi = profileApi ?? throw new ArgumentNullException(nameof(profileApi));
+        _localProfile = localProfile ?? throw new ArgumentNullException(nameof(localProfile));
         Title = AppResources.T("EditProfileTitle");
         SaveCommand = new Command(async () => await SaveAsync());
         GenderOptions =
@@ -89,14 +93,36 @@ public sealed class EditProfileViewModel : BaseViewModel
     public string PhotoHint => AppResources.T("EditProfilePhotoHint");
     public ICommand SaveCommand { get; }
 
-    public void LoadFromStore()
+    public async Task LoadAsync()
     {
-        FirstName = _profile.FirstName;
-        LastName = _profile.LastName;
-        Email = _profile.Email;
-        Phone = _profile.Phone;
-        DateOfBirth = _profile.DateOfBirth ?? DateTime.Today.AddYears(-25);
-        GenderIndex = MapGenderToIndex(_profile.Gender);
+        if (IsBusy) return;
+        IsBusy = true;
+        try
+        {
+            var response = await _profileApi.GetMyProfileAsync(CancellationToken.None).ConfigureAwait(false);
+            if (response.IsSuccess && response.Data is { } data)
+            {
+                ApplyFromApi(data);
+                CopyToLocalStore(data);
+                return;
+            }
+
+            LoadFromLocalStore();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    public void LoadFromLocalStore()
+    {
+        FirstName = _localProfile.FirstName;
+        LastName = _localProfile.LastName;
+        Email = _localProfile.Email;
+        Phone = _localProfile.Phone;
+        DateOfBirth = _localProfile.DateOfBirth ?? DateTime.Today.AddYears(-25);
+        GenderIndex = MapGenderToIndex(_localProfile.Gender);
     }
 
     private async Task SaveAsync()
@@ -105,12 +131,28 @@ public sealed class EditProfileViewModel : BaseViewModel
         IsBusy = true;
         try
         {
-            _profile.FirstName = FirstName.Trim();
-            _profile.LastName = LastName.Trim();
-            _profile.Email = Email.Trim();
-            _profile.Phone = Phone.Trim();
-            _profile.DateOfBirth = DateOfBirth.Date;
-            _profile.Gender = MapIndexToGender(GenderIndex);
+            var request = new MyPatientProfileUpdateRequest
+            {
+                FirstName = FirstName.Trim(),
+                LastName = LastName.Trim(),
+                Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim(),
+                PhoneNumber = string.IsNullOrWhiteSpace(Phone) ? null : Phone.Trim(),
+                DateOfBirth = DateOfBirth.Date,
+                Gender = MapIndexToGender(GenderIndex),
+            };
+
+            var response = await _profileApi.UpdateMyProfileAsync(request, CancellationToken.None).ConfigureAwait(false);
+            if (!response.IsSuccess)
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                    await Shell.Current.DisplayAlertAsync(
+                        AppResources.T("EditProfileTitle"),
+                        AppResources.T("EditProfileSaveFailed"),
+                        AppResources.T("CommonOk")));
+                return;
+            }
+
+            CopyToLocalStore(request);
 
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
@@ -127,6 +169,36 @@ public sealed class EditProfileViewModel : BaseViewModel
         }
     }
 
+    private void ApplyFromApi(MyPatientProfileViewModel data)
+    {
+        FirstName = data.FirstName;
+        LastName = data.LastName;
+        Email = data.Email ?? string.Empty;
+        Phone = data.PhoneNumber ?? string.Empty;
+        DateOfBirth = data.DateOfBirth;
+        GenderIndex = MapGenderToIndex(data.Gender);
+    }
+
+    private void CopyToLocalStore(MyPatientProfileViewModel data)
+    {
+        _localProfile.FirstName = data.FirstName;
+        _localProfile.LastName = data.LastName;
+        _localProfile.Email = data.Email ?? string.Empty;
+        _localProfile.Phone = data.PhoneNumber ?? string.Empty;
+        _localProfile.DateOfBirth = data.DateOfBirth;
+        _localProfile.Gender = data.Gender;
+    }
+
+    private void CopyToLocalStore(MyPatientProfileUpdateRequest data)
+    {
+        _localProfile.FirstName = data.FirstName;
+        _localProfile.LastName = data.LastName;
+        _localProfile.Email = data.Email ?? string.Empty;
+        _localProfile.Phone = data.PhoneNumber ?? string.Empty;
+        _localProfile.DateOfBirth = data.DateOfBirth;
+        _localProfile.Gender = data.Gender;
+    }
+
     private static int MapGenderToIndex(string stored)
     {
         return stored switch
@@ -138,7 +210,7 @@ public sealed class EditProfileViewModel : BaseViewModel
         };
     }
 
-    private string MapIndexToGender(int index) =>
+    private static string MapIndexToGender(int index) =>
         index switch
         {
             1 => "male",

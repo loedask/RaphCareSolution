@@ -62,6 +62,10 @@ public static class ServiceRegistration
         services.AddTransient<IPatientMentalHealthService>(sp => new PatientMentalHealthService(
             sp.GetRequiredService<IClient>()));
 
+        services.AddTransient<IPatientProfileService>(sp => new PatientProfileService(
+            sp.GetRequiredService<IClient>(),
+            sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
+
         services.AddTransient<IPatientTelehealthService>(sp => new PatientTelehealthService(
             sp.GetRequiredService<IClient>(),
             sp.GetRequiredService<IMapper>()!));
