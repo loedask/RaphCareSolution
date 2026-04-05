@@ -140,7 +140,7 @@ public sealed class HomeViewModel : BaseViewModel
         {
             Title = AppResources.HomeHubSettings,
             Subtitle = AppResources.T("HomeDashHintSettings"),
-            IconGlyph = "⚙",
+            IconGlyph = "👤",
             NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.Settings, AppResources.HomeHubSettings)),
         },
     ];

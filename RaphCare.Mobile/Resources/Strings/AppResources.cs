@@ -40,7 +40,7 @@ public static class AppResources
     public static string HomeHubFamily => Get(nameof(HomeHubFamily), "Family members");
     public static string HomeHubAiAssistant => Get(nameof(HomeHubAiAssistant), "AI assistant");
     public static string HomeHubNotifications => Get(nameof(HomeHubNotifications), "Notifications");
-    public static string HomeHubSettings => Get(nameof(HomeHubSettings), "Settings");
+    public static string HomeHubSettings => Get(nameof(HomeHubSettings), "Profile");
     public static string HomeHubSamples => Get(nameof(HomeHubSamples), "Developer samples");
 
     private static string Get(string name, string fallback) =>

@@ -40,6 +40,16 @@ public static class AppNavigator
     public const string InsuranceProfileDetail = "InsuranceProfileDetailPage";
     public const string AddInsuranceProfile = "AddInsuranceProfilePage";
     public const string Settings = "SettingsPage";
+
+    /// <summary>Profile hub (concept <c>/profile</c>).</summary>
+    public const string EditProfile = "EditProfilePage";
+
+    /// <summary>Privacy &amp; data (concept <c>/privacy</c>).</summary>
+    public const string Privacy = "PrivacyPage";
+
+    /// <summary>Help &amp; support (concept <c>/help-support</c>).</summary>
+    public const string HelpSupport = "HelpSupportPage";
+
     public const string UnderConstruction = "UnderConstructionPage";
 
     /// <summary>Care and telehealth: session list (Agora join info + Twilio SMS from API).</summary>
@@ -108,6 +118,9 @@ public static class AppNavigator
         Routing.RegisterRoute(InsuranceProfileDetail, typeof(InsuranceProfileDetailPage));
         Routing.RegisterRoute(AddInsuranceProfile, typeof(AddInsuranceProfilePage));
         Routing.RegisterRoute(Settings, typeof(SettingsPage));
+        Routing.RegisterRoute(EditProfile, typeof(EditProfilePage));
+        Routing.RegisterRoute(Privacy, typeof(PrivacyPage));
+        Routing.RegisterRoute(HelpSupport, typeof(HelpSupportPage));
 
         Routing.RegisterRoute(CareTelehealth, typeof(CareTelehealthPage));
         Routing.RegisterRoute(TelehealthJoin, typeof(TelehealthJoinPage));

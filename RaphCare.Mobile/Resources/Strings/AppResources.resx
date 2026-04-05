@@ -276,7 +276,7 @@ Accessible. Intelligent. Human.</value>
     <value>Notifications</value>
   </data>
   <data name="HomeHubSettings" xml:space="preserve">
-    <value>Settings</value>
+    <value>Profile</value>
   </data>
   <data name="HomeHubSamples" xml:space="preserve">
     <value>Developer samples</value>
@@ -558,7 +558,7 @@ Accessible. Intelligent. Human.</value>
     <value>Alerts &amp; updates</value>
   </data>
   <data name="HomeDashHintSettings" xml:space="preserve">
-    <value>Account &amp; app</value>
+    <value>Account, privacy &amp; help</value>
   </data>
   <data name="AppointmentsListTitle" xml:space="preserve">
     <value>Appointments</value>
@@ -928,5 +928,281 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="MentalHealthMoodSaveFailed" xml:space="preserve">
     <value>Could not save your check-in. Please try again.</value>
+  </data>
+  <data name="CommonOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="CommonCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ProfileHubTitle" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="ProfileAppName" xml:space="preserve">
+    <value>RaphCare</value>
+  </data>
+  <data name="ProfileDefaultName" xml:space="preserve">
+    <value>Patient</value>
+  </data>
+  <data name="ProfileNoEmail" xml:space="preserve">
+    <value>Add your email in Edit profile</value>
+  </data>
+  <data name="ProfileInsuranceBadge" xml:space="preserve">
+    <value>RaphCare Essential</value>
+  </data>
+  <data name="ProfileEditProfile" xml:space="preserve">
+    <value>Edit profile</value>
+  </data>
+  <data name="ProfileSignOut" xml:space="preserve">
+    <value>Log out</value>
+  </data>
+  <data name="ProfileSignOutTitle" xml:space="preserve">
+    <value>Log out?</value>
+  </data>
+  <data name="ProfileSignOutMessage" xml:space="preserve">
+    <value>You will need to sign in again to use the app.</value>
+  </data>
+  <data name="ProfileSignOutConfirm" xml:space="preserve">
+    <value>Log out</value>
+  </data>
+  <data name="ProfilePhotoComingSoon" xml:space="preserve">
+    <value>Profile photo upload is not available in this build.</value>
+  </data>
+  <data name="ProfileSectionAccount" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="ProfileSectionHealth" xml:space="preserve">
+    <value>Health</value>
+  </data>
+  <data name="ProfileSectionInsurance" xml:space="preserve">
+    <value>Insurance &amp; billing</value>
+  </data>
+  <data name="ProfileSectionApp" xml:space="preserve">
+    <value>App</value>
+  </data>
+  <data name="ProfilePersonalInformation" xml:space="preserve">
+    <value>Personal information</value>
+  </data>
+  <data name="ProfilePersonalInformationHint" xml:space="preserve">
+    <value>Name, email, phone</value>
+  </data>
+  <data name="ProfileChangePassword" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="ProfileChangePasswordHint" xml:space="preserve">
+    <value>Security settings</value>
+  </data>
+  <data name="ProfileLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="ProfileLanguageCurrentFormat" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="ProfileLanguageHintBody" xml:space="preserve">
+    <value>Language is chosen on the welcome screen. Sign out and return to the landing page to change it.</value>
+  </data>
+  <data name="ProfileMedicalInformation" xml:space="preserve">
+    <value>Medical information</value>
+  </data>
+  <data name="ProfileMedicalInformationHint" xml:space="preserve">
+    <value>Blood type, allergies</value>
+  </data>
+  <data name="ProfileEmergencyContacts" xml:space="preserve">
+    <value>Emergency contacts</value>
+  </data>
+  <data name="ProfileEmergencyContactsHint" xml:space="preserve">
+    <value>ICE numbers for your care team</value>
+  </data>
+  <data name="ProfileFamilyMembersHint" xml:space="preserve">
+    <value>People linked to your account</value>
+  </data>
+  <data name="ProfileCurrentPlan" xml:space="preserve">
+    <value>Current plan</value>
+  </data>
+  <data name="ProfileCurrentPlanHint" xml:space="preserve">
+    <value>Insurance profiles</value>
+  </data>
+  <data name="ProfilePaymentMethods" xml:space="preserve">
+    <value>Payment methods</value>
+  </data>
+  <data name="ProfilePaymentMethodsHint" xml:space="preserve">
+    <value>Cards and billing</value>
+  </data>
+  <data name="ProfileBillingHistory" xml:space="preserve">
+    <value>Billing history</value>
+  </data>
+  <data name="ProfileBillingHistoryHint" xml:space="preserve">
+    <value>Invoices and payments</value>
+  </data>
+  <data name="ProfileNotificationsHint" xml:space="preserve">
+    <value>Alerts and updates</value>
+  </data>
+  <data name="ProfilePrivacy" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
+  <data name="ProfilePrivacyHint" xml:space="preserve">
+    <value>Data and security</value>
+  </data>
+  <data name="ProfileHelpSupport" xml:space="preserve">
+    <value>Help &amp; support</value>
+  </data>
+  <data name="ProfileHelpSupportHint" xml:space="preserve">
+    <value>FAQ, contact, tips</value>
+  </data>
+  <data name="ProfileFeatureComingSoon" xml:space="preserve">
+    <value>This feature is not available yet.</value>
+  </data>
+  <data name="EditProfileTitle" xml:space="preserve">
+    <value>Edit profile</value>
+  </data>
+  <data name="EditProfilePhotoHint" xml:space="preserve">
+    <value>Tap camera to change photo (coming soon)</value>
+  </data>
+  <data name="EditProfileFirstName" xml:space="preserve">
+    <value>First name</value>
+  </data>
+  <data name="EditProfileLastName" xml:space="preserve">
+    <value>Last name</value>
+  </data>
+  <data name="EditProfileEmail" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="EditProfilePhone" xml:space="preserve">
+    <value>Phone number</value>
+  </data>
+  <data name="EditProfileDob" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="EditProfileGender" xml:space="preserve">
+    <value>Gender</value>
+  </data>
+  <data name="EditProfileSave" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="EditProfileSaved" xml:space="preserve">
+    <value>Your profile was saved on this device.</value>
+  </data>
+  <data name="ProfileGenderFemale" xml:space="preserve">
+    <value>Female</value>
+  </data>
+  <data name="ProfileGenderMale" xml:space="preserve">
+    <value>Male</value>
+  </data>
+  <data name="ProfileGenderOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="ProfileGenderPreferNot" xml:space="preserve">
+    <value>Prefer not to say</value>
+  </data>
+  <data name="PrivacyTitle" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
+  <data name="PrivacySecuritySection" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="PrivacyChangePasswordSubtitle" xml:space="preserve">
+    <value>Update your account password</value>
+  </data>
+  <data name="PrivacyTwoFactorTitle" xml:space="preserve">
+    <value>Two-factor authentication</value>
+  </data>
+  <data name="PrivacyTwoFactorSubtitle" xml:space="preserve">
+    <value>Extra security for sign-in</value>
+  </data>
+  <data name="PrivacyDataSection" xml:space="preserve">
+    <value>Data &amp; permissions</value>
+  </data>
+  <data name="PrivacyDataSharingTitle" xml:space="preserve">
+    <value>Data sharing</value>
+  </data>
+  <data name="PrivacyDataSharingSubtitle" xml:space="preserve">
+    <value>Share anonymized usage to improve the app</value>
+  </data>
+  <data name="PrivacyDownloadRowTitle" xml:space="preserve">
+    <value>Download health data</value>
+  </data>
+  <data name="PrivacyDownloadRowSubtitle" xml:space="preserve">
+    <value>Export a copy of your records</value>
+  </data>
+  <data name="PrivacyDownloadTitle" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="PrivacyDownloadMessage" xml:space="preserve">
+    <value>Your clinic will provide exports when connected to this feature.</value>
+  </data>
+  <data name="PrivacyDeleteRowTitle" xml:space="preserve">
+    <value>Delete account</value>
+  </data>
+  <data name="PrivacyDeleteRowSubtitle" xml:space="preserve">
+    <value>Permanently remove your app account</value>
+  </data>
+  <data name="PrivacyDeleteTitle" xml:space="preserve">
+    <value>Delete account?</value>
+  </data>
+  <data name="PrivacyDeleteMessage" xml:space="preserve">
+    <value>This requests account deletion. Your organization may retain records as required by law.</value>
+  </data>
+  <data name="PrivacyDeleteConfirm" xml:space="preserve">
+    <value>Request deletion</value>
+  </data>
+  <data name="PrivacyDeleteRequestedTitle" xml:space="preserve">
+    <value>Request received</value>
+  </data>
+  <data name="PrivacyDeleteRequestedBody" xml:space="preserve">
+    <value>We will process your request according to policy. You have been signed out.</value>
+  </data>
+  <data name="HelpSupportTitle" xml:space="preserve">
+    <value>Help &amp; support</value>
+  </data>
+  <data name="HelpContactSection" xml:space="preserve">
+    <value>Contact us</value>
+  </data>
+  <data name="HelpFaq" xml:space="preserve">
+    <value>FAQ</value>
+  </data>
+  <data name="HelpFaqSubtitle" xml:space="preserve">
+    <value>Common questions</value>
+  </data>
+  <data name="HelpSendMessage" xml:space="preserve">
+    <value>Send a message</value>
+  </data>
+  <data name="HelpSendMessageSubtitle" xml:space="preserve">
+    <value>We typically reply within one business day</value>
+  </data>
+  <data name="HelpCallSupport" xml:space="preserve">
+    <value>Call support</value>
+  </data>
+  <data name="HelpCallSubtitle" xml:space="preserve">
+    <value>+234 800 RAPH CARE</value>
+  </data>
+  <data name="HelpEmailSupport" xml:space="preserve">
+    <value>Email support</value>
+  </data>
+  <data name="HelpEmailSubtitle" xml:space="preserve">
+    <value>support@raphcare.com</value>
+  </data>
+  <data name="HelpSupportPhoneUri" xml:space="preserve">
+    <value>tel:+2348007242273</value>
+  </data>
+  <data name="HelpSupportMailUri" xml:space="preserve">
+    <value>mailto:support@raphcare.com</value>
+  </data>
+  <data name="HelpTipsSection" xml:space="preserve">
+    <value>Quick tips</value>
+  </data>
+  <data name="HelpTip1" xml:space="preserve">
+    <value>Keep your emergency contacts up to date in Health.</value>
+  </data>
+  <data name="HelpTip2" xml:space="preserve">
+    <value>Use telehealth for follow-ups when your clinic enables it.</value>
+  </data>
+  <data name="HelpTip3" xml:space="preserve">
+    <value>Device readings sync when Bluetooth is on and the app is open.</value>
+  </data>
+  <data name="HelpTip4" xml:space="preserve">
+    <value>For medical emergencies, call local emergency services.</value>
+  </data>
+  <data name="HelpLauncherFailed" xml:space="preserve">
+    <value>Could not open the link on this device.</value>
   </data>
 </root>

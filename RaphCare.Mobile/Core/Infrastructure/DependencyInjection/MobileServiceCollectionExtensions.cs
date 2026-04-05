@@ -28,6 +28,8 @@ using RaphCare.Mobile.Core.Features.Insurance.ViewModels;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
 using RaphCare.Mobile.Core.Features.Records.ViewModels;
 using RaphCare.Mobile.Core.Features.Records.Views;
+using RaphCare.Mobile.Core.Features.Settings.Services;
+using RaphCare.Mobile.Core.Features.Settings.ViewModels;
 using RaphCare.Mobile.Core.Features.Settings.Views;
 using RaphCare.Mobile.Core.Shared.Configuration;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
@@ -58,6 +60,8 @@ public static class MobileServiceCollectionExtensions
 #endif
 
         services.AddSingleton<IWearableBleCoordinator, WearableBleCoordinator>();
+
+        services.AddSingleton<ILocalPatientProfileStore, LocalPatientProfileStore>();
 
         services.AddTransient<LandingViewModel>();
         services.AddTransient<RegisterOptionsViewModel>();
@@ -118,7 +122,14 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<FamilyMemberDetailPage>();
         services.AddTransient<MentalHealthViewModel>();
         services.AddTransient<MentalHealthPage>();
+        services.AddTransient<ProfileHubViewModel>();
+        services.AddTransient<EditProfileViewModel>();
+        services.AddTransient<PrivacySettingsViewModel>();
+        services.AddTransient<HelpSupportViewModel>();
         services.AddTransient<SettingsPage>();
+        services.AddTransient<EditProfilePage>();
+        services.AddTransient<PrivacyPage>();
+        services.AddTransient<HelpSupportPage>();
         services.AddTransient<UnderConstructionPage>();
         services.AddTransient<BlazorHostPage>();
         services.AddTransient<AppShell>();

@@ -11,6 +11,20 @@
         <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
+    <!-- Profile hub row icon (concept icon-container bg-secondary) -->
+    <Style TargetType="Border" x:Key="ProfileMenuIconBorder">
+        <Setter Property="BackgroundColor" Value="{StaticResource SecondaryColor}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="WidthRequest" Value="40" />
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="StrokeShape">
+            <RoundRectangle CornerRadius="12" />
+        </Setter>
+    </Style>
+
     <Style TargetType="Border" x:Key="CardPremium">
         <Setter Property="BackgroundColor" Value="{StaticResource CardColor}" />
         <Setter Property="Stroke" Value="{StaticResource BorderColor}" />
