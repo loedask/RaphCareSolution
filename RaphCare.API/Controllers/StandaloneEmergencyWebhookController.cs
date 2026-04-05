@@ -3,6 +3,7 @@ using System.Text.Json;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mime;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.StandaloneEmergency.Commands.IngestDeviceEmergencyEvent;
 using RaphCare.Application.Features.StandaloneEmergency.DTOs;
@@ -26,7 +27,9 @@ public sealed class StandaloneEmergencyWebhookController(
     private readonly IStandaloneEmergencyWebhookSignatureValidator _signatureValidator = signatureValidator;
 
     /// <summary>Accepts JSON body; validates <c>X-RaphCare-Emergency-Signature</c> (hex HMAC-SHA256 of raw UTF-8 bytes) when a shared secret is configured.</summary>
+    /// <remarks>OpenAPI request schema: <see cref="IngestDeviceEmergencyEventCommand"/> (see also <c>StandaloneEmergencyWebhookOperationFilter</c>).</remarks>
     [HttpPost("events")]
+    [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(IngestDeviceEmergencyEventResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

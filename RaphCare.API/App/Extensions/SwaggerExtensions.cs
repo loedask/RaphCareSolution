@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using RaphCare.API.App.Swagger;
 
 namespace RaphCare.API.App.Extensions;
 
@@ -40,6 +41,8 @@ public static class SwaggerExtensions
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             if (File.Exists(xmlPath))
                 options.IncludeXmlComments(xmlPath);
+
+            options.OperationFilter<StandaloneEmergencyWebhookOperationFilter>();
         });
         return services;
     }
