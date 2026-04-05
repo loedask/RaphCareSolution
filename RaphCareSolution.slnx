@@ -13,8 +13,10 @@
     <Project Path="RaphCare.Persistence/RaphCare.Persistence.csproj" />
   </Folder>
   <Folder Name="/UI/">
-    <Project Path="RaphCare.Client/RaphCare.Client.csproj" Id="1f3e627f-90cd-42d0-a220-20f4fdf42455" />
     <Project Path="RaphCare.Mobile/RaphCare.Mobile.csproj" Id="8a25d5f6-e9d0-4774-81fe-26866e4bdac1" />
     <Project Path="RaphCare.Web/RaphCare.Web.csproj" />
+  </Folder>
+  <Folder Name="/UI/Core/">
+    <Project Path="RaphCare.Client/RaphCare.Client.csproj" Id="1f3e627f-90cd-42d0-a220-20f4fdf42455" />
   </Folder>
 </Solution>
