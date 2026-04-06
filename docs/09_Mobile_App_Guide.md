@@ -1,5 +1,7 @@
 # RaphCare.Mobile — structure, configuration, and testing
 
+**Run the patient app + API (demo checklist, ports, Entra, flags):** [Mobile_Demo_Launch_Guide.md](./Mobile_Demo_Launch_Guide.md).
+
 ## Where code goes
 
 | Area | Use for |
