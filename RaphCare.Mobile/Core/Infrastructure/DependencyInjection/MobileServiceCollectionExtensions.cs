@@ -20,6 +20,8 @@ using RaphCare.Mobile.Core.Features.MentalHealth.ViewModels;
 using RaphCare.Mobile.Core.Features.MentalHealth.Views;
 using RaphCare.Mobile.Core.Features.Notifications.ViewModels;
 using RaphCare.Mobile.Core.Features.Notifications.Views;
+using RaphCare.Mobile.Core.Features.AiAssistant.ViewModels;
+using RaphCare.Mobile.Core.Features.AiAssistant.Views;
 #if ANDROID
 using RaphCare.Mobile.Platforms.Android.Telehealth;
 #endif
@@ -126,6 +128,8 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<MentalHealthPage>();
         services.AddTransient<NotificationsViewModel>();
         services.AddTransient<NotificationsPage>();
+        services.AddTransient<AiAssistantViewModel>();
+        services.AddTransient<AiAssistantPage>();
         services.AddTransient<ProfileHubViewModel>();
         services.AddTransient<EditProfileViewModel>();
         services.AddTransient<PrivacySettingsViewModel>();

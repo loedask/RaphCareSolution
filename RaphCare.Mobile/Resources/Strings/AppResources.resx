@@ -1097,6 +1097,27 @@ Accessible. Intelligent. Human.</value>
   <data name="ProfileGenderPreferNot" xml:space="preserve">
     <value>Prefer not to say</value>
   </data>
+  <data name="AiAssistantTitle" xml:space="preserve">
+    <value>AI assistant</value>
+  </data>
+  <data name="AiAssistantIntro" xml:space="preserve">
+    <value>Ask general wellness questions. Do not share passwords or full medical records. This is not for emergencies.</value>
+  </data>
+  <data name="AiAssistantPlaceholder" xml:space="preserve">
+    <value>Type your message…</value>
+  </data>
+  <data name="AiAssistantSend" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="AiAssistantReplyHeading" xml:space="preserve">
+    <value>Reply</value>
+  </data>
+  <data name="AiAssistantEmptyReply" xml:space="preserve">
+    <value>Your reply will appear here after you send a message.</value>
+  </data>
+  <data name="AiAssistantSendFailed" xml:space="preserve">
+    <value>We couldn't reach the assistant. Check your connection and try again.</value>
+  </data>
   <data name="NotificationsTitle" xml:space="preserve">
     <value>Notifications</value>
   </data>

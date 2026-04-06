@@ -133,7 +133,7 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/mental-health` | MentalHealth | Mental health |
 | `/profile`, `/edit-profile`, … | Profile, EditProfile, … | `SettingsPage` (hub), `EditProfilePage` |
 | `/notifications`, `/privacy`, `/help-support` | … | `NotificationsPage` (patient API), `PrivacyPage`, `HelpSupportPage` |
-| `/ai-assistant` | AIAssistant | AI |
+| `/ai-assistant` | AIAssistant | `AiAssistantPage` (patient API chat, placeholder LLM) |
 | `*` | NotFound | Optional error page |
 
 Shell route names in MAUI may differ; this table is for **screen inventory and parity**, not a 1:1 path string match.
@@ -162,6 +162,7 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Privacy | `Privacy.tsx` | `PrivacyPage` (local toggles, delete flow) | ☑ |
 | Help & support | `HelpSupport.tsx` | `HelpSupportPage` | ☑ |
 | Notifications | (concept notifications) | `NotificationsPage` (list, mark read, push registration API) | ☑ |
+| AI assistant | `AIAssistant` | `AiAssistantPage` (`POST api/patient/ai-assistant/chat`, no auto PHI) | ☑ |
 
 *(Extend the table as you implement each flow.)*
 

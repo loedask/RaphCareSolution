@@ -12,6 +12,7 @@ using RaphCare.Mobile.Core.Features.Billing.Views;
 using RaphCare.Mobile.Core.Features.Family.Views;
 using RaphCare.Mobile.Core.Features.MentalHealth.Views;
 using RaphCare.Mobile.Core.Features.Notifications.Views;
+using RaphCare.Mobile.Core.Features.AiAssistant.Views;
 using RaphCare.Mobile.Core.Shared.Views;
 
 namespace RaphCare.Mobile.Core.Shared.Navigation;
@@ -85,10 +86,7 @@ public static class AppNavigator
     /// Routes that resolve to <see cref="UnderConstructionPage"/> with a display name until the vertical is implemented.
     /// Remove a route from this set when replacing registration with a real page type.
     /// </summary>
-    private static readonly HashSet<string> StubRoutes =
-    [
-        AiAssistant,
-    ];
+    private static readonly HashSet<string> StubRoutes = [];
 
     /// <summary>
     /// Call once at app startup (e.g. from AppShell or MauiProgram) to register every route.
@@ -136,7 +134,7 @@ public static class AppNavigator
 
         // Concept areas (stubs → same page type; query <c>featureName</c> set by <see cref="GoToFeatureAsync"/> when flag is on)
         Routing.RegisterRoute(MentalHealth, typeof(MentalHealthPage));
-        Routing.RegisterRoute(AiAssistant, typeof(UnderConstructionPage));
+        Routing.RegisterRoute(AiAssistant, typeof(AiAssistantPage));
         Routing.RegisterRoute(Notifications, typeof(NotificationsPage));
 
         Routing.RegisterRoute(UnderConstruction, typeof(UnderConstructionPage));

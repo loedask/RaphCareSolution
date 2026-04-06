@@ -57,6 +57,8 @@ public static class DependencyInjection
         services.Configure<PatientMentalHealthContentOptions>(configuration.GetSection(PatientMentalHealthContentOptions.SectionName));
         services.AddSingleton<IPatientMentalHealthContentProvider, OptionsPatientMentalHealthContentProvider>();
 
+        services.Configure<PatientAssistantAiOptions>(configuration.GetSection(PatientAssistantAiOptions.SectionName));
+
         services.AddScoped<IPatientPushNotificationSender, NoOpPatientPushNotificationSender>();
 
         return services;
