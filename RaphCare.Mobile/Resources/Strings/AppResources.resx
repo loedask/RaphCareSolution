@@ -887,6 +887,12 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesSyncReadings" xml:space="preserve">
     <value>Sync readings</value>
   </data>
+  <data name="DevicesOutboxFlushedFormat" xml:space="preserve">
+    <value>({0} queued batch(es) uploaded.)</value>
+  </data>
+  <data name="DevicesSyncQueuedOfflineHint" xml:space="preserve">
+    <value>Readings saved to retry when you are back online.</value>
+  </data>
   <data name="DevicesRawHexFormat" xml:space="preserve">
     <value>Raw: {0}</value>
   </data>

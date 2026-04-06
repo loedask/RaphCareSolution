@@ -10,6 +10,13 @@ public partial class DevicesPage : ContentPage
         BindingContext = viewModel;
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is DevicesViewModel vm)
+            await vm.OnAppearingAsync().ConfigureAwait(true);
+    }
+
     protected override void OnDisappearing()
     {
         base.OnDisappearing();

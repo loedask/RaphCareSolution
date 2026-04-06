@@ -65,6 +65,8 @@ public static class MobileServiceCollectionExtensions
 
         services.AddSingleton<IWearableBleCoordinator, WearableBleCoordinator>();
 
+        services.AddSingleton<IVitalsSyncOutbox, FileVitalsSyncOutbox>();
+
         services.AddSingleton<ILocalPatientProfileStore, LocalPatientProfileStore>();
 
         services.AddTransient<LandingViewModel>();

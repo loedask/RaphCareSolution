@@ -34,21 +34,23 @@ Copy the table for each major screen (e.g. list vs detail vs “add”).
 
 Flags are defined in **`RaphCare.Mobile.Kernel`** (`FeatureFlags`, `FeatureFlagOptions`) and configured under **`FeatureFlags`** in **`RaphCare.Mobile/appsettings.json`** (overridden by **`appsettings.Development.json`** or User Secrets in DEBUG—see **`09_Mobile_App_Guide.md`**).
 
+**`appsettings.Development.json`** is set so **every flag is `true`** for DEBUG builds (local parity). **`appsettings.json`** (tracked defaults) keeps most verticals off until you choose prod/pilot rollout.
+
 Fill in your rollout targets:
 
-| Flag | Prod (on/off) | Pilot (on/off) | Notes |
-|------|---------------|----------------|-------|
-| `SettingsEnabled` | | | |
-| `RecordsEnabled` | | | |
-| `AppointmentsEnabled` | | | |
-| `InsuranceEnabled` | | | |
-| `CareTelehealthEnabled` | | | |
-| `DevicesEnabled` | | | |
-| `BillingEnabled` | | | |
-| `MentalHealthEnabled` | | | |
-| `FamilyMembersEnabled` | | | |
-| `AiAssistantEnabled` | | | |
-| `NotificationsEnabled` | | | |
+| Flag | Tracked default (`appsettings.json`) | DEBUG dev (`appsettings.Development.json`) | Prod (on/off) | Pilot (on/off) | Notes |
+|------|----------------------------------------|---------------------------------------------|---------------|----------------|-------|
+| `SettingsEnabled` | `true` | `true` | | | |
+| `RecordsEnabled` | `false` | `true` | | | |
+| `AppointmentsEnabled` | `false` | `true` | | | |
+| `InsuranceEnabled` | `false` | `true` | | | |
+| `CareTelehealthEnabled` | `false` | `true` | | | |
+| `DevicesEnabled` | `false` | `true` | | | |
+| `BillingEnabled` | `false` | `true` | | | |
+| `MentalHealthEnabled` | `false` | `true` | | | |
+| `FamilyMembersEnabled` | `false` | `true` | | | |
+| `AiAssistantEnabled` | `false` | `true` | | | |
+| `NotificationsEnabled` | `false` | `true` | | | |
 
 ---
 
@@ -62,10 +64,10 @@ Use the **route ↔ MAUI** table in **`Mobile_Concept_Port.md`** as the spine. E
 
 Use this as a reminder list; close each item or mark **N/A** with a short rationale in your release notes.
 
-- **Telehealth RTC:** Android Agora vs **iOS / other platforms** (`ITelehealthRtcSession` registration in **`MobileServiceCollectionExtensions`**).
-- **AI assistant:** backend **`IAIService`** / real provider vs placeholder replies.
-- **Push:** **`IPatientPushNotificationSender`** implementation vs no-op.
-- **Devices:** vitals pipeline to API; **offline queue / retry / idempotency** if required for field use.
+- **Telehealth RTC:** Android Agora vs **iOS / other platforms** (`ITelehealthRtcSession` registration in **`MobileServiceCollectionExtensions`**). iOS still needs **AgoraRtcKit** (xcframework) wiring—see **`docs/10_Agora_Twilio_Setup.md`**.
+- **AI assistant:** When **`PatientAssistant`** (`AzureOpenAiEndpoint`, `AzureOpenAiApiKey`, `AzureOpenAiDeployment`) is set in API config, **`AIService`** calls Azure OpenAI chat; otherwise **`PlaceholderReply`** is used.
+- **Push:** When **`FirebasePush:ServiceAccountJsonPath`** points to a valid Firebase service-account JSON file, **`FirebasePatientPushNotificationSender`** sends FCM to tokens from **`PatientPushDevices`**; otherwise **`NoOpPatientPushNotificationSender`** runs.
+- **Devices:** Vitals sync to API; **offline queue** — **`IVitalsSyncOutbox`** / **`FileVitalsSyncOutbox`** (JSON under app data, max 50 batches) retries on next Devices visit or after a successful sync.
 - **Dark mode:** second resource dictionary vs explicit **not in v1** decision (**`Mobile_Concept_Port.md`** `.dark` tokens).
 - **Deep links:** optional global **NotFound** / bad-route UX (`AppNavigator`).
 

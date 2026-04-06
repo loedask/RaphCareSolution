@@ -17,6 +17,7 @@ public sealed class DevicesViewModel : BaseViewModel
 {
     private readonly IWearableBleCoordinator _ble;
     private readonly IPatientDevicesService _patientDevices;
+    private readonly IVitalsSyncOutbox _vitalsOutbox;
     private bool _showAllDevices;
     private bool _isScanningUi;
     private string? _errorMessage;
@@ -29,10 +30,11 @@ public sealed class DevicesViewModel : BaseViewModel
     private Guid? _registeredDeviceId;
     private string? _syncResultText;
 
-    public DevicesViewModel(IWearableBleCoordinator ble, IPatientDevicesService patientDevices)
+    public DevicesViewModel(IWearableBleCoordinator ble, IPatientDevicesService patientDevices, IVitalsSyncOutbox vitalsOutbox)
     {
         _ble = ble ?? throw new ArgumentNullException(nameof(ble));
         _patientDevices = patientDevices ?? throw new ArgumentNullException(nameof(patientDevices));
+        _vitalsOutbox = vitalsOutbox ?? throw new ArgumentNullException(nameof(vitalsOutbox));
         Title = AppResources.T("DevicesPageTitle");
 
         ScanCommand = new Command(async () => await ScanAsync().ConfigureAwait(false), () => !IsBusy && _ble.IsBleSupported);
@@ -182,6 +184,20 @@ public sealed class DevicesViewModel : BaseViewModel
         _ble.DiscoveredDevicesChanged -= OnDiscoveredChanged;
         _ble.VitalsUpdated -= OnVitalsUpdated;
         _ble.ErrorOccurred -= OnBleError;
+    }
+
+    public async Task OnAppearingAsync()
+    {
+        try
+        {
+            var flushed = await _vitalsOutbox.TryFlushAsync(_patientDevices, CancellationToken.None).ConfigureAwait(false);
+            if (flushed > 0)
+                SyncResultText = string.Format(AppResources.T("DevicesOutboxFlushedFormat"), flushed);
+        }
+        catch
+        {
+            // Best-effort; user can retry sync manually.
+        }
     }
 
     public async Task OnDisappearingAsync()
@@ -434,6 +450,15 @@ public sealed class DevicesViewModel : BaseViewModel
             if (!resp.IsSuccess)
             {
                 ErrorMessage = resp.ErrorMessage ?? "Sync failed.";
+                var code = resp.StatusCode;
+                if (code is null or >= 500 or 408 or 429)
+                {
+                    await _vitalsOutbox
+                        .EnqueueAsync(deviceId, hrList, spo2List, CancellationToken.None)
+                        .ConfigureAwait(false);
+                    StatusHint = AppResources.T("DevicesSyncQueuedOfflineHint");
+                }
+
                 return;
             }
 
@@ -441,6 +466,17 @@ public sealed class DevicesViewModel : BaseViewModel
             SyncResultText = dto is null
                 ? "Synced."
                 : $"Synced HR={dto.HeartRateCount}, SpO₂={dto.SpO2Count}";
+
+            try
+            {
+                var flushed = await _vitalsOutbox.TryFlushAsync(_patientDevices, CancellationToken.None).ConfigureAwait(false);
+                if (flushed > 0)
+                    SyncResultText += " " + string.Format(AppResources.T("DevicesOutboxFlushedFormat"), flushed);
+            }
+            catch
+            {
+                // ignore secondary flush errors
+            }
         }
         finally
         {

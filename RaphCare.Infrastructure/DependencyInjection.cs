@@ -59,7 +59,14 @@ public static class DependencyInjection
 
         services.Configure<PatientAssistantAiOptions>(configuration.GetSection(PatientAssistantAiOptions.SectionName));
 
-        services.AddScoped<IPatientPushNotificationSender, NoOpPatientPushNotificationSender>();
+        services.AddHttpClient();
+
+        services.Configure<FirebasePushOptions>(configuration.GetSection(FirebasePushOptions.SectionName));
+        var firebasePush = configuration.GetSection(FirebasePushOptions.SectionName).Get<FirebasePushOptions>();
+        if (firebasePush?.IsEnabled == true)
+            services.AddScoped<IPatientPushNotificationSender, FirebasePatientPushNotificationSender>();
+        else
+            services.AddScoped<IPatientPushNotificationSender, NoOpPatientPushNotificationSender>();
 
         return services;
     }
