@@ -764,6 +764,83 @@ namespace RaphCare.Persistence.Migrations
                     b.ToTable("MoodLogs", (string)null);
                 });
 
+            modelBuilder.Entity("RaphCare.Domain.Patients.PatientInAppNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("PatientId", "CreatedAt");
+
+                    b.ToTable("PatientInAppNotifications", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Patients.PatientPushDevice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeviceToken")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("PatientId", "DeviceToken")
+                        .IsUnique();
+
+                    b.ToTable("PatientPushDevices", (string)null);
+                });
+
             modelBuilder.Entity("RaphCare.Domain.Organization.AvailabilityBlock", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2472,6 +2549,24 @@ namespace RaphCare.Persistence.Migrations
                 });
 
             modelBuilder.Entity("RaphCare.Domain.MentalHealth.MoodLog", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Patients.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Patients.PatientInAppNotification", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Patients.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Patients.PatientPushDevice", b =>
                 {
                     b.HasOne("RaphCare.Domain.Patients.Patient", null)
                         .WithMany()

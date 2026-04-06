@@ -11,6 +11,7 @@ using RaphCare.Mobile.Core.Features.Devices.Views;
 using RaphCare.Mobile.Core.Features.Billing.Views;
 using RaphCare.Mobile.Core.Features.Family.Views;
 using RaphCare.Mobile.Core.Features.MentalHealth.Views;
+using RaphCare.Mobile.Core.Features.Notifications.Views;
 using RaphCare.Mobile.Core.Shared.Views;
 
 namespace RaphCare.Mobile.Core.Shared.Navigation;
@@ -87,7 +88,6 @@ public static class AppNavigator
     private static readonly HashSet<string> StubRoutes =
     [
         AiAssistant,
-        Notifications,
     ];
 
     /// <summary>
@@ -137,7 +137,7 @@ public static class AppNavigator
         // Concept areas (stubs → same page type; query <c>featureName</c> set by <see cref="GoToFeatureAsync"/> when flag is on)
         Routing.RegisterRoute(MentalHealth, typeof(MentalHealthPage));
         Routing.RegisterRoute(AiAssistant, typeof(UnderConstructionPage));
-        Routing.RegisterRoute(Notifications, typeof(UnderConstructionPage));
+        Routing.RegisterRoute(Notifications, typeof(NotificationsPage));
 
         Routing.RegisterRoute(UnderConstruction, typeof(UnderConstructionPage));
         Routing.RegisterRoute(BlazorHost, typeof(BlazorHostPage));

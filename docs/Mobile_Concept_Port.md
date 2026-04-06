@@ -132,7 +132,7 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/payment-methods`, `/billing-history`, `/upgrade-plan` | Payment*, Billing*, UpgradePlan | Billing |
 | `/mental-health` | MentalHealth | Mental health |
 | `/profile`, `/edit-profile`, … | Profile, EditProfile, … | `SettingsPage` (hub), `EditProfilePage` |
-| `/notifications`, `/privacy`, `/help-support` | … | `NotificationsPage` (stub), `PrivacyPage`, `HelpSupportPage` |
+| `/notifications`, `/privacy`, `/help-support` | … | `NotificationsPage` (patient API), `PrivacyPage`, `HelpSupportPage` |
 | `/ai-assistant` | AIAssistant | AI |
 | `*` | NotFound | Optional error page |
 
@@ -161,6 +161,7 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Edit profile | `EditProfile.tsx` | `EditProfilePage` (local store + JWT hints) | ☑ |
 | Privacy | `Privacy.tsx` | `PrivacyPage` (local toggles, delete flow) | ☑ |
 | Help & support | `HelpSupport.tsx` | `HelpSupportPage` | ☑ |
+| Notifications | (concept notifications) | `NotificationsPage` (list, mark read, push registration API) | ☑ |
 
 *(Extend the table as you implement each flow.)*
 

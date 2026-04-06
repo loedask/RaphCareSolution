@@ -8,6 +8,7 @@ using RaphCare.Infrastructure.Persistence.Interceptors;
 using RaphCare.Infrastructure.Services;
 using RaphCare.Infrastructure.StandaloneEmergency;
 using RaphCare.Infrastructure.Telehealth;
+using RaphCare.Infrastructure.Notifications;
 
 namespace RaphCare.Infrastructure;
 
@@ -55,6 +56,8 @@ public static class DependencyInjection
 
         services.Configure<PatientMentalHealthContentOptions>(configuration.GetSection(PatientMentalHealthContentOptions.SectionName));
         services.AddSingleton<IPatientMentalHealthContentProvider, OptionsPatientMentalHealthContentProvider>();
+
+        services.AddScoped<IPatientPushNotificationSender, NoOpPatientPushNotificationSender>();
 
         return services;
     }

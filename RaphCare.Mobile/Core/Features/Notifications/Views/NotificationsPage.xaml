@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Notifications.ViewModels"
+             xmlns:cn="clr-namespace:RaphCare.Client.Models.Notifications;assembly=RaphCare.Client"
+             x:Class="RaphCare.Mobile.Core.Features.Notifications.Views.NotificationsPage"
+             x:DataType="vm:NotificationsViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="24" RowSpacing="12">
+        <HorizontalStackLayout Grid.Row="0" Spacing="12">
+            <Button Text="{Binding RefreshButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding RefreshCommand}"
+                    HorizontalOptions="Start" />
+            <Button Text="{Binding MarkAllReadButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding MarkAllReadCommand}"
+                    HorizontalOptions="End" />
+        </HorizontalStackLayout>
+
+        <Label Grid.Row="1"
+               Text="{Binding PushHintText}"
+               Style="{StaticResource Caption}"
+               TextColor="{StaticResource MutedForegroundColor}" />
+
+        <Grid Grid.Row="2">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" Color="{StaticResource PrimaryColor}" />
+
+            <CollectionView ItemsSource="{Binding Items}"
+                            SelectionMode="None"
+                            IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="cn:PatientNotificationViewModel">
+                        <Grid Margin="0,0,0,12">
+                            <Border Style="{StaticResource CardBorder}" Padding="16" Margin="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="6" InputTransparent="True">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding Title}"
+                                               Style="{StaticResource BodyMedium}"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center" />
+                                        <Border Grid.Column="1"
+                                                BackgroundColor="{StaticResource CalmColor}"
+                                                Padding="6,2"
+                                                VerticalOptions="Center"
+                                                IsVisible="{Binding IsRead, Converter={StaticResource InvertedBoolConverter}}">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="8" />
+                                            </Border.StrokeShape>
+                                            <Label Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.NewBadgeText}"
+                                                   Style="{StaticResource Caption}"
+                                                   TextColor="{StaticResource PrimaryColor}" />
+                                        </Border>
+                                    </Grid>
+                                    <Label Text="{Binding Body}"
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                    <Label Text="{Binding CreatedAt, StringFormat='{0:g}'}"
+                                           Style="{StaticResource Caption}"
+                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Button BackgroundColor="Transparent"
+                                    Opacity="0.02"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenItemCommand}"
+                                    CommandParameter="{Binding Id}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label Text="{Binding EmptyStateText}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   HorizontalTextAlignment="Center"
+                   VerticalOptions="Center"
+                   IsVisible="{Binding ShowEmpty}"
+                   InputTransparent="True" />
+
+            <Label Text="{Binding ErrorMessage}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource ErrorColor}"
+                   VerticalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   InputTransparent="True" />
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1097,6 +1097,27 @@ Accessible. Intelligent. Human.</value>
   <data name="ProfileGenderPreferNot" xml:space="preserve">
     <value>Prefer not to say</value>
   </data>
+  <data name="NotificationsTitle" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="NotificationsRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="NotificationsMarkAllRead" xml:space="preserve">
+    <value>Mark all read</value>
+  </data>
+  <data name="NotificationsEmpty" xml:space="preserve">
+    <value>No notifications yet. When your care team or the app sends alerts, they will appear here.</value>
+  </data>
+  <data name="NotificationsLoadFailed" xml:space="preserve">
+    <value>We couldn't load notifications. Pull to refresh or try again later.</value>
+  </data>
+  <data name="NotificationsNewBadge" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="NotificationsPushHint" xml:space="preserve">
+    <value>Push alerts: register a device token from your mobile build when FCM or APNs is configured.</value>
+  </data>
   <data name="PrivacyTitle" xml:space="preserve">
     <value>Privacy</value>
   </data>

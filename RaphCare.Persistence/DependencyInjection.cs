@@ -17,6 +17,7 @@ using RaphCare.Domain.Reporting;
 using RaphCare.Infrastructure.Persistence.Interceptors;
 using RaphCare.Persistence.Repositories;
 using RaphCare.Persistence.FhirMappers;
+using RaphCare.Persistence.Services;
 
 namespace RaphCare.Persistence;
 
@@ -174,6 +175,9 @@ public static class DependencyInjection
         services.AddScoped<IRepository<Message>>(sp => new EfRepository<Message, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<PatientFamilyMember>>(sp => new EfRepository<PatientFamilyMember, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<MoodLog>>(sp => new EfRepository<MoodLog, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<PatientInAppNotification>>(sp => new EfRepository<PatientInAppNotification, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<PatientPushDevice>>(sp => new EfRepository<PatientPushDevice, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IPatientInAppNotificationBulkWriter, PatientInAppNotificationBulkWriter>();
 
         services.AddScoped<IRepository<Invoice>>(sp => new EfRepository<Invoice, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
         services.AddScoped<IRepository<PaymentMethod>>(sp => new EfRepository<PaymentMethod, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
