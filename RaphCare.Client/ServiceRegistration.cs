@@ -69,8 +69,7 @@ public static class ServiceRegistration
             sp.GetRequiredService<IClient>()));
 
         services.AddTransient<IPatientAiAssistantService>(sp => new PatientAiAssistantService(
-            sp.GetRequiredService<IClient>(),
-            sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
+            sp.GetRequiredService<IClient>()));
 
         services.AddTransient<IPatientTelehealthService>(sp => new PatientTelehealthService(
             sp.GetRequiredService<IClient>(),

@@ -5,13 +5,34 @@ using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-/// <summary>HTTP access to <c>api/patient/ai-assistant</c> until operations exist on <see cref="IClient"/> (NSwag regen).</summary>
-public sealed class PatientAiAssistantService(IClient client, HttpClient httpClient) : BaseHttpService(client, httpClient), IPatientAiAssistantService
+/// <summary>Wraps generated <see cref="IClient"/> patient AI assistant chat.</summary>
+public sealed class PatientAiAssistantService(IClient client) : IPatientAiAssistantService
 {
-    private const string ChatUri = "api/patient/ai-assistant/chat";
+    private readonly IClient _client = client;
 
-    public Task<Response<PatientAssistantReplyViewModel>> SendMessageAsync(
+    public async Task<Response<PatientAssistantReplyViewModel>> SendMessageAsync(
         SendMyPatientAssistantMessageRequest request,
-        CancellationToken cancellationToken = default) =>
-        PostAsync<PatientAssistantReplyViewModel>(ChatUri, request, cancellationToken);
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var body = new SendMyPatientAssistantMessageCommand
+            {
+                Message = request.Message,
+            };
+            var dto = await _client.SendMyPatientAssistantMessageAsync(body, cancellationToken).ConfigureAwait(false);
+            return Response<PatientAssistantReplyViewModel>.Success(Map(dto));
+        }
+        catch (global::RaphCare.Client.Services.Base.ApiException ex)
+        {
+            return Response<PatientAssistantReplyViewModel>.Failure(ex.Message, ex.StatusCode);
+        }
+    }
+
+    private static PatientAssistantReplyViewModel Map(PatientAssistantReplyDto d) =>
+        new()
+        {
+            Reply = d.Reply ?? string.Empty,
+            MedicalDisclaimer = d.MedicalDisclaimer ?? string.Empty,
+        };
 }
