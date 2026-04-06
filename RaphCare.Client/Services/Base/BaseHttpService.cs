@@ -83,22 +83,6 @@ public abstract class BaseHttpService(IClient client, HttpClient httpClient)
         }
     }
 
-    /// <summary>PUT with JSON body; treats 204 No Content as success.</summary>
-    protected async Task<Response<bool>> PutAsJsonNoContentAsync(string requestUri, object? body, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            using var response = await HttpClient.PutAsJsonAsync(requestUri, body, JsonOptions, cancellationToken).ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode)
-                return await ToErrorResponseAsync<bool>(response, cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Success(true);
-        }
-        catch (ApiException ex)
-        {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
-        }
-    }
-
     private static async Task<Response<T>> ToErrorResponseAsync<T>(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
