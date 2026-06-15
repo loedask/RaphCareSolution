@@ -7,14 +7,9 @@ namespace RaphCare.Persistence;
 /// <summary>
 /// EF Core implementation of <see cref="IApplicationUserStore"/> using <see cref="IdentityDbContext"/>.
 /// </summary>
-public class ApplicationUserStore : IApplicationUserStore
+public class ApplicationUserStore(IdentityDbContext context) : IApplicationUserStore
 {
-    private readonly IdentityDbContext _context;
-
-    public ApplicationUserStore(IdentityDbContext context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
+    private readonly IdentityDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
 
     /// <inheritdoc />
     public async Task<ApplicationUser?> FindByEntraObjectIdAsync(string entraObjectId, CancellationToken cancellationToken = default)

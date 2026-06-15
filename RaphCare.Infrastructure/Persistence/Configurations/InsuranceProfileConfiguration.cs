@@ -14,5 +14,9 @@ public class InsuranceProfileConfiguration : IEntityTypeConfiguration<InsuranceP
         builder.Property(e => e.MembershipNumber).IsRequired().HasMaxLength(100);
         builder.HasIndex(e => e.PatientId);
         builder.HasIndex(e => e.InsurancePlanId);
+        builder.HasOne(e => e.Patient)
+            .WithMany(p => p.InsuranceProfiles)
+            .HasForeignKey(e => e.PatientId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

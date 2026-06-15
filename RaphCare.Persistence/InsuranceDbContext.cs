@@ -8,10 +8,8 @@ namespace RaphCare.Persistence;
 /// <summary>
 /// Bounded context: Insurance plans and patient insurance profiles.
 /// </summary>
-public class InsuranceDbContext : DbContext
+public class InsuranceDbContext(DbContextOptions<InsuranceDbContext> options) : DbContext(options)
 {
-    public InsuranceDbContext(DbContextOptions<InsuranceDbContext> options) : base(options) { }
-
     public DbSet<InsurancePlan> InsurancePlans => Set<InsurancePlan>();
     public DbSet<InsuranceProfile> InsuranceProfiles => Set<InsuranceProfile>();
 
@@ -19,6 +17,15 @@ public class InsuranceDbContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new InsurancePlanConfiguration());
         modelBuilder.ApplyConfiguration(new InsuranceProfileConfiguration());
+
+        // ClinicalDbContext owns Patients and the patient aggregate when contexts share one database.
+        modelBuilder.Entity<Patient>(b =>
+        {
+            b.ToTable("Patients", t => t.ExcludeFromMigrations());
+            b.HasKey(e => e.Id);
+        });
+
         modelBuilder.ApplyPersistenceConventions();
+        modelBuilder.ExcludeNonOwnedTablesFromMigrations(typeof(InsurancePlan), typeof(InsuranceProfile));
     }
 }

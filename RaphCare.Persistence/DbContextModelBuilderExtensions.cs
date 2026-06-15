@@ -22,6 +22,21 @@ public static class DbContextModelBuilderExtensions
         ApplyDefaultStringLength(modelBuilder);
     }
 
+    /// <summary>
+    /// Marks every mapped table except <paramref name="ownedEntityTypes"/> as excluded from migrations.
+    /// Use when multiple DbContexts share one database: the owning context migrates shared tables.
+    /// </summary>
+    public static void ExcludeNonOwnedTablesFromMigrations(this ModelBuilder modelBuilder, params Type[] ownedEntityTypes)
+    {
+        var owned = new HashSet<Type>(ownedEntityTypes);
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (owned.Contains(entityType.ClrType))
+                continue;
+            entityType.SetIsTableExcludedFromMigrations(true);
+        }
+    }
+
     private static void ApplyGlobalRestrictDeleteBehavior(ModelBuilder modelBuilder)
     {
         foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
@@ -163,30 +178,18 @@ public static class DbContextModelBuilderExtensions
         }
     }
 
-    private sealed class ReplaceParameterVisitor : ExpressionVisitor
+    private sealed class ReplaceParameterVisitor(ParameterExpression oldParam, ParameterExpression newParam) : ExpressionVisitor
     {
-        private readonly ParameterExpression _old;
-        private readonly ParameterExpression _new;
-
-        public ReplaceParameterVisitor(ParameterExpression oldParam, ParameterExpression newParam)
-        {
-            _old = oldParam;
-            _new = newParam;
-        }
+        private readonly ParameterExpression _old = oldParam;
+        private readonly ParameterExpression _new = newParam;
 
         protected override Expression VisitParameter(ParameterExpression node) => node == _old ? _new : node;
     }
 
-    private sealed class ReplaceParameterWithExpressionVisitor : ExpressionVisitor
+    private sealed class ReplaceParameterWithExpressionVisitor(ParameterExpression param, Expression replacement) : ExpressionVisitor
     {
-        private readonly ParameterExpression _param;
-        private readonly Expression _replacement;
-
-        public ReplaceParameterWithExpressionVisitor(ParameterExpression param, Expression replacement)
-        {
-            _param = param;
-            _replacement = replacement;
-        }
+        private readonly ParameterExpression _param = param;
+        private readonly Expression _replacement = replacement;
 
         protected override Expression VisitParameter(ParameterExpression node) => node == _param ? _replacement : node;
     }
