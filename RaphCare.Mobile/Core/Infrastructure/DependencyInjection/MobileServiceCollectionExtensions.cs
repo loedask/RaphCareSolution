@@ -144,12 +144,29 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<BlazorHostPage>();
         services.AddTransient<AppShell>();
 
-        var apiBaseAddress = configuration["Api:BaseAddress"] ?? "https://localhost:7001/";
+        var apiBaseAddress = ResolveApiBaseAddress(configuration["Api:BaseAddress"]);
         services.AddRaphCareClient(client =>
         {
             client.BaseAddress = new Uri(apiBaseAddress);
         }, useBearerToken: true);
 
         return services;
+    }
+
+    private static string ResolveApiBaseAddress(string? configured)
+    {
+        var address = string.IsNullOrWhiteSpace(configured) ? "http://localhost:5281/" : configured.Trim();
+
+#if DEBUG && ANDROID
+        // Android emulator: localhost is the device itself; 10.0.2.2 reaches the dev machine.
+        if (address.Contains("localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            address = address
+                .Replace("https://localhost", "https://10.0.2.2", StringComparison.OrdinalIgnoreCase)
+                .Replace("http://localhost", "http://10.0.2.2", StringComparison.OrdinalIgnoreCase);
+        }
+#endif
+
+        return address.EndsWith('/') ? address : address + "/";
     }
 }
