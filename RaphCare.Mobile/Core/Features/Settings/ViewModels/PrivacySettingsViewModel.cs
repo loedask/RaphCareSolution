@@ -114,7 +114,7 @@ public sealed class PrivacySettingsViewModel : BaseViewModel
                 AppResources.T("PrivacyDeleteRequestedTitle"),
                 AppResources.T("PrivacyDeleteRequestedBody"),
                 AppResources.T("CommonOk")));
-        await _auth.SignOutAsync(CancellationToken.None).ConfigureAwait(false);
+        await _auth.SignOutAsync(CancellationToken.None);
         await SafeShellNavigator.GoToAsync("//" + AppNavigator.Landing);
     }
 }

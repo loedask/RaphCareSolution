@@ -77,8 +77,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
             _localProfile.Phone = data.PhoneNumber ?? string.Empty;
             _localProfile.DateOfBirth = data.DateOfBirth;
             _localProfile.Gender = data.Gender;
-            SetDisplayFromNames(data.FirstName, data.LastName, data.Email);
-            BuildSections();
+            await ApplyProfileDisplayAsync(data.FirstName, data.LastName, data.Email).ConfigureAwait(false);
             return;
         }
 
@@ -87,9 +86,20 @@ public sealed class ProfileHubViewModel : BaseViewModel
 
         var first = _localProfile.FirstName.Trim();
         var last = _localProfile.LastName.Trim();
-        SetDisplayFromNames(first, last, _localProfile.Email.Trim(), claimName, claimEmail);
-        BuildSections();
+        await ApplyProfileDisplayAsync(first, last, _localProfile.Email.Trim(), claimName, claimEmail).ConfigureAwait(false);
     }
+
+    private Task ApplyProfileDisplayAsync(
+        string firstName,
+        string lastName,
+        string? profileEmail,
+        string? claimNameFallback = null,
+        string? claimEmailFallback = null) =>
+        MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            SetDisplayFromNames(firstName, lastName, profileEmail, claimNameFallback, claimEmailFallback);
+            BuildSections();
+        });
 
     private void SetDisplayFromNames(
         string firstName,
@@ -264,7 +274,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
         if (!confirm)
             return;
 
-        await _auth.SignOutAsync(CancellationToken.None).ConfigureAwait(false);
+        await _auth.SignOutAsync(CancellationToken.None);
         await SafeShellNavigator.GoToAsync("//" + AppNavigator.Landing);
     }
 }
