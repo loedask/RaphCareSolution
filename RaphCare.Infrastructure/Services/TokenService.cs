@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +24,7 @@ public class TokenService(IOptions<JwtOptions> options) : ITokenService
             new(ClaimTypes.Role, "Patient")
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
+        var key = CreateSigningKey(_options.Secret);
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
@@ -34,5 +35,16 @@ public class TokenService(IOptions<JwtOptions> options) : ITokenService
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    /// <summary>HS256 requires at least 256 bits; hash shorter configured secrets to a 256-bit key.</summary>
+    internal static SymmetricSecurityKey CreateSigningKey(string secret)
+    {
+        if (string.IsNullOrWhiteSpace(secret))
+            throw new InvalidOperationException("Jwt:Secret is not configured.");
+
+        var secretBytes = Encoding.UTF8.GetBytes(secret);
+        var keyBytes = secretBytes.Length >= 32 ? secretBytes : SHA256.HashData(secretBytes);
+        return new SymmetricSecurityKey(keyBytes);
     }
 }
