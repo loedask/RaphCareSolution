@@ -1,11 +1,12 @@
 using MediatR;
+using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Application.Features.Onboarding.Commands.CreatePatientFromVoice;
 
 /// <summary>
 /// Creates a patient from voice-recorded onboarding: transcribes audio, extracts data, creates patient, stores recording metadata.
 /// </summary>
-public class CreatePatientFromVoiceCommand : IRequest<CreatePatientFromVoiceResult>
+public class CreatePatientFromVoiceCommand : IRequest<CreatePatientFromVoiceResult>, IAllowAnonymousRequest
 {
     /// <summary>Audio stream (e.g. from uploaded file).</summary>
     public Stream AudioStream { get; set; } = null!;

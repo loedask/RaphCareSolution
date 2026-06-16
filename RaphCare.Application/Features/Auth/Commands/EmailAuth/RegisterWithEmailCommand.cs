@@ -1,8 +1,9 @@
 using MediatR;
+using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Application.Features.Auth.Commands.EmailAuth;
 
-public sealed class RegisterWithEmailCommand : IRequest<EmailAuthResult>
+public sealed class RegisterWithEmailCommand : IRequest<EmailAuthResult>, IAllowAnonymousRequest
 {
     public string FirstName { get; init; } = string.Empty;
     public string LastName { get; init; } = string.Empty;
