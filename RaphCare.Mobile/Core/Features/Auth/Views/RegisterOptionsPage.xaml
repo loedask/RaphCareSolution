@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RaphCare.Mobile.Core.Features.Auth.Views.RegisterOptionsPage"
              Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
              BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>

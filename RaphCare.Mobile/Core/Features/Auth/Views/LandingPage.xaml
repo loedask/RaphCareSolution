@@ -5,6 +5,7 @@
              x:Class="RaphCare.Mobile.Core.Features.Auth.Views.LandingPage"
              x:Name="LandingRoot"
              Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
              Background="{StaticResource AuthBackgroundGradient}">
 
     <Grid>

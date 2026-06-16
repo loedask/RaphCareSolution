@@ -401,14 +401,125 @@ Accessible. Intelligent. Human.</value>
   <data name="HomePageTitle" xml:space="preserve">
     <value>Home</value>
   </data>
+  <data name="TabHome" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="TabAppointments" xml:space="preserve">
+    <value>Appointments</value>
+  </data>
+  <data name="TabRecords" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="TabInsurance" xml:space="preserve">
+    <value>Insurance</value>
+  </data>
+  <data name="TabProfile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
   <data name="HomeGreetingMorning" xml:space="preserve">
-    <value>Good morning</value>
+    <value>Good morning,</value>
   </data>
   <data name="HomeGreetingAfternoon" xml:space="preserve">
-    <value>Good afternoon</value>
+    <value>Good afternoon,</value>
   </data>
   <data name="HomeGreetingEvening" xml:space="preserve">
-    <value>Good evening</value>
+    <value>Good evening,</value>
+  </data>
+  <data name="HomeDefaultUserName" xml:space="preserve">
+    <value>Patient</value>
+  </data>
+  <data name="HomeNeedHelpNow" xml:space="preserve">
+    <value>Need help now?</value>
+  </data>
+  <data name="HomeRequestCall" xml:space="preserve">
+    <value>Request a Call</value>
+  </data>
+  <data name="HomeConnectWithDoctor" xml:space="preserve">
+    <value>Connect with a doctor in minutes</value>
+  </data>
+  <data name="HomeUpcoming" xml:space="preserve">
+    <value>Upcoming</value>
+  </data>
+  <data name="HomeSeeAll" xml:space="preserve">
+    <value>See all</value>
+  </data>
+  <data name="HomeQuickActions" xml:space="preserve">
+    <value>Quick Actions</value>
+  </data>
+  <data name="HomeBookAppointment" xml:space="preserve">
+    <value>Book&#10;Appointment</value>
+  </data>
+  <data name="HomeHealthRecordsQuick" xml:space="preserve">
+    <value>Health&#10;Records</value>
+  </data>
+  <data name="HomeInsurancePlanQuick" xml:space="preserve">
+    <value>Insurance&#10;Plan</value>
+  </data>
+  <data name="HomeConnectedDevicesQuick" xml:space="preserve">
+    <value>Connected&#10;Devices</value>
+  </data>
+  <data name="HomeMentalHealthQuick" xml:space="preserve">
+    <value>Mental&#10;Health</value>
+  </data>
+  <data name="HomeAiAssistantQuick" xml:space="preserve">
+    <value>AI&#10;Assistant</value>
+  </data>
+  <data name="HomeHealthSummary" xml:space="preserve">
+    <value>Health Summary</value>
+  </data>
+  <data name="HomeHeartRate" xml:space="preserve">
+    <value>Heart Rate</value>
+  </data>
+  <data name="HomeBloodPressure" xml:space="preserve">
+    <value>Blood Pressure</value>
+  </data>
+  <data name="HomeBloodGlucose" xml:space="preserve">
+    <value>Blood Glucose</value>
+  </data>
+  <data name="HomeNormal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="HomeTrendVsLastWeek" xml:space="preserve">
+    <value>vs last week</value>
+  </data>
+  <data name="HomeGeneralConsultation" xml:space="preserve">
+    <value>General Consultation</value>
+  </data>
+  <data name="HomeVideo" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="HomeJoinConsultation" xml:space="preserve">
+    <value>Join Consultation</value>
+  </data>
+  <data name="HomeDemoDoctorName" xml:space="preserve">
+    <value>Dr. Ngozi Okafor</value>
+  </data>
+  <data name="HomeDemoDoctorInitials" xml:space="preserve">
+    <value>NO</value>
+  </data>
+  <data name="HomeDemoAppointmentTime" xml:space="preserve">
+    <value>Today, 2:30 PM</value>
+  </data>
+  <data name="HomeConnectedDevicesTitle" xml:space="preserve">
+    <value>Connected Devices</value>
+  </data>
+  <data name="HomeSyncedMinutesAgo" xml:space="preserve">
+    <value>{0}m ago</value>
+  </data>
+  <data name="HomeSyncedLive" xml:space="preserve">
+    <value>Live</value>
+  </data>
+  <data name="HomeAiWellnessInsight" xml:space="preserve">
+    <value>AI Wellness Insight</value>
+  </data>
+  <data name="HomeDailyHealthTip" xml:space="preserve">
+    <value>Daily Health Tip</value>
+  </data>
+  <data name="HomeWellnessMessage" xml:space="preserve">
+    <value>Your mood has been consistently positive this week. Keep up the good routines — regular sleep and your morning walks seem to be helping.</value>
+  </data>
+  <data name="HomeAskAiAssistant" xml:space="preserve">
+    <value>Ask AI Assistant</value>
   </data>
   <data name="HomeDashboardTagline" xml:space="preserve">
     <value>Your care hub at a glance.</value>

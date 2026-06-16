@@ -1,32 +1,70 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Microsoft.Maui.ApplicationModel;
 using RaphCare.Mobile.Core.Features.Home.Models;
+using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Shared.Navigation;
+using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Home.ViewModels;
 
-/// <summary>Home dashboard: greeting, hero, and concept-style quick-link cards (vertical 2 parity).</summary>
+/// <summary>Home dashboard aligned with concept <c>Home.tsx</c>.</summary>
 public sealed class HomeViewModel : BaseViewModel
 {
+    private readonly IAuthService _auth;
     private string _greeting = string.Empty;
+    private string _userDisplayName = string.Empty;
 
-    public HomeViewModel()
+    public HomeViewModel(IAuthService auth)
     {
+        _auth = auth ?? throw new ArgumentNullException(nameof(auth));
+
         Title = AppResources.T("HomePageTitle");
-        HeroTitle = AppResources.T("HomeHeroTitle");
-        HeroSubtitle = AppResources.T("HomeHeroSubtitle");
-        Tagline = AppResources.T("HomeDashboardTagline");
-        SectionCare = AppResources.HomeHubSectionCare;
-        SectionMore = AppResources.HomeHubSectionMore;
-        SectionSamples = AppResources.HomeHubSamples;
-        OpenBlazorText = AppResources.OpenBlazorSample;
 
-        CareItems = new ObservableCollection<HomeQuickLinkItem>(BuildCareItems());
-        MoreItems = new ObservableCollection<HomeQuickLinkItem>(BuildMoreItems());
+        SectionUpcoming = AppResources.T("HomeUpcoming");
+        SectionQuickActions = AppResources.T("HomeQuickActions");
+        SectionHealthSummary = AppResources.T("HomeHealthSummary");
+        SectionConnectedDevices = AppResources.T("HomeConnectedDevicesTitle");
+        SectionAiInsight = AppResources.T("HomeAiWellnessInsight");
+        SeeAllText = AppResources.T("HomeSeeAll");
 
-        OpenBlazorCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.BlazorHost));
+        NeedHelpNow = AppResources.T("HomeNeedHelpNow");
+        RequestCallTitle = AppResources.T("HomeRequestCall");
+        RequestCallSubtitle = AppResources.T("HomeConnectWithDoctor");
+
+        UpcomingDoctorName = AppResources.T("HomeDemoDoctorName");
+        UpcomingDoctorInitials = AppResources.T("HomeDemoDoctorInitials");
+        UpcomingConsultationType = AppResources.T("HomeGeneralConsultation");
+        UpcomingTimeLabel = AppResources.T("HomeDemoAppointmentTime");
+        UpcomingModeLabel = AppResources.T("HomeVideo");
+        JoinConsultationText = AppResources.T("HomeJoinConsultation");
+
+        DailyHealthTipTitle = AppResources.T("HomeDailyHealthTip");
+        WellnessMessage = AppResources.T("HomeWellnessMessage");
+        AskAiAssistantText = AppResources.T("HomeAskAiAssistant");
+
+        QuickActions = new ObservableCollection<HomeQuickActionItem>(BuildQuickActions());
+        HealthMetrics = new ObservableCollection<HomeHealthMetricItem>(BuildHealthMetrics());
+        ConnectedDevices = new ObservableCollection<HomeConnectedDeviceItem>(BuildConnectedDevices());
+
+        OpenNotificationsCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.Notifications, AppResources.HomeHubNotifications));
+        RequestCallCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.CareTelehealth, AppResources.T("HomeRequestCall")));
+        SeeAllAppointmentsCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.Appointments, AppResources.HomeHubAppointments));
+        OpenUpcomingAppointmentCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.Appointments, AppResources.HomeHubAppointments));
+        JoinConsultationCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.CareTelehealth, AppResources.T("HomeJoinConsultation")));
+        SeeAllDevicesCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.Devices, AppResources.HomeHubDevices));
+        SeeAllHealthCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.Devices, AppResources.T("HomeHealthSummary")));
+        AskAiAssistantCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.AiAssistant, AppResources.HomeHubAiAssistant));
 
         RefreshGreeting();
     }
@@ -37,18 +75,46 @@ public sealed class HomeViewModel : BaseViewModel
         private set => SetProperty(ref _greeting, value);
     }
 
-    public string Tagline { get; }
-    public string HeroTitle { get; }
-    public string HeroSubtitle { get; }
-    public string SectionCare { get; }
-    public string SectionMore { get; }
-    public string SectionSamples { get; }
-    public string OpenBlazorText { get; }
+    public string UserDisplayName
+    {
+        get => _userDisplayName;
+        private set => SetProperty(ref _userDisplayName, value);
+    }
 
-    public ObservableCollection<HomeQuickLinkItem> CareItems { get; }
-    public ObservableCollection<HomeQuickLinkItem> MoreItems { get; }
+    public string SectionUpcoming { get; }
+    public string SectionQuickActions { get; }
+    public string SectionHealthSummary { get; }
+    public string SectionConnectedDevices { get; }
+    public string SectionAiInsight { get; }
+    public string SeeAllText { get; }
 
-    public ICommand OpenBlazorCommand { get; }
+    public string NeedHelpNow { get; }
+    public string RequestCallTitle { get; }
+    public string RequestCallSubtitle { get; }
+
+    public string UpcomingDoctorName { get; }
+    public string UpcomingDoctorInitials { get; }
+    public string UpcomingConsultationType { get; }
+    public string UpcomingTimeLabel { get; }
+    public string UpcomingModeLabel { get; }
+    public string JoinConsultationText { get; }
+
+    public string DailyHealthTipTitle { get; }
+    public string WellnessMessage { get; }
+    public string AskAiAssistantText { get; }
+
+    public ObservableCollection<HomeQuickActionItem> QuickActions { get; }
+    public ObservableCollection<HomeHealthMetricItem> HealthMetrics { get; }
+    public ObservableCollection<HomeConnectedDeviceItem> ConnectedDevices { get; }
+
+    public ICommand OpenNotificationsCommand { get; }
+    public ICommand RequestCallCommand { get; }
+    public ICommand SeeAllAppointmentsCommand { get; }
+    public ICommand OpenUpcomingAppointmentCommand { get; }
+    public ICommand JoinConsultationCommand { get; }
+    public ICommand SeeAllDevicesCommand { get; }
+    public ICommand SeeAllHealthCommand { get; }
+    public ICommand AskAiAssistantCommand { get; }
 
     public void RefreshGreeting()
     {
@@ -60,88 +126,158 @@ public sealed class HomeViewModel : BaseViewModel
         };
     }
 
-    private static HomeQuickLinkItem[] BuildCareItems() =>
+    public async Task RefreshAsync()
+    {
+        RefreshGreeting();
+
+        var token = await _auth.GetAccessTokenAsync(CancellationToken.None).ConfigureAwait(false);
+        var (name, _) = JwtClaimsReader.ReadDisplayClaims(token);
+        var displayName = ResolveFirstName(name);
+        await MainThread.InvokeOnMainThreadAsync(() => UserDisplayName = displayName);
+    }
+
+    private static string ResolveFirstName(string? fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return AppResources.T("HomeDefaultUserName");
+
+        var first = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        return string.IsNullOrWhiteSpace(first) ? AppResources.T("HomeDefaultUserName") : first;
+    }
+
+    private static HomeQuickActionItem[] BuildQuickActions() =>
     [
-        new HomeQuickLinkItem
+        new HomeQuickActionItem
         {
-            Title = AppResources.HomeHubHealthRecords,
-            Subtitle = AppResources.T("HomeDashHintRecords"),
-            IconGlyph = "📋",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.Records, AppResources.HomeHubHealthRecords)),
-        },
-        new HomeQuickLinkItem
-        {
-            Title = AppResources.HomeHubAppointments,
-            Subtitle = AppResources.T("HomeDashHintAppointments"),
+            Title = AppResources.T("HomeBookAppointment"),
             IconGlyph = "📅",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.Appointments, AppResources.HomeHubAppointments)),
+            IsAccent = true,
+            TapCommand = new Command(async () =>
+                await AppNavigator.GoToFeatureAsync(AppNavigator.BookAppointment, AppResources.T("HomeBookAppointment"))),
         },
-        new HomeQuickLinkItem
+        new HomeQuickActionItem
         {
-            Title = AppResources.HomeHubInsurance,
-            Subtitle = AppResources.T("HomeDashHintInsurance"),
-            IconGlyph = "🏥",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.Insurance, AppResources.HomeHubInsurance)),
+            Title = AppResources.T("HomeHealthRecordsQuick"),
+            IconGlyph = "📋",
+            TapCommand = new Command(async () =>
+                await AppNavigator.GoToFeatureAsync(AppNavigator.Records, AppResources.HomeHubHealthRecords)),
         },
-        new HomeQuickLinkItem
+        new HomeQuickActionItem
         {
-            Title = AppResources.HomeHubCareTelehealth,
-            Subtitle = AppResources.T("HomeDashHintCareTelehealth"),
-            IconGlyph = "💬",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.CareTelehealth, AppResources.HomeHubCareTelehealth)),
+            Title = AppResources.T("HomeInsurancePlanQuick"),
+            IconGlyph = "🛡️",
+            TapCommand = new Command(async () =>
+                await AppNavigator.GoToFeatureAsync(AppNavigator.Insurance, AppResources.HomeHubInsurance)),
         },
-        new HomeQuickLinkItem
+        new HomeQuickActionItem
         {
-            Title = AppResources.HomeHubDevices,
-            Subtitle = AppResources.T("HomeDashHintDevices"),
+            Title = AppResources.T("HomeConnectedDevicesQuick"),
             IconGlyph = "⌚",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.Devices, AppResources.HomeHubDevices)),
+            TapCommand = new Command(async () =>
+                await AppNavigator.GoToFeatureAsync(AppNavigator.Devices, AppResources.HomeHubDevices)),
+        },
+        new HomeQuickActionItem
+        {
+            Title = AppResources.T("HomeMentalHealthQuick"),
+            IconGlyph = "🧠",
+            TapCommand = new Command(async () =>
+                await AppNavigator.GoToFeatureAsync(AppNavigator.MentalHealth, AppResources.HomeHubMentalHealth)),
+        },
+        new HomeQuickActionItem
+        {
+            Title = AppResources.T("HomeAiAssistantQuick"),
+            IconGlyph = "✨",
+            TapCommand = new Command(async () =>
+                await AppNavigator.GoToFeatureAsync(AppNavigator.AiAssistant, AppResources.HomeHubAiAssistant)),
         },
     ];
 
-    private static HomeQuickLinkItem[] BuildMoreItems() =>
+    private static HomeHealthMetricItem[] BuildHealthMetrics() =>
     [
-        new HomeQuickLinkItem
-        {
-            Title = AppResources.HomeHubBilling,
-            Subtitle = AppResources.T("HomeDashHintBilling"),
-            IconGlyph = "💳",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.Billing, AppResources.HomeHubBilling)),
-        },
-        new HomeQuickLinkItem
-        {
-            Title = AppResources.HomeHubMentalHealth,
-            Subtitle = AppResources.T("HomeDashHintMentalHealth"),
-            IconGlyph = "🧠",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.MentalHealth, AppResources.HomeHubMentalHealth)),
-        },
-        new HomeQuickLinkItem
-        {
-            Title = AppResources.HomeHubFamily,
-            Subtitle = AppResources.T("HomeDashHintFamily"),
-            IconGlyph = "👨‍👩‍👧",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.FamilyMembers, AppResources.HomeHubFamily)),
-        },
-        new HomeQuickLinkItem
-        {
-            Title = AppResources.HomeHubAiAssistant,
-            Subtitle = AppResources.T("HomeDashHintAiAssistant"),
-            IconGlyph = "✨",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.AiAssistant, AppResources.HomeHubAiAssistant)),
-        },
-        new HomeQuickLinkItem
-        {
-            Title = AppResources.HomeHubNotifications,
-            Subtitle = AppResources.T("HomeDashHintNotifications"),
-            IconGlyph = "🔔",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.Notifications, AppResources.HomeHubNotifications)),
-        },
-        new HomeQuickLinkItem
-        {
-            Title = AppResources.HomeHubSettings,
-            Subtitle = AppResources.T("HomeDashHintSettings"),
-            IconGlyph = "👤",
-            NavigateCommand = new Command(async () => await AppNavigator.GoToFeatureAsync(AppNavigator.Settings, AppResources.HomeHubSettings)),
-        },
+        CreateMetric(
+            AppResources.T("HomeHeartRate"),
+            "72",
+            "bpm",
+            "❤️",
+            "+2",
+            "↑",
+            [40, 55, 35, 60, 50, 70, 45, 65, 55, 72]),
+        CreateMetric(
+            AppResources.T("HomeBloodPressure"),
+            "120/80",
+            "mmHg",
+            "📈",
+            "-1",
+            "↓",
+            [65, 58, 70, 55, 62, 68, 60, 72, 64, 66]),
     ];
+
+    private static HomeHealthMetricItem CreateMetric(
+        string label,
+        string value,
+        string unit,
+        string icon,
+        string trendDelta,
+        string trendGlyph,
+        int[] barPercents)
+    {
+        var sparkline = new ObservableCollection<HomeSparklineBar>();
+        for (var i = 0; i < barPercents.Length; i++)
+        {
+            sparkline.Add(new HomeSparklineBar
+            {
+                Height = 36 * barPercents[i] / 100.0,
+                IsLatest = i == barPercents.Length - 1,
+            });
+        }
+
+        return new HomeHealthMetricItem
+        {
+            Label = label,
+            Value = value,
+            Unit = unit,
+            Status = AppResources.T("HomeNormal"),
+            TrendLabel = $"{trendDelta} {AppResources.T("HomeTrendVsLastWeek")}",
+            TrendGlyph = trendGlyph,
+            IconGlyph = icon,
+            Sparkline = sparkline,
+        };
+    }
+
+    private static HomeConnectedDeviceItem[] BuildConnectedDevices()
+    {
+        var devicesCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.Devices, AppResources.HomeHubDevices));
+
+        return
+        [
+            new HomeConnectedDeviceItem
+            {
+                Name = AppResources.T("HomeBloodPressure"),
+                Value = "120/80",
+                Unit = "mmHg",
+                Synced = AppResources.T("HomeSyncedMinutesAgo").Replace("{0}", "2"),
+                IconGlyph = "📈",
+                TapCommand = devicesCommand,
+            },
+            new HomeConnectedDeviceItem
+            {
+                Name = AppResources.T("HomeBloodGlucose"),
+                Value = "95",
+                Unit = "mg/dL",
+                Synced = AppResources.T("HomeSyncedMinutesAgo").Replace("{0}", "15"),
+                IconGlyph = "💧",
+                TapCommand = devicesCommand,
+            },
+            new HomeConnectedDeviceItem
+            {
+                Name = AppResources.T("HomeHeartRate"),
+                Value = "72",
+                Unit = "bpm",
+                Synced = AppResources.T("HomeSyncedLive"),
+                IconGlyph = "❤️",
+                TapCommand = devicesCommand,
+            },
+        ];
+    }
 }

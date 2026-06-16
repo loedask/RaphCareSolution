@@ -5,151 +5,579 @@
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Home.ViewModels"
              x:Class="RaphCare.Mobile.Core.Features.Home.Views.HomePage"
              x:DataType="vm:HomeViewModel"
-             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="0">
-            <Label Text="{Binding Greeting}"
-                   Style="{StaticResource TitleLarge}"
-                   TextColor="{StaticResource ForegroundColor}"
-                   Margin="0,8,0,4" />
-            <Label Text="{Binding Tagline}"
-                   Style="{StaticResource BodyMedium}"
-                   TextColor="{StaticResource MutedForegroundColor}"
-                   Margin="0,0,0,20" />
+        <VerticalStackLayout Padding="24,56,24,40" Spacing="0">
 
-            <Border Padding="22,20"
-                    StrokeThickness="0"
-                    Margin="0,0,0,24">
+            <!-- Greeting header -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="{Binding Greeting}"
+                           Style="{StaticResource BodyMedium}"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource MutedForegroundColor}" />
+                    <Label Text="{Binding UserDisplayName}"
+                           Style="{StaticResource TitleLarge}"
+                           TextColor="{StaticResource ForegroundColor}"
+                           Margin="0" />
+                </VerticalStackLayout>
+                <HorizontalStackLayout Grid.Column="1" Spacing="12" VerticalOptions="Start">
+                    <Grid WidthRequest="44" HeightRequest="44">
+                        <Border BackgroundColor="{StaticResource CardColor}"
+                                Stroke="{StaticResource BorderColor}"
+                                StrokeThickness="1"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Opacity="0.06" Radius="8" Offset="0,2" />
+                            </Border.Shadow>
+                            <Label Text="🔔"
+                                   FontSize="18"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+                        <Border WidthRequest="8"
+                                HeightRequest="8"
+                                BackgroundColor="{StaticResource DestructiveColor}"
+                                Stroke="{StaticResource CardColor}"
+                                StrokeThickness="2"
+                                HorizontalOptions="End"
+                                VerticalOptions="Start"
+                                Margin="0,10,10,0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="4" />
+                            </Border.StrokeShape>
+                        </Border>
+                        <Button BackgroundColor="Transparent"
+                                Opacity="0.02"
+                                Command="{Binding OpenNotificationsCommand}" />
+                    </Grid>
+                    <Border WidthRequest="40"
+                            HeightRequest="40"
+                            Stroke="{StaticResource BorderColor}"
+                            StrokeThickness="2"
+                            Padding="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Opacity="0.06" Radius="8" Offset="0,2" />
+                        </Border.Shadow>
+                        <Image Source="raphcare_logo.png"
+                               Aspect="AspectFill" />
+                    </Border>
+                </HorizontalStackLayout>
+            </Grid>
+
+            <!-- Request a call CTA -->
+            <Grid Margin="0,0,0,28">
+                <Border Padding="24"
+                        StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24" />
+                    </Border.StrokeShape>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{StaticResource GradientStartColor}" Offset="0" />
+                            <GradientStop Color="{StaticResource GradientMidColor}" Offset="0.55" />
+                            <GradientStop Color="{StaticResource PrimaryColor}" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.12" Radius="16" Offset="0,6" />
+                    </Border.Shadow>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <VerticalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="{Binding NeedHelpNow}"
+                                   Style="{StaticResource Micro}"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TealGlowColor}"
+                                   CharacterSpacing="1.2" />
+                            <Label Text="{Binding RequestCallTitle}"
+                                   FontFamily="SpaceGrotesk"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+                            <Label Text="{Binding RequestCallSubtitle}"
+                                   Style="{StaticResource BodyMedium}"
+                                   TextColor="{StaticResource TealGlowColor}"
+                                   Opacity="0.85"
+                                   Margin="0" />
+                        </VerticalStackLayout>
+                        <Border Grid.Column="1"
+                                WidthRequest="64"
+                                HeightRequest="64"
+                                BackgroundColor="#1AFFFFFF"
+                                Stroke="#1AFFFFFF"
+                                StrokeThickness="1"
+                                VerticalOptions="Center">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <Label Text="📞"
+                                   FontSize="26"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+                    </Grid>
+                </Border>
+                <Button BackgroundColor="Transparent"
+                        Opacity="0.02"
+                        Command="{Binding RequestCallCommand}" />
+            </Grid>
+
+            <!-- Upcoming appointment -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+                <Label Text="{Binding SectionUpcoming}" Style="{StaticResource SectionTitle}" Margin="0" />
+                <Button Grid.Column="1"
+                        Text="{Binding SeeAllText}"
+                        Style="{StaticResource TextButton}"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        Padding="0"
+                        MinimumHeightRequest="32"
+                        VerticalOptions="Center"
+                        Command="{Binding SeeAllAppointmentsCommand}" />
+            </Grid>
+
+            <Border BackgroundColor="{StaticResource CardColor}"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="1"
+                    Padding="0"
+                    Margin="0,0,0,28">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16" />
                 </Border.StrokeShape>
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="{StaticResource GradientStartColor}" Offset="0" />
-                        <GradientStop Color="{StaticResource GradientMidColor}" Offset="0.55" />
-                        <GradientStop Color="{StaticResource PrimaryColor}" Offset="1" />
-                    </LinearGradientBrush>
-                </Border.Background>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="{Binding HeroTitle}"
-                           FontFamily="SpaceGrotesk"
-                           FontSize="20"
-                           FontAttributes="Bold"
-                           TextColor="White" />
-                    <Label Text="{Binding HeroSubtitle}"
-                           FontSize="13"
-                           LineHeight="1.35"
-                           TextColor="{StaticResource TealGlowColor}"
-                           Opacity="0.95" />
+                <Border.Shadow>
+                    <Shadow Brush="Black" Opacity="0.06" Radius="10" Offset="0,3" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="0">
+                    <Grid>
+                        <VerticalStackLayout Padding="20" Spacing="0">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+                                <Border WidthRequest="56"
+                                        HeightRequest="56"
+                                        StrokeThickness="0"
+                                        VerticalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="{StaticResource GradientStartColor}" Offset="0" />
+                                            <GradientStop Color="{StaticResource GradientMidColor}" Offset="0.55" />
+                                            <GradientStop Color="{StaticResource PrimaryColor}" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Label Text="{Binding UpcomingDoctorInitials}"
+                                           FontFamily="SpaceGrotesk"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource TealGlowColor}"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding UpcomingDoctorName}"
+                                           FontFamily="SpaceGrotesk"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource ForegroundColor}" />
+                                    <Label Text="{Binding UpcomingConsultationType}"
+                                           Style="{StaticResource BodyMedium}"
+                                           TextColor="{StaticResource MutedForegroundColor}"
+                                           Margin="0" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2"
+                                       Text="›"
+                                       FontSize="22"
+                                       TextColor="{StaticResource MutedForegroundColor}"
+                                       Opacity="0.4"
+                                       VerticalOptions="Center" />
+                            </Grid>
+                            <HorizontalStackLayout Spacing="8" Margin="0,16,0,0">
+                                <Border BackgroundColor="{StaticResource SecondaryColor}"
+                                        StrokeThickness="0"
+                                        Padding="12,6">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="🕐" FontSize="12" VerticalOptions="Center" />
+                                        <Label Text="{Binding UpcomingTimeLabel}"
+                                               Style="{StaticResource BodySmall}"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource ForegroundColor}"
+                                               Margin="0"
+                                               VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                                <Border BackgroundColor="#1A35B69C"
+                                        StrokeThickness="0"
+                                        Padding="12,6">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="📹" FontSize="12" VerticalOptions="Center" />
+                                        <Label Text="{Binding UpcomingModeLabel}"
+                                               Style="{StaticResource BodySmall}"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource AccentColor}"
+                                               Margin="0"
+                                               VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                        <Button BackgroundColor="Transparent"
+                                Opacity="0.02"
+                                Command="{Binding OpenUpcomingAppointmentCommand}" />
+                    </Grid>
+                    <Button Text="{Binding JoinConsultationText}"
+                            FontFamily="SpaceGrotesk"
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            TextColor="{StaticResource PrimaryForegroundColor}"
+                            CornerRadius="0"
+                            Padding="0,14"
+                            BorderWidth="0"
+                            Command="{Binding JoinConsultationCommand}">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
                 </VerticalStackLayout>
             </Border>
 
-            <Label Text="{Binding SectionCare}" Style="{StaticResource SectionTitle}" TextColor="{StaticResource ForegroundColor}" Margin="0,0,0,12" />
-
-            <VerticalStackLayout Spacing="0"
-                                 BindableLayout.ItemsSource="{Binding CareItems}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:HomeQuickLinkItem">
-                        <Grid Margin="0,0,0,12">
-                            <Border Style="{StaticResource CardBorder}" Padding="18" Margin="0">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="16" />
-                                </Border.StrokeShape>
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" InputTransparent="True">
-                                    <Border Grid.Column="0"
-                                            WidthRequest="52"
-                                            HeightRequest="52"
-                                            StrokeThickness="0"
-                                            VerticalOptions="Center">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="14" />
-                                        </Border.StrokeShape>
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
-                                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
-                                            </LinearGradientBrush>
-                                        </Border.Background>
-                                        <Label Text="{Binding IconGlyph}"
-                                               FontSize="22"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center" />
-                                    </Border>
-                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                        <Label Text="{Binding Title}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-                                        <Label Text="{Binding Subtitle}"
-                                               Style="{StaticResource BodySmall}"
-                                               TextColor="{StaticResource MutedForegroundColor}" />
-                                    </VerticalStackLayout>
-                                </Grid>
-                            </Border>
-                            <Button BackgroundColor="Transparent"
-                                    Opacity="0.02"
-                                    Command="{Binding NavigateCommand}" />
-                        </Grid>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
-
-            <Label Text="{Binding SectionMore}"
+            <!-- Quick actions -->
+            <Label Text="{Binding SectionQuickActions}"
                    Style="{StaticResource SectionTitle}"
-                   TextColor="{StaticResource ForegroundColor}"
-                   Margin="0,8,0,12" />
-
-            <VerticalStackLayout Spacing="0"
-                                 BindableLayout.ItemsSource="{Binding MoreItems}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:HomeQuickLinkItem">
-                        <Grid Margin="0,0,0,12">
-                            <Border Style="{StaticResource CardBorder}" Padding="18" Margin="0">
+                   Margin="0,0,0,16" />
+            <CollectionView ItemsSource="{Binding QuickActions}"
+                            Margin="0,0,0,28"
+                            SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
+                                     Span="3"
+                                     HorizontalItemSpacing="12"
+                                     VerticalItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:HomeQuickActionItem">
+                        <Grid>
+                            <Border BackgroundColor="{StaticResource CardColor}"
+                                    Stroke="{StaticResource BorderColor}"
+                                    StrokeThickness="1"
+                                    Padding="12,20">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="16" />
                                 </Border.StrokeShape>
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" InputTransparent="True">
-                                    <Border Grid.Column="0"
-                                            WidthRequest="52"
-                                            HeightRequest="52"
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Opacity="0.05" Radius="6" Offset="0,2" />
+                                </Border.Shadow>
+                                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                                    <Border WidthRequest="44"
+                                            HeightRequest="44"
                                             StrokeThickness="0"
-                                            VerticalOptions="Center">
+                                            HorizontalOptions="Center">
                                         <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="14" />
+                                            <RoundRectangle CornerRadius="12" />
                                         </Border.StrokeShape>
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
-                                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
-                                            </LinearGradientBrush>
-                                        </Border.Background>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border"
+                                                         Binding="{Binding IsAccent}"
+                                                         Value="True">
+                                                <Setter Property="Background">
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                        <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                                                        <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border"
+                                                         Binding="{Binding IsAccent}"
+                                                         Value="False">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource SecondaryColor}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
                                         <Label Text="{Binding IconGlyph}"
-                                               FontSize="22"
+                                               FontSize="18"
                                                HorizontalOptions="Center"
                                                VerticalOptions="Center" />
                                     </Border>
-                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                        <Label Text="{Binding Title}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-                                        <Label Text="{Binding Subtitle}"
-                                               Style="{StaticResource BodySmall}"
-                                               TextColor="{StaticResource MutedForegroundColor}" />
-                                    </VerticalStackLayout>
-                                </Grid>
+                                    <Label Text="{Binding Title}"
+                                           Style="{StaticResource BodySmall}"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource ForegroundColor}"
+                                           HorizontalTextAlignment="Center"
+                                           LineBreakMode="WordWrap"
+                                           Margin="0" />
+                                </VerticalStackLayout>
                             </Border>
                             <Button BackgroundColor="Transparent"
                                     Opacity="0.02"
-                                    Command="{Binding NavigateCommand}" />
+                                    Command="{Binding TapCommand}" />
                         </Grid>
                     </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-            <Label Text="{Binding SectionSamples}"
-                   Style="{StaticResource BodySmall}"
-                   TextColor="{StaticResource MutedForegroundColor}"
-                   Margin="0,16,0,8" />
-            <Button Text="{Binding OpenBlazorText}"
-                    Style="{StaticResource OutlineTealButton}"
-                    Command="{Binding OpenBlazorCommand}" />
+            <!-- Health summary -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+                <Label Text="{Binding SectionHealthSummary}" Style="{StaticResource SectionTitle}" Margin="0" />
+                <Button Grid.Column="1"
+                        Text="{Binding SeeAllText}"
+                        Style="{StaticResource TextButton}"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        Padding="0"
+                        MinimumHeightRequest="32"
+                        VerticalOptions="Center"
+                        Command="{Binding SeeAllHealthCommand}" />
+            </Grid>
+            <CollectionView ItemsSource="{Binding HealthMetrics}"
+                            Margin="0,0,0,28"
+                            SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
+                                     Span="2"
+                                     HorizontalItemSpacing="12"
+                                     VerticalItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:HomeHealthMetricItem">
+                        <Border BackgroundColor="{StaticResource CardColor}"
+                                Stroke="{StaticResource BorderColor}"
+                                StrokeThickness="1"
+                                Padding="16">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Opacity="0.06" Radius="8" Offset="0,2" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="0">
+                                <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,12">
+                                    <Border Grid.Column="0"
+                                            Style="{StaticResource ProfileMenuIconBorder}"
+                                            WidthRequest="36"
+                                            HeightRequest="36"
+                                            Padding="8">
+                                        <Label Text="{Binding IconGlyph}" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                    <Border Grid.Column="1"
+                                            BackgroundColor="#1A37BE7F"
+                                            StrokeThickness="0"
+                                            Padding="8,4"
+                                            HorizontalOptions="End"
+                                            VerticalOptions="Start">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding Status}"
+                                               Style="{StaticResource Micro}"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource HealthNormalColor}"
+                                               Margin="0" />
+                                    </Border>
+                                </Grid>
+                                <Label Text="{Binding Label}"
+                                       Style="{StaticResource BodySmall}"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource MutedForegroundColor}"
+                                       Margin="0,0,0,4" />
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label Text="{Binding Value}"
+                                           FontFamily="SpaceGrotesk"
+                                           FontSize="24"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource ForegroundColor}"
+                                           VerticalOptions="End" />
+                                    <Label Text="{Binding Unit}"
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource MutedForegroundColor}"
+                                           VerticalOptions="End"
+                                           Margin="0,0,0,2" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="4" Margin="0,8,0,0">
+                                    <Label Text="{Binding TrendGlyph}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource HealthNormalColor}"
+                                           VerticalOptions="Center" />
+                                    <Label Text="{Binding TrendLabel}"
+                                           Style="{StaticResource Micro}"
+                                           TextColor="{StaticResource MutedForegroundColor}"
+                                           VerticalOptions="Center"
+                                           Margin="0" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Sparkline}"
+                                                       HeightRequest="36"
+                                                       Spacing="2"
+                                                       Margin="0,12,0,0"
+                                                       VerticalOptions="End">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="models:HomeSparklineBar">
+                                            <BoxView WidthRequest="6"
+                                                     VerticalOptions="End"
+                                                     HeightRequest="{Binding Height}"
+                                                     CornerRadius="2">
+                                                <BoxView.Triggers>
+                                                    <DataTrigger TargetType="BoxView"
+                                                                 Binding="{Binding IsLatest}"
+                                                                 Value="True">
+                                                        <Setter Property="Color" Value="{StaticResource PrimaryColor}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="BoxView"
+                                                                 Binding="{Binding IsLatest}"
+                                                                 Value="False">
+                                                        <Setter Property="Color" Value="#261B9BBB" />
+                                                    </DataTrigger>
+                                                </BoxView.Triggers>
+                                            </BoxView>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Connected devices -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+                <Label Text="{Binding SectionConnectedDevices}" Style="{StaticResource SectionTitle}" Margin="0" />
+                <Button Grid.Column="1"
+                        Text="{Binding SeeAllText}"
+                        Style="{StaticResource TextButton}"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        Padding="0"
+                        MinimumHeightRequest="32"
+                        VerticalOptions="Center"
+                        Command="{Binding SeeAllDevicesCommand}" />
+            </Grid>
+            <Border BackgroundColor="{StaticResource CardColor}"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="1"
+                    Padding="0"
+                    Margin="0,0,0,28">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="Black" Opacity="0.06" Radius="8" Offset="0,2" />
+                </Border.Shadow>
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding ConnectedDevices}"
+                                     Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:HomeConnectedDeviceItem">
+                            <Grid Padding="16,16" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                <Border Grid.Column="0"
+                                        Style="{StaticResource ProfileMenuIconBorder}"
+                                        WidthRequest="40"
+                                        HeightRequest="40"
+                                        Padding="8">
+                                    <Label Text="{Binding IconGlyph}" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}"
+                                           Style="{StaticResource BodyMedium}"
+                                           FontAttributes="Bold"
+                                           Margin="0" />
+                                    <Label Text="{Binding Synced}"
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource MutedForegroundColor}"
+                                           Margin="0" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center">
+                                    <Label Text="{Binding Value}"
+                                           FontFamily="SpaceGrotesk"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="End"
+                                           Margin="0" />
+                                    <Label Text="{Binding Unit}"
+                                           Style="{StaticResource Micro}"
+                                           TextColor="{StaticResource MutedForegroundColor}"
+                                           HorizontalTextAlignment="End"
+                                           Margin="0" />
+                                </VerticalStackLayout>
+                                <Grid Grid.ColumnSpan="3">
+                                    <BoxView HeightRequest="1"
+                                             Color="{StaticResource BorderColor}"
+                                             VerticalOptions="End"
+                                             IsVisible="False" />
+                                    <Button BackgroundColor="Transparent"
+                                            Opacity="0.02"
+                                            Command="{Binding TapCommand}" />
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- AI wellness insight -->
+            <Label Text="{Binding SectionAiInsight}"
+                   Style="{StaticResource SectionTitle}"
+                   Margin="0,0,0,16" />
+            <Border Style="{StaticResource CardPremium}"
+                    Padding="20"
+                    Margin="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="Black" Opacity="0.06" Radius="8" Offset="0,2" />
+                </Border.Shadow>
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                    <Border WidthRequest="40"
+                            HeightRequest="40"
+                            StrokeThickness="0"
+                            Padding="0"
+                            VerticalOptions="Start">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Label Text="✨" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" Spacing="6">
+                        <Label Text="{Binding DailyHealthTipTitle}"
+                               FontFamily="SpaceGrotesk"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource ForegroundColor}"
+                               Margin="0" />
+                        <Label Text="{Binding WellnessMessage}"
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="{StaticResource MutedForegroundColor}"
+                               LineHeight="1.4"
+                               Margin="0" />
+                        <Button Text="{Binding AskAiAssistantText}"
+                                Style="{StaticResource TextButton}"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                HorizontalOptions="Start"
+                                Padding="0"
+                                Margin="0,4,0,0"
+                                Command="{Binding AskAiAssistantCommand}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

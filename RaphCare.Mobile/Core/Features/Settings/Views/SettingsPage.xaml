@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:RaphCare.Mobile.Core.Features.Settings.Models"
              x:Class="RaphCare.Mobile.Core.Features.Settings.Views.SettingsPage"
              x:DataType="vm:ProfileHubViewModel"
+             Shell.NavBarIsVisible="False"
              Title="{Binding Title}"
              BackgroundColor="{StaticResource BackgroundColor}">
 

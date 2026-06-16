@@ -59,6 +59,11 @@
         <MauiImage Include="Resources\Images\*" />
         <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
         <MauiImage Update="Resources\Images\raphcare_logo.png" BaseSize="320,120" />
+        <MauiImage Update="Resources\Images\tab_home.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\tab_appointments.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\tab_records.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\tab_insurance.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\tab_profile.svg" BaseSize="24,24" />
 
         <!-- Custom Fonts (OFL license texts live alongside but are not MauiFont items) -->
         <MauiFont Include="Resources\Fonts\*.ttf" />

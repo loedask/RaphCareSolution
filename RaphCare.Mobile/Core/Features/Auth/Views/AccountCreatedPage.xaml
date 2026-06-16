@@ -4,6 +4,7 @@
              xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Shared.Controls"
              x:Class="RaphCare.Mobile.Core.Features.Auth.Views.AccountCreatedPage"
              Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
              Background="{StaticResource AuthBackgroundGradient}">
 
     <ScrollView>

@@ -5,6 +5,7 @@
              xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Shared.Controls"
              x:Class="RaphCare.Mobile.Core.Features.Auth.Views.VoiceSubmitPage"
              Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
              BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
