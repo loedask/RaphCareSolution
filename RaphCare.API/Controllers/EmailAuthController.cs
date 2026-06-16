@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.Auth.Commands.EmailAuth;
+using RaphCare.Application.Features.Auth.Queries.GetRegistrationClinics;
 
 namespace RaphCare.API.Controllers;
 
@@ -10,6 +11,14 @@ namespace RaphCare.API.Controllers;
 [Route("api/auth/email")]
 public class EmailAuthController(IMediator mediator) : ControllerBase
 {
+    [HttpGet("clinics")]
+    [ProducesResponseType(typeof(IReadOnlyList<RegistrationClinicDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRegistrationClinics(CancellationToken cancellationToken)
+    {
+        var clinics = await mediator.Send(new GetRegistrationClinicsQuery(), cancellationToken).ConfigureAwait(false);
+        return Ok(clinics);
+    }
+
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

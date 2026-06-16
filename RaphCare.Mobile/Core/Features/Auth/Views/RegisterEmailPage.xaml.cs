@@ -12,4 +12,11 @@ public partial class RegisterEmailPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is RegisterEmailViewModel vm)
+            await vm.LoadClinicsAsync();
+    }
 }

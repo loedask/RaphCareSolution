@@ -17,7 +17,9 @@ public class TenantResolutionMiddleware(RequestDelegate next, ILogger<TenantReso
     public async Task InvokeAsync(HttpContext context)
     {
         var path = context.Request.Path.Value ?? "";
-        if (path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase) || !path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
+        if (path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase)
+            || !path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase)
+            || IsTenantExemptPath(path))
         {
             await _next(context).ConfigureAwait(false);
             return;
@@ -43,4 +45,8 @@ public class TenantResolutionMiddleware(RequestDelegate next, ILogger<TenantReso
         context.Items[ClinicIdItemKey] = clinicId;
         await _next(context).ConfigureAwait(false);
     }
+
+    /// <summary>Patient self-registration and sign-in do not require a tenant header.</summary>
+    private static bool IsTenantExemptPath(string path) =>
+        path.StartsWith("/api/auth/email", StringComparison.OrdinalIgnoreCase);
 }

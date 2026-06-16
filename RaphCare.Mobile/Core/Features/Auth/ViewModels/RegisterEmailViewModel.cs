@@ -1,4 +1,7 @@
+using System.Collections.ObjectModel;
 using System.Windows.Input;
+using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Features.Auth.Models;
 using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.ViewModels;
@@ -6,22 +9,23 @@ using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
-/// <summary>
-/// Email registration form. Triggers Entra sign-up; on success navigates to VerifyEmailPage.
-/// </summary>
+/// <summary>Email/password patient registration with optional clinic selection.</summary>
 public class RegisterEmailViewModel : BaseViewModel
 {
     private readonly IAuthService _authService;
+    private readonly IEmailAuthService _emailAuthService;
 
     private string _firstName = string.Empty;
     private string _lastName = string.Empty;
     private string _email = string.Empty;
     private string _password = string.Empty;
+    private ClinicPickerItem? _selectedClinic;
     private string? _errorMessage;
 
-    public RegisterEmailViewModel(IAuthService authService)
+    public RegisterEmailViewModel(IAuthService authService, IEmailAuthService emailAuthService)
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+        _emailAuthService = emailAuthService ?? throw new ArgumentNullException(nameof(emailAuthService));
         Title = AppResources.T("RegisterEmailTitle");
         PageTitle = AppResources.T("RegisterEmailTitle");
         Subtitle = AppResources.T("RegisterEmailSubtitle");
@@ -29,6 +33,8 @@ public class RegisterEmailViewModel : BaseViewModel
         LastNameLabel = AppResources.T("RegisterEmailLastName");
         EmailLabel = AppResources.T("RegisterEmailEmail");
         PasswordLabel = AppResources.T("RegisterEmailPassword");
+        ClinicLabel = AppResources.T("RegisterEmailClinic");
+        ClinicHint = AppResources.T("RegisterEmailClinicHint");
         PlaceholderFirst = AppResources.T("RegisterEmailPlaceholderFirst");
         PlaceholderLast = AppResources.T("RegisterEmailPlaceholderLast");
         PlaceholderEmail = AppResources.T("RegisterEmailPlaceholderEmail");
@@ -37,10 +43,14 @@ public class RegisterEmailViewModel : BaseViewModel
         AlreadyHaveText = AppResources.T("RegisterEmailAlreadyHave");
         SignInLinkText = AppResources.T("RegisterEmailSignIn");
 
+        Clinics = new ObservableCollection<ClinicPickerItem>();
+
         RegisterCommand = new Command(async () => await RegisterAsync(), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync());
         SignInCommand = new Command(async () => await SafeShellNavigator.GoToAsync("SignInPage"));
     }
+
+    public ObservableCollection<ClinicPickerItem> Clinics { get; }
 
     public string PageTitle { get; }
     public string Subtitle { get; }
@@ -48,6 +58,8 @@ public class RegisterEmailViewModel : BaseViewModel
     public string LastNameLabel { get; }
     public string EmailLabel { get; }
     public string PasswordLabel { get; }
+    public string ClinicLabel { get; }
+    public string ClinicHint { get; }
     public string PlaceholderFirst { get; }
     public string PlaceholderLast { get; }
     public string PlaceholderEmail { get; }
@@ -80,6 +92,12 @@ public class RegisterEmailViewModel : BaseViewModel
         set => SetProperty(ref _password, value ?? string.Empty);
     }
 
+    public ClinicPickerItem? SelectedClinic
+    {
+        get => _selectedClinic;
+        set => SetProperty(ref _selectedClinic, value);
+    }
+
     public string? ErrorMessage
     {
         get => _errorMessage;
@@ -89,6 +107,52 @@ public class RegisterEmailViewModel : BaseViewModel
     public ICommand RegisterCommand { get; }
     public ICommand BackCommand { get; }
     public ICommand SignInCommand { get; }
+
+    public async Task LoadClinicsAsync()
+    {
+        ErrorMessage = null;
+        IsBusy = true;
+        try
+        {
+            var response = await _emailAuthService.GetRegistrationClinicsAsync(CancellationToken.None).ConfigureAwait(false);
+            Clinics.Clear();
+            Clinics.Add(new ClinicPickerItem
+            {
+                Id = null,
+                DisplayName = AppResources.T("RegisterEmailClinicNone")
+            });
+
+            if (response.IsSuccess && response.Data is not null)
+            {
+                foreach (var clinic in response.Data)
+                {
+                    Clinics.Add(new ClinicPickerItem
+                    {
+                        Id = clinic.Id,
+                        DisplayName = clinic.Name
+                    });
+                }
+            }
+
+            SelectedClinic = Clinics.Count > 0 ? Clinics[0] : null;
+        }
+        catch (Exception)
+        {
+            if (Clinics.Count == 0)
+            {
+                Clinics.Add(new ClinicPickerItem
+                {
+                    Id = null,
+                    DisplayName = AppResources.T("RegisterEmailClinicNone")
+                });
+                SelectedClinic = Clinics[0];
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
 
     private async Task RegisterAsync()
     {
@@ -122,8 +186,9 @@ public class RegisterEmailViewModel : BaseViewModel
         IsBusy = true;
         try
         {
+            var clinicId = SelectedClinic?.Id;
             var result = await _authService
-                .RegisterWithEmailAsync(FirstName, LastName, Email.Trim(), Password, CancellationToken.None)
+                .RegisterWithEmailAsync(FirstName, LastName, Email.Trim(), Password, clinicId, CancellationToken.None)
                 .ConfigureAwait(false);
 
             if (result.Success)

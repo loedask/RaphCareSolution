@@ -13,6 +13,7 @@ public interface IAuthService
         string lastName,
         string email,
         string password,
+        Guid? clinicId = null,
         CancellationToken cancellationToken = default);
 
     Task<AuthResult> SignInWithEmailAsync(

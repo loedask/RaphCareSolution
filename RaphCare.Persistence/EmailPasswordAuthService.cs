@@ -22,12 +22,9 @@ public class EmailPasswordAuthService(
         string lastName,
         string email,
         string password,
-        Guid clinicId,
+        Guid? clinicId,
         CancellationToken cancellationToken = default)
     {
-        if (clinicId == Guid.Empty)
-            return (false, "Clinic is required.", null, Guid.Empty);
-
         var normalizedEmail = NormalizeEmail(email);
         if (string.IsNullOrWhiteSpace(normalizedEmail))
             return (false, "Email is required.", null, Guid.Empty);
@@ -72,19 +69,32 @@ public class EmailPasswordAuthService(
         };
         patient.LinkToApplicationUser(user.Id);
 
+        if (clinicId is { } selectedClinicId && selectedClinicId != Guid.Empty)
+        {
+            var clinicExists = await _clinicalDbContext.Clinics
+                .AnyAsync(c => c.Id == selectedClinicId && c.IsActive && !c.IsDeleted, cancellationToken)
+                .ConfigureAwait(false);
+            if (!clinicExists)
+                return (false, "Selected clinic is not available.", null, Guid.Empty);
+        }
+
         _identityDbContext.Users.Add(user);
         _identityDbContext.EmailPasswordCredentials.Add(credential);
         _clinicalDbContext.Patients.Add(patient);
-        _clinicalDbContext.PatientClinicAccesses.Add(new PatientClinicAccess
+        if (clinicId is { } linkClinicId && linkClinicId != Guid.Empty)
         {
-            PatientId = patient.Id,
-            ClinicId = clinicId,
-            AccessType = PatientClinicAccessType.Registered,
-            GrantedAt = _clock.UtcNow,
-            GrantedByRule = "EmailRegistration",
-            LastValidatedAt = _clock.UtcNow,
-            IsActive = true
-        });
+            _clinicalDbContext.PatientClinicAccesses.Add(new PatientClinicAccess
+            {
+                PatientId = patient.Id,
+                ClinicId = linkClinicId,
+                AccessType = PatientClinicAccessType.Registered,
+                GrantedAt = _clock.UtcNow,
+                GrantedByRule = "EmailRegistration",
+                LastValidatedAt = _clock.UtcNow,
+                IsActive = true
+            });
+        }
+
         await _identityDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         await _clinicalDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

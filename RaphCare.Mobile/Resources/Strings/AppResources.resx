@@ -356,6 +356,15 @@ Accessible. Intelligent. Human.</value>
   <data name="RegisterEmailErrorPassword" xml:space="preserve">
     <value>Please enter a password.</value>
   </data>
+  <data name="RegisterEmailClinic" xml:space="preserve">
+    <value>Clinic (optional)</value>
+  </data>
+  <data name="RegisterEmailClinicHint" xml:space="preserve">
+    <value>You can register without choosing a clinic and link one later.</value>
+  </data>
+  <data name="RegisterEmailClinicNone" xml:space="preserve">
+    <value>No clinic — register without linking</value>
+  </data>
   <data name="RegisterEmailFailed" xml:space="preserve">
     <value>Registration failed.</value>
   </data>

@@ -8,4 +8,7 @@ public sealed class RegisterWithEmailCommand : IRequest<EmailAuthResult>
     public string LastName { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;
+
+    /// <summary>Optional clinic to link during registration. Omit to create a patient without clinic access.</summary>
+    public Guid? ClinicId { get; init; }
 }

@@ -66,10 +66,11 @@ public class EntraAuthService : IAuthService
         string lastName,
         string email,
         string password,
+        Guid? clinicId = null,
         CancellationToken cancellationToken = default)
     {
         var response = await _emailAuthService
-            .RegisterAsync(firstName, lastName, email, password, cancellationToken)
+            .RegisterAsync(firstName, lastName, email, password, clinicId, cancellationToken)
             .ConfigureAwait(false);
         if (!response.IsSuccess || response.Data?.Success != true || string.IsNullOrWhiteSpace(response.Data.Token))
             return AuthResult.Fail(response.ErrorMessage ?? "Registration failed.");

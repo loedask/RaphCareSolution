@@ -25,6 +25,13 @@
             <shared:InputField LabelText="{Binding EmailLabel}" Placeholder="{Binding PlaceholderEmail}" Keyboard="Email" Text="{Binding Email}" />
             <shared:InputField LabelText="{Binding PasswordLabel}" Placeholder="{Binding PlaceholderPassword}" IsPassword="True" Text="{Binding Password}" />
 
+            <Label Text="{Binding ClinicLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
+            <Label Text="{Binding ClinicHint}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" FontSize="12" />
+            <Picker ItemsSource="{Binding Clinics}"
+                    ItemDisplayBinding="{Binding DisplayName}"
+                    SelectedItem="{Binding SelectedClinic}"
+                    Title="{Binding ClinicLabel}" />
+
             <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" FontSize="12" Margin="0,-8,0,0" />
 
             <shared:GradientButton Text="{Binding ContinueText}"

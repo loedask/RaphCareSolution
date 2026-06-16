@@ -9,16 +9,43 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
+    public async Task<Response<IReadOnlyList<RegistrationClinicItem>>> GetRegistrationClinicsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var clinics = await client
+                .GetFromJsonAsync<List<RegistrationClinicDto>>("api/auth/email/clinics", JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (clinics is null)
+                return Response<IReadOnlyList<RegistrationClinicItem>>.Failure("Could not load clinics.");
+
+            IReadOnlyList<RegistrationClinicItem> items = clinics
+                .Select(c => new RegistrationClinicItem { Id = c.Id, Name = c.Name })
+                .ToList();
+            return Response<IReadOnlyList<RegistrationClinicItem>>.Success(items);
+        }
+        catch (HttpRequestException ex)
+        {
+            return Response<IReadOnlyList<RegistrationClinicItem>>.Failure(ex.Message);
+        }
+    }
+
     public async Task<Response<EmailAuthResult>> RegisterAsync(
         string firstName,
         string lastName,
         string email,
         string password,
+        Guid? clinicId = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            return await PostAuthAsync("api/auth/email/register", new { firstName, lastName, email, password }, cancellationToken)
+            return await PostAuthAsync(
+                    "api/auth/email/register",
+                    new { firstName, lastName, email, password, clinicId },
+                    cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (HttpRequestException ex)
@@ -87,5 +114,11 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
     private sealed class ErrorDto
     {
         public string? Error { get; set; }
+    }
+
+    private sealed class RegistrationClinicDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
