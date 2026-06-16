@@ -15,6 +15,7 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : Db
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<OtpCode> OtpCodes => Set<OtpCode>();
+    public DbSet<EmailPasswordCredential> EmailPasswordCredentials => Set<EmailPasswordCredential>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,6 +25,7 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
         modelBuilder.ApplyConfiguration(new RolePermissionConfiguration());
         modelBuilder.ApplyConfiguration(new OtpCodeConfiguration());
+        modelBuilder.ApplyConfiguration(new EmailPasswordCredentialConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

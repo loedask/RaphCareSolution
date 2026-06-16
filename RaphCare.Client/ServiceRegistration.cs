@@ -33,7 +33,10 @@ public static class ServiceRegistration
         });
 
         if (useBearerToken)
+        {
+            services.AddTransient<BearerTokenHandler>();
             httpClientBuilder.AddHttpMessageHandler<BearerTokenHandler>();
+        }
 
         services.AddHttpClient(WebhookHttpClientName, client =>
         {
@@ -87,6 +90,7 @@ public static class ServiceRegistration
         // Transient: MAUI Shell-created pages often resolve VMs via root IServiceProvider (no scope);
         // scoped registration throws when resolved outside a scope.
         services.AddTransient<IOtpAuthService, OtpAuthService>();
+        services.AddTransient<IEmailAuthService, EmailAuthService>();
         services.AddTransient<IVoiceOnboardingService, VoiceOnboardingService>();
 
         return services;

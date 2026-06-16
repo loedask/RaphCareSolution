@@ -98,6 +98,24 @@ Accessible. Intelligent. Human.</value>
   <data name="AuthSignInToContinue" xml:space="preserve">
     <value>Sign in to your account to continue.</value>
   </data>
+  <data name="AuthEmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="AuthPasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="AuthEmailPlaceholder" xml:space="preserve">
+    <value>you@example.com</value>
+  </data>
+  <data name="AuthPasswordPlaceholder" xml:space="preserve">
+    <value>Enter your password</value>
+  </data>
+  <data name="AuthEmailRequired" xml:space="preserve">
+    <value>Please enter your email.</value>
+  </data>
+  <data name="AuthPasswordRequired" xml:space="preserve">
+    <value>Please enter your password.</value>
+  </data>
   <data name="AuthSignInSecureHint" xml:space="preserve">
     <value>You'll sign in securely with Microsoft (Entra ID). A browser window will open to complete sign-in—same as the web app, optimized for mobile.</value>
   </data>

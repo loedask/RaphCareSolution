@@ -8,6 +8,18 @@ namespace RaphCare.Mobile.Core.Shared.Services.Auth;
 /// </summary>
 public interface IAuthService
 {
+    Task<AuthResult> RegisterWithEmailAsync(
+        string firstName,
+        string lastName,
+        string email,
+        string password,
+        CancellationToken cancellationToken = default);
+
+    Task<AuthResult> SignInWithEmailAsync(
+        string email,
+        string password,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Starts the Entra sign-up (registration) flow. For B2C/External ID this typically opens the sign-up policy.
     /// </summary>

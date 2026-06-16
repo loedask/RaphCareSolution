@@ -122,12 +122,13 @@ public class RegisterEmailViewModel : BaseViewModel
         IsBusy = true;
         try
         {
-            // Names are collected for UX parity; Entra interactive sign-up may collect profile in the browser.
-            var result = await _authService.SignUpWithEmailAsync(Email.Trim(), Password, CancellationToken.None).ConfigureAwait(false);
+            var result = await _authService
+                .RegisterWithEmailAsync(FirstName, LastName, Email.Trim(), Password, CancellationToken.None)
+                .ConfigureAwait(false);
 
             if (result.Success)
             {
-                await SafeShellNavigator.GoToAsync("//VerifyEmailPage").ConfigureAwait(false);
+                await SafeShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
             }
             else
             {

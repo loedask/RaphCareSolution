@@ -2,6 +2,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Shared.Models;
 
 namespace RaphCare.Mobile.Core.Shared.Services.Auth;
@@ -17,11 +18,13 @@ public class EntraAuthService : IAuthService
     private readonly IPublicClientApplication? _msalClient;
     private readonly EntraAuthOptions _options;
     private readonly ILogger<EntraAuthService> _logger;
+    private readonly IEmailAuthService _emailAuthService;
 
-    public EntraAuthService(IOptions<EntraAuthOptions> options, ILogger<EntraAuthService> logger)
+    public EntraAuthService(IOptions<EntraAuthOptions> options, ILogger<EntraAuthService> logger, IEmailAuthService emailAuthService)
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _emailAuthService = emailAuthService ?? throw new ArgumentNullException(nameof(emailAuthService));
 
         if (string.IsNullOrWhiteSpace(_options.ClientId))
         {
@@ -57,6 +60,37 @@ public class EntraAuthService : IAuthService
 
     private static AuthResult MsalUnavailable() =>
         AuthResult.Fail("Sign-in is not available. Check Microsoft Entra configuration in appsettings.");
+
+    public async Task<AuthResult> RegisterWithEmailAsync(
+        string firstName,
+        string lastName,
+        string email,
+        string password,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _emailAuthService
+            .RegisterAsync(firstName, lastName, email, password, cancellationToken)
+            .ConfigureAwait(false);
+        if (!response.IsSuccess || response.Data?.Success != true || string.IsNullOrWhiteSpace(response.Data.Token))
+            return AuthResult.Fail(response.ErrorMessage ?? "Registration failed.");
+
+        var expiresOn = DateTimeOffset.UtcNow.AddHours(12);
+        await StoreTokensFromApiAsync(response.Data.Token, expiresOn).ConfigureAwait(false);
+        return AuthResult.Ok(response.Data.Token, null, expiresOn);
+    }
+
+    public async Task<AuthResult> SignInWithEmailAsync(string email, string password, CancellationToken cancellationToken = default)
+    {
+        var response = await _emailAuthService
+            .SignInAsync(email, password, cancellationToken)
+            .ConfigureAwait(false);
+        if (!response.IsSuccess || response.Data?.Success != true || string.IsNullOrWhiteSpace(response.Data.Token))
+            return AuthResult.Fail(response.ErrorMessage ?? "Sign-in failed.");
+
+        var expiresOn = DateTimeOffset.UtcNow.AddHours(12);
+        await StoreTokensFromApiAsync(response.Data.Token, expiresOn).ConfigureAwait(false);
+        return AuthResult.Ok(response.Data.Token, null, expiresOn);
+    }
 
     public async Task<AuthResult> SignUpWithEmailAsync(string email, string password, CancellationToken cancellationToken = default)
     {

@@ -24,11 +24,15 @@
                    TextColor="{StaticResource MutedForegroundColor}"
                    Margin="0,0,0,20" />
 
-            <Label Text="{Binding SecureSignInHint}"
-                   FontSize="13"
-                   LineHeight="1.4"
-                   TextColor="{StaticResource MutedForegroundColor}"
-                   Margin="0,0,0,8" />
+            <shared:InputField LabelText="{Binding EmailLabel}"
+                               Placeholder="{Binding EmailPlaceholder}"
+                               Keyboard="Email"
+                               Text="{Binding Email}" />
+
+            <shared:InputField LabelText="{Binding PasswordLabel}"
+                               Placeholder="{Binding PasswordPlaceholder}"
+                               IsPassword="True"
+                               Text="{Binding Password}" />
 
             <Label Text="{Binding ErrorMessage}"
                    TextColor="{StaticResource ErrorColor}"

@@ -17,6 +17,8 @@ public class SignInViewModel : BaseViewModel
     private readonly EntraAuthOptions _options;
 
     private string? _errorMessage;
+    private string _email = string.Empty;
+    private string _password = string.Empty;
 
     public string? ErrorMessage
     {
@@ -28,7 +30,10 @@ public class SignInViewModel : BaseViewModel
 
     public string SignInSubtitle => AppResources.T("AuthSignInToContinue");
 
-    public string SecureSignInHint => AppResources.T("AuthSignInSecureHint");
+    public string EmailLabel => AppResources.T("AuthEmailLabel");
+    public string PasswordLabel => AppResources.T("AuthPasswordLabel");
+    public string EmailPlaceholder => AppResources.T("AuthEmailPlaceholder");
+    public string PasswordPlaceholder => AppResources.T("AuthPasswordPlaceholder");
 
     public string SignInButtonText => AppResources.T("AuthSignIn");
 
@@ -37,6 +42,18 @@ public class SignInViewModel : BaseViewModel
     public string DontHaveAccountText => AppResources.T("AuthDontHaveAccount");
 
     public string SignUpText => AppResources.T("AuthSignUp");
+
+    public string Email
+    {
+        get => _email;
+        set => SetProperty(ref _email, value ?? string.Empty);
+    }
+
+    public string Password
+    {
+        get => _password;
+        set => SetProperty(ref _password, value ?? string.Empty);
+    }
 
     public ICommand SignInCommand { get; }
     public ICommand BackCommand { get; }
@@ -99,10 +116,22 @@ public class SignInViewModel : BaseViewModel
         if (IsBusy) return;
 
         ErrorMessage = null;
+        if (string.IsNullOrWhiteSpace(Email))
+        {
+            ErrorMessage = AppResources.T("AuthEmailRequired");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Password))
+        {
+            ErrorMessage = AppResources.T("AuthPasswordRequired");
+            return;
+        }
+
         IsBusy = true;
         try
         {
-            var result = await _authService.SignInAsync(CancellationToken.None).ConfigureAwait(false);
+            var result = await _authService.SignInWithEmailAsync(Email.Trim(), Password, CancellationToken.None).ConfigureAwait(false);
 
             if (result.Success)
             {
