@@ -35,7 +35,9 @@ using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Features.Settings.ViewModels;
 using RaphCare.Mobile.Core.Features.Settings.Views;
+using RaphCare.Client.Contracts;
 using RaphCare.Mobile.Core.Shared.Configuration;
+using RaphCare.Mobile.Core.Shared.Services.Api;
 using RaphCare.Mobile.Core.Shared.Services.Auth;
 using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
 using RaphCare.Mobile.Core.Shared.Views;
@@ -50,11 +52,13 @@ public static class MobileServiceCollectionExtensions
     public static IServiceCollection AddRaphCareMobile(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EntraAuthOptions>(configuration.GetSection(EntraAuthOptions.SectionName));
+        services.Configure<ApiMobileOptions>(configuration.GetSection(ApiMobileOptions.SectionName));
         services.Configure<OnboardingOptions>(configuration.GetSection(OnboardingOptions.SectionName));
         services.Configure<AppointmentsMobileOptions>(configuration.GetSection(AppointmentsMobileOptions.SectionName));
         services.Configure<FeatureFlagOptions>(configuration.GetSection(FeatureFlagOptions.SectionName));
 
         services.AddSingleton<IAuthService, EntraAuthService>();
+        services.AddSingleton<IClinicIdProvider, ConfigurationClinicIdProvider>();
         services.AddSingleton<RaphCare.Client.Contracts.IAccessTokenProvider, SecureStorageAccessTokenProvider>();
 
 #if ANDROID

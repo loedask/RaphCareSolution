@@ -9,6 +9,7 @@ public interface IEmailPasswordAuthService
         string lastName,
         string email,
         string password,
+        Guid clinicId,
         CancellationToken cancellationToken = default);
 
     Task<(bool Success, string? Error, ApplicationUser? User, Guid PatientId)> SignInAsync(

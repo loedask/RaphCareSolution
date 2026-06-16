@@ -1,5 +1,7 @@
 using AutoMapper;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Services;
 using RaphCare.Client.Services.Base;
@@ -37,6 +39,10 @@ public static class ServiceRegistration
             services.AddTransient<BearerTokenHandler>();
             httpClientBuilder.AddHttpMessageHandler<BearerTokenHandler>();
         }
+
+        services.TryAddSingleton<IClinicIdProvider, NullClinicIdProvider>();
+        services.AddTransient<ClinicIdHeaderHandler>();
+        httpClientBuilder.AddHttpMessageHandler<ClinicIdHeaderHandler>();
 
         services.AddHttpClient(WebhookHttpClientName, client =>
         {

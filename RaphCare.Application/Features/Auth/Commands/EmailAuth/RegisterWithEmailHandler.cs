@@ -5,12 +5,16 @@ namespace RaphCare.Application.Features.Auth.Commands.EmailAuth;
 
 public sealed class RegisterWithEmailHandler(
     IEmailPasswordAuthService emailPasswordAuthService,
-    ITokenService tokenService) : IRequestHandler<RegisterWithEmailCommand, EmailAuthResult>
+    ITokenService tokenService,
+    IClinicContext clinicContext) : IRequestHandler<RegisterWithEmailCommand, EmailAuthResult>
 {
     public async Task<EmailAuthResult> Handle(RegisterWithEmailCommand request, CancellationToken cancellationToken)
     {
+        if (clinicContext.ClinicId is not { } clinicId || clinicId == Guid.Empty)
+            return new EmailAuthResult { Success = false, Error = "X-Clinic-Id header is required." };
+
         var (success, error, user, patientId) = await emailPasswordAuthService
-            .RegisterAsync(request.FirstName, request.LastName, request.Email, request.Password, cancellationToken)
+            .RegisterAsync(request.FirstName, request.LastName, request.Email, request.Password, clinicId, cancellationToken)
             .ConfigureAwait(false);
 
         if (!success || user is null)

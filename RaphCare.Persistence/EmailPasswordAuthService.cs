@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Identity;
 using RaphCare.Domain.Patients;
+using RaphCare.Domain.Patients.Enums;
 
 namespace RaphCare.Persistence;
 
@@ -21,8 +22,12 @@ public class EmailPasswordAuthService(
         string lastName,
         string email,
         string password,
+        Guid clinicId,
         CancellationToken cancellationToken = default)
     {
+        if (clinicId == Guid.Empty)
+            return (false, "Clinic is required.", null, Guid.Empty);
+
         var normalizedEmail = NormalizeEmail(email);
         if (string.IsNullOrWhiteSpace(normalizedEmail))
             return (false, "Email is required.", null, Guid.Empty);
@@ -70,6 +75,16 @@ public class EmailPasswordAuthService(
         _identityDbContext.Users.Add(user);
         _identityDbContext.EmailPasswordCredentials.Add(credential);
         _clinicalDbContext.Patients.Add(patient);
+        _clinicalDbContext.PatientClinicAccesses.Add(new PatientClinicAccess
+        {
+            PatientId = patient.Id,
+            ClinicId = clinicId,
+            AccessType = PatientClinicAccessType.Registered,
+            GrantedAt = _clock.UtcNow,
+            GrantedByRule = "EmailRegistration",
+            LastValidatedAt = _clock.UtcNow,
+            IsActive = true
+        });
         await _identityDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         await _clinicalDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
