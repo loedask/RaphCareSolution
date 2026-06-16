@@ -4,15 +4,18 @@
     "Projects": [
       {
         "Path": "RaphCare.API\\RaphCare.API.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "https"
       },
       {
         "Path": "RaphCare.Mobile\\RaphCare.Mobile.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "Pixel 9 - API 36.0 (Android 16.0 - API 36)"
       },
       {
         "Path": "RaphCare.Web\\RaphCare.Web.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "https"
       }
     ]
   },
@@ -21,11 +24,13 @@
     "Projects": [
       {
         "Path": "RaphCare.API\\RaphCare.API.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "https"
       },
       {
         "Path": "RaphCare.Mobile\\RaphCare.Mobile.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "Pixel 9 - API 36.0 (Android 16.0 - API 36)"
       }
     ]
   }

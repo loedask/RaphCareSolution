@@ -158,12 +158,12 @@ public static class MobileServiceCollectionExtensions
         var address = string.IsNullOrWhiteSpace(configured) ? "http://localhost:5281/" : configured.Trim();
 
 #if DEBUG && ANDROID
-        // Android emulator: localhost is the device itself; 10.0.2.2 reaches the dev machine.
-        if (address.Contains("localhost", StringComparison.OrdinalIgnoreCase))
+        // Emulator: localhost is the device. Local ASP.NET dev HTTPS certs are not trusted on Android.
+        if (Uri.TryCreate(address, UriKind.Absolute, out var uri)
+            && (uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
+                || uri.Host.Equals("10.0.2.2", StringComparison.OrdinalIgnoreCase)))
         {
-            address = address
-                .Replace("https://localhost", "https://10.0.2.2", StringComparison.OrdinalIgnoreCase)
-                .Replace("http://localhost", "http://10.0.2.2", StringComparison.OrdinalIgnoreCase);
+            return "http://10.0.2.2:5281/";
         }
 #endif
 
