@@ -135,6 +135,10 @@ public class RegisterEmailViewModel : BaseViewModel
                 ErrorMessage = result.ErrorMessage ?? AppResources.T("RegisterEmailFailed");
             }
         }
+        catch (Exception)
+        {
+            ErrorMessage = AppResources.T("RegisterEmailFailed");
+        }
         finally
         {
             IsBusy = false;

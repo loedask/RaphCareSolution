@@ -142,6 +142,10 @@ public class SignInViewModel : BaseViewModel
                 ErrorMessage = result.ErrorMessage ?? AppResources.T("AuthSignInFailed");
             }
         }
+        catch (Exception)
+        {
+            ErrorMessage = AppResources.T("AuthSignInFailed");
+        }
         finally
         {
             IsBusy = false;

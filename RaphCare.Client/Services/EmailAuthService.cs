@@ -16,33 +16,34 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
         string password,
         CancellationToken cancellationToken = default)
     {
-        var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
-        using var response = await client.PostAsJsonAsync(
-            "api/auth/email/register",
-            new { firstName, lastName, email, password },
-            cancellationToken).ConfigureAwait(false);
-
-        if (response.IsSuccessStatusCode)
+        try
         {
-            var dto = await response.Content.ReadFromJsonAsync<AuthResponseDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
-            return Response<EmailAuthResult>.Success(new EmailAuthResult
-            {
-                Success = dto?.Success ?? false,
-                Token = dto?.Token
-            });
+            return await PostAuthAsync("api/auth/email/register", new { firstName, lastName, email, password }, cancellationToken)
+                .ConfigureAwait(false);
         }
-
-        var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
-        return Response<EmailAuthResult>.Failure(error, (int)response.StatusCode);
+        catch (HttpRequestException ex)
+        {
+            return Response<EmailAuthResult>.Failure(ex.Message);
+        }
     }
 
     public async Task<Response<EmailAuthResult>> SignInAsync(string email, string password, CancellationToken cancellationToken = default)
     {
+        try
+        {
+            return await PostAuthAsync("api/auth/email/signin", new { email, password }, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex)
+        {
+            return Response<EmailAuthResult>.Failure(ex.Message);
+        }
+    }
+
+    private async Task<Response<EmailAuthResult>> PostAuthAsync(string path, object body, CancellationToken cancellationToken)
+    {
         var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
-        using var response = await client.PostAsJsonAsync(
-            "api/auth/email/signin",
-            new { email, password },
-            cancellationToken).ConfigureAwait(false);
+        using var response = await client.PostAsJsonAsync(path, body, cancellationToken).ConfigureAwait(false);
 
         if (response.IsSuccessStatusCode)
         {
