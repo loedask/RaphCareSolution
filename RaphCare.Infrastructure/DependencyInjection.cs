@@ -52,7 +52,11 @@ public static class DependencyInjection
         services.AddScoped<IAIService, AIService>();
         services.AddScoped<IDeviceIntegrationService, DeviceIntegrationService>();
         services.AddScoped<ITeleSessionService, TeleSessionService>();
-        services.AddScoped<ISpeechToTextService, AzureSpeechToTextService>();
+        services.Configure<SpeechToTextOptions>(configuration.GetSection(SpeechToTextOptions.SectionName));
+        services.AddSingleton<WhisperModelHolder>();
+        services.AddSingleton<WhisperSpeechToTextService>();
+        services.AddSingleton<AzureSpeechToTextService>();
+        services.AddScoped<ISpeechToTextService, SpeechToTextRouter>();
 
         services.Configure<PatientMentalHealthContentOptions>(configuration.GetSection(PatientMentalHealthContentOptions.SectionName));
         services.AddSingleton<IPatientMentalHealthContentProvider, OptionsPatientMentalHealthContentProvider>();
