@@ -1,0 +1,30 @@
+---
+description: RaphCare.Infrastructure — app interface implementations, interceptors, EF configurations
+globs: RaphCare.Infrastructure/**/*.cs
+alwaysApply: false
+---
+
+# RaphCare.Infrastructure
+
+Implements **RaphCare.Application** abstractions that are *not* pure EF data access: cross-cutting tech, external services, and shared EF **configurations** / **interceptors** consumed when building DbContexts.
+
+## What belongs here
+
+- **`Services/`** — Concrete implementations registered in **`AddInfrastructure`**: e.g. **`ICurrentUserService`**, **`IDateTimeProvider`**, **`IEmailService`**, **`ISmsService`**, **`ITokenService`** (+ **`JwtOptions`**), **`IPaymentGatewayService`**, **`IAIService`**, **`IDeviceIntegrationService`**, **`ITeleSessionService`**, **`ISpeechToTextService`**. **Do not** add new services that require **`DbContext`** directly—those belong in **Persistence** (see stub in **`Services/OtpService.cs`**).
+- **`Persistence/Interceptors/`** — **`AuditableEntityInterceptor`**, **`SoftDeleteInterceptor`**, **`DomainEventDispatcherInterceptor`** (resolved from DI when registering contexts in **Persistence**).
+- **`Persistence/Configurations/`** — EF Core **`IEntityTypeConfiguration<T>`** for domain entities (table/column/relationship mapping).
+- **`Persistence/DomainEventDispatcher.cs`** — Implements **`IDomainEventDispatcher`** from Application.
+
+## Registration
+
+- **`DependencyInjection.AddInfrastructure`** — Call **before** **`AddPersistence`** so interceptors exist when DbContexts are configured.
+
+## References
+
+- **Application** (interfaces + domain events contract) and **Domain** (entity types for configurations). **Persistence** references **Infrastructure** for interceptor and configuration *types*; avoid circular dependency from Infrastructure back to Persistence.
+
+## Conventions
+
+- New **`I*Service`** implementation that only calls HTTP, files, or third-party SDKs → **`Services/`**.
+- New behavior that runs inside EF save pipeline → **`Persistence/Interceptors/`** (or extend existing interceptors deliberately).
+- Entity mapping for a type already in **Domain** → **`Persistence/Configurations/{Entity}Configuration.cs`**.

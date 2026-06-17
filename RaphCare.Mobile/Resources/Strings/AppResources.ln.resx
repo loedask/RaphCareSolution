@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AuthWelcomeTagline" xml:space="preserve">
+    <value>Système na yo ya malamu mobimba.
+Ezali na bosaleli. Ezali mayele. Ezali moto.</value>
+  </data>
+  <data name="AuthHealthcareBarriers" xml:space="preserve">
+    <value>Boluki ya malamu sansa ba entrave</value>
+  </data>
+  <data name="AuthLogoCardTagline" xml:space="preserve">
+    <value>Boluki ya malamu sansa ba entrave</value>
+  </data>
+  <data name="AuthSignIn" xml:space="preserve">
+    <value>Kota</value>
+  </data>
+  <data name="AuthCreateAccount" xml:space="preserve">
+    <value>Sala compte</value>
+  </data>
+  <data name="AuthChooseLanguage" xml:space="preserve">
+    <value>Pona monoko na yo</value>
+  </data>
+  <data name="AuthWelcomeBack" xml:space="preserve">
+    <value>Boyei malamu</value>
+  </data>
+  <data name="AuthSignInToContinue" xml:space="preserve">
+    <value>Kota na compte na yo mpo na kokoba.</value>
+  </data>
+  <data name="AuthSignInSecureHint" xml:space="preserve">
+    <value>Okokota na boboto elongo na Microsoft (Entra ID). Fenetre ya navigateur ekofungwama—ndenge na site, mpo na telefone.</value>
+  </data>
+  <data name="AuthForgotPassword" xml:space="preserve">
+    <value>Olibi mot de passe?</value>
+  </data>
+  <data name="AuthDontHaveAccount" xml:space="preserve">
+    <value>Ozali na compte te?</value>
+  </data>
+  <data name="AuthSignUp" xml:space="preserve">
+    <value>Zwa compte</value>
+  </data>
+</root>

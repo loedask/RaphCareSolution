@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Insurance.ViewModels"
+             x:Class="RaphCare.Mobile.Core.Features.Insurance.Views.InsuranceProfileDetailPage"
+             x:DataType="vm:InsuranceProfileDetailViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource PrimaryColor}" />
+
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="{StaticResource ErrorColor}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   Style="{StaticResource BodyMedium}" />
+
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                <Label Text="{Binding PlanLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <Label Text="{Binding PlanLine}" Style="{StaticResource TitleMedium}" />
+
+                <Label Text="{Binding MembershipLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Label Text="{Binding MembershipText}" Style="{StaticResource BodyMedium}" />
+
+                <Label Text="{Binding StartLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Label Text="{Binding StartLine}" Style="{StaticResource BodyMedium}" />
+
+                <Label Text="{Binding EndLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Label Text="{Binding EndLine}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
+
+                <HorizontalStackLayout Spacing="12" Margin="0,8,0,0">
+                    <Label Text="{Binding ActiveLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" VerticalOptions="Center" />
+                    <Switch IsToggled="{Binding IsActive}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <Button Text="{Binding SaveLabel}"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding SaveCommand}"
+                        Margin="0,16,0,0" />
+            </VerticalStackLayout>
+
+            <Button Text="← Back"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding BackCommand}"
+                    Margin="0,8,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

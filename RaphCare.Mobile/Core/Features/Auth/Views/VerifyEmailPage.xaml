@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Shared.Controls"
+             x:Class="RaphCare.Mobile.Core.Features.Auth.Views.VerifyEmailPage"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             Background="{StaticResource AuthBackgroundGradient}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" VerticalOptions="Center" Spacing="24">
+            <Label Text="{Binding Headline}" Style="{StaticResource AuthTitleLabel}" />
+            <Label Text="{Binding Subtitle}"
+                   Style="{StaticResource AuthSubtitleLabel}" />
+
+            <Label Text="{Binding StatusMessage}"
+                   FontSize="13"
+                   LineHeight="1.35"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" Margin="0,0,0,8" FontSize="12" />
+
+            <shared:GradientButton Text="{Binding SignInButtonText}"
+                                   Command="{Binding SignInCommand}"
+                                   IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                   Margin="0,8,0,0" />
+
+            <Button Text="{Binding ResendButtonText}"
+                    Style="{StaticResource AuthSecondaryButton}"
+                    Command="{Binding ResendCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    Margin="0,8,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

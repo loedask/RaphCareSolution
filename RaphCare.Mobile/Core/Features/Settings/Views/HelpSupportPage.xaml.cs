@@ -1,0 +1,15 @@
+using RaphCare.Mobile.Core.Features.Settings.ViewModels;
+using RaphCare.Mobile.Core.Infrastructure.Composition;
+
+namespace RaphCare.Mobile.Core.Features.Settings.Views;
+
+public partial class HelpSupportPage : ContentPage
+{
+    public HelpSupportPage() : this(MobileServiceHub.GetRequiredService<HelpSupportViewModel>()) { }
+
+    public HelpSupportPage(HelpSupportViewModel viewModel)
+    {
+        InitializeComponent();
+        BindingContext = viewModel;
+    }
+}

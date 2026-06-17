@@ -1,0 +1,240 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 264241152 bytes. Error detail: G1 virtual space
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   This process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+#     placed in the first 32GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_windows.cpp:3736), pid=29624, tid=1592
+#
+# JRE version:  (21.0.8+9) (build )
+# Java VM: OpenJDK 64-Bit Server VM (21.0.8+9-LTS, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: com.xamarin.manifestmerger.Main obj\Debug\net10.0-android\android\manifestmerger.rsp
+
+Host: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz, 8 cores, 15G,  Windows 11 , 64 bit Build 22621 (10.0.22621.5415)
+Time: Sun Mar 29 16:16:22 2026 South Africa Standard Time elapsed time: 0.016202 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00000196e4e01bd0):  JavaThread "Unknown thread" [_thread_in_vm, id=1592, stack(0x000000500de00000,0x000000500df00000) (1024K)]
+
+Stack: [0x000000500de00000,0x000000500df00000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x6e1729]
+V  [jvm.dll+0x8bf47b]
+V  [jvm.dll+0x8c19aa]
+V  [jvm.dll+0x8c2083]
+V  [jvm.dll+0x289fd6]
+V  [jvm.dll+0x6de085]
+V  [jvm.dll+0x6d218a]
+V  [jvm.dll+0x366f6e]
+V  [jvm.dll+0x36ee1b]
+V  [jvm.dll+0x3c06b9]
+V  [jvm.dll+0x3c095b]
+V  [jvm.dll+0x33a8b7]
+V  [jvm.dll+0x33b3fb]
+V  [jvm.dll+0x888e5e]
+V  [jvm.dll+0x3cd611]
+V  [jvm.dll+0x871e5c]
+V  [jvm.dll+0x461261]
+V  [jvm.dll+0x462ea1]
+C  [jli.dll+0x52f0]
+C  [ucrtbase.dll+0x29333]
+C  [KERNEL32.DLL+0x1259d]
+C  [ntdll.dll+0x5af78]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ffe60356288, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+Total: 0
+
+Other Threads:
+  0x00000196e7280460 WorkerThread "GC Thread#0"                     [id=11556, stack(0x000000500df00000,0x000000500e000000) (1024K)]
+  0x00000196e7292a10 ConcurrentGCThread "G1 Main Marker"            [id=36332, stack(0x000000500e000000,0x000000500e100000) (1024K)]
+  0x00000196e7293cb0 WorkerThread "G1 Conc#0"                       [id=2308, stack(0x000000500e100000,0x000000500e200000) (1024K)]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffe5fa4d307]
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007ffe603ca8c8] Heap_lock - owner thread: 0x00000196e4e01bd0
+
+Heap address: 0x0000000704000000, size: 4032 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 1.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+ CardTable entry size: 512
+ Card Set container configuration: InlinePtr #cards 4 size 8 Array Of Cards #cards 16 size 48 Howl #buckets 8 coarsen threshold 3686 Howl Bitmap #cards 512 size 80 coarsen threshold 460 Card regions per heap region 1 cards per card region 4096
+
+Heap:
+ garbage-first heap   total 0K, used 0K [0x0000000704000000, 0x0000000800000000)
+  region size 2048K, 0 young (0K), 0 survivors (0K)
+
+[error occurred during error reporting (printing heap information), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffe5fe3ba99]
+GC Heap History (0 events):
+No events
+
+Dll operation events (1 events):
+Event: 0.009 Loaded shared library C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\java.dll
+
+Deoptimization events (0 events):
+No events
+
+Classes loaded (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+ZGC Phase Switch (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Memory protections (0 events):
+No events
+
+Nmethod flushes (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff7183b0000 - 0x00007ff7183be000 	C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\java.exe
+0x00007fffe2fb0000 - 0x00007fffe31c8000 	C:\Windows\SYSTEM32\ntdll.dll
+0x00007fffe20d0000 - 0x00007fffe2194000 	C:\Windows\System32\KERNEL32.DLL
+0x00007fffe0350000 - 0x00007fffe0723000 	C:\Windows\System32\KERNELBASE.dll
+0x00007fffe09d0000 - 0x00007fffe0ae1000 	C:\Windows\System32\ucrtbase.dll
+0x00007fffc2be0000 - 0x00007fffc2bfe000 	C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\VCRUNTIME140.dll
+0x00007fff9d190000 - 0x00007fff9d1a8000 	C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\jli.dll
+0x00007fffe2ce0000 - 0x00007fffe2e92000 	C:\Windows\System32\USER32.dll
+0x00007fffe0200000 - 0x00007fffe0226000 	C:\Windows\System32\win32u.dll
+0x00007fffcd120000 - 0x00007fffcd3bc000 	C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.6060_none_2712eda17382d24b\COMCTL32.dll
+0x00007fffe25c0000 - 0x00007fffe25e9000 	C:\Windows\System32\GDI32.dll
+0x00007fffe0230000 - 0x00007fffe034b000 	C:\Windows\System32\gdi32full.dll
+0x00007fffe2ea0000 - 0x00007fffe2f47000 	C:\Windows\System32\msvcrt.dll
+0x00007fffe0bb0000 - 0x00007fffe0c4a000 	C:\Windows\System32\msvcp_win.dll
+0x00007fffe2580000 - 0x00007fffe25b1000 	C:\Windows\System32\IMM32.DLL
+0x00007fffd7f30000 - 0x00007fffd7f3c000 	C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\vcruntime140_1.dll
+0x00007fff21730000 - 0x00007fff217b9000 	C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\msvcp140.dll
+0x00007ffe5f700000 - 0x00007ffe604ac000 	C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\server\jvm.dll
+0x00007fffe21a0000 - 0x00007fffe2251000 	C:\Windows\System32\ADVAPI32.dll
+0x00007fffe2440000 - 0x00007fffe24e8000 	C:\Windows\System32\sechost.dll
+0x00007fffe0730000 - 0x00007fffe0758000 	C:\Windows\System32\bcrypt.dll
+0x00007fffe2ae0000 - 0x00007fffe2bf8000 	C:\Windows\System32\RPCRT4.dll
+0x00007fffe1ef0000 - 0x00007fffe1f61000 	C:\Windows\System32\WS2_32.dll
+0x00007fffdeed0000 - 0x00007fffdef1d000 	C:\Windows\SYSTEM32\POWRPROF.dll
+0x00007fffdd8d0000 - 0x00007fffdd8da000 	C:\Windows\SYSTEM32\VERSION.dll
+0x00007fffd7360000 - 0x00007fffd7394000 	C:\Windows\SYSTEM32\WINMM.dll
+0x00007fffdeeb0000 - 0x00007fffdeec3000 	C:\Windows\SYSTEM32\UMPDC.dll
+0x00007fffdf150000 - 0x00007fffdf168000 	C:\Windows\SYSTEM32\kernel.appcore.dll
+0x00007fffc2bc0000 - 0x00007fffc2bca000 	C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\jimage.dll
+0x00007fffdd650000 - 0x00007fffdd883000 	C:\Windows\SYSTEM32\DBGHELP.DLL
+0x00007fffe0f60000 - 0x00007fffe12f1000 	C:\Windows\System32\combase.dll
+0x00007fffe2c00000 - 0x00007fffe2cd8000 	C:\Windows\System32\OLEAUT32.dll
+0x00007fffb9800000 - 0x00007fffb9832000 	C:\Windows\SYSTEM32\dbgcore.DLL
+0x00007fffe0950000 - 0x00007fffe09cb000 	C:\Windows\System32\bcryptPrimitives.dll
+0x00007fff06170000 - 0x00007fff06191000 	C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\java.dll
+
+JVMTI agents: none
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin;C:\Windows\SYSTEM32;C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.6060_none_2712eda17382d24b;C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin\server
+
+VM Arguments:
+java_command: com.xamarin.manifestmerger.Main obj\Debug\net10.0-android\android\manifestmerger.rsp
+java_class_path (initial): C:\Program Files\dotnet\packs\Microsoft.Android.Sdk.Windows\36.1.30\tools\manifestmerger.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 4                                         {product} {ergonomic}
+     uint ConcGCThreads                            = 2                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 8                                         {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 2097152                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 264241152                                 {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 4227858432                                {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 2097152                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 8388608                                   {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 5839372                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122909434                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122909434                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 4227858432                             {manageable} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags foldmultilines=false
+ #1: stderr all=off uptime,level,tags foldmultilines=false
+
+Environment Variables:
+PATH=C:\Program Files (x86)\Android\openjdk\jdk-21.0.8\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.6.7-hotspot\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\laragon\bin\php\php-8.3.16-Win32-vs16-x64;C:\laragon\bin\composer;C:\laragon\bin\nodejs\node-v22;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\PuTTY\;C:\Users\Sanel\.config\herd\bin\nvm;C:\Program Files\nodejs;C:\Program Files\dotnet\;C:\Program Files\Git\cmd;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\Sanel\.config\herd\bin;C:\Users\Sanel\AppData\Local\Microsoft\WindowsApps;C:\Users\Sanel\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Sanel\AppData\Local\GitHubDesktop\bin;C:\Users\Sanel\AppData\Local\Programs\cursor\resources\app\bin;C:\Program Files (x86)\Rico Suter\NSwagStudio\NSwagStudio\;C:\Users\Sanel\.dotnet\tools;C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\PrivateAssemblies\runtimes\win-x64\native
+USERNAME=Sanel
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 140 Stepping 1, GenuineIntel
+TMP=C:\Users\Sanel\AppData\Local\Temp
+TEMP=C:\Users\Sanel\AppData\Local\Temp
+
+
+
+
+Periodic native trim disabled
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 11 , 64 bit Build 22621 (10.0.22621.5415)
+OS uptime: 2 days 21:41 hours
+Hyper-V role detected
+
+CPU: total 8 (initial active 8) (4 cores per cpu, 2 threads per core) family 6 model 140 stepping 1 microcode 0xbe, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, adx, avx512f, avx512dq, avx512cd, avx512bw, avx512vl, sha, fma, vzeroupper, avx512_vpopcntdq, avx512_vpclmulqdq, avx512_vaes, avx512_vnni, clflush, clflushopt, clwb, avx512_vbmi2, avx512_vbmi, hv, rdtscp, rdpid, fsrm, gfni, avx512_bitalg, f16c, cet_ibt, cet_ss, avx512_ifma
+Processor Information for the first 8 processors :
+  Max Mhz: 1382, Current Mhz: 1382, Mhz Limit: 1382
+
+Memory: 4k page, system-wide physical 16122M (1096M free)
+TotalPageFile size 46531M (AvailPageFile size 103M)
+current process WorkingSet (physical memory assigned to process): 11M, peak: 11M
+current process commit charge ("private bytes"): 60M, peak: 312M
+
+vm_info: OpenJDK 64-Bit Server VM (21.0.8+9-LTS) for windows-amd64 JRE (21.0.8+9-LTS), built on 2025-07-10T20:22:44Z by "MicrosoftCorporation" with unknown MS VC++:1944
+
+END.

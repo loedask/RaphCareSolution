@@ -1,0 +1,102 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFrameworks>net10.0-android</TargetFrameworks>
+        <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+
+        <!-- Note for MacCatalyst:
+            The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
+            When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
+            The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
+            either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
+        <!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+
+        <OutputType>Exe</OutputType>
+        <RootNamespace>RaphCare.Mobile</RootNamespace>
+        <UseMaui>true</UseMaui>
+        <SingleProject>true</SingleProject>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <EnableDefaultCssItems>false</EnableDefaultCssItems>
+        <Nullable>enable</Nullable>
+        <NeutralLanguage>en</NeutralLanguage>
+        <UserSecretsId>7c8e9f0a-1b2c-4d5e-8f9a-0b1c2d3e4f5a</UserSecretsId>
+
+        <!-- XAML: use runtime inflation (SourceGen had issues with ResourceDictionary/Styles) -->
+
+        <!-- Display name -->
+        <ApplicationTitle>RaphCare.Mobile</ApplicationTitle>
+
+        <!-- App Identifier -->
+        <ApplicationId>com.companyname.raphcare.mobile</ApplicationId>
+
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+
+        <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
+        <WindowsPackageType>None</WindowsPackageType>
+
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+        <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- App Icon -->
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+
+        <!-- Splash Screen -->
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+
+        <!-- Images -->
+        <MauiImage Include="Resources\Images\*" />
+        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
+        <MauiImage Update="Resources\Images\raphcare_logo.png" BaseSize="320,120" />
+        <MauiImage Update="Resources\Images\tab_home.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\tab_appointments.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\tab_records.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\tab_insurance.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\tab_profile.svg" BaseSize="24,24" />
+
+        <!-- Custom Fonts (OFL license texts live alongside but are not MauiFont items) -->
+        <MauiFont Include="Resources\Fonts\*.ttf" />
+
+        <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Plugin.BLE" Version="3.1.0" />
+        <PackageReference Include="Plugin.Maui.Audio" Version="4.0.0" />
+        <ProjectReference Include="..\RaphCare.Mobile.Kernel\RaphCare.Mobile.Kernel.csproj" />
+        <ProjectReference Include="..\RaphCare.Client\RaphCare.Client.csproj" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Identity.Client" Version="4.66.0" />
+    </ItemGroup>
+
+    <!-- Native Agora RTC (Java); Bind=false — we call RtcEngine via JNI from Platforms/Android. -->
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <AndroidMavenLibrary Include="io.agora.rtc:full-sdk" Version="4.5.2" Bind="false" VerifyDependencies="false" />
+    </ItemGroup>
+
+    <!-- Optional: HBand vendor SDK (https://github.com/HBandSDK/Android_Ble_SDK). Run tools/download-hband-android-libs.ps1; see docs/12_HBand_SDK_Integration.md. Embeds JARs only — C# still needs a binding project to call VPOperateManager. -->
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' AND Exists('Platforms\Android\libs\vpbluetooth-1.18.aar') AND Exists('Platforms\Android\libs\vpprotocol-2.3.48.15.aar') AND Exists('Platforms\Android\libs\gson-2.2.4.jar')">
+        <AndroidLibrary Include="Platforms\Android\libs\vpbluetooth-1.18.aar" />
+        <AndroidLibrary Include="Platforms\Android\libs\vpprotocol-2.3.48.15.aar" />
+        <AndroidJavaLibrary Include="Platforms\Android\libs\gson-2.2.4.jar" />
+    </ItemGroup>
+
+</Project>

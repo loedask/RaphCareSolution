@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Billing.ViewModels"
+             xmlns:bill="clr-namespace:RaphCare.Client.Models.Billing;assembly=RaphCare.Client"
+             x:Class="RaphCare.Mobile.Core.Features.Billing.Views.BillingPage"
+             x:DataType="vm:BillingViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <Grid RowDefinitions="Auto,*" Padding="24" RowSpacing="12">
+        <HorizontalStackLayout Grid.Row="0" Spacing="12">
+            <Button Text="{Binding RefreshButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding RefreshCommand}"
+                    HorizontalOptions="Start" />
+            <Button Text="{Binding AddPaymentButtonText}"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding AddPaymentCommand}"
+                    HorizontalOptions="End" />
+        </HorizontalStackLayout>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16">
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource PrimaryColor}"
+                                   VerticalOptions="Center" />
+
+                <Label Text="{Binding ErrorMessage}"
+                       Style="{StaticResource BodyMedium}"
+                       TextColor="{StaticResource ErrorColor}"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                    <Label Text="{Binding CurrentPlanLabel}"
+                           Style="{StaticResource BodyMedium}"
+                           FontAttributes="Bold" />
+                    <Label Text="{Binding CurrentPlanSummary}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}" />
+
+                    <VerticalStackLayout Spacing="8" IsVisible="{Binding HasUpgradeChoices}">
+                        <Label Text="{Binding UpgradeSectionTitle}"
+                               Style="{StaticResource BodyMedium}"
+                               FontAttributes="Bold"
+                               Margin="0,8,0,0" />
+                        <Picker ItemsSource="{Binding PlanOptions}"
+                                ItemDisplayBinding="{Binding DisplayName}"
+                                SelectedItem="{Binding SelectedUpgradePlan}"
+                                Title="{Binding UpgradePickerTitle}" />
+                        <Button Text="{Binding UpgradeButtonText}"
+                                Style="{StaticResource PrimaryButton}"
+                                Command="{Binding UpgradeCommand}" />
+                    </VerticalStackLayout>
+
+                    <Label Text="{Binding PaymentMethodsSectionTitle}"
+                           Style="{StaticResource BodyMedium}"
+                           FontAttributes="Bold"
+                           Margin="0,8,0,0" />
+
+                    <CollectionView ItemsSource="{Binding PaymentMethods}"
+                                    SelectionMode="None"
+                                    IsVisible="{Binding ShowEmptyPayments, Converter={StaticResource InvertedBoolConverter}}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="bill:PatientPaymentMethodViewModel">
+                                <Border Style="{StaticResource CardBorder}" Padding="16" Margin="0,0,0,12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="8">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="{Binding ProviderName}"
+                                                   Style="{StaticResource BodyMedium}"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="StartAndExpand" />
+                                            <Label Text="{Binding MethodType}"
+                                                   Style="{StaticResource BodySmall}"
+                                                   TextColor="{StaticResource MutedForegroundColor}"
+                                                   VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding MaskedDetails}"
+                                               Style="{StaticResource BodySmall}"
+                                               TextColor="{StaticResource MutedForegroundColor}" />
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Button Style="{StaticResource SecondaryButton}"
+                                                    Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetDefaultButtonText}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetDefaultCommand}"
+                                                    CommandParameter="{Binding Id}"
+                                                    IsVisible="{Binding IsDefault, Converter={StaticResource InvertedBoolConverter}}"
+                                                    HorizontalOptions="Start" />
+                                            <Button Style="{StaticResource SecondaryButton}"
+                                                    Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveButtonText}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveMethodCommand}"
+                                                    CommandParameter="{Binding Id}"
+                                                    HorizontalOptions="Start" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Label Text="{Binding EmptyPaymentsText}"
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="{Binding ShowEmptyPayments}" />
+
+                    <Label Text="{Binding HistorySectionTitle}"
+                           Style="{StaticResource BodyMedium}"
+                           FontAttributes="Bold"
+                           Margin="0,8,0,0" />
+
+                    <CollectionView ItemsSource="{Binding Invoices}"
+                                    SelectionMode="None"
+                                    IsVisible="{Binding ShowEmptyInvoices, Converter={StaticResource InvertedBoolConverter}}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="bill:PatientInvoiceHistoryItemViewModel">
+                                <Border Style="{StaticResource CardBorder}" Padding="16" Margin="0,0,0,12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="4">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <HorizontalStackLayout Spacing="4">
+                                                <Label Text="{Binding Currency}"
+                                                       Style="{StaticResource BodyMedium}"
+                                                       FontAttributes="Bold" />
+                                                <Label Text="{Binding Amount, StringFormat='{0:0.00}'}"
+                                                       Style="{StaticResource BodyMedium}"
+                                                       FontAttributes="Bold" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding Status}"
+                                                   Style="{StaticResource BodySmall}"
+                                                   TextColor="{StaticResource MutedForegroundColor}"
+                                                   VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding DueDate, StringFormat='Due {0:d}'}"
+                                               Style="{StaticResource BodySmall}"
+                                               TextColor="{StaticResource MutedForegroundColor}" />
+                                        <Label Text="{Binding PaidAt, StringFormat='Paid {0:g}'}"
+                                               Style="{StaticResource BodySmall}"
+                                               TextColor="{StaticResource MutedForegroundColor}"
+                                               IsVisible="{Binding PaidAt, Converter={StaticResource NotNullConverter}}" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Label Text="{Binding EmptyInvoicesText}"
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="{Binding ShowEmptyInvoices}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

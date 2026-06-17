@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Shared.Controls"
+             x:Class="RaphCare.Mobile.Core.Features.Auth.Views.RegisterPhonePage"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <HorizontalStackLayout Margin="0,48,0,24" HorizontalOptions="Start">
+                <Button Style="{StaticResource IconBackButton}" Text="←" FontSize="20" Command="{Binding BackCommand}" />
+            </HorizontalStackLayout>
+
+            <Border WidthRequest="56" HeightRequest="56" StrokeThickness="0" Padding="0" HorizontalOptions="Start" Margin="0,0,0,8">
+                <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+                        <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Label Text="📞" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="{Binding Title}" Style="{StaticResource TitleLarge}" Margin="0,0,0,4" />
+            <Label Text="{Binding Subtitle}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   Margin="0,0,0,24" />
+
+            <Label Text="{Binding PhoneFieldLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,0,0,8" />
+
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <Picker Grid.Column="0"
+                        WidthRequest="160"
+                        ItemsSource="{Binding Countries}"
+                        ItemDisplayBinding="{Binding Display}"
+                        SelectedItem="{Binding SelectedCountry}"
+                        TextColor="{StaticResource ForegroundColor}"
+                        BackgroundColor="{StaticResource CardColor}" />
+                <Entry Grid.Column="1"
+                       Text="{Binding LocalNumber}"
+                       Keyboard="Telephone"
+                       Placeholder="812 345 6789"
+                       Style="{StaticResource DefaultEntry}" />
+            </Grid>
+
+            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" FontSize="12" />
+
+            <shared:GradientButton Text="{Binding ContinueText}"
+                                   Command="{Binding ContinueCommand}"
+                                   IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                   Margin="0,16,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

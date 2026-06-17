@@ -1,0 +1,24 @@
+---
+description: RaphCare.Identity — Entra JWT, provisioning, role mapping
+globs: RaphCare.Identity/**/*.cs
+alwaysApply: false
+---
+
+# RaphCare.Identity
+
+Authentication and **Entra ID** integration for the API host. Part of the vertical slice described in **`.cursor/rules/raphcare-solution-layers.mdc`**.
+
+## What belongs here
+
+- **`Entra/`** — `EntraOptions` (bound from configuration), **`EntraTokenValidator`**, **`EntraUserProvisioningService`** (`IUserProvisioningService`), **`EntraRoleMapper`**.
+- **`DependencyInjection.cs`** — **`AddIdentity`**: JWT Bearer scheme, token validation parameters, **`OnTokenValidated`** hook that runs provisioning/mapping via scoped services.
+
+## References
+
+- May reference **RaphCare.Application** (**`IUserProvisioningService`** and related contracts; implementations live in **`Entra/`**) and **RaphCare.Domain** for user/role concepts used during provisioning.
+- **Do not** reference **RaphCare.Persistence** directly. User persistence goes through **`IApplicationUserStore`** (implemented in **Persistence**); Identity wires provisioning only.
+
+## Conventions
+
+- Keep Entra-specific options and validation in **`Entra/`**; keep registration in **`DependencyInjection`** readable and configuration-driven (`EntraOptions.SectionName`).
+- No EF Core `DbContext` types in this project—no migrations or entity configurations here.

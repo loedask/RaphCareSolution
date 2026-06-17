@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <!-- Prototype: input-premium py-3.5 px-4 rounded-xl bg-secondary/60 border border-border. h-12 in EmailRegister -->
+    <Style TargetType="Entry" x:Key="DefaultEntry">
+        <Setter Property="BackgroundColor" Value="{StaticResource CardColor}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource MutedForegroundColor}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+
+    <Style TargetType="Entry" x:Key="AuthEntry" BasedOn="{StaticResource DefaultEntry}">
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style TargetType="Entry" x:Key="PremiumEntry" BasedOn="{StaticResource DefaultEntry}">
+        <Setter Property="BackgroundColor" Value="{StaticResource CardColor}" />
+        <Setter Property="HeightRequest" Value="48" />
+    </Style>
+
+    <Style TargetType="Editor" x:Key="DefaultEditor">
+        <Setter Property="BackgroundColor" Value="{StaticResource CardColor}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource MutedForegroundColor}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="MinimumHeightRequest" Value="100" />
+        <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+</ResourceDictionary>

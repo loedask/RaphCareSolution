@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Auth.ViewModels"
+             x:Class="RaphCare.Mobile.Core.Features.Auth.Views.LandingPage"
+             x:Name="LandingRoot"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             Background="{StaticResource AuthBackgroundGradient}">
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="24,56,24,32" Spacing="0">
+                <Grid HeightRequest="8" />
+
+                <!-- Branding: replace Resources/Images/raphcare_logo.png with your production asset (same key). -->
+                <Border BackgroundColor="{StaticResource CardColor}"
+                        Stroke="{StaticResource BorderColor}"
+                        StrokeThickness="1"
+                        Padding="16,18"
+                        Margin="0,0,0,28"
+                        HorizontalOptions="Center"
+                        MaximumWidthRequest="300">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Image Source="raphcare_logo.png"
+                           Aspect="AspectFit"
+                           HeightRequest="104"
+                           SemanticProperties.Description="RaphCare logo" />
+                </Border>
+
+                <Label Text="{Binding WelcomeTagline}"
+                       TextColor="{StaticResource TealGlowColor}"
+                       Opacity="0.85"
+                       FontSize="18"
+                       LineHeight="1.35"
+                       HorizontalTextAlignment="Center"
+                       Margin="8,0,8,36" />
+
+                <Button Text="{Binding SignInText}"
+                        Style="{StaticResource AuthPrimaryButton}"
+                        Command="{Binding SignInCommand}"
+                        Margin="0,0,0,12" />
+
+                <Button Text="{Binding CreateAccountText}"
+                        Style="{StaticResource AuthSecondaryButton}"
+                        Command="{Binding CreateAccountCommand}" />
+
+                <Label Text="{Binding FooterTagline}"
+                       Style="{StaticResource Micro}"
+                       TextColor="{StaticResource TealGlowColor}"
+                       Opacity="0.55"
+                       FontSize="11"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,36,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Language chip (concept: globe + language name) -->
+        <Border Padding="12,8"
+                StrokeThickness="1"
+                Stroke="#33FFFFFF"
+                BackgroundColor="#19FFFFFF"
+                HorizontalOptions="End"
+                VerticalOptions="Start"
+                Margin="0,28,16,0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20" />
+            </Border.StrokeShape>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding OpenLanguageSheetCommand}" />
+            </Border.GestureRecognizers>
+            <HorizontalStackLayout Spacing="8">
+                <Label Text="&#x1F310;"
+                       FontSize="15"
+                       VerticalOptions="Center" />
+                <Label Text="{Binding CurrentLanguageNative}"
+                       FontSize="13"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TealGlowColor}"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </Border>
+
+        <!-- Bottom sheet: language list -->
+        <Grid IsVisible="{Binding IsLanguageSheetOpen}"
+              ZIndex="100"
+              VerticalOptions="Fill">
+            <Grid RowDefinitions="*,Auto">
+                <BoxView Grid.Row="0"
+                         Color="#99000000"
+                         VerticalOptions="Fill">
+                    <BoxView.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CloseLanguageSheetCommand}" />
+                    </BoxView.GestureRecognizers>
+                </BoxView>
+                <Border Grid.Row="1"
+                        BackgroundColor="{StaticResource CardColor}"
+                        Padding="20,16,20,32">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24,24,0,0" />
+                    </Border.StrokeShape>
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="{Binding ChooseLanguageTitle}"
+                           FontFamily="SpaceGrotesk"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{StaticResource ForegroundColor}" />
+                    <VerticalStackLayout Spacing="8"
+                                         BindableLayout.ItemsSource="{Binding Languages}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:LanguageOption">
+                                <Border Padding="14,12"
+                                        BackgroundColor="{Binding IsCurrent, Converter={StaticResource LanguageRowHighlightConverter}}"
+                                        StrokeThickness="1"
+                                        Stroke="{StaticResource BorderColor}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="14" />
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectLanguageCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding Native}"
+                                                   FontSize="15"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource ForegroundColor}" />
+                                            <Label Text="{Binding English}"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource MutedForegroundColor}" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1"
+                                               Text="✓"
+                                               FontSize="18"
+                                               TextColor="{StaticResource PrimaryColor}"
+                                               VerticalOptions="Center"
+                                               IsVisible="{Binding IsCurrent}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

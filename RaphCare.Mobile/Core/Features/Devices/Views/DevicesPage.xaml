@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Name="ThisPage"
+             xmlns:models="clr-namespace:RaphCare.Mobile.Core.Features.Devices.Models"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Devices.ViewModels"
+             x:Class="RaphCare.Mobile.Core.Features.Devices.Views.DevicesPage"
+             x:DataType="vm:DevicesViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="24" RowSpacing="12">
+        <HorizontalStackLayout Grid.Row="0" Spacing="12">
+            <Button Text="{Binding ScanButtonText}"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding ScanCommand}"
+                    IsEnabled="{Binding BleSupported}" />
+            <Button Text="{Binding StopScanButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding StopScanCommand}" />
+            <Button Text="←"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding BackCommand}"
+                    WidthRequest="48" />
+        </HorizontalStackLayout>
+
+        <VerticalStackLayout Grid.Row="1" Spacing="6">
+            <Button Text="{Binding ShowAllToggleText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding ToggleShowAllCommand}"
+                    HorizontalOptions="Start"
+                    IsVisible="{Binding BleSupported}" />
+            <Label Text="{Binding StatusHint}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding BleSupported}" />
+            <Label Text="{Binding ErrorMessage}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource ErrorColor}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+            <Label Text="{Binding BleUnsupportedMessage}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding BleSupported, Converter={StaticResource InvertedBoolConverter}}" />
+        </VerticalStackLayout>
+
+        <ScrollView Grid.Row="2" IsVisible="{Binding BleSupported}">
+            <VerticalStackLayout Spacing="16">
+                <ActivityIndicator IsRunning="{Binding IsScanningUi}" IsVisible="{Binding IsScanningUi}" Color="{StaticResource PrimaryColor}" />
+
+                <Label Text="{Binding ConnectHint}"
+                       Style="{StaticResource BodySmall}"
+                       TextColor="{StaticResource MutedForegroundColor}" />
+
+                <CollectionView ItemsSource="{Binding Items}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:WearableDeviceRowViewModel">
+                            <Grid Margin="0,0,0,10">
+                                <Border Style="{StaticResource CardBorder}" Padding="16">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                        <Label Grid.Row="0" Grid.Column="0"
+                                               Text="{Binding Title}"
+                                               Style="{StaticResource BodyMedium}"
+                                               FontAttributes="Bold" />
+                                        <Label Grid.Row="1" Grid.Column="0"
+                                               Text="{Binding RssiText, StringFormat='RSSI {0}'}"
+                                               Style="{StaticResource BodySmall}"
+                                               TextColor="{StaticResource MutedForegroundColor}" />
+                                        <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                                                Text="{Binding Path=BindingContext.DevicesConnectLabel, Source={x:Reference ThisPage}}"
+                                                Style="{StaticResource PrimaryButton}"
+                                                Command="{Binding Path=BindingContext.ConnectCommand, Source={x:Reference ThisPage}}"
+                                                CommandParameter="{Binding Id}"
+                                                VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="{Binding DisconnectButtonText}"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding DisconnectCommand}"
+                        HorizontalOptions="Start" />
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="{Binding LastReadingLabel}"
+                           Style="{StaticResource SectionTitle}"
+                           TextColor="{StaticResource ForegroundColor}" />
+                    <Label Text="{Binding VitalsHeartLine}"
+                           Style="{StaticResource BodyMedium}"
+                           IsVisible="{Binding VitalsHeartLine, Converter={StaticResource StringNotEmptyConverter}}" />
+                    <Label Text="{Binding VitalsSpo2Line}"
+                           Style="{StaticResource BodyMedium}"
+                           IsVisible="{Binding VitalsSpo2Line, Converter={StaticResource StringNotEmptyConverter}}" />
+                    <Label Text="{Binding VitalsRawLine}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           IsVisible="{Binding VitalsRawLine, Converter={StaticResource StringNotEmptyConverter}}" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cloud sync (Vertical 5b)"
+                           Style="{StaticResource SectionTitle}"
+                           TextColor="{StaticResource ForegroundColor}" />
+
+                    <Label Text="Enter the bracelet serial (from packaging) and register once. Then you can sync readings."
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}" />
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Entry Grid.Column="0"
+                               Placeholder="Serial number"
+                               Text="{Binding SerialNumber}"
+                               Style="{StaticResource TextEntry}" />
+                        <Picker Grid.Column="1"
+                                WidthRequest="110"
+                                Title="SKU"
+                                ItemsSource="{Binding ModelSkuOptions}"
+                                SelectedItem="{Binding ModelSku}" />
+                    </Grid>
+
+                    <HorizontalStackLayout Spacing="12">
+                        <Button Text="Register"
+                                Style="{StaticResource PrimaryButton}"
+                                Command="{Binding RegisterCommand}" />
+                        <Button Text="{Binding SyncReadingsButtonText}"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding SyncLastReadingCommand}" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="{Binding RegisteredDeviceId, StringFormat='Registered device id: {0}'}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           IsVisible="{Binding RegisteredDeviceId, Converter={StaticResource NotNullConverter}}" />
+
+                    <Label Text="{Binding SyncResultText}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           IsVisible="{Binding SyncResultText, Converter={StaticResource StringNotEmptyConverter}}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RaphCare.Mobile.Core.Shared.Views.UnderConstructionPage"
+             x:Name="PageRoot"
+             Title="Coming Soon"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout VerticalOptions="Center" Padding="32" Spacing="24">
+            <Label Text="🚧"
+                   FontSize="64"
+                   HorizontalOptions="Center"
+                   Margin="0,48,0,0" />
+            <Label Text="This feature is currently under development."
+                   Style="{StaticResource BodyLarge}"
+                   HorizontalTextAlignment="Center"
+                   HorizontalOptions="Center" />
+            <Label x:Name="FeatureLabel"
+                   Style="{StaticResource BodySmall}"
+                   HorizontalTextAlignment="Center"
+                   HorizontalOptions="Center" />
+            <Button Text="Go Back"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding GoBackCommand}"
+                    Margin="0,24,0,48"
+                    HorizontalOptions="Center" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

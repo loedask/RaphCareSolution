@@ -1,0 +1,42 @@
+---
+description: React (Vite) concept app — design must match exactly when porting to RaphCare.Mobile (MAUI)
+globs: RaphCare.Mobile/**/*,RaphCare.Mobile/**/*.xaml,RaphCare.Mobile.Kernel/**/*.cs,RaphCare.Client/**/*.cs
+alwaysApply: false
+---
+
+# Mobile concept — design source (React + Vite)
+
+## Source repo
+
+**`C:\laragon\www\raphcare-mobile-app-concept`** — **React 18 + Vite + TypeScript**. UI stack includes **Tailwind CSS**, **shadcn/ui** (built on **Radix UI**), **lucide-react** icons, **framer-motion**, **react-router-dom**, **TanStack Query**, **react-hook-form** + **zod**, toasts (**sonner** / **radix toast**), and **i18n** under `src/i18n/`.
+
+**Do not** port those libraries into MAUI. **Do** port **design tokens and layout** so the app **looks the same**.
+
+**Authoritative port doc in this repo:** **`docs/Mobile_Concept_Port.md`** (fonts, HSL tokens from `index.css`, typography scale from `tailwind.config.ts`, route ↔ feature map, parity checklist). **Keep it updated** when the concept changes.
+
+## What must match
+
+As closely as MAUI allows: **colors** (`:root` / `.dark` HSL in `src/index.css`), **typography** (Space Grotesk display, DM Sans body; `text-page-title` … `text-micro` scale), **spacing**, **radii** (base `--radius: 0.875rem`), **shadows**, **gradients**, **borders**, **icon weight/size**, **layout** and **component states**. The concept is the **design spec**, not the architecture spec.
+
+## Fidelity rules for RaphCare.Mobile
+
+- **Match the concept first** per screen/control; then wire **Shell**, **ViewModels**, **Client**, **Kernel** per **`.cursor/rules/raphcare-mobile.mdc`**.
+- Map tokens into **`Resources/Styles/`** and shared **`Core/Shared/Controls/`**—avoid one-off colors in page XAML.
+- Document intentional deltas in **`docs/Mobile_Concept_Port.md`** (or comments). Default: **closest visual match**, not MAUI/template defaults.
+
+## Architecture vs design
+
+- **Structure / DI / features:** this solution’s rules.
+- **Look and feel:** the **React concept** exactly unless the user approves a change.
+
+## Making the concept visible to Cursor
+
+The concept folder is **outside** **`RaphCareSolution`** unless you add it to the workspace:
+
+1. **Multi-root workspace** — Add the Laragon path so you can **`@`** `src/pages/*.tsx`, `src/index.css`, `src/components/ui/*`.
+2. **Paste / attach** — Screenshots or snippets for the screen in progress.
+3. **`docs/Mobile_Concept_Port.md`** — Filled **MAUI resource** column next to each token as you lock colors.
+
+## Optional
+
+A **`.cursor/rules/`** inside the concept repo applies only when that folder is opened alone.

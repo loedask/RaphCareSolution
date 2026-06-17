@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Settings.ViewModels"
+             xmlns:models="clr-namespace:RaphCare.Mobile.Core.Features.Settings.Models"
+             x:Class="RaphCare.Mobile.Core.Features.Settings.Views.SettingsPage"
+             x:DataType="vm:ProfileHubViewModel"
+             Shell.NavBarIsVisible="False"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,56,24,24" Spacing="20">
+            <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                <Grid WidthRequest="96" HeightRequest="96" HorizontalOptions="Center">
+                    <Border BackgroundColor="{StaticResource SecondaryColor}"
+                            StrokeThickness="0"
+                            HorizontalOptions="Fill"
+                            VerticalOptions="Fill">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="24" />
+                        </Border.StrokeShape>
+                        <Label Text="👤"
+                               FontSize="36"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
+                    <Button FontSize="12"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="12"
+                            Padding="0"
+                            Text="📷"
+                            BackgroundColor="{StaticResource PrimaryColor}"
+                            TextColor="{StaticResource PrimaryForegroundColor}"
+                            HorizontalOptions="End"
+                            VerticalOptions="End"
+                            Margin="0,0,-4,-4"
+                            Command="{Binding OpenPhotoCommand}" />
+                </Grid>
+
+                <Label Text="{Binding DisplayName}"
+                       Style="{StaticResource TitleLarge}"
+                       FontFamily="SpaceGrotesk"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="{Binding EmailLine}"
+                       Style="{StaticResource BodyMedium}"
+                       TextColor="{StaticResource MutedForegroundColor}"
+                       HorizontalTextAlignment="Center" />
+
+                <Border BackgroundColor="{StaticResource AccentColor}"
+                        StrokeThickness="0"
+                        Opacity="0.12"
+                        Padding="14,8"
+                        HorizontalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="999" />
+                    </Border.StrokeShape>
+                    <HorizontalStackLayout Spacing="6" HorizontalOptions="Center">
+                        <Label Text="✓" TextColor="{StaticResource AccentColor}" FontSize="12" VerticalOptions="Center" />
+                        <Label Text="{Binding InsuranceBadgeText}"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource AccentColor}"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Button Style="{StaticResource SecondaryButton}"
+                        Text="{Binding EditProfileButtonText}"
+                        Command="{Binding EditProfileCommand}"
+                        HorizontalOptions="Center"
+                        Padding="24,10" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="0"
+                                 BindableLayout.ItemsSource="{Binding Sections}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:ProfileSectionModel">
+                        <VerticalStackLayout Spacing="12" Margin="0,0,0,8">
+                            <Label Text="{Binding Title}"
+                                   Style="{StaticResource SectionTitle}"
+                                   Margin="4,0,0,0" />
+                            <Border Style="{StaticResource CardBorder}" Margin="0">
+                                <VerticalStackLayout Spacing="0"
+                                                     BindableLayout.ItemsSource="{Binding Items}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="models:ProfileMenuRowModel">
+                                            <VerticalStackLayout Spacing="0">
+                                                <Grid ColumnDefinitions="Auto,*,Auto"
+                                                      Padding="16,14"
+                                                      BackgroundColor="Transparent">
+                                                    <Border Grid.Column="0"
+                                                            Style="{StaticResource ProfileMenuIconBorder}"
+                                                            Margin="0,0,12,0">
+                                                        <Label Text="{Binding IconGlyph}"
+                                                               FontSize="16"
+                                                               HorizontalOptions="Center"
+                                                               VerticalOptions="Center" />
+                                                    </Border>
+                                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                                        <Label Text="{Binding Title}"
+                                                               Style="{StaticResource BodyMedium}"
+                                                               FontAttributes="Bold" />
+                                                        <Label Text="{Binding Subtitle}"
+                                                               Style="{StaticResource Caption}"
+                                                               TextColor="{StaticResource MutedForegroundColor}"
+                                                               LineBreakMode="TailTruncation"
+                                                               MaxLines="2" />
+                                                    </VerticalStackLayout>
+                                                    <Label Grid.Column="2"
+                                                           Text="›"
+                                                           FontSize="18"
+                                                           TextColor="{StaticResource MutedForegroundColor}"
+                                                           VerticalOptions="Center"
+                                                           Opacity="0.5" />
+                                                    <Grid.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding TapCommand}" />
+                                                    </Grid.GestureRecognizers>
+                                                </Grid>
+                                                <BoxView HeightRequest="1"
+                                                         Color="{StaticResource BorderColor}"
+                                                         Margin="16,0"
+                                                         IsVisible="{Binding ShowSeparator}" />
+                                            </VerticalStackLayout>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Button Text="{Binding SignOutButtonText}"
+                    Command="{Binding SignOutCommand}"
+                    TextColor="{StaticResource DestructiveColor}"
+                    BackgroundColor="#14DB4343"
+                    FontAttributes="Bold"
+                    CornerRadius="16"
+                    Padding="16,14"
+                    Margin="0,8,0,0" />
+
+            <Label Text="{Binding AppVersionLabel}"
+                   Style="{StaticResource Micro}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   HorizontalTextAlignment="Center"
+                   Opacity="0.7"
+                   Margin="0,8,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

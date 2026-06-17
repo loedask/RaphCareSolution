@@ -1,0 +1,1409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>RaphCare</value>
+  </data>
+  <data name="HomeWelcome" xml:space="preserve">
+    <value>Welcome to RaphCare</value>
+  </data>
+  <data name="HomeSignedIn" xml:space="preserve">
+    <value>You're signed in.</value>
+  </data>
+  <data name="OpenBlazorSample" xml:space="preserve">
+    <value>Open Blazor sample UI</value>
+  </data>
+  <data name="AuthWelcomeTagline" xml:space="preserve">
+    <value>Your complete healthcare ecosystem.
+Accessible. Intelligent. Human.</value>
+  </data>
+  <data name="AuthHealthcareBarriers" xml:space="preserve">
+    <value>Healthcare Without Barriers</value>
+  </data>
+  <data name="AuthLogoCardTagline" xml:space="preserve">
+    <value>Healthcare Without Barriers</value>
+  </data>
+  <data name="AuthSignIn" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="AuthCreateAccount" xml:space="preserve">
+    <value>Create Account</value>
+  </data>
+  <data name="AuthChooseLanguage" xml:space="preserve">
+    <value>Choose your language</value>
+  </data>
+  <data name="AuthLandingPageTitle" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="AuthWelcomeBack" xml:space="preserve">
+    <value>Welcome back</value>
+  </data>
+  <data name="AuthSignInToContinue" xml:space="preserve">
+    <value>Sign in to your account to continue.</value>
+  </data>
+  <data name="AuthEmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="AuthPasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="AuthEmailPlaceholder" xml:space="preserve">
+    <value>you@example.com</value>
+  </data>
+  <data name="AuthPasswordPlaceholder" xml:space="preserve">
+    <value>Enter your password</value>
+  </data>
+  <data name="AuthEmailRequired" xml:space="preserve">
+    <value>Please enter your email.</value>
+  </data>
+  <data name="AuthPasswordRequired" xml:space="preserve">
+    <value>Please enter your password.</value>
+  </data>
+  <data name="AuthSignInSecureHint" xml:space="preserve">
+    <value>You'll sign in securely with Microsoft (Entra ID). A browser window will open to complete sign-in—same as the web app, optimized for mobile.</value>
+  </data>
+  <data name="AuthForgotPassword" xml:space="preserve">
+    <value>Forgot password?</value>
+  </data>
+  <data name="AuthDontHaveAccount" xml:space="preserve">
+    <value>Don't have an account?</value>
+  </data>
+  <data name="AuthSignUp" xml:space="preserve">
+    <value>Sign up</value>
+  </data>
+  <data name="RegisterCreateAccountTitle" xml:space="preserve">
+    <value>Create account</value>
+  </data>
+  <data name="RegisterChooseHowSubtitle" xml:space="preserve">
+    <value>Choose how you'd like to sign up.</value>
+  </data>
+  <data name="RegisterOptionEmailTitle" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="RegisterOptionEmailSubtitle" xml:space="preserve">
+    <value>Register with email</value>
+  </data>
+  <data name="RegisterOptionPhoneTitle" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="RegisterOptionPhoneSubtitle" xml:space="preserve">
+    <value>Register with phone</value>
+  </data>
+  <data name="RegisterOptionVoiceTitle" xml:space="preserve">
+    <value>Voice</value>
+  </data>
+  <data name="RegisterOptionVoiceSubtitle" xml:space="preserve">
+    <value>Register with voice</value>
+  </data>
+  <data name="RegisterAlreadyHaveAccount" xml:space="preserve">
+    <value>Already have an account?</value>
+  </data>
+  <data name="RegisterPhoneTitle" xml:space="preserve">
+    <value>Your phone number</value>
+  </data>
+  <data name="RegisterPhoneSubtitle" xml:space="preserve">
+    <value>We'll send a verification code by SMS.</value>
+  </data>
+  <data name="RegisterPhoneFieldLabel" xml:space="preserve">
+    <value>Phone number</value>
+  </data>
+  <data name="RegisterPhoneContinue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="RegisterPhoneInvalid" xml:space="preserve">
+    <value>Enter a valid phone number.</value>
+  </data>
+  <data name="RegisterPhoneSendFailed" xml:space="preserve">
+    <value>Could not send the code. Try again.</value>
+  </data>
+  <data name="VerifyPhoneTitle" xml:space="preserve">
+    <value>Verify your phone</value>
+  </data>
+  <data name="VerifyPhoneSubtitle" xml:space="preserve">
+    <value>Enter the code we sent to</value>
+  </data>
+  <data name="VerifyPhoneCodeLabel" xml:space="preserve">
+    <value>Verification code</value>
+  </data>
+  <data name="VerifyPhoneVerify" xml:space="preserve">
+    <value>Verify</value>
+  </data>
+  <data name="VerifyPhoneResend" xml:space="preserve">
+    <value>Resend code</value>
+  </data>
+  <data name="VerifyPhoneCodeInvalid" xml:space="preserve">
+    <value>Enter the verification code.</value>
+  </data>
+  <data name="VerifyPhoneFailed" xml:space="preserve">
+    <value>Invalid or expired code.</value>
+  </data>
+  <data name="RegisterVoiceTitle" xml:space="preserve">
+    <value>Voice registration</value>
+  </data>
+  <data name="RegisterVoiceIntroBody" xml:space="preserve">
+    <value>We'll verify your phone number first, then you can upload a short voice recording so we can create your profile. Speak clearly when recording.</value>
+  </data>
+  <data name="RegisterVoiceContinue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="VoiceSubmitTitle" xml:space="preserve">
+    <value>Upload voice sample</value>
+  </data>
+  <data name="VoiceSubmitSubtitle" xml:space="preserve">
+    <value>Record a short message with your details. We transcribe it and create your patient record.</value>
+  </data>
+  <data name="VoiceSubmitPhoneLabel" xml:space="preserve">
+    <value>Verified phone</value>
+  </data>
+  <data name="VoiceSubmitLanguageLabel" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="VoiceRecordStart" xml:space="preserve">
+    <value>Start recording</value>
+  </data>
+  <data name="VoiceRecordStop" xml:space="preserve">
+    <value>Done speaking</value>
+  </data>
+  <data name="VoiceRecordListeningTitle" xml:space="preserve">
+    <value>Listening…</value>
+  </data>
+  <data name="VoiceRecordListeningHint" xml:space="preserve">
+    <value>Say your name, date of birth, and phone number clearly.</value>
+  </data>
+  <data name="VoiceRecordExampleTitle" xml:space="preserve">
+    <value>Say something like this:</value>
+  </data>
+  <data name="VoiceRecordExampleScript" xml:space="preserve">
+    <value>My name is Sane Loe. I was born on 15 March 1988. My phone number is {0}.</value>
+  </data>
+  <data name="VoiceRecordSpeakPrompt" xml:space="preserve">
+    <value>When you are ready, say your full name, your date of birth, and your phone number. For example: My name is Sane Loe. I was born on 15 March 1988. My phone number is {0}.</value>
+  </data>
+  <data name="VoiceRecordHearExample" xml:space="preserve">
+    <value>Hear example</value>
+  </data>
+  <data name="VoiceRecordProcessingTitle" xml:space="preserve">
+    <value>Processing…</value>
+  </data>
+  <data name="VoiceRecordProcessingHint" xml:space="preserve">
+    <value>Creating your profile from your voice…</value>
+  </data>
+  <data name="VoiceRecordNotAvailable" xml:space="preserve">
+    <value>This device cannot record audio.</value>
+  </data>
+  <data name="VoiceRecordPermissionDenied" xml:space="preserve">
+    <value>Microphone access is required. Enable it in system settings.</value>
+  </data>
+  <data name="VoiceRecordStopFailed" xml:space="preserve">
+    <value>Could not finish recording. Try again.</value>
+  </data>
+  <data name="VoiceSubmitNoClinic" xml:space="preserve">
+    <value>Set Onboarding:VoiceRegistrationClinicId in appsettings (or User Secrets) to your demo clinic Guid.</value>
+  </data>
+  <data name="VoiceSubmitFailed" xml:space="preserve">
+    <value>Upload failed.</value>
+  </data>
+  <data name="VoiceSubmitSuccessTitle" xml:space="preserve">
+    <value>Profile created</value>
+  </data>
+  <data name="VoiceSubmitContinueHome" xml:space="preserve">
+    <value>Continue to home</value>
+  </data>
+  <data name="VoiceSubmitContinueWelcome" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="HomeHubSectionCare" xml:space="preserve">
+    <value>Your care</value>
+  </data>
+  <data name="HomeHubSectionMore" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="HomeHubHealthRecords" xml:space="preserve">
+    <value>Health records</value>
+  </data>
+  <data name="HomeHubAppointments" xml:space="preserve">
+    <value>Appointments</value>
+  </data>
+  <data name="HomeHubInsurance" xml:space="preserve">
+    <value>Insurance</value>
+  </data>
+  <data name="HomeHubCareTelehealth" xml:space="preserve">
+    <value>Care &amp; telehealth</value>
+  </data>
+  <data name="HomeHubDevices" xml:space="preserve">
+    <value>Devices &amp; wearables</value>
+  </data>
+  <data name="HomeHubBilling" xml:space="preserve">
+    <value>Billing &amp; plans</value>
+  </data>
+  <data name="HomeHubMentalHealth" xml:space="preserve">
+    <value>Mental health</value>
+  </data>
+  <data name="HomeHubFamily" xml:space="preserve">
+    <value>Family members</value>
+  </data>
+  <data name="HomeHubAiAssistant" xml:space="preserve">
+    <value>AI assistant</value>
+  </data>
+  <data name="HomeHubNotifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="HomeHubSettings" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="HomeHubSamples" xml:space="preserve">
+    <value>Developer samples</value>
+  </data>
+  <data name="AuthSignInPageTitle" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="AuthSignInFailed" xml:space="preserve">
+    <value>Sign-in failed.</value>
+  </data>
+  <data name="RegisterEmailTitle" xml:space="preserve">
+    <value>Create with email</value>
+  </data>
+  <data name="RegisterEmailSubtitle" xml:space="preserve">
+    <value>Fill in your details to get started.</value>
+  </data>
+  <data name="RegisterEmailFirstName" xml:space="preserve">
+    <value>First name</value>
+  </data>
+  <data name="RegisterEmailLastName" xml:space="preserve">
+    <value>Last name</value>
+  </data>
+  <data name="RegisterEmailEmail" xml:space="preserve">
+    <value>Email address</value>
+  </data>
+  <data name="RegisterEmailPassword" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="RegisterEmailPlaceholderFirst" xml:space="preserve">
+    <value>John</value>
+  </data>
+  <data name="RegisterEmailPlaceholderLast" xml:space="preserve">
+    <value>Doe</value>
+  </data>
+  <data name="RegisterEmailPlaceholderEmail" xml:space="preserve">
+    <value>john@example.com</value>
+  </data>
+  <data name="RegisterEmailPlaceholderPassword" xml:space="preserve">
+    <value>Min 8 characters</value>
+  </data>
+  <data name="RegisterEmailContinue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="RegisterEmailAlreadyHave" xml:space="preserve">
+    <value>Already have an account?</value>
+  </data>
+  <data name="RegisterEmailSignIn" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="RegisterEmailErrorFirstName" xml:space="preserve">
+    <value>Please enter your first name.</value>
+  </data>
+  <data name="RegisterEmailErrorLastName" xml:space="preserve">
+    <value>Please enter your last name.</value>
+  </data>
+  <data name="RegisterEmailErrorEmail" xml:space="preserve">
+    <value>Please enter your email.</value>
+  </data>
+  <data name="RegisterEmailErrorPassword" xml:space="preserve">
+    <value>Please enter a password.</value>
+  </data>
+  <data name="RegisterEmailClinic" xml:space="preserve">
+    <value>Clinic (optional)</value>
+  </data>
+  <data name="RegisterEmailClinicHint" xml:space="preserve">
+    <value>You can register without choosing a clinic and link one later.</value>
+  </data>
+  <data name="RegisterEmailClinicNone" xml:space="preserve">
+    <value>No clinic — register without linking</value>
+  </data>
+  <data name="RegisterEmailFailed" xml:space="preserve">
+    <value>Registration failed.</value>
+  </data>
+  <data name="VerifyEmailTitle" xml:space="preserve">
+    <value>Verify your email</value>
+  </data>
+  <data name="VerifyEmailSubtitle" xml:space="preserve">
+    <value>We sent a verification link to your email. Open it to verify your account, then sign in below.</value>
+  </data>
+  <data name="VerifyEmailSignIn" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="VerifyEmailResend" xml:space="preserve">
+    <value>Resend verification</value>
+  </data>
+  <data name="VerifyEmailResendHint" xml:space="preserve">
+    <value>If you did not receive an email, check spam or use the link in your original invitation. Resend is not available for all tenants—use Microsoft’s sign-in help if needed.</value>
+  </data>
+  <data name="VerifyEmailPageTitle" xml:space="preserve">
+    <value>Verify email</value>
+  </data>
+  <data name="AccountCreatedTitle" xml:space="preserve">
+    <value>Welcome to RaphCare</value>
+  </data>
+  <data name="AccountCreatedSubtitle" xml:space="preserve">
+    <value>You’re all set. Continue below to open your home hub.</value>
+  </data>
+  <data name="AccountCreatedContinue" xml:space="preserve">
+    <value>Continue to home</value>
+  </data>
+  <data name="AccountCreatedPageTitle" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="HomePageTitle" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="TabHome" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="TabAppointments" xml:space="preserve">
+    <value>Appointments</value>
+  </data>
+  <data name="TabRecords" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="TabInsurance" xml:space="preserve">
+    <value>Insurance</value>
+  </data>
+  <data name="TabProfile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="HomeGreetingMorning" xml:space="preserve">
+    <value>Good morning,</value>
+  </data>
+  <data name="HomeGreetingAfternoon" xml:space="preserve">
+    <value>Good afternoon,</value>
+  </data>
+  <data name="HomeGreetingEvening" xml:space="preserve">
+    <value>Good evening,</value>
+  </data>
+  <data name="HomeDefaultUserName" xml:space="preserve">
+    <value>Patient</value>
+  </data>
+  <data name="HomeNeedHelpNow" xml:space="preserve">
+    <value>Need help now?</value>
+  </data>
+  <data name="HomeRequestCall" xml:space="preserve">
+    <value>Request a Call</value>
+  </data>
+  <data name="HomeConnectWithDoctor" xml:space="preserve">
+    <value>Connect with a doctor in minutes</value>
+  </data>
+  <data name="HomeUpcoming" xml:space="preserve">
+    <value>Upcoming</value>
+  </data>
+  <data name="HomeSeeAll" xml:space="preserve">
+    <value>See all</value>
+  </data>
+  <data name="HomeQuickActions" xml:space="preserve">
+    <value>Quick Actions</value>
+  </data>
+  <data name="HomeBookAppointment" xml:space="preserve">
+    <value>Book&#10;Appointment</value>
+  </data>
+  <data name="HomeHealthRecordsQuick" xml:space="preserve">
+    <value>Health&#10;Records</value>
+  </data>
+  <data name="HomeInsurancePlanQuick" xml:space="preserve">
+    <value>Insurance&#10;Plan</value>
+  </data>
+  <data name="HomeConnectedDevicesQuick" xml:space="preserve">
+    <value>Connected&#10;Devices</value>
+  </data>
+  <data name="HomeMentalHealthQuick" xml:space="preserve">
+    <value>Mental&#10;Health</value>
+  </data>
+  <data name="HomeAiAssistantQuick" xml:space="preserve">
+    <value>AI&#10;Assistant</value>
+  </data>
+  <data name="HomeHealthSummary" xml:space="preserve">
+    <value>Health Summary</value>
+  </data>
+  <data name="HomeHeartRate" xml:space="preserve">
+    <value>Heart Rate</value>
+  </data>
+  <data name="HomeBloodPressure" xml:space="preserve">
+    <value>Blood Pressure</value>
+  </data>
+  <data name="HomeBloodGlucose" xml:space="preserve">
+    <value>Blood Glucose</value>
+  </data>
+  <data name="HomeNormal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="HomeTrendVsLastWeek" xml:space="preserve">
+    <value>vs last week</value>
+  </data>
+  <data name="HomeGeneralConsultation" xml:space="preserve">
+    <value>General Consultation</value>
+  </data>
+  <data name="HomeVideo" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="HomeJoinConsultation" xml:space="preserve">
+    <value>Join Consultation</value>
+  </data>
+  <data name="HomeDemoDoctorName" xml:space="preserve">
+    <value>Dr. Ngozi Okafor</value>
+  </data>
+  <data name="HomeDemoDoctorInitials" xml:space="preserve">
+    <value>NO</value>
+  </data>
+  <data name="HomeDemoAppointmentTime" xml:space="preserve">
+    <value>Today, 2:30 PM</value>
+  </data>
+  <data name="HomeConnectedDevicesTitle" xml:space="preserve">
+    <value>Connected Devices</value>
+  </data>
+  <data name="HomeSyncedMinutesAgo" xml:space="preserve">
+    <value>{0}m ago</value>
+  </data>
+  <data name="HomeSyncedLive" xml:space="preserve">
+    <value>Live</value>
+  </data>
+  <data name="HomeAiWellnessInsight" xml:space="preserve">
+    <value>AI Wellness Insight</value>
+  </data>
+  <data name="HomeDailyHealthTip" xml:space="preserve">
+    <value>Daily Health Tip</value>
+  </data>
+  <data name="HomeWellnessMessage" xml:space="preserve">
+    <value>Your mood has been consistently positive this week. Keep up the good routines — regular sleep and your morning walks seem to be helping.</value>
+  </data>
+  <data name="HomeAskAiAssistant" xml:space="preserve">
+    <value>Ask AI Assistant</value>
+  </data>
+  <data name="HomeDashboardTagline" xml:space="preserve">
+    <value>Your care hub at a glance.</value>
+  </data>
+  <data name="HomeHeroTitle" xml:space="preserve">
+    <value>Everything in one place</value>
+  </data>
+  <data name="HomeHeroSubtitle" xml:space="preserve">
+    <value>Records, appointments, devices, and more—tap a card to continue.</value>
+  </data>
+  <data name="HomeDashHintRecords" xml:space="preserve">
+    <value>History &amp; vitals</value>
+  </data>
+  <data name="HomeDashHintAppointments" xml:space="preserve">
+    <value>Book and manage visits</value>
+  </data>
+  <data name="HomeDashHintInsurance" xml:space="preserve">
+    <value>Coverage &amp; details</value>
+  </data>
+  <data name="HomeDashHintCareTelehealth" xml:space="preserve">
+    <value>Calls &amp; consultations</value>
+  </data>
+  <data name="HomeDashHintDevices" xml:space="preserve">
+    <value>Wearables &amp; trackers</value>
+  </data>
+  <data name="HomeDashHintBilling" xml:space="preserve">
+    <value>Plans &amp; payments</value>
+  </data>
+  <data name="BillingTitle" xml:space="preserve">
+    <value>Billing &amp; plans</value>
+  </data>
+  <data name="BillingRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="BillingAddPayment" xml:space="preserve">
+    <value>Add payment</value>
+  </data>
+  <data name="BillingLoadFailed" xml:space="preserve">
+    <value>Could not load billing information.</value>
+  </data>
+  <data name="BillingCurrentPlanLabel" xml:space="preserve">
+    <value>Current plan</value>
+  </data>
+  <data name="BillingCurrentPlanFormat" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="BillingRenewsFormat" xml:space="preserve">
+    <value>Renews {0}</value>
+  </data>
+  <data name="BillingSectionUpgrade" xml:space="preserve">
+    <value>Change plan</value>
+  </data>
+  <data name="BillingPickerUpgradePlan" xml:space="preserve">
+    <value>Choose a plan</value>
+  </data>
+  <data name="BillingUpgradeButton" xml:space="preserve">
+    <value>Upgrade</value>
+  </data>
+  <data name="BillingUpgradeFailed" xml:space="preserve">
+    <value>Could not change your plan.</value>
+  </data>
+  <data name="BillingSectionPaymentMethods" xml:space="preserve">
+    <value>Payment methods</value>
+  </data>
+  <data name="BillingSectionHistory" xml:space="preserve">
+    <value>Billing history</value>
+  </data>
+  <data name="BillingSetDefault" xml:space="preserve">
+    <value>Set default</value>
+  </data>
+  <data name="BillingRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="BillingEmptyPayments" xml:space="preserve">
+    <value>No payment methods yet. Add one to get started.</value>
+  </data>
+  <data name="BillingEmptyInvoices" xml:space="preserve">
+    <value>No invoices yet.</value>
+  </data>
+  <data name="BillingAddPaymentTitle" xml:space="preserve">
+    <value>Add payment method</value>
+  </data>
+  <data name="BillingFieldMethodType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="BillingFieldProvider" xml:space="preserve">
+    <value>Provider</value>
+  </data>
+  <data name="BillingFieldMasked" xml:space="preserve">
+    <value>Masked details</value>
+  </data>
+  <data name="BillingFieldDefault" xml:space="preserve">
+    <value>Use as default</value>
+  </data>
+  <data name="BillingSubmitPayment" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="BillingCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="BillingAddPaymentFailed" xml:space="preserve">
+    <value>Could not save this payment method.</value>
+  </data>
+  <data name="HomeDashHintMentalHealth" xml:space="preserve">
+    <value>Support &amp; resources</value>
+  </data>
+  <data name="HomeDashHintFamily" xml:space="preserve">
+    <value>People you support</value>
+  </data>
+  <data name="FamilyTitle" xml:space="preserve">
+    <value>Family members</value>
+  </data>
+  <data name="FamilyRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="FamilyAddMember" xml:space="preserve">
+    <value>Add member</value>
+  </data>
+  <data name="FamilyEmpty" xml:space="preserve">
+    <value>No family members yet. Add someone you care for or manage.</value>
+  </data>
+  <data name="FamilyLoadFailed" xml:space="preserve">
+    <value>Could not load family members.</value>
+  </data>
+  <data name="FamilyAddTitle" xml:space="preserve">
+    <value>Add family member</value>
+  </data>
+  <data name="FamilyDetailTitle" xml:space="preserve">
+    <value>Family member</value>
+  </data>
+  <data name="FamilyFieldFirstName" xml:space="preserve">
+    <value>First name</value>
+  </data>
+  <data name="FamilyFieldLastName" xml:space="preserve">
+    <value>Last name</value>
+  </data>
+  <data name="FamilyFieldRelationship" xml:space="preserve">
+    <value>Relationship</value>
+  </data>
+  <data name="FamilyFieldDob" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="FamilyDobHint" xml:space="preserve">
+    <value>Include date of birth</value>
+  </data>
+  <data name="FamilyFieldPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="FamilyFieldEmail" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="FamilySave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="FamilyCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="FamilySaveFailed" xml:space="preserve">
+    <value>Could not save. Check your details and try again.</value>
+  </data>
+  <data name="FamilyDetailFailed" xml:space="preserve">
+    <value>Could not load this member.</value>
+  </data>
+  <data name="FamilyRemove" xml:space="preserve">
+    <value>Remove from list</value>
+  </data>
+  <data name="FamilyRemoveFailed" xml:space="preserve">
+    <value>Could not remove this member.</value>
+  </data>
+  <data name="HomeDashHintAiAssistant" xml:space="preserve">
+    <value>Guidance &amp; answers</value>
+  </data>
+  <data name="HomeDashHintNotifications" xml:space="preserve">
+    <value>Alerts &amp; updates</value>
+  </data>
+  <data name="HomeDashHintSettings" xml:space="preserve">
+    <value>Account, privacy &amp; help</value>
+  </data>
+  <data name="AppointmentsListTitle" xml:space="preserve">
+    <value>Appointments</value>
+  </data>
+  <data name="AppointmentsBook" xml:space="preserve">
+    <value>Book</value>
+  </data>
+  <data name="AppointmentsRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="AppointmentsEmpty" xml:space="preserve">
+    <value>No appointments yet. Book one to get started.</value>
+  </data>
+  <data name="AppointmentsLoadFailed" xml:space="preserve">
+    <value>Could not load appointments.</value>
+  </data>
+  <data name="AppointmentsDetailTitle" xml:space="preserve">
+    <value>Appointment</value>
+  </data>
+  <data name="AppointmentsWhen" xml:space="preserve">
+    <value>When</value>
+  </data>
+  <data name="AppointmentsStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="AppointmentsType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="AppointmentsReason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="AppointmentsClinicId" xml:space="preserve">
+    <value>Clinic ID</value>
+  </data>
+  <data name="AppointmentsProviderId" xml:space="preserve">
+    <value>Provider ID</value>
+  </data>
+  <data name="AppointmentsBookTitle" xml:space="preserve">
+    <value>Book appointment</value>
+  </data>
+  <data name="AppointmentsBookSubtitle" xml:space="preserve">
+    <value>Enter clinic and provider identifiers from your care team, then choose date and times.</value>
+  </data>
+  <data name="AppointmentsDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="AppointmentsStartTime" xml:space="preserve">
+    <value>Start time</value>
+  </data>
+  <data name="AppointmentsEndTime" xml:space="preserve">
+    <value>End time</value>
+  </data>
+  <data name="AppointmentsSubmit" xml:space="preserve">
+    <value>Request appointment</value>
+  </data>
+  <data name="AppointmentsCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="AppointmentsInvalidGuid" xml:space="preserve">
+    <value>Enter valid clinic and provider IDs (GUIDs).</value>
+  </data>
+  <data name="AppointmentsEndBeforeStart" xml:space="preserve">
+    <value>End time must be after start time.</value>
+  </data>
+  <data name="AppointmentsBookingFailed" xml:space="preserve">
+    <value>Booking failed.</value>
+  </data>
+  <data name="AppointmentsBookingOk" xml:space="preserve">
+    <value>Your appointment was requested.</value>
+  </data>
+  <data name="AppointmentsDetailFailed" xml:space="preserve">
+    <value>Could not load this appointment.</value>
+  </data>
+  <data name="RecordsListTitle" xml:space="preserve">
+    <value>Health records</value>
+  </data>
+  <data name="RecordsRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="RecordsEmpty" xml:space="preserve">
+    <value>No visits on file yet.</value>
+  </data>
+  <data name="RecordsLoadFailed" xml:space="preserve">
+    <value>Could not load your health records.</value>
+  </data>
+  <data name="RecordsDetailTitle" xml:space="preserve">
+    <value>Visit details</value>
+  </data>
+  <data name="RecordsWhen" xml:space="preserve">
+    <value>When</value>
+  </data>
+  <data name="RecordsStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="RecordsVisitType" xml:space="preserve">
+    <value>Visit type</value>
+  </data>
+  <data name="RecordsSummary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="RecordsVitalsSection" xml:space="preserve">
+    <value>Vital signs</value>
+  </data>
+  <data name="RecordsDetailFailed" xml:space="preserve">
+    <value>Could not load this record.</value>
+  </data>
+  <data name="InsuranceListTitle" xml:space="preserve">
+    <value>Insurance</value>
+  </data>
+  <data name="InsuranceRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="InsuranceAdd" xml:space="preserve">
+    <value>Add plan</value>
+  </data>
+  <data name="InsuranceEmpty" xml:space="preserve">
+    <value>No insurance profiles yet.</value>
+  </data>
+  <data name="InsuranceLoadFailed" xml:space="preserve">
+    <value>Could not load insurance profiles.</value>
+  </data>
+  <data name="InsuranceStatusActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="InsuranceStatusInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="InsuranceAddTitle" xml:space="preserve">
+    <value>Add insurance</value>
+  </data>
+  <data name="InsurancePlanLabel" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="InsuranceMembershipLabel" xml:space="preserve">
+    <value>Membership number</value>
+  </data>
+  <data name="InsuranceStartDateLabel" xml:space="preserve">
+    <value>Start date</value>
+  </data>
+  <data name="InsuranceSubmit" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="InsuranceCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="InsurancePlansLoadFailed" xml:space="preserve">
+    <value>Could not load insurance plans.</value>
+  </data>
+  <data name="InsuranceCreateFailed" xml:space="preserve">
+    <value>Could not save this profile.</value>
+  </data>
+  <data name="InsuranceSelectPlan" xml:space="preserve">
+    <value>Select a plan.</value>
+  </data>
+  <data name="InsuranceMembershipRequired" xml:space="preserve">
+    <value>Enter your membership number.</value>
+  </data>
+  <data name="InsuranceDetailTitle" xml:space="preserve">
+    <value>Insurance details</value>
+  </data>
+  <data name="InsuranceDetailPlan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="InsuranceEndDateLabel" xml:space="preserve">
+    <value>End date</value>
+  </data>
+  <data name="InsuranceActiveLabel" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="InsuranceSave" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="InsuranceDetailFailed" xml:space="preserve">
+    <value>Could not load this profile.</value>
+  </data>
+  <data name="InsuranceSaveFailed" xml:space="preserve">
+    <value>Could not save changes.</value>
+  </data>
+  <data name="CareTelehealthTitle" xml:space="preserve">
+    <value>Care &amp; telehealth</value>
+  </data>
+  <data name="CareTelehealthRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="CareTelehealthEmpty" xml:space="preserve">
+    <value>No telehealth sessions yet.</value>
+  </data>
+  <data name="CareTelehealthHint" xml:space="preserve">
+    <value>Tap a session to open join details (channel, Agora token when configured).</value>
+  </data>
+  <data name="CareTelehealthLoadFailed" xml:space="preserve">
+    <value>Could not load telehealth sessions.</value>
+  </data>
+  <data name="CareTelehealthPlatformUnknown" xml:space="preserve">
+    <value>Platform not set</value>
+  </data>
+  <data name="CareTelehealthJoinTitle" xml:space="preserve">
+    <value>Join session</value>
+  </data>
+  <data name="CareTelehealthChannel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="CareTelehealthUid" xml:space="preserve">
+    <value>UID</value>
+  </data>
+  <data name="CareTelehealthAppId" xml:space="preserve">
+    <value>Agora app ID</value>
+  </data>
+  <data name="CareTelehealthToken" xml:space="preserve">
+    <value>Token</value>
+  </data>
+  <data name="CareTelehealthCopyToken" xml:space="preserve">
+    <value>Copy token</value>
+  </data>
+  <data name="CareTelehealthSendSms" xml:space="preserve">
+    <value>Send SMS reminder</value>
+  </data>
+  <data name="CareTelehealthBack" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="CareTelehealthJoinFailed" xml:space="preserve">
+    <value>Could not load join information.</value>
+  </data>
+  <data name="CareTelehealthTokenUnset" xml:space="preserve">
+    <value>No RTC token (server not configured or session not ready).</value>
+  </data>
+  <data name="CareTelehealthRtcReady" xml:space="preserve">
+    <value>Video call credentials are available.</value>
+  </data>
+  <data name="CareTelehealthRtcNotConfigured" xml:space="preserve">
+    <value>RTC is not configured on the server; channel and UID are still shown.</value>
+  </data>
+  <data name="CareTelehealthCopied" xml:space="preserve">
+    <value>Token copied to clipboard.</value>
+  </data>
+  <data name="CareTelehealthSmsFailed" xml:space="preserve">
+    <value>Could not send SMS.</value>
+  </data>
+  <data name="CareTelehealthSmsSent" xml:space="preserve">
+    <value>SMS sent.</value>
+  </data>
+  <data name="CareTelehealthStartVideo" xml:space="preserve">
+    <value>Start video call</value>
+  </data>
+  <data name="CareTelehealthEndVideo" xml:space="preserve">
+    <value>End video call</value>
+  </data>
+  <data name="CareTelehealthLocalVideo" xml:space="preserve">
+    <value>You (local)</value>
+  </data>
+  <data name="CareTelehealthRemoteVideo" xml:space="preserve">
+    <value>Clinician (remote)</value>
+  </data>
+  <data name="CareTelehealthVideoHintAndroid" xml:space="preserve">
+    <value>Native Agora RTC uses your camera and microphone. Grant permissions when prompted.</value>
+  </data>
+  <data name="CareTelehealthVideoHintOther" xml:space="preserve">
+    <value>Native Agora video is enabled on Android in this build. You can still use token copy and SMS on this device.</value>
+  </data>
+  <data name="CareTelehealthVideoStartFailed" xml:space="preserve">
+    <value>Could not start the video session.</value>
+  </data>
+  <data name="DevicesPageTitle" xml:space="preserve">
+    <value>Devices &amp; wearables</value>
+  </data>
+  <data name="DevicesScan" xml:space="preserve">
+    <value>Scan</value>
+  </data>
+  <data name="DevicesStopScan" xml:space="preserve">
+    <value>Stop scan</value>
+  </data>
+  <data name="DevicesShowAllBle" xml:space="preserve">
+    <value>Showing: all BLE devices</value>
+  </data>
+  <data name="DevicesE580E585Filter" xml:space="preserve">
+    <value>Showing: E580 / E585-style names only</value>
+  </data>
+  <data name="DevicesConnectHint" xml:space="preserve">
+    <value>Put your bracelet in pairing range, then tap Scan. Connect to stream notifications (heart rate if the device exposes standard GATT).</value>
+  </data>
+  <data name="DevicesConnectButton" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="DevicesDisconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="DevicesLastReading" xml:space="preserve">
+    <value>Last reading</value>
+  </data>
+  <data name="DevicesUnnamedPeripheral" xml:space="preserve">
+    <value>Unknown device</value>
+  </data>
+  <data name="DevicesPermissionChecking" xml:space="preserve">
+    <value>Checking Bluetooth permission…</value>
+  </data>
+  <data name="DevicesPermissionDenied" xml:space="preserve">
+    <value>Bluetooth permission was denied. Enable it in system settings.</value>
+  </data>
+  <data name="DevicesBluetoothOff" xml:space="preserve">
+    <value>Bluetooth is off. Turn it on and try again.</value>
+  </data>
+  <data name="DevicesScanning" xml:space="preserve">
+    <value>Scanning for wearables…</value>
+  </data>
+  <data name="DevicesScanComplete" xml:space="preserve">
+    <value>Scan finished.</value>
+  </data>
+  <data name="DevicesScanStopped" xml:space="preserve">
+    <value>Scan stopped.</value>
+  </data>
+  <data name="DevicesConnected" xml:space="preserve">
+    <value>Connected.</value>
+  </data>
+  <data name="DevicesDisconnected" xml:space="preserve">
+    <value>Disconnected.</value>
+  </data>
+  <data name="DevicesBleUnsupported" xml:space="preserve">
+    <value>Bluetooth Low Energy for wearables is not enabled on this Windows build. Use Android or iOS to pair E580/E585-class devices.</value>
+  </data>
+  <data name="DevicesHeartRateFormat" xml:space="preserve">
+    <value>Heart rate: {0} bpm</value>
+  </data>
+  <data name="DevicesSpO2Format" xml:space="preserve">
+    <value>SpO₂: {0} %</value>
+  </data>
+  <data name="DevicesSyncReadings" xml:space="preserve">
+    <value>Sync readings</value>
+  </data>
+  <data name="DevicesOutboxFlushedFormat" xml:space="preserve">
+    <value>({0} queued batch(es) uploaded.)</value>
+  </data>
+  <data name="DevicesSyncQueuedOfflineHint" xml:space="preserve">
+    <value>Readings saved to retry when you are back online.</value>
+  </data>
+  <data name="DevicesRawHexFormat" xml:space="preserve">
+    <value>Raw: {0}</value>
+  </data>
+  <data name="MentalHealthTitle" xml:space="preserve">
+    <value>Mental health</value>
+  </data>
+  <data name="MentalHealthHowAreYou" xml:space="preserve">
+    <value>How are you feeling?</value>
+  </data>
+  <data name="MentalHealthDailyCheckIn" xml:space="preserve">
+    <value>Take a moment to check in with yourself.</value>
+  </data>
+  <data name="MentalHealthMoodGreat" xml:space="preserve">
+    <value>Great</value>
+  </data>
+  <data name="MentalHealthMoodGood" xml:space="preserve">
+    <value>Good</value>
+  </data>
+  <data name="MentalHealthMoodOkay" xml:space="preserve">
+    <value>Okay</value>
+  </data>
+  <data name="MentalHealthMoodLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="MentalHealthBookTherapy" xml:space="preserve">
+    <value>Book therapy session</value>
+  </data>
+  <data name="MentalHealthConnectTherapist" xml:space="preserve">
+    <value>Connect with a licensed therapist</value>
+  </data>
+  <data name="MentalHealthSessionHistory" xml:space="preserve">
+    <value>Session history</value>
+  </data>
+  <data name="MentalHealthSessionsThisMonth" xml:space="preserve">
+    <value>View your appointments and past sessions</value>
+  </data>
+  <data name="MentalHealthLoadFailed" xml:space="preserve">
+    <value>Could not load wellness content. Pull to refresh or try again later.</value>
+  </data>
+  <data name="MentalHealthMoodSaveFailed" xml:space="preserve">
+    <value>Could not save your check-in. Please try again.</value>
+  </data>
+  <data name="CommonOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="CommonCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ProfileHubTitle" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="ProfileAppName" xml:space="preserve">
+    <value>RaphCare</value>
+  </data>
+  <data name="ProfileDefaultName" xml:space="preserve">
+    <value>Patient</value>
+  </data>
+  <data name="ProfileNoEmail" xml:space="preserve">
+    <value>Add your email in Edit profile</value>
+  </data>
+  <data name="ProfileInsuranceBadge" xml:space="preserve">
+    <value>RaphCare Essential</value>
+  </data>
+  <data name="ProfileEditProfile" xml:space="preserve">
+    <value>Edit profile</value>
+  </data>
+  <data name="ProfileSignOut" xml:space="preserve">
+    <value>Log out</value>
+  </data>
+  <data name="ProfileSignOutTitle" xml:space="preserve">
+    <value>Log out?</value>
+  </data>
+  <data name="ProfileSignOutMessage" xml:space="preserve">
+    <value>You will need to sign in again to use the app.</value>
+  </data>
+  <data name="ProfileSignOutConfirm" xml:space="preserve">
+    <value>Log out</value>
+  </data>
+  <data name="ProfilePhotoComingSoon" xml:space="preserve">
+    <value>Profile photo upload is not available in this build.</value>
+  </data>
+  <data name="ProfileSectionAccount" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="ProfileSectionHealth" xml:space="preserve">
+    <value>Health</value>
+  </data>
+  <data name="ProfileSectionInsurance" xml:space="preserve">
+    <value>Insurance &amp; billing</value>
+  </data>
+  <data name="ProfileSectionApp" xml:space="preserve">
+    <value>App</value>
+  </data>
+  <data name="ProfilePersonalInformation" xml:space="preserve">
+    <value>Personal information</value>
+  </data>
+  <data name="ProfilePersonalInformationHint" xml:space="preserve">
+    <value>Name, email, phone</value>
+  </data>
+  <data name="ProfileChangePassword" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="ProfileChangePasswordHint" xml:space="preserve">
+    <value>Security settings</value>
+  </data>
+  <data name="ProfileLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="ProfileLanguageCurrentFormat" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="ProfileLanguageHintBody" xml:space="preserve">
+    <value>Language is chosen on the welcome screen. Sign out and return to the landing page to change it.</value>
+  </data>
+  <data name="ProfileMedicalInformation" xml:space="preserve">
+    <value>Medical information</value>
+  </data>
+  <data name="ProfileMedicalInformationHint" xml:space="preserve">
+    <value>Blood type, allergies</value>
+  </data>
+  <data name="ProfileEmergencyContacts" xml:space="preserve">
+    <value>Emergency contacts</value>
+  </data>
+  <data name="ProfileEmergencyContactsHint" xml:space="preserve">
+    <value>ICE numbers for your care team</value>
+  </data>
+  <data name="ProfileFamilyMembersHint" xml:space="preserve">
+    <value>People linked to your account</value>
+  </data>
+  <data name="ProfileCurrentPlan" xml:space="preserve">
+    <value>Current plan</value>
+  </data>
+  <data name="ProfileCurrentPlanHint" xml:space="preserve">
+    <value>Insurance profiles</value>
+  </data>
+  <data name="ProfilePaymentMethods" xml:space="preserve">
+    <value>Payment methods</value>
+  </data>
+  <data name="ProfilePaymentMethodsHint" xml:space="preserve">
+    <value>Cards and billing</value>
+  </data>
+  <data name="ProfileBillingHistory" xml:space="preserve">
+    <value>Billing history</value>
+  </data>
+  <data name="ProfileBillingHistoryHint" xml:space="preserve">
+    <value>Invoices and payments</value>
+  </data>
+  <data name="ProfileNotificationsHint" xml:space="preserve">
+    <value>Alerts and updates</value>
+  </data>
+  <data name="ProfilePrivacy" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
+  <data name="ProfilePrivacyHint" xml:space="preserve">
+    <value>Data and security</value>
+  </data>
+  <data name="ProfileHelpSupport" xml:space="preserve">
+    <value>Help &amp; support</value>
+  </data>
+  <data name="ProfileHelpSupportHint" xml:space="preserve">
+    <value>FAQ, contact, tips</value>
+  </data>
+  <data name="ProfileFeatureComingSoon" xml:space="preserve">
+    <value>This feature is not available yet.</value>
+  </data>
+  <data name="EditProfileTitle" xml:space="preserve">
+    <value>Edit profile</value>
+  </data>
+  <data name="EditProfilePhotoHint" xml:space="preserve">
+    <value>Tap camera to change photo (coming soon)</value>
+  </data>
+  <data name="EditProfileFirstName" xml:space="preserve">
+    <value>First name</value>
+  </data>
+  <data name="EditProfileLastName" xml:space="preserve">
+    <value>Last name</value>
+  </data>
+  <data name="EditProfileEmail" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="EditProfilePhone" xml:space="preserve">
+    <value>Phone number</value>
+  </data>
+  <data name="EditProfileDob" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="EditProfileGender" xml:space="preserve">
+    <value>Gender</value>
+  </data>
+  <data name="EditProfileSave" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="EditProfileSaved" xml:space="preserve">
+    <value>Your profile was updated.</value>
+  </data>
+  <data name="EditProfileSaveFailed" xml:space="preserve">
+    <value>We couldn't save your profile. Check your connection and try again.</value>
+  </data>
+  <data name="ProfileGenderFemale" xml:space="preserve">
+    <value>Female</value>
+  </data>
+  <data name="ProfileGenderMale" xml:space="preserve">
+    <value>Male</value>
+  </data>
+  <data name="ProfileGenderOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="ProfileGenderPreferNot" xml:space="preserve">
+    <value>Prefer not to say</value>
+  </data>
+  <data name="AiAssistantTitle" xml:space="preserve">
+    <value>AI assistant</value>
+  </data>
+  <data name="AiAssistantIntro" xml:space="preserve">
+    <value>Ask general wellness questions. Do not share passwords or full medical records. This is not for emergencies.</value>
+  </data>
+  <data name="AiAssistantPlaceholder" xml:space="preserve">
+    <value>Type your message…</value>
+  </data>
+  <data name="AiAssistantSend" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="AiAssistantReplyHeading" xml:space="preserve">
+    <value>Reply</value>
+  </data>
+  <data name="AiAssistantEmptyReply" xml:space="preserve">
+    <value>Your reply will appear here after you send a message.</value>
+  </data>
+  <data name="AiAssistantSendFailed" xml:space="preserve">
+    <value>We couldn't reach the assistant. Check your connection and try again.</value>
+  </data>
+  <data name="NotificationsTitle" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="NotificationsRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="NotificationsMarkAllRead" xml:space="preserve">
+    <value>Mark all read</value>
+  </data>
+  <data name="NotificationsEmpty" xml:space="preserve">
+    <value>No notifications yet. When your care team or the app sends alerts, they will appear here.</value>
+  </data>
+  <data name="NotificationsLoadFailed" xml:space="preserve">
+    <value>We couldn't load notifications. Pull to refresh or try again later.</value>
+  </data>
+  <data name="NotificationsNewBadge" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="NotificationsPushHint" xml:space="preserve">
+    <value>Push alerts: register a device token from your mobile build when FCM or APNs is configured.</value>
+  </data>
+  <data name="PrivacyTitle" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
+  <data name="PrivacySecuritySection" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="PrivacyChangePasswordSubtitle" xml:space="preserve">
+    <value>Update your account password</value>
+  </data>
+  <data name="PrivacyTwoFactorTitle" xml:space="preserve">
+    <value>Two-factor authentication</value>
+  </data>
+  <data name="PrivacyTwoFactorSubtitle" xml:space="preserve">
+    <value>Extra security for sign-in</value>
+  </data>
+  <data name="PrivacyDataSection" xml:space="preserve">
+    <value>Data &amp; permissions</value>
+  </data>
+  <data name="PrivacyDataSharingTitle" xml:space="preserve">
+    <value>Data sharing</value>
+  </data>
+  <data name="PrivacyDataSharingSubtitle" xml:space="preserve">
+    <value>Share anonymized usage to improve the app</value>
+  </data>
+  <data name="PrivacyDownloadRowTitle" xml:space="preserve">
+    <value>Download health data</value>
+  </data>
+  <data name="PrivacyDownloadRowSubtitle" xml:space="preserve">
+    <value>Export a copy of your records</value>
+  </data>
+  <data name="PrivacyDownloadTitle" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="PrivacyDownloadMessage" xml:space="preserve">
+    <value>Your clinic will provide exports when connected to this feature.</value>
+  </data>
+  <data name="PrivacyDeleteRowTitle" xml:space="preserve">
+    <value>Delete account</value>
+  </data>
+  <data name="PrivacyDeleteRowSubtitle" xml:space="preserve">
+    <value>Permanently remove your app account</value>
+  </data>
+  <data name="PrivacyDeleteTitle" xml:space="preserve">
+    <value>Delete account?</value>
+  </data>
+  <data name="PrivacyDeleteMessage" xml:space="preserve">
+    <value>This requests account deletion. Your organization may retain records as required by law.</value>
+  </data>
+  <data name="PrivacyDeleteConfirm" xml:space="preserve">
+    <value>Request deletion</value>
+  </data>
+  <data name="PrivacyDeleteRequestedTitle" xml:space="preserve">
+    <value>Request received</value>
+  </data>
+  <data name="PrivacyDeleteRequestedBody" xml:space="preserve">
+    <value>We will process your request according to policy. You have been signed out.</value>
+  </data>
+  <data name="HelpSupportTitle" xml:space="preserve">
+    <value>Help &amp; support</value>
+  </data>
+  <data name="HelpContactSection" xml:space="preserve">
+    <value>Contact us</value>
+  </data>
+  <data name="HelpFaq" xml:space="preserve">
+    <value>FAQ</value>
+  </data>
+  <data name="HelpFaqSubtitle" xml:space="preserve">
+    <value>Common questions</value>
+  </data>
+  <data name="HelpSendMessage" xml:space="preserve">
+    <value>Send a message</value>
+  </data>
+  <data name="HelpSendMessageSubtitle" xml:space="preserve">
+    <value>We typically reply within one business day</value>
+  </data>
+  <data name="HelpCallSupport" xml:space="preserve">
+    <value>Call support</value>
+  </data>
+  <data name="HelpCallSubtitle" xml:space="preserve">
+    <value>+234 800 RAPH CARE</value>
+  </data>
+  <data name="HelpEmailSupport" xml:space="preserve">
+    <value>Email support</value>
+  </data>
+  <data name="HelpEmailSubtitle" xml:space="preserve">
+    <value>support@raphcare.com</value>
+  </data>
+  <data name="HelpSupportPhoneUri" xml:space="preserve">
+    <value>tel:+2348007242273</value>
+  </data>
+  <data name="HelpSupportMailUri" xml:space="preserve">
+    <value>mailto:support@raphcare.com</value>
+  </data>
+  <data name="HelpTipsSection" xml:space="preserve">
+    <value>Quick tips</value>
+  </data>
+  <data name="HelpTip1" xml:space="preserve">
+    <value>Keep your emergency contacts up to date in Health.</value>
+  </data>
+  <data name="HelpTip2" xml:space="preserve">
+    <value>Use telehealth for follow-ups when your clinic enables it.</value>
+  </data>
+  <data name="HelpTip3" xml:space="preserve">
+    <value>Device readings sync when Bluetooth is on and the app is open.</value>
+  </data>
+  <data name="HelpTip4" xml:space="preserve">
+    <value>For medical emergencies, call local emergency services.</value>
+  </data>
+  <data name="HelpLauncherFailed" xml:space="preserve">
+    <value>Could not open the link on this device.</value>
+  </data>
+</root>
