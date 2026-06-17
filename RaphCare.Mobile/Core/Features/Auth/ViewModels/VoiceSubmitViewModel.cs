@@ -6,6 +6,7 @@ using Microsoft.Maui.Controls;
 using Plugin.Maui.Audio;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Auth.Models;
+using RaphCare.Mobile.Core.Features.Auth.Services;
 using RaphCare.Mobile.Core.Shared.Configuration;
 using RaphCare.Mobile.Core.Shared.Navigation;
 using RaphCare.Mobile.Core.Shared.ViewModels;
@@ -24,6 +25,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
     private string? _recordingPath;
     private IDispatcherTimer? _waveTimer;
     private IDispatcherTimer? _maxDurationTimer;
+    private CancellationTokenSource? _speechCts;
 
     private string _phoneE164 = string.Empty;
     private string _language = string.Empty;
@@ -31,6 +33,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
     private string? _successTranscription;
     private bool _isRecording;
     private bool _isProcessing;
+    private bool _isSpeaking;
     private double _pulseScale = 1;
 
     public VoiceSubmitViewModel(
@@ -55,12 +58,15 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
         ProcessingHint = AppResources.T("VoiceRecordProcessingHint");
         SuccessTitle = AppResources.T("VoiceSubmitSuccessTitle");
         ContinueHomeText = AppResources.T("VoiceSubmitContinueWelcome");
+        ExampleTitle = AppResources.T("VoiceRecordExampleTitle");
+        HearExampleText = AppResources.T("VoiceRecordHearExample");
 
         for (var i = 0; i < 20; i++)
             WaveBars.Add(new WaveBarItem());
 
-        StartRecordingCommand = new Command(async () => await StartRecordingAsync(), () => !IsBusy && !IsRecording && !IsProcessing && !ShowSuccess);
+        StartRecordingCommand = new Command(async () => await StartRecordingAsync(), () => !IsBusy && !IsRecording && !IsProcessing && !IsSpeaking && !ShowSuccess);
         StopRecordingCommand = new Command(async () => await StopRecordingAndSubmitAsync(), () => !IsBusy && IsRecording);
+        HearExampleCommand = new Command(async () => await SpeakExamplePromptAsync(), () => !IsBusy && !IsRecording && !IsProcessing && !IsSpeaking);
         ContinueHomeCommand = new Command(async () => await SafeShellNavigator.GoToAsync($"//{AppNavigator.AccountCreated}"));
         BackCommand = new Command(async () => await GoBackAsync());
     }
@@ -76,13 +82,24 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
     public string ProcessingHint { get; }
     public string SuccessTitle { get; }
     public string ContinueHomeText { get; }
+    public string ExampleTitle { get; }
+    public string HearExampleText { get; }
+
+    public string ExampleScript => FormatExampleScript(PhoneE164);
 
     public ObservableCollection<WaveBarItem> WaveBars { get; } = new();
 
     public string PhoneE164
     {
         get => _phoneE164;
-        private set => SetProperty(ref _phoneE164, value);
+        private set
+        {
+            if (EqualityComparer<string>.Default.Equals(_phoneE164, value))
+                return;
+            _phoneE164 = value ?? string.Empty;
+            OnPropertyChanged(nameof(PhoneE164));
+            OnPropertyChanged(nameof(ExampleScript));
+        }
     }
 
     public string Language
@@ -126,6 +143,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
             OnPropertyChanged(nameof(ShowIntroChrome));
             (StartRecordingCommand as Command)?.ChangeCanExecute();
             (StopRecordingCommand as Command)?.ChangeCanExecute();
+            (HearExampleCommand as Command)?.ChangeCanExecute();
         }
     }
 
@@ -140,6 +158,21 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
             OnPropertyChanged(nameof(IsProcessing));
             OnPropertyChanged(nameof(ShowIntroChrome));
             (StartRecordingCommand as Command)?.ChangeCanExecute();
+            (HearExampleCommand as Command)?.ChangeCanExecute();
+        }
+    }
+
+    public bool IsSpeaking
+    {
+        get => _isSpeaking;
+        private set
+        {
+            if (_isSpeaking == value)
+                return;
+            _isSpeaking = value;
+            OnPropertyChanged(nameof(IsSpeaking));
+            (StartRecordingCommand as Command)?.ChangeCanExecute();
+            (HearExampleCommand as Command)?.ChangeCanExecute();
         }
     }
 
@@ -154,6 +187,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
 
     public ICommand StartRecordingCommand { get; }
     public ICommand StopRecordingCommand { get; }
+    public ICommand HearExampleCommand { get; }
     public ICommand ContinueHomeCommand { get; }
     public ICommand BackCommand { get; }
 
@@ -167,6 +201,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
     public async Task CancelAsync()
     {
         StopAnimationTimers();
+        await StopSpeakingAsync().ConfigureAwait(false);
         try
         {
             if (_recorder is { IsRecording: true })
@@ -229,6 +264,8 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
 
         try
         {
+            await SpeakExamplePromptAsync().ConfigureAwait(false);
+
             _recorder = _audioManager.CreateRecorder();
             if (!_recorder.CanRecordAudio)
             {
@@ -322,6 +359,69 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
             _recordingPath = null;
             (StartRecordingCommand as Command)?.ChangeCanExecute();
         }
+    }
+
+    private static string FormatExampleScript(string phoneE164)
+    {
+        var phone = string.IsNullOrWhiteSpace(phoneE164) ? "…" : phoneE164.Trim();
+        return string.Format(AppResources.T("VoiceRecordExampleScript"), phone);
+    }
+
+    private static string FormatSpeakPrompt(string phoneE164)
+    {
+        var phone = string.IsNullOrWhiteSpace(phoneE164) ? "your phone number" : phoneE164.Trim();
+        return string.Format(AppResources.T("VoiceRecordSpeakPrompt"), phone);
+    }
+
+    private async Task SpeakExamplePromptAsync()
+    {
+        if (IsSpeaking || IsRecording || IsProcessing)
+            return;
+
+        _speechCts?.Cancel();
+        _speechCts = new CancellationTokenSource();
+        var token = _speechCts.Token;
+
+        IsSpeaking = true;
+        try
+        {
+            await VoiceRegistrationPromptSpeaker.SpeakAsync(
+                FormatSpeakPrompt(PhoneE164),
+                Language.Trim(),
+                token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // user navigated away or started recording
+        }
+        finally
+        {
+            if (_speechCts?.Token == token)
+            {
+                _speechCts.Dispose();
+                _speechCts = null;
+            }
+
+            IsSpeaking = false;
+        }
+    }
+
+    private async Task StopSpeakingAsync()
+    {
+        _speechCts?.Cancel();
+        _speechCts?.Dispose();
+        _speechCts = null;
+
+        try
+        {
+            await VoiceRegistrationPromptSpeaker.StopAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            // best-effort cleanup
+        }
+
+        IsSpeaking = false;
     }
 
     private void StartAnimationTimers()

@@ -227,6 +227,18 @@ Accessible. Intelligent. Human.</value>
   <data name="VoiceRecordListeningHint" xml:space="preserve">
     <value>Say your name, date of birth, and phone number clearly.</value>
   </data>
+  <data name="VoiceRecordExampleTitle" xml:space="preserve">
+    <value>Say something like this:</value>
+  </data>
+  <data name="VoiceRecordExampleScript" xml:space="preserve">
+    <value>My name is Sane Loe. I was born on 15 March 1988. My phone number is {0}.</value>
+  </data>
+  <data name="VoiceRecordSpeakPrompt" xml:space="preserve">
+    <value>When you are ready, say your full name, your date of birth, and your phone number. For example: My name is Sane Loe. I was born on 15 March 1988. My phone number is {0}.</value>
+  </data>
+  <data name="VoiceRecordHearExample" xml:space="preserve">
+    <value>Hear example</value>
+  </data>
   <data name="VoiceRecordProcessingTitle" xml:space="preserve">
     <value>Processing…</value>
   </data>

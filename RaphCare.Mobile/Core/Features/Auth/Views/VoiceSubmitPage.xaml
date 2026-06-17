@@ -25,6 +25,23 @@
                 <Label Text="{Binding LanguageLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
                 <Entry Text="{Binding Language}" Style="{StaticResource DefaultEntry}" />
 
+                <Border Margin="0,12,0,0" Padding="16" Stroke="{StaticResource BorderColor}" BackgroundColor="{StaticResource SecondaryColor}">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding ExampleTitle}" Style="{StaticResource BodySmall}" FontAttributes="Bold" />
+                        <Label Text="{Binding ExampleScript}"
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="{StaticResource MutedForegroundColor}"
+                               LineBreakMode="WordWrap"
+                               FontAttributes="Italic" />
+                        <Button Text="{Binding HearExampleText}"
+                                Command="{Binding HearExampleCommand}"
+                                Style="{StaticResource OutlineTealButton}"
+                                IsEnabled="{Binding IsSpeaking, Converter={StaticResource InvertedBoolConverter}}"
+                                Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" FontSize="12" Margin="0,8,0,0" />
 
                 <shared:GradientButton Text="{Binding StartRecordingText}"
