@@ -46,7 +46,8 @@ public class TenantResolutionMiddleware(RequestDelegate next, ILogger<TenantReso
         await _next(context).ConfigureAwait(false);
     }
 
-    /// <summary>Patient self-registration and sign-in do not require a tenant header.</summary>
+    /// <summary>Paths that operate above tenant scope or before a clinic exists.</summary>
     private static bool IsTenantExemptPath(string path) =>
-        path.StartsWith("/api/auth/email", StringComparison.OrdinalIgnoreCase);
+        path.StartsWith("/api/auth/email", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/api/admin/", StringComparison.OrdinalIgnoreCase);
 }

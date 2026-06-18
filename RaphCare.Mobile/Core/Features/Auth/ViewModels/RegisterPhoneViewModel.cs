@@ -107,8 +107,8 @@ public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
             await SafeShellNavigator.GoToAsync("..");
         else if (string.Equals(_continueWith, "Voice", StringComparison.OrdinalIgnoreCase))
-            await SafeShellNavigator.GoToAsync("RegisterVoiceIntroPage");
+            await SafeShellNavigator.GoToAsync($"//{AppNavigator.Landing}/{AppNavigator.RegisterVoiceIntro}");
         else
-            await SafeShellNavigator.GoToAsync("RegisterOptionsPage");
+            await SafeShellNavigator.GoToAsync($"//{AppNavigator.Landing}/{AppNavigator.RegisterOptions}");
     }
 }

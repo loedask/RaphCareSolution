@@ -25,5 +25,5 @@ public class RegisterVoiceIntroViewModel : BaseViewModel
     public ICommand BackCommand { get; }
 
     private static async Task GoBackAsync() =>
-        await SafeShellNavigator.GoToAsync("RegisterOptionsPage");
+        await SafeShellNavigator.GoToAsync("..");
 }

@@ -90,11 +90,11 @@ public static class AppNavigator
 
     /// <summary>
     /// Call once at app startup (e.g. from AppShell or MauiProgram) to register every route.
+    /// Pages already declared in <c>AppShell.xaml</c> (Landing + main tabs) must not be registered here — duplicate routes cause Shell "ambiguous routes" crashes.
     /// </summary>
     public static void RegisterAllRoutes()
     {
-        // Auth
-        Routing.RegisterRoute(Landing, typeof(LandingPage));
+        // Auth (not in Shell visual tree)
         Routing.RegisterRoute(RegisterOptions, typeof(RegisterOptionsPage));
         Routing.RegisterRoute(RegisterEmail, typeof(RegisterEmailPage));
         Routing.RegisterRoute(RegisterPhone, typeof(RegisterPhonePage));
@@ -105,17 +105,12 @@ public static class AppNavigator
         Routing.RegisterRoute(AccountCreated, typeof(AccountCreatedPage));
         Routing.RegisterRoute(SignIn, typeof(SignInPage));
 
-        // Main
-        Routing.RegisterRoute(Home, typeof(HomePage));
-        Routing.RegisterRoute(Records, typeof(RecordsPage));
+        // Feature pages (pushed from tabs or deep links — not ShellContent routes)
         Routing.RegisterRoute(HealthRecordDetail, typeof(HealthRecordDetailPage));
-        Routing.RegisterRoute(Appointments, typeof(AppointmentsPage));
         Routing.RegisterRoute(AppointmentDetail, typeof(AppointmentDetailPage));
         Routing.RegisterRoute(BookAppointment, typeof(BookAppointmentPage));
-        Routing.RegisterRoute(Insurance, typeof(InsurancePage));
         Routing.RegisterRoute(InsuranceProfileDetail, typeof(InsuranceProfileDetailPage));
         Routing.RegisterRoute(AddInsuranceProfile, typeof(AddInsuranceProfilePage));
-        Routing.RegisterRoute(Settings, typeof(SettingsPage));
         Routing.RegisterRoute(EditProfile, typeof(EditProfilePage));
         Routing.RegisterRoute(Privacy, typeof(PrivacyPage));
         Routing.RegisterRoute(HelpSupport, typeof(HelpSupportPage));

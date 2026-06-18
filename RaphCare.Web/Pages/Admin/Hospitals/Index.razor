@@ -1,0 +1,85 @@
+@page "/admin/hospitals"
+@layout AdminLayout
+
+<PageTitle>Hospitals — RaphCare Admin</PageTitle>
+
+<section>
+  <div class="page-toolbar">
+    <div>
+      <h2>Hospitals</h2>
+      <p class="text-muted">All registered healthcare organizations on the platform.</p>
+    </div>
+    <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
+  </div>
+
+  @if (_loading)
+  {
+    <p class="text-muted">Loading…</p>
+  }
+  else if (!string.IsNullOrEmpty(_error))
+  {
+    <div class="alert alert-error">@_error</div>
+  }
+  else if (_clinics.Count == 0)
+  {
+    <div class="empty-state">
+      <h3>No hospitals registered</h3>
+      <p>Use the onboarding wizard to add your first hospital.</p>
+      <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
+    </div>
+  }
+  else
+  {
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Registration #</th>
+            <th>Country</th>
+            <th>Time zone</th>
+            <th>Facilities</th>
+            <th>Registered</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var clinic in _clinics)
+          {
+            <tr>
+              <td><strong>@clinic.Name</strong></td>
+              <td>@clinic.RegistrationNumber</td>
+              <td>@clinic.Country</td>
+              <td>@clinic.TimeZone</td>
+              <td>@clinic.FacilityCount</td>
+              <td>@clinic.CreatedAt.ToString("dd MMM yyyy")</td>
+              <td>
+                <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
+                  @(clinic.IsActive ? "Active" : "Inactive")
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+@code {
+  [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+
+  private bool _loading = true;
+  private string? _error;
+  private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
+
+  protected override async Task OnInitializedAsync()
+  {
+    var response = await AdminClinicService.GetClinicsAsync();
+    _loading = false;
+    if (response.IsSuccess && response.Data is not null)
+      _clinics = response.Data;
+    else
+      _error = response.ErrorMessage ?? "Could not load hospitals.";
+  }
+}

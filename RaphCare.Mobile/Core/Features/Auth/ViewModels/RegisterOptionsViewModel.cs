@@ -51,6 +51,6 @@ public class RegisterOptionsViewModel : BaseViewModel
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
             await SafeShellNavigator.GoToAsync("..");
         else
-            await SafeShellNavigator.GoToAsync("LandingPage");
+            await SafeShellNavigator.GoToAsync($"//{AppNavigator.Landing}");
     }
 }

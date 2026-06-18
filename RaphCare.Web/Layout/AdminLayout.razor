@@ -1,0 +1,42 @@
+@inherits LayoutComponentBase
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            <div class="admin-brand-icon">+</div>
+            <div>
+                <div class="admin-brand-title">RaphCare</div>
+                <div class="admin-brand-sub">Admin panel</div>
+            </div>
+        </div>
+
+        <nav class="admin-nav">
+            <div class="admin-nav-section">Platform</div>
+            <NavLink class="admin-nav-link" href="/admin" Match="NavLinkMatch.All">
+                Dashboard
+            </NavLink>
+            <NavLink class="admin-nav-link" href="/admin/hospitals">
+                Hospitals
+            </NavLink>
+            <NavLink class="admin-nav-link" href="/admin/hospitals/register">
+                Register hospital
+            </NavLink>
+        </nav>
+
+        <div class="admin-sidebar-footer">
+            <span class="admin-env-badge">Development</span>
+        </div>
+    </aside>
+
+    <div class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header-title">Admin</h1>
+        </header>
+        <main class="admin-content">
+            @Body
+        </main>
+    </div>
+</div>
+
+@code {
+}

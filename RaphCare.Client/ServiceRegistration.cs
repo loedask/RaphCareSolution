@@ -98,6 +98,7 @@ public static class ServiceRegistration
         services.AddTransient<IOtpAuthService, OtpAuthService>();
         services.AddTransient<IEmailAuthService, EmailAuthService>();
         services.AddTransient<IVoiceOnboardingService, VoiceOnboardingService>();
+        services.AddTransient<IAdminClinicService, AdminClinicService>();
 
         return services;
     }
