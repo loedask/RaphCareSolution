@@ -37,6 +37,31 @@ public class TokenService(IOptions<JwtOptions> options) : ITokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public string GenerateStaffToken(ApplicationUser user, IReadOnlyList<string> roles)
+    {
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(ClaimTypes.Email, user.Email ?? string.Empty),
+            new("name", user.DisplayName ?? string.Empty)
+        };
+
+        foreach (var role in roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct(StringComparer.OrdinalIgnoreCase))
+            claims.Add(new Claim(ClaimTypes.Role, role));
+
+        var key = CreateSigningKey(_options.Secret);
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _options.Issuer,
+            audience: _options.Audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(12),
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
     /// <summary>HS256 requires at least 256 bits; hash shorter configured secrets to a 256-bit key.</summary>
     internal static SymmetricSecurityKey CreateSigningKey(string secret)
     {

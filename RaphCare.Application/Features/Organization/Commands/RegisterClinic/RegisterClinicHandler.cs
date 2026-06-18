@@ -9,7 +9,9 @@ namespace RaphCare.Application.Features.Organization.Commands.RegisterClinic;
 public sealed class RegisterClinicHandler(
     IRepository<Clinic> clinicRepository,
     IUnitOfWork unitOfWork,
-    IUniqueConstraintViolationDetector uniqueConstraintDetector) : IRequestHandler<RegisterClinicCommand, RegisterClinicResultDto>
+    IUniqueConstraintViolationDetector uniqueConstraintDetector,
+    ICurrentUserService currentUserService,
+    IUserRoleAssignmentService roleAssignmentService) : IRequestHandler<RegisterClinicCommand, RegisterClinicResultDto>
 {
     public async Task<RegisterClinicResultDto> Handle(RegisterClinicCommand request, CancellationToken cancellationToken)
     {
@@ -47,6 +49,9 @@ public sealed class RegisterClinicHandler(
                 "A clinic with this registration number already exists.",
                 ex);
         }
+
+        if (currentUserService.CurrentUserId is { } userId)
+            await roleAssignmentService.AssignRoleIfMissingAsync(userId, "Administrator", cancellationToken).ConfigureAwait(false);
 
         return new RegisterClinicResultDto
         {

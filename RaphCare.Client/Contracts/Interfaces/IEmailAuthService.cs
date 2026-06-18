@@ -25,6 +25,18 @@ public interface IEmailAuthService
         string email,
         string password,
         CancellationToken cancellationToken = default);
+
+    Task<Response<EmailAuthResult>> RegisterProfessionalAsync(
+        string firstName,
+        string lastName,
+        string email,
+        string password,
+        CancellationToken cancellationToken = default);
+
+    Task<Response<EmailAuthResult>> SignInProfessionalAsync(
+        string email,
+        string password,
+        CancellationToken cancellationToken = default);
 }
 
 public sealed class EmailAuthResult

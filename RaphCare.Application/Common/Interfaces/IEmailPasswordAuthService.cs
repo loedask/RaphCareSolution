@@ -16,4 +16,16 @@ public interface IEmailPasswordAuthService
         string email,
         string password,
         CancellationToken cancellationToken = default);
+
+    Task<(bool Success, string? Error, ApplicationUser? User)> RegisterProfessionalAsync(
+        string firstName,
+        string lastName,
+        string email,
+        string password,
+        CancellationToken cancellationToken = default);
+
+    Task<(bool Success, string? Error, ApplicationUser? User)> SignInProfessionalAsync(
+        string email,
+        string password,
+        CancellationToken cancellationToken = default);
 }

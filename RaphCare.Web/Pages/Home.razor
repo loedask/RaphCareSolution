@@ -3,11 +3,30 @@
 
 <PageTitle>RaphCare</PageTitle>
 
-@code {
-    protected override void OnInitialized()
-    {
-        Navigation.NavigateTo("/admin", replace: true);
-    }
+<section class="landing">
+    <div class="landing-hero">
+        <div class="landing-brand">
+            <div class="landing-brand-icon">+</div>
+            <div>
+                <h1>RaphCare</h1>
+                <p>Connected healthcare for patients and professionals.</p>
+            </div>
+        </div>
+    </div>
 
-    [Inject] private NavigationManager Navigation { get; set; } = default!;
-}
+    <div class="role-grid">
+        <a class="role-card role-card-patient" href="/patient">
+            <span class="role-icon">♥</span>
+            <h2>I'm a patient</h2>
+            <p>Book care, view records, and manage your health from web or the mobile app.</p>
+            <span class="role-cta">Continue as patient →</span>
+        </a>
+
+        <a class="role-card role-card-pro" href="/professional">
+            <span class="role-icon">⚕</span>
+            <h2>I'm a healthcare professional</h2>
+            <p>Create your practice account, register your hospital, and manage your clinic portal.</p>
+            <span class="role-cta">Continue as professional →</span>
+        </a>
+    </div>
+</section>

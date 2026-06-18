@@ -67,6 +67,43 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
         }
     }
 
+    public async Task<Response<EmailAuthResult>> RegisterProfessionalAsync(
+        string firstName,
+        string lastName,
+        string email,
+        string password,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await PostAuthAsync(
+                    "api/auth/email/register-professional",
+                    new { firstName, lastName, email, password },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex)
+        {
+            return Response<EmailAuthResult>.Failure(ex.Message);
+        }
+    }
+
+    public async Task<Response<EmailAuthResult>> SignInProfessionalAsync(
+        string email,
+        string password,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await PostAuthAsync("api/auth/email/signin-professional", new { email, password }, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex)
+        {
+            return Response<EmailAuthResult>.Failure(ex.Message);
+        }
+    }
+
     private async Task<Response<EmailAuthResult>> PostAuthAsync(string path, object body, CancellationToken cancellationToken)
     {
         var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);

@@ -8,8 +8,8 @@ using RaphCare.Application.Features.Organization.Queries.GetAdminClinics;
 
 namespace RaphCare.API.Controllers;
 
-/// <summary>Platform admin: hospital (clinic) onboarding and directory. Does not require X-Clinic-Id.</summary>
-[Authorize(Policy = "RequirePlatformAdmin")]
+/// <summary>Practice portal: hospital onboarding and directory. Does not require X-Clinic-Id.</summary>
+[Authorize(Policy = "RequireProvider")]
 [ApiController]
 [Route("api/admin/clinics")]
 public class AdminClinicsController(IMediator mediator) : ControllerBase

@@ -1,0 +1,67 @@
+@page "/patient/signin"
+
+<PageTitle>Sign in — Patient</PageTitle>
+
+<section class="auth-page auth-form-page">
+    <a class="back-link" href="/patient">← Back</a>
+    <h1>Patient sign in</h1>
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="alert alert-error">@_error</div>
+    }
+
+    <EditForm Model="_model" OnValidSubmit="SubmitAsync">
+        <div class="form-grid single-column">
+            <div class="form-field">
+                <label>Email</label>
+                <InputText class="form-control" @bind-Value="_model.Email" type="email" />
+            </div>
+            <div class="form-field">
+                <label>Password</label>
+                <InputText class="form-control" @bind-Value="_model.Password" type="password" />
+            </div>
+        </div>
+        <div class="form-actions" style="margin-top: 1rem;">
+            <button class="btn btn-primary" type="submit" disabled="@_busy">
+                @(_busy ? "Signing in…" : "Sign in")
+            </button>
+        </div>
+    </EditForm>
+
+    <p class="hint">No account? <a href="/patient/register">Register as a patient</a></p>
+</section>
+
+@code {
+    [Inject] private IEmailAuthService EmailAuth { get; set; } = default!;
+    [Inject] private IWebAuthService WebAuth { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private readonly SignInModel _model = new();
+    private bool _busy;
+    private string? _error;
+
+    private async Task SubmitAsync()
+    {
+        _busy = true;
+        _error = null;
+
+        var response = await EmailAuth.SignInAsync(_model.Email.Trim(), _model.Password);
+        _busy = false;
+
+        if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data?.Token))
+        {
+            _error = response.ErrorMessage ?? "Sign-in failed.";
+            return;
+        }
+
+        await WebAuth.StoreSessionAsync(response.Data.Token, WebAccountKind.Patient);
+        Navigation.NavigateTo("/patient/welcome", replace: true);
+    }
+
+    private sealed class SignInModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}

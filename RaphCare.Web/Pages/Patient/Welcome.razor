@@ -1,0 +1,31 @@
+@page "/patient/welcome"
+
+<PageTitle>Welcome — Patient</PageTitle>
+
+<section class="auth-page">
+    <h1>You're signed in</h1>
+    <p class="text-muted">Your patient account is active. Download the RaphCare mobile app for appointments, records, telehealth, and device monitoring.</p>
+    <div class="auth-actions">
+        <a class="btn btn-primary" href="/">Back to home</a>
+        <button type="button" class="btn btn-secondary" @onclick="SignOutAsync">Sign out</button>
+    </div>
+</section>
+
+@code {
+    [Inject] private IWebAuthService WebAuth { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await WebAuth.GetTokenAsync();
+        var kind = await WebAuth.GetAccountKindAsync();
+        if (string.IsNullOrWhiteSpace(token) || kind != WebAccountKind.Patient)
+            Navigation.NavigateTo("/patient/signin", replace: true);
+    }
+
+    private async Task SignOutAsync()
+    {
+        await WebAuth.SignOutAsync();
+        Navigation.NavigateTo("/", replace: true);
+    }
+}

@@ -1,0 +1,82 @@
+@page "/professional/register"
+
+<PageTitle>Register — Healthcare professional</PageTitle>
+
+<section class="auth-page auth-form-page">
+    <a class="back-link" href="/professional">← Back</a>
+    <h1>Create your professional account</h1>
+    <p class="text-muted">Use email and password. You can register your hospital after signing in.</p>
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="alert alert-error">@_error</div>
+    }
+
+    <EditForm Model="_model" OnValidSubmit="SubmitAsync">
+        <div class="form-grid single-column">
+            <div class="form-field">
+                <label>First name</label>
+                <InputText class="form-control" @bind-Value="_model.FirstName" />
+            </div>
+            <div class="form-field">
+                <label>Last name</label>
+                <InputText class="form-control" @bind-Value="_model.LastName" />
+            </div>
+            <div class="form-field">
+                <label>Email</label>
+                <InputText class="form-control" @bind-Value="_model.Email" type="email" />
+            </div>
+            <div class="form-field">
+                <label>Password</label>
+                <InputText class="form-control" @bind-Value="_model.Password" type="password" />
+            </div>
+        </div>
+        <div class="form-actions" style="margin-top: 1rem;">
+            <button class="btn btn-primary" type="submit" disabled="@_busy">
+                @(_busy ? "Creating account…" : "Create account")
+            </button>
+        </div>
+    </EditForm>
+
+    <p class="hint">Already have an account? <a href="/professional/signin">Sign in</a></p>
+</section>
+
+@code {
+    [Inject] private IEmailAuthService EmailAuth { get; set; } = default!;
+    [Inject] private IWebAuthService WebAuth { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private readonly RegisterModel _model = new();
+    private bool _busy;
+    private string? _error;
+
+    private async Task SubmitAsync()
+    {
+        _busy = true;
+        _error = null;
+
+        var response = await EmailAuth.RegisterProfessionalAsync(
+            _model.FirstName.Trim(),
+            _model.LastName.Trim(),
+            _model.Email.Trim(),
+            _model.Password);
+
+        _busy = false;
+        if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data?.Token))
+        {
+            _error = response.ErrorMessage ?? "Registration failed.";
+            return;
+        }
+
+        await WebAuth.StoreSessionAsync(response.Data.Token, WebAccountKind.Professional);
+        Navigation.NavigateTo("/admin/hospitals/register", replace: true);
+    }
+
+    private sealed class RegisterModel
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}

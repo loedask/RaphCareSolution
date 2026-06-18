@@ -6,7 +6,7 @@
             <div class="admin-brand-icon">+</div>
             <div>
                 <div class="admin-brand-title">RaphCare</div>
-                <div class="admin-brand-sub">Admin panel</div>
+                <div class="admin-brand-sub">Clinic portal</div>
             </div>
         </div>
 
@@ -24,19 +24,16 @@
         </nav>
 
         <div class="admin-sidebar-footer">
-            <span class="admin-env-badge">Development</span>
+            <button type="button" class="btn btn-ghost admin-signout" @onclick="SignOutAsync">Sign out</button>
         </div>
     </aside>
 
     <div class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header-title">Admin</h1>
+            <h1 class="admin-header-title">Clinic portal</h1>
         </header>
         <main class="admin-content">
             @Body
         </main>
     </div>
 </div>
-
-@code {
-}

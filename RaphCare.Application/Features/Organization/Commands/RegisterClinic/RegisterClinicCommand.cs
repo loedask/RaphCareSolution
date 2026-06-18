@@ -5,7 +5,7 @@ using RaphCare.Application.Features.Organization.DTOs;
 namespace RaphCare.Application.Features.Organization.Commands.RegisterClinic;
 
 /// <summary>Platform use case: onboard a new hospital (clinic) with an optional primary facility.</summary>
-public class RegisterClinicCommand : IRequest<RegisterClinicResultDto>, IPlatformAdminRequest
+public sealed class RegisterClinicCommand : IRequest<RegisterClinicResultDto>
 {
     public string Name { get; set; } = string.Empty;
     public string RegistrationNumber { get; set; } = string.Empty;
