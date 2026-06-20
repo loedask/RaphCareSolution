@@ -72,6 +72,13 @@
         _error = null;
         _status = null;
 
+        if (string.IsNullOrWhiteSpace(_model.Email))
+        {
+            _sendingCode = false;
+            _error = "Enter your email before requesting a verification code.";
+            return;
+        }
+
         var response = await EmailAuth.SendEmailVerificationAsync(_model.Email.Trim());
         _sendingCode = false;
 
@@ -83,9 +90,22 @@
 
     private async Task SubmitAsync()
     {
-        _busy = true;
         _error = null;
         _status = null;
+
+        if (string.IsNullOrWhiteSpace(_model.VerificationCode))
+        {
+            _error = "Enter the 6-digit verification code from your email. Tap Send code if you have not received one yet.";
+            return;
+        }
+
+        if (_model.VerificationCode.Trim().Length != 6)
+        {
+            _error = "Verification code must be exactly 6 digits.";
+            return;
+        }
+
+        _busy = true;
 
         var response = await EmailAuth.RegisterProfessionalAsync(
             _model.FirstName.Trim(),

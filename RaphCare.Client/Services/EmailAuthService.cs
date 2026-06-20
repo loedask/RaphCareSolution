@@ -168,6 +168,12 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
                 var dto = JsonSerializer.Deserialize<ErrorDto>(body, JsonOptions);
                 if (!string.IsNullOrWhiteSpace(dto?.Error))
                     return dto.Error;
+
+                if (dto?.Errors is { Count: > 0 })
+                    return FormatValidationErrors(dto.Errors);
+
+                if (!string.IsNullOrWhiteSpace(dto?.Detail))
+                    return dto.Detail;
             }
             catch
             {
@@ -175,6 +181,18 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
         }
 
         return response.ReasonPhrase ?? "Request failed.";
+    }
+
+    private static string FormatValidationErrors(Dictionary<string, string[]> errors)
+    {
+        var messages = errors
+            .SelectMany(pair => pair.Value)
+            .Where(message => !string.IsNullOrWhiteSpace(message))
+            .ToList();
+
+        return messages.Count > 0
+            ? string.Join(" ", messages)
+            : "One or more validation failures have occurred.";
     }
 
     private sealed class AuthResponseDto
@@ -187,6 +205,8 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
     private sealed class ErrorDto
     {
         public string? Error { get; set; }
+        public string? Detail { get; set; }
+        public Dictionary<string, string[]>? Errors { get; set; }
     }
 
     private sealed class RegistrationClinicDto
