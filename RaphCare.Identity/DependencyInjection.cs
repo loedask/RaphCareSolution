@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,6 +52,8 @@ public static class DependencyInjection
                 options.Authority = entraAuthority;
                 options.Audience = entraAudience;
 
+                options.MapInboundClaims = false;
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuers = validIssuers,
@@ -61,7 +64,7 @@ public static class DependencyInjection
                     ValidateIssuerSigningKey = true,
                     ClockSkew = TimeSpan.FromMinutes(2),
                     NameClaimType = JwtRegisteredClaimNames.Sub,
-                    RoleClaimType = "role",
+                    RoleClaimType = ClaimTypes.Role,
                     IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
                         ResolveSigningKeys(token, securityToken, entraAuthority, localJwt)
                 };
@@ -76,7 +79,10 @@ public static class DependencyInjection
                         var rawToken = context.Request.Headers.Authorization.ToString();
                         if (LocalJwtTokenHelper.IsLocalEmailJwt(rawToken, context.SecurityToken, localJwt)
                             || LocalJwtTokenHelper.IsLocalEmailPrincipal(context.Principal, localJwt))
+                        {
+                            LocalJwtTokenHelper.ApplyRoleClaimsForAuthorization(context.Principal);
                             return;
+                        }
 
                         if (!LocalJwtTokenHelper.HasEntraObjectId(context.Principal))
                             return;

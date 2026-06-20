@@ -21,7 +21,7 @@ public class TokenService(IOptions<JwtOptions> options) : ITokenService
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new("patientId", patientId.ToString()),
             new("phone", user.Email ?? string.Empty),
-            new("role", "Patient")
+            new(ClaimTypes.Role, "Patient")
         };
 
         var key = CreateSigningKey(_options.Secret);
@@ -47,7 +47,7 @@ public class TokenService(IOptions<JwtOptions> options) : ITokenService
         };
 
         foreach (var role in roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct(StringComparer.OrdinalIgnoreCase))
-            claims.Add(new Claim("role", role));
+            claims.Add(new Claim(ClaimTypes.Role, role));
 
         var key = CreateSigningKey(_options.Secret);
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

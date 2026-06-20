@@ -55,4 +55,19 @@ internal static class LocalJwtTokenHelper
     internal static bool HasEntraObjectId(ClaimsPrincipal principal) =>
         !string.IsNullOrWhiteSpace(principal.FindFirstValue("oid")
             ?? principal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier"));
+
+    /// <summary>
+    /// Email JWTs use short <c>role</c> claims; ASP.NET role checks use <see cref="ClaimTypes.Role"/> by default.
+    /// </summary>
+    internal static void ApplyRoleClaimsForAuthorization(ClaimsPrincipal principal)
+    {
+        if (principal.Identity is not ClaimsIdentity identity)
+            return;
+
+        foreach (var roleClaim in principal.FindAll("role").ToList())
+        {
+            if (!identity.HasClaim(ClaimTypes.Role, roleClaim.Value))
+                identity.AddClaim(new Claim(ClaimTypes.Role, roleClaim.Value));
+        }
+    }
 }
