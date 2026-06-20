@@ -19,11 +19,13 @@ public interface IEmailAuthService
         string email,
         string password,
         Guid? clinicId = null,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default);
 
     Task<Response<EmailAuthResult>> SignInAsync(
         string email,
         string password,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default);
 
     Task<Response<EmailAuthResult>> RegisterProfessionalAsync(
@@ -31,16 +33,21 @@ public interface IEmailAuthService
         string lastName,
         string email,
         string password,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default);
 
     Task<Response<EmailAuthResult>> SignInProfessionalAsync(
         string email,
         string password,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default);
+
+    Task<Response<object>> SendEmailVerificationAsync(string email, CancellationToken cancellationToken = default);
 }
 
 public sealed class EmailAuthResult
 {
     public bool Success { get; init; }
     public string? Token { get; init; }
+    public bool RequiresVerification { get; init; }
 }

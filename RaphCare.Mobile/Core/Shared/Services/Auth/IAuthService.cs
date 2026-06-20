@@ -14,11 +14,13 @@ public interface IAuthService
         string email,
         string password,
         Guid? clinicId = null,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default);
 
     Task<AuthResult> SignInWithEmailAsync(
         string email,
         string password,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>

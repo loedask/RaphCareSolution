@@ -7,4 +7,7 @@ public sealed class SignInProfessionalWithEmailCommand : IRequest<EmailAuthResul
 {
     public string Email { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;
+
+    /// <summary>When omitted, validates password and emails a verification code.</summary>
+    public string? VerificationCode { get; init; }
 }

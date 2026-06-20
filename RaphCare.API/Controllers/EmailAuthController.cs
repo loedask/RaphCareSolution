@@ -19,15 +19,32 @@ public class EmailAuthController(IMediator mediator) : ControllerBase
         return Ok(clinics);
     }
 
+    [HttpPost("send-verification")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    public async Task<IActionResult> SendVerification(
+        [FromBody] SendEmailVerificationCommand command,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await mediator.Send(command, cancellationToken).ConfigureAwait(false);
+            return NoContent();
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("limit", StringComparison.OrdinalIgnoreCase))
+        {
+            return StatusCode(StatusCodes.Status429TooManyRequests, new { error = ex.Message });
+        }
+    }
+
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterWithEmailCommand command, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken).ConfigureAwait(false);
-        if (!result.Success)
-            return BadRequest(new { error = result.Error ?? "Registration failed." });
-        return Ok(new { success = true, token = result.Token });
+        return AuthResult(result);
     }
 
     [HttpPost("signin")]
@@ -36,9 +53,7 @@ public class EmailAuthController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> SignIn([FromBody] SignInWithEmailCommand command, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken).ConfigureAwait(false);
-        if (!result.Success)
-            return BadRequest(new { error = result.Error ?? "Sign-in failed." });
-        return Ok(new { success = true, token = result.Token });
+        return AuthResult(result);
     }
 
     [HttpPost("register-professional")]
@@ -49,9 +64,7 @@ public class EmailAuthController(IMediator mediator) : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken).ConfigureAwait(false);
-        if (!result.Success)
-            return BadRequest(new { error = result.Error ?? "Registration failed." });
-        return Ok(new { success = true, token = result.Token });
+        return AuthResult(result);
     }
 
     [HttpPost("signin-professional")]
@@ -62,8 +75,19 @@ public class EmailAuthController(IMediator mediator) : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken).ConfigureAwait(false);
+        return AuthResult(result);
+    }
+
+    private IActionResult AuthResult(EmailAuthResult result)
+    {
         if (!result.Success)
-            return BadRequest(new { error = result.Error ?? "Sign-in failed." });
-        return Ok(new { success = true, token = result.Token });
+            return BadRequest(new { error = result.Error ?? "Request failed." });
+
+        return Ok(new
+        {
+            success = true,
+            token = result.Token,
+            requiresVerification = result.RequiresVerification
+        });
     }
 }

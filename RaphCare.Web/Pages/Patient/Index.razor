@@ -1,14 +1,7 @@
 @page "/patient"
+@inject NavigationManager Navigation
 
-<PageTitle>Patient — RaphCare</PageTitle>
-
-<section class="auth-page">
-    <a class="back-link" href="/">← Back</a>
-    <h1>Patient access</h1>
-    <p class="text-muted">Create an account or sign in to connect with a clinic. For the full experience, use the RaphCare mobile app.</p>
-
-    <div class="auth-actions">
-        <a class="btn btn-primary" href="/patient/register">Create patient account</a>
-        <a class="btn btn-secondary" href="/patient/signin">Sign in</a>
-    </div>
-</section>
+@code {
+    protected override void OnInitialized() =>
+        Navigation.NavigateTo("/", replace: true);
+}

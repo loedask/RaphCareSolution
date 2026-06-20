@@ -1,36 +1,49 @@
 @page "/professional/signin"
+@layout AuthShellLayout
 
 <PageTitle>Sign in — Healthcare professional</PageTitle>
 
-<section class="auth-page auth-form-page">
-    <a class="back-link" href="/professional">← Back</a>
-    <h1>Sign in to the clinic portal</h1>
+<div class="auth-card auth-card-form">
+    <a class="back-link" href="/?role=professional">← Back</a>
+    <h2 class="auth-card-title">Welcome back</h2>
+    <p class="auth-card-subtitle">Sign in to your clinic portal. We'll email you a verification code.</p>
 
     @if (!string.IsNullOrEmpty(_error))
     {
         <div class="alert alert-error">@_error</div>
+    }
+    @if (!string.IsNullOrEmpty(_status))
+    {
+        <div class="alert alert-info">@_status</div>
     }
 
     <EditForm Model="_model" OnValidSubmit="SubmitAsync">
         <div class="form-grid single-column">
             <div class="form-field">
                 <label>Email</label>
-                <InputText class="form-control" @bind-Value="_model.Email" type="email" />
+                <InputText class="form-control" @bind-Value="_model.Email" type="email" disabled="@_awaitingCode" />
             </div>
             <div class="form-field">
                 <label>Password</label>
-                <InputText class="form-control" @bind-Value="_model.Password" type="password" />
+                <InputText class="form-control" @bind-Value="_model.Password" type="password" disabled="@_awaitingCode" />
             </div>
+            @if (_awaitingCode)
+            {
+                <div class="form-field">
+                    <label>Verification code</label>
+                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="6-digit code" maxlength="6" />
+                </div>
+            }
         </div>
         <div class="form-actions" style="margin-top: 1rem;">
-            <button class="btn btn-primary" type="submit" disabled="@_busy">
-                @(_busy ? "Signing in…" : "Sign in")
+            <button class="btn btn-primary btn-block" type="submit" disabled="@_busy">
+                @(_busy ? "Please wait…" : _awaitingCode ? "Verify and sign in →" : "Continue →")
             </button>
         </div>
     </EditForm>
 
-    <p class="hint">New here? <a href="/professional/register">Create a professional account</a></p>
-</section>
+    <p class="auth-card-foot">New here? <a href="/professional/register">Create a professional account</a></p>
+</div>
 
 @code {
     [Inject] private IEmailAuthService EmailAuth { get; set; } = default!;
@@ -39,19 +52,36 @@
 
     private readonly SignInModel _model = new();
     private bool _busy;
+    private bool _awaitingCode;
     private string? _error;
+    private string? _status;
 
     private async Task SubmitAsync()
     {
         _busy = true;
         _error = null;
+        _status = null;
 
-        var response = await EmailAuth.SignInProfessionalAsync(_model.Email.Trim(), _model.Password);
+        var code = _awaitingCode ? _model.VerificationCode.Trim() : null;
+        var response = await EmailAuth.SignInProfessionalAsync(_model.Email.Trim(), _model.Password, code);
         _busy = false;
 
-        if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data?.Token))
+        if (!response.IsSuccess || response.Data is null)
         {
             _error = response.ErrorMessage ?? "Sign-in failed.";
+            return;
+        }
+
+        if (response.Data.RequiresVerification)
+        {
+            _awaitingCode = true;
+            _status = "We sent a verification code to your email.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(response.Data.Token))
+        {
+            _error = "Sign-in failed.";
             return;
         }
 
@@ -63,5 +93,6 @@
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string VerificationCode { get; set; } = string.Empty;
     }
 }

@@ -1,15 +1,20 @@
 @page "/patient/register"
+@layout AuthShellLayout
 
 <PageTitle>Register — Patient</PageTitle>
 
-<section class="auth-page auth-form-page">
-    <a class="back-link" href="/patient">← Back</a>
-    <h1>Create your patient account</h1>
-    <p class="text-muted">Optionally link to a clinic during registration.</p>
+<div class="auth-card auth-card-form">
+    <a class="back-link" href="/">← Back</a>
+    <h2 class="auth-card-title">Create patient account</h2>
+    <p class="auth-card-subtitle">Verify your email to confirm you're a real user.</p>
 
     @if (!string.IsNullOrEmpty(_error))
     {
         <div class="alert alert-error">@_error</div>
+    }
+    @if (!string.IsNullOrEmpty(_status))
+    {
+        <div class="alert alert-info">@_status</div>
     }
 
     <EditForm Model="_model" OnValidSubmit="SubmitAsync">
@@ -40,6 +45,15 @@
                     }
                 </InputSelect>
             </div>
+            <div class="form-field verification-field">
+                <label>Verification code</label>
+                <div class="verification-row">
+                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="6-digit code" maxlength="6" />
+                    <button type="button" class="btn btn-secondary" disabled="@_sendingCode" @onclick="SendCodeAsync">
+                        @(_sendingCode ? "Sending…" : "Send code")
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="form-actions" style="margin-top: 1rem;">
             <button class="btn btn-primary" type="submit" disabled="@_busy">
@@ -48,8 +62,8 @@
         </div>
     </EditForm>
 
-    <p class="hint">Already registered? <a href="/patient/signin">Sign in</a></p>
-</section>
+    <p class="auth-card-foot">Already registered? <a href="/patient/signin">Sign in</a></p>
+</div>
 
 @code {
     [Inject] private IEmailAuthService EmailAuth { get; set; } = default!;
@@ -60,13 +74,30 @@
     private IReadOnlyList<RegistrationClinicItem> _clinics = Array.Empty<RegistrationClinicItem>();
     private string _selectedClinicId = string.Empty;
     private bool _busy;
+    private bool _sendingCode;
     private string? _error;
+    private string? _status;
 
     protected override async Task OnInitializedAsync()
     {
         var response = await EmailAuth.GetRegistrationClinicsAsync();
         if (response.IsSuccess && response.Data is not null)
             _clinics = response.Data;
+    }
+
+    private async Task SendCodeAsync()
+    {
+        _sendingCode = true;
+        _error = null;
+        _status = null;
+
+        var response = await EmailAuth.SendEmailVerificationAsync(_model.Email.Trim());
+        _sendingCode = false;
+
+        if (response.IsSuccess)
+            _status = "Verification code sent. Check your inbox.";
+        else
+            _error = response.ErrorMessage ?? "Could not send verification email.";
     }
 
     private async Task SubmitAsync()
@@ -80,7 +111,8 @@
             _model.LastName.Trim(),
             _model.Email.Trim(),
             _model.Password,
-            clinicId);
+            clinicId,
+            _model.VerificationCode.Trim());
 
         _busy = false;
         if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data?.Token))
@@ -99,5 +131,6 @@
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string VerificationCode { get; set; } = string.Empty;
     }
 }

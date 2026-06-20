@@ -1,15 +1,20 @@
 @page "/professional/register"
+@layout AuthShellLayout
 
 <PageTitle>Register — Healthcare professional</PageTitle>
 
-<section class="auth-page auth-form-page">
-    <a class="back-link" href="/professional">← Back</a>
-    <h1>Create your professional account</h1>
-    <p class="text-muted">Use email and password. You can register your hospital after signing in.</p>
+<div class="auth-card auth-card-form">
+    <a class="back-link" href="/?role=professional">← Back</a>
+    <h2 class="auth-card-title">Create professional account</h2>
+    <p class="auth-card-subtitle">Verify your email, then create your clinic portal account.</p>
 
     @if (!string.IsNullOrEmpty(_error))
     {
         <div class="alert alert-error">@_error</div>
+    }
+    @if (!string.IsNullOrEmpty(_status))
+    {
+        <div class="alert alert-info">@_status</div>
     }
 
     <EditForm Model="_model" OnValidSubmit="SubmitAsync">
@@ -30,6 +35,15 @@
                 <label>Password</label>
                 <InputText class="form-control" @bind-Value="_model.Password" type="password" />
             </div>
+            <div class="form-field verification-field">
+                <label>Verification code</label>
+                <div class="verification-row">
+                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="6-digit code" maxlength="6" />
+                    <button type="button" class="btn btn-secondary" disabled="@_sendingCode" @onclick="SendCodeAsync">
+                        @(_sendingCode ? "Sending…" : "Send code")
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="form-actions" style="margin-top: 1rem;">
             <button class="btn btn-primary" type="submit" disabled="@_busy">
@@ -38,8 +52,8 @@
         </div>
     </EditForm>
 
-    <p class="hint">Already have an account? <a href="/professional/signin">Sign in</a></p>
-</section>
+    <p class="auth-card-foot">Already have an account? <a href="/professional/signin">Sign in</a></p>
+</div>
 
 @code {
     [Inject] private IEmailAuthService EmailAuth { get; set; } = default!;
@@ -48,18 +62,37 @@
 
     private readonly RegisterModel _model = new();
     private bool _busy;
+    private bool _sendingCode;
     private string? _error;
+    private string? _status;
+
+    private async Task SendCodeAsync()
+    {
+        _sendingCode = true;
+        _error = null;
+        _status = null;
+
+        var response = await EmailAuth.SendEmailVerificationAsync(_model.Email.Trim());
+        _sendingCode = false;
+
+        if (response.IsSuccess)
+            _status = "Verification code sent. Check your inbox (and spam folder).";
+        else
+            _error = response.ErrorMessage ?? "Could not send verification email.";
+    }
 
     private async Task SubmitAsync()
     {
         _busy = true;
         _error = null;
+        _status = null;
 
         var response = await EmailAuth.RegisterProfessionalAsync(
             _model.FirstName.Trim(),
             _model.LastName.Trim(),
             _model.Email.Trim(),
-            _model.Password);
+            _model.Password,
+            _model.VerificationCode.Trim());
 
         _busy = false;
         if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data?.Token))
@@ -78,5 +111,6 @@
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string VerificationCode { get; set; } = string.Empty;
     }
 }

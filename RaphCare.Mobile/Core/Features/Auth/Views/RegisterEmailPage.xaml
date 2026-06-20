@@ -26,6 +26,26 @@
             <shared:InputField LabelText="{Binding EmailLabel}" Placeholder="{Binding PlaceholderEmail}" Keyboard="Email" Text="{Binding Email}" />
             <shared:InputField LabelText="{Binding PasswordLabel}" Placeholder="{Binding PlaceholderPassword}" IsPassword="True" Text="{Binding Password}" />
 
+            <Label Text="{Binding VerificationCodeLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <shared:InputField Grid.Column="0"
+                                   Placeholder="{Binding PlaceholderVerificationCode}"
+                                   Keyboard="Numeric"
+                                   Text="{Binding VerificationCode}" />
+                <Button Grid.Column="1"
+                        Text="{Binding SendCodeButtonText}"
+                        Style="{StaticResource AuthSecondaryButton}"
+                        Command="{Binding SendCodeCommand}"
+                        VerticalOptions="End"
+                        Padding="16,12" />
+            </Grid>
+
+            <Label Text="{Binding StatusMessage}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   FontSize="12"
+                   IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   Margin="0,-8,0,0" />
+
             <Label Text="{Binding ClinicLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
             <Label Text="{Binding ClinicHint}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" FontSize="12" />
             <Picker ItemsSource="{Binding Clinics}"

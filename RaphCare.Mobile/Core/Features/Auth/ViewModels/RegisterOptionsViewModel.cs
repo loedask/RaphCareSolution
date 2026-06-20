@@ -5,7 +5,7 @@ using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
-/// <summary>Create account: Email (Entra), Phone (OTP + API JWT), or Voice (phone OTP then multipart upload).</summary>
+/// <summary>Create account: Email (password + verification), Phone (OTP + API JWT), or Voice (phone OTP then multipart upload).</summary>
 public class RegisterOptionsViewModel : BaseViewModel
 {
     public RegisterOptionsViewModel()

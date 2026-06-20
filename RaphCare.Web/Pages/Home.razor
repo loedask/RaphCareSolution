@@ -1,32 +1,92 @@
 ﻿@page "/"
 @page "/home"
+@layout AuthShellLayout
 
-<PageTitle>RaphCare</PageTitle>
+<PageTitle>RaphCare — Sign in</PageTitle>
 
-<section class="landing">
-    <div class="landing-hero">
-        <div class="landing-brand">
-            <div class="landing-brand-icon">+</div>
-            <div>
-                <h1>RaphCare</h1>
-                <p>Connected healthcare for patients and professionals.</p>
-            </div>
-        </div>
+<div class="auth-card">
+    <h2 class="auth-card-title">Welcome</h2>
+    <p class="auth-card-subtitle">Choose how you'll use RaphCare, then sign in or create an account.</p>
+
+    <div class="role-toggle" role="tablist" aria-label="Account type">
+        <button type="button"
+                class="role-toggle-btn @(_role == UserRole.Patient ? "active" : "")"
+                role="tab"
+                aria-selected="@(_role == UserRole.Patient)"
+                @onclick="() => SelectRole(UserRole.Patient)">
+            <span class="role-toggle-icon">♥</span>
+            <span>Patient</span>
+        </button>
+        <button type="button"
+                class="role-toggle-btn @(_role == UserRole.Professional ? "active" : "")"
+                role="tab"
+                aria-selected="@(_role == UserRole.Professional)"
+                @onclick="() => SelectRole(UserRole.Professional)">
+            <span class="role-toggle-icon">⚕</span>
+            <span>Healthcare professional</span>
+        </button>
     </div>
 
-    <div class="role-grid">
-        <a class="role-card role-card-patient" href="/patient">
-            <span class="role-icon">♥</span>
-            <h2>I'm a patient</h2>
-            <p>Book care, view records, and manage your health from web or the mobile app.</p>
-            <span class="role-cta">Continue as patient →</span>
-        </a>
-
-        <a class="role-card role-card-pro" href="/professional">
-            <span class="role-icon">⚕</span>
-            <h2>I'm a healthcare professional</h2>
-            <p>Create your practice account, register your hospital, and manage your clinic portal.</p>
-            <span class="role-cta">Continue as professional →</span>
-        </a>
+    <div class="role-summary">
+        @if (_role == UserRole.Patient)
+        {
+            <h3>Patient access</h3>
+            <p>Book care, view records, and connect with your clinic. Full mobile experience available in the RaphCare app.</p>
+            <ul class="role-bullets">
+                <li>Email + password with verification code</li>
+                <li>Link to your hospital during registration</li>
+                <li>Secure patient portal on web and mobile</li>
+            </ul>
+        }
+        else
+        {
+            <h3>Clinic portal</h3>
+            <p>Register your practice, onboard your hospital, and manage your clinic workspace from the admin portal.</p>
+            <ul class="role-bullets">
+                <li>Create your professional account</li>
+                <li>Register hospital &amp; primary facility</li>
+                <li>Email 2FA on every sign-in</li>
+            </ul>
+        }
     </div>
-</section>
+
+    <div class="auth-card-actions">
+        <a class="btn btn-primary btn-block" href="@RegisterHref">
+            Create account
+            <span class="btn-arrow">→</span>
+        </a>
+        <a class="btn btn-secondary btn-block" href="@SignInHref">Sign in</a>
+    </div>
+
+    <p class="auth-card-foot">
+        @if (_role == UserRole.Patient)
+        {
+            <span>Healthcare staff?</span>
+            <button type="button" class="link-btn" @onclick="() => SelectRole(UserRole.Professional)">Switch to professional</button>
+        }
+        else
+        {
+            <span>Looking for patient access?</span>
+            <button type="button" class="link-btn" @onclick="() => SelectRole(UserRole.Patient)">Switch to patient</button>
+        }
+    </p>
+</div>
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private UserRole _role = UserRole.Patient;
+
+    protected override void OnInitialized()
+    {
+        if (Navigation.Uri.Contains("role=professional", StringComparison.OrdinalIgnoreCase))
+            _role = UserRole.Professional;
+    }
+
+    private string RegisterHref => _role == UserRole.Patient ? "/patient/register" : "/professional/register";
+    private string SignInHref => _role == UserRole.Patient ? "/patient/signin" : "/professional/signin";
+
+    private void SelectRole(UserRole role) => _role = role;
+
+    private enum UserRole { Patient, Professional }
+}

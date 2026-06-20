@@ -96,7 +96,7 @@ Accessible. Intelligent. Human.</value>
     <value>Welcome back</value>
   </data>
   <data name="AuthSignInToContinue" xml:space="preserve">
-    <value>Sign in to your account to continue.</value>
+    <value>Sign in with your email and password. We'll send a verification code to your inbox.</value>
   </data>
   <data name="AuthEmailLabel" xml:space="preserve">
     <value>Email</value>
@@ -138,7 +138,7 @@ Accessible. Intelligent. Human.</value>
     <value>Email</value>
   </data>
   <data name="RegisterOptionEmailSubtitle" xml:space="preserve">
-    <value>Register with email</value>
+    <value>Email and password with verification</value>
   </data>
   <data name="RegisterOptionPhoneTitle" xml:space="preserve">
     <value>Phone</value>
@@ -321,7 +321,7 @@ Accessible. Intelligent. Human.</value>
     <value>Create with email</value>
   </data>
   <data name="RegisterEmailSubtitle" xml:space="preserve">
-    <value>Fill in your details to get started.</value>
+    <value>Fill in your details and verify your email with the code we send you.</value>
   </data>
   <data name="RegisterEmailFirstName" xml:space="preserve">
     <value>First name</value>
@@ -380,11 +380,44 @@ Accessible. Intelligent. Human.</value>
   <data name="RegisterEmailFailed" xml:space="preserve">
     <value>Registration failed.</value>
   </data>
+  <data name="RegisterEmailVerificationCode" xml:space="preserve">
+    <value>Verification code</value>
+  </data>
+  <data name="RegisterEmailVerificationPlaceholder" xml:space="preserve">
+    <value>6-digit code</value>
+  </data>
+  <data name="RegisterEmailSendCode" xml:space="preserve">
+    <value>Send code</value>
+  </data>
+  <data name="RegisterEmailSendingCode" xml:space="preserve">
+    <value>Sending…</value>
+  </data>
+  <data name="RegisterEmailCodeSent" xml:space="preserve">
+    <value>Verification code sent. Check your inbox.</value>
+  </data>
+  <data name="RegisterEmailErrorVerificationCode" xml:space="preserve">
+    <value>Please enter the verification code from your email.</value>
+  </data>
+  <data name="RegisterEmailSendCodeFailed" xml:space="preserve">
+    <value>Could not send verification email.</value>
+  </data>
+  <data name="AuthVerificationCodeLabel" xml:space="preserve">
+    <value>Verification code</value>
+  </data>
+  <data name="AuthVerificationCodePlaceholder" xml:space="preserve">
+    <value>6-digit code</value>
+  </data>
+  <data name="AuthSignInVerifyButton" xml:space="preserve">
+    <value>Verify and sign in</value>
+  </data>
+  <data name="AuthSignInCodeSent" xml:space="preserve">
+    <value>We sent a verification code to your email.</value>
+  </data>
   <data name="VerifyEmailTitle" xml:space="preserve">
     <value>Verify your email</value>
   </data>
   <data name="VerifyEmailSubtitle" xml:space="preserve">
-    <value>We sent a verification link to your email. Open it to verify your account, then sign in below.</value>
+    <value>Enter the verification code we sent to your email, then sign in.</value>
   </data>
   <data name="VerifyEmailSignIn" xml:space="preserve">
     <value>Sign in</value>
@@ -393,7 +426,7 @@ Accessible. Intelligent. Human.</value>
     <value>Resend verification</value>
   </data>
   <data name="VerifyEmailResendHint" xml:space="preserve">
-    <value>If you did not receive an email, check spam or use the link in your original invitation. Resend is not available for all tenants—use Microsoft’s sign-in help if needed.</value>
+    <value>If you did not receive an email, check spam or tap Resend to get a new code.</value>
   </data>
   <data name="VerifyEmailPageTitle" xml:space="preserve">
     <value>Verify email</value>

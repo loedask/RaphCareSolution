@@ -35,6 +35,18 @@
                                IsPassword="True"
                                Text="{Binding Password}" />
 
+            <shared:InputField LabelText="{Binding VerificationCodeLabel}"
+                               Placeholder="{Binding VerificationCodePlaceholder}"
+                               Keyboard="Numeric"
+                               Text="{Binding VerificationCode}"
+                               IsVisible="{Binding AwaitingVerification}" />
+
+            <Label Text="{Binding StatusMessage}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   FontSize="12"
+                   IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   Margin="0,8,0,0" />
+
             <Label Text="{Binding ErrorMessage}"
                    TextColor="{StaticResource ErrorColor}"
                    FontSize="12"

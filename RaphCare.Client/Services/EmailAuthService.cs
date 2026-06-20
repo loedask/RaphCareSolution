@@ -32,19 +32,41 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
         }
     }
 
+    public async Task<Response<object>> SendEmailVerificationAsync(string email, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync("api/auth/email/send-verification", new { email }, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<object>.Success(new object());
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            return Response<object>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException ex)
+        {
+            return Response<object>.Failure(ex.Message);
+        }
+    }
+
     public async Task<Response<EmailAuthResult>> RegisterAsync(
         string firstName,
         string lastName,
         string email,
         string password,
         Guid? clinicId = null,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
             return await PostAuthAsync(
                     "api/auth/email/register",
-                    new { firstName, lastName, email, password, clinicId },
+                    new { firstName, lastName, email, password, clinicId, verificationCode },
                     cancellationToken)
                 .ConfigureAwait(false);
         }
@@ -54,11 +76,18 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
         }
     }
 
-    public async Task<Response<EmailAuthResult>> SignInAsync(string email, string password, CancellationToken cancellationToken = default)
+    public async Task<Response<EmailAuthResult>> SignInAsync(
+        string email,
+        string password,
+        string? verificationCode = null,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            return await PostAuthAsync("api/auth/email/signin", new { email, password }, cancellationToken)
+            return await PostAuthAsync(
+                    "api/auth/email/signin",
+                    new { email, password, verificationCode },
+                    cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (HttpRequestException ex)
@@ -72,13 +101,14 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
         string lastName,
         string email,
         string password,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
             return await PostAuthAsync(
                     "api/auth/email/register-professional",
-                    new { firstName, lastName, email, password },
+                    new { firstName, lastName, email, password, verificationCode },
                     cancellationToken)
                 .ConfigureAwait(false);
         }
@@ -91,11 +121,15 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
     public async Task<Response<EmailAuthResult>> SignInProfessionalAsync(
         string email,
         string password,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            return await PostAuthAsync("api/auth/email/signin-professional", new { email, password }, cancellationToken)
+            return await PostAuthAsync(
+                    "api/auth/email/signin-professional",
+                    new { email, password, verificationCode },
+                    cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (HttpRequestException ex)
@@ -115,7 +149,8 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
             return Response<EmailAuthResult>.Success(new EmailAuthResult
             {
                 Success = dto?.Success ?? false,
-                Token = dto?.Token
+                Token = dto?.Token,
+                RequiresVerification = dto?.RequiresVerification ?? false
             });
         }
 
@@ -146,6 +181,7 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
     {
         public bool Success { get; set; }
         public string? Token { get; set; }
+        public bool RequiresVerification { get; set; }
     }
 
     private sealed class ErrorDto

@@ -67,10 +67,11 @@ public class EntraAuthService : IAuthService
         string email,
         string password,
         Guid? clinicId = null,
+        string? verificationCode = null,
         CancellationToken cancellationToken = default)
     {
         var response = await _emailAuthService
-            .RegisterAsync(firstName, lastName, email, password, clinicId, cancellationToken)
+            .RegisterAsync(firstName, lastName, email, password, clinicId, verificationCode, cancellationToken)
             .ConfigureAwait(false);
         if (!response.IsSuccess || response.Data?.Success != true || string.IsNullOrWhiteSpace(response.Data.Token))
             return AuthResult.Fail(response.ErrorMessage ?? "Registration failed.");
@@ -80,12 +81,22 @@ public class EntraAuthService : IAuthService
         return AuthResult.Ok(response.Data.Token, null, expiresOn);
     }
 
-    public async Task<AuthResult> SignInWithEmailAsync(string email, string password, CancellationToken cancellationToken = default)
+    public async Task<AuthResult> SignInWithEmailAsync(
+        string email,
+        string password,
+        string? verificationCode = null,
+        CancellationToken cancellationToken = default)
     {
         var response = await _emailAuthService
-            .SignInAsync(email, password, cancellationToken)
+            .SignInAsync(email, password, verificationCode, cancellationToken)
             .ConfigureAwait(false);
-        if (!response.IsSuccess || response.Data?.Success != true || string.IsNullOrWhiteSpace(response.Data.Token))
+        if (!response.IsSuccess || response.Data is null)
+            return AuthResult.Fail(response.ErrorMessage ?? "Sign-in failed.");
+
+        if (response.Data.RequiresVerification)
+            return AuthResult.PendingVerification();
+
+        if (!response.Data.Success || string.IsNullOrWhiteSpace(response.Data.Token))
             return AuthResult.Fail(response.ErrorMessage ?? "Sign-in failed.");
 
         var expiresOn = DateTimeOffset.UtcNow.AddHours(12);

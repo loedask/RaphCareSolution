@@ -9,7 +9,7 @@ using RaphCare.Mobile.Core.Shared.ViewModels;
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
 /// <summary>
-/// Sign-in with Microsoft Entra ID (MSAL interactive). UI matches the concept login layout; credentials are handled in the browser, not in-app fields.
+/// Sign-in with email and password. After password validation, a verification code is emailed for two-factor sign-in.
 /// </summary>
 public class SignInViewModel : BaseViewModel
 {
@@ -17,13 +17,22 @@ public class SignInViewModel : BaseViewModel
     private readonly EntraAuthOptions _options;
 
     private string? _errorMessage;
+    private string? _statusMessage;
     private string _email = string.Empty;
     private string _password = string.Empty;
+    private string _verificationCode = string.Empty;
+    private bool _awaitingVerification;
 
     public string? ErrorMessage
     {
         get => _errorMessage;
         set => SetProperty(ref _errorMessage, value);
+    }
+
+    public string? StatusMessage
+    {
+        get => _statusMessage;
+        set => SetProperty(ref _statusMessage, value);
     }
 
     public string WelcomeBack => AppResources.T("AuthWelcomeBack");
@@ -32,16 +41,31 @@ public class SignInViewModel : BaseViewModel
 
     public string EmailLabel => AppResources.T("AuthEmailLabel");
     public string PasswordLabel => AppResources.T("AuthPasswordLabel");
+    public string VerificationCodeLabel => AppResources.T("AuthVerificationCodeLabel");
     public string EmailPlaceholder => AppResources.T("AuthEmailPlaceholder");
     public string PasswordPlaceholder => AppResources.T("AuthPasswordPlaceholder");
+    public string VerificationCodePlaceholder => AppResources.T("AuthVerificationCodePlaceholder");
 
-    public string SignInButtonText => AppResources.T("AuthSignIn");
+    public string SignInButtonText =>
+        AwaitingVerification ? AppResources.T("AuthSignInVerifyButton") : AppResources.T("AuthSignIn");
 
     public string ForgotPasswordText => AppResources.T("AuthForgotPassword");
 
     public string DontHaveAccountText => AppResources.T("AuthDontHaveAccount");
 
     public string SignUpText => AppResources.T("AuthSignUp");
+
+    public bool AwaitingVerification
+    {
+        get => _awaitingVerification;
+        private set
+        {
+            if (_awaitingVerification == value) return;
+            _awaitingVerification = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(SignInButtonText));
+        }
+    }
 
     public string Email
     {
@@ -53,6 +77,12 @@ public class SignInViewModel : BaseViewModel
     {
         get => _password;
         set => SetProperty(ref _password, value ?? string.Empty);
+    }
+
+    public string VerificationCode
+    {
+        get => _verificationCode;
+        set => SetProperty(ref _verificationCode, value ?? string.Empty);
     }
 
     public ICommand SignInCommand { get; }
@@ -73,11 +103,7 @@ public class SignInViewModel : BaseViewModel
 
     private async Task OpenSignUpAsync()
     {
-        var url = _options.ExternalSignUpUrl;
-        if (!string.IsNullOrWhiteSpace(url))
-            await Launcher.Default.OpenAsync(new Uri(url.Trim(), UriKind.Absolute)).ConfigureAwait(false);
-        else
-            await SafeShellNavigator.GoToAsync("RegisterOptionsPage");
+        await SafeShellNavigator.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
     }
 
     private async Task OpenPasswordResetAsync()
@@ -116,6 +142,7 @@ public class SignInViewModel : BaseViewModel
         if (IsBusy) return;
 
         ErrorMessage = null;
+        StatusMessage = null;
         if (string.IsNullOrWhiteSpace(Email))
         {
             ErrorMessage = AppResources.T("AuthEmailRequired");
@@ -128,10 +155,26 @@ public class SignInViewModel : BaseViewModel
             return;
         }
 
+        if (AwaitingVerification && string.IsNullOrWhiteSpace(VerificationCode))
+        {
+            ErrorMessage = AppResources.T("RegisterEmailErrorVerificationCode");
+            return;
+        }
+
         IsBusy = true;
         try
         {
-            var result = await _authService.SignInWithEmailAsync(Email.Trim(), Password, CancellationToken.None).ConfigureAwait(false);
+            var code = AwaitingVerification ? VerificationCode.Trim() : null;
+            var result = await _authService
+                .SignInWithEmailAsync(Email.Trim(), Password, code, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            if (result.RequiresVerification)
+            {
+                AwaitingVerification = true;
+                StatusMessage = AppResources.T("AuthSignInCodeSent");
+                return;
+            }
 
             if (result.Success)
             {

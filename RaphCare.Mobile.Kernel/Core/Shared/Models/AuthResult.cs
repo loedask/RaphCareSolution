@@ -6,6 +6,7 @@ namespace RaphCare.Mobile.Core.Shared.Models;
 public class AuthResult
 {
     public bool Success { get; set; }
+    public bool RequiresVerification { get; set; }
     public string? ErrorMessage { get; set; }
     public string? AccessToken { get; set; }
     public string? RefreshToken { get; set; }
@@ -13,6 +14,9 @@ public class AuthResult
 
     public static AuthResult Ok(string? accessToken = null, string? refreshToken = null, DateTimeOffset? expiresOn = null) =>
         new() { Success = true, AccessToken = accessToken, RefreshToken = refreshToken, ExpiresOn = expiresOn };
+
+    public static AuthResult PendingVerification() =>
+        new() { Success = true, RequiresVerification = true };
 
     public static AuthResult Fail(string message) =>
         new() { Success = false, ErrorMessage = message };

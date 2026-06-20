@@ -31,7 +31,12 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
-        services.AddScoped<IEmailService, EmailService>();
+        services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
+        var smtp = configuration.GetSection(SmtpOptions.SectionName).Get<SmtpOptions>();
+        if (smtp?.IsEnabled == true)
+            services.AddScoped<IEmailService, SmtpEmailService>();
+        else
+            services.AddScoped<IEmailService, DevelopmentEmailService>();
 
         services.Configure<StandaloneEmergencyOptions>(configuration.GetSection(StandaloneEmergencyOptions.SectionName));
         services.AddSingleton<IStandaloneEmergencyWebhookSignatureValidator, StandaloneEmergencyWebhookSignatureValidator>();

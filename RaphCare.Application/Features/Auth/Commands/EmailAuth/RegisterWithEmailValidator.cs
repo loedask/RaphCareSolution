@@ -2,9 +2,9 @@ using FluentValidation;
 
 namespace RaphCare.Application.Features.Auth.Commands.EmailAuth;
 
-public sealed class RegisterProfessionalWithEmailValidator : AbstractValidator<RegisterProfessionalWithEmailCommand>
+public sealed class RegisterWithEmailValidator : AbstractValidator<RegisterWithEmailCommand>
 {
-    public RegisterProfessionalWithEmailValidator()
+    public RegisterWithEmailValidator()
     {
         RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);

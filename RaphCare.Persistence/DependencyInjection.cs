@@ -150,6 +150,7 @@ public static class DependencyInjection
         services.AddScoped<IApplicationUserStore, ApplicationUserStore>();
         services.AddScoped<IEmailPasswordAuthService, EmailPasswordAuthService>();
         services.AddScoped<IUserRoleAssignmentService, UserRoleAssignmentService>();
+        services.AddScoped<IEmailOtpService, EmailOtpService>();
         services.AddScoped<IOtpService, OtpService>();
         services.AddScoped<IIdentityOtpProvisioningService, IdentityOtpProvisioningService>();
         services.AddScoped<IPatientIdentityTimelineService, PatientIdentityTimelineService>();
