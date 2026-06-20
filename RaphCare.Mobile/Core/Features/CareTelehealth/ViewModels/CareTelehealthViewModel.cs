@@ -6,7 +6,6 @@ using RaphCare.Client.Models.Telehealth;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Models;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 
@@ -18,10 +17,10 @@ public sealed class CareTelehealthViewModel : BaseViewModel
     public CareTelehealthViewModel(IPatientTelehealthService telehealth)
     {
         _telehealth = telehealth ?? throw new ArgumentNullException(nameof(telehealth));
-        Title = AppResources.T("CareTelehealthTitle");
-        RefreshButtonText = AppResources.T("CareTelehealthRefresh");
-        EmptyStateText = AppResources.T("CareTelehealthEmpty");
-        HintText = AppResources.T("CareTelehealthHint");
+        Title = T("CareTelehealthTitle");
+        RefreshButtonText = T("CareTelehealthRefresh");
+        EmptyStateText = T("CareTelehealthEmpty");
+        HintText = T("CareTelehealthHint");
 
         RefreshCommand = new Command(async () => await LoadAsync());
         OpenJoinCommand = new Command<Guid>(async id =>
@@ -58,7 +57,7 @@ public sealed class CareTelehealthViewModel : BaseViewModel
             var response = await _telehealth.GetMySessionsAsync(1, 50, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("CareTelehealthLoadFailed");
+                ErrorMessage = response.ErrorMessage ?? T("CareTelehealthLoadFailed");
                 Items.Clear();
                 OnPropertyChanged(nameof(ShowEmpty));
                 return;
@@ -83,7 +82,7 @@ public sealed class CareTelehealthViewModel : BaseViewModel
         {
             Id = s.Id,
             PrimaryLine = $"{when} · {s.Status}",
-            SecondaryLine = string.IsNullOrWhiteSpace(s.Platform) ? AppResources.T("CareTelehealthPlatformUnknown") : s.Platform
+            SecondaryLine = string.IsNullOrWhiteSpace(s.Platform) ? T("CareTelehealthPlatformUnknown") : s.Platform
         };
     }
 }

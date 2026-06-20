@@ -4,7 +4,6 @@ using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Insurance;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Insurance.ViewModels;
 
@@ -22,13 +21,13 @@ public sealed class InsuranceProfileDetailViewModel : BaseViewModel
     public InsuranceProfileDetailViewModel(IPatientInsuranceService insurance)
     {
         _insurance = insurance ?? throw new ArgumentNullException(nameof(insurance));
-        Title = AppResources.T("InsuranceDetailTitle");
-        PlanLabel = AppResources.T("InsuranceDetailPlan");
-        MembershipLabel = AppResources.T("InsuranceMembershipLabel");
-        StartLabel = AppResources.T("InsuranceStartDateLabel");
-        EndLabel = AppResources.T("InsuranceEndDateLabel");
-        ActiveLabel = AppResources.T("InsuranceActiveLabel");
-        SaveLabel = AppResources.T("InsuranceSave");
+        Title = T("InsuranceDetailTitle");
+        PlanLabel = T("InsuranceDetailPlan");
+        MembershipLabel = T("InsuranceMembershipLabel");
+        StartLabel = T("InsuranceStartDateLabel");
+        EndLabel = T("InsuranceEndDateLabel");
+        ActiveLabel = T("InsuranceActiveLabel");
+        SaveLabel = T("InsuranceSave");
         BackCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
         SaveCommand = new Command(async () => await SaveAsync());
     }
@@ -81,7 +80,7 @@ public sealed class InsuranceProfileDetailViewModel : BaseViewModel
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("profileId", out var v) && v != null && Guid.TryParse(v.ToString(), out var id))
+        if (TryGetQueryGuid(query, "profileId", out var id))
             _profileId = id;
     }
 
@@ -89,7 +88,7 @@ public sealed class InsuranceProfileDetailViewModel : BaseViewModel
     {
         if (_profileId == Guid.Empty)
         {
-            ErrorMessage = AppResources.T("InsuranceDetailFailed");
+            ErrorMessage = T("InsuranceDetailFailed");
             return;
         }
 
@@ -100,7 +99,7 @@ public sealed class InsuranceProfileDetailViewModel : BaseViewModel
             var response = await _insurance.GetMyProfileAsync(_profileId, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("InsuranceDetailFailed");
+                ErrorMessage = response.ErrorMessage ?? T("InsuranceDetailFailed");
                 return;
             }
 
@@ -142,7 +141,7 @@ public sealed class InsuranceProfileDetailViewModel : BaseViewModel
 
             var response = await _insurance.UpdateProfileAsync(req, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("InsuranceSaveFailed");
+                ErrorMessage = response.ErrorMessage ?? T("InsuranceSaveFailed");
         }
         finally
         {

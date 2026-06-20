@@ -2,7 +2,6 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.AiAssistant;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.AiAssistant.ViewModels;
 
@@ -18,16 +17,16 @@ public sealed class AiAssistantViewModel : BaseViewModel
     public AiAssistantViewModel(IPatientAiAssistantService assistant)
     {
         _assistant = assistant ?? throw new ArgumentNullException(nameof(assistant));
-        Title = AppResources.T("AiAssistantTitle");
+        Title = T("AiAssistantTitle");
         SendCommand = new Command(async () => await SendAsync(), () => !IsBusy && !string.IsNullOrWhiteSpace(DraftMessage));
         DraftMessage = string.Empty;
     }
 
-    public string IntroText => AppResources.T("AiAssistantIntro");
-    public string PlaceholderText => AppResources.T("AiAssistantPlaceholder");
-    public string SendButtonText => AppResources.T("AiAssistantSend");
-    public string ReplyHeading => AppResources.T("AiAssistantReplyHeading");
-    public string EmptyReplyText => AppResources.T("AiAssistantEmptyReply");
+    public string IntroText => T("AiAssistantIntro");
+    public string PlaceholderText => T("AiAssistantPlaceholder");
+    public string SendButtonText => T("AiAssistantSend");
+    public string ReplyHeading => T("AiAssistantReplyHeading");
+    public string EmptyReplyText => T("AiAssistantEmptyReply");
 
     public string DraftMessage
     {
@@ -78,7 +77,7 @@ public sealed class AiAssistantViewModel : BaseViewModel
 
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("AiAssistantSendFailed");
+                ErrorMessage = response.ErrorMessage ?? T("AiAssistantSendFailed");
                 return;
             }
 

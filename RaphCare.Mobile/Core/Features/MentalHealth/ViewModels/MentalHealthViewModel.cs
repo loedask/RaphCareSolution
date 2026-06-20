@@ -3,7 +3,6 @@ using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.MentalHealth.ViewModels;
 
@@ -19,7 +18,7 @@ public sealed class MentalHealthViewModel : BaseViewModel
     public MentalHealthViewModel(IPatientMentalHealthService mentalHealth)
     {
         _mentalHealth = mentalHealth ?? throw new ArgumentNullException(nameof(mentalHealth));
-        Title = AppResources.T("MentalHealthTitle");
+        Title = T("MentalHealthTitle");
 
         SelectMoodCommand = new Command<string>(async s =>
         {
@@ -31,16 +30,16 @@ public sealed class MentalHealthViewModel : BaseViewModel
         SessionHistoryCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.Appointments));
     }
 
-    public string HowAreYouLabel => AppResources.T("MentalHealthHowAreYou");
-    public string DailyCheckInHint => AppResources.T("MentalHealthDailyCheckIn");
-    public string MoodGreat => AppResources.T("MentalHealthMoodGreat");
-    public string MoodGood => AppResources.T("MentalHealthMoodGood");
-    public string MoodOkay => AppResources.T("MentalHealthMoodOkay");
-    public string MoodLow => AppResources.T("MentalHealthMoodLow");
-    public string BookTherapyTitle => AppResources.T("MentalHealthBookTherapy");
-    public string BookTherapySubtitle => AppResources.T("MentalHealthConnectTherapist");
-    public string SessionHistoryTitle => AppResources.T("MentalHealthSessionHistory");
-    public string SessionHistorySubtitle => AppResources.T("MentalHealthSessionsThisMonth");
+    public string HowAreYouLabel => T("MentalHealthHowAreYou");
+    public string DailyCheckInHint => T("MentalHealthDailyCheckIn");
+    public string MoodGreat => T("MentalHealthMoodGreat");
+    public string MoodGood => T("MentalHealthMoodGood");
+    public string MoodOkay => T("MentalHealthMoodOkay");
+    public string MoodLow => T("MentalHealthMoodLow");
+    public string BookTherapyTitle => T("MentalHealthBookTherapy");
+    public string BookTherapySubtitle => T("MentalHealthConnectTherapist");
+    public string SessionHistoryTitle => T("MentalHealthSessionHistory");
+    public string SessionHistorySubtitle => T("MentalHealthSessionsThisMonth");
 
     public string InsightTitle
     {
@@ -87,7 +86,7 @@ public sealed class MentalHealthViewModel : BaseViewModel
             var response = await _mentalHealth.GetContentAsync(CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("MentalHealthLoadFailed");
+                ErrorMessage = response.ErrorMessage ?? T("MentalHealthLoadFailed");
                 return;
             }
 
@@ -112,8 +111,8 @@ public sealed class MentalHealthViewModel : BaseViewModel
         {
             await MainThread.InvokeOnMainThreadAsync(async () =>
                 await Shell.Current.DisplayAlertAsync(
-                    AppResources.T("MentalHealthTitle"),
-                    response.ErrorMessage ?? AppResources.T("MentalHealthMoodSaveFailed"),
+                    T("MentalHealthTitle"),
+                    response.ErrorMessage ?? T("MentalHealthMoodSaveFailed"),
                     "OK"));
         }
     }

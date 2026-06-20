@@ -2,7 +2,6 @@ using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
@@ -11,20 +10,20 @@ public sealed class HelpSupportViewModel : BaseViewModel
 {
     public HelpSupportViewModel()
     {
-        Title = AppResources.T("HelpSupportTitle");
-        FaqCommand = new Command(async () => await ToastComingSoonAsync(AppResources.T("HelpFaq")));
-        MessageCommand = new Command(async () => await ToastComingSoonAsync(AppResources.T("HelpSendMessage")));
-        CallCommand = new Command(async () => await OpenUriAsync(AppResources.T("HelpSupportPhoneUri")));
-        EmailCommand = new Command(async () => await OpenUriAsync(AppResources.T("HelpSupportMailUri")));
+        Title = T("HelpSupportTitle");
+        FaqCommand = new Command(async () => await ToastComingSoonAsync(T("HelpFaq")));
+        MessageCommand = new Command(async () => await ToastComingSoonAsync(T("HelpSendMessage")));
+        CallCommand = new Command(async () => await OpenUriAsync(T("HelpSupportPhoneUri")));
+        EmailCommand = new Command(async () => await OpenUriAsync(T("HelpSupportMailUri")));
 
-        FaqTitle = AppResources.T("HelpFaq");
-        FaqSubtitle = AppResources.T("HelpFaqSubtitle");
-        MessageTitle = AppResources.T("HelpSendMessage");
-        MessageSubtitle = AppResources.T("HelpSendMessageSubtitle");
-        CallTitle = AppResources.T("HelpCallSupport");
-        CallSubtitle = AppResources.T("HelpCallSubtitle");
-        EmailTitle = AppResources.T("HelpEmailSupport");
-        EmailSubtitle = AppResources.T("HelpEmailSubtitle");
+        FaqTitle = T("HelpFaq");
+        FaqSubtitle = T("HelpFaqSubtitle");
+        MessageTitle = T("HelpSendMessage");
+        MessageSubtitle = T("HelpSendMessageSubtitle");
+        CallTitle = T("HelpCallSupport");
+        CallSubtitle = T("HelpCallSubtitle");
+        EmailTitle = T("HelpEmailSupport");
+        EmailSubtitle = T("HelpEmailSubtitle");
     }
 
     public string FaqTitle { get; }
@@ -36,13 +35,13 @@ public sealed class HelpSupportViewModel : BaseViewModel
     public string EmailTitle { get; }
     public string EmailSubtitle { get; }
 
-    public string ContactSectionTitle => AppResources.T("HelpContactSection");
-    public string TipsSectionTitle => AppResources.T("HelpTipsSection");
-    public string Tip1 => AppResources.T("HelpTip1");
-    public string Tip2 => AppResources.T("HelpTip2");
-    public string Tip3 => AppResources.T("HelpTip3");
-    public string Tip4 => AppResources.T("HelpTip4");
-    public string AppVersionLabel => $"{AppResources.T("ProfileAppName")} v{AppInfo.Current.VersionString}";
+    public string ContactSectionTitle => T("HelpContactSection");
+    public string TipsSectionTitle => T("HelpTipsSection");
+    public string Tip1 => T("HelpTip1");
+    public string Tip2 => T("HelpTip2");
+    public string Tip3 => T("HelpTip3");
+    public string Tip4 => T("HelpTip4");
+    public string AppVersionLabel => $"{T("ProfileAppName")} v{AppInfo.Current.VersionString}";
 
     public ICommand FaqCommand { get; }
     public ICommand MessageCommand { get; }
@@ -51,7 +50,7 @@ public sealed class HelpSupportViewModel : BaseViewModel
 
     private static async Task ToastComingSoonAsync(string title) =>
         await MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(title, AppResources.T("ProfileFeatureComingSoon"), AppResources.T("CommonOk")));
+            await Shell.Current.DisplayAlertAsync(title, T("ProfileFeatureComingSoon"), T("CommonOk")));
 
     private static async Task OpenUriAsync(string? uri)
     {
@@ -65,9 +64,9 @@ public sealed class HelpSupportViewModel : BaseViewModel
         {
             await MainThread.InvokeOnMainThreadAsync(async () =>
                 await Shell.Current.DisplayAlertAsync(
-                    AppResources.T("HelpSupportTitle"),
-                    AppResources.T("HelpLauncherFailed"),
-                    AppResources.T("CommonOk")));
+                    T("HelpSupportTitle"),
+                    T("HelpLauncherFailed"),
+                    T("CommonOk")));
         }
     }
 }

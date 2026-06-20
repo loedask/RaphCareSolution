@@ -1,7 +1,6 @@
 using System.Windows.Input;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
@@ -10,9 +9,9 @@ public class RegisterVoiceIntroViewModel : BaseViewModel
 {
     public RegisterVoiceIntroViewModel()
     {
-        Title = AppResources.T("RegisterVoiceTitle");
-        IntroBody = AppResources.T("RegisterVoiceIntroBody");
-        ContinueLabel = AppResources.T("RegisterVoiceContinue");
+        Title = T("RegisterVoiceTitle");
+        IntroBody = T("RegisterVoiceIntroBody");
+        ContinueLabel = T("RegisterVoiceContinue");
 
         ContinueCommand = new Command(async () => await SafeShellNavigator.GoToAsync("RegisterPhonePage?ContinueWith=Voice"));
         BackCommand = new Command(async () => await GoBackAsync());

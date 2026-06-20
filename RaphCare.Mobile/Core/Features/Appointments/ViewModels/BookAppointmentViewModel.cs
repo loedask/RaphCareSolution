@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Extensions.Options;
 using RaphCare.Client.Contracts.Interfaces;
@@ -5,7 +6,6 @@ using RaphCare.Client.Models.Appointments;
 using RaphCare.Mobile.Core.Common.Configuration;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Appointments.ViewModels;
 
@@ -27,14 +27,14 @@ public sealed class BookAppointmentViewModel : BaseViewModel
     {
         _appointments = appointments ?? throw new ArgumentNullException(nameof(appointments));
         _defaults = options?.Value ?? new AppointmentsMobileOptions();
-        Title = AppResources.T("AppointmentsBookTitle");
-        SubmitLabel = AppResources.T("AppointmentsSubmit");
-        CancelLabel = AppResources.T("AppointmentsCancel");
+        Title = T("AppointmentsBookTitle");
+        SubmitLabel = T("AppointmentsSubmit");
+        CancelLabel = T("AppointmentsCancel");
 
         if (Guid.TryParse(_defaults.DefaultClinicId, out var c))
-            ClinicIdText = c.ToString();
+            ClinicIdText = c.ToString("D", CultureInfo.InvariantCulture);
         if (Guid.TryParse(_defaults.DefaultProviderId, out var p))
-            ProviderIdText = p.ToString();
+            ProviderIdText = p.ToString("D", CultureInfo.InvariantCulture);
 
         SubmitCommand = new Command(async () => await SubmitAsync());
         CancelCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
@@ -43,15 +43,15 @@ public sealed class BookAppointmentViewModel : BaseViewModel
     public string SubmitLabel { get; }
     public string CancelLabel { get; }
 
-    public string PageSubtitle => AppResources.T("AppointmentsBookSubtitle");
+    public string PageSubtitle => T("AppointmentsBookSubtitle");
 
-    public string ClinicIdLabel => AppResources.T("AppointmentsClinicId");
-    public string ProviderIdLabel => AppResources.T("AppointmentsProviderId");
-    public string DateLabel => AppResources.T("AppointmentsDate");
-    public string StartLabel => AppResources.T("AppointmentsStartTime");
-    public string EndLabel => AppResources.T("AppointmentsEndTime");
-    public string TypeLabel => AppResources.T("AppointmentsType");
-    public string ReasonLabel => AppResources.T("AppointmentsReason");
+    public string ClinicIdLabel => T("AppointmentsClinicId");
+    public string ProviderIdLabel => T("AppointmentsProviderId");
+    public string DateLabel => T("AppointmentsDate");
+    public string StartLabel => T("AppointmentsStartTime");
+    public string EndLabel => T("AppointmentsEndTime");
+    public string TypeLabel => T("AppointmentsType");
+    public string ReasonLabel => T("AppointmentsReason");
 
     public IReadOnlyList<string> VisitTypes { get; } = new[] { "InPerson", "Telemedicine" };
 
@@ -113,7 +113,7 @@ public sealed class BookAppointmentViewModel : BaseViewModel
 
         if (!Guid.TryParse(ClinicIdText.Trim(), out var clinicId) || !Guid.TryParse(ProviderIdText.Trim(), out var providerId))
         {
-            ErrorMessage = AppResources.T("AppointmentsInvalidGuid");
+            ErrorMessage = T("AppointmentsInvalidGuid");
             return;
         }
 
@@ -122,7 +122,7 @@ public sealed class BookAppointmentViewModel : BaseViewModel
         var end = day.Add(EndTime);
         if (end <= start)
         {
-            ErrorMessage = AppResources.T("AppointmentsEndBeforeStart");
+            ErrorMessage = T("AppointmentsEndBeforeStart");
             return;
         }
 
@@ -142,13 +142,13 @@ public sealed class BookAppointmentViewModel : BaseViewModel
             var response = await _appointments.BookAsync(request, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("AppointmentsBookingFailed");
+                ErrorMessage = response.ErrorMessage ?? T("AppointmentsBookingFailed");
                 return;
             }
 
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                await Shell.Current.DisplayAlertAsync(Title, AppResources.T("AppointmentsBookingOk"), "OK");
+                await Shell.Current.DisplayAlertAsync(Title, T("AppointmentsBookingOk"), "OK");
                 await SafeShellNavigator.GoToAsync("..");
             });
         }

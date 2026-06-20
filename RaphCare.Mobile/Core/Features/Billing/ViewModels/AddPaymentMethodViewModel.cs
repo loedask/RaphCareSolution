@@ -2,7 +2,6 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Billing.ViewModels;
 
@@ -18,7 +17,7 @@ public sealed class AddPaymentMethodViewModel : BaseViewModel
     public AddPaymentMethodViewModel(IPatientBillingService billing)
     {
         _billing = billing ?? throw new ArgumentNullException(nameof(billing));
-        Title = AppResources.T("BillingAddPaymentTitle");
+        Title = T("BillingAddPaymentTitle");
         SubmitCommand = new Command(async () => await SubmitAsync(), () => !IsBusy && !string.IsNullOrWhiteSpace(ProviderName) && !string.IsNullOrWhiteSpace(MaskedDetails));
         CancelCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
     }
@@ -65,12 +64,12 @@ public sealed class AddPaymentMethodViewModel : BaseViewModel
         set => SetProperty(ref _errorMessage, value);
     }
 
-    public string MethodTypeLabel => AppResources.T("BillingFieldMethodType");
-    public string ProviderLabel => AppResources.T("BillingFieldProvider");
-    public string MaskedLabel => AppResources.T("BillingFieldMasked");
-    public string DefaultLabel => AppResources.T("BillingFieldDefault");
-    public string SubmitLabel => AppResources.T("BillingSubmitPayment");
-    public string CancelLabel => AppResources.T("BillingCancel");
+    public string MethodTypeLabel => T("BillingFieldMethodType");
+    public string ProviderLabel => T("BillingFieldProvider");
+    public string MaskedLabel => T("BillingFieldMasked");
+    public string DefaultLabel => T("BillingFieldDefault");
+    public string SubmitLabel => T("BillingSubmitPayment");
+    public string CancelLabel => T("BillingCancel");
 
     public ICommand SubmitCommand { get; }
     public ICommand CancelCommand { get; }
@@ -91,7 +90,7 @@ public sealed class AddPaymentMethodViewModel : BaseViewModel
                 CancellationToken.None).ConfigureAwait(false);
             if (!res.IsSuccess)
             {
-                ErrorMessage = res.ErrorMessage ?? AppResources.T("BillingAddPaymentFailed");
+                ErrorMessage = res.ErrorMessage ?? T("BillingAddPaymentFailed");
                 return;
             }
 

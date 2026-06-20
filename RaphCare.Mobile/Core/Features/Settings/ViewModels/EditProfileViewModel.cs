@@ -5,7 +5,6 @@ using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Profile;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
@@ -25,22 +24,22 @@ public sealed class EditProfileViewModel : BaseViewModel
     {
         _profileApi = profileApi ?? throw new ArgumentNullException(nameof(profileApi));
         _localProfile = localProfile ?? throw new ArgumentNullException(nameof(localProfile));
-        Title = AppResources.T("EditProfileTitle");
+        Title = T("EditProfileTitle");
         SaveCommand = new Command(async () => await SaveAsync());
         GenderOptions =
         [
-            AppResources.T("ProfileGenderFemale"),
-            AppResources.T("ProfileGenderMale"),
-            AppResources.T("ProfileGenderOther"),
-            AppResources.T("ProfileGenderPreferNot"),
+            T("ProfileGenderFemale"),
+            T("ProfileGenderMale"),
+            T("ProfileGenderOther"),
+            T("ProfileGenderPreferNot"),
         ];
-        FirstNameLabel = AppResources.T("EditProfileFirstName");
-        LastNameLabel = AppResources.T("EditProfileLastName");
-        EmailLabel = AppResources.T("EditProfileEmail");
-        PhoneLabel = AppResources.T("EditProfilePhone");
-        DobLabel = AppResources.T("EditProfileDob");
-        GenderLabel = AppResources.T("EditProfileGender");
-        SaveLabel = AppResources.T("EditProfileSave");
+        FirstNameLabel = T("EditProfileFirstName");
+        LastNameLabel = T("EditProfileLastName");
+        EmailLabel = T("EditProfileEmail");
+        PhoneLabel = T("EditProfilePhone");
+        DobLabel = T("EditProfileDob");
+        GenderLabel = T("EditProfileGender");
+        SaveLabel = T("EditProfileSave");
     }
 
     public string FirstNameLabel { get; }
@@ -90,7 +89,7 @@ public sealed class EditProfileViewModel : BaseViewModel
         set => SetProperty(ref _genderIndex, value);
     }
 
-    public string PhotoHint => AppResources.T("EditProfilePhotoHint");
+    public string PhotoHint => T("EditProfilePhotoHint");
     public ICommand SaveCommand { get; }
 
     public async Task LoadAsync()
@@ -146,9 +145,9 @@ public sealed class EditProfileViewModel : BaseViewModel
             {
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                     await Shell.Current.DisplayAlertAsync(
-                        AppResources.T("EditProfileTitle"),
-                        AppResources.T("EditProfileSaveFailed"),
-                        AppResources.T("CommonOk")));
+                        T("EditProfileTitle"),
+                        T("EditProfileSaveFailed"),
+                        T("CommonOk")));
                 return;
             }
 
@@ -157,9 +156,9 @@ public sealed class EditProfileViewModel : BaseViewModel
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
                 await Shell.Current.DisplayAlertAsync(
-                    AppResources.T("EditProfileTitle"),
-                    AppResources.T("EditProfileSaved"),
-                    AppResources.T("CommonOk"));
+                    T("EditProfileTitle"),
+                    T("EditProfileSaved"),
+                    T("CommonOk"));
                 await Shell.Current.GoToAsync("..");
             });
         }

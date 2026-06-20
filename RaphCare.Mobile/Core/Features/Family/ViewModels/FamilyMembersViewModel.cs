@@ -4,7 +4,6 @@ using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Family;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Family.ViewModels;
 
@@ -16,10 +15,10 @@ public sealed class FamilyMembersViewModel : BaseViewModel
     public FamilyMembersViewModel(IPatientFamilyMembersService family)
     {
         _family = family ?? throw new ArgumentNullException(nameof(family));
-        Title = AppResources.T("FamilyTitle");
-        RefreshButtonText = AppResources.T("FamilyRefresh");
-        AddButtonText = AppResources.T("FamilyAddMember");
-        EmptyStateText = AppResources.T("FamilyEmpty");
+        Title = T("FamilyTitle");
+        RefreshButtonText = T("FamilyRefresh");
+        AddButtonText = T("FamilyAddMember");
+        EmptyStateText = T("FamilyEmpty");
         Items.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ShowEmpty));
 
         RefreshCommand = new Command(async () => await LoadAsync());
@@ -57,7 +56,7 @@ public sealed class FamilyMembersViewModel : BaseViewModel
             var response = await _family.GetMyFamilyMembersAsync(CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("FamilyLoadFailed");
+                ErrorMessage = response.ErrorMessage ?? T("FamilyLoadFailed");
                 Items.Clear();
                 return;
             }

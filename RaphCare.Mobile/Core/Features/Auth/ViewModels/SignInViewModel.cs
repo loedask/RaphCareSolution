@@ -2,7 +2,6 @@ using System.Windows.Input;
 using Microsoft.Extensions.Options;
 using Microsoft.Maui.ApplicationModel;
 using RaphCare.Mobile.Core.Common.Navigation;
-using RaphCare.Mobile.Resources.Strings;
 using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
@@ -35,25 +34,25 @@ public class SignInViewModel : BaseViewModel
         set => SetProperty(ref _statusMessage, value);
     }
 
-    public string WelcomeBack => AppResources.T("AuthWelcomeBack");
+    public string WelcomeBack => T("AuthWelcomeBack");
 
-    public string SignInSubtitle => AppResources.T("AuthSignInToContinue");
+    public string SignInSubtitle => T("AuthSignInToContinue");
 
-    public string EmailLabel => AppResources.T("AuthEmailLabel");
-    public string PasswordLabel => AppResources.T("AuthPasswordLabel");
-    public string VerificationCodeLabel => AppResources.T("AuthVerificationCodeLabel");
-    public string EmailPlaceholder => AppResources.T("AuthEmailPlaceholder");
-    public string PasswordPlaceholder => AppResources.T("AuthPasswordPlaceholder");
-    public string VerificationCodePlaceholder => AppResources.T("AuthVerificationCodePlaceholder");
+    public string EmailLabel => T("AuthEmailLabel");
+    public string PasswordLabel => T("AuthPasswordLabel");
+    public string VerificationCodeLabel => T("AuthVerificationCodeLabel");
+    public string EmailPlaceholder => T("AuthEmailPlaceholder");
+    public string PasswordPlaceholder => T("AuthPasswordPlaceholder");
+    public string VerificationCodePlaceholder => T("AuthVerificationCodePlaceholder");
 
     public string SignInButtonText =>
-        AwaitingVerification ? AppResources.T("AuthSignInVerifyButton") : AppResources.T("AuthSignIn");
+        AwaitingVerification ? T("AuthSignInVerifyButton") : T("AuthSignIn");
 
-    public string ForgotPasswordText => AppResources.T("AuthForgotPassword");
+    public string ForgotPasswordText => T("AuthForgotPassword");
 
-    public string DontHaveAccountText => AppResources.T("AuthDontHaveAccount");
+    public string DontHaveAccountText => T("AuthDontHaveAccount");
 
-    public string SignUpText => AppResources.T("AuthSignUp");
+    public string SignUpText => T("AuthSignUp");
 
     public bool AwaitingVerification
     {
@@ -94,7 +93,7 @@ public class SignInViewModel : BaseViewModel
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-        Title = AppResources.T("AuthSignInPageTitle");
+        Title = T("AuthSignInPageTitle");
         SignInCommand = new Command(async () => await SignInAsync().ConfigureAwait(false), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync().ConfigureAwait(false));
         SignUpCommand = new Command(async () => await OpenSignUpAsync().ConfigureAwait(false));
@@ -145,19 +144,19 @@ public class SignInViewModel : BaseViewModel
         StatusMessage = null;
         if (string.IsNullOrWhiteSpace(Email))
         {
-            ErrorMessage = AppResources.T("AuthEmailRequired");
+            ErrorMessage = T("AuthEmailRequired");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(Password))
         {
-            ErrorMessage = AppResources.T("AuthPasswordRequired");
+            ErrorMessage = T("AuthPasswordRequired");
             return;
         }
 
         if (AwaitingVerification && string.IsNullOrWhiteSpace(VerificationCode))
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorVerificationCode");
+            ErrorMessage = T("RegisterEmailErrorVerificationCode");
             return;
         }
 
@@ -172,7 +171,7 @@ public class SignInViewModel : BaseViewModel
             if (result.RequiresVerification)
             {
                 AwaitingVerification = true;
-                StatusMessage = AppResources.T("AuthSignInCodeSent");
+                StatusMessage = T("AuthSignInCodeSent");
                 return;
             }
 
@@ -182,12 +181,12 @@ public class SignInViewModel : BaseViewModel
             }
             else
             {
-                ErrorMessage = result.ErrorMessage ?? AppResources.T("AuthSignInFailed");
+                ErrorMessage = result.ErrorMessage ?? T("AuthSignInFailed");
             }
         }
         catch (Exception)
         {
-            ErrorMessage = AppResources.T("AuthSignInFailed");
+            ErrorMessage = T("AuthSignInFailed");
         }
         finally
         {

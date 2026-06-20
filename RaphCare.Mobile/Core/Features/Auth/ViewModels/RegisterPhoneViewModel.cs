@@ -1,10 +1,10 @@
+using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Auth.Models;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
@@ -18,14 +18,14 @@ public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
     private string? _errorMessage;
     private string _continueWith = string.Empty;
 
-    public string Subtitle { get; } = AppResources.T("RegisterPhoneSubtitle");
-    public string PhoneFieldLabel { get; } = AppResources.T("RegisterPhoneFieldLabel");
-    public string ContinueText { get; } = AppResources.T("RegisterPhoneContinue");
+    public string Subtitle { get; } = T("RegisterPhoneSubtitle");
+    public string PhoneFieldLabel { get; } = T("RegisterPhoneFieldLabel");
+    public string ContinueText { get; } = T("RegisterPhoneContinue");
 
     public RegisterPhoneViewModel(IOtpAuthService otpAuth)
     {
         _otpAuth = otpAuth ?? throw new ArgumentNullException(nameof(otpAuth));
-        Title = AppResources.T("RegisterPhoneTitle");
+        Title = T("RegisterPhoneTitle");
         ContinueCommand = new Command(async () => await SendAndContinueAsync(), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync());
     }
@@ -56,7 +56,7 @@ public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("ContinueWith", out var v) && v != null)
-            _continueWith = v.ToString() ?? string.Empty;
+            _continueWith = Convert.ToString(v, CultureInfo.InvariantCulture) ?? string.Empty;
     }
 
     private string BuildE164()
@@ -78,7 +78,7 @@ public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
         var phone = BuildE164();
         if (phone.Length < 10)
         {
-            ErrorMessage = AppResources.T("RegisterPhoneInvalid");
+            ErrorMessage = T("RegisterPhoneInvalid");
             return;
         }
 
@@ -88,7 +88,7 @@ public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
             var result = await _otpAuth.SendOtpAsync(phone, CancellationToken.None).ConfigureAwait(false);
             if (!result.IsSuccess)
             {
-                ErrorMessage = result.ErrorMessage ?? AppResources.T("RegisterPhoneSendFailed");
+                ErrorMessage = result.ErrorMessage ?? T("RegisterPhoneSendFailed");
                 return;
             }
 

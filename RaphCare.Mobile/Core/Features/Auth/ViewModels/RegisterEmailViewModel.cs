@@ -5,7 +5,6 @@ using RaphCare.Mobile.Core.Features.Auth.Models;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
@@ -29,25 +28,25 @@ public class RegisterEmailViewModel : BaseViewModel
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _emailAuthService = emailAuthService ?? throw new ArgumentNullException(nameof(emailAuthService));
-        Title = AppResources.T("RegisterEmailTitle");
-        PageTitle = AppResources.T("RegisterEmailTitle");
-        Subtitle = AppResources.T("RegisterEmailSubtitle");
-        FirstNameLabel = AppResources.T("RegisterEmailFirstName");
-        LastNameLabel = AppResources.T("RegisterEmailLastName");
-        EmailLabel = AppResources.T("RegisterEmailEmail");
-        PasswordLabel = AppResources.T("RegisterEmailPassword");
-        VerificationCodeLabel = AppResources.T("RegisterEmailVerificationCode");
-        ClinicLabel = AppResources.T("RegisterEmailClinic");
-        ClinicHint = AppResources.T("RegisterEmailClinicHint");
-        PlaceholderFirst = AppResources.T("RegisterEmailPlaceholderFirst");
-        PlaceholderLast = AppResources.T("RegisterEmailPlaceholderLast");
-        PlaceholderEmail = AppResources.T("RegisterEmailPlaceholderEmail");
-        PlaceholderPassword = AppResources.T("RegisterEmailPlaceholderPassword");
-        PlaceholderVerificationCode = AppResources.T("RegisterEmailVerificationPlaceholder");
-        ContinueText = AppResources.T("RegisterEmailContinue");
-        SendCodeText = AppResources.T("RegisterEmailSendCode");
-        AlreadyHaveText = AppResources.T("RegisterEmailAlreadyHave");
-        SignInLinkText = AppResources.T("RegisterEmailSignIn");
+        Title = T("RegisterEmailTitle");
+        PageTitle = T("RegisterEmailTitle");
+        Subtitle = T("RegisterEmailSubtitle");
+        FirstNameLabel = T("RegisterEmailFirstName");
+        LastNameLabel = T("RegisterEmailLastName");
+        EmailLabel = T("RegisterEmailEmail");
+        PasswordLabel = T("RegisterEmailPassword");
+        VerificationCodeLabel = T("RegisterEmailVerificationCode");
+        ClinicLabel = T("RegisterEmailClinic");
+        ClinicHint = T("RegisterEmailClinicHint");
+        PlaceholderFirst = T("RegisterEmailPlaceholderFirst");
+        PlaceholderLast = T("RegisterEmailPlaceholderLast");
+        PlaceholderEmail = T("RegisterEmailPlaceholderEmail");
+        PlaceholderPassword = T("RegisterEmailPlaceholderPassword");
+        PlaceholderVerificationCode = T("RegisterEmailVerificationPlaceholder");
+        ContinueText = T("RegisterEmailContinue");
+        SendCodeText = T("RegisterEmailSendCode");
+        AlreadyHaveText = T("RegisterEmailAlreadyHave");
+        SignInLinkText = T("RegisterEmailSignIn");
 
         Clinics = new ObservableCollection<ClinicPickerItem>();
 
@@ -139,7 +138,7 @@ public class RegisterEmailViewModel : BaseViewModel
     }
 
     public string SendCodeButtonText =>
-        SendingCode ? AppResources.T("RegisterEmailSendingCode") : SendCodeText;
+        SendingCode ? T("RegisterEmailSendingCode") : SendCodeText;
 
     public ICommand RegisterCommand { get; }
     public ICommand SendCodeCommand { get; }
@@ -157,7 +156,7 @@ public class RegisterEmailViewModel : BaseViewModel
             Clinics.Add(new ClinicPickerItem
             {
                 Id = null,
-                DisplayName = AppResources.T("RegisterEmailClinicNone")
+                DisplayName = T("RegisterEmailClinicNone")
             });
 
             if (response.IsSuccess && response.Data is not null)
@@ -181,7 +180,7 @@ public class RegisterEmailViewModel : BaseViewModel
                 Clinics.Add(new ClinicPickerItem
                 {
                     Id = null,
-                    DisplayName = AppResources.T("RegisterEmailClinicNone")
+                    DisplayName = T("RegisterEmailClinicNone")
                 });
                 SelectedClinic = Clinics[0];
             }
@@ -200,7 +199,7 @@ public class RegisterEmailViewModel : BaseViewModel
         StatusMessage = null;
         if (string.IsNullOrWhiteSpace(Email))
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorEmail");
+            ErrorMessage = T("RegisterEmailErrorEmail");
             return;
         }
 
@@ -212,13 +211,13 @@ public class RegisterEmailViewModel : BaseViewModel
                 .ConfigureAwait(false);
 
             if (response.IsSuccess)
-                StatusMessage = AppResources.T("RegisterEmailCodeSent");
+                StatusMessage = T("RegisterEmailCodeSent");
             else
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("RegisterEmailSendCodeFailed");
+                ErrorMessage = response.ErrorMessage ?? T("RegisterEmailSendCodeFailed");
         }
         catch (Exception)
         {
-            ErrorMessage = AppResources.T("RegisterEmailSendCodeFailed");
+            ErrorMessage = T("RegisterEmailSendCodeFailed");
         }
         finally
         {
@@ -234,31 +233,31 @@ public class RegisterEmailViewModel : BaseViewModel
         StatusMessage = null;
         if (string.IsNullOrWhiteSpace(FirstName))
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorFirstName");
+            ErrorMessage = T("RegisterEmailErrorFirstName");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(LastName))
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorLastName");
+            ErrorMessage = T("RegisterEmailErrorLastName");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(Email))
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorEmail");
+            ErrorMessage = T("RegisterEmailErrorEmail");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(Password))
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorPassword");
+            ErrorMessage = T("RegisterEmailErrorPassword");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(VerificationCode))
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorVerificationCode");
+            ErrorMessage = T("RegisterEmailErrorVerificationCode");
             return;
         }
 
@@ -283,12 +282,12 @@ public class RegisterEmailViewModel : BaseViewModel
             }
             else
             {
-                ErrorMessage = result.ErrorMessage ?? AppResources.T("RegisterEmailFailed");
+                ErrorMessage = result.ErrorMessage ?? T("RegisterEmailFailed");
             }
         }
         catch (Exception)
         {
-            ErrorMessage = AppResources.T("RegisterEmailFailed");
+            ErrorMessage = T("RegisterEmailFailed");
         }
         finally
         {

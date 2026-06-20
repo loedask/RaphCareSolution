@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Extensions.Options;
 using Microsoft.Maui.ApplicationModel;
@@ -10,7 +11,6 @@ using RaphCare.Mobile.Core.Features.Auth.Services;
 using RaphCare.Mobile.Core.Common.Configuration;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
@@ -46,20 +46,20 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
         _audioManager = audioManager ?? throw new ArgumentNullException(nameof(audioManager));
         _language = string.IsNullOrWhiteSpace(_onboarding.DefaultVoiceLanguage) ? "en-ZA" : _onboarding.DefaultVoiceLanguage;
 
-        Title = AppResources.T("VoiceSubmitTitle");
-        Subtitle = AppResources.T("VoiceSubmitSubtitle");
-        PhoneLabel = AppResources.T("VoiceSubmitPhoneLabel");
-        LanguageLabel = AppResources.T("VoiceSubmitLanguageLabel");
-        StartRecordingText = AppResources.T("VoiceRecordStart");
-        StopRecordingText = AppResources.T("VoiceRecordStop");
-        ListeningTitle = AppResources.T("VoiceRecordListeningTitle");
-        ListeningHint = AppResources.T("VoiceRecordListeningHint");
-        ProcessingTitle = AppResources.T("VoiceRecordProcessingTitle");
-        ProcessingHint = AppResources.T("VoiceRecordProcessingHint");
-        SuccessTitle = AppResources.T("VoiceSubmitSuccessTitle");
-        ContinueHomeText = AppResources.T("VoiceSubmitContinueWelcome");
-        ExampleTitle = AppResources.T("VoiceRecordExampleTitle");
-        HearExampleText = AppResources.T("VoiceRecordHearExample");
+        Title = T("VoiceSubmitTitle");
+        Subtitle = T("VoiceSubmitSubtitle");
+        PhoneLabel = T("VoiceSubmitPhoneLabel");
+        LanguageLabel = T("VoiceSubmitLanguageLabel");
+        StartRecordingText = T("VoiceRecordStart");
+        StopRecordingText = T("VoiceRecordStop");
+        ListeningTitle = T("VoiceRecordListeningTitle");
+        ListeningHint = T("VoiceRecordListeningHint");
+        ProcessingTitle = T("VoiceRecordProcessingTitle");
+        ProcessingHint = T("VoiceRecordProcessingHint");
+        SuccessTitle = T("VoiceSubmitSuccessTitle");
+        ContinueHomeText = T("VoiceSubmitContinueWelcome");
+        ExampleTitle = T("VoiceRecordExampleTitle");
+        HearExampleText = T("VoiceRecordHearExample");
 
         for (var i = 0; i < 20; i++)
             WaveBars.Add(new WaveBarItem());
@@ -194,7 +194,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("Phone", out var p) && p != null)
-            PhoneE164 = p.ToString() ?? string.Empty;
+            PhoneE164 = Convert.ToString(p, CultureInfo.InvariantCulture) ?? string.Empty;
     }
 
     /// <summary>Stops an in-flight recording without uploading; used when leaving the page.</summary>
@@ -244,21 +244,21 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
 
         if (string.IsNullOrWhiteSpace(PhoneE164))
         {
-            ErrorMessage = AppResources.T("RegisterPhoneInvalid");
+            ErrorMessage = T("RegisterPhoneInvalid");
             return;
         }
 
         var perm = await Permissions.RequestAsync<Permissions.Microphone>().ConfigureAwait(false);
         if (perm != PermissionStatus.Granted)
         {
-            ErrorMessage = AppResources.T("VoiceRecordPermissionDenied");
+            ErrorMessage = T("VoiceRecordPermissionDenied");
             return;
         }
 
         var clinicId = _onboarding.VoiceRegistrationClinicId;
         if (clinicId is null || clinicId == Guid.Empty)
         {
-            ErrorMessage = AppResources.T("VoiceSubmitNoClinic");
+            ErrorMessage = T("VoiceSubmitNoClinic");
             return;
         }
 
@@ -269,7 +269,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
             _recorder = _audioManager.CreateRecorder();
             if (!_recorder.CanRecordAudio)
             {
-                ErrorMessage = AppResources.T("VoiceRecordNotAvailable");
+                ErrorMessage = T("VoiceRecordNotAvailable");
                 _recorder = null;
                 return;
             }
@@ -297,7 +297,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
         var clinicId = _onboarding.VoiceRegistrationClinicId;
         if (clinicId is null || clinicId == Guid.Empty)
         {
-            ErrorMessage = AppResources.T("VoiceSubmitNoClinic");
+            ErrorMessage = T("VoiceSubmitNoClinic");
             await CancelAsync().ConfigureAwait(false);
             return;
         }
@@ -320,7 +320,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
 
             if (source is not FileAudioSource fileSource)
             {
-                ErrorMessage = AppResources.T("VoiceRecordStopFailed");
+                ErrorMessage = T("VoiceRecordStopFailed");
                 TryDeleteFile(_recordingPath);
                 _recordingPath = null;
                 return;
@@ -341,7 +341,7 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
 
             if (!result.IsSuccess || result.Data is null)
             {
-                ErrorMessage = result.ErrorMessage ?? AppResources.T("VoiceSubmitFailed");
+                ErrorMessage = result.ErrorMessage ?? T("VoiceSubmitFailed");
                 return;
             }
 
@@ -364,13 +364,13 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
     private static string FormatExampleScript(string phoneE164)
     {
         var phone = string.IsNullOrWhiteSpace(phoneE164) ? "…" : phoneE164.Trim();
-        return string.Format(AppResources.T("VoiceRecordExampleScript"), phone);
+        return Format(T("VoiceRecordExampleScript"), phone);
     }
 
     private static string FormatSpeakPrompt(string phoneE164)
     {
         var phone = string.IsNullOrWhiteSpace(phoneE164) ? "your phone number" : phoneE164.Trim();
-        return string.Format(AppResources.T("VoiceRecordSpeakPrompt"), phone);
+        return Format(T("VoiceRecordSpeakPrompt"), phone);
     }
 
     private async Task SpeakExamplePromptAsync()

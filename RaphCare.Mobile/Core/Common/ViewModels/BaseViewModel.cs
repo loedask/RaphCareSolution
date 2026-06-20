@@ -1,6 +1,8 @@
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.Maui.ApplicationModel;
+using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Common.ViewModels;
 
@@ -48,5 +50,23 @@ public abstract class BaseViewModel : INotifyPropertyChanged
             handler(this, new PropertyChangedEventArgs(propertyName));
         else
             MainThread.BeginInvokeOnMainThread(() => handler(this, new PropertyChangedEventArgs(propertyName)));
+    }
+
+    /// <summary>Localized string for <see cref="CultureInfo.CurrentUICulture"/>.</summary>
+    protected static string T(string name) =>
+        AppResources.T(name, CultureInfo.CurrentUICulture);
+
+    /// <summary>Formats a localized pattern with <see cref="CultureInfo.CurrentCulture"/>.</summary>
+    protected static string Format(string format, params object?[] args) =>
+        string.Format(CultureInfo.CurrentCulture, format, args);
+
+    /// <summary>Parses a Shell query value as a <see cref="Guid"/> using invariant culture.</summary>
+    protected static bool TryGetQueryGuid(IDictionary<string, object> query, string key, out Guid id)
+    {
+        id = default;
+        if (!query.TryGetValue(key, out var value) || value is null)
+            return false;
+
+        return Guid.TryParse(Convert.ToString(value, CultureInfo.InvariantCulture), out id);
     }
 }

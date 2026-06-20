@@ -6,7 +6,6 @@ using System.Windows.Input;
 using Microsoft.Extensions.Options;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
-using RaphCare.Mobile.Resources.Strings;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.ViewModels;
@@ -63,7 +62,7 @@ public class LandingViewModel : BaseViewModel
     public LandingViewModel(IOptions<EntraAuthOptions> entraOptions)
     {
         _entra = entraOptions?.Value ?? throw new ArgumentNullException(nameof(entraOptions));
-        Title = AppResources.T("AuthLandingPageTitle");
+        Title = T("AuthLandingPageTitle");
         Languages = new ObservableCollection<LanguageOption>(new[]
         {
             new LanguageOption("en", "English", "English", CultureInfo.GetCultureInfo("en-US")),
@@ -98,15 +97,15 @@ public class LandingViewModel : BaseViewModel
     public string CurrentLanguageNative =>
         Languages.FirstOrDefault(l => l.Code == _languageCode)?.Native ?? "English";
 
-    public string WelcomeTagline => AppResources.T("AuthWelcomeTagline");
+    public string WelcomeTagline => T("AuthWelcomeTagline");
 
-    public string FooterTagline => AppResources.T("AuthHealthcareBarriers");
+    public string FooterTagline => T("AuthHealthcareBarriers");
 
-    public string SignInText => AppResources.T("AuthSignIn");
+    public string SignInText => T("AuthSignIn");
 
-    public string CreateAccountText => AppResources.T("AuthCreateAccount");
+    public string CreateAccountText => T("AuthCreateAccount");
 
-    public string ChooseLanguageTitle => AppResources.T("AuthChooseLanguage");
+    public string ChooseLanguageTitle => T("AuthChooseLanguage");
 
     private void RestoreLanguagePreference()
     {

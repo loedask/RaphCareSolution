@@ -7,7 +7,6 @@ using RaphCare.Client.Models.Appointments;
 using RaphCare.Mobile.Core.Features.Appointments.Models;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Appointments.ViewModels;
 
@@ -19,10 +18,10 @@ public sealed class AppointmentsViewModel : BaseViewModel
     public AppointmentsViewModel(IAppointmentService appointments)
     {
         _appointments = appointments ?? throw new ArgumentNullException(nameof(appointments));
-        Title = AppResources.T("AppointmentsListTitle");
-        BookButtonText = AppResources.T("AppointmentsBook");
-        RefreshButtonText = AppResources.T("AppointmentsRefresh");
-        EmptyStateText = AppResources.T("AppointmentsEmpty");
+        Title = T("AppointmentsListTitle");
+        BookButtonText = T("AppointmentsBook");
+        RefreshButtonText = T("AppointmentsRefresh");
+        EmptyStateText = T("AppointmentsEmpty");
 
         RefreshCommand = new Command(async () => await LoadAsync());
         BookCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.BookAppointment));
@@ -60,7 +59,7 @@ public sealed class AppointmentsViewModel : BaseViewModel
             var response = await _appointments.GetMyAppointmentsAsync(1, 50, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("AppointmentsLoadFailed");
+                ErrorMessage = response.ErrorMessage ?? T("AppointmentsLoadFailed");
                 Items.Clear();
                 NotifyEmptyChanged();
                 return;

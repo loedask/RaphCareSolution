@@ -10,7 +10,6 @@ using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
@@ -29,17 +28,17 @@ public sealed class ProfileHubViewModel : BaseViewModel
         _profileApi = profileApi ?? throw new ArgumentNullException(nameof(profileApi));
         _localProfile = localProfile ?? throw new ArgumentNullException(nameof(localProfile));
 
-        Title = AppResources.T("ProfileHubTitle");
+        Title = T("ProfileHubTitle");
         EditProfileCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.EditProfile));
         SignOutCommand = new Command(async () => await SignOutAsync());
         OpenPhotoCommand = new Command(async () =>
             await MainThread.InvokeOnMainThreadAsync(async () =>
-                await Shell.Current.DisplayAlertAsync(Title, AppResources.T("ProfilePhotoComingSoon"), AppResources.T("CommonOk"))));
+                await Shell.Current.DisplayAlertAsync(Title, T("ProfilePhotoComingSoon"), T("CommonOk"))));
         Sections = new ObservableCollection<ProfileSectionModel>();
-        AppVersionLabel = $"{AppResources.T("ProfileAppName")} v{AppInfo.Current.VersionString}";
-        InsuranceBadgeText = AppResources.T("ProfileInsuranceBadge");
-        EditProfileButtonText = AppResources.T("ProfileEditProfile");
-        SignOutButtonText = AppResources.T("ProfileSignOut");
+        AppVersionLabel = $"{T("ProfileAppName")} v{AppInfo.Current.VersionString}";
+        InsuranceBadgeText = T("ProfileInsuranceBadge");
+        EditProfileButtonText = T("ProfileEditProfile");
+        SignOutButtonText = T("ProfileSignOut");
     }
 
     public string EditProfileButtonText { get; }
@@ -111,12 +110,12 @@ public sealed class ProfileHubViewModel : BaseViewModel
         var combined = string.Join(" ", new[] { firstName.Trim(), lastName.Trim() }.Where(s => s.Length > 0));
         DisplayName = !string.IsNullOrEmpty(combined)
             ? combined
-            : (!string.IsNullOrEmpty(claimNameFallback) ? claimNameFallback : AppResources.T("ProfileDefaultName"));
+            : (!string.IsNullOrEmpty(claimNameFallback) ? claimNameFallback : T("ProfileDefaultName"));
 
         var email = profileEmail?.Trim() ?? string.Empty;
         EmailLine = !string.IsNullOrEmpty(email)
             ? email
-            : (!string.IsNullOrEmpty(claimEmailFallback) ? claimEmailFallback : AppResources.T("ProfileNoEmail"));
+            : (!string.IsNullOrEmpty(claimEmailFallback) ? claimEmailFallback : T("ProfileNoEmail"));
     }
 
     private void BuildSections()
@@ -125,26 +124,26 @@ public sealed class ProfileHubViewModel : BaseViewModel
 
         Sections.Add(new ProfileSectionModel
         {
-            Title = AppResources.T("ProfileSectionAccount"),
+            Title = T("ProfileSectionAccount"),
             Items = new ObservableCollection<ProfileMenuRowModel>(
             [
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfilePersonalInformation"),
-                    Subtitle = AppResources.T("ProfilePersonalInformationHint"),
+                    Title = T("ProfilePersonalInformation"),
+                    Subtitle = T("ProfilePersonalInformationHint"),
                     IconGlyph = "👤",
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.EditProfile)),
                 },
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfileChangePassword"),
-                    Subtitle = AppResources.T("ProfileChangePasswordHint"),
+                    Title = T("ProfileChangePassword"),
+                    Subtitle = T("ProfileChangePasswordHint"),
                     IconGlyph = "🔒",
                     TapCommand = new Command(async () => await ComingSoonAsync()),
                 },
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfileLanguage"),
+                    Title = T("ProfileLanguage"),
                     Subtitle = CurrentLanguageSubtitle(),
                     IconGlyph = "🌐",
                     ShowSeparator = false,
@@ -155,92 +154,92 @@ public sealed class ProfileHubViewModel : BaseViewModel
 
         Sections.Add(new ProfileSectionModel
         {
-            Title = AppResources.T("ProfileSectionHealth"),
+            Title = T("ProfileSectionHealth"),
             Items = new ObservableCollection<ProfileMenuRowModel>(
             [
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfileMedicalInformation"),
-                    Subtitle = AppResources.T("ProfileMedicalInformationHint"),
+                    Title = T("ProfileMedicalInformation"),
+                    Subtitle = T("ProfileMedicalInformationHint"),
                     IconGlyph = "❤️",
                     TapCommand = new Command(async () => await ComingSoonAsync()),
                 },
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfileEmergencyContacts"),
-                    Subtitle = AppResources.T("ProfileEmergencyContactsHint"),
+                    Title = T("ProfileEmergencyContacts"),
+                    Subtitle = T("ProfileEmergencyContactsHint"),
                     IconGlyph = "📞",
                     TapCommand = new Command(async () => await ComingSoonAsync()),
                 },
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.HomeHubFamily,
-                    Subtitle = AppResources.T("ProfileFamilyMembersHint"),
+                    Title = T("HomeHubFamily"),
+                    Subtitle = T("ProfileFamilyMembersHint"),
                     IconGlyph = "👨‍👩‍👧",
                     ShowSeparator = false,
                     TapCommand = new Command(async () =>
-                        await AppNavigator.GoToFeatureAsync(AppNavigator.FamilyMembers, AppResources.HomeHubFamily)),
+                        await AppNavigator.GoToFeatureAsync(AppNavigator.FamilyMembers, T("HomeHubFamily"))),
                 },
             ]),
         });
 
         Sections.Add(new ProfileSectionModel
         {
-            Title = AppResources.T("ProfileSectionInsurance"),
+            Title = T("ProfileSectionInsurance"),
             Items = new ObservableCollection<ProfileMenuRowModel>(
             [
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfileCurrentPlan"),
-                    Subtitle = AppResources.T("ProfileCurrentPlanHint"),
+                    Title = T("ProfileCurrentPlan"),
+                    Subtitle = T("ProfileCurrentPlanHint"),
                     IconGlyph = "🛡️",
                     TapCommand = new Command(async () =>
-                        await AppNavigator.GoToFeatureAsync(AppNavigator.Insurance, AppResources.HomeHubInsurance)),
+                        await AppNavigator.GoToFeatureAsync(AppNavigator.Insurance, T("HomeHubInsurance"))),
                 },
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfilePaymentMethods"),
-                    Subtitle = AppResources.T("ProfilePaymentMethodsHint"),
+                    Title = T("ProfilePaymentMethods"),
+                    Subtitle = T("ProfilePaymentMethodsHint"),
                     IconGlyph = "💳",
                     TapCommand = new Command(async () =>
-                        await AppNavigator.GoToFeatureAsync(AppNavigator.Billing, AppResources.HomeHubBilling)),
+                        await AppNavigator.GoToFeatureAsync(AppNavigator.Billing, T("HomeHubBilling"))),
                 },
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfileBillingHistory"),
-                    Subtitle = AppResources.T("ProfileBillingHistoryHint"),
+                    Title = T("ProfileBillingHistory"),
+                    Subtitle = T("ProfileBillingHistoryHint"),
                     IconGlyph = "🧾",
                     ShowSeparator = false,
                     TapCommand = new Command(async () =>
-                        await AppNavigator.GoToFeatureAsync(AppNavigator.Billing, AppResources.HomeHubBilling)),
+                        await AppNavigator.GoToFeatureAsync(AppNavigator.Billing, T("HomeHubBilling"))),
                 },
             ]),
         });
 
         Sections.Add(new ProfileSectionModel
         {
-            Title = AppResources.T("ProfileSectionApp"),
+            Title = T("ProfileSectionApp"),
             Items = new ObservableCollection<ProfileMenuRowModel>(
             [
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.HomeHubNotifications,
-                    Subtitle = AppResources.T("ProfileNotificationsHint"),
+                    Title = T("HomeHubNotifications"),
+                    Subtitle = T("ProfileNotificationsHint"),
                     IconGlyph = "🔔",
                     TapCommand = new Command(async () =>
-                        await AppNavigator.GoToFeatureAsync(AppNavigator.Notifications, AppResources.HomeHubNotifications)),
+                        await AppNavigator.GoToFeatureAsync(AppNavigator.Notifications, T("HomeHubNotifications"))),
                 },
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfilePrivacy"),
-                    Subtitle = AppResources.T("ProfilePrivacyHint"),
+                    Title = T("ProfilePrivacy"),
+                    Subtitle = T("ProfilePrivacyHint"),
                     IconGlyph = "👁️",
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.Privacy)),
                 },
                 new ProfileMenuRowModel
                 {
-                    Title = AppResources.T("ProfileHelpSupport"),
-                    Subtitle = AppResources.T("ProfileHelpSupportHint"),
+                    Title = T("ProfileHelpSupport"),
+                    Subtitle = T("ProfileHelpSupportHint"),
                     IconGlyph = "❔",
                     ShowSeparator = false,
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.HelpSupport)),
@@ -250,27 +249,27 @@ public sealed class ProfileHubViewModel : BaseViewModel
     }
 
     private static string CurrentLanguageSubtitle() =>
-        string.Format(AppResources.T("ProfileLanguageCurrentFormat"), CultureInfo.CurrentUICulture.NativeName);
+        Format(T("ProfileLanguageCurrentFormat"), CultureInfo.CurrentUICulture.NativeName);
 
     private async Task ComingSoonAsync() =>
         await MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(Title, AppResources.T("ProfileFeatureComingSoon"), AppResources.T("CommonOk")));
+            await Shell.Current.DisplayAlertAsync(Title, T("ProfileFeatureComingSoon"), T("CommonOk")));
 
     private async Task LanguageHintAsync() =>
         await MainThread.InvokeOnMainThreadAsync(async () =>
             await Shell.Current.DisplayAlertAsync(
-                AppResources.T("ProfileLanguage"),
-                AppResources.T("ProfileLanguageHintBody"),
-                AppResources.T("CommonOk")));
+                T("ProfileLanguage"),
+                T("ProfileLanguageHintBody"),
+                T("CommonOk")));
 
     private async Task SignOutAsync()
     {
         var confirm = await MainThread.InvokeOnMainThreadAsync(async () =>
             await Shell.Current.DisplayAlertAsync(
-                AppResources.T("ProfileSignOutTitle"),
-                AppResources.T("ProfileSignOutMessage"),
-                AppResources.T("ProfileSignOutConfirm"),
-                AppResources.T("CommonCancel")));
+                T("ProfileSignOutTitle"),
+                T("ProfileSignOutMessage"),
+                T("ProfileSignOutConfirm"),
+                T("CommonCancel")));
         if (!confirm)
             return;
 

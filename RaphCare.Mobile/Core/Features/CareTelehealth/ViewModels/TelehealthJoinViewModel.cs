@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices;
@@ -5,7 +6,6 @@ using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Rtc;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 
@@ -31,18 +31,18 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     {
         _telehealth = telehealth ?? throw new ArgumentNullException(nameof(telehealth));
         _rtc = rtc ?? throw new ArgumentNullException(nameof(rtc));
-        Title = AppResources.T("CareTelehealthJoinTitle");
-        ChannelLabel = AppResources.T("CareTelehealthChannel");
-        UidLabel = AppResources.T("CareTelehealthUid");
-        AppIdLabel = AppResources.T("CareTelehealthAppId");
-        TokenLabel = AppResources.T("CareTelehealthToken");
-        CopyTokenLabel = AppResources.T("CareTelehealthCopyToken");
-        SmsLabel = AppResources.T("CareTelehealthSendSms");
-        BackLabel = AppResources.T("CareTelehealthBack");
-        StartVideoLabel = AppResources.T("CareTelehealthStartVideo");
-        EndVideoLabel = AppResources.T("CareTelehealthEndVideo");
-        LocalVideoLabel = AppResources.T("CareTelehealthLocalVideo");
-        RemoteVideoLabel = AppResources.T("CareTelehealthRemoteVideo");
+        Title = T("CareTelehealthJoinTitle");
+        ChannelLabel = T("CareTelehealthChannel");
+        UidLabel = T("CareTelehealthUid");
+        AppIdLabel = T("CareTelehealthAppId");
+        TokenLabel = T("CareTelehealthToken");
+        CopyTokenLabel = T("CareTelehealthCopyToken");
+        SmsLabel = T("CareTelehealthSendSms");
+        BackLabel = T("CareTelehealthBack");
+        StartVideoLabel = T("CareTelehealthStartVideo");
+        EndVideoLabel = T("CareTelehealthEndVideo");
+        LocalVideoLabel = T("CareTelehealthLocalVideo");
+        RemoteVideoLabel = T("CareTelehealthRemoteVideo");
 
         RefreshCommand = new Command(async () => await LoadAsync());
         CopyTokenCommand = new Command(async () => await CopyTokenAsync());
@@ -66,8 +66,8 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
 
     public string VideoHintText =>
         DeviceInfo.Current.Platform == DevicePlatform.Android
-            ? AppResources.T("CareTelehealthVideoHintAndroid")
-            : AppResources.T("CareTelehealthVideoHintOther");
+            ? T("CareTelehealthVideoHintAndroid")
+            : T("CareTelehealthVideoHintOther");
 
     public bool ShowVideoSection => DeviceInfo.Current.Platform == DevicePlatform.Android;
 
@@ -140,7 +140,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("sessionId", out var v) && v != null && Guid.TryParse(v.ToString(), out var id))
+        if (TryGetQueryGuid(query, "sessionId", out var id))
             _sessionId = id;
     }
 
@@ -154,7 +154,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     {
         if (_sessionId == Guid.Empty)
         {
-            ErrorMessage = AppResources.T("CareTelehealthJoinFailed");
+            ErrorMessage = T("CareTelehealthJoinFailed");
             return;
         }
 
@@ -165,22 +165,22 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
             var response = await _telehealth.GetJoinInfoAsync(_sessionId, null, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("CareTelehealthJoinFailed");
+                ErrorMessage = response.ErrorMessage ?? T("CareTelehealthJoinFailed");
                 return;
             }
 
             var j = response.Data;
             ChannelText = j.ChannelName;
-            UidText = j.Uid.ToString();
+            UidText = j.Uid.ToString(CultureInfo.InvariantCulture);
             AppIdText = string.IsNullOrEmpty(j.AppId) ? "—" : j.AppId;
             TokenPreview = string.IsNullOrEmpty(j.RtcToken)
-                ? AppResources.T("CareTelehealthTokenUnset")
+                ? T("CareTelehealthTokenUnset")
                 : j.RtcToken.Length <= 24
                     ? j.RtcToken
                     : $"{j.RtcToken[..24]}…";
             RtcStatusText = j.RtcConfigured
-                ? AppResources.T("CareTelehealthRtcReady")
-                : AppResources.T("CareTelehealthRtcNotConfigured");
+                ? T("CareTelehealthRtcReady")
+                : T("CareTelehealthRtcNotConfigured");
             _fullToken = j.RtcToken ?? string.Empty;
             _joinChannel = j.ChannelName;
             _joinAppId = j.AppId ?? string.Empty;
@@ -210,7 +210,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
 
             if (!result.Success)
             {
-                await Shell.Current.DisplayAlertAsync(Title, result.ErrorMessage ?? AppResources.T("CareTelehealthVideoStartFailed"), "OK");
+                await Shell.Current.DisplayAlertAsync(Title, result.ErrorMessage ?? T("CareTelehealthVideoStartFailed"), "OK");
                 return;
             }
 
@@ -247,12 +247,12 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     {
         if (string.IsNullOrEmpty(_fullToken))
         {
-            await Shell.Current.DisplayAlertAsync(Title, AppResources.T("CareTelehealthTokenUnset"), "OK");
+            await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthTokenUnset"), "OK");
             return;
         }
 
         await Clipboard.Default.SetTextAsync(_fullToken);
-        await Shell.Current.DisplayAlertAsync(Title, AppResources.T("CareTelehealthCopied"), "OK");
+        await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthCopied"), "OK");
     }
 
     private async Task SendSmsAsync()
@@ -264,11 +264,11 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
             var response = await _telehealth.SendSessionSmsAsync(_sessionId, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
             {
-                await Shell.Current.DisplayAlertAsync(Title, response.ErrorMessage ?? AppResources.T("CareTelehealthSmsFailed"), "OK");
+                await Shell.Current.DisplayAlertAsync(Title, response.ErrorMessage ?? T("CareTelehealthSmsFailed"), "OK");
                 return;
             }
 
-            await Shell.Current.DisplayAlertAsync(Title, AppResources.T("CareTelehealthSmsSent"), "OK");
+            await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthSmsSent"), "OK");
         }
         finally
         {

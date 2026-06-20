@@ -4,7 +4,6 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Notifications;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Notifications.ViewModels;
 
@@ -17,7 +16,7 @@ public sealed class NotificationsViewModel : BaseViewModel
     public NotificationsViewModel(IPatientNotificationsService notifications)
     {
         _notifications = notifications ?? throw new ArgumentNullException(nameof(notifications));
-        Title = AppResources.T("NotificationsTitle");
+        Title = T("NotificationsTitle");
         Items = new ObservableCollection<PatientNotificationViewModel>();
         Items.CollectionChanged += OnItemsCollectionChanged;
 
@@ -28,11 +27,11 @@ public sealed class NotificationsViewModel : BaseViewModel
 
     public ObservableCollection<PatientNotificationViewModel> Items { get; }
 
-    public string RefreshButtonText => AppResources.T("NotificationsRefresh");
-    public string MarkAllReadButtonText => AppResources.T("NotificationsMarkAllRead");
-    public string EmptyStateText => AppResources.T("NotificationsEmpty");
-    public string PushHintText => AppResources.T("NotificationsPushHint");
-    public string NewBadgeText => AppResources.T("NotificationsNewBadge");
+    public string RefreshButtonText => T("NotificationsRefresh");
+    public string MarkAllReadButtonText => T("NotificationsMarkAllRead");
+    public string EmptyStateText => T("NotificationsEmpty");
+    public string PushHintText => T("NotificationsPushHint");
+    public string NewBadgeText => T("NotificationsNewBadge");
 
     public string? ErrorMessage
     {
@@ -56,7 +55,7 @@ public sealed class NotificationsViewModel : BaseViewModel
             var response = await _notifications.GetMyNotificationsAsync(CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("NotificationsLoadFailed");
+                ErrorMessage = response.ErrorMessage ?? T("NotificationsLoadFailed");
                 Items.Clear();
                 return;
             }
@@ -79,7 +78,7 @@ public sealed class NotificationsViewModel : BaseViewModel
         var response = await _notifications.MarkAllReadAsync(CancellationToken.None).ConfigureAwait(false);
         if (!response.IsSuccess)
         {
-            ErrorMessage = response.ErrorMessage ?? AppResources.T("NotificationsLoadFailed");
+            ErrorMessage = response.ErrorMessage ?? T("NotificationsLoadFailed");
             return;
         }
 
@@ -92,7 +91,7 @@ public sealed class NotificationsViewModel : BaseViewModel
         var response = await _notifications.MarkReadAsync(id, CancellationToken.None).ConfigureAwait(false);
         if (!response.IsSuccess)
         {
-            ErrorMessage = response.ErrorMessage ?? AppResources.T("NotificationsLoadFailed");
+            ErrorMessage = response.ErrorMessage ?? T("NotificationsLoadFailed");
             return;
         }
 

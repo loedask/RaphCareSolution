@@ -3,7 +3,6 @@ using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
@@ -21,11 +20,11 @@ public class VerifyEmailViewModel : BaseViewModel, IQueryAttributable
     public VerifyEmailViewModel(IEmailAuthService emailAuthService)
     {
         _emailAuthService = emailAuthService ?? throw new ArgumentNullException(nameof(emailAuthService));
-        Title = AppResources.T("VerifyEmailPageTitle");
-        Headline = AppResources.T("VerifyEmailTitle");
-        Subtitle = AppResources.T("VerifyEmailSubtitle");
-        SignInButtonText = AppResources.T("VerifyEmailSignIn");
-        ResendButtonText = AppResources.T("VerifyEmailResend");
+        Title = T("VerifyEmailPageTitle");
+        Headline = T("VerifyEmailTitle");
+        Subtitle = T("VerifyEmailSubtitle");
+        SignInButtonText = T("VerifyEmailSignIn");
+        ResendButtonText = T("VerifyEmailResend");
 
         SignInCommand = new Command(async () => await SignInAsync(), () => !IsBusy);
         ResendCommand = new Command(async () => await ResendAsync(), () => !IsBusy);
@@ -88,7 +87,7 @@ public class VerifyEmailViewModel : BaseViewModel, IQueryAttributable
 
         if (string.IsNullOrWhiteSpace(Email))
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorEmail");
+            ErrorMessage = T("RegisterEmailErrorEmail");
             return;
         }
 
@@ -100,13 +99,13 @@ public class VerifyEmailViewModel : BaseViewModel, IQueryAttributable
                 .ConfigureAwait(false);
 
             if (response.IsSuccess)
-                StatusMessage = AppResources.T("RegisterEmailCodeSent");
+                StatusMessage = T("RegisterEmailCodeSent");
             else
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("RegisterEmailSendCodeFailed");
+                ErrorMessage = response.ErrorMessage ?? T("RegisterEmailSendCodeFailed");
         }
         catch (Exception)
         {
-            ErrorMessage = AppResources.T("RegisterEmailSendCodeFailed");
+            ErrorMessage = T("RegisterEmailSendCodeFailed");
         }
         finally
         {
