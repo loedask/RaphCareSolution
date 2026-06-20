@@ -73,8 +73,12 @@ public static class DependencyInjection
                         if (context.Principal is null)
                             return;
 
-                        if (context.SecurityToken is JwtSecurityToken jwt
-                            && string.Equals(jwt.Issuer, localJwt.Issuer, StringComparison.Ordinal))
+                        var rawToken = context.Request.Headers.Authorization.ToString();
+                        if (LocalJwtTokenHelper.IsLocalEmailJwt(rawToken, context.SecurityToken, localJwt)
+                            || LocalJwtTokenHelper.IsLocalEmailPrincipal(context.Principal, localJwt))
+                            return;
+
+                        if (!LocalJwtTokenHelper.HasEntraObjectId(context.Principal))
                             return;
 
                         var provisioning = context.HttpContext.RequestServices
@@ -98,7 +102,7 @@ public static class DependencyInjection
         if (!string.IsNullOrWhiteSpace(localJwt.Secret))
             keys.Add(LocalJwtSigningKeyHelper.CreateSigningKey(localJwt.Secret));
 
-        if (IsLocalEmailJwt(rawToken, securityToken, localJwt))
+        if (LocalJwtTokenHelper.IsLocalEmailJwt(rawToken, securityToken, localJwt))
             return keys;
 
         try
@@ -111,31 +115,6 @@ public static class DependencyInjection
         }
 
         return keys;
-    }
-
-    private static bool IsLocalEmailJwt(string rawToken, SecurityToken securityToken, LocalJwtOptions localJwt)
-    {
-        if (string.IsNullOrWhiteSpace(localJwt.Issuer))
-            return false;
-
-        if (securityToken is JwtSecurityToken jwt
-            && string.Equals(jwt.Issuer, localJwt.Issuer, StringComparison.Ordinal))
-            return true;
-
-        try
-        {
-            var handler = new JwtSecurityTokenHandler();
-            if (!handler.CanReadToken(rawToken))
-                return false;
-
-            var parsed = handler.ReadJwtToken(rawToken);
-            return string.Equals(parsed.Issuer, localJwt.Issuer, StringComparison.Ordinal)
-                   || string.Equals(parsed.SignatureAlgorithm, SecurityAlgorithms.HmacSha256, StringComparison.Ordinal);
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     private static IEnumerable<SecurityKey> GetEntraSigningKeys(string entraAuthority)
