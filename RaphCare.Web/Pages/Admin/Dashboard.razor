@@ -7,7 +7,13 @@
     <header class="admin-page-header">
         <div>
             <h1>Platform overview</h1>
-            <p class="admin-page-lead">Manage hospital onboarding, tenants, and platform configuration.</p>
+            <p class="admin-page-lead">
+                @if (!string.IsNullOrWhiteSpace(ClinicContext.CurrentClinicName))
+                {
+                    <span>Active hospital: <strong>@ClinicContext.CurrentClinicName</strong>. </span>
+                }
+                Manage hospital onboarding and your linked organizations.
+            </p>
         </div>
         <a class="btn btn-primary" href="/admin/hospitals/register">+ Register hospital</a>
     </header>
@@ -37,7 +43,7 @@
         <div class="stat-grid">
             <div class="stat-card stat-card-blue">
                 <div class="stat-card-top">
-                    <span class="stat-label">Registered hospitals</span>
+                    <span class="stat-label">My hospitals</span>
                     <span class="stat-icon" aria-hidden="true">⌂</span>
                 </div>
                 <div class="stat-value">@_clinics.Count</div>
@@ -71,7 +77,7 @@
         {
             <div class="card">
                 <div class="card-header">
-                    <h3>Recent hospitals</h3>
+                    <h3>Your hospitals</h3>
                     <a class="card-header-link" href="/admin/hospitals">View all →</a>
                 </div>
                 <div class="table-wrap">
@@ -88,7 +94,7 @@
                             @foreach (var clinic in _clinics.Take(5))
                             {
                                 <tr>
-                                    <td><strong>@clinic.Name</strong></td>
+                                    <td><a class="card-header-link" href="/admin/hospitals/@clinic.Id"><strong>@clinic.Name</strong></a></td>
                                     <td>@clinic.Country</td>
                                     <td>@clinic.FacilityCount</td>
                                     <td>
@@ -110,6 +116,7 @@
     private const string AdminPath = "/admin";
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private bool _loading = true;
     private bool _authRequired;

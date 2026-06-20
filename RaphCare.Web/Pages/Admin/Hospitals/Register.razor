@@ -33,7 +33,8 @@
             </div>
 
             <div class="admin-page-actions">
-                <a class="btn btn-primary" href="/admin/hospitals">View hospitals</a>
+                <a class="btn btn-primary" href="/admin/hospitals/@_result.ClinicId">Open hospital</a>
+                <a class="btn btn-secondary" href="/admin/hospitals">View all hospitals</a>
                 <button type="button" class="btn btn-secondary" @onclick="StartAnotherAsync">Register another</button>
             </div>
         </div>
@@ -265,6 +266,8 @@ else
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IHospitalOnboardingStorage OnboardingStorage { get; set; } = default!;
     [Inject] private IWebAuthService WebAuth { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+    [Inject] private IJSRuntime Js { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private const int _stepCount = 5;
@@ -415,6 +418,8 @@ else
             _completed = true;
             _resumeMessage = null;
             await OnboardingStorage.ClearAsync().ConfigureAwait(false);
+            await Js.InvokeVoidAsync("raphCareClinic.setPendingClinicId", _result.ClinicId.ToString()).ConfigureAwait(false);
+            await ClinicContext.SetCurrentClinicAsync(_result.ClinicId, _result.Name).ConfigureAwait(false);
             return;
         }
 

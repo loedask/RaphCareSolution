@@ -64,6 +64,10 @@
                     <span class="admin-search-icon" aria-hidden="true">⌕</span>
                     <input type="search" placeholder="Search hospitals, facilities…" disabled />
                 </label>
+                @if (!string.IsNullOrWhiteSpace(ClinicContext.CurrentClinicName))
+                {
+                    <span class="admin-pill admin-pill-clinic" title="Active hospital context">@ClinicContext.CurrentClinicName</span>
+                }
                 <span class="admin-pill">Professional</span>
             </div>
         </header>

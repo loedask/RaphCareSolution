@@ -6,8 +6,8 @@
 <section class="admin-page">
     <header class="admin-page-header">
         <div>
-            <h1>Hospitals</h1>
-            <p class="admin-page-lead">All registered healthcare organizations on the platform.</p>
+            <h1>My hospitals</h1>
+            <p class="admin-page-lead">Healthcare organizations linked to your professional account.</p>
         </div>
         <a class="btn btn-primary" href="/admin/hospitals/register">+ Register hospital</a>
     </header>
@@ -21,7 +21,7 @@
         <div class="empty-state admin-guidance-state">
             <div class="empty-state-icon" aria-hidden="true">⌂</div>
             <h3>Finish registering your hospital</h3>
-            <p>Your professional account is set up, but we couldn't load the hospital list yet. Continue onboarding to register your organization, or sign in again if your session expired.</p>
+            <p>Your professional account is set up, but we couldn't load your hospitals yet. Continue onboarding or sign in again if your session expired.</p>
             <div class="admin-guidance-actions">
                 <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
                 <a class="btn btn-secondary" href="@_signInReturnUrl">Sign in again</a>
@@ -34,18 +34,33 @@
     }
     else if (_clinics.Count == 0)
     {
-        <div class="empty-state">
+        <div class="empty-state admin-guidance-state">
             <div class="empty-state-icon" aria-hidden="true">⌂</div>
-            <h3>No hospitals registered</h3>
-            <p>Use the onboarding wizard to add your first hospital.</p>
-            <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
+            <h3>No hospitals linked yet</h3>
+            <p>Register a new hospital, or link one you created earlier using its registration number.</p>
+            <div class="claim-form">
+                <label>Registration number</label>
+                <div class="claim-form-row">
+                    <input class="form-control" @bind="_claimRegistrationNumber" placeholder="e.g. 12345" />
+                    <button type="button" class="btn btn-secondary" disabled="@_claiming" @onclick="ClaimAsync">
+                        @(_claiming ? "Linking…" : "Link hospital")
+                    </button>
+                </div>
+                @if (!string.IsNullOrEmpty(_claimError))
+                {
+                    <p class="claim-error">@_claimError</p>
+                }
+            </div>
+            <div class="admin-guidance-actions">
+                <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
+            </div>
         </div>
     }
     else
     {
         <div class="card">
             <div class="card-header">
-                <h3>Hospital directory</h3>
+                <h3>Your hospitals</h3>
                 <span class="card-header-meta">@_clinics.Count total</span>
             </div>
             <div class="table-wrap">
@@ -55,20 +70,19 @@
                             <th>Name</th>
                             <th>Registration #</th>
                             <th>Country</th>
-                            <th>Time zone</th>
                             <th>Facilities</th>
                             <th>Registered</th>
                             <th>Status</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var clinic in _clinics)
                         {
                             <tr>
-                                <td><strong>@clinic.Name</strong></td>
+                                <td><a class="card-header-link" href="/admin/hospitals/@clinic.Id"><strong>@clinic.Name</strong></a></td>
                                 <td>@clinic.RegistrationNumber</td>
                                 <td>@clinic.Country</td>
-                                <td>@clinic.TimeZone</td>
                                 <td>@clinic.FacilityCount</td>
                                 <td>@clinic.CreatedAt.ToString("dd MMM yyyy")</td>
                                 <td>
@@ -76,6 +90,7 @@
                                         @(clinic.IsActive ? "Active" : "Inactive")
                                     </span>
                                 </td>
+                                <td><a class="btn btn-ghost btn-sm" href="/admin/hospitals/@clinic.Id">Open →</a></td>
                             </tr>
                         }
                     </tbody>
@@ -89,10 +104,15 @@
     private const string HospitalsPath = "/admin/hospitals";
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private bool _loading = true;
+    private bool _claiming;
     private bool _authRequired;
     private string? _error;
+    private string? _claimError;
+    private string _claimRegistrationNumber = string.Empty;
     private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
 
     private string _signInReturnUrl =>
@@ -100,15 +120,42 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        _error = null;
         var response = await AdminClinicService.GetClinicsAsync();
         _loading = false;
         if (response.IsSuccess && response.Data is not null)
         {
             _clinics = response.Data;
+            if (_clinics.Count == 1)
+                await ClinicContext.SetCurrentClinicAsync(_clinics[0].Id, _clinics[0].Name);
             return;
         }
 
         _error = response.ErrorMessage ?? "Could not load hospitals.";
         _authRequired = response.StatusCode is 401 or 403;
+    }
+
+    private async Task ClaimAsync()
+    {
+        _claiming = true;
+        _claimError = null;
+        var response = await AdminClinicService.ClaimByRegistrationNumberAsync(_claimRegistrationNumber.Trim());
+        _claiming = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _claimError = response.ErrorMessage ?? "Could not link hospital.";
+            return;
+        }
+
+        await ClinicContext.SetCurrentClinicAsync(response.Data.Value);
+        await LoadAsync();
+        Navigation.NavigateTo($"/admin/hospitals/{response.Data.Value}");
     }
 }

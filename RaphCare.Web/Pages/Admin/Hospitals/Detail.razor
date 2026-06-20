@@ -1,0 +1,136 @@
+@page "/admin/hospitals/{ClinicId:guid}"
+@layout AdminLayout
+
+<PageTitle>@(_detail?.Name ?? "Hospital") — RaphCare Admin</PageTitle>
+
+<section class="admin-page">
+    @if (_loading)
+    {
+        <p class="text-muted">Loading hospital…</p>
+    }
+    else if (_detail is null)
+    {
+        <div class="alert alert-error">@(_error ?? "Hospital not found.")</div>
+        <a class="btn btn-secondary" href="/admin/hospitals">Back to hospitals</a>
+    }
+    else
+    {
+        <header class="admin-page-header">
+            <div>
+                <h1>@_detail.Name</h1>
+                <p class="admin-page-lead">Hospital profile, facilities, and tenant settings.</p>
+            </div>
+            <span class="badge @(_detail.IsActive ? "badge-success" : "badge-muted")">
+                @(_detail.IsActive ? "Active" : "Inactive")
+            </span>
+        </header>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Hospital profile</p>
+                    <h1>Organization details</h1>
+                </div>
+            </header>
+            <div class="admin-page-card-body">
+                <div class="review-grid">
+                    <div class="review-item">
+                        <span class="review-label">Registration #</span>
+                        <span class="review-value">@_detail.RegistrationNumber</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Country</span>
+                        <span class="review-value">@_detail.Country</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Time zone</span>
+                        <span class="review-value">@_detail.TimeZone</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Registered</span>
+                        <span class="review-value">@_detail.CreatedAt.ToString("dd MMM yyyy")</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Hospital ID</span>
+                        <span class="review-value"><code>@_detail.Id</code></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Locations</p>
+                    <h1>Facilities</h1>
+                    <p class="admin-page-lead">Physical campuses and virtual sites for this hospital.</p>
+                </div>
+                <span class="admin-progress-pill">@_detail.Facilities.Count facility@(_detail.Facilities.Count == 1 ? "" : "ies")</span>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_detail.Facilities.Count == 0)
+                {
+                    <p class="text-muted">No facilities added yet. You can add one when editing hospital settings (coming soon).</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>City</th>
+                                    <th>Country</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var facility in _detail.Facilities)
+                                {
+                                    <tr>
+                                        <td><strong>@facility.Name</strong></td>
+                                        <td>@facility.City</td>
+                                        <td>@facility.Country</td>
+                                        <td>@(facility.IsVirtual ? "Virtual" : "Physical")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-actions">
+            <a class="btn btn-secondary" href="/admin/hospitals">← Back to hospitals</a>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+
+    private bool _loading = true;
+    private string? _error;
+    private ClinicDetail? _detail;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+
+        var response = await AdminClinicService.GetClinicAsync(ClinicId);
+        _loading = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _detail = response.Data;
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail.Name).ConfigureAwait(false);
+            return;
+        }
+
+        _error = response.ErrorMessage ?? "Could not load hospital.";
+    }
+}

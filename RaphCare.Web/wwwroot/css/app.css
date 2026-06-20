@@ -305,6 +305,16 @@ a:hover { text-decoration: underline; }
     border: 1px solid #bfdbfe;
 }
 
+.admin-pill-clinic {
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 600;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .admin-content {
     padding: 1.5rem;
     flex: 1;
@@ -739,9 +749,39 @@ a:hover { text-decoration: underline; }
 
 .admin-guidance-actions {
     display: flex;
-    gap: 0.65rem;
     flex-wrap: wrap;
+    gap: 0.75rem;
     justify-content: center;
+    margin-top: 1rem;
+}
+
+.claim-form {
+    margin: 1.25rem auto 0;
+    max-width: 28rem;
+    text-align: left;
+}
+
+.claim-form label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: #334155;
+}
+
+.claim-form-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.claim-form-row .form-control {
+    flex: 1;
+}
+
+.claim-error {
+    margin-top: 0.5rem;
+    color: #b91c1c;
+    font-size: 0.875rem;
 }
 
 .text-muted { color: var(--rc-muted); }

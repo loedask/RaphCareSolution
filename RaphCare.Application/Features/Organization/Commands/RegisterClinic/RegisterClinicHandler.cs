@@ -11,7 +11,8 @@ public sealed class RegisterClinicHandler(
     IUnitOfWork unitOfWork,
     IUniqueConstraintViolationDetector uniqueConstraintDetector,
     ICurrentUserService currentUserService,
-    IUserRoleAssignmentService roleAssignmentService) : IRequestHandler<RegisterClinicCommand, RegisterClinicResultDto>
+    IUserRoleAssignmentService roleAssignmentService,
+    IClinicStaffMembershipService clinicStaffMembershipService) : IRequestHandler<RegisterClinicCommand, RegisterClinicResultDto>
 {
     public async Task<RegisterClinicResultDto> Handle(RegisterClinicCommand request, CancellationToken cancellationToken)
     {
@@ -38,6 +39,9 @@ public sealed class RegisterClinicHandler(
             clinic.Facilities.Add(facility);
         }
 
+        if (currentUserService.CurrentUserId is { } registeringUserId)
+            clinic.RegisteredByApplicationUserId = registeringUserId;
+
         try
         {
             await clinicRepository.AddAsync(clinic, cancellationToken).ConfigureAwait(false);
@@ -51,7 +55,10 @@ public sealed class RegisterClinicHandler(
         }
 
         if (currentUserService.CurrentUserId is { } userId)
+        {
             await roleAssignmentService.AssignRoleIfMissingAsync(userId, "Administrator", cancellationToken).ConfigureAwait(false);
+            await clinicStaffMembershipService.EnsureMembershipAsync(userId, clinic.Id, cancellationToken).ConfigureAwait(false);
+        }
 
         return new RegisterClinicResultDto
         {

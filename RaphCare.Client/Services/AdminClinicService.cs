@@ -56,6 +56,95 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicDetail>> GetClinicAsync(Guid clinicId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicDetail>.Failure("Hospital not found or you do not have access.", 404);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                return Response<ClinicDetail>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<ClinicDetailDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (dto is null)
+                return Response<ClinicDetail>.Failure("Could not load hospital.");
+
+            return Response<ClinicDetail>.Success(MapDetail(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicDetail>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<bool>> EnsureMembershipAsync(Guid clinicId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/membership", content: null, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<bool>.Success(true);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                return Response<bool>.Failure("You cannot link this hospital to your account.", 403);
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            return Response<bool>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<Guid?>> ClaimByRegistrationNumberAsync(
+        string registrationNumber,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync("api/admin/clinics/claim", new { registrationNumber }, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<Guid?>.Failure("No hospital found with that registration number, or it is already linked to another team.", 404);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                return Response<Guid?>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<ClaimResultDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+
+            return Response<Guid?>.Success(dto?.ClinicId);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<Guid?>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<RegisterClinicResult>> RegisterClinicAsync(
         RegisterClinicRequest request,
         CancellationToken cancellationToken = default)
@@ -138,6 +227,28 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             ? "Something went wrong. Sign in again or try later."
             : fallback;
 
+    private static ClinicDetail MapDetail(ClinicDetailDto dto) => new()
+    {
+        Id = dto.Id,
+        Name = dto.Name,
+        RegistrationNumber = dto.RegistrationNumber,
+        Country = dto.Country,
+        TimeZone = dto.TimeZone,
+        IsActive = dto.IsActive,
+        CreatedAt = dto.CreatedAt,
+        Facilities = dto.Facilities?
+            .Select(f => new FacilityListItem
+            {
+                Id = f.Id,
+                Name = f.Name,
+                Address = f.Address,
+                City = f.City,
+                Country = f.Country,
+                IsVirtual = f.IsVirtual
+            })
+            .ToList() ?? []
+    };
+
     private sealed class PagedClinicsDto
     {
         public List<ClinicListItemDto>? Items { get; set; }
@@ -153,6 +264,33 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public bool IsActive { get; set; }
         public int FacilityCount { get; set; }
         public DateTime CreatedAt { get; set; }
+    }
+
+    private sealed class ClinicDetailDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string RegistrationNumber { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public string TimeZone { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public List<FacilityListItemDto>? Facilities { get; set; }
+    }
+
+    private sealed class FacilityListItemDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public bool IsVirtual { get; set; }
+    }
+
+    private sealed class ClaimResultDto
+    {
+        public Guid ClinicId { get; set; }
     }
 
     private sealed class RegisterClinicResultDto

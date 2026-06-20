@@ -909,6 +909,9 @@ namespace RaphCare.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid?>("RegisteredByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("TimeZone")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -925,6 +928,42 @@ namespace RaphCare.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Clinics", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Organization.ClinicStaffMembership", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("ApplicationUserId", "ClinicId")
+                        .IsUnique();
+
+                    b.ToTable("ClinicStaffMemberships", (string)null);
                 });
 
             modelBuilder.Entity("RaphCare.Domain.Organization.Department", b =>
@@ -2586,6 +2625,17 @@ namespace RaphCare.Persistence.Migrations
                     b.Navigation("ProviderSchedule");
                 });
 
+            modelBuilder.Entity("RaphCare.Domain.Organization.ClinicStaffMembership", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Organization.Clinic", "Clinic")
+                        .WithMany("StaffMemberships")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+                });
+
             modelBuilder.Entity("RaphCare.Domain.Organization.Department", b =>
                 {
                     b.HasOne("RaphCare.Domain.Organization.Clinic", "Clinic")
@@ -3011,6 +3061,8 @@ namespace RaphCare.Persistence.Migrations
                     b.Navigation("Providers");
 
                     b.Navigation("ServiceOfferings");
+
+                    b.Navigation("StaffMemberships");
                 });
 
             modelBuilder.Entity("RaphCare.Domain.Organization.Provider", b =>

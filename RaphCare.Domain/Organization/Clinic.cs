@@ -20,9 +20,11 @@ public class Clinic : AggregateRoot, ISoftDelete
     public bool IsActive { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
+    public Guid? RegisteredByApplicationUserId { get; set; }
 
     public ICollection<Facility> Facilities { get; set; } = new List<Facility>();
     public ICollection<Department> Departments { get; set; } = new List<Department>();
     public ICollection<Provider> Providers { get; set; } = new List<Provider>();
     public ICollection<ServiceOffering> ServiceOfferings { get; set; } = new List<ServiceOffering>();
+    public ICollection<ClinicStaffMembership> StaffMemberships { get; set; } = new List<ClinicStaffMembership>();
 }

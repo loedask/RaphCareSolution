@@ -8,6 +8,7 @@ public partial class AdminLayout
 {
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private IWebAuthService WebAuth { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private IReadOnlyList<(string Label, string Href, bool IsLast)> _breadcrumbs = [];
 
@@ -22,7 +23,10 @@ public partial class AdminLayout
         {
             var returnUrl = Uri.EscapeDataString(Navigation.Uri);
             Navigation.NavigateTo($"/professional/signin?returnUrl={returnUrl}", replace: true);
+            return;
         }
+
+        await ClinicContext.InitializeAsync().ConfigureAwait(true);
 
         Navigation.LocationChanged += OnLocationChanged;
         UpdateBreadcrumbs(Navigation.Uri);
@@ -49,6 +53,12 @@ public partial class AdminLayout
                 ("RaphCare", "/admin", false),
                 ("Hospitals", "/admin/hospitals", false),
                 ("Register hospital", "/admin/hospitals/register", true)
+            ],
+            _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path != "/admin/hospitals/register" =>
+            [
+                ("RaphCare", "/admin", false),
+                ("Hospitals", "/admin/hospitals", false),
+                ("Hospital details", path, true)
             ],
             _ => [("RaphCare", "/admin", false), ("Clinic portal", "/admin", true)]
         };

@@ -15,6 +15,7 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
         builder.Property(e => e.RegistrationNumber).IsRequired().HasMaxLength(100);
         builder.Property(e => e.Country).IsRequired().HasMaxLength(100);
         builder.Property(e => e.TimeZone).IsRequired().HasMaxLength(50);
+        builder.Property(e => e.RegisteredByApplicationUserId);
         builder.HasIndex(e => e.RegistrationNumber).IsUnique();
         builder.HasIndex(e => e.IsDeleted);
         builder.HasQueryFilter(e => !e.IsDeleted);

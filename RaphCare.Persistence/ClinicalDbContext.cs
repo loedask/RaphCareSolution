@@ -30,6 +30,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<MoodLog> MoodLogs => Set<MoodLog>();
     public DbSet<PatientInAppNotification> PatientInAppNotifications => Set<PatientInAppNotification>();
     public DbSet<PatientPushDevice> PatientPushDevices => Set<PatientPushDevice>();
+    public DbSet<ClinicStaffMembership> ClinicStaffMemberships => Set<ClinicStaffMembership>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,6 +48,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new MoodLogConfiguration());
         modelBuilder.ApplyConfiguration(new PatientInAppNotificationConfiguration());
         modelBuilder.ApplyConfiguration(new PatientPushDeviceConfiguration());
+        modelBuilder.ApplyConfiguration(new ClinicStaffMembershipConfiguration());
         modelBuilder.ApplyConfiguration(new VitalSignRecordConfiguration());
         modelBuilder.ApplyConfiguration(new ServiceOfferingConfiguration());
         modelBuilder.ApplyPersistenceConventions();

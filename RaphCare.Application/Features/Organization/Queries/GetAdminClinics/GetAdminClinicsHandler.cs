@@ -7,16 +7,46 @@ using RaphCare.Domain.Organization;
 
 namespace RaphCare.Application.Features.Organization.Queries.GetAdminClinics;
 
-public sealed class GetAdminClinicsHandler(IRepository<Clinic> clinicRepository)
+public sealed class GetAdminClinicsHandler(
+    IRepository<Clinic> clinicRepository,
+    ICurrentUserService currentUserService,
+    IClinicStaffMembershipService clinicStaffMembershipService)
     : IRequestHandler<GetAdminClinicsQuery, PagedResult<ClinicListItemDto>>
 {
     public async Task<PagedResult<ClinicListItemDto>> Handle(
         GetAdminClinicsQuery request,
         CancellationToken cancellationToken)
     {
+        if (currentUserService.CurrentUserId is not { } userId)
+        {
+            return new PagedResult<ClinicListItemDto>
+            {
+                Items = [],
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
+                TotalCount = 0
+            };
+        }
+
+        var clinicIds = await clinicStaffMembershipService
+            .GetClinicIdsForUserAsync(userId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (clinicIds.Count == 0)
+        {
+            return new PagedResult<ClinicListItemDto>
+            {
+                Items = [],
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
+                TotalCount = 0
+            };
+        }
+
         var paged = await clinicRepository.SearchAsync(
             queryShaper: q => q
                 .Include(c => c.Facilities)
+                .Where(c => clinicIds.Contains(c.Id))
                 .OrderByDescending(c => c.CreatedAt),
             pageNumber: request.PageNumber,
             pageSize: request.PageSize,
