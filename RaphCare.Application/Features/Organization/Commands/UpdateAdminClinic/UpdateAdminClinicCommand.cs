@@ -9,4 +9,5 @@ public sealed class UpdateAdminClinicCommand : IRequest<ClinicDetailDto?>
     public string Name { get; init; } = string.Empty;
     public string Country { get; init; } = string.Empty;
     public string TimeZone { get; init; } = string.Empty;
+    public bool IsActive { get; init; }
 }

@@ -29,6 +29,7 @@ internal static class AdminClinicDetailMapper
             TimeZone = clinic.TimeZone,
             IsActive = clinic.IsActive,
             CreatedAt = clinic.CreatedAt,
+            RegisteredByApplicationUserId = clinic.RegisteredByApplicationUserId,
             CurrentUserIsAdministrator = isAdministrator,
             Facilities = clinic.Facilities
                 .OrderBy(f => f.Name)

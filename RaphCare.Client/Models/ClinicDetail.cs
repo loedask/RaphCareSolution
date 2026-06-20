@@ -9,6 +9,7 @@ public sealed class ClinicDetail
     public string TimeZone { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
+    public Guid? RegisteredByApplicationUserId { get; set; }
     public bool CurrentUserIsAdministrator { get; set; }
     public IReadOnlyList<FacilityListItem> Facilities { get; set; } = Array.Empty<FacilityListItem>();
 }

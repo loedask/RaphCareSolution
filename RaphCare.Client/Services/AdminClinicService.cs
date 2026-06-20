@@ -573,6 +573,36 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<bool>> DeleteFacilityAsync(
+        Guid clinicId,
+        Guid facilityId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .DeleteAsync($"api/admin/clinics/{clinicId}/facilities/{facilityId}", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<bool>.Success(true);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Facility not found.", 404);
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                error = "Only hospital administrators can delete facilities.";
+            return Response<bool>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     private static ClinicStaffMember MapStaff(ClinicStaffMemberDto dto) => new()
     {
         UserId = dto.UserId,
@@ -650,6 +680,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         TimeZone = dto.TimeZone,
         IsActive = dto.IsActive,
         CreatedAt = dto.CreatedAt,
+        RegisteredByApplicationUserId = dto.RegisteredByApplicationUserId,
         CurrentUserIsAdministrator = dto.CurrentUserIsAdministrator,
         Facilities = dto.Facilities?
             .Select(f => new FacilityListItem
@@ -690,6 +721,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string TimeZone { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Guid? RegisteredByApplicationUserId { get; set; }
         public bool CurrentUserIsAdministrator { get; set; }
         public List<FacilityListItemDto>? Facilities { get; set; }
     }

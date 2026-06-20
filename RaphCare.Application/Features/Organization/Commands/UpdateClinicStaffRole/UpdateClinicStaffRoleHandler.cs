@@ -52,8 +52,13 @@ public sealed class UpdateClinicStaffRoleHandler(
         if (!isCurrentlyAdministrator)
             return true;
 
-        if (!await HasAnotherClinicAdministratorAsync(request.ClinicId, request.UserId, cancellationToken)
-                .ConfigureAwait(false))
+        if (!await AdminClinicStaffRules.HasAnotherClinicAdministratorAsync(
+                request.ClinicId,
+                request.UserId,
+                clinicStaffMembershipService,
+                roleAssignmentService,
+                cancellationToken)
+            .ConfigureAwait(false))
             throw new BusinessRuleException("At least one other administrator must remain for this hospital.");
 
         await roleAssignmentService
@@ -63,26 +68,5 @@ public sealed class UpdateClinicStaffRoleHandler(
             .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Clinician, cancellationToken)
             .ConfigureAwait(false);
         return true;
-    }
-
-    private async Task<bool> HasAnotherClinicAdministratorAsync(
-        Guid clinicId,
-        Guid excludingUserId,
-        CancellationToken cancellationToken)
-    {
-        var memberships = await clinicStaffMembershipService
-            .GetStaffMembershipsAsync(clinicId, cancellationToken)
-            .ConfigureAwait(false);
-
-        foreach (var membership in memberships.Where(m => m.IsActive && m.ApplicationUserId != excludingUserId))
-        {
-            var roles = await roleAssignmentService
-                .GetRoleNamesAsync(membership.ApplicationUserId, cancellationToken)
-                .ConfigureAwait(false);
-            if (RaphCareRoles.HasAdministratorRole(roles))
-                return true;
-        }
-
-        return false;
     }
 }

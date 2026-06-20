@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminFacility;
+using RaphCare.Application.Features.Organization.Commands.DeleteAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.EnsureClinicMembership;
 using RaphCare.Application.Features.Organization.Commands.InviteClinicStaff;
 using RaphCare.Application.Features.Organization.Commands.RegisterClinic;
@@ -64,7 +65,8 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
                 ClinicId = id,
                 Name = body.Name,
                 Country = body.Country,
-                TimeZone = body.TimeZone
+                TimeZone = body.TimeZone,
+                IsActive = body.IsActive
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
@@ -283,5 +285,18 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Delete a hospital facility.</summary>
+    [HttpDelete("{id:guid}/facilities/{facilityId:guid}", Name = "DeleteAdminFacility")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteFacility(Guid id, Guid facilityId, CancellationToken cancellationToken)
+    {
+        var deleted = await mediator.Send(
+            new DeleteAdminFacilityCommand { ClinicId = id, FacilityId = facilityId },
+            cancellationToken);
+        return deleted ? NoContent() : NotFound();
     }
 }

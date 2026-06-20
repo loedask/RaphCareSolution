@@ -19,6 +19,7 @@ public sealed class UpdateClinicRequest
     public string Name { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public string TimeZone { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
 }
 
 public sealed class ClinicPatientListItem

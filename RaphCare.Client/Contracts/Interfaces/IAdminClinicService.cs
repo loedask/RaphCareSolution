@@ -21,4 +21,5 @@ public interface IAdminClinicService
     Task<Response<bool>> UpdateStaffRoleAsync(Guid clinicId, Guid userId, bool isAdministrator, CancellationToken cancellationToken = default);
     Task<Response<FacilityListItem>> CreateFacilityAsync(Guid clinicId, SaveFacilityRequest request, CancellationToken cancellationToken = default);
     Task<Response<FacilityListItem>> UpdateFacilityAsync(Guid clinicId, Guid facilityId, SaveFacilityRequest request, CancellationToken cancellationToken = default);
+    Task<Response<bool>> DeleteFacilityAsync(Guid clinicId, Guid facilityId, CancellationToken cancellationToken = default);
 }

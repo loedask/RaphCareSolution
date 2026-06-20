@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Domain.Organization;
@@ -25,9 +26,22 @@ public sealed class UpdateAdminClinicHandler(
         if (clinic is null || clinic.IsDeleted)
             return null;
 
+        if (clinic.IsActive != request.IsActive
+            && !await AdminClinicAuthorization.IsClinicAdministratorAsync(
+                currentUserService,
+                clinicStaffMembershipService,
+                roleAssignmentService,
+                request.ClinicId,
+                cancellationToken)
+                .ConfigureAwait(false))
+        {
+            throw new ForbiddenAccessException("Only hospital administrators can change hospital status.");
+        }
+
         clinic.Name = request.Name.Trim();
         clinic.Country = request.Country.Trim();
         clinic.TimeZone = request.TimeZone.Trim();
+        clinic.IsActive = request.IsActive;
 
         await clinicRepository.UpdateAsync(clinic, cancellationToken).ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
