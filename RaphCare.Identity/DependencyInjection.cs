@@ -63,7 +63,7 @@ public static class DependencyInjection
                     NameClaimType = JwtRegisteredClaimNames.Sub,
                     RoleClaimType = "role",
                     IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
-                        ResolveSigningKeys(securityToken, entraAuthority, localJwt)
+                        ResolveSigningKeys(token, securityToken, entraAuthority, localJwt)
                 };
 
                 options.Events = new JwtBearerEvents
@@ -88,16 +88,58 @@ public static class DependencyInjection
     }
 
     private static IEnumerable<SecurityKey> ResolveSigningKeys(
+        string rawToken,
         SecurityToken securityToken,
         string entraAuthority,
         LocalJwtOptions localJwt)
     {
-        if (securityToken is JwtSecurityToken jwt
-            && string.Equals(jwt.Issuer, localJwt.Issuer, StringComparison.Ordinal))
+        var keys = new List<SecurityKey>();
+
+        if (!string.IsNullOrWhiteSpace(localJwt.Secret))
+            keys.Add(LocalJwtSigningKeyHelper.CreateSigningKey(localJwt.Secret));
+
+        if (IsLocalEmailJwt(rawToken, securityToken, localJwt))
+            return keys;
+
+        try
         {
-            return [LocalJwtSigningKeyHelper.CreateSigningKey(localJwt.Secret)];
+            keys.AddRange(GetEntraSigningKeys(entraAuthority));
+        }
+        catch
+        {
+            // Entra metadata unavailable (offline dev); local key above may still validate email JWTs.
         }
 
+        return keys;
+    }
+
+    private static bool IsLocalEmailJwt(string rawToken, SecurityToken securityToken, LocalJwtOptions localJwt)
+    {
+        if (string.IsNullOrWhiteSpace(localJwt.Issuer))
+            return false;
+
+        if (securityToken is JwtSecurityToken jwt
+            && string.Equals(jwt.Issuer, localJwt.Issuer, StringComparison.Ordinal))
+            return true;
+
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(rawToken))
+                return false;
+
+            var parsed = handler.ReadJwtToken(rawToken);
+            return string.Equals(parsed.Issuer, localJwt.Issuer, StringComparison.Ordinal)
+                   || string.Equals(parsed.SignatureAlgorithm, SecurityAlgorithms.HmacSha256, StringComparison.Ordinal);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static IEnumerable<SecurityKey> GetEntraSigningKeys(string entraAuthority)
+    {
         var metadataAddress = $"{entraAuthority}/.well-known/openid-configuration";
         var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(
             metadataAddress,
