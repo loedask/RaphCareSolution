@@ -8,11 +8,23 @@ public sealed class ClinicStaffMembershipService(ClinicalDbContext clinicalDbCon
 {
     public async Task EnsureMembershipAsync(Guid applicationUserId, Guid clinicId, CancellationToken cancellationToken = default)
     {
-        var exists = await clinicalDbContext.ClinicStaffMemberships
-            .AnyAsync(m => m.ApplicationUserId == applicationUserId && m.ClinicId == clinicId, cancellationToken)
+        var existing = await clinicalDbContext.ClinicStaffMemberships
+            .FirstOrDefaultAsync(
+                m => m.ApplicationUserId == applicationUserId && m.ClinicId == clinicId,
+                cancellationToken)
             .ConfigureAwait(false);
-        if (exists)
+
+        if (existing is not null)
+        {
+            if (!existing.IsActive)
+            {
+                existing.IsActive = true;
+                existing.JoinedAt = DateTime.UtcNow;
+                await clinicalDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             return;
+        }
 
         clinicalDbContext.ClinicStaffMemberships.Add(new ClinicStaffMembership
         {
@@ -52,4 +64,41 @@ public sealed class ClinicStaffMembershipService(ClinicalDbContext clinicalDbCon
     public Task<int> GetActiveStaffCountAsync(Guid clinicId, CancellationToken cancellationToken = default) =>
         clinicalDbContext.ClinicStaffMemberships
             .CountAsync(m => m.ClinicId == clinicId && m.IsActive, cancellationToken);
+
+    public async Task<IReadOnlyList<ClinicStaffMembershipEntry>> GetStaffMembershipsAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        return await clinicalDbContext.ClinicStaffMemberships
+            .AsNoTracking()
+            .Where(m => m.ClinicId == clinicId)
+            .OrderBy(m => m.JoinedAt)
+            .Select(m => new ClinicStaffMembershipEntry
+            {
+                ApplicationUserId = m.ApplicationUserId,
+                JoinedAt = m.JoinedAt,
+                IsActive = m.IsActive
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<bool> DeactivateMembershipAsync(
+        Guid applicationUserId,
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        var membership = await clinicalDbContext.ClinicStaffMemberships
+            .FirstOrDefaultAsync(
+                m => m.ApplicationUserId == applicationUserId && m.ClinicId == clinicId && m.IsActive,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (membership is null)
+            return false;
+
+        membership.IsActive = false;
+        await clinicalDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return true;
+    }
 }

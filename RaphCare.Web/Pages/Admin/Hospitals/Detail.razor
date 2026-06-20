@@ -18,88 +18,217 @@
         <header class="admin-page-header">
             <div>
                 <h1>@_detail.Name</h1>
-                <p class="admin-page-lead">Hospital profile, facilities, and tenant settings.</p>
+                <p class="admin-page-lead">Hospital profile, facilities, and staff.</p>
             </div>
             <span class="badge @(_detail.IsActive ? "badge-success" : "badge-muted")">
                 @(_detail.IsActive ? "Active" : "Inactive")
             </span>
         </header>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">Hospital profile</p>
-                    <h1>Organization details</h1>
-                </div>
-            </header>
-            <div class="admin-page-card-body">
-                <div class="review-grid">
-                    <div class="review-item">
-                        <span class="review-label">Registration #</span>
-                        <span class="review-value">@_detail.RegistrationNumber</span>
-                    </div>
-                    <div class="review-item">
-                        <span class="review-label">Country</span>
-                        <span class="review-value">@_detail.Country</span>
-                    </div>
-                    <div class="review-item">
-                        <span class="review-label">Time zone</span>
-                        <span class="review-value">@_detail.TimeZone</span>
-                    </div>
-                    <div class="review-item">
-                        <span class="review-label">Registered</span>
-                        <span class="review-value">@_detail.CreatedAt.ToString("dd MMM yyyy")</span>
-                    </div>
-                    <div class="review-item">
-                        <span class="review-label">Hospital ID</span>
-                        <span class="review-value"><code>@_detail.Id</code></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <nav class="admin-detail-tabs" aria-label="Hospital sections">
+            <button type="button" class="admin-detail-tab @(_tab == "overview" ? "active" : "")" @onclick='() => SetTab("overview")'>Overview</button>
+            <button type="button" class="admin-detail-tab @(_tab == "facilities" ? "active" : "")" @onclick='() => SetTab("facilities")'>Facilities</button>
+            <button type="button" class="admin-detail-tab @(_tab == "staff" ? "active" : "")" @onclick='() => SetTab("staff")'>Staff</button>
+        </nav>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">Locations</p>
-                    <h1>Facilities</h1>
-                    <p class="admin-page-lead">Physical campuses and virtual sites for this hospital.</p>
-                </div>
-                <span class="admin-progress-pill">@_detail.Facilities.Count facility@(_detail.Facilities.Count == 1 ? "" : "ies")</span>
-            </header>
-            <div class="admin-page-card-body">
-                @if (_detail.Facilities.Count == 0)
-                {
-                    <p class="text-muted">No facilities added yet. You can add one when editing hospital settings (coming soon).</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>City</th>
-                                    <th>Country</th>
-                                    <th>Type</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var facility in _detail.Facilities)
-                                {
-                                    <tr>
-                                        <td><strong>@facility.Name</strong></td>
-                                        <td>@facility.City</td>
-                                        <td>@facility.Country</td>
-                                        <td>@(facility.IsVirtual ? "Virtual" : "Physical")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+        @if (!string.IsNullOrEmpty(_actionError))
+        {
+            <div class="alert alert-error">@_actionError</div>
+        }
+
+        @if (_tab == "overview")
+        {
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Hospital profile</p>
+                        <h1>Organization details</h1>
                     </div>
-                }
+                </header>
+                <div class="admin-page-card-body">
+                    <div class="review-grid">
+                        <div class="review-item">
+                            <span class="review-label">Registration #</span>
+                            <span class="review-value">@_detail.RegistrationNumber</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Country</span>
+                            <span class="review-value">@_detail.Country</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Time zone</span>
+                            <span class="review-value">@_detail.TimeZone</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Registered</span>
+                            <span class="review-value">@_detail.CreatedAt.ToString("dd MMM yyyy")</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Hospital ID</span>
+                            <span class="review-value"><code>@_detail.Id</code></span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        }
+        else if (_tab == "facilities")
+        {
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Locations</p>
+                        <h1>Facilities</h1>
+                        <p class="admin-page-lead">Physical campuses and virtual sites for this hospital.</p>
+                    </div>
+                    <span class="admin-progress-pill">@_detail.Facilities.Count facility@(_detail.Facilities.Count == 1 ? "" : "ies")</span>
+                </header>
+                <div class="admin-page-card-body">
+                    <div class="admin-inline-form">
+                        <h3>@(_editingFacilityId is null ? "Add facility" : "Edit facility")</h3>
+                        <div class="form-grid">
+                            <label>
+                                Name
+                                <input class="form-control" @bind="_facilityForm.Name" placeholder="Main Campus" />
+                            </label>
+                            <label>
+                                City
+                                <input class="form-control" @bind="_facilityForm.City" placeholder="Johannesburg" />
+                            </label>
+                            <label>
+                                Address
+                                <input class="form-control" @bind="_facilityForm.Address" placeholder="Street address" />
+                            </label>
+                            <label>
+                                Country
+                                <input class="form-control" @bind="_facilityForm.Country" placeholder="@_detail.Country" />
+                            </label>
+                            <label class="form-check">
+                                <input type="checkbox" @bind="_facilityForm.IsVirtual" />
+                                Virtual site (no physical address)
+                            </label>
+                        </div>
+                        <div class="admin-form-actions">
+                            @if (_editingFacilityId is null)
+                            {
+                                <button type="button" class="btn btn-primary" disabled="@_savingFacility" @onclick="CreateFacilityAsync">
+                                    @(_savingFacility ? "Adding…" : "Add facility")
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-primary" disabled="@_savingFacility" @onclick="UpdateFacilityAsync">
+                                    @(_savingFacility ? "Saving…" : "Save changes")
+                                </button>
+                                <button type="button" class="btn btn-secondary" @onclick="CancelEditFacility">Cancel</button>
+                            }
+                        </div>
+                    </div>
+
+                    @if (_detail.Facilities.Count == 0)
+                    {
+                        <p class="text-muted">No facilities yet. Add your first location above.</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>City</th>
+                                        <th>Address</th>
+                                        <th>Country</th>
+                                        <th>Type</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var facility in _detail.Facilities)
+                                    {
+                                        <tr>
+                                            <td><strong>@facility.Name</strong></td>
+                                            <td>@(string.IsNullOrWhiteSpace(facility.City) ? "—" : facility.City)</td>
+                                            <td>@(string.IsNullOrWhiteSpace(facility.Address) ? "—" : facility.Address)</td>
+                                            <td>@facility.Country</td>
+                                            <td>@(facility.IsVirtual ? "Virtual" : "Physical")</td>
+                                            <td>
+                                                <button type="button" class="btn btn-ghost btn-sm" @onclick="() => StartEditFacility(facility)">Edit</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Team</p>
+                        <h1>Staff</h1>
+                        <p class="admin-page-lead">Professionals linked to this hospital. Administrators can invite colleagues by email.</p>
+                    </div>
+                    <span class="admin-progress-pill">@_staff.Count member@(_staff.Count == 1 ? "" : "s")</span>
+                </header>
+                <div class="admin-page-card-body">
+                    <div class="admin-inline-form">
+                        <h3>Invite staff</h3>
+                        <div class="claim-form-row">
+                            <input class="form-control" @bind="_inviteEmail" placeholder="colleague@hospital.com" />
+                            <button type="button" class="btn btn-primary" disabled="@_inviting" @onclick="InviteStaffAsync">
+                                @(_inviting ? "Inviting…" : "Invite")
+                            </button>
+                        </div>
+                        <p class="hint">They must already have a RaphCare professional account.</p>
+                    </div>
+
+                    @if (_loadingStaff)
+                    {
+                        <p class="text-muted">Loading staff…</p>
+                    }
+                    else if (_staff.Count == 0)
+                    {
+                        <p class="text-muted">No staff linked yet.</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Roles</th>
+                                        <th>Joined</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var member in _staff)
+                                    {
+                                        <tr>
+                                            <td><strong>@member.DisplayName</strong></td>
+                                            <td>@member.Email</td>
+                                            <td>@string.Join(", ", member.Roles)</td>
+                                            <td>@member.JoinedAt.ToString("dd MMM yyyy")</td>
+                                            <td>
+                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == member.UserId" @onclick="() => RemoveStaffAsync(member.UserId)">
+                                                    @(_removingUserId == member.UserId ? "Removing…" : "Remove")
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
 
         <div class="admin-page-actions">
             <a class="btn btn-secondary" href="/admin/hospitals">← Back to hospitals</a>
@@ -114,23 +243,161 @@
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private bool _loading = true;
+    private bool _loadingStaff;
+    private bool _savingFacility;
+    private bool _inviting;
+    private Guid? _removingUserId;
     private string? _error;
+    private string? _actionError;
+    private string _tab = "overview";
+    private string _inviteEmail = string.Empty;
+    private Guid? _editingFacilityId;
     private ClinicDetail? _detail;
+    private IReadOnlyList<ClinicStaffMember> _staff = Array.Empty<ClinicStaffMember>();
+    private bool _staffLoaded;
+    private SaveFacilityRequest _facilityForm = new();
 
     protected override async Task OnInitializedAsync()
     {
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        await LoadDetailAsync();
+    }
 
+    private async Task LoadDetailAsync()
+    {
+        _loading = true;
+        _error = null;
         var response = await AdminClinicService.GetClinicAsync(ClinicId);
         _loading = false;
 
         if (response.IsSuccess && response.Data is not null)
         {
             _detail = response.Data;
+            ResetFacilityForm(_detail.Country);
             await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail.Name).ConfigureAwait(false);
             return;
         }
 
         _error = response.ErrorMessage ?? "Could not load hospital.";
+    }
+
+    private async Task LoadStaffAsync()
+    {
+        _loadingStaff = true;
+        _actionError = null;
+        var response = await AdminClinicService.GetStaffAsync(ClinicId);
+        _loadingStaff = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _staff = response.Data;
+            _staffLoaded = true;
+        }
+        else
+            _actionError = response.ErrorMessage ?? "Could not load staff.";
+    }
+
+    private async Task SetTab(string tab)
+    {
+        _tab = tab;
+        _actionError = null;
+        if (tab == "staff" && !_staffLoaded)
+            await LoadStaffAsync();
+    }
+
+    private void ResetFacilityForm(string defaultCountry)
+    {
+        _facilityForm = new SaveFacilityRequest { Country = defaultCountry };
+        _editingFacilityId = null;
+    }
+
+    private void StartEditFacility(FacilityListItem facility)
+    {
+        _editingFacilityId = facility.Id;
+        _facilityForm = new SaveFacilityRequest
+        {
+            Name = facility.Name,
+            Address = facility.Address,
+            City = facility.City,
+            Country = facility.Country,
+            IsVirtual = facility.IsVirtual
+        };
+        _actionError = null;
+    }
+
+    private void CancelEditFacility()
+    {
+        ResetFacilityForm(_detail?.Country ?? string.Empty);
+        _actionError = null;
+    }
+
+    private async Task CreateFacilityAsync()
+    {
+        _savingFacility = true;
+        _actionError = null;
+        var response = await AdminClinicService.CreateFacilityAsync(ClinicId, _facilityForm);
+        _savingFacility = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _actionError = response.ErrorMessage ?? "Could not add facility.";
+            return;
+        }
+
+        await LoadDetailAsync();
+        ResetFacilityForm(_detail?.Country ?? string.Empty);
+    }
+
+    private async Task UpdateFacilityAsync()
+    {
+        if (_editingFacilityId is null)
+            return;
+
+        _savingFacility = true;
+        _actionError = null;
+        var response = await AdminClinicService.UpdateFacilityAsync(ClinicId, _editingFacilityId.Value, _facilityForm);
+        _savingFacility = false;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not update facility.";
+            return;
+        }
+
+        await LoadDetailAsync();
+        ResetFacilityForm(_detail?.Country ?? string.Empty);
+    }
+
+    private async Task InviteStaffAsync()
+    {
+        _inviting = true;
+        _actionError = null;
+        var response = await AdminClinicService.InviteStaffAsync(ClinicId, _inviteEmail.Trim());
+        _inviting = false;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not invite staff.";
+            return;
+        }
+
+        _inviteEmail = string.Empty;
+        await LoadStaffAsync();
+    }
+
+    private async Task RemoveStaffAsync(Guid userId)
+    {
+        _removingUserId = userId;
+        _actionError = null;
+        var response = await AdminClinicService.RemoveStaffAsync(ClinicId, userId);
+        _removingUserId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not remove staff.";
+            return;
+        }
+
+        await LoadStaffAsync();
     }
 }

@@ -2,11 +2,16 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.DTOs;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.EnsureClinicMembership;
+using RaphCare.Application.Features.Organization.Commands.InviteClinicStaff;
 using RaphCare.Application.Features.Organization.Commands.RegisterClinic;
+using RaphCare.Application.Features.Organization.Commands.RemoveClinicStaff;
+using RaphCare.Application.Features.Organization.Commands.UpdateAdminFacility;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinics;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicStaff;
 
 namespace RaphCare.API.Controllers;
 
@@ -80,5 +85,92 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
         {
             return Conflict(new { error = ex.Message });
         }
+    }
+
+    /// <summary>List staff linked to a hospital.</summary>
+    [HttpGet("{id:guid}/staff", Name = "GetAdminClinicStaff")]
+    [ProducesResponseType(typeof(IReadOnlyList<ClinicStaffMemberDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetStaff(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetAdminClinicStaffQuery { ClinicId = id }, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Invite a healthcare professional to the hospital by email.</summary>
+    [HttpPost("{id:guid}/staff", Name = "InviteClinicStaff")]
+    [ProducesResponseType(typeof(ClinicStaffMemberDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> InviteStaff(
+        Guid id,
+        [FromBody] InviteClinicStaffRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new InviteClinicStaffCommand { ClinicId = id, Email = body.Email },
+            cancellationToken);
+        return CreatedAtAction(nameof(GetStaff), new { id }, result);
+    }
+
+    /// <summary>Remove a staff member from the hospital.</summary>
+    [HttpDelete("{id:guid}/staff/{userId:guid}", Name = "RemoveClinicStaff")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveStaff(Guid id, Guid userId, CancellationToken cancellationToken)
+    {
+        var removed = await mediator.Send(
+            new RemoveClinicStaffCommand { ClinicId = id, UserId = userId },
+            cancellationToken);
+        return removed ? NoContent() : NotFound();
+    }
+
+    /// <summary>Add a facility to a hospital.</summary>
+    [HttpPost("{id:guid}/facilities", Name = "CreateAdminFacility")]
+    [ProducesResponseType(typeof(FacilityListItemDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateFacility(
+        Guid id,
+        [FromBody] CreateAdminFacilityRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminFacilityCommand
+            {
+                ClinicId = id,
+                Name = body.Name,
+                Address = body.Address,
+                City = body.City,
+                Country = body.Country,
+                IsVirtual = body.IsVirtual
+            },
+            cancellationToken);
+        return result is null ? NotFound() : CreatedAtAction(nameof(GetById), new { id }, result);
+    }
+
+    /// <summary>Update a hospital facility.</summary>
+    [HttpPut("{id:guid}/facilities/{facilityId:guid}", Name = "UpdateAdminFacility")]
+    [ProducesResponseType(typeof(FacilityListItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateFacility(
+        Guid id,
+        Guid facilityId,
+        [FromBody] UpdateAdminFacilityRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new UpdateAdminFacilityCommand
+            {
+                ClinicId = id,
+                FacilityId = facilityId,
+                Name = body.Name,
+                Address = body.Address,
+                City = body.City,
+                Country = body.Country,
+                IsVirtual = body.IsVirtual
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
     }
 }

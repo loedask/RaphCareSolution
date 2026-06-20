@@ -185,6 +185,202 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<IReadOnlyList<ClinicStaffMember>>> GetStaffAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/staff", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<IReadOnlyList<ClinicStaffMember>>.Failure("Hospital not found or you do not have access.", 404);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                return Response<IReadOnlyList<ClinicStaffMember>>.Failure(error, (int)response.StatusCode);
+            }
+
+            var items = await response.Content
+                .ReadFromJsonAsync<List<ClinicStaffMemberDto>>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+
+            IReadOnlyList<ClinicStaffMember> staff = items?
+                .Select(MapStaff)
+                .ToList() ?? [];
+
+            return Response<IReadOnlyList<ClinicStaffMember>>.Success(staff);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<IReadOnlyList<ClinicStaffMember>>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicStaffMember>> InviteStaffAsync(
+        Guid clinicId,
+        string email,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/staff", new { email }, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can invite staff.";
+                return Response<ClinicStaffMember>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<ClinicStaffMemberDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (dto is null)
+                return Response<ClinicStaffMember>.Failure("Could not invite staff member.");
+
+            return Response<ClinicStaffMember>.Success(MapStaff(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicStaffMember>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<bool>> RemoveStaffAsync(
+        Guid clinicId,
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .DeleteAsync($"api/admin/clinics/{clinicId}/staff/{userId}", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<bool>.Success(true);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Staff member not found.", 404);
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            return Response<bool>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<FacilityListItem>> CreateFacilityAsync(
+        Guid clinicId,
+        SaveFacilityRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/facilities", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<FacilityListItem>.Failure("Hospital not found or you do not have access.", 404);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                return Response<FacilityListItem>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<FacilityListItemDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (dto is null)
+                return Response<FacilityListItem>.Failure("Could not create facility.");
+
+            return Response<FacilityListItem>.Success(MapFacility(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<FacilityListItem>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<FacilityListItem>> UpdateFacilityAsync(
+        Guid clinicId,
+        Guid facilityId,
+        SaveFacilityRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/facilities/{facilityId}", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<FacilityListItem>.Failure("Facility not found.", 404);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                return Response<FacilityListItem>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<FacilityListItemDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (dto is null)
+                return Response<FacilityListItem>.Failure("Could not update facility.");
+
+            return Response<FacilityListItem>.Success(MapFacility(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<FacilityListItem>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    private static ClinicStaffMember MapStaff(ClinicStaffMemberDto dto) => new()
+    {
+        UserId = dto.UserId,
+        Email = dto.Email,
+        DisplayName = dto.DisplayName,
+        Roles = dto.Roles ?? [],
+        JoinedAt = dto.JoinedAt,
+        IsActive = dto.IsActive
+    };
+
+    private static FacilityListItem MapFacility(FacilityListItemDto dto) => new()
+    {
+        Id = dto.Id,
+        Name = dto.Name,
+        Address = dto.Address,
+        City = dto.City,
+        Country = dto.Country,
+        IsVirtual = dto.IsVirtual
+    };
+
     private static async Task<string> ReadErrorAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         var body = response.Content is null
@@ -198,6 +394,8 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 var dto = JsonSerializer.Deserialize<ErrorDto>(body, JsonOptions);
                 if (!string.IsNullOrWhiteSpace(dto?.Error))
                     return dto.Error;
+                if (!string.IsNullOrWhiteSpace(dto?.Detail))
+                    return dto.Detail;
             }
             catch
             {
@@ -304,5 +502,16 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
     private sealed class ErrorDto
     {
         public string? Error { get; set; }
+        public string? Detail { get; set; }
+    }
+
+    private sealed class ClinicStaffMemberDto
+    {
+        public Guid UserId { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public List<string>? Roles { get; set; }
+        public DateTime JoinedAt { get; set; }
+        public bool IsActive { get; set; }
     }
 }
