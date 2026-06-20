@@ -4,8 +4,8 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Telehealth;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Models;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;

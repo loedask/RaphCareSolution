@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using RaphCare.Domain.Common;
 
-namespace RaphCare.Domain.Organization.Shared;
+namespace RaphCare.Domain.Organization.Common;
 
 /// <summary>
 /// Base class for clinic-owned entities that are also aggregate roots.

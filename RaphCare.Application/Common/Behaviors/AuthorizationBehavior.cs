@@ -33,7 +33,7 @@ public class AuthorizationBehavior<TRequest, TResponse> : IPipelineBehavior<TReq
 
         // Hook for per-request authorization rules (e.g., attributes, roles) in future.
 
-        return await next();
+        return await next(cancellationToken);
     }
 }
 

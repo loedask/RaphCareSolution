@@ -1,7 +1,7 @@
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 
-namespace RaphCare.Mobile.Core.Shared.Navigation;
+namespace RaphCare.Mobile.Core.Common.Navigation;
 
 /// <summary>
 /// Shell navigation must run on the main thread. Gesture commands and continuations after

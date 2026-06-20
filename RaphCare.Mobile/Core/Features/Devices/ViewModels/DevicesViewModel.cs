@@ -5,9 +5,9 @@ using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Devices;
 using RaphCare.Mobile.Core.Features.Devices.Models;
 using RaphCare.Mobile.Core.Features.Devices.Services;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Kernel.Core.Shared.Devices;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
+using RaphCare.Mobile.Kernel.Core.Common.Devices;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Devices.ViewModels;

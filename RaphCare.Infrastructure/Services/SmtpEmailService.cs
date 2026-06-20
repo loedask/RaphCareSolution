@@ -13,7 +13,7 @@ public sealed class SmtpEmailService(
     IOptionsMonitor<SmtpOptions> options,
     ILogger<SmtpEmailService> logger) : IEmailService
 {
-    public async Task SendEmailAsync(string to, string subject, string body, CancellationToken cancellationToken = default)
+    public async Task SendEmailAsync(string recipient, string subject, string body, CancellationToken cancellationToken = default)
     {
         var o = options.CurrentValue;
         if (!o.IsEnabled)
@@ -24,7 +24,7 @@ public sealed class SmtpEmailService(
 
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(o.FromDisplayName, o.FromAddress));
-        message.To.Add(MailboxAddress.Parse(to));
+        message.To.Add(MailboxAddress.Parse(recipient));
         message.Subject = subject;
         message.Body = new TextPart("plain") { Text = body };
 
@@ -35,6 +35,6 @@ public sealed class SmtpEmailService(
         await client.SendAsync(message, cancellationToken).ConfigureAwait(false);
         await client.DisconnectAsync(true, cancellationToken).ConfigureAwait(false);
 
-        logger.LogInformation("SMTP email sent to {To}, subject {Subject}.", to, subject);
+        logger.LogInformation("SMTP email sent to {To}, subject {Subject}.", recipient, subject);
     }
 }

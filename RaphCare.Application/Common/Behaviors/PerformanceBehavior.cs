@@ -25,7 +25,7 @@ public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         CancellationToken cancellationToken)
     {
         _timer.Start();
-        var response = await next();
+        var response = await next(cancellationToken);
         _timer.Stop();
 
         if (_timer.ElapsedMilliseconds > 500)

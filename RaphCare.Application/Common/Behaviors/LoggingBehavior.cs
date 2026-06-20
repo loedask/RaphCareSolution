@@ -24,7 +24,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         CancellationToken cancellationToken)
     {
         _logger.LogInformation("Handling request {RequestName}", typeof(TRequest).Name);
-        var response = await next();
+        var response = await next(cancellationToken);
         _logger.LogInformation("Handled request {RequestName}", typeof(TRequest).Name);
         return response;
     }

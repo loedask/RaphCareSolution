@@ -1,7 +1,7 @@
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.AiAssistant;
-using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Core.Common.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.AiAssistant.ViewModels;

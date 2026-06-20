@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
+namespace RaphCare.Mobile.Core.Common.Services.FeatureFlags;
 
 /// <summary>
 /// Bound from configuration section <see cref="SectionName"/>. Applied to <see cref="FeatureFlags"/> at startup.

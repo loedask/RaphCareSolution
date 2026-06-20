@@ -1,4 +1,4 @@
-using RaphCare.Mobile.Core.Shared.Navigation;
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile;

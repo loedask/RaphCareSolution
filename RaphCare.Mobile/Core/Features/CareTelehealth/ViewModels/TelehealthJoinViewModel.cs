@@ -3,8 +3,8 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Rtc;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;

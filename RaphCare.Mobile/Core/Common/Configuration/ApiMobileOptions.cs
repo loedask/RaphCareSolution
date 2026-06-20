@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Core.Shared.Configuration;
+namespace RaphCare.Mobile.Core.Common.Configuration;
 
 /// <summary>Mobile API client settings (base URL is also read via <c>Api:BaseAddress</c> in DI).</summary>
 public sealed class ApiMobileOptions

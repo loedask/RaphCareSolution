@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Kernel.Core.Shared.Devices;
+namespace RaphCare.Mobile.Kernel.Core.Common.Devices;
 
 /// <summary>
 /// Stable SKU identifiers for RaphCare-provided patient hardware (see docs/13_Patient_Device_Packages_and_Fleet.md).

@@ -19,7 +19,7 @@ public class GetFhirPatientsHandler(
     {
         string? nhidLower = null;
         if (!string.IsNullOrWhiteSpace(request.NationalHealthId))
-            nhidLower = request.NationalHealthId.Trim().ToLower();
+            nhidLower = request.NationalHealthId.Trim().ToLowerInvariant();
 
         var pagedPatients = await _repository.SearchAsync(
             queryShaper: q =>
@@ -28,7 +28,7 @@ public class GetFhirPatientsHandler(
                     q = q.Where(p => p.Id == id);
 
                 if (nhidLower is not null)
-                    q = q.Where(p => p.NationalHealthId != null && p.NationalHealthId.ToLower() == nhidLower);
+                    q = q.Where(p => p.NationalHealthId != null && p.NationalHealthId.ToLowerInvariant() == nhidLower);
 
                 return q;
             },

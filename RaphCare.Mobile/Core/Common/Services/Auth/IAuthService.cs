@@ -1,7 +1,7 @@
 using RaphCare.Client.Contracts;
-using RaphCare.Mobile.Core.Shared.Models;
+using RaphCare.Mobile.Core.Common.Models;
 
-namespace RaphCare.Mobile.Core.Shared.Services.Auth;
+namespace RaphCare.Mobile.Core.Common.Services.Auth;
 
 /// <summary>
 /// Handles Microsoft Entra ID sign-up, sign-in, and token storage for the mobile app.

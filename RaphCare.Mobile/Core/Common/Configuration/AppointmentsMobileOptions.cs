@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Core.Shared.Configuration;
+namespace RaphCare.Mobile.Core.Common.Configuration;
 
 /// <summary>Optional defaults for the book-appointment form (clinic/provider Guids from your environment).</summary>
 public class AppointmentsMobileOptions

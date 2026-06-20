@@ -1,4 +1,4 @@
-using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
+using RaphCare.Mobile.Core.Common.Services.FeatureFlags;
 using Xunit;
 
 namespace RaphCare.Mobile.Tests;

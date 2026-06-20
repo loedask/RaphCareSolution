@@ -7,9 +7,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
 using RaphCare.Mobile.Resources.Strings;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.Services.Auth;
-using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.Services.Auth;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 

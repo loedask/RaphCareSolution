@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Options;
 using RaphCare.Client.Contracts;
-using RaphCare.Mobile.Core.Shared.Configuration;
+using RaphCare.Mobile.Core.Common.Configuration;
 
-namespace RaphCare.Mobile.Core.Shared.Services.Api;
+namespace RaphCare.Mobile.Core.Common.Services.Api;
 
 public sealed class ConfigurationClinicIdProvider(IOptions<ApiMobileOptions> apiOptions, IOptions<OnboardingOptions> onboardingOptions)
     : IClinicIdProvider

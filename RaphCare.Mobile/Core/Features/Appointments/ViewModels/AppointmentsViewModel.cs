@@ -5,8 +5,8 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Appointments;
 using RaphCare.Mobile.Core.Features.Appointments.Models;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Appointments.ViewModels;

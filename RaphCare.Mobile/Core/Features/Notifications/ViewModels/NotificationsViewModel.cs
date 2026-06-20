@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Notifications;
-using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Core.Common.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Notifications.ViewModels;

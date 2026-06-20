@@ -19,7 +19,7 @@ public class GetFhirAppointmentsHandler(
     {
         var statusLower = request.Status;
         if (!string.IsNullOrWhiteSpace(statusLower))
-            statusLower = statusLower.Trim().ToLower();
+            statusLower = statusLower.Trim().ToLowerInvariant();
         else
             statusLower = null;
 
@@ -30,7 +30,7 @@ public class GetFhirAppointmentsHandler(
                     q = q.Where(a => a.PatientId == patientId);
 
                 if (statusLower is not null)
-                    q = q.Where(a => a.Status != null && a.Status.ToLower() == statusLower);
+                    q = q.Where(a => a.Status != null && a.Status.ToLowerInvariant() == statusLower);
 
                 return q;
             },

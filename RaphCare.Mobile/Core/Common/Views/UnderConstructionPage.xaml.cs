@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace RaphCare.Mobile.Core.Shared.Views;
+namespace RaphCare.Mobile.Core.Common.Views;
 
 [QueryProperty(nameof(FeatureName), "featureName")]
 public partial class UnderConstructionPage : ContentPage

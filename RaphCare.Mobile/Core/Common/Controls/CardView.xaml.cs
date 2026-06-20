@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Core.Shared.Controls;
+namespace RaphCare.Mobile.Core.Common.Controls;
 
 public partial class CardView : Border
 {

@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Core.Shared.Configuration;
+namespace RaphCare.Mobile.Core.Common.Configuration;
 
 /// <summary>Voice onboarding and related mobile-only configuration (not Entra).</summary>
 public sealed class OnboardingOptions

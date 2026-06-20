@@ -36,11 +36,11 @@ using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Features.Settings.ViewModels;
 using RaphCare.Mobile.Core.Features.Settings.Views;
 using RaphCare.Client.Contracts;
-using RaphCare.Mobile.Core.Shared.Configuration;
-using RaphCare.Mobile.Core.Shared.Services.Api;
-using RaphCare.Mobile.Core.Shared.Services.Auth;
-using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
-using RaphCare.Mobile.Core.Shared.Views;
+using RaphCare.Mobile.Core.Common.Configuration;
+using RaphCare.Mobile.Core.Common.Services.Api;
+using RaphCare.Mobile.Core.Common.Services.Auth;
+using RaphCare.Mobile.Core.Common.Services.FeatureFlags;
+using RaphCare.Mobile.Core.Common.Views;
 
 namespace RaphCare.Mobile.Core.Infrastructure.DependencyInjection;
 

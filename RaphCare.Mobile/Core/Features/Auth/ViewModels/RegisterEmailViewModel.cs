@@ -2,9 +2,9 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Auth.Models;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.Services.Auth;
-using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.Services.Auth;
+using RaphCare.Mobile.Core.Common.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;

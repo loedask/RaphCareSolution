@@ -1,4 +1,4 @@
-using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
+using RaphCare.Mobile.Core.Common.Services.FeatureFlags;
 using RaphCare.Mobile.Core.Features.Appointments.Views;
 using RaphCare.Mobile.Core.Features.Auth.Views;
 using RaphCare.Mobile.Core.Features.Home.Views;
@@ -13,9 +13,9 @@ using RaphCare.Mobile.Core.Features.Family.Views;
 using RaphCare.Mobile.Core.Features.MentalHealth.Views;
 using RaphCare.Mobile.Core.Features.Notifications.Views;
 using RaphCare.Mobile.Core.Features.AiAssistant.Views;
-using RaphCare.Mobile.Core.Shared.Views;
+using RaphCare.Mobile.Core.Common.Views;
 
-namespace RaphCare.Mobile.Core.Shared.Navigation;
+namespace RaphCare.Mobile.Core.Common.Navigation;
 
 /// <summary>
 /// Registers all app routes and provides navigation that respects feature flags.

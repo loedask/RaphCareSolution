@@ -9,7 +9,7 @@ using AVFoundation;
 #endif
 using RaphCare.Mobile.Core.Features.CareTelehealth.Views;
 using RaphCare.Mobile.Core.Infrastructure.DependencyInjection;
-using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
+using RaphCare.Mobile.Core.Common.Services.FeatureFlags;
 #if ANDROID
 using RaphCare.Mobile.Platforms.Android.Telehealth;
 #elif IOS

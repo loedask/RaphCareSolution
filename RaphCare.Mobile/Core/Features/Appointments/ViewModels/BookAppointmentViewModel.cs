@@ -2,9 +2,9 @@ using System.Windows.Input;
 using Microsoft.Extensions.Options;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Appointments;
-using RaphCare.Mobile.Core.Shared.Configuration;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
+using RaphCare.Mobile.Core.Common.Configuration;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Features.Appointments.ViewModels;

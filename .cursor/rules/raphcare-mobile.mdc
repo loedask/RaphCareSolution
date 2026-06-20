@@ -11,16 +11,16 @@ Apply when editing **RaphCare.Mobile**, **RaphCare.Mobile.Kernel**, or **RaphCar
 ## Where code lives
 
 - **`Core/Features/<Feature>/`**: Screens (Views), feature view models, feature-only types. Namespaces: `RaphCare.Mobile.Core.Features.<Feature>.Views` / `.ViewModels` (and `.Services` / `.Models` only when truly feature-scoped).
-- **`Core/Shared/`**: Cross-feature reuse—navigation (`AppNavigator`), auth (`Core.Shared.Services.Auth`), **Controls** (MAUI XAML; namespace `RaphCare.Mobile.Core.Shared.Controls`), **ViewModels** (`BaseViewModel` in `Core.Shared.ViewModels`), shared pages (`UnderConstructionPage`). Do **not** name this folder `Components` for MAUI controls (that name is reserved for confusion with Blazor).
+- **`Core/Common/`**: Cross-feature reuse—navigation (`AppNavigator`), auth (`Core.Shared.Services.Auth`), **Controls** (MAUI XAML; namespace `RaphCare.Mobile.Core.Common.Controls`), **ViewModels** (`BaseViewModel` in `Core.Shared.ViewModels`), shared pages (`UnderConstructionPage`). Do **not** name this folder `Components` for MAUI controls (that name is reserved for confusion with Blazor).
 - **`Core/Infrastructure/`**: Composition only—`MobileServiceCollectionExtensions.AddRaphCareMobile`, `MobileServiceHub`. New service registrations go into `AddRaphCareMobile` (or a focused extension called from there), not scattered in `MauiProgram` unless there is a strong reason.
 - **`Core/Converters/`**: `IValueConverter` types; register in `App.xaml` resource dictionary.
 - **`Blazor/`**: Razor UI for **BlazorWebView** only (`Routes.razor`, `Layout/`, `Pages/`). Namespace `RaphCare.Mobile.Blazor`. Hybrid host page: `Core/Features/Hybrid/Views/BlazorHostPage`.
-- **`RaphCare.Mobile.Kernel`**: **net10.0**, **no MAUI**. Holds `AuthResult`, `FeatureFlags`, `FeatureFlagOptions`—same CLR namespaces (`RaphCare.Mobile.Core.Shared.*`) as before the split. Add here only types that must be unit-tested without the MAUI workload.
+- **`RaphCare.Mobile.Kernel`**: **net10.0**, **no MAUI**. Holds `AuthResult`, `FeatureFlags`, `FeatureFlagOptions`—same CLR namespaces (`RaphCare.Mobile.Core.Common.*`) as before the split. Add here only types that must be unit-tested without the MAUI workload.
 - **`RaphCare.Client`**: All HTTP, API DTOs, `IPatientService`-style interfaces, `AddRaphCareClient`. **Do not** duplicate API models or hand-rolled HTTP in Mobile. For new API areas, follow **backend → human NSwag (`ClientService.cs`) → Client feature services → Mobile/Web**—never skip Client or generate NSwag output from AI.
 
 ## Namespaces
 
-- Keep **folder path aligned** with namespace under `Core/` (e.g. `Core/Shared/Controls` → `RaphCare.Mobile.Core.Shared.Controls`).
+- Keep **folder path aligned** with namespace under `Core/` (e.g. `Core/Common/Controls` → `RaphCare.Mobile.Core.Common.Controls`).
 - Root app types (`App`, `MauiProgram`, `AppShell`) stay in `RaphCare.Mobile`.
 
 ## Dependency injection and Shell

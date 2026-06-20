@@ -1,6 +1,6 @@
 using Microsoft.Maui.Devices;
 
-namespace RaphCare.Mobile.Core.Shared.Services.Auth;
+namespace RaphCare.Mobile.Core.Common.Services.Auth;
 
 /// <summary>
 /// Configuration for Microsoft Entra ID (B2C / External ID) used by the mobile app.

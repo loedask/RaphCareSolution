@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Microsoft.Maui.ApplicationModel;
 
-namespace RaphCare.Mobile.Core.Shared.ViewModels;
+namespace RaphCare.Mobile.Core.Common.ViewModels;
 
 /// <summary>
 /// Base class for MVVM ViewModels with property change notification and busy state.

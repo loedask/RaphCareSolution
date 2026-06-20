@@ -1,4 +1,4 @@
-namespace RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
+namespace RaphCare.Mobile.Core.Common.Services.FeatureFlags;
 
 /// <summary>
 /// Feature flags to enable/disable areas of the app while under development.
