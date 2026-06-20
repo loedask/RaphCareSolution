@@ -27,6 +27,7 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new RolePermissionConfiguration());
         modelBuilder.ApplyConfiguration(new OtpCodeConfiguration());
         modelBuilder.ApplyConfiguration(new EmailPasswordCredentialConfiguration());
+        modelBuilder.ApplyConfiguration(new LoginAuditConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }
