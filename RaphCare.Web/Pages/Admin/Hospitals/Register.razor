@@ -5,218 +5,279 @@
 
 @if (_completed && _result is not null)
 {
-    <section class="onboarding-complete">
-        <div class="complete-icon">✓</div>
-        <h2>@_result.Name is registered</h2>
-        <p class="text-muted">The hospital is active on the platform. Patients can select it during registration once staff are provisioned.</p>
+    <section class="admin-page onboarding-success">
+        <div class="success-card">
+            <div class="success-icon" aria-hidden="true">✓</div>
+            <h1>@_result.Name is registered</h1>
+            <p class="text-muted">The hospital is active on the platform. Patients can select it during registration once staff are provisioned.</p>
 
-        <dl class="summary-list">
-            <div><dt>Hospital ID</dt><dd><code>@_result.ClinicId</code></dd></div>
-            @if (_result.PrimaryFacilityName is not null)
-            {
-                <div><dt>Primary facility</dt><dd>@_result.PrimaryFacilityName</dd></div>
-            }
-            @if (!string.IsNullOrWhiteSpace(_draft.AdminEmail))
-            {
-                <div><dt>Admin contact (pending)</dt><dd>@_draft.AdminFullName — @_draft.AdminEmail</dd></div>
-            }
-        </dl>
+            <div class="review-grid">
+                <div class="review-item">
+                    <span class="review-label">Hospital ID</span>
+                    <span class="review-value"><code>@_result.ClinicId</code></span>
+                </div>
+                @if (_result.PrimaryFacilityName is not null)
+                {
+                    <div class="review-item">
+                        <span class="review-label">Primary facility</span>
+                        <span class="review-value">@_result.PrimaryFacilityName</span>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(_draft.AdminEmail))
+                {
+                    <div class="review-item">
+                        <span class="review-label">Admin contact (pending)</span>
+                        <span class="review-value">@_draft.AdminFullName — @_draft.AdminEmail</span>
+                    </div>
+                }
+            </div>
 
-        <div class="form-actions">
-            <a class="btn btn-primary" href="/admin/hospitals">View hospitals</a>
-            <button type="button" class="btn btn-secondary" @onclick="StartAnother">Register another</button>
+            <div class="admin-page-actions">
+                <a class="btn btn-primary" href="/admin/hospitals">View hospitals</a>
+                <button type="button" class="btn btn-secondary" @onclick="StartAnotherAsync">Register another</button>
+            </div>
         </div>
     </section>
 }
 else
 {
-    <div class="onboarding-shell">
-        <header class="onboarding-header">
-            <div class="onboarding-header-inner">
-                <div class="onboarding-brand">
-                    <div class="onboarding-brand-icon">+</div>
-                    <div>
-                        <div class="onboarding-brand-title">RaphCare</div>
-                        <div class="onboarding-brand-sub">Hospital onboarding</div>
-                    </div>
-                </div>
-                <div class="onboarding-progress-wrap">
-                    <div class="onboarding-progress-meta">
-                        <span>Step @_step of @_stepCount</span>
-                        <span>@_progressPercent%</span>
-                    </div>
-                    <div class="onboarding-progress-bar">
-                        <div class="onboarding-progress-fill" style="width: @(_progressPercent)%"></div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <div class="onboarding-body">
-            <aside class="onboarding-steps">
-                @foreach (var s in _steps)
-                {
-                    var done = s.Id < _step;
-                    var active = s.Id == _step;
-                    <div class="onboarding-step @(active ? "active" : done ? "done" : "")">
-                        <span class="onboarding-step-num">@(done ? "✓" : s.Id.ToString())</span>
-                        <span>@s.Label</span>
-                    </div>
-                }
-            </aside>
-
-            <main class="onboarding-main">
-                <h1>@_stepMeta.Title</h1>
-                @if (!string.IsNullOrEmpty(_stepMeta.Subtitle))
-                {
-                    <p class="onboarding-subtitle">@_stepMeta.Subtitle</p>
-                }
-
-                @if (!string.IsNullOrEmpty(_submitError))
-                {
-                    <div class="alert alert-error">@_submitError</div>
-                }
-
-                <div class="onboarding-panel">
-                    @switch (_step)
-                    {
-                        case 1:
-                            <p>Register a new healthcare organization on RaphCare. This wizard collects hospital identity, a primary facility, and an administrator contact for follow-up provisioning.</p>
-                            <ul class="feature-list">
-                                <li>Creates the hospital tenant (clinic)</li>
-                                <li>Adds an optional primary facility or virtual site</li>
-                                <li>Prepares admin contact for Entra provisioning (coming next)</li>
-                            </ul>
-                            break;
-
-                        case 2:
-                            <div class="form-grid">
-                                <div class="form-field span-2">
-                                    <label for="name">Hospital name *</label>
-                                    <InputText id="name" class="form-control" @bind-Value="_draft.Name" placeholder="e.g. RaphCare General Hospital" />
-                                </div>
-                                <div class="form-field">
-                                    <label for="reg">Registration number *</label>
-                                    <InputText id="reg" class="form-control" @bind-Value="_draft.RegistrationNumber" placeholder="e.g. HPCSA-12345" />
-                                </div>
-                                <div class="form-field">
-                                    <label for="country">Country *</label>
-                                    <InputSelect id="country" class="form-control" @bind-Value="_draft.Country">
-                                        @foreach (var c in _countries)
-                                        {
-                                            <option value="@c">@c</option>
-                                        }
-                                    </InputSelect>
-                                </div>
-                                <div class="form-field span-2">
-                                    <label for="tz">Time zone *</label>
-                                    <InputSelect id="tz" class="form-control" @bind-Value="_draft.TimeZone">
-                                        @foreach (var tz in _timeZones)
-                                        {
-                                            <option value="@tz">@tz</option>
-                                        }
-                                    </InputSelect>
-                                </div>
-                            </div>
-                            break;
-
-                        case 3:
-                            <div class="form-grid">
-                                <div class="form-field span-2">
-                                    <label for="facName">Facility name</label>
-                                    <InputText id="facName" class="form-control" @bind-Value="_draft.FacilityName" placeholder="e.g. Main campus" />
-                                </div>
-                                <div class="form-field span-2">
-                                    <label for="address">Street address</label>
-                                    <InputText id="address" class="form-control" @bind-Value="_draft.FacilityAddress" />
-                                </div>
-                                <div class="form-field">
-                                    <label for="city">City</label>
-                                    <InputText id="city" class="form-control" @bind-Value="_draft.FacilityCity" />
-                                </div>
-                                <div class="form-field checkbox-field">
-                                    <label>
-                                        <InputCheckbox @bind-Value="_draft.IsVirtualFacility" />
-                                        Virtual / telehealth-only site
-                                    </label>
-                                </div>
-                            </div>
-                            break;
-
-                        case 4:
-                            <div class="form-grid">
-                                <div class="form-field">
-                                    <label for="adminName">Administrator full name</label>
-                                    <InputText id="adminName" class="form-control" @bind-Value="_draft.AdminFullName" placeholder="e.g. Dr. Jane Smith" />
-                                </div>
-                                <div class="form-field">
-                                    <label for="adminEmail">Administrator email</label>
-                                    <InputText id="adminEmail" class="form-control" @bind-Value="_draft.AdminEmail" type="email" placeholder="admin@hospital.org" />
-                                </div>
-                            </div>
-                            <p class="hint">Admin accounts will be linked via Microsoft Entra in a later step. Contact details are stored locally in this wizard for now.</p>
-                            break;
-
-                        case 5:
-                            <dl class="summary-list">
-                                <div><dt>Hospital</dt><dd>@_draft.Name</dd></div>
-                                <div><dt>Registration #</dt><dd>@_draft.RegistrationNumber</dd></div>
-                                <div><dt>Country</dt><dd>@_draft.Country</dd></div>
-                                <div><dt>Time zone</dt><dd>@_draft.TimeZone</dd></div>
-                                @if (!string.IsNullOrWhiteSpace(_draft.FacilityName))
-                                {
-                                    <div><dt>Primary facility</dt><dd>@_draft.FacilityName @(_draft.IsVirtualFacility ? "(virtual)" : "")</dd></div>
-                                }
-                                @if (!string.IsNullOrWhiteSpace(_draft.AdminEmail))
-                                {
-                                    <div><dt>Administrator</dt><dd>@_draft.AdminFullName — @_draft.AdminEmail</dd></div>
-                                }
-                            </dl>
-                            break;
-                    }
-                </div>
-
-                <footer class="onboarding-footer">
-                    <div class="form-actions">
-                        @if (_step > 1)
+    <section class="admin-page onboarding-page">
+        <div class="lifecycle-stepper" aria-label="Onboarding progress">
+            @foreach (var s in _steps)
+            {
+                var done = s.Id < _step;
+                var active = s.Id == _step;
+                var stateClass = active ? "active" : done ? "done" : "pending";
+                <div class="lifecycle-step @stateClass">
+                    <div class="lifecycle-step-marker">
+                        @if (done)
                         {
-                            <button type="button" class="btn btn-secondary" @onclick="GoBack" disabled="@_submitting">Back</button>
+                            <span aria-hidden="true">✓</span>
                         }
                         else
                         {
-                            <a class="btn btn-ghost" href="/admin/hospitals">Cancel</a>
+                            <span>@s.Id</span>
                         }
+                    </div>
+                    <span class="lifecycle-step-label">@s.Label</span>
+                </div>
+                @if (s.Id < _stepCount)
+                {
+                    <div class="lifecycle-connector @(s.Id < _step ? "done" : "")"></div>
+                }
+            }
+        </div>
 
-                        <div class="form-actions-right">
-                            @if (_step < _stepCount)
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Hospital onboarding · Step @_step of @_stepCount</p>
+                    <h1>@_stepMeta.Title</h1>
+                    @if (!string.IsNullOrEmpty(_stepMeta.Subtitle))
+                    {
+                        <p class="admin-page-lead">@_stepMeta.Subtitle</p>
+                    }
+                </div>
+                <div class="admin-page-head-meta">
+                    <span class="admin-progress-pill">@_progressPercent% complete</span>
+                </div>
+            </header>
+
+            @if (!string.IsNullOrEmpty(_resumeMessage))
+            {
+                <div class="alert alert-info admin-page-alert">@_resumeMessage</div>
+            }
+
+            @if (!string.IsNullOrEmpty(_submitError))
+            {
+                <div class="alert alert-error admin-page-alert">
+                    <p class="admin-alert-text">@_submitError</p>
+                    @if (_authRetryRequired)
+                    {
+                        <p class="admin-alert-hint">Your hospital details are saved on this device. Sign in again, then return here to finish registration.</p>
+                        <a class="btn btn-secondary btn-sm" href="@_signInReturnUrl">Sign in and continue</a>
+                    }
+                </div>
+            }
+
+            <div class="admin-page-card-body">
+                @switch (_step)
+                {
+                    case 1:
+                        <p class="onboarding-intro">Register a new healthcare organization on RaphCare. This wizard collects hospital identity, a primary facility, and an administrator contact for follow-up provisioning.</p>
+                        <div class="feature-card-grid">
+                            <div class="feature-card">
+                                <div class="feature-card-icon hospital">⌂</div>
+                                <h3>Hospital tenant</h3>
+                                <p>Creates the clinic record and regional settings for your organization.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-card-icon facility">◎</div>
+                                <h3>Primary facility</h3>
+                                <p>Add a physical campus or virtual telehealth site as the first location.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-card-icon admin">👤</div>
+                                <h3>Administrator</h3>
+                                <p>Capture who will manage the hospital on the platform.</p>
+                            </div>
+                        </div>
+                        break;
+
+                    case 2:
+                        <div class="form-grid">
+                            <div class="form-field span-2">
+                                <label for="name">Hospital name *</label>
+                                <InputText id="name" class="form-control" @bind-Value="_draft.Name" placeholder="e.g. RaphCare General Hospital" />
+                            </div>
+                            <div class="form-field">
+                                <label for="reg">Registration number *</label>
+                                <InputText id="reg" class="form-control" @bind-Value="_draft.RegistrationNumber" placeholder="e.g. HPCSA-12345" />
+                            </div>
+                            <div class="form-field">
+                                <label for="country">Country *</label>
+                                <InputSelect id="country" class="form-control" @bind-Value="_draft.Country">
+                                    @foreach (var c in _countries)
+                                    {
+                                        <option value="@c">@c</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="form-field span-2">
+                                <label for="tz">Time zone *</label>
+                                <InputSelect id="tz" class="form-control" @bind-Value="_draft.TimeZone">
+                                    @foreach (var tz in _timeZones)
+                                    {
+                                        <option value="@tz">@tz</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+                        break;
+
+                    case 3:
+                        <div class="form-grid">
+                            <div class="form-field span-2">
+                                <label for="facName">Facility name</label>
+                                <InputText id="facName" class="form-control" @bind-Value="_draft.FacilityName" placeholder="e.g. Main campus" />
+                            </div>
+                            <div class="form-field span-2">
+                                <label for="address">Street address</label>
+                                <InputText id="address" class="form-control" @bind-Value="_draft.FacilityAddress" />
+                            </div>
+                            <div class="form-field">
+                                <label for="city">City</label>
+                                <InputText id="city" class="form-control" @bind-Value="_draft.FacilityCity" />
+                            </div>
+                            <div class="form-field checkbox-field">
+                                <label>
+                                    <InputCheckbox @bind-Value="_draft.IsVirtualFacility" />
+                                    Virtual / telehealth-only site
+                                </label>
+                            </div>
+                        </div>
+                        break;
+
+                    case 4:
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="adminName">Administrator full name</label>
+                                <InputText id="adminName" class="form-control" @bind-Value="_draft.AdminFullName" placeholder="e.g. Dr. Jane Smith" />
+                            </div>
+                            <div class="form-field">
+                                <label for="adminEmail">Administrator email</label>
+                                <InputText id="adminEmail" class="form-control" @bind-Value="_draft.AdminEmail" type="email" placeholder="admin@hospital.org" />
+                            </div>
+                        </div>
+                        <p class="hint">Admin accounts will be linked via email sign-in. Contact details are stored for follow-up provisioning.</p>
+                        break;
+
+                    case 5:
+                        <div class="review-grid">
+                            <div class="review-item">
+                                <span class="review-label">Hospital</span>
+                                <span class="review-value">@_draft.Name</span>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Registration #</span>
+                                <span class="review-value">@_draft.RegistrationNumber</span>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Country</span>
+                                <span class="review-value">@_draft.Country</span>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Time zone</span>
+                                <span class="review-value">@_draft.TimeZone</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(_draft.FacilityName))
                             {
-                                <button type="button" class="btn btn-ghost" @onclick="GoNext">Skip step</button>
-                                <button type="button" class="btn btn-primary" @onclick="GoNext" disabled="@(!CanContinue)">Continue</button>
+                                <div class="review-item">
+                                    <span class="review-label">Primary facility</span>
+                                    <span class="review-value">@_draft.FacilityName @(_draft.IsVirtualFacility ? "(virtual)" : "")</span>
+                                </div>
                             }
-                            else
+                            @if (!string.IsNullOrWhiteSpace(_draft.AdminEmail))
                             {
-                                <button type="button" class="btn btn-primary" @onclick="SubmitAsync" disabled="@(_submitting || !CanContinue)">
-                                    @(_submitting ? "Registering…" : "Register hospital")
-                                </button>
+                                <div class="review-item">
+                                    <span class="review-label">Administrator</span>
+                                    <span class="review-value">@_draft.AdminFullName — @_draft.AdminEmail</span>
+                                </div>
                             }
                         </div>
+                        break;
+                }
+            </div>
+
+            <footer class="admin-page-card-foot">
+                <div class="admin-page-actions">
+                    @if (_step > 1)
+                    {
+                        <button type="button" class="btn btn-secondary" @onclick="GoBackAsync" disabled="@_submitting">Back</button>
+                    }
+                    else
+                    {
+                        <a class="btn btn-ghost" href="/admin/hospitals">Cancel</a>
+                    }
+
+                    <div class="admin-page-actions-right">
+                        @if (_step < _stepCount)
+                        {
+                            <button type="button" class="btn btn-ghost" @onclick="GoNextAsync">Skip step</button>
+                            <button type="button" class="btn btn-primary" @onclick="GoNextAsync" disabled="@(!CanContinue)">Continue →</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary" @onclick="SubmitAsync" disabled="@(_submitting || !CanContinue)">
+                                @(_submitting ? "Registering…" : "Register hospital")
+                            </button>
+                        }
                     </div>
-                </footer>
-            </main>
+                </div>
+            </footer>
         </div>
-    </div>
+    </section>
 }
 
 @code {
+    private const string RegisterPath = "/admin/hospitals/register";
+
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IHospitalOnboardingStorage OnboardingStorage { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private const int _stepCount = 5;
     private int _step = 1;
     private bool _submitting;
     private bool _completed;
+    private bool _authRetryRequired;
     private string? _submitError;
+    private string? _resumeMessage;
     private RegisterClinicResult? _result;
     private readonly OnboardingDraft _draft = new();
+
+    private string _signInReturnUrl =>
+        $"/professional/signin?returnUrl={Uri.EscapeDataString(RegisterPath)}";
 
     private readonly (int Id, string Label)[] _steps =
     [
@@ -263,22 +324,73 @@ else
         _ => true
     };
 
-    private void GoNext()
+    protected override async Task OnInitializedAsync()
+    {
+        var saved = await OnboardingStorage.LoadAsync().ConfigureAwait(false);
+        if (saved is null || !saved.HasHospitalDetails)
+            return;
+
+        ApplySavedDraft(saved);
+        _resumeMessage = saved.Step >= _stepCount
+            ? "We restored your saved hospital details. Review and tap Register hospital when you are ready."
+            : $"We restored your saved progress from step {saved.Step}. You can continue where you left off.";
+    }
+
+    private void ApplySavedDraft(HospitalOnboardingDraft saved)
+    {
+        _step = Math.Clamp(saved.Step, 1, _stepCount);
+        _draft.Name = saved.Name;
+        _draft.RegistrationNumber = saved.RegistrationNumber;
+        _draft.Country = string.IsNullOrWhiteSpace(saved.Country) ? "South Africa" : saved.Country;
+        _draft.TimeZone = string.IsNullOrWhiteSpace(saved.TimeZone) ? "South Africa Standard Time" : saved.TimeZone;
+        _draft.FacilityName = saved.FacilityName;
+        _draft.FacilityAddress = saved.FacilityAddress;
+        _draft.FacilityCity = saved.FacilityCity;
+        _draft.IsVirtualFacility = saved.IsVirtualFacility;
+        _draft.AdminFullName = saved.AdminFullName;
+        _draft.AdminEmail = saved.AdminEmail;
+    }
+
+    private async Task PersistDraftAsync()
+    {
+        await OnboardingStorage.SaveAsync(new HospitalOnboardingDraft
+        {
+            Step = _step,
+            Name = _draft.Name,
+            RegistrationNumber = _draft.RegistrationNumber,
+            Country = _draft.Country,
+            TimeZone = _draft.TimeZone,
+            FacilityName = _draft.FacilityName,
+            FacilityAddress = _draft.FacilityAddress,
+            FacilityCity = _draft.FacilityCity,
+            IsVirtualFacility = _draft.IsVirtualFacility,
+            AdminFullName = _draft.AdminFullName,
+            AdminEmail = _draft.AdminEmail
+        }).ConfigureAwait(false);
+    }
+
+    private async Task GoNextAsync()
     {
         if (_step < _stepCount)
             _step++;
+
+        await PersistDraftAsync().ConfigureAwait(false);
     }
 
-    private void GoBack()
+    private async Task GoBackAsync()
     {
         if (_step > 1)
             _step--;
+
+        await PersistDraftAsync().ConfigureAwait(false);
     }
 
     private async Task SubmitAsync()
     {
         _submitting = true;
         _submitError = null;
+        _authRetryRequired = false;
+        await PersistDraftAsync().ConfigureAwait(false);
 
         var request = new RegisterClinicRequest
         {
@@ -299,18 +411,26 @@ else
         {
             _result = response.Data;
             _completed = true;
+            _resumeMessage = null;
+            await OnboardingStorage.ClearAsync().ConfigureAwait(false);
             return;
         }
 
         _submitError = response.ErrorMessage ?? "Registration failed.";
+        _authRetryRequired = response.StatusCode is 401 or 403;
+        await PersistDraftAsync().ConfigureAwait(false);
     }
 
-    private void StartAnother()
+    private async Task StartAnotherAsync()
     {
         _completed = false;
         _result = null;
         _step = 1;
+        _resumeMessage = null;
+        _submitError = null;
+        _authRetryRequired = false;
         _draft.Reset();
+        await OnboardingStorage.ClearAsync().ConfigureAwait(false);
     }
 
     private sealed class OnboardingDraft

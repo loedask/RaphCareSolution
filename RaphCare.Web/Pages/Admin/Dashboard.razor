@@ -3,16 +3,30 @@
 
 <PageTitle>RaphCare Admin</PageTitle>
 
-<section class="admin-dashboard">
-    <div class="admin-hero">
-        <h2>Platform overview</h2>
-        <p>Manage hospital onboarding, tenants, and platform configuration.</p>
-        <a class="btn btn-primary" href="/admin/hospitals/register">Register a hospital</a>
-    </div>
+<section class="admin-page">
+    <header class="admin-page-header">
+        <div>
+            <h1>Platform overview</h1>
+            <p class="admin-page-lead">Manage hospital onboarding, tenants, and platform configuration.</p>
+        </div>
+        <a class="btn btn-primary" href="/admin/hospitals/register">+ Register hospital</a>
+    </header>
 
     @if (_loading)
     {
         <p class="text-muted">Loading hospitals…</p>
+    }
+    else if (_authRequired)
+    {
+        <div class="empty-state admin-guidance-state">
+            <div class="empty-state-icon" aria-hidden="true">⌂</div>
+            <h3>Finish registering your hospital</h3>
+            <p>Your professional account is ready. Register your hospital to unlock the full clinic portal, or sign in again if your session expired.</p>
+            <div class="admin-guidance-actions">
+                <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
+                <a class="btn btn-secondary" href="@_signInReturnUrl">Sign in again</a>
+            </div>
+        </div>
     }
     else if (!string.IsNullOrEmpty(_error))
     {
@@ -21,16 +35,25 @@
     else
     {
         <div class="stat-grid">
-            <div class="stat-card">
-                <div class="stat-label">Registered hospitals</div>
+            <div class="stat-card stat-card-blue">
+                <div class="stat-card-top">
+                    <span class="stat-label">Registered hospitals</span>
+                    <span class="stat-icon" aria-hidden="true">⌂</span>
+                </div>
                 <div class="stat-value">@_clinics.Count</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Active hospitals</div>
+            <div class="stat-card stat-card-green">
+                <div class="stat-card-top">
+                    <span class="stat-label">Active hospitals</span>
+                    <span class="stat-icon" aria-hidden="true">✓</span>
+                </div>
                 <div class="stat-value">@_clinics.Count(c => c.IsActive)</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Total facilities</div>
+            <div class="stat-card stat-card-violet">
+                <div class="stat-card-top">
+                    <span class="stat-label">Total facilities</span>
+                    <span class="stat-icon" aria-hidden="true">◎</span>
+                </div>
                 <div class="stat-value">@_clinics.Sum(c => c.FacilityCount)</div>
             </div>
         </div>
@@ -38,9 +61,10 @@
         @if (_clinics.Count == 0)
         {
             <div class="empty-state">
+                <div class="empty-state-icon" aria-hidden="true">⌂</div>
                 <h3>No hospitals yet</h3>
                 <p>Start by registering your first hospital through the onboarding wizard.</p>
-                <a class="btn btn-secondary" href="/admin/hospitals/register">Start onboarding</a>
+                <a class="btn btn-primary" href="/admin/hospitals/register">Start onboarding</a>
             </div>
         }
         else
@@ -48,52 +72,64 @@
             <div class="card">
                 <div class="card-header">
                     <h3>Recent hospitals</h3>
-                    <a href="/admin/hospitals">View all</a>
+                    <a class="card-header-link" href="/admin/hospitals">View all →</a>
                 </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Country</th>
-                            <th>Facilities</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var clinic in _clinics.Take(5))
-                        {
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <td>@clinic.Name</td>
-                                <td>@clinic.Country</td>
-                                <td>@clinic.FacilityCount</td>
-                                <td>
-                                    <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
-                                        @(clinic.IsActive ? "Active" : "Inactive")
-                                    </span>
-                                </td>
+                                <th>Name</th>
+                                <th>Country</th>
+                                <th>Facilities</th>
+                                <th>Status</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var clinic in _clinics.Take(5))
+                            {
+                                <tr>
+                                    <td><strong>@clinic.Name</strong></td>
+                                    <td>@clinic.Country</td>
+                                    <td>@clinic.FacilityCount</td>
+                                    <td>
+                                        <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
+                                            @(clinic.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         }
     }
 </section>
 
 @code {
+    private const string AdminPath = "/admin";
+
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
 
     private bool _loading = true;
+    private bool _authRequired;
     private string? _error;
     private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
+
+    private string _signInReturnUrl =>
+        $"/professional/signin?returnUrl={Uri.EscapeDataString(AdminPath)}";
 
     protected override async Task OnInitializedAsync()
     {
         var response = await AdminClinicService.GetClinicsAsync();
         _loading = false;
         if (response.IsSuccess && response.Data is not null)
+        {
             _clinics = response.Data;
-        else
-            _error = response.ErrorMessage ?? "Could not load hospitals.";
+            return;
+        }
+
+        _error = response.ErrorMessage ?? "Could not load hospitals.";
+        _authRequired = response.StatusCode is 401 or 403;
     }
 }

@@ -146,7 +146,17 @@ public class EmailPasswordAuthService(
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
         if (patientId == Guid.Empty)
-            return (false, "Patient profile is missing.", null, Guid.Empty);
+        {
+            var hasStaffRole = await _identityDbContext.UserRoles
+                .Where(ur => ur.UserId == user.Id)
+                .Join(_identityDbContext.Roles, ur => ur.RoleId, r => r.Id, (_, r) => r.Name)
+                .AnyAsync(name => name == "Clinician" || name == "Administrator", cancellationToken)
+                .ConfigureAwait(false);
+            if (hasStaffRole)
+                return (false, "This email is registered as a healthcare professional. Use professional sign-in and the clinic portal—not patient sign-in.", null, Guid.Empty);
+
+            return (false, "Patient profile is missing. Complete patient registration or contact support.", null, Guid.Empty);
+        }
 
         return (true, null, user, patientId);
     }

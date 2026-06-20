@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@implements IDisposable
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -13,24 +14,58 @@
         <nav class="admin-nav">
             <div class="admin-nav-section">Platform</div>
             <NavLink class="admin-nav-link" href="/admin" Match="NavLinkMatch.All">
+                <span class="admin-nav-icon" aria-hidden="true">▦</span>
                 Dashboard
             </NavLink>
             <NavLink class="admin-nav-link" href="/admin/hospitals">
+                <span class="admin-nav-icon" aria-hidden="true">⌂</span>
                 Hospitals
             </NavLink>
+
+            <div class="admin-nav-section">Onboarding</div>
             <NavLink class="admin-nav-link" href="/admin/hospitals/register">
+                <span class="admin-nav-icon" aria-hidden="true">＋</span>
                 Register hospital
             </NavLink>
         </nav>
 
         <div class="admin-sidebar-footer">
+            <div class="admin-user-card">
+                <div class="admin-user-avatar">HC</div>
+                <div class="admin-user-meta">
+                    <div class="admin-user-name">Healthcare professional</div>
+                    <div class="admin-user-role">Clinic administrator</div>
+                </div>
+            </div>
             <button type="button" class="btn btn-ghost admin-signout" @onclick="SignOutAsync">Sign out</button>
         </div>
     </aside>
 
     <div class="admin-main">
-        <header class="admin-header">
-            <h1 class="admin-header-title">Clinic portal</h1>
+        <header class="admin-topbar">
+            <div class="admin-topbar-left">
+                <nav class="admin-breadcrumb" aria-label="Breadcrumb">
+                    @foreach (var (label, href, isLast) in _breadcrumbs)
+                    {
+                        if (isLast)
+                        {
+                            <span class="admin-breadcrumb-current">@label</span>
+                        }
+                        else
+                        {
+                            <a href="@href">@label</a>
+                            <span class="admin-breadcrumb-sep">/</span>
+                        }
+                    }
+                </nav>
+            </div>
+            <div class="admin-topbar-right">
+                <label class="admin-search">
+                    <span class="admin-search-icon" aria-hidden="true">⌕</span>
+                    <input type="search" placeholder="Search hospitals, facilities…" disabled />
+                </label>
+                <span class="admin-pill">Professional</span>
+            </div>
         </header>
         <main class="admin-content">
             @Body

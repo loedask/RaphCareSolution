@@ -3,83 +3,112 @@
 
 <PageTitle>Hospitals — RaphCare Admin</PageTitle>
 
-<section>
-  <div class="page-toolbar">
-    <div>
-      <h2>Hospitals</h2>
-      <p class="text-muted">All registered healthcare organizations on the platform.</p>
-    </div>
-    <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
-  </div>
+<section class="admin-page">
+    <header class="admin-page-header">
+        <div>
+            <h1>Hospitals</h1>
+            <p class="admin-page-lead">All registered healthcare organizations on the platform.</p>
+        </div>
+        <a class="btn btn-primary" href="/admin/hospitals/register">+ Register hospital</a>
+    </header>
 
-  @if (_loading)
-  {
-    <p class="text-muted">Loading…</p>
-  }
-  else if (!string.IsNullOrEmpty(_error))
-  {
-    <div class="alert alert-error">@_error</div>
-  }
-  else if (_clinics.Count == 0)
-  {
-    <div class="empty-state">
-      <h3>No hospitals registered</h3>
-      <p>Use the onboarding wizard to add your first hospital.</p>
-      <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
-    </div>
-  }
-  else
-  {
-    <div class="card">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Registration #</th>
-            <th>Country</th>
-            <th>Time zone</th>
-            <th>Facilities</th>
-            <th>Registered</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach (var clinic in _clinics)
-          {
-            <tr>
-              <td><strong>@clinic.Name</strong></td>
-              <td>@clinic.RegistrationNumber</td>
-              <td>@clinic.Country</td>
-              <td>@clinic.TimeZone</td>
-              <td>@clinic.FacilityCount</td>
-              <td>@clinic.CreatedAt.ToString("dd MMM yyyy")</td>
-              <td>
-                <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
-                  @(clinic.IsActive ? "Active" : "Inactive")
-                </span>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
+    @if (_loading)
+    {
+        <p class="text-muted">Loading…</p>
+    }
+    else if (_authRequired)
+    {
+        <div class="empty-state admin-guidance-state">
+            <div class="empty-state-icon" aria-hidden="true">⌂</div>
+            <h3>Finish registering your hospital</h3>
+            <p>Your professional account is set up, but we couldn't load the hospital list yet. Continue onboarding to register your organization, or sign in again if your session expired.</p>
+            <div class="admin-guidance-actions">
+                <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
+                <a class="btn btn-secondary" href="@_signInReturnUrl">Sign in again</a>
+            </div>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="alert alert-error">@_error</div>
+    }
+    else if (_clinics.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon" aria-hidden="true">⌂</div>
+            <h3>No hospitals registered</h3>
+            <p>Use the onboarding wizard to add your first hospital.</p>
+            <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header">
+                <h3>Hospital directory</h3>
+                <span class="card-header-meta">@_clinics.Count total</span>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Registration #</th>
+                            <th>Country</th>
+                            <th>Time zone</th>
+                            <th>Facilities</th>
+                            <th>Registered</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var clinic in _clinics)
+                        {
+                            <tr>
+                                <td><strong>@clinic.Name</strong></td>
+                                <td>@clinic.RegistrationNumber</td>
+                                <td>@clinic.Country</td>
+                                <td>@clinic.TimeZone</td>
+                                <td>@clinic.FacilityCount</td>
+                                <td>@clinic.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
+                                        @(clinic.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </section>
 
 @code {
-  [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    private const string HospitalsPath = "/admin/hospitals";
 
-  private bool _loading = true;
-  private string? _error;
-  private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
 
-  protected override async Task OnInitializedAsync()
-  {
-    var response = await AdminClinicService.GetClinicsAsync();
-    _loading = false;
-    if (response.IsSuccess && response.Data is not null)
-      _clinics = response.Data;
-    else
-      _error = response.ErrorMessage ?? "Could not load hospitals.";
-  }
+    private bool _loading = true;
+    private bool _authRequired;
+    private string? _error;
+    private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
+
+    private string _signInReturnUrl =>
+        $"/professional/signin?returnUrl={Uri.EscapeDataString(HospitalsPath)}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await AdminClinicService.GetClinicsAsync();
+        _loading = false;
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _clinics = response.Data;
+            return;
+        }
+
+        _error = response.ErrorMessage ?? "Could not load hospitals.";
+        _authRequired = response.StatusCode is 401 or 403;
+    }
 }

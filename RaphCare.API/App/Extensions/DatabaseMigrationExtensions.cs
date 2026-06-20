@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RaphCare.Persistence;
+using RaphCare.Persistence.Seed;
 
 namespace RaphCare.API.App.Extensions;
 
@@ -29,5 +30,7 @@ public static class DatabaseMigrationExtensions
         {
             await context.Database.MigrateAsync();
         }
+
+        await DatabaseSeeder.SeedAsync(services);
     }
 }

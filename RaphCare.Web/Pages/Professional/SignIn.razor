@@ -8,6 +8,11 @@
     <h2 class="auth-card-title">Welcome back</h2>
     <p class="auth-card-subtitle">Sign in to your clinic portal. We'll email you a verification code.</p>
 
+    @if (_hasPendingOnboarding)
+    {
+        <div class="alert alert-info">You have a saved hospital registration. After sign-in we'll take you back to finish it.</div>
+    }
+
     @if (!string.IsNullOrEmpty(_error))
     {
         <div class="alert alert-error">@_error</div>
@@ -48,13 +53,39 @@
 @code {
     [Inject] private IEmailAuthService EmailAuth { get; set; } = default!;
     [Inject] private IWebAuthService WebAuth { get; set; } = default!;
+    [Inject] private IHospitalOnboardingStorage OnboardingStorage { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private readonly SignInModel _model = new();
     private bool _busy;
     private bool _awaitingCode;
+    private bool _hasPendingOnboarding;
     private string? _error;
     private string? _status;
+    private string _returnUrl = "/admin";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (!string.IsNullOrEmpty(uri.Query))
+        {
+            foreach (var part in uri.Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var pair = part.Split('=', 2);
+                if (pair.Length == 2
+                    && string.Equals(pair[0], "returnUrl", StringComparison.OrdinalIgnoreCase)
+                    && IsSafeReturnUrl(Uri.UnescapeDataString(pair[1])))
+                {
+                    _returnUrl = Uri.UnescapeDataString(pair[1]);
+                    break;
+                }
+            }
+        }
+
+        var saved = await OnboardingStorage.LoadAsync().ConfigureAwait(false);
+        _hasPendingOnboarding = saved?.HasHospitalDetails == true
+            && _returnUrl.StartsWith("/admin/hospitals/register", StringComparison.OrdinalIgnoreCase);
+    }
 
     private async Task SubmitAsync()
     {
@@ -86,8 +117,13 @@
         }
 
         await WebAuth.StoreSessionAsync(response.Data.Token, WebAccountKind.Professional);
-        Navigation.NavigateTo("/admin", replace: true);
+        Navigation.NavigateTo(_returnUrl, replace: true);
     }
+
+    private static bool IsSafeReturnUrl(string url) =>
+        !string.IsNullOrWhiteSpace(url)
+        && url.StartsWith("/", StringComparison.Ordinal)
+        && !url.StartsWith("//", StringComparison.Ordinal);
 
     private sealed class SignInModel
     {

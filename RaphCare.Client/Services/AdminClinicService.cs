@@ -15,8 +15,19 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         try
         {
             var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
-            var page = await client
-                .GetFromJsonAsync<PagedClinicsDto>("api/admin/clinics?pageSize=100", JsonOptions, cancellationToken)
+            using var response = await client
+                .GetAsync("api/admin/clinics?pageSize=100", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                error = MapStatusToMessage((int)response.StatusCode, error, forList: true);
+                return Response<IReadOnlyList<ClinicListItem>>.Failure(error, (int)response.StatusCode);
+            }
+
+            var page = await response.Content
+                .ReadFromJsonAsync<PagedClinicsDto>(JsonOptions, cancellationToken)
                 .ConfigureAwait(false);
 
             if (page?.Items is null)
@@ -38,9 +49,10 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
 
             return Response<IReadOnlyList<ClinicListItem>>.Success(items);
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            return Response<IReadOnlyList<ClinicListItem>>.Failure(ex.Message);
+            return Response<IReadOnlyList<ClinicListItem>>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -74,11 +86,13 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             }
 
             var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            error = MapStatusToMessage((int)response.StatusCode, error);
             return Response<RegisterClinicResult>.Failure(error, (int)response.StatusCode);
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            return Response<RegisterClinicResult>.Failure(ex.Message);
+            return Response<RegisterClinicResult>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -103,6 +117,26 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
 
         return response.ReasonPhrase ?? "Request failed.";
     }
+
+    private static string MapStatusToMessage(int statusCode, string fallback, bool forList = false) =>
+        statusCode switch
+        {
+            401 when forList =>
+                "Your session expired or is invalid. Sign in again to view hospitals.",
+            401 =>
+                "Your session expired or is invalid. Sign in again as a healthcare professional, then retry.",
+            403 when forList =>
+                "You don't have permission to view hospitals. Sign in with a healthcare professional account.",
+            403 =>
+                "You do not have permission to register a hospital. Sign in with a professional account.",
+            _ => HumanizeFallback(fallback, statusCode)
+        };
+
+    private static string HumanizeFallback(string fallback, int statusCode) =>
+        fallback.Contains("net_http_message_not_success", StringComparison.OrdinalIgnoreCase)
+        || fallback.Contains("Unauthorized", StringComparison.OrdinalIgnoreCase) && statusCode == 401
+            ? "Something went wrong. Sign in again or try later."
+            : fallback;
 
     private sealed class PagedClinicsDto
     {

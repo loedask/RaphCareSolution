@@ -8,67 +8,82 @@ namespace RaphCare.Persistence.Seed;
 
 /// <summary>
 /// Seeds identity bounded-context data: roles and permissions.
-/// Idempotent: skips if any roles already exist.
+/// Idempotent: ensures default roles and permissions exist by name.
 /// </summary>
 public static class IdentitySeeder
 {
+    private static readonly (string Name, string Description)[] DefaultRoles =
+    [
+        ("Administrator", "Full system access"),
+        ("Clinician", "Clinical access"),
+        ("Patient", "Patient portal access")
+    ];
+
+    private static readonly (string Code, string Name)[] DefaultPermissions =
+    [
+        ("Patients.Read", "View patients"),
+        ("Patients.Write", "Edit patients"),
+        ("Visits.Read", "View visits"),
+        ("Visits.Write", "Document visits"),
+        ("Admin.All", "Administrative access")
+    ];
+
     /// <summary>
-    /// Seeds default roles and permissions when none exist.
+    /// Ensures default roles and permissions exist.
     /// </summary>
-    /// <param name="scopedProvider">Scoped service provider (e.g. from CreateAsyncScope).</param>
-    /// <param name="logger">Logger for this seeder.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
     public static async Task SeedAsync(
         IServiceProvider scopedProvider,
         ILogger logger,
         CancellationToken cancellationToken = default)
     {
         var context = scopedProvider.GetService<IdentityDbContext>();
-        if (context == null) return;
-
-        if (await context.Roles.AnyAsync(cancellationToken).ConfigureAwait(false))
-        {
-            logger.LogInformation("Roles already seeded.");
+        if (context is null)
             return;
-        }
 
         var now = DateTime.UtcNow;
+        var existingRoles = await context.Roles
+            .AsNoTracking()
+            .Select(r => r.Name)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
 
-        var adminRole = new Role
+        foreach (var (name, description) in DefaultRoles)
         {
-            Id = Guid.NewGuid(),
-            Name = "Administrator",
-            Description = "Full system access",
-            CreatedAt = now
-        };
-        var clinicianRole = new Role
-        {
-            Id = Guid.NewGuid(),
-            Name = "Clinician",
-            Description = "Clinical access",
-            CreatedAt = now
-        };
-        var patientRole = new Role
-        {
-            Id = Guid.NewGuid(),
-            Name = "Patient",
-            Description = "Patient portal access",
-            CreatedAt = now
-        };
+            if (existingRoles.Contains(name, StringComparer.OrdinalIgnoreCase))
+                continue;
 
-        context.Roles.AddRange(adminRole, clinicianRole, patientRole);
+            context.Roles.Add(new Role
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                Description = description,
+                CreatedAt = now
+            });
+            logger.LogInformation("Seeded role {RoleName}.", name);
+        }
 
-        var permissions = new[]
+        var existingPermissions = await context.Permissions
+            .AsNoTracking()
+            .Select(p => p.Code)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        foreach (var (code, name) in DefaultPermissions)
         {
-            new Permission { Id = Guid.NewGuid(), Code = "Patients.Read", Name = "View patients", CreatedAt = now },
-            new Permission { Id = Guid.NewGuid(), Code = "Patients.Write", Name = "Edit patients", CreatedAt = now },
-            new Permission { Id = Guid.NewGuid(), Code = "Visits.Read", Name = "View visits", CreatedAt = now },
-            new Permission { Id = Guid.NewGuid(), Code = "Visits.Write", Name = "Document visits", CreatedAt = now },
-            new Permission { Id = Guid.NewGuid(), Code = "Admin.All", Name = "Administrative access", CreatedAt = now }
-        };
-        context.Permissions.AddRange(permissions);
+            if (existingPermissions.Contains(code, StringComparer.OrdinalIgnoreCase))
+                continue;
 
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        logger.LogInformation("Roles and permissions seeded.");
+            context.Permissions.Add(new Permission
+            {
+                Id = Guid.NewGuid(),
+                Code = code,
+                Name = name,
+                CreatedAt = now
+            });
+            logger.LogInformation("Seeded permission {PermissionCode}.", code);
+        }
+
+        if (context.ChangeTracker.HasChanges())
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 }

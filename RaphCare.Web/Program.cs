@@ -14,6 +14,7 @@ if (!apiBase.EndsWith('/'))
     apiBase += "/";
 
 builder.Services.AddScoped<IWebAuthService, WebAuthService>();
+builder.Services.AddScoped<IHospitalOnboardingStorage, HospitalOnboardingStorage>();
 builder.Services.AddScoped<IAccessTokenProvider, BrowserAccessTokenProvider>();
 builder.Services.AddRaphCareClient(client => client.BaseAddress = new Uri(apiBase), useBearerToken: true);
 
