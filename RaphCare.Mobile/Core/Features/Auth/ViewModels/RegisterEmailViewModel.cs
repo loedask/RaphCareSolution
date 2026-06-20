@@ -295,7 +295,7 @@ public class RegisterEmailViewModel : BaseViewModel
         }
     }
 
-    private async Task GoBackAsync()
+    private static async Task GoBackAsync()
     {
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
             await SafeShellNavigator.GoToAsync("..");

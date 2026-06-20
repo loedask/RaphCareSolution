@@ -27,6 +27,9 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     private bool _rtcConfigured;
     private bool _inCall;
 
+    private readonly string _videoHintText;
+    private readonly bool _showVideoSection;
+
     public TelehealthJoinViewModel(IPatientTelehealthService telehealth, ITelehealthRtcSession rtc)
     {
         _telehealth = telehealth ?? throw new ArgumentNullException(nameof(telehealth));
@@ -43,6 +46,10 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
         EndVideoLabel = T("CareTelehealthEndVideo");
         LocalVideoLabel = T("CareTelehealthLocalVideo");
         RemoteVideoLabel = T("CareTelehealthRemoteVideo");
+        _videoHintText = DeviceInfo.Current.Platform == DevicePlatform.Android
+            ? T("CareTelehealthVideoHintAndroid")
+            : T("CareTelehealthVideoHintOther");
+        _showVideoSection = DeviceInfo.Current.Platform == DevicePlatform.Android;
 
         RefreshCommand = new Command(async () => await LoadAsync());
         CopyTokenCommand = new Command(async () => await CopyTokenAsync());
@@ -64,12 +71,9 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     public string LocalVideoLabel { get; }
     public string RemoteVideoLabel { get; }
 
-    public string VideoHintText =>
-        DeviceInfo.Current.Platform == DevicePlatform.Android
-            ? T("CareTelehealthVideoHintAndroid")
-            : T("CareTelehealthVideoHintOther");
+    public string VideoHintText => _videoHintText;
 
-    public bool ShowVideoSection => DeviceInfo.Current.Platform == DevicePlatform.Android;
+    public bool ShowVideoSection => _showVideoSection;
 
     public string ChannelText
     {

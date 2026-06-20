@@ -37,6 +37,18 @@ public sealed class DevicesViewModel : BaseViewModel
         _vitalsOutbox = vitalsOutbox ?? throw new ArgumentNullException(nameof(vitalsOutbox));
         Title = T("DevicesPageTitle");
 
+    ScanButtonText = T("DevicesScan");
+    StopScanButtonText = T("DevicesStopScan");
+    ConnectHint = T("DevicesConnectHint");
+    DisconnectButtonText = T("DevicesDisconnect");
+    ShowAllLabel = T("DevicesShowAllBle");
+    E580E585FilterLabel = T("DevicesE580E585Filter");
+    LastReadingLabel = T("DevicesLastReading");
+    BleUnsupportedMessage = T("DevicesBleUnsupported");
+    DevicesConnectLabel = T("DevicesConnectButton");
+
+    SyncReadingsButtonText = T("DevicesSyncReadings");
+
         ScanCommand = new Command(async () => await ScanAsync().ConfigureAwait(false), () => !IsBusy && _ble.IsBleSupported);
         StopScanCommand = new Command(async () => await StopScanAsync().ConfigureAwait(false), () => _ble.IsScanning);
         ConnectCommand = new Command<Guid>(async id => await ConnectAsync(id).ConfigureAwait(false), _ => !IsBusy);
@@ -55,17 +67,17 @@ public sealed class DevicesViewModel : BaseViewModel
         _ble.ErrorOccurred += OnBleError;
     }
 
-    public string ScanButtonText => T("DevicesScan");
-    public string StopScanButtonText => T("DevicesStopScan");
-    public string ConnectHint => T("DevicesConnectHint");
-    public string DisconnectButtonText => T("DevicesDisconnect");
-    public string ShowAllLabel => T("DevicesShowAllBle");
-    public string E580E585FilterLabel => T("DevicesE580E585Filter");
-    public string LastReadingLabel => T("DevicesLastReading");
-    public string BleUnsupportedMessage => T("DevicesBleUnsupported");
-    public string DevicesConnectLabel => T("DevicesConnectButton");
+    public string ScanButtonText { get; }
+    public string StopScanButtonText { get; }
+    public string ConnectHint { get; }
+    public string DisconnectButtonText { get; }
+    public string ShowAllLabel { get; }
+    public string E580E585FilterLabel { get; }
+    public string LastReadingLabel { get; }
+    public string BleUnsupportedMessage { get; }
+    public string DevicesConnectLabel { get; }
 
-    public string SyncReadingsButtonText => T("DevicesSyncReadings");
+    public string SyncReadingsButtonText { get; }
 
     public string ShowAllToggleText => ShowAllDevices ? ShowAllLabel : E580E585FilterLabel;
 

@@ -45,7 +45,7 @@ public class RegisterOptionsViewModel : BaseViewModel
     public ICommand BackCommand { get; }
     public ICommand SignInCommand { get; }
 
-    private async Task GoBackAsync()
+    private static async Task GoBackAsync()
     {
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
             await SafeShellNavigator.GoToAsync("..");

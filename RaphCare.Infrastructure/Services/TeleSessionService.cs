@@ -10,25 +10,25 @@ public interface ITeleSessionService
 }
 
 /// <summary>Telemedicine session integration. Placeholder for Azure Communication Services or WebRTC.</summary>
-public class TeleSessionService : ITeleSessionService
+public sealed partial class TeleSessionService(ILogger<TeleSessionService> logger) : ITeleSessionService
 {
-    private readonly ILogger<TeleSessionService> _logger;
-
-    public TeleSessionService(ILogger<TeleSessionService> logger)
-    {
-        _logger = logger;
-    }
-
     public Task<Guid> CreateSessionAsync(Guid appointmentId, Guid visitId, string platform, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Tele session create placeholder: AppointmentId={AppointmentId}, Platform={Platform}", appointmentId, platform);
-        // TODO: Integrate with Azure Communication Services or WebRTC
+        LogTeleSessionCreatePlaceholder(appointmentId, platform);
         return Task.FromResult(Guid.NewGuid());
     }
 
     public Task EndSessionAsync(Guid sessionId, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Tele session end placeholder: SessionId={SessionId}", sessionId);
+        LogTeleSessionEndPlaceholder(sessionId);
         return Task.CompletedTask;
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = "Tele session create placeholder: AppointmentId={AppointmentId}, Platform={Platform}")]
+    private partial void LogTeleSessionCreatePlaceholder(Guid appointmentId, string platform);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Tele session end placeholder: SessionId={SessionId}")]
+    private partial void LogTeleSessionEndPlaceholder(Guid sessionId);
 }

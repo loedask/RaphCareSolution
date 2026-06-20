@@ -25,6 +25,8 @@ public sealed class EditProfileViewModel : BaseViewModel
         _profileApi = profileApi ?? throw new ArgumentNullException(nameof(profileApi));
         _localProfile = localProfile ?? throw new ArgumentNullException(nameof(localProfile));
         Title = T("EditProfileTitle");
+
+    PhotoHint = T("EditProfilePhotoHint");
         SaveCommand = new Command(async () => await SaveAsync());
         GenderOptions =
         [
@@ -89,7 +91,7 @@ public sealed class EditProfileViewModel : BaseViewModel
         set => SetProperty(ref _genderIndex, value);
     }
 
-    public string PhotoHint => T("EditProfilePhotoHint");
+    public string PhotoHint { get; }
     public ICommand SaveCommand { get; }
 
     public async Task LoadAsync()

@@ -34,25 +34,25 @@ public class SignInViewModel : BaseViewModel
         set => SetProperty(ref _statusMessage, value);
     }
 
-    public string WelcomeBack => T("AuthWelcomeBack");
+    public string WelcomeBack { get; }
 
-    public string SignInSubtitle => T("AuthSignInToContinue");
+    public string SignInSubtitle { get; }
 
-    public string EmailLabel => T("AuthEmailLabel");
-    public string PasswordLabel => T("AuthPasswordLabel");
-    public string VerificationCodeLabel => T("AuthVerificationCodeLabel");
-    public string EmailPlaceholder => T("AuthEmailPlaceholder");
-    public string PasswordPlaceholder => T("AuthPasswordPlaceholder");
-    public string VerificationCodePlaceholder => T("AuthVerificationCodePlaceholder");
+    public string EmailLabel { get; }
+    public string PasswordLabel { get; }
+    public string VerificationCodeLabel { get; }
+    public string EmailPlaceholder { get; }
+    public string PasswordPlaceholder { get; }
+    public string VerificationCodePlaceholder { get; }
 
     public string SignInButtonText =>
         AwaitingVerification ? T("AuthSignInVerifyButton") : T("AuthSignIn");
 
-    public string ForgotPasswordText => T("AuthForgotPassword");
+    public string ForgotPasswordText { get; }
 
-    public string DontHaveAccountText => T("AuthDontHaveAccount");
+    public string DontHaveAccountText { get; }
 
-    public string SignUpText => T("AuthSignUp");
+    public string SignUpText { get; }
 
     public bool AwaitingVerification
     {
@@ -94,13 +94,24 @@ public class SignInViewModel : BaseViewModel
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         Title = T("AuthSignInPageTitle");
+        WelcomeBack = T("AuthWelcomeBack");
+        SignInSubtitle = T("AuthSignInToContinue");
+        EmailLabel = T("AuthEmailLabel");
+        PasswordLabel = T("AuthPasswordLabel");
+        VerificationCodeLabel = T("AuthVerificationCodeLabel");
+        EmailPlaceholder = T("AuthEmailPlaceholder");
+        PasswordPlaceholder = T("AuthPasswordPlaceholder");
+        VerificationCodePlaceholder = T("AuthVerificationCodePlaceholder");
+        ForgotPasswordText = T("AuthForgotPassword");
+        DontHaveAccountText = T("AuthDontHaveAccount");
+        SignUpText = T("AuthSignUp");
         SignInCommand = new Command(async () => await SignInAsync().ConfigureAwait(false), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync().ConfigureAwait(false));
         SignUpCommand = new Command(async () => await OpenSignUpAsync().ConfigureAwait(false));
         ForgotPasswordCommand = new Command(async () => await OpenPasswordResetAsync().ConfigureAwait(false));
     }
 
-    private async Task OpenSignUpAsync()
+    private static async Task OpenSignUpAsync()
     {
         await SafeShellNavigator.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
     }
@@ -194,7 +205,7 @@ public class SignInViewModel : BaseViewModel
         }
     }
 
-    private async Task GoBackAsync()
+    private static async Task GoBackAsync()
     {
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
             await SafeShellNavigator.GoToAsync("..");

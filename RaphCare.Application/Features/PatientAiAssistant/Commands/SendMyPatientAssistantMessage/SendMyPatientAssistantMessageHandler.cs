@@ -13,7 +13,7 @@ namespace RaphCare.Application.Features.PatientAiAssistant.Commands.SendMyPatien
 /// Handles patient assistant chat: validates input, audits by patient id and length only (not message body),
 /// and delegates text generation to <see cref="IAIService"/> (placeholder or future LLM with policy guardrails).
 /// </summary>
-public sealed class SendMyPatientAssistantMessageHandler(
+public sealed partial class SendMyPatientAssistantMessageHandler(
     IAIService aiService,
     ICurrentUserService currentUser,
     IOptions<PatientAssistantAiOptions> options,
@@ -22,7 +22,6 @@ public sealed class SendMyPatientAssistantMessageHandler(
     private readonly IAIService _aiService = aiService;
     private readonly ICurrentUserService _currentUser = currentUser;
     private readonly IOptions<PatientAssistantAiOptions> _options = options;
-    private readonly ILogger<SendMyPatientAssistantMessageHandler> _logger = logger;
 
     public async Task<PatientAssistantReplyDto> Handle(SendMyPatientAssistantMessageCommand request, CancellationToken cancellationToken)
     {
@@ -30,10 +29,7 @@ public sealed class SendMyPatientAssistantMessageHandler(
             ?? throw new ForbiddenAccessException("A patient profile is required.");
 
         var message = NormalizeMessage(request.Message);
-        _logger.LogInformation(
-            "Patient assistant message accepted for patient {PatientId}; length {Length}.",
-            patientId,
-            message.Length);
+        LogPatientAssistantMessageAccepted(patientId, message.Length);
 
         var reply = await _aiService.GeneratePatientAssistantReplyAsync(message, cancellationToken).ConfigureAwait(false);
         var opts = _options.Value;
@@ -57,4 +53,9 @@ public sealed class SendMyPatientAssistantMessageHandler(
 
         return sb.ToString();
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = "Patient assistant message accepted for patient {PatientId}; length {Length}.")]
+    private partial void LogPatientAssistantMessageAccepted(Guid patientId, int length);
 }

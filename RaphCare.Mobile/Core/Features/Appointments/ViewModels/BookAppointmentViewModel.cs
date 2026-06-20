@@ -28,6 +28,16 @@ public sealed class BookAppointmentViewModel : BaseViewModel
         _appointments = appointments ?? throw new ArgumentNullException(nameof(appointments));
         _defaults = options?.Value ?? new AppointmentsMobileOptions();
         Title = T("AppointmentsBookTitle");
+
+    PageSubtitle = T("AppointmentsBookSubtitle");
+
+    ClinicIdLabel = T("AppointmentsClinicId");
+    ProviderIdLabel = T("AppointmentsProviderId");
+    DateLabel = T("AppointmentsDate");
+    StartLabel = T("AppointmentsStartTime");
+    EndLabel = T("AppointmentsEndTime");
+    TypeLabel = T("AppointmentsType");
+    ReasonLabel = T("AppointmentsReason");
         SubmitLabel = T("AppointmentsSubmit");
         CancelLabel = T("AppointmentsCancel");
 
@@ -43,15 +53,15 @@ public sealed class BookAppointmentViewModel : BaseViewModel
     public string SubmitLabel { get; }
     public string CancelLabel { get; }
 
-    public string PageSubtitle => T("AppointmentsBookSubtitle");
+    public string PageSubtitle { get; }
 
-    public string ClinicIdLabel => T("AppointmentsClinicId");
-    public string ProviderIdLabel => T("AppointmentsProviderId");
-    public string DateLabel => T("AppointmentsDate");
-    public string StartLabel => T("AppointmentsStartTime");
-    public string EndLabel => T("AppointmentsEndTime");
-    public string TypeLabel => T("AppointmentsType");
-    public string ReasonLabel => T("AppointmentsReason");
+    public string ClinicIdLabel { get; }
+    public string ProviderIdLabel { get; }
+    public string DateLabel { get; }
+    public string StartLabel { get; }
+    public string EndLabel { get; }
+    public string TypeLabel { get; }
+    public string ReasonLabel { get; }
 
     public IReadOnlyList<string> VisitTypes { get; } = new[] { "InPerson", "Telemedicine" };
 

@@ -6,7 +6,7 @@ using Whisper.net;
 namespace RaphCare.Infrastructure.Services;
 
 /// <summary>Local speech-to-text via Whisper.net (default provider).</summary>
-public sealed class WhisperSpeechToTextService(
+public sealed partial class WhisperSpeechToTextService(
     WhisperModelHolder modelHolder,
     ILogger<WhisperSpeechToTextService> logger) : ISpeechToTextService
 {
@@ -34,7 +34,7 @@ public sealed class WhisperSpeechToTextService(
         }
 
         var fullText = transcript.ToString().Trim();
-        logger.LogInformation("Whisper transcription completed ({Length} chars).", fullText.Length);
+        LogWhisperTranscriptionCompleted(fullText.Length);
 
         return new TranscriptionResult
         {
@@ -51,4 +51,7 @@ public sealed class WhisperSpeechToTextService(
         var primary = language.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault();
         return string.IsNullOrWhiteSpace(primary) ? "auto" : primary.ToLowerInvariant();
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Whisper transcription completed ({Length} chars).")]
+    private partial void LogWhisperTranscriptionCompleted(int length);
 }

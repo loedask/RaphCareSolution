@@ -11,11 +11,16 @@ public sealed class HelpSupportViewModel : BaseViewModel
     public HelpSupportViewModel()
     {
         Title = T("HelpSupportTitle");
+        ContactSectionTitle = T("HelpContactSection");
+        TipsSectionTitle = T("HelpTipsSection");
+        Tip1 = T("HelpTip1");
+        Tip2 = T("HelpTip2");
+        Tip3 = T("HelpTip3");
+        Tip4 = T("HelpTip4");
         FaqCommand = new Command(async () => await ToastComingSoonAsync(T("HelpFaq")));
         MessageCommand = new Command(async () => await ToastComingSoonAsync(T("HelpSendMessage")));
         CallCommand = new Command(async () => await OpenUriAsync(T("HelpSupportPhoneUri")));
         EmailCommand = new Command(async () => await OpenUriAsync(T("HelpSupportMailUri")));
-
         FaqTitle = T("HelpFaq");
         FaqSubtitle = T("HelpFaqSubtitle");
         MessageTitle = T("HelpSendMessage");
@@ -24,6 +29,7 @@ public sealed class HelpSupportViewModel : BaseViewModel
         CallSubtitle = T("HelpCallSubtitle");
         EmailTitle = T("HelpEmailSupport");
         EmailSubtitle = T("HelpEmailSubtitle");
+        AppVersionLabel = $"{T("ProfileAppName")} v{AppInfo.Current.VersionString}";
     }
 
     public string FaqTitle { get; }
@@ -35,13 +41,13 @@ public sealed class HelpSupportViewModel : BaseViewModel
     public string EmailTitle { get; }
     public string EmailSubtitle { get; }
 
-    public string ContactSectionTitle => T("HelpContactSection");
-    public string TipsSectionTitle => T("HelpTipsSection");
-    public string Tip1 => T("HelpTip1");
-    public string Tip2 => T("HelpTip2");
-    public string Tip3 => T("HelpTip3");
-    public string Tip4 => T("HelpTip4");
-    public string AppVersionLabel => $"{T("ProfileAppName")} v{AppInfo.Current.VersionString}";
+    public string ContactSectionTitle { get; }
+    public string TipsSectionTitle { get; }
+    public string Tip1 { get; }
+    public string Tip2 { get; }
+    public string Tip3 { get; }
+    public string Tip4 { get; }
+    public string AppVersionLabel { get; }
 
     public ICommand FaqCommand { get; }
     public ICommand MessageCommand { get; }

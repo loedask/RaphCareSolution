@@ -9,7 +9,7 @@ using RaphCare.Application.Common.Interfaces;
 namespace RaphCare.Infrastructure.Services;
 
 /// <summary>AI integration: patient assistant uses Azure OpenAI when configured; other entry points remain placeholders.</summary>
-public sealed class AIService : IAIService
+public sealed partial class AIService : IAIService
 {
     private const int MaxUserMessageLength = 8000;
 
@@ -30,7 +30,7 @@ public sealed class AIService : IAIService
     /// <inheritdoc />
     public Task<string> GenerateSummaryAsync(string input, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("AI GenerateSummary placeholder: Input length={Length}", input?.Length ?? 0);
+        LogGenerateSummaryPlaceholder(input?.Length ?? 0);
         return Task.FromResult("[Placeholder summary]");
     }
 
@@ -44,9 +44,7 @@ public sealed class AIService : IAIService
 
         if (!opts.IsAzureOpenAiConfigured)
         {
-            _logger.LogInformation(
-                "AI patient assistant (placeholder): message length {Length}",
-                trimmed.Length);
+            LogPatientAssistantPlaceholder(trimmed.Length);
             return opts.PlaceholderReply;
         }
 
@@ -84,10 +82,7 @@ public sealed class AIService : IAIService
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning(
-                    "Azure OpenAI chat failed: {Status} body length {Length}",
-                    (int)response.StatusCode,
-                    responseText.Length);
+                LogAzureOpenAiChatFailed((int)response.StatusCode, responseText.Length);
                 return opts.PlaceholderReply;
             }
 
@@ -100,7 +95,7 @@ public sealed class AIService : IAIService
 
             if (string.IsNullOrWhiteSpace(reply))
             {
-                _logger.LogWarning("Azure OpenAI returned an empty assistant message.");
+                LogAzureOpenAiEmptyReply();
                 return opts.PlaceholderReply;
             }
 
@@ -112,7 +107,7 @@ public sealed class AIService : IAIService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Azure OpenAI patient assistant call failed.");
+            LogAzureOpenAiCallFailed(ex);
             return _patientAssistantOptions.CurrentValue.PlaceholderReply;
         }
     }
@@ -120,14 +115,14 @@ public sealed class AIService : IAIService
     /// <inheritdoc />
     public Task<string> GenerateWellnessInsightAsync(string patientContext, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("AI GenerateWellnessInsight placeholder");
+        LogGenerateWellnessInsightPlaceholder();
         return Task.FromResult("[Placeholder wellness insight]");
     }
 
     /// <inheritdoc />
     public Task<decimal> CalculateRiskScoreAsync(string clinicalData, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("AI CalculateRiskScore placeholder");
+        LogCalculateRiskScorePlaceholder();
         return Task.FromResult(0m);
     }
 
@@ -159,4 +154,25 @@ public sealed class AIService : IAIService
         public string Role { get; set; } = "";
         public string Content { get; set; } = "";
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "AI GenerateSummary placeholder: Input length={Length}")]
+    private partial void LogGenerateSummaryPlaceholder(int length);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "AI patient assistant (placeholder): message length {Length}")]
+    private partial void LogPatientAssistantPlaceholder(int length);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Azure OpenAI chat failed: {Status} body length {Length}")]
+    private partial void LogAzureOpenAiChatFailed(int status, int length);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Azure OpenAI returned an empty assistant message.")]
+    private partial void LogAzureOpenAiEmptyReply();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Azure OpenAI patient assistant call failed.")]
+    private partial void LogAzureOpenAiCallFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "AI GenerateWellnessInsight placeholder")]
+    private partial void LogGenerateWellnessInsightPlaceholder();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "AI CalculateRiskScore placeholder")]
+    private partial void LogCalculateRiskScorePlaceholder();
 }

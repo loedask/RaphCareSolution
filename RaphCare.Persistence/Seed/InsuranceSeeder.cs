@@ -12,6 +12,18 @@ namespace RaphCare.Persistence.Seed;
 /// </summary>
 public static class InsuranceSeeder
 {
+    private static readonly Action<ILogger, Exception?> LogInsurancePlansAlreadySeeded =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            new EventId(1, nameof(LogInsurancePlansAlreadySeeded)),
+            "Insurance plans already seeded.");
+
+    private static readonly Action<ILogger, Exception?> LogSampleInsurancePlanSeeded =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            new EventId(2, nameof(LogSampleInsurancePlanSeeded)),
+            "Sample insurance plan seeded.");
+
     /// <summary>
     /// Seeds a sample insurance plan when none exist.
     /// </summary>
@@ -28,7 +40,7 @@ public static class InsuranceSeeder
 
         if (await context.InsurancePlans.AnyAsync(cancellationToken).ConfigureAwait(false))
         {
-            logger.LogInformation("Insurance plans already seeded.");
+            LogInsurancePlansAlreadySeeded(logger, null);
             return;
         }
 
@@ -41,6 +53,6 @@ public static class InsuranceSeeder
         };
         context.InsurancePlans.Add(plan);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        logger.LogInformation("Sample insurance plan seeded.");
+        LogSampleInsurancePlanSeeded(logger, null);
     }
 }

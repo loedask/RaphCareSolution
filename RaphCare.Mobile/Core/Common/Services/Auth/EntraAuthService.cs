@@ -12,6 +12,36 @@ namespace RaphCare.Mobile.Core.Common.Services.Auth;
 /// </summary>
 public class EntraAuthService : IAuthService
 {
+    private static readonly Action<ILogger, Exception?> LogEntraClientIdMissing =
+        LoggerMessage.Define(
+            Microsoft.Extensions.Logging.LogLevel.Critical,
+            new EventId(1, nameof(LogEntraClientIdMissing)),
+            "Entra:ClientId is missing. Entra sign-in/up is disabled.");
+
+    private static readonly Action<ILogger, Exception?> LogMsalInitFailed =
+        LoggerMessage.Define(
+            Microsoft.Extensions.Logging.LogLevel.Critical,
+            new EventId(2, nameof(LogMsalInitFailed)),
+            "MSAL failed to initialize. Entra sign-in/up is disabled.");
+
+    private static readonly Action<ILogger, string, Exception?> LogEntraSignUpFailed =
+        LoggerMessage.Define<string>(
+            Microsoft.Extensions.Logging.LogLevel.Warning,
+            new EventId(3, nameof(LogEntraSignUpFailed)),
+            "Entra sign-up failed for {Email}");
+
+    private static readonly Action<ILogger, Exception?> LogEntraSignInFailed =
+        LoggerMessage.Define(
+            Microsoft.Extensions.Logging.LogLevel.Warning,
+            new EventId(4, nameof(LogEntraSignInFailed)),
+            "Entra sign-in failed");
+
+    private static readonly Action<ILogger, string, Exception?> LogInteractiveAcquireFailed =
+        LoggerMessage.Define<string>(
+            Microsoft.Extensions.Logging.LogLevel.Warning,
+            new EventId(5, nameof(LogInteractiveAcquireFailed)),
+            "Interactive acquire failed for authority {Authority}");
+
     private const string AccessTokenKey = "access_token";
     private const string ExpiresOnKey = "expires_on";
 
@@ -28,7 +58,7 @@ public class EntraAuthService : IAuthService
 
         if (string.IsNullOrWhiteSpace(_options.ClientId))
         {
-            _logger.LogCritical("Entra:ClientId is missing. Entra sign-in/up is disabled.");
+            LogEntraClientIdMissing(_logger, null);
             return;
         }
 
@@ -38,7 +68,7 @@ public class EntraAuthService : IAuthService
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "MSAL failed to initialize. Entra sign-in/up is disabled.");
+            LogMsalInitFailed(_logger, ex);
         }
     }
 
@@ -118,7 +148,7 @@ public class EntraAuthService : IAuthService
         }
         catch (MsalException ex)
         {
-            _logger.LogWarning(ex, "Entra sign-up failed for {Email}", email);
+            LogEntraSignUpFailed(_logger, email, ex);
             return AuthResult.Fail(ex.Message);
         }
     }
@@ -137,7 +167,7 @@ public class EntraAuthService : IAuthService
         }
         catch (MsalException ex)
         {
-            _logger.LogWarning(ex, "Entra sign-in failed");
+            LogEntraSignInFailed(_logger, ex);
             return AuthResult.Fail(ex.Message);
         }
     }
@@ -171,7 +201,7 @@ public class EntraAuthService : IAuthService
         }
         catch (MsalException ex)
         {
-            _logger.LogWarning(ex, "Interactive acquire failed for authority {Authority}", authority);
+            LogInteractiveAcquireFailed(_logger, authority, ex);
             return AuthResult.Fail(ex.Message);
         }
     }

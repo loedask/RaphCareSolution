@@ -251,16 +251,21 @@ public sealed class ProfileHubViewModel : BaseViewModel
     private static string CurrentLanguageSubtitle() =>
         Format(T("ProfileLanguageCurrentFormat"), CultureInfo.CurrentUICulture.NativeName);
 
-    private async Task ComingSoonAsync() =>
+    private async Task ComingSoonAsync()
+    {
+        var title = Title;
         await MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(Title, T("ProfileFeatureComingSoon"), T("CommonOk")));
+            await Shell.Current.DisplayAlertAsync(title, T("ProfileFeatureComingSoon"), T("CommonOk")));
+    }
 
-    private async Task LanguageHintAsync() =>
+    private static async Task LanguageHintAsync()
+    {
         await MainThread.InvokeOnMainThreadAsync(async () =>
             await Shell.Current.DisplayAlertAsync(
                 T("ProfileLanguage"),
                 T("ProfileLanguageHintBody"),
                 T("CommonOk")));
+    }
 
     private async Task SignOutAsync()
     {

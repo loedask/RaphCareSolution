@@ -18,15 +18,21 @@ public sealed class AiAssistantViewModel : BaseViewModel
     {
         _assistant = assistant ?? throw new ArgumentNullException(nameof(assistant));
         Title = T("AiAssistantTitle");
+
+    IntroText = T("AiAssistantIntro");
+    PlaceholderText = T("AiAssistantPlaceholder");
+    SendButtonText = T("AiAssistantSend");
+    ReplyHeading = T("AiAssistantReplyHeading");
+    EmptyReplyText = T("AiAssistantEmptyReply");
         SendCommand = new Command(async () => await SendAsync(), () => !IsBusy && !string.IsNullOrWhiteSpace(DraftMessage));
         DraftMessage = string.Empty;
     }
 
-    public string IntroText => T("AiAssistantIntro");
-    public string PlaceholderText => T("AiAssistantPlaceholder");
-    public string SendButtonText => T("AiAssistantSend");
-    public string ReplyHeading => T("AiAssistantReplyHeading");
-    public string EmptyReplyText => T("AiAssistantEmptyReply");
+    public string IntroText { get; }
+    public string PlaceholderText { get; }
+    public string SendButtonText { get; }
+    public string ReplyHeading { get; }
+    public string EmptyReplyText { get; }
 
     public string DraftMessage
     {

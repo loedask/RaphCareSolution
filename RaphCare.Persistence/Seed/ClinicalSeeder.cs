@@ -12,6 +12,18 @@ namespace RaphCare.Persistence.Seed;
 /// </summary>
 public static class ClinicalSeeder
 {
+    private static readonly Action<ILogger, Exception?> LogClinicAlreadySeeded =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            new EventId(1, nameof(LogClinicAlreadySeeded)),
+            "Clinic already seeded.");
+
+    private static readonly Action<ILogger, Exception?> LogExampleClinicSeeded =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            new EventId(2, nameof(LogExampleClinicSeeded)),
+            "Example clinic seeded.");
+
     /// <summary>
     /// Seeds a default demo clinic when none exist.
     /// </summary>
@@ -28,7 +40,7 @@ public static class ClinicalSeeder
 
         if (await context.Clinics.AnyAsync(cancellationToken).ConfigureAwait(false))
         {
-            logger.LogInformation("Clinic already seeded.");
+            LogClinicAlreadySeeded(logger, null);
             return;
         }
 
@@ -42,6 +54,6 @@ public static class ClinicalSeeder
         };
         context.Clinics.Add(clinic);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        logger.LogInformation("Example clinic seeded.");
+        LogExampleClinicSeeded(logger, null);
     }
 }

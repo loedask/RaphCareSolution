@@ -9,6 +9,12 @@ namespace RaphCare.Persistence.Seed;
 /// </summary>
 public static class DatabaseSeeder
 {
+    private static readonly Action<ILogger, Exception?> LogSeedError =
+        LoggerMessage.Define(
+            LogLevel.Error,
+            new EventId(1, nameof(LogSeedError)),
+            "An error occurred while seeding the database.");
+
     /// <summary>
     /// Runs all seeders (Identity, Clinical, Insurance, Device, Billing) within one async scope.
     /// Logs and rethrows any exception after logging.
@@ -32,7 +38,7 @@ public static class DatabaseSeeder
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while seeding the database.");
+            LogSeedError(logger, ex);
             throw;
         }
     }

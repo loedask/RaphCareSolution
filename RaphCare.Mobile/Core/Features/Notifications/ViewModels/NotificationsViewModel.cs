@@ -17,6 +17,12 @@ public sealed class NotificationsViewModel : BaseViewModel
     {
         _notifications = notifications ?? throw new ArgumentNullException(nameof(notifications));
         Title = T("NotificationsTitle");
+
+    RefreshButtonText = T("NotificationsRefresh");
+    MarkAllReadButtonText = T("NotificationsMarkAllRead");
+    EmptyStateText = T("NotificationsEmpty");
+    PushHintText = T("NotificationsPushHint");
+    NewBadgeText = T("NotificationsNewBadge");
         Items = new ObservableCollection<PatientNotificationViewModel>();
         Items.CollectionChanged += OnItemsCollectionChanged;
 
@@ -27,11 +33,11 @@ public sealed class NotificationsViewModel : BaseViewModel
 
     public ObservableCollection<PatientNotificationViewModel> Items { get; }
 
-    public string RefreshButtonText => T("NotificationsRefresh");
-    public string MarkAllReadButtonText => T("NotificationsMarkAllRead");
-    public string EmptyStateText => T("NotificationsEmpty");
-    public string PushHintText => T("NotificationsPushHint");
-    public string NewBadgeText => T("NotificationsNewBadge");
+    public string RefreshButtonText { get; }
+    public string MarkAllReadButtonText { get; }
+    public string EmptyStateText { get; }
+    public string PushHintText { get; }
+    public string NewBadgeText { get; }
 
     public string? ErrorMessage
     {

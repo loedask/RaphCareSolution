@@ -8,10 +8,9 @@ namespace RaphCare.API.App.Middleware;
 /// <summary>
 /// Catches unhandled exceptions, logs them, and returns a ProblemDetails response.
 /// </summary>
-public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+public partial class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
     private readonly RequestDelegate _next = next;
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
 
     /// <summary>Invokes the next middleware; on exception, logs and returns ProblemDetails (404/400/403/500).</summary>
     /// <param name="context">The HTTP context.</param>
@@ -29,7 +28,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        _logger.LogError(exception, "Unhandled exception: {Message}", exception.Message);
+        LogUnhandledException(exception, exception.Message);
 
         var (statusCode, title, detail) = exception switch
         {
@@ -60,4 +59,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, options)).ConfigureAwait(false);
     }
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Unhandled exception: {Message}")]
+    private partial void LogUnhandledException(Exception exception, string message);
 }

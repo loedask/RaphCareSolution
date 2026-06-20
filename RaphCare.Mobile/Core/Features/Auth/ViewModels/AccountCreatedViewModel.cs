@@ -10,14 +10,20 @@ public class AccountCreatedViewModel : BaseViewModel
     public AccountCreatedViewModel()
     {
         Title = T("AccountCreatedPageTitle");
+
+    Headline = T("AccountCreatedTitle");
+
+    Body = T("AccountCreatedSubtitle");
+
+    ContinueLabel = T("AccountCreatedContinue");
         ContinueCommand = new Command(async () => await SafeShellNavigator.GoToAsync("//HomePage"));
     }
 
-    public string Headline => T("AccountCreatedTitle");
+    public string Headline { get; }
 
-    public string Body => T("AccountCreatedSubtitle");
+    public string Body { get; }
 
-    public string ContinueLabel => T("AccountCreatedContinue");
+    public string ContinueLabel { get; }
 
     public ICommand ContinueCommand { get; }
 }

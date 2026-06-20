@@ -20,6 +20,17 @@ public sealed class MentalHealthViewModel : BaseViewModel
         _mentalHealth = mentalHealth ?? throw new ArgumentNullException(nameof(mentalHealth));
         Title = T("MentalHealthTitle");
 
+    HowAreYouLabel = T("MentalHealthHowAreYou");
+    DailyCheckInHint = T("MentalHealthDailyCheckIn");
+    MoodGreat = T("MentalHealthMoodGreat");
+    MoodGood = T("MentalHealthMoodGood");
+    MoodOkay = T("MentalHealthMoodOkay");
+    MoodLow = T("MentalHealthMoodLow");
+    BookTherapyTitle = T("MentalHealthBookTherapy");
+    BookTherapySubtitle = T("MentalHealthConnectTherapist");
+    SessionHistoryTitle = T("MentalHealthSessionHistory");
+    SessionHistorySubtitle = T("MentalHealthSessionsThisMonth");
+
         SelectMoodCommand = new Command<string>(async s =>
         {
             if (!int.TryParse(s, out var index))
@@ -30,16 +41,16 @@ public sealed class MentalHealthViewModel : BaseViewModel
         SessionHistoryCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.Appointments));
     }
 
-    public string HowAreYouLabel => T("MentalHealthHowAreYou");
-    public string DailyCheckInHint => T("MentalHealthDailyCheckIn");
-    public string MoodGreat => T("MentalHealthMoodGreat");
-    public string MoodGood => T("MentalHealthMoodGood");
-    public string MoodOkay => T("MentalHealthMoodOkay");
-    public string MoodLow => T("MentalHealthMoodLow");
-    public string BookTherapyTitle => T("MentalHealthBookTherapy");
-    public string BookTherapySubtitle => T("MentalHealthConnectTherapist");
-    public string SessionHistoryTitle => T("MentalHealthSessionHistory");
-    public string SessionHistorySubtitle => T("MentalHealthSessionsThisMonth");
+    public string HowAreYouLabel { get; }
+    public string DailyCheckInHint { get; }
+    public string MoodGreat { get; }
+    public string MoodGood { get; }
+    public string MoodOkay { get; }
+    public string MoodLow { get; }
+    public string BookTherapyTitle { get; }
+    public string BookTherapySubtitle { get; }
+    public string SessionHistoryTitle { get; }
+    public string SessionHistorySubtitle { get; }
 
     public string InsightTitle
     {

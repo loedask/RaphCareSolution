@@ -18,6 +18,13 @@ public sealed class AddPaymentMethodViewModel : BaseViewModel
     {
         _billing = billing ?? throw new ArgumentNullException(nameof(billing));
         Title = T("BillingAddPaymentTitle");
+
+    MethodTypeLabel = T("BillingFieldMethodType");
+    ProviderLabel = T("BillingFieldProvider");
+    MaskedLabel = T("BillingFieldMasked");
+    DefaultLabel = T("BillingFieldDefault");
+    SubmitLabel = T("BillingSubmitPayment");
+    CancelLabel = T("BillingCancel");
         SubmitCommand = new Command(async () => await SubmitAsync(), () => !IsBusy && !string.IsNullOrWhiteSpace(ProviderName) && !string.IsNullOrWhiteSpace(MaskedDetails));
         CancelCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
     }
@@ -64,12 +71,12 @@ public sealed class AddPaymentMethodViewModel : BaseViewModel
         set => SetProperty(ref _errorMessage, value);
     }
 
-    public string MethodTypeLabel => T("BillingFieldMethodType");
-    public string ProviderLabel => T("BillingFieldProvider");
-    public string MaskedLabel => T("BillingFieldMasked");
-    public string DefaultLabel => T("BillingFieldDefault");
-    public string SubmitLabel => T("BillingSubmitPayment");
-    public string CancelLabel => T("BillingCancel");
+    public string MethodTypeLabel { get; }
+    public string ProviderLabel { get; }
+    public string MaskedLabel { get; }
+    public string DefaultLabel { get; }
+    public string SubmitLabel { get; }
+    public string CancelLabel { get; }
 
     public ICommand SubmitCommand { get; }
     public ICommand CancelCommand { get; }

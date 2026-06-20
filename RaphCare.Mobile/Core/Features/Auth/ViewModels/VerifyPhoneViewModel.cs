@@ -140,7 +140,7 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
-    private async Task GoBackAsync()
+    private static async Task GoBackAsync()
     {
         await SafeShellNavigator.GoToAsync("..").ConfigureAwait(false);
     }

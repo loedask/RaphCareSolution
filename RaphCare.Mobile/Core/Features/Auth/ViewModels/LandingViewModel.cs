@@ -59,6 +59,12 @@ public class LandingViewModel : BaseViewModel
     private string _languageCode = "en";
     private bool _isLanguageSheetOpen;
 
+    private string _welcomeTagline = string.Empty;
+    private string _footerTagline = string.Empty;
+    private string _signInText = string.Empty;
+    private string _createAccountText = string.Empty;
+    private string _chooseLanguageTitle = string.Empty;
+
     public LandingViewModel(IOptions<EntraAuthOptions> entraOptions)
     {
         _entra = entraOptions?.Value ?? throw new ArgumentNullException(nameof(entraOptions));
@@ -97,15 +103,15 @@ public class LandingViewModel : BaseViewModel
     public string CurrentLanguageNative =>
         Languages.FirstOrDefault(l => l.Code == _languageCode)?.Native ?? "English";
 
-    public string WelcomeTagline => T("AuthWelcomeTagline");
+    public string WelcomeTagline => _welcomeTagline;
 
-    public string FooterTagline => T("AuthHealthcareBarriers");
+    public string FooterTagline => _footerTagline;
 
-    public string SignInText => T("AuthSignIn");
+    public string SignInText => _signInText;
 
-    public string CreateAccountText => T("AuthCreateAccount");
+    public string CreateAccountText => _createAccountText;
 
-    public string ChooseLanguageTitle => T("AuthChooseLanguage");
+    public string ChooseLanguageTitle => _chooseLanguageTitle;
 
     private void RestoreLanguagePreference()
     {
@@ -153,6 +159,12 @@ public class LandingViewModel : BaseViewModel
 
     private void NotifyLocalizedProperties()
     {
+        _welcomeTagline = T("AuthWelcomeTagline");
+        _footerTagline = T("AuthHealthcareBarriers");
+        _signInText = T("AuthSignIn");
+        _createAccountText = T("AuthCreateAccount");
+        _chooseLanguageTitle = T("AuthChooseLanguage");
+
         OnPropertyChanged(nameof(WelcomeTagline));
         OnPropertyChanged(nameof(FooterTagline));
         OnPropertyChanged(nameof(SignInText));
@@ -169,7 +181,7 @@ public class LandingViewModel : BaseViewModel
             await SafeShellNavigator.GoToAsync("RegisterOptionsPage");
     }
 
-    private async Task SignInAsync()
+    private static async Task SignInAsync()
     {
         await SafeShellNavigator.GoToAsync("SignInPage");
     }

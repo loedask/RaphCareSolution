@@ -12,6 +12,18 @@ namespace RaphCare.Persistence.Seed;
 /// </summary>
 public static class IdentitySeeder
 {
+    private static readonly Action<ILogger, string, Exception?> LogSeededRole =
+        LoggerMessage.Define<string>(
+            LogLevel.Information,
+            new EventId(1, nameof(LogSeededRole)),
+            "Seeded role {RoleName}.");
+
+    private static readonly Action<ILogger, string, Exception?> LogSeededPermission =
+        LoggerMessage.Define<string>(
+            LogLevel.Information,
+            new EventId(2, nameof(LogSeededPermission)),
+            "Seeded permission {PermissionCode}.");
+
     private static readonly (string Name, string Description)[] DefaultRoles =
     [
         (RaphCareRoles.Administrator, "Full system access"),
@@ -59,7 +71,7 @@ public static class IdentitySeeder
                 Description = description,
                 CreatedAt = now
             });
-            logger.LogInformation("Seeded role {RoleName}.", name);
+            LogSeededRole(logger, name, null);
         }
 
         var existingPermissions = await context.Permissions
@@ -80,7 +92,7 @@ public static class IdentitySeeder
                 Name = name,
                 CreatedAt = now
             });
-            logger.LogInformation("Seeded permission {PermissionCode}.", code);
+            LogSeededPermission(logger, code, null);
         }
 
         if (context.ChangeTracker.HasChanges())

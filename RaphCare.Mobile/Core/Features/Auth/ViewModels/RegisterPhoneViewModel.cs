@@ -18,19 +18,23 @@ public class RegisterPhoneViewModel : BaseViewModel, IQueryAttributable
     private string? _errorMessage;
     private string _continueWith = string.Empty;
 
-    public string Subtitle { get; } = T("RegisterPhoneSubtitle");
-    public string PhoneFieldLabel { get; } = T("RegisterPhoneFieldLabel");
-    public string ContinueText { get; } = T("RegisterPhoneContinue");
+    public string Subtitle { get; }
+    public string PhoneFieldLabel { get; }
+    public string ContinueText { get; }
 
     public RegisterPhoneViewModel(IOtpAuthService otpAuth)
     {
         _otpAuth = otpAuth ?? throw new ArgumentNullException(nameof(otpAuth));
         Title = T("RegisterPhoneTitle");
+        Subtitle = T("RegisterPhoneSubtitle");
+        PhoneFieldLabel = T("RegisterPhoneFieldLabel");
+        ContinueText = T("RegisterPhoneContinue");
         ContinueCommand = new Command(async () => await SendAndContinueAsync(), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync());
+        Countries = CountryDialOption.DefaultList;
     }
 
-    public IReadOnlyList<CountryDialOption> Countries => CountryDialOption.DefaultList;
+    public IReadOnlyList<CountryDialOption> Countries { get; }
 
     public CountryDialOption SelectedCountry
     {
