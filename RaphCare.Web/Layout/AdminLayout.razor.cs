@@ -13,9 +13,11 @@ public partial class AdminLayout
 
     protected override async Task OnInitializedAsync()
     {
-        var token = await WebAuth.GetTokenAsync().ConfigureAwait(false);
-        var kind = await WebAuth.GetAccountKindAsync().ConfigureAwait(false);
-        var sessionValid = await WebAuth.IsSessionValidAsync().ConfigureAwait(false);
+        await WebAuth.EnsureHydratedAsync().ConfigureAwait(true);
+
+        var token = await WebAuth.GetTokenAsync().ConfigureAwait(true);
+        var kind = await WebAuth.GetAccountKindAsync().ConfigureAwait(true);
+        var sessionValid = await WebAuth.IsSessionValidAsync().ConfigureAwait(true);
         if (string.IsNullOrWhiteSpace(token) || kind != WebAccountKind.Professional || !sessionValid)
         {
             var returnUrl = Uri.EscapeDataString(Navigation.Uri);

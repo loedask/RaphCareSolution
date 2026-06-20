@@ -60,6 +60,8 @@ public static class DependencyInjection
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ClockSkew = TimeSpan.FromMinutes(2),
+                    NameClaimType = JwtRegisteredClaimNames.Sub,
+                    RoleClaimType = "role",
                     IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
                         ResolveSigningKeys(securityToken, entraAuthority, localJwt)
                 };

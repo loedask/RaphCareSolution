@@ -1,0 +1,9 @@
+@inject IWebAuthService WebAuth
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await WebAuth.EnsureHydratedAsync().ConfigureAwait(true);
+    }
+}
