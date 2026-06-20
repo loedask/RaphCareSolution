@@ -16,6 +16,7 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : Db
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<OtpCode> OtpCodes => Set<OtpCode>();
     public DbSet<EmailPasswordCredential> EmailPasswordCredentials => Set<EmailPasswordCredential>();
+    public DbSet<LoginAudit> LoginAudits => Set<LoginAudit>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -40,4 +40,12 @@ public sealed class ProfessionalUserLookupService(IdentityDbContext identityDbCo
             .AnyAsync(name => name == "Clinician" || name == "Administrator", cancellationToken)
             .ConfigureAwait(false);
     }
+
+    public async Task<bool> HasSuccessfulLoginAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await identityDbContext.LoginAudits
+            .AsNoTracking()
+            .AnyAsync(a => a.UserId == userId && a.Success, cancellationToken)
+            .ConfigureAwait(false);
+    }
 }

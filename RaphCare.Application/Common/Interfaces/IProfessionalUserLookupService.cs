@@ -9,4 +9,5 @@ public interface IProfessionalUserLookupService
         IReadOnlyCollection<Guid> userIds,
         CancellationToken cancellationToken = default);
     Task<bool> IsProfessionalAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<bool> HasSuccessfulLoginAsync(Guid userId, CancellationToken cancellationToken = default);
 }

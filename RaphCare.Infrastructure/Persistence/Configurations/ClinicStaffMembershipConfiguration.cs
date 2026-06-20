@@ -15,6 +15,7 @@ public sealed class ClinicStaffMembershipConfiguration : IEntityTypeConfiguratio
         builder.Property(e => e.ClinicId).IsRequired();
         builder.Property(e => e.IsActive).IsRequired();
         builder.Property(e => e.JoinedAt).IsRequired();
+        builder.Property(e => e.LastInvitationSentAt);
 
         builder.HasIndex(e => new { e.ApplicationUserId, e.ClinicId }).IsUnique();
         builder.HasIndex(e => e.ClinicId);

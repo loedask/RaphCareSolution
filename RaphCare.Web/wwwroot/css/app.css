@@ -849,6 +849,13 @@ a:hover { text-decoration: underline; }
     margin-top: 0.75rem;
 }
 
+.admin-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    justify-content: flex-end;
+}
+
 .text-muted { color: var(--rc-muted); }
 .hint { font-size: 0.85rem; color: var(--rc-muted); margin-top: 0.75rem; line-height: 1.5; }
 

@@ -1,6 +1,8 @@
 using MediatR;
+using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Domain.Organization;
 
 namespace RaphCare.Application.Features.Organization.Queries.GetAdminClinicStaff;
 
@@ -8,7 +10,8 @@ public sealed class GetAdminClinicStaffHandler(
     ICurrentUserService currentUserService,
     IClinicStaffMembershipService clinicStaffMembershipService,
     IProfessionalUserLookupService professionalUserLookupService,
-    IUserRoleAssignmentService roleAssignmentService)
+    IUserRoleAssignmentService roleAssignmentService,
+    IRepository<Clinic> clinicRepository)
     : IRequestHandler<GetAdminClinicStaffQuery, IReadOnlyList<ClinicStaffMemberDto>?>
 {
     public async Task<IReadOnlyList<ClinicStaffMemberDto>?> Handle(
@@ -19,6 +22,8 @@ public sealed class GetAdminClinicStaffHandler(
                 currentUserService, clinicStaffMembershipService, request.ClinicId, cancellationToken)
             .ConfigureAwait(false))
             return null;
+
+        var clinic = await clinicRepository.GetByIdAsync(request.ClinicId, cancellationToken).ConfigureAwait(false);
 
         var memberships = await clinicStaffMembershipService
             .GetStaffMembershipsAsync(request.ClinicId, cancellationToken)
@@ -43,6 +48,9 @@ public sealed class GetAdminClinicStaffHandler(
                 .GetRoleNamesAsync(user.Id, cancellationToken)
                 .ConfigureAwait(false);
 
+            var hasLoggedIn = await StaffLoginStatus.HasLoggedInAsync(
+                user.Id, clinic, professionalUserLookupService, cancellationToken).ConfigureAwait(false);
+
             result.Add(new ClinicStaffMemberDto
             {
                 UserId = user.Id,
@@ -50,7 +58,9 @@ public sealed class GetAdminClinicStaffHandler(
                 DisplayName = user.DisplayName,
                 Roles = roles,
                 JoinedAt = membership.JoinedAt,
-                IsActive = membership.IsActive
+                IsActive = membership.IsActive,
+                HasLoggedIn = hasLoggedIn,
+                LastInvitationSentAt = membership.LastInvitationSentAt
             });
         }
 

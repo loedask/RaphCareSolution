@@ -8,4 +8,6 @@ public sealed class ClinicStaffMemberDto
     public IReadOnlyList<string> Roles { get; set; } = Array.Empty<string>();
     public DateTime JoinedAt { get; set; }
     public bool IsActive { get; set; }
+    public bool HasLoggedIn { get; set; }
+    public DateTime? LastInvitationSentAt { get; set; }
 }

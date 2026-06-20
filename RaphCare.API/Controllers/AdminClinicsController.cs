@@ -7,6 +7,7 @@ using RaphCare.Application.Features.Organization.Commands.EnsureClinicMembership
 using RaphCare.Application.Features.Organization.Commands.InviteClinicStaff;
 using RaphCare.Application.Features.Organization.Commands.RegisterClinic;
 using RaphCare.Application.Features.Organization.Commands.RemoveClinicStaff;
+using RaphCare.Application.Features.Organization.Commands.ResendClinicStaffInvitation;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminFacility;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicById;
@@ -111,6 +112,20 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             new InviteClinicStaffCommand { ClinicId = id, Email = body.Email },
             cancellationToken);
         return CreatedAtAction(nameof(GetStaff), new { id }, result);
+    }
+
+    /// <summary>Resend the clinic portal invitation email to a staff member who has not signed in yet.</summary>
+    [HttpPost("{id:guid}/staff/{userId:guid}/resend-invitation", Name = "ResendClinicStaffInvitation")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResendStaffInvitation(Guid id, Guid userId, CancellationToken cancellationToken)
+    {
+        var sent = await mediator.Send(
+            new ResendClinicStaffInvitationCommand { ClinicId = id, UserId = userId },
+            cancellationToken);
+        return sent ? NoContent() : NotFound();
     }
 
     /// <summary>Remove a staff member from the hospital.</summary>

@@ -258,6 +258,36 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<bool>> ResendStaffInvitationAsync(
+        Guid clinicId,
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/staff/{userId}/resend-invitation", content: null, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<bool>.Success(true);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Staff member not found.", 404);
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                error = "Only hospital administrators can resend invitations.";
+            return Response<bool>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<bool>> RemoveStaffAsync(
         Guid clinicId,
         Guid userId,
@@ -368,7 +398,9 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         DisplayName = dto.DisplayName,
         Roles = dto.Roles ?? [],
         JoinedAt = dto.JoinedAt,
-        IsActive = dto.IsActive
+        IsActive = dto.IsActive,
+        HasLoggedIn = dto.HasLoggedIn,
+        LastInvitationSentAt = dto.LastInvitationSentAt
     };
 
     private static FacilityListItem MapFacility(FacilityListItemDto dto) => new()
@@ -513,5 +545,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public List<string>? Roles { get; set; }
         public DateTime JoinedAt { get; set; }
         public bool IsActive { get; set; }
+        public bool HasLoggedIn { get; set; }
+        public DateTime? LastInvitationSentAt { get; set; }
     }
 }

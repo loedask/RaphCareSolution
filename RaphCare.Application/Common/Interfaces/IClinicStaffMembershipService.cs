@@ -5,6 +5,7 @@ public sealed class ClinicStaffMembershipEntry
     public Guid ApplicationUserId { get; init; }
     public DateTime JoinedAt { get; init; }
     public bool IsActive { get; init; }
+    public DateTime? LastInvitationSentAt { get; init; }
 }
 
 public interface IClinicStaffMembershipService
@@ -20,4 +21,5 @@ public interface IClinicStaffMembershipService
         Guid applicationUserId,
         Guid clinicId,
         CancellationToken cancellationToken = default);
+    Task RecordInvitationSentAsync(Guid applicationUserId, Guid clinicId, CancellationToken cancellationToken = default);
 }

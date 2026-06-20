@@ -1,5 +1,6 @@
 using MediatR;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Domain.Identity;
 
 namespace RaphCare.Application.Features.Auth.Commands.EmailAuth;
 
@@ -8,7 +9,9 @@ public sealed class SignInProfessionalWithEmailHandler(
     IEmailOtpService emailOtpService,
     IEmailService emailService,
     IUserRoleAssignmentService roleAssignmentService,
-    ITokenService tokenService) : IRequestHandler<SignInProfessionalWithEmailCommand, EmailAuthResult>
+    ITokenService tokenService,
+    IIdentityOtpProvisioningService identityOtpProvisioningService,
+    IDateTimeProvider dateTimeProvider) : IRequestHandler<SignInProfessionalWithEmailCommand, EmailAuthResult>
 {
     public async Task<EmailAuthResult> Handle(SignInProfessionalWithEmailCommand request, CancellationToken cancellationToken)
     {
@@ -34,6 +37,16 @@ public sealed class SignInProfessionalWithEmailHandler(
 
         await roleAssignmentService.AssignRoleIfMissingAsync(user.Id, "Clinician", cancellationToken).ConfigureAwait(false);
         var roles = await roleAssignmentService.GetRoleNamesAsync(user.Id, cancellationToken).ConfigureAwait(false);
+
+        await identityOtpProvisioningService.LogLoginAttemptAsync(new LoginAudit
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            LoginTime = dateTimeProvider.UtcNow,
+            Success = true,
+            CreatedAt = dateTimeProvider.UtcNow
+        }, cancellationToken).ConfigureAwait(false);
+
         var token = tokenService.GenerateStaffToken(user, roles);
         return new EmailAuthResult { Success = true, Token = token };
     }

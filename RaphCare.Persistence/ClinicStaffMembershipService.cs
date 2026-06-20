@@ -77,7 +77,8 @@ public sealed class ClinicStaffMembershipService(ClinicalDbContext clinicalDbCon
             {
                 ApplicationUserId = m.ApplicationUserId,
                 JoinedAt = m.JoinedAt,
-                IsActive = m.IsActive
+                IsActive = m.IsActive,
+                LastInvitationSentAt = m.LastInvitationSentAt
             })
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -100,5 +101,23 @@ public sealed class ClinicStaffMembershipService(ClinicalDbContext clinicalDbCon
         membership.IsActive = false;
         await clinicalDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
+    }
+
+    public async Task RecordInvitationSentAsync(
+        Guid applicationUserId,
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        var membership = await clinicalDbContext.ClinicStaffMemberships
+            .FirstOrDefaultAsync(
+                m => m.ApplicationUserId == applicationUserId && m.ClinicId == clinicId && m.IsActive,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (membership is null)
+            return;
+
+        membership.LastInvitationSentAt = DateTime.UtcNow;
+        await clinicalDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 }

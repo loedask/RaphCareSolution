@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
         services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
+        services.Configure<RaphCarePortalOptions>(configuration.GetSection(RaphCarePortalOptions.SectionName));
         var smtp = configuration.GetSection(SmtpOptions.SectionName).Get<SmtpOptions>();
         if (smtp?.IsEnabled == true)
             services.AddScoped<IEmailService, SmtpEmailService>();

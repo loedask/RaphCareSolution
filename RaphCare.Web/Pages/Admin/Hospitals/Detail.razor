@@ -203,6 +203,7 @@
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Roles</th>
+                                        <th>Status</th>
                                         <th>Joined</th>
                                         <th></th>
                                     </tr>
@@ -214,8 +215,24 @@
                                             <td><strong>@member.DisplayName</strong></td>
                                             <td>@member.Email</td>
                                             <td>@string.Join(", ", member.Roles)</td>
-                                            <td>@member.JoinedAt.ToString("dd MMM yyyy")</td>
                                             <td>
+                                                @if (member.HasLoggedIn)
+                                                {
+                                                    <span class="badge badge-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-muted">Pending sign-in</span>
+                                                }
+                                            </td>
+                                            <td>@member.JoinedAt.ToString("dd MMM yyyy")</td>
+                                            <td class="admin-row-actions">
+                                                @if (!member.HasLoggedIn)
+                                                {
+                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingUserId == member.UserId" @onclick="() => ResendInvitationAsync(member.UserId)">
+                                                        @(_resendingUserId == member.UserId ? "Sending…" : "Resend invite")
+                                                    </button>
+                                                }
                                                 <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == member.UserId" @onclick="() => RemoveStaffAsync(member.UserId)">
                                                     @(_removingUserId == member.UserId ? "Removing…" : "Remove")
                                                 </button>
@@ -247,6 +264,7 @@
     private bool _savingFacility;
     private bool _inviting;
     private Guid? _removingUserId;
+    private Guid? _resendingUserId;
     private string? _error;
     private string? _actionError;
     private string _tab = "overview";
@@ -382,6 +400,22 @@
         }
 
         _inviteEmail = string.Empty;
+        await LoadStaffAsync();
+    }
+
+    private async Task ResendInvitationAsync(Guid userId)
+    {
+        _resendingUserId = userId;
+        _actionError = null;
+        var response = await AdminClinicService.ResendStaffInvitationAsync(ClinicId, userId);
+        _resendingUserId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not resend invitation.";
+            return;
+        }
+
         await LoadStaffAsync();
     }
 

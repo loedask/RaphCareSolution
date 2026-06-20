@@ -9,6 +9,7 @@ public class ClinicStaffMembership : BaseEntity
     public Guid ClinicId { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime JoinedAt { get; set; }
+    public DateTime? LastInvitationSentAt { get; set; }
 
     public Clinic Clinic { get; set; } = null!;
 }

@@ -2,13 +2,16 @@ using MediatR;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Domain.Organization;
 
 namespace RaphCare.Application.Features.Organization.Commands.InviteClinicStaff;
 public sealed class InviteClinicStaffHandler(
     ICurrentUserService currentUserService,
     IClinicStaffMembershipService clinicStaffMembershipService,
     IProfessionalUserLookupService professionalUserLookupService,
-    IUserRoleAssignmentService roleAssignmentService)
+    IUserRoleAssignmentService roleAssignmentService,
+    IClinicStaffInvitationService clinicStaffInvitationService,
+    IRepository<Clinic> clinicRepository)
     : IRequestHandler<InviteClinicStaffCommand, ClinicStaffMemberDto?>
 {
     public async Task<ClinicStaffMemberDto?> Handle(
@@ -45,6 +48,17 @@ public sealed class InviteClinicStaffHandler(
             .EnsureMembershipAsync(user.Id, request.ClinicId, cancellationToken)
             .ConfigureAwait(false);
 
+        var clinic = await clinicRepository.GetByIdAsync(request.ClinicId, cancellationToken).ConfigureAwait(false);
+        var hasLoggedIn = await StaffLoginStatus.HasLoggedInAsync(
+            user.Id, clinic, professionalUserLookupService, cancellationToken).ConfigureAwait(false);
+
+        if (!hasLoggedIn)
+        {
+            await clinicStaffInvitationService
+                .SendInvitationAsync(request.ClinicId, user.Id, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         var roles = await roleAssignmentService
             .GetRoleNamesAsync(user.Id, cancellationToken)
             .ConfigureAwait(false);
@@ -61,7 +75,9 @@ public sealed class InviteClinicStaffHandler(
             DisplayName = user.DisplayName,
             Roles = roles,
             JoinedAt = membership?.JoinedAt ?? DateTime.UtcNow,
-            IsActive = membership?.IsActive ?? true
+            IsActive = membership?.IsActive ?? true,
+            HasLoggedIn = hasLoggedIn,
+            LastInvitationSentAt = membership?.LastInvitationSentAt
         };
     }
 }
