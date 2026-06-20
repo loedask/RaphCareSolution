@@ -5,7 +5,7 @@ using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-public class AppointmentService(IClient client, HttpClient httpClient) : BaseHttpService(client, httpClient), IAppointmentService
+public sealed class AppointmentService(HttpClient httpClient) : BaseHttpService(httpClient), IAppointmentService
 {
     public Task<Response<PagedAppointmentsViewModel>> GetMyAppointmentsAsync(int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default) =>
         GetAsync<PagedAppointmentsViewModel>($"api/patient/appointments?pageNumber={pageNumber}&pageSize={pageSize}", cancellationToken);

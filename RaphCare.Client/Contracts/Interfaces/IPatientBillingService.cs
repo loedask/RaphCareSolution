@@ -3,7 +3,7 @@ using RaphCare.Client.Models.Billing;
 
 namespace RaphCare.Client.Contracts.Interfaces;
 
-/// <summary>Patient billing vertical (plans, payment methods, invoices). Implemented by <see cref="RaphCare.Client.Services.PatientBillingService"/> wrapping generated <c>IClient</c>.</summary>
+/// <summary>Patient billing vertical (plans, payment methods, invoices).</summary>
 public interface IPatientBillingService
 {
     Task<Response<IReadOnlyList<PatientBillingPlanOptionViewModel>>> GetPlanOptionsAsync(CancellationToken cancellationToken = default);

@@ -1,70 +1,56 @@
-using AutoMapper;
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models;
+using RaphCare.Client.Models.Api;
+using RaphCare.Client.Models.Appointments;
 using RaphCare.Client.Models.Patients;
 using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-public class PatientService(IClient client, HttpClient httpClient, IMapper mapper) : BaseHttpService(client, httpClient), IPatientService
+public sealed class PatientService(HttpClient httpClient) : BaseHttpService(httpClient), IPatientService
 {
-    private readonly IMapper _mapper = mapper;
+    public Task<Response<PatientViewModel?>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+        GetAsync<PatientViewModel?>($"api/Patients/{id}", cancellationToken);
 
-    public async Task<Response<PatientViewModel?>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Response<PagedResultViewModel<PatientViewModel>>> GetListAsync(
+        int pageNumber = 1,
+        int pageSize = 20,
+        CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var dto = await Client.GetPatientByIdAsync(id, cancellationToken).ConfigureAwait(false);
-            var viewModel = _mapper.Map<PatientViewModel>(dto);
-            return Response<PatientViewModel?>.Success(viewModel);
-        }
-        catch (RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<PatientViewModel?>.Failure(ex.Message, ex.StatusCode);
-        }
-    }
+        var result = await GetAsync<PagedApiResult<PatientViewModel>>(
+                $"api/Patients?pageNumber={pageNumber}&pageSize={pageSize}",
+                cancellationToken)
+            .ConfigureAwait(false);
 
-    public async Task<Response<PagedResultViewModel<PatientViewModel>>> GetListAsync(int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
-    {
-        try
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PagedResultViewModel<PatientViewModel>>.Failure(
+                result.ErrorMessage ?? "Could not load patients.",
+                result.StatusCode);
+
+        return Response<PagedResultViewModel<PatientViewModel>>.Success(new PagedResultViewModel<PatientViewModel>
         {
-            var dto = await Client.GetPatientsPaginatedAsync(pageNumber, pageSize, cancellationToken).ConfigureAwait(false);
-            var viewModel = _mapper.Map<PagedResultViewModel<PatientViewModel>>(dto);
-            return Response<PagedResultViewModel<PatientViewModel>>.Success(viewModel);
-        }
-        catch (RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<PagedResultViewModel<PatientViewModel>>.Failure(ex.Message, ex.StatusCode);
-        }
+            Items = result.Data.Items ?? Array.Empty<PatientViewModel>(),
+            TotalCount = result.Data.TotalCount,
+            PageNumber = result.Data.PageNumber,
+            PageSize = result.Data.PageSize
+        });
     }
 
     public async Task<Response<Guid>> CreateAsync(CreatePatientRequest request, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var command = _mapper.Map<CreatePatientCommand>(request);
-            var result = await Client.CreatePatientAsync(command, cancellationToken).ConfigureAwait(false);
-            return Response<Guid>.Success(result.Id);
-        }
-        catch (RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<Guid>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await PostAsync<CreatedGuidApiResponse>("api/Patients", request, cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess || result.Data is null)
+            return Response<Guid>.Failure(result.ErrorMessage ?? "Create failed.", result.StatusCode);
+        return Response<Guid>.Success(result.Data.Id);
     }
 
     public async Task<Response<bool>> UpdateAsync(Guid id, UpdatePatientRequest request, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            request.Id = id;
-            var command = _mapper.Map<UpdatePatientCommand>(request);
-            await Client.UpdatePatientAsync(id, command, cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Success(true);
-        }
-        catch (RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
-        }
+        request.Id = id;
+        var result = await PutNoContentAsync($"api/Patients/{id}", request, cancellationToken).ConfigureAwait(false);
+        return result.IsSuccess
+            ? Response<bool>.Success(true)
+            : Response<bool>.Failure(result.ErrorMessage ?? "Update failed.", result.StatusCode);
     }
 }

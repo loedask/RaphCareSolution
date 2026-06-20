@@ -5,70 +5,28 @@ using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-/// <summary>Wraps generated <see cref="IClient"/> patient notification operations and maps to feature view models.</summary>
-public sealed class PatientNotificationsService(IClient client) : IPatientNotificationsService
+public sealed class PatientNotificationsService(HttpClient httpClient) : BaseHttpService(httpClient), IPatientNotificationsService
 {
-    private readonly IClient _client = client;
-
     public async Task<Response<IReadOnlyList<PatientNotificationViewModel>>> GetMyNotificationsAsync(CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var list = await _client.GetMyPatientNotificationsAsync(cancellationToken).ConfigureAwait(false);
-            var mapped = (list ?? Array.Empty<PatientNotificationDto>()).Select(Map).ToList();
-            return Response<IReadOnlyList<PatientNotificationViewModel>>.Success(mapped);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<IReadOnlyList<PatientNotificationViewModel>>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await GetAsync<IReadOnlyList<NotificationDto>>("api/patient/notifications", cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess)
+            return Response<IReadOnlyList<PatientNotificationViewModel>>.Failure(result.ErrorMessage ?? "Could not load notifications.", result.StatusCode);
+
+        var mapped = (result.Data ?? Array.Empty<NotificationDto>()).Select(Map).ToList();
+        return Response<IReadOnlyList<PatientNotificationViewModel>>.Success(mapped);
     }
 
-    public async Task<Response<bool>> MarkReadAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await _client.MarkMyPatientNotificationReadAsync(id, cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Success(true);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
-        }
-    }
+    public Task<Response<bool>> MarkReadAsync(Guid id, CancellationToken cancellationToken = default) =>
+        PutNoContentAsync($"api/patient/notifications/{id}/read", body: null, cancellationToken);
 
-    public async Task<Response<bool>> MarkAllReadAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await _client.MarkAllMyPatientNotificationsReadAsync(cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Success(true);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
-        }
-    }
+    public Task<Response<bool>> MarkAllReadAsync(CancellationToken cancellationToken = default) =>
+        PutNoContentAsync("api/patient/notifications/read-all", body: null, cancellationToken);
 
-    public async Task<Response<bool>> RegisterPushDeviceAsync(RegisterPatientPushDeviceRequest request, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var body = new RegisterMyPatientPushDeviceCommand
-            {
-                DeviceToken = request.DeviceToken,
-                Platform = request.Platform,
-            };
-            await _client.RegisterMyPatientPushDeviceAsync(body, cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Success(true);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
-        }
-    }
+    public Task<Response<bool>> RegisterPushDeviceAsync(RegisterPatientPushDeviceRequest request, CancellationToken cancellationToken = default) =>
+        PutNoContentAsync("api/patient/notifications/push-device", request, cancellationToken);
 
-    private static PatientNotificationViewModel Map(PatientNotificationDto d) =>
+    private static PatientNotificationViewModel Map(NotificationDto d) =>
         new()
         {
             Id = d.Id,
@@ -78,4 +36,14 @@ public sealed class PatientNotificationsService(IClient client) : IPatientNotifi
             IsRead = d.IsRead,
             CreatedAt = d.CreatedAt,
         };
+
+    private sealed class NotificationDto
+    {
+        public Guid Id { get; set; }
+        public string? Title { get; set; }
+        public string? Body { get; set; }
+        public string? Type { get; set; }
+        public bool IsRead { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
 }

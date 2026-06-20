@@ -3,7 +3,7 @@ using RaphCare.Client.Models.Telehealth;
 
 namespace RaphCare.Client.Contracts.Interfaces;
 
-/// <summary>Patient telehealth API (<c>api/patient/telehealth/...</c>) backed by NSwag <see cref="Services.Base.IClient"/>.</summary>
+/// <summary>Patient telehealth API (<c>api/patient/telehealth/...</c>).</summary>
 public interface IPatientTelehealthService
 {
     Task<Response<PagedPatientTeleSessionsViewModel>> GetMySessionsAsync(int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default);

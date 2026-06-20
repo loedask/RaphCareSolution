@@ -1,55 +1,95 @@
-using AutoMapper;
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.Api;
 using RaphCare.Client.Models.Telehealth;
 using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-/// <summary>Patient telehealth API via generated <see cref="IClient"/>.</summary>
-public class PatientTelehealthService(IClient client, IMapper mapper) : IPatientTelehealthService
+public sealed class PatientTelehealthService(HttpClient httpClient) : BaseHttpService(httpClient), IPatientTelehealthService
 {
-    private readonly IClient _client = client ?? throw new ArgumentNullException(nameof(client));
-    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-
-    public async Task<Response<PagedPatientTeleSessionsViewModel>> GetMySessionsAsync(int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+    public async Task<Response<PagedPatientTeleSessionsViewModel>> GetMySessionsAsync(
+        int pageNumber = 1,
+        int pageSize = 20,
+        CancellationToken cancellationToken = default)
     {
-        try
+        var result = await GetAsync<PagedApiResult<TeleSessionListItemDto>>(
+                $"api/patient/telehealth/sessions?pageNumber={pageNumber}&pageSize={pageSize}",
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PagedPatientTeleSessionsViewModel>.Failure(result.ErrorMessage ?? "Could not load sessions.", result.StatusCode);
+
+        var paged = result.Data;
+        return Response<PagedPatientTeleSessionsViewModel>.Success(new PagedPatientTeleSessionsViewModel
         {
-            var dto = await _client.GetMyTeleSessionsAsync(pageNumber, pageSize, cancellationToken).ConfigureAwait(false);
-            var vm = _mapper.Map<PagedPatientTeleSessionsViewModel>(dto);
-            return Response<PagedPatientTeleSessionsViewModel>.Success(vm);
-        }
-        catch (RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<PagedPatientTeleSessionsViewModel>.Failure(ex.Message, ex.StatusCode);
-        }
+            Items = (paged.Items ?? Array.Empty<TeleSessionListItemDto>())
+                .Select(s => new PatientTeleSessionListItemViewModel
+                {
+                    Id = s.Id,
+                    ScheduledStart = s.ScheduledStart,
+                    Status = s.Status ?? string.Empty,
+                    Platform = s.Platform ?? string.Empty
+                })
+                .ToList(),
+            TotalCount = paged.TotalCount,
+            PageNumber = paged.PageNumber,
+            PageSize = paged.PageSize
+        });
     }
 
-    public async Task<Response<TelehealthJoinInfoViewModel?>> GetJoinInfoAsync(Guid teleSessionId, int? uid = null, CancellationToken cancellationToken = default)
+    public async Task<Response<TelehealthJoinInfoViewModel?>> GetJoinInfoAsync(
+        Guid teleSessionId,
+        int? uid = null,
+        CancellationToken cancellationToken = default)
     {
-        try
+        var url = uid.HasValue
+            ? $"api/patient/telehealth/sessions/{teleSessionId}/join-info?uid={uid.Value}"
+            : $"api/patient/telehealth/sessions/{teleSessionId}/join-info";
+
+        var result = await GetAsync<JoinInfoDto>(url, cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess)
+            return Response<TelehealthJoinInfoViewModel?>.Failure(result.ErrorMessage ?? "Could not load join info.", result.StatusCode);
+        if (result.Data is null)
+            return Response<TelehealthJoinInfoViewModel?>.Success(null);
+
+        var d = result.Data;
+        return Response<TelehealthJoinInfoViewModel?>.Success(new TelehealthJoinInfoViewModel
         {
-            var dto = await _client.GetTelehealthJoinInfoAsync(teleSessionId, uid, cancellationToken).ConfigureAwait(false);
-            var vm = _mapper.Map<TelehealthJoinInfoViewModel>(dto);
-            return Response<TelehealthJoinInfoViewModel?>.Success(vm);
-        }
-        catch (RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<TelehealthJoinInfoViewModel?>.Failure(ex.Message, ex.StatusCode);
-        }
+            TeleSessionId = d.TeleSessionId,
+            ChannelName = d.ChannelName ?? string.Empty,
+            Uid = unchecked((uint)d.Uid),
+            AppId = d.AppId,
+            RtcToken = d.RtcToken,
+            TokenExpiresAtUnix = d.TokenExpiresAtUnix,
+            RtcConfigured = d.RtcConfigured,
+            Status = d.Status ?? string.Empty,
+            ScheduledStart = d.ScheduledStart
+        });
     }
 
-    public async Task<Response<bool>> SendSessionSmsAsync(Guid teleSessionId, CancellationToken cancellationToken = default)
+    public Task<Response<bool>> SendSessionSmsAsync(Guid teleSessionId, CancellationToken cancellationToken = default) =>
+        PostNoContentAsync($"api/patient/telehealth/sessions/{teleSessionId}/notify-sms", body: null, cancellationToken);
+
+    private sealed class TeleSessionListItemDto
     {
-        try
-        {
-            await _client.SendTelehealthSessionSmsAsync(teleSessionId, cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Success(true);
-        }
-        catch (RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
-        }
+        public Guid Id { get; set; }
+        public DateTime ScheduledStart { get; set; }
+        public string? Status { get; set; }
+        public string? Platform { get; set; }
+    }
+
+    private sealed class JoinInfoDto
+    {
+        public Guid TeleSessionId { get; set; }
+        public string? ChannelName { get; set; }
+        public int Uid { get; set; }
+        public string? AppId { get; set; }
+        public string? RtcToken { get; set; }
+        public long TokenExpiresAtUnix { get; set; }
+        public bool RtcConfigured { get; set; }
+        public string? Status { get; set; }
+        public DateTime ScheduledStart { get; set; }
     }
 }
