@@ -26,10 +26,22 @@
         </header>
 
         <nav class="admin-detail-tabs" aria-label="Hospital sections">
-            <button type="button" class="admin-detail-tab @(_tab == "overview" ? "active" : "")" @onclick='() => SetTab("overview")'>Overview</button>
-            <button type="button" class="admin-detail-tab @(_tab == "facilities" ? "active" : "")" @onclick='() => SetTab("facilities")'>Facilities</button>
-            <button type="button" class="admin-detail-tab @(_tab == "patients" ? "active" : "")" @onclick='() => SetTab("patients")'>Patients</button>
-            <button type="button" class="admin-detail-tab @(_tab == "staff" ? "active" : "")" @onclick='() => SetTab("staff")'>Staff</button>
+            <button type="button" class="admin-detail-tab @(_tab == "overview" ? "active" : "")" @onclick='() => SetTab("overview")'>
+                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                Overview
+            </button>
+            <button type="button" class="admin-detail-tab @(_tab == "facilities" ? "active" : "")" @onclick='() => SetTab("facilities")'>
+                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+                Facilities
+            </button>
+            <button type="button" class="admin-detail-tab @(_tab == "patients" ? "active" : "")" @onclick='() => SetTab("patients")'>
+                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                Patients
+            </button>
+            <button type="button" class="admin-detail-tab @(_tab == "staff" ? "active" : "")" @onclick='() => SetTab("staff")'>
+                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3.1-6 7-6"/><circle cx="17" cy="9" r="2.5"/><path d="M14 20c0-2.5 2.2-4.5 5-4.5"/></svg>
+                Staff
+            </button>
         </nav>
 
         @if (!string.IsNullOrEmpty(_actionError))
