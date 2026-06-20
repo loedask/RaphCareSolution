@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Identity;
+using RaphCare.Domain.Identity;
 
 namespace RaphCare.Persistence;
 
@@ -37,7 +38,7 @@ public sealed class ProfessionalUserLookupService(IdentityDbContext identityDbCo
         return await identityDbContext.UserRoles
             .Where(ur => ur.UserId == userId)
             .Join(identityDbContext.Roles, ur => ur.RoleId, r => r.Id, (_, r) => r.Name)
-            .AnyAsync(name => name == "Clinician" || name == "Administrator", cancellationToken)
+            .AnyAsync(name => name == RaphCareRoles.Clinician || name == RaphCareRoles.Administrator, cancellationToken)
             .ConfigureAwait(false);
     }
 

@@ -34,7 +34,7 @@ public sealed class RegisterProfessionalWithEmailHandler(
         if (!success || user is null)
             return new EmailAuthResult { Success = false, Error = error ?? "Registration failed." };
 
-        await roleAssignmentService.AssignRoleIfMissingAsync(user.Id, "Clinician", cancellationToken).ConfigureAwait(false);
+        await roleAssignmentService.AssignRoleIfMissingAsync(user.Id, RaphCareRoles.Clinician, cancellationToken).ConfigureAwait(false);
         await clinicStaffPendingInvitationService
             .AcceptPendingInvitationsAsync(user.Id, request.Email, cancellationToken)
             .ConfigureAwait(false);

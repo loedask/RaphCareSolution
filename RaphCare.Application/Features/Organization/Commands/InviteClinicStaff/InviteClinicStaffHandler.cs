@@ -1,7 +1,7 @@
-using MediatR;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Domain.Identity;
 using RaphCare.Domain.Organization;
 
 namespace RaphCare.Application.Features.Organization.Commands.InviteClinicStaff;
@@ -61,7 +61,7 @@ public sealed class InviteClinicStaffHandler(
                 "That account is not a healthcare professional. They must use professional registration.");
 
         await roleAssignmentService
-            .AssignRoleIfMissingAsync(user.Id, "Clinician", cancellationToken)
+            .AssignRoleIfMissingAsync(user.Id, RaphCareRoles.Clinician, cancellationToken)
             .ConfigureAwait(false);
 
         await clinicStaffMembershipService

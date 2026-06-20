@@ -1,6 +1,7 @@
 using MediatR;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Domain.Identity;
 
 namespace RaphCare.Application.Features.Organization.Commands.UpdateClinicStaffRole;
 
@@ -32,7 +33,7 @@ public sealed class UpdateClinicStaffRoleHandler(
         var roles = await roleAssignmentService
             .GetRoleNamesAsync(request.UserId, cancellationToken)
             .ConfigureAwait(false);
-        var isCurrentlyAdministrator = roles.Contains("Administrator", StringComparer.OrdinalIgnoreCase);
+        var isCurrentlyAdministrator = RaphCareRoles.HasAdministratorRole(roles);
 
         if (request.IsAdministrator)
         {
@@ -40,10 +41,10 @@ public sealed class UpdateClinicStaffRoleHandler(
                 return true;
 
             await roleAssignmentService
-                .AssignRoleIfMissingAsync(request.UserId, "Clinician", cancellationToken)
+                .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Clinician, cancellationToken)
                 .ConfigureAwait(false);
             await roleAssignmentService
-                .AssignRoleIfMissingAsync(request.UserId, "Administrator", cancellationToken)
+                .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Administrator, cancellationToken)
                 .ConfigureAwait(false);
             return true;
         }
@@ -56,10 +57,10 @@ public sealed class UpdateClinicStaffRoleHandler(
             throw new BusinessRuleException("At least one other administrator must remain for this hospital.");
 
         await roleAssignmentService
-            .RemoveRoleAsync(request.UserId, "Administrator", cancellationToken)
+            .RemoveRoleAsync(request.UserId, RaphCareRoles.Administrator, cancellationToken)
             .ConfigureAwait(false);
         await roleAssignmentService
-            .AssignRoleIfMissingAsync(request.UserId, "Clinician", cancellationToken)
+            .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Clinician, cancellationToken)
             .ConfigureAwait(false);
         return true;
     }
@@ -78,7 +79,7 @@ public sealed class UpdateClinicStaffRoleHandler(
             var roles = await roleAssignmentService
                 .GetRoleNamesAsync(membership.ApplicationUserId, cancellationToken)
                 .ConfigureAwait(false);
-            if (roles.Contains("Administrator", StringComparer.OrdinalIgnoreCase))
+            if (RaphCareRoles.HasAdministratorRole(roles))
                 return true;
         }
 

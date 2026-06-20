@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Domain.Identity;
 using RaphCare.Domain.Organization;
 
 namespace RaphCare.Application.Features.Organization.Commands.RegisterClinic;
@@ -56,7 +57,7 @@ public sealed class RegisterClinicHandler(
 
         if (currentUserService.CurrentUserId is { } userId)
         {
-            await roleAssignmentService.AssignRoleIfMissingAsync(userId, "Administrator", cancellationToken).ConfigureAwait(false);
+            await roleAssignmentService.AssignRoleIfMissingAsync(userId, RaphCareRoles.Administrator, cancellationToken).ConfigureAwait(false);
             await clinicStaffMembershipService.EnsureMembershipAsync(userId, clinic.Id, cancellationToken).ConfigureAwait(false);
         }
 

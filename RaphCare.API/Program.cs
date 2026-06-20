@@ -8,6 +8,8 @@ using RaphCare.Identity;
 using RaphCare.Infrastructure;
 using RaphCare.Persistence;
 
+using RaphCare.Domain.Identity;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
@@ -23,9 +25,9 @@ builder.Services.AddScoped<IFhirExportAuditLogger, FhirExportAuditLogger>();
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Administrator"));
-    options.AddPolicy("RequireProvider", policy => policy.RequireRole("Administrator", "Clinician"));
-    options.AddPolicy("RequirePatient", policy => policy.RequireRole("Patient", "Administrator", "Clinician"));
+    options.AddPolicy("RequireAdmin", policy => policy.RequireRole(RaphCareRoles.Administrator));
+    options.AddPolicy("RequireProvider", policy => policy.RequireRole(RaphCareRoles.Provider));
+    options.AddPolicy("RequirePatient", policy => policy.RequireRole(RaphCareRoles.PatientPortal));
     options.AddPolicy("RequirePlatformAdmin", policy =>
     {
         policy.RequireAssertion(context =>
@@ -38,7 +40,7 @@ builder.Services.AddAuthorization(options =>
             if (env.IsDevelopment() && config.GetValue("Admin:AllowAnonymousInDevelopment", true))
                 return true;
 
-            return context.User.IsInRole("Administrator");
+            return context.User.IsInRole(RaphCareRoles.Administrator);
         });
     });
 });

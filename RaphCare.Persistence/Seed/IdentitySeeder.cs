@@ -14,9 +14,9 @@ public static class IdentitySeeder
 {
     private static readonly (string Name, string Description)[] DefaultRoles =
     [
-        ("Administrator", "Full system access"),
-        ("Clinician", "Clinical access"),
-        ("Patient", "Patient portal access")
+        (RaphCareRoles.Administrator, "Full system access"),
+        (RaphCareRoles.Clinician, "Clinical access"),
+        (RaphCareRoles.Patient, "Patient portal access")
     ];
 
     private static readonly (string Code, string Name)[] DefaultPermissions =

@@ -1,4 +1,6 @@
+using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Domain.Identity;
 
 namespace RaphCare.Application.Features.Organization;
 
@@ -32,6 +34,6 @@ internal static class AdminClinicAuthorization
             return false;
 
         var roles = await roleAssignmentService.GetRoleNamesAsync(userId, cancellationToken).ConfigureAwait(false);
-        return roles.Contains("Administrator", StringComparer.OrdinalIgnoreCase);
+        return RaphCareRoles.HasAdministratorRole(roles);
     }
 }
