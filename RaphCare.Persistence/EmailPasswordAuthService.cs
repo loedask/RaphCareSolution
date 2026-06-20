@@ -99,7 +99,7 @@ public class EmailPasswordAuthService(
         await _clinicalDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var patientRole = await _identityDbContext.Roles
-            .FirstOrDefaultAsync(r => r.Name == "Patient", cancellationToken)
+            .FirstOrDefaultAsync(r => r.Name == RaphCareRoles.Patient, cancellationToken)
             .ConfigureAwait(false);
         if (patientRole is not null)
         {
@@ -150,7 +150,7 @@ public class EmailPasswordAuthService(
             var hasStaffRole = await _identityDbContext.UserRoles
                 .Where(ur => ur.UserId == user.Id)
                 .Join(_identityDbContext.Roles, ur => ur.RoleId, r => r.Id, (_, r) => r.Name)
-                .AnyAsync(name => name == "Clinician" || name == "Administrator", cancellationToken)
+                .AnyAsync(name => name == RaphCareRoles.Clinician || name == RaphCareRoles.Administrator, cancellationToken)
                 .ConfigureAwait(false);
             if (hasStaffRole)
                 return (false, "This email is registered as a healthcare professional. Use professional sign-in and the clinic portal—not patient sign-in.", null, Guid.Empty);
@@ -207,7 +207,7 @@ public class EmailPasswordAuthService(
         await _identityDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var clinicianRole = await _identityDbContext.Roles
-            .FirstOrDefaultAsync(r => r.Name == "Clinician", cancellationToken)
+            .FirstOrDefaultAsync(r => r.Name == RaphCareRoles.Clinician, cancellationToken)
             .ConfigureAwait(false);
         if (clinicianRole is not null)
         {
@@ -251,7 +251,7 @@ public class EmailPasswordAuthService(
         var hasStaffRole = await _identityDbContext.UserRoles
             .Where(ur => ur.UserId == user.Id)
             .Join(_identityDbContext.Roles, ur => ur.RoleId, r => r.Id, (_, r) => r.Name)
-            .AnyAsync(name => name == "Clinician" || name == "Administrator", cancellationToken)
+            .AnyAsync(name => name == RaphCareRoles.Clinician || name == RaphCareRoles.Administrator, cancellationToken)
             .ConfigureAwait(false);
         if (!hasStaffRole)
             return (false, "This account is not registered as a healthcare professional.", null);

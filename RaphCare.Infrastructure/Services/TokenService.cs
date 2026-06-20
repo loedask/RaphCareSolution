@@ -21,7 +21,7 @@ public class TokenService(IOptions<JwtOptions> options) : ITokenService
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new("patientId", patientId.ToString()),
             new("phone", user.Email ?? string.Empty),
-            new(ClaimTypes.Role, "Patient")
+            new(ClaimTypes.Role, RaphCareRoles.Patient)
         };
 
         var key = CreateSigningKey(_options.Secret);

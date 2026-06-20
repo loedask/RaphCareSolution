@@ -139,7 +139,7 @@ public class IdentityOtpProvisioningService(
 
         // Ensure Patient role is assigned.
         var patientRole = await _identityDbContext.Roles
-            .FirstOrDefaultAsync(r => r.Name == "Patient", cancellationToken);
+            .FirstOrDefaultAsync(r => r.Name == RaphCareRoles.Patient, cancellationToken);
 
         if (patientRole != null)
         {

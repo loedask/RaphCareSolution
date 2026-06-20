@@ -1,3 +1,4 @@
+using MediatR;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;

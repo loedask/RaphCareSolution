@@ -538,7 +538,7 @@
     }
 
     private static bool IsStaffAdministrator(ClinicStaffMember member) =>
-        member.Roles.Any(role => string.Equals(role, "Administrator", StringComparison.OrdinalIgnoreCase));
+        RaphCareRoles.HasAdministratorRole(member.Roles);
 
     private async Task UpdateStaffRoleAsync(Guid userId, bool isAdministrator)
     {
