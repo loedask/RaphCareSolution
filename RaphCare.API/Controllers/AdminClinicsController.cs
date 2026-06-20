@@ -9,10 +9,12 @@ using RaphCare.Application.Features.Organization.Commands.RegisterClinic;
 using RaphCare.Application.Features.Organization.Commands.RemoveClinicStaff;
 using RaphCare.Application.Features.Organization.Commands.ResendClinicStaffInvitation;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminFacility;
+using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinic;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinics;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicStaff;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicPatients;
 
 namespace RaphCare.API.Controllers;
 
@@ -43,6 +45,43 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetAdminClinicByIdQuery { ClinicId = id }, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Update hospital profile fields (name, country, time zone).</summary>
+    [HttpPut("{id:guid}", Name = "UpdateAdminClinic")]
+    [ProducesResponseType(typeof(ClinicDetailDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(
+        Guid id,
+        [FromBody] UpdateAdminClinicRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new UpdateAdminClinicCommand
+            {
+                ClinicId = id,
+                Name = body.Name,
+                Country = body.Country,
+                TimeZone = body.TimeZone
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>List patients with access to this hospital.</summary>
+    [HttpGet("{id:guid}/patients", Name = "GetAdminClinicPatients")]
+    [ProducesResponseType(typeof(PagedResult<AdminClinicPatientListItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPatients(
+        Guid id,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicPatientsQuery { ClinicId = id, PageNumber = pageNumber, PageSize = pageSize },
+            cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 
@@ -126,6 +165,38 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             new ResendClinicStaffInvitationCommand { ClinicId = id, UserId = userId },
             cancellationToken);
         return sent ? NoContent() : NotFound();
+    }
+
+    /// <summary>Resend a pending staff invitation email to someone who has not registered yet.</summary>
+    [HttpPost("{id:guid}/staff/invitations/{invitationId:guid}/resend", Name = "ResendPendingStaffInvitation")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResendPendingInvitation(
+        Guid id,
+        Guid invitationId,
+        CancellationToken cancellationToken)
+    {
+        var sent = await mediator.Send(
+            new ResendPendingStaffInvitationCommand { ClinicId = id, InvitationId = invitationId },
+            cancellationToken);
+        return sent ? NoContent() : NotFound();
+    }
+
+    /// <summary>Cancel a pending staff invitation.</summary>
+    [HttpDelete("{id:guid}/staff/invitations/{invitationId:guid}", Name = "CancelPendingStaffInvitation")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelPendingInvitation(
+        Guid id,
+        Guid invitationId,
+        CancellationToken cancellationToken)
+    {
+        var cancelled = await mediator.Send(
+            new CancelPendingStaffInvitationCommand { ClinicId = id, InvitationId = invitationId },
+            cancellationToken);
+        return cancelled ? NoContent() : NotFound();
     }
 
     /// <summary>Remove a staff member from the hospital.</summary>

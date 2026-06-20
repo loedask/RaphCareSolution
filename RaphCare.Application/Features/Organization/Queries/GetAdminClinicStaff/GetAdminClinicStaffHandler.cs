@@ -11,6 +11,7 @@ public sealed class GetAdminClinicStaffHandler(
     IClinicStaffMembershipService clinicStaffMembershipService,
     IProfessionalUserLookupService professionalUserLookupService,
     IUserRoleAssignmentService roleAssignmentService,
+    IClinicStaffPendingInvitationService clinicStaffPendingInvitationService,
     IRepository<Clinic> clinicRepository)
     : IRequestHandler<GetAdminClinicStaffQuery, IReadOnlyList<ClinicStaffMemberDto>?>
 {
@@ -29,38 +30,58 @@ public sealed class GetAdminClinicStaffHandler(
             .GetStaffMembershipsAsync(request.ClinicId, cancellationToken)
             .ConfigureAwait(false);
 
-        if (memberships.Count == 0)
-            return Array.Empty<ClinicStaffMemberDto>();
-
-        var userIds = memberships.Select(m => m.ApplicationUserId).ToList();
-        var users = await professionalUserLookupService
-            .GetUsersByIdsAsync(userIds, cancellationToken)
+        var pendingInvitations = await clinicStaffPendingInvitationService
+            .GetPendingForClinicAsync(request.ClinicId, cancellationToken)
             .ConfigureAwait(false);
-        var usersById = users.ToDictionary(u => u.Id);
 
         var result = new List<ClinicStaffMemberDto>();
-        foreach (var membership in memberships.Where(m => m.IsActive).OrderBy(m => m.JoinedAt))
+
+        if (memberships.Count > 0)
         {
-            if (!usersById.TryGetValue(membership.ApplicationUserId, out var user))
-                continue;
-
-            var roles = await roleAssignmentService
-                .GetRoleNamesAsync(user.Id, cancellationToken)
+            var userIds = memberships.Select(m => m.ApplicationUserId).ToList();
+            var users = await professionalUserLookupService
+                .GetUsersByIdsAsync(userIds, cancellationToken)
                 .ConfigureAwait(false);
+            var usersById = users.ToDictionary(u => u.Id);
 
-            var hasLoggedIn = await StaffLoginStatus.HasLoggedInAsync(
-                user.Id, clinic, professionalUserLookupService, cancellationToken).ConfigureAwait(false);
+            foreach (var membership in memberships.Where(m => m.IsActive).OrderBy(m => m.JoinedAt))
+            {
+                if (!usersById.TryGetValue(membership.ApplicationUserId, out var user))
+                    continue;
 
+                var roles = await roleAssignmentService
+                    .GetRoleNamesAsync(user.Id, cancellationToken)
+                    .ConfigureAwait(false);
+
+                var hasLoggedIn = await StaffLoginStatus.HasLoggedInAsync(
+                    user.Id, clinic, professionalUserLookupService, cancellationToken).ConfigureAwait(false);
+
+                result.Add(new ClinicStaffMemberDto
+                {
+                    UserId = user.Id,
+                    Email = user.Email,
+                    DisplayName = user.DisplayName,
+                    Roles = roles,
+                    JoinedAt = membership.JoinedAt,
+                    IsActive = membership.IsActive,
+                    HasLoggedIn = hasLoggedIn,
+                    LastInvitationSentAt = membership.LastInvitationSentAt
+                });
+            }
+        }
+
+        foreach (var pending in pendingInvitations)
+        {
             result.Add(new ClinicStaffMemberDto
             {
-                UserId = user.Id,
-                Email = user.Email,
-                DisplayName = user.DisplayName,
-                Roles = roles,
-                JoinedAt = membership.JoinedAt,
-                IsActive = membership.IsActive,
-                HasLoggedIn = hasLoggedIn,
-                LastInvitationSentAt = membership.LastInvitationSentAt
+                InvitationId = pending.InvitationId,
+                IsPendingInvitation = true,
+                Email = pending.Email,
+                DisplayName = pending.Email,
+                JoinedAt = pending.InvitedAt,
+                IsActive = true,
+                HasLoggedIn = false,
+                LastInvitationSentAt = pending.LastInvitationSentAt
             });
         }
 

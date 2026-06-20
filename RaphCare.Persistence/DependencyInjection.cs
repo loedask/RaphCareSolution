@@ -153,6 +153,8 @@ public static class DependencyInjection
         services.AddScoped<IClinicStaffMembershipService, ClinicStaffMembershipService>();
         services.AddScoped<IProfessionalUserLookupService, ProfessionalUserLookupService>();
         services.AddScoped<IClinicStaffInvitationService, ClinicStaffInvitationService>();
+        services.AddScoped<IClinicStaffPendingInvitationService, ClinicStaffPendingInvitationService>();
+        services.AddScoped<IAdminClinicPatientQueryService, AdminClinicPatientQueryService>();
         services.AddScoped<IEmailOtpService, EmailOtpService>();
         services.AddScoped<IOtpService, OtpService>();
         services.AddScoped<IIdentityOtpProvisioningService, IdentityOtpProvisioningService>();

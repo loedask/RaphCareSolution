@@ -56,6 +56,8 @@
 </div>
 
 @code {
+    [SupplyParameterFromQuery(Name = "email")] public string? PrefillEmail { get; set; }
+
     [Inject] private IEmailAuthService EmailAuth { get; set; } = default!;
     [Inject] private IWebAuthService WebAuth { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
@@ -65,6 +67,12 @@
     private bool _sendingCode;
     private string? _error;
     private string? _status;
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrWhiteSpace(PrefillEmail))
+            _model.Email = PrefillEmail.Trim();
+    }
 
     private async Task SendCodeAsync()
     {

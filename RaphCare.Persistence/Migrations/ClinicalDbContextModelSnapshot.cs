@@ -969,6 +969,55 @@ namespace RaphCare.Persistence.Migrations
                     b.ToTable("ClinicStaffMemberships", (string)null);
                 });
 
+            modelBuilder.Entity("RaphCare.Domain.Organization.ClinicStaffInvitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("AcceptedApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid>("InvitedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("InvitedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastInvitationSentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("IsCancelled");
+
+                    b.HasIndex("ClinicId", "Email");
+
+                    b.ToTable("ClinicStaffInvitations", (string)null);
+                });
+
             modelBuilder.Entity("RaphCare.Domain.Organization.Department", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2632,6 +2681,17 @@ namespace RaphCare.Persistence.Migrations
                 {
                     b.HasOne("RaphCare.Domain.Organization.Clinic", "Clinic")
                         .WithMany("StaffMemberships")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Organization.ClinicStaffInvitation", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Organization.Clinic", "Clinic")
+                        .WithMany()
                         .HasForeignKey("ClinicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

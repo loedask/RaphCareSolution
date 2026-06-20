@@ -11,6 +11,7 @@ public sealed class InviteClinicStaffHandler(
     IProfessionalUserLookupService professionalUserLookupService,
     IUserRoleAssignmentService roleAssignmentService,
     IClinicStaffInvitationService clinicStaffInvitationService,
+    IClinicStaffPendingInvitationService clinicStaffPendingInvitationService,
     IRepository<Clinic> clinicRepository)
     : IRequestHandler<InviteClinicStaffCommand, ClinicStaffMemberDto?>
 {
@@ -18,6 +19,9 @@ public sealed class InviteClinicStaffHandler(
         InviteClinicStaffCommand request,
         CancellationToken cancellationToken)
     {
+        if (currentUserService.CurrentUserId is not { } invitedByUserId)
+            throw new ForbiddenAccessException("Only hospital administrators can invite staff.");
+
         if (!await AdminClinicAuthorization.IsClinicAdministratorAsync(
                 currentUserService,
                 clinicStaffMembershipService,
@@ -30,9 +34,25 @@ public sealed class InviteClinicStaffHandler(
         var user = await professionalUserLookupService
             .FindByEmailAsync(request.Email, cancellationToken)
             .ConfigureAwait(false);
+
         if (user is null)
-            throw new BusinessRuleException(
-                "No account found with that email. Ask them to register as a healthcare professional first.");
+        {
+            var pending = await clinicStaffPendingInvitationService
+                .CreateAsync(request.ClinicId, request.Email, invitedByUserId, cancellationToken)
+                .ConfigureAwait(false);
+
+            return new ClinicStaffMemberDto
+            {
+                InvitationId = pending.InvitationId,
+                IsPendingInvitation = true,
+                Email = pending.Email,
+                DisplayName = pending.Email,
+                JoinedAt = pending.InvitedAt,
+                IsActive = true,
+                HasLoggedIn = false,
+                LastInvitationSentAt = pending.LastInvitationSentAt
+            };
+        }
 
         if (!await professionalUserLookupService
                 .IsProfessionalAsync(user.Id, cancellationToken)

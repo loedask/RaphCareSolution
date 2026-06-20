@@ -28,6 +28,7 @@
         <nav class="admin-detail-tabs" aria-label="Hospital sections">
             <button type="button" class="admin-detail-tab @(_tab == "overview" ? "active" : "")" @onclick='() => SetTab("overview")'>Overview</button>
             <button type="button" class="admin-detail-tab @(_tab == "facilities" ? "active" : "")" @onclick='() => SetTab("facilities")'>Facilities</button>
+            <button type="button" class="admin-detail-tab @(_tab == "patients" ? "active" : "")" @onclick='() => SetTab("patients")'>Patients</button>
             <button type="button" class="admin-detail-tab @(_tab == "staff" ? "active" : "")" @onclick='() => SetTab("staff")'>Staff</button>
         </nav>
 
@@ -43,21 +44,36 @@
                     <div>
                         <p class="admin-page-eyebrow">Hospital profile</p>
                         <h1>Organization details</h1>
+                        <p class="admin-page-lead">Update your hospital name, country, and time zone.</p>
                     </div>
                 </header>
                 <div class="admin-page-card-body">
-                    <div class="review-grid">
+                    <div class="admin-inline-form">
+                        <div class="form-grid">
+                            <label>
+                                Hospital name
+                                <input class="form-control" @bind="_clinicForm.Name" />
+                            </label>
+                            <label>
+                                Country
+                                <input class="form-control" @bind="_clinicForm.Country" />
+                            </label>
+                            <label>
+                                Time zone
+                                <input class="form-control" @bind="_clinicForm.TimeZone" placeholder="Africa/Johannesburg" />
+                            </label>
+                        </div>
+                        <div class="admin-form-actions">
+                            <button type="button" class="btn btn-primary" disabled="@_savingClinic" @onclick="SaveClinicAsync">
+                                @(_savingClinic ? "Saving…" : "Save changes")
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="review-grid" style="margin-top: 1.5rem;">
                         <div class="review-item">
                             <span class="review-label">Registration #</span>
                             <span class="review-value">@_detail.RegistrationNumber</span>
-                        </div>
-                        <div class="review-item">
-                            <span class="review-label">Country</span>
-                            <span class="review-value">@_detail.Country</span>
-                        </div>
-                        <div class="review-item">
-                            <span class="review-label">Time zone</span>
-                            <span class="review-value">@_detail.TimeZone</span>
                         </div>
                         <div class="review-item">
                             <span class="review-label">Registered</span>
@@ -163,7 +179,56 @@
                 </div>
             </div>
         }
-        else
+        else if (_tab == "patients")
+        {
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Care recipients</p>
+                        <h1>Patients</h1>
+                        <p class="admin-page-lead">Patients who have access to this hospital.</p>
+                    </div>
+                    <span class="admin-progress-pill">@_patientTotalCount patient@(_patientTotalCount == 1 ? "" : "s")</span>
+                </header>
+                <div class="admin-page-card-body">
+                    @if (_loadingPatients)
+                    {
+                        <p class="text-muted">Loading patients…</p>
+                    }
+                    else if (_patients.Count == 0)
+                    {
+                        <p class="text-muted">No patients linked to this hospital yet.</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Date of birth</th>
+                                        <th>Access</th>
+                                        <th>Granted</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var patient in _patients)
+                                    {
+                                        <tr>
+                                            <td><strong>@patient.FirstName @patient.LastName</strong></td>
+                                            <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
+                                            <td>@patient.AccessType</td>
+                                            <td>@patient.GrantedAt.ToString("dd MMM yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (_tab == "staff")
         {
             <div class="admin-page-card">
                 <header class="admin-page-card-head">
@@ -183,7 +248,7 @@
                                 @(_inviting ? "Inviting…" : "Invite")
                             </button>
                         </div>
-                        <p class="hint">They must already have a RaphCare professional account.</p>
+                        <p class="hint">Invite colleagues by email. If they do not have a RaphCare account yet, they will receive a registration link.</p>
                     </div>
 
                     @if (_loadingStaff)
@@ -216,7 +281,11 @@
                                             <td>@member.Email</td>
                                             <td>@string.Join(", ", member.Roles)</td>
                                             <td>
-                                                @if (member.HasLoggedIn)
+                                                @if (member.IsPendingInvitation)
+                                                {
+                                                    <span class="badge badge-muted">Pending registration</span>
+                                                }
+                                                else if (member.HasLoggedIn)
                                                 {
                                                     <span class="badge badge-success">Active</span>
                                                 }
@@ -227,15 +296,30 @@
                                             </td>
                                             <td>@member.JoinedAt.ToString("dd MMM yyyy")</td>
                                             <td class="admin-row-actions">
-                                                @if (!member.HasLoggedIn)
+                                                @if (member.IsPendingInvitation && member.InvitationId is { } invitationId)
                                                 {
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingUserId == member.UserId" @onclick="() => ResendInvitationAsync(member.UserId)">
-                                                        @(_resendingUserId == member.UserId ? "Sending…" : "Resend invite")
+                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingInvitationId == invitationId" @onclick="() => ResendPendingInvitationAsync(invitationId)">
+                                                        @(_resendingInvitationId == invitationId ? "Sending…" : "Resend invite")
+                                                    </button>
+                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_cancellingInvitationId == invitationId" @onclick="() => CancelPendingInvitationAsync(invitationId)">
+                                                        @(_cancellingInvitationId == invitationId ? "Cancelling…" : "Cancel")
                                                     </button>
                                                 }
-                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == member.UserId" @onclick="() => RemoveStaffAsync(member.UserId)">
-                                                    @(_removingUserId == member.UserId ? "Removing…" : "Remove")
-                                                </button>
+                                                else if (!member.HasLoggedIn && member.UserId is { } userId)
+                                                {
+                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingUserId == userId" @onclick="() => ResendInvitationAsync(userId)">
+                                                        @(_resendingUserId == userId ? "Sending…" : "Resend invite")
+                                                    </button>
+                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == userId" @onclick="() => RemoveStaffAsync(userId)">
+                                                        @(_removingUserId == userId ? "Removing…" : "Remove")
+                                                    </button>
+                                                }
+                                                else if (member.UserId is { } activeUserId)
+                                                {
+                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == activeUserId" @onclick="() => RemoveStaffAsync(activeUserId)">
+                                                        @(_removingUserId == activeUserId ? "Removing…" : "Remove")
+                                                    </button>
+                                                }
                                             </td>
                                         </tr>
                                     }
@@ -261,10 +345,14 @@
 
     private bool _loading = true;
     private bool _loadingStaff;
+    private bool _loadingPatients;
     private bool _savingFacility;
+    private bool _savingClinic;
     private bool _inviting;
     private Guid? _removingUserId;
     private Guid? _resendingUserId;
+    private Guid? _resendingInvitationId;
+    private Guid? _cancellingInvitationId;
     private string? _error;
     private string? _actionError;
     private string _tab = "overview";
@@ -272,8 +360,12 @@
     private Guid? _editingFacilityId;
     private ClinicDetail? _detail;
     private IReadOnlyList<ClinicStaffMember> _staff = Array.Empty<ClinicStaffMember>();
+    private IReadOnlyList<ClinicPatientListItem> _patients = Array.Empty<ClinicPatientListItem>();
+    private int _patientTotalCount;
     private bool _staffLoaded;
+    private bool _patientsLoaded;
     private SaveFacilityRequest _facilityForm = new();
+    private UpdateClinicRequest _clinicForm = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -292,6 +384,7 @@
         {
             _detail = response.Data;
             ResetFacilityForm(_detail.Country);
+            ResetClinicForm(_detail);
             await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail.Name).ConfigureAwait(false);
             return;
         }
@@ -315,12 +408,59 @@
             _actionError = response.ErrorMessage ?? "Could not load staff.";
     }
 
+    private async Task LoadPatientsAsync()
+    {
+        _loadingPatients = true;
+        _actionError = null;
+        var response = await AdminClinicService.GetPatientsAsync(ClinicId);
+        _loadingPatients = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _patients = response.Data.Items;
+            _patientTotalCount = response.Data.TotalCount;
+            _patientsLoaded = true;
+        }
+        else
+            _actionError = response.ErrorMessage ?? "Could not load patients.";
+    }
+
     private async Task SetTab(string tab)
     {
         _tab = tab;
         _actionError = null;
         if (tab == "staff" && !_staffLoaded)
             await LoadStaffAsync();
+        else if (tab == "patients" && !_patientsLoaded)
+            await LoadPatientsAsync();
+    }
+
+    private void ResetClinicForm(ClinicDetail detail)
+    {
+        _clinicForm = new UpdateClinicRequest
+        {
+            Name = detail.Name,
+            Country = detail.Country,
+            TimeZone = detail.TimeZone
+        };
+    }
+
+    private async Task SaveClinicAsync()
+    {
+        _savingClinic = true;
+        _actionError = null;
+        var response = await AdminClinicService.UpdateClinicAsync(ClinicId, _clinicForm);
+        _savingClinic = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _actionError = response.ErrorMessage ?? "Could not update hospital.";
+            return;
+        }
+
+        _detail = response.Data;
+        ResetClinicForm(_detail);
+        await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail.Name).ConfigureAwait(false);
     }
 
     private void ResetFacilityForm(string defaultCountry)
@@ -413,6 +553,38 @@
         if (!response.IsSuccess)
         {
             _actionError = response.ErrorMessage ?? "Could not resend invitation.";
+            return;
+        }
+
+        await LoadStaffAsync();
+    }
+
+    private async Task ResendPendingInvitationAsync(Guid invitationId)
+    {
+        _resendingInvitationId = invitationId;
+        _actionError = null;
+        var response = await AdminClinicService.ResendPendingInvitationAsync(ClinicId, invitationId);
+        _resendingInvitationId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not resend invitation.";
+            return;
+        }
+
+        await LoadStaffAsync();
+    }
+
+    private async Task CancelPendingInvitationAsync(Guid invitationId)
+    {
+        _cancellingInvitationId = invitationId;
+        _actionError = null;
+        var response = await AdminClinicService.CancelPendingInvitationAsync(ClinicId, invitationId);
+        _cancellingInvitationId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not cancel invitation.";
             return;
         }
 

@@ -10,6 +10,7 @@ public sealed class SignInProfessionalWithEmailHandler(
     IEmailService emailService,
     IUserRoleAssignmentService roleAssignmentService,
     ITokenService tokenService,
+    IClinicStaffPendingInvitationService clinicStaffPendingInvitationService,
     IIdentityOtpProvisioningService identityOtpProvisioningService,
     IDateTimeProvider dateTimeProvider) : IRequestHandler<SignInProfessionalWithEmailCommand, EmailAuthResult>
 {
@@ -36,6 +37,11 @@ public sealed class SignInProfessionalWithEmailHandler(
         }
 
         await roleAssignmentService.AssignRoleIfMissingAsync(user.Id, "Clinician", cancellationToken).ConfigureAwait(false);
+
+        await clinicStaffPendingInvitationService
+            .AcceptPendingInvitationsAsync(user.Id, request.Email, cancellationToken)
+            .ConfigureAwait(false);
+
         var roles = await roleAssignmentService.GetRoleNamesAsync(user.Id, cancellationToken).ConfigureAwait(false);
 
         await identityOtpProvisioningService.LogLoginAttemptAsync(new LoginAudit
