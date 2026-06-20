@@ -32,6 +32,7 @@ public sealed class SignInProfessionalWithEmailHandler(
             return new EmailAuthResult { Success = false, Error = "Invalid or expired verification code." };
         }
 
+        await roleAssignmentService.AssignRoleIfMissingAsync(user.Id, "Clinician", cancellationToken).ConfigureAwait(false);
         var roles = await roleAssignmentService.GetRoleNamesAsync(user.Id, cancellationToken).ConfigureAwait(false);
         var token = tokenService.GenerateStaffToken(user, roles);
         return new EmailAuthResult { Success = true, Token = token };

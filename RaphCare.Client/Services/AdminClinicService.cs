@@ -124,7 +124,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             401 when forList =>
                 "Your session expired or is invalid. Sign in again to view hospitals.",
             401 =>
-                "Your session expired or is invalid. Sign in again as a healthcare professional, then retry.",
+                "Your sign-in session expired. Use Sign in and continue below, then tap Register hospital again.",
             403 when forList =>
                 "You don't have permission to view hospitals. Sign in with a healthcare professional account.",
             403 =>

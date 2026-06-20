@@ -15,7 +15,8 @@ public partial class AdminLayout
     {
         var token = await WebAuth.GetTokenAsync().ConfigureAwait(false);
         var kind = await WebAuth.GetAccountKindAsync().ConfigureAwait(false);
-        if (string.IsNullOrWhiteSpace(token) || kind != WebAccountKind.Professional)
+        var sessionValid = await WebAuth.IsSessionValidAsync().ConfigureAwait(false);
+        if (string.IsNullOrWhiteSpace(token) || kind != WebAccountKind.Professional || !sessionValid)
         {
             var returnUrl = Uri.EscapeDataString(Navigation.Uri);
             Navigation.NavigateTo($"/professional/signin?returnUrl={returnUrl}", replace: true);

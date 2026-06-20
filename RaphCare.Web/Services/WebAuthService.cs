@@ -6,6 +6,7 @@ public interface IWebAuthService
 {
     Task<WebAccountKind> GetAccountKindAsync();
     Task<string?> GetTokenAsync();
+    Task<bool> IsSessionValidAsync();
     Task StoreSessionAsync(string token, WebAccountKind kind);
     Task SignOutAsync();
 }
@@ -25,6 +26,9 @@ public sealed class WebAuthService(IJSRuntime js) : IWebAuthService
 
     public Task<string?> GetTokenAsync() =>
         js.InvokeAsync<string?>("raphCareAuth.getToken").AsTask();
+
+    public Task<bool> IsSessionValidAsync() =>
+        js.InvokeAsync<bool>("raphCareAuth.isSessionValid").AsTask();
 
     public Task StoreSessionAsync(string token, WebAccountKind kind)
     {
