@@ -9,7 +9,8 @@ namespace RaphCare.Application.Features.Organization.Queries.GetAdminClinicById;
 public sealed class GetAdminClinicByIdHandler(
     IRepository<Clinic> clinicRepository,
     ICurrentUserService currentUserService,
-    IClinicStaffMembershipService clinicStaffMembershipService)
+    IClinicStaffMembershipService clinicStaffMembershipService,
+    IUserRoleAssignmentService roleAssignmentService)
     : IRequestHandler<GetAdminClinicByIdQuery, ClinicDetailDto?>
 {
     public async Task<ClinicDetailDto?> Handle(GetAdminClinicByIdQuery request, CancellationToken cancellationToken)
@@ -32,27 +33,11 @@ public sealed class GetAdminClinicByIdHandler(
         if (entity is null)
             return null;
 
-        return new ClinicDetailDto
-        {
-            Id = entity.Id,
-            Name = entity.Name,
-            RegistrationNumber = entity.RegistrationNumber,
-            Country = entity.Country,
-            TimeZone = entity.TimeZone,
-            IsActive = entity.IsActive,
-            CreatedAt = entity.CreatedAt,
-            Facilities = entity.Facilities
-                .OrderBy(f => f.Name)
-                .Select(f => new FacilityListItemDto
-                {
-                    Id = f.Id,
-                    Name = f.Name,
-                    Address = f.Address,
-                    City = f.City,
-                    Country = f.Country,
-                    IsVirtual = f.IsVirtual
-                })
-                .ToList()
-        };
+        return await AdminClinicDetailMapper.MapAsync(
+            entity,
+            currentUserService,
+            clinicStaffMembershipService,
+            roleAssignmentService,
+            cancellationToken).ConfigureAwait(false);
     }
 }

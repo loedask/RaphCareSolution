@@ -11,6 +11,7 @@ public partial class AdminLayout
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private IReadOnlyList<(string Label, string Href, bool IsLast)> _breadcrumbs = [];
+    private bool _clinicSwitcherOpen;
 
     protected override async Task OnInitializedAsync()
     {
@@ -26,10 +27,29 @@ public partial class AdminLayout
             return;
         }
 
+        ClinicContext.Changed += OnClinicContextChanged;
         await ClinicContext.InitializeAsync().ConfigureAwait(true);
 
         Navigation.LocationChanged += OnLocationChanged;
         UpdateBreadcrumbs(Navigation.Uri);
+    }
+
+    private void OnClinicContextChanged() => _ = InvokeAsync(StateHasChanged);
+
+    private void ToggleClinicSwitcher() => _clinicSwitcherOpen = !_clinicSwitcherOpen;
+
+    private async Task SwitchClinicAsync(Guid clinicId, string name)
+    {
+        _clinicSwitcherOpen = false;
+        await ClinicContext.SetCurrentClinicAsync(clinicId, name).ConfigureAwait(true);
+
+        var path = new Uri(Navigation.Uri).AbsolutePath.TrimEnd('/');
+        if (path.StartsWith("/admin/hospitals/", StringComparison.Ordinal)
+            && path != "/admin/hospitals/register"
+            && Guid.TryParse(path["/admin/hospitals/".Length..], out _))
+        {
+            Navigation.NavigateTo($"/admin/hospitals/{clinicId}");
+        }
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -70,5 +90,9 @@ public partial class AdminLayout
         Navigation.NavigateTo("/", replace: true);
     }
 
-    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+        ClinicContext.Changed -= OnClinicContextChanged;
+    }
 }

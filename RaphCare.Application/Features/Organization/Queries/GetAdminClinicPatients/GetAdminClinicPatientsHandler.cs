@@ -24,7 +24,7 @@ public sealed class GetAdminClinicPatientsHandler(
         var pageSize = request.PageSize < 1 ? 20 : Math.Min(request.PageSize, 100);
 
         return await adminClinicPatientQueryService
-            .GetPatientsAsync(request.ClinicId, pageNumber, pageSize, cancellationToken)
+            .GetPatientsAsync(request.ClinicId, pageNumber, pageSize, request.Search, cancellationToken)
             .ConfigureAwait(false);
     }
 }

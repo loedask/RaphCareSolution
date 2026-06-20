@@ -203,13 +203,28 @@
                     <span class="admin-progress-pill">@_patientTotalCount patient@(_patientTotalCount == 1 ? "" : "s")</span>
                 </header>
                 <div class="admin-page-card-body">
+                    <div class="admin-table-toolbar">
+                        <div class="claim-form-row">
+                            <input class="form-control"
+                                   @bind="_patientSearch"
+                                   @bind:event="oninput"
+                                   placeholder="Search by name, email, or phone"
+                                   @onkeydown="OnPatientSearchKeyDown" />
+                            <button type="button" class="btn btn-secondary" @onclick="SearchPatientsAsync">Search</button>
+                        </div>
+                    </div>
+
                     @if (_loadingPatients)
                     {
                         <p class="text-muted">Loading patients…</p>
                     }
-                    else if (_patients.Count == 0)
+                    else if (_patientTotalCount == 0 && string.IsNullOrWhiteSpace(_patientSearchApplied))
                     {
                         <p class="text-muted">No patients linked to this hospital yet.</p>
+                    }
+                    else if (_patients.Count == 0)
+                    {
+                        <p class="text-muted">No patients match your search.</p>
                     }
                     else
                     {
@@ -236,6 +251,16 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <div class="admin-pagination">
+                            <span class="admin-pagination-meta">
+                                Page @_patientPageNumber of @_patientPageCount · @_patientTotalCount patient@(_patientTotalCount == 1 ? "" : "s")
+                            </span>
+                            <div class="admin-pagination-actions">
+                                <button type="button" class="btn btn-secondary btn-sm" disabled="@(_patientPageNumber <= 1 || _loadingPatients)" @onclick="PreviousPatientsPageAsync">Previous</button>
+                                <button type="button" class="btn btn-secondary btn-sm" disabled="@(_patientPageNumber >= _patientPageCount || _loadingPatients)" @onclick="NextPatientsPageAsync">Next</button>
+                            </div>
+                        </div>
                     }
                 </div>
             </div>
@@ -252,16 +277,23 @@
                     <span class="admin-progress-pill">@_staff.Count member@(_staff.Count == 1 ? "" : "s")</span>
                 </header>
                 <div class="admin-page-card-body">
-                    <div class="admin-inline-form">
-                        <h3>Invite staff</h3>
-                        <div class="claim-form-row">
-                            <input class="form-control" @bind="_inviteEmail" placeholder="colleague@hospital.com" />
-                            <button type="button" class="btn btn-primary" disabled="@_inviting" @onclick="InviteStaffAsync">
-                                @(_inviting ? "Inviting…" : "Invite")
-                            </button>
+                    @if (_isAdministrator)
+                    {
+                        <div class="admin-inline-form">
+                            <h3>Invite staff</h3>
+                            <div class="claim-form-row">
+                                <input class="form-control" @bind="_inviteEmail" placeholder="colleague@hospital.com" />
+                                <button type="button" class="btn btn-primary" disabled="@_inviting" @onclick="InviteStaffAsync">
+                                    @(_inviting ? "Inviting…" : "Invite")
+                                </button>
+                            </div>
+                            <p class="hint">Invite colleagues by email. If they do not have a RaphCare account yet, they will receive a registration link.</p>
                         </div>
-                        <p class="hint">Invite colleagues by email. If they do not have a RaphCare account yet, they will receive a registration link.</p>
-                    </div>
+                    }
+                    else
+                    {
+                        <p class="hint">Only hospital administrators can invite or manage staff.</p>
+                    }
 
                     @if (_loadingStaff)
                     {
@@ -308,29 +340,45 @@
                                             </td>
                                             <td>@member.JoinedAt.ToString("dd MMM yyyy")</td>
                                             <td class="admin-row-actions">
-                                                @if (member.IsPendingInvitation && member.InvitationId is { } invitationId)
+                                                @if (_isAdministrator)
                                                 {
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingInvitationId == invitationId" @onclick="() => ResendPendingInvitationAsync(invitationId)">
-                                                        @(_resendingInvitationId == invitationId ? "Sending…" : "Resend invite")
-                                                    </button>
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_cancellingInvitationId == invitationId" @onclick="() => CancelPendingInvitationAsync(invitationId)">
-                                                        @(_cancellingInvitationId == invitationId ? "Cancelling…" : "Cancel")
-                                                    </button>
-                                                }
-                                                else if (!member.HasLoggedIn && member.UserId is { } userId)
-                                                {
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingUserId == userId" @onclick="() => ResendInvitationAsync(userId)">
-                                                        @(_resendingUserId == userId ? "Sending…" : "Resend invite")
-                                                    </button>
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == userId" @onclick="() => RemoveStaffAsync(userId)">
-                                                        @(_removingUserId == userId ? "Removing…" : "Remove")
-                                                    </button>
-                                                }
-                                                else if (member.UserId is { } activeUserId)
-                                                {
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == activeUserId" @onclick="() => RemoveStaffAsync(activeUserId)">
-                                                        @(_removingUserId == activeUserId ? "Removing…" : "Remove")
-                                                    </button>
+                                                    @if (member.IsPendingInvitation && member.InvitationId is { } invitationId)
+                                                    {
+                                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingInvitationId == invitationId" @onclick="() => ResendPendingInvitationAsync(invitationId)">
+                                                            @(_resendingInvitationId == invitationId ? "Sending…" : "Resend invite")
+                                                        </button>
+                                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_cancellingInvitationId == invitationId" @onclick="() => CancelPendingInvitationAsync(invitationId)">
+                                                            @(_cancellingInvitationId == invitationId ? "Cancelling…" : "Cancel")
+                                                        </button>
+                                                    }
+                                                    else if (!member.HasLoggedIn && member.UserId is { } userId)
+                                                    {
+                                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingUserId == userId" @onclick="() => ResendInvitationAsync(userId)">
+                                                            @(_resendingUserId == userId ? "Sending…" : "Resend invite")
+                                                        </button>
+                                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == userId" @onclick="() => RemoveStaffAsync(userId)">
+                                                            @(_removingUserId == userId ? "Removing…" : "Remove")
+                                                        </button>
+                                                    }
+                                                    else if (member.UserId is { } activeUserId)
+                                                    {
+                                                        if (IsStaffAdministrator(member))
+                                                        {
+                                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@_updatingRoleUserId == activeUserId" @onclick="() => UpdateStaffRoleAsync(activeUserId, false)">
+                                                                @(_updatingRoleUserId == activeUserId ? "Saving…" : "Remove admin")
+                                                            </button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@_updatingRoleUserId == activeUserId" @onclick="() => UpdateStaffRoleAsync(activeUserId, true)">
+                                                                @(_updatingRoleUserId == activeUserId ? "Saving…" : "Make admin")
+                                                            </button>
+                                                        }
+
+                                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == activeUserId" @onclick="() => RemoveStaffAsync(activeUserId)">
+                                                            @(_removingUserId == activeUserId ? "Removing…" : "Remove")
+                                                        </button>
+                                                    }
                                                 }
                                             </td>
                                         </tr>
@@ -365,10 +413,17 @@
     private Guid? _resendingUserId;
     private Guid? _resendingInvitationId;
     private Guid? _cancellingInvitationId;
+    private Guid? _updatingRoleUserId;
     private string? _error;
     private string? _actionError;
     private string _tab = "overview";
     private string _inviteEmail = string.Empty;
+    private string _patientSearch = string.Empty;
+    private string _patientSearchApplied = string.Empty;
+    private int _patientPageNumber = 1;
+    private const int PatientPageSize = 20;
+    private int _patientPageCount = 1;
+    private bool _isAdministrator;
     private Guid? _editingFacilityId;
     private ClinicDetail? _detail;
     private IReadOnlyList<ClinicStaffMember> _staff = Array.Empty<ClinicStaffMember>();
@@ -395,6 +450,7 @@
         if (response.IsSuccess && response.Data is not null)
         {
             _detail = response.Data;
+            _isAdministrator = _detail.CurrentUserIsAdministrator;
             ResetFacilityForm(_detail.Country);
             ResetClinicForm(_detail);
             await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail.Name).ConfigureAwait(false);
@@ -424,17 +480,80 @@
     {
         _loadingPatients = true;
         _actionError = null;
-        var response = await AdminClinicService.GetPatientsAsync(ClinicId);
+        var response = await AdminClinicService.GetPatientsAsync(
+            ClinicId,
+            _patientPageNumber,
+            PatientPageSize,
+            string.IsNullOrWhiteSpace(_patientSearchApplied) ? null : _patientSearchApplied);
         _loadingPatients = false;
 
         if (response.IsSuccess && response.Data is not null)
         {
             _patients = response.Data.Items;
             _patientTotalCount = response.Data.TotalCount;
+            _patientPageCount = Math.Max(1, (int)Math.Ceiling(_patientTotalCount / (double)PatientPageSize));
+            if (_patientPageNumber > _patientPageCount)
+            {
+                _patientPageNumber = _patientPageCount;
+                await LoadPatientsAsync();
+                return;
+            }
+
             _patientsLoaded = true;
         }
         else
             _actionError = response.ErrorMessage ?? "Could not load patients.";
+    }
+
+    private async Task SearchPatientsAsync()
+    {
+        _patientSearchApplied = _patientSearch.Trim();
+        _patientPageNumber = 1;
+        _patientsLoaded = false;
+        await LoadPatientsAsync();
+    }
+
+    private async Task OnPatientSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+            await SearchPatientsAsync();
+    }
+
+    private async Task PreviousPatientsPageAsync()
+    {
+        if (_patientPageNumber <= 1)
+            return;
+
+        _patientPageNumber--;
+        await LoadPatientsAsync();
+    }
+
+    private async Task NextPatientsPageAsync()
+    {
+        if (_patientPageNumber >= _patientPageCount)
+            return;
+
+        _patientPageNumber++;
+        await LoadPatientsAsync();
+    }
+
+    private static bool IsStaffAdministrator(ClinicStaffMember member) =>
+        member.Roles.Any(role => string.Equals(role, "Administrator", StringComparison.OrdinalIgnoreCase));
+
+    private async Task UpdateStaffRoleAsync(Guid userId, bool isAdministrator)
+    {
+        _updatingRoleUserId = userId;
+        _actionError = null;
+        var response = await AdminClinicService.UpdateStaffRoleAsync(ClinicId, userId, isAdministrator);
+        _updatingRoleUserId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not update staff role.";
+            return;
+        }
+
+        await LoadStaffAsync();
     }
 
     private async Task SetTab(string tab)
@@ -471,6 +590,7 @@
         }
 
         _detail = response.Data;
+        _isAdministrator = _detail.CurrentUserIsAdministrator;
         ResetClinicForm(_detail);
         await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail.Name).ConfigureAwait(false);
     }

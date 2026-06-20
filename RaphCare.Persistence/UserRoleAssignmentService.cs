@@ -40,4 +40,22 @@ public sealed class UserRoleAssignmentService(IdentityDbContext identityDbContex
         });
         await identityDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
+
+    public async Task RemoveRoleAsync(Guid userId, string roleName, CancellationToken cancellationToken = default)
+    {
+        var role = await identityDbContext.Roles
+            .FirstOrDefaultAsync(r => r.Name == roleName, cancellationToken)
+            .ConfigureAwait(false);
+        if (role is null)
+            return;
+
+        var link = await identityDbContext.UserRoles
+            .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == role.Id, cancellationToken)
+            .ConfigureAwait(false);
+        if (link is null)
+            return;
+
+        identityDbContext.UserRoles.Remove(link);
+        await identityDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
 }

@@ -64,7 +64,37 @@
                     <span class="admin-search-icon" aria-hidden="true">⌕</span>
                     <input type="search" placeholder="Search hospitals, facilities…" disabled />
                 </label>
-                @if (!string.IsNullOrWhiteSpace(ClinicContext.CurrentClinicName))
+                @if (ClinicContext.MyClinics.Count > 1)
+                {
+                    <div class="admin-clinic-switcher">
+                        <button type="button"
+                                class="admin-clinic-switcher-trigger @(_clinicSwitcherOpen ? "open" : "")"
+                                aria-haspopup="listbox"
+                                aria-expanded="@_clinicSwitcherOpen"
+                                @onclick="ToggleClinicSwitcher">
+                            <span class="admin-clinic-switcher-icon" aria-hidden="true">⌂</span>
+                            <span class="admin-clinic-switcher-label">@(ClinicContext.CurrentClinicName ?? "Select hospital")</span>
+                            <span class="admin-clinic-switcher-caret" aria-hidden="true">▾</span>
+                        </button>
+                        @if (_clinicSwitcherOpen)
+                        {
+                            <div class="admin-clinic-switcher-menu" role="listbox" aria-label="Switch hospital">
+                                @foreach (var clinic in ClinicContext.MyClinics)
+                                {
+                                    <button type="button"
+                                            class="admin-clinic-switcher-item @(ClinicContext.CurrentClinicId == clinic.Id ? "active" : "")"
+                                            role="option"
+                                            aria-selected="@(ClinicContext.CurrentClinicId == clinic.Id)"
+                                            @onclick="() => SwitchClinicAsync(clinic.Id, clinic.Name)">
+                                        <span class="admin-clinic-switcher-item-name">@clinic.Name</span>
+                                        <span class="admin-clinic-switcher-item-meta">@clinic.RegistrationNumber</span>
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else if (!string.IsNullOrWhiteSpace(ClinicContext.CurrentClinicName))
                 {
                     <span class="admin-pill admin-pill-clinic" title="Active hospital context">@ClinicContext.CurrentClinicName</span>
                 }

@@ -9,5 +9,6 @@ public interface IAdminClinicPatientQueryService
         Guid clinicId,
         int pageNumber,
         int pageSize,
+        string? search = null,
         CancellationToken cancellationToken = default);
 }

@@ -9,6 +9,7 @@ public interface IClinicContextService
     Guid? CurrentClinicId { get; }
     string? CurrentClinicName { get; }
     IReadOnlyList<ClinicListItem> MyClinics { get; }
+    event Action? Changed;
     Task InitializeAsync();
     Task SetCurrentClinicAsync(Guid clinicId, string? name = null);
     Task TryClaimPendingClinicAsync();
@@ -19,6 +20,8 @@ public sealed class ClinicContextService(
     IJSRuntime js) : IClinicContextService
 {
     private bool _initialized;
+
+    public event Action? Changed;
 
     public Guid? CurrentClinicId { get; private set; }
     public string? CurrentClinicName { get; private set; }
@@ -50,6 +53,7 @@ public sealed class ClinicContextService(
             await SetCurrentClinicAsync(MyClinics[0].Id, MyClinics[0].Name).ConfigureAwait(true);
 
         _initialized = true;
+        Changed?.Invoke();
     }
 
     public async Task SetCurrentClinicAsync(Guid clinicId, string? name = null)
@@ -57,6 +61,7 @@ public sealed class ClinicContextService(
         CurrentClinicId = clinicId;
         CurrentClinicName = name ?? MyClinics.FirstOrDefault(c => c.Id == clinicId)?.Name;
         await js.InvokeVoidAsync("raphCareClinic.setClinicId", clinicId.ToString()).ConfigureAwait(true);
+        Changed?.Invoke();
     }
 
     public async Task TryClaimPendingClinicAsync()

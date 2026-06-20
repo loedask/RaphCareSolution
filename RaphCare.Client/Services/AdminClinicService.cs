@@ -129,13 +129,18 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         Guid clinicId,
         int pageNumber = 1,
         int pageSize = 20,
+        string? search = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
             var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var query = $"api/admin/clinics/{clinicId}/patients?pageNumber={pageNumber}&pageSize={pageSize}";
+            if (!string.IsNullOrWhiteSpace(search))
+                query += $"&search={Uri.EscapeDataString(search.Trim())}";
+
             using var response = await client
-                .GetAsync($"api/admin/clinics/{clinicId}/patients?pageNumber={pageNumber}&pageSize={pageSize}", cancellationToken)
+                .GetAsync(query, cancellationToken)
                 .ConfigureAwait(false);
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -462,6 +467,37 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<bool>> UpdateStaffRoleAsync(
+        Guid clinicId,
+        Guid userId,
+        bool isAdministrator,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/staff/{userId}/role", new { isAdministrator }, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<bool>.Success(true);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Staff member not found.", 404);
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                error = "Only hospital administrators can change staff roles.";
+            return Response<bool>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<FacilityListItem>> CreateFacilityAsync(
         Guid clinicId,
         SaveFacilityRequest request,
@@ -614,6 +650,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         TimeZone = dto.TimeZone,
         IsActive = dto.IsActive,
         CreatedAt = dto.CreatedAt,
+        CurrentUserIsAdministrator = dto.CurrentUserIsAdministrator,
         Facilities = dto.Facilities?
             .Select(f => new FacilityListItem
             {
@@ -653,6 +690,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string TimeZone { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool CurrentUserIsAdministrator { get; set; }
         public List<FacilityListItemDto>? Facilities { get; set; }
     }
 

@@ -12,6 +12,7 @@ public sealed class AdminClinicPatientQueryService(ClinicalDbContext clinicalDbC
         Guid clinicId,
         int pageNumber,
         int pageSize,
+        string? search = null,
         CancellationToken cancellationToken = default)
     {
         var query = clinicalDbContext.PatientClinicAccesses
@@ -21,7 +22,19 @@ public sealed class AdminClinicPatientQueryService(ClinicalDbContext clinicalDbC
                 clinicalDbContext.Patients.AsNoTracking().Where(p => !p.IsDeleted),
                 access => access.PatientId,
                 patient => patient.Id,
-                (access, patient) => new { access, patient })
+                (access, patient) => new { access, patient });
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            query = query.Where(x =>
+                x.patient.FirstName.Contains(term)
+                || x.patient.LastName.Contains(term)
+                || (x.patient.Email != null && x.patient.Email.Contains(term))
+                || (x.patient.PhoneNumber != null && x.patient.PhoneNumber.Contains(term)));
+        }
+
+        query = query
             .OrderBy(x => x.patient.LastName)
             .ThenBy(x => x.patient.FirstName);
 

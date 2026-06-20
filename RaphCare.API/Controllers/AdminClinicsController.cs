@@ -10,6 +10,7 @@ using RaphCare.Application.Features.Organization.Commands.RemoveClinicStaff;
 using RaphCare.Application.Features.Organization.Commands.ResendClinicStaffInvitation;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinic;
+using RaphCare.Application.Features.Organization.Commands.UpdateClinicStaffRole;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinics;
@@ -77,10 +78,11 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
         Guid id,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 20,
+        [FromQuery] string? search = null,
         CancellationToken cancellationToken = default)
     {
         var result = await mediator.Send(
-            new GetAdminClinicPatientsQuery { ClinicId = id, PageNumber = pageNumber, PageSize = pageSize },
+            new GetAdminClinicPatientsQuery { ClinicId = id, PageNumber = pageNumber, PageSize = pageSize, Search = search },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
@@ -151,6 +153,29 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             new InviteClinicStaffCommand { ClinicId = id, Email = body.Email },
             cancellationToken);
         return CreatedAtAction(nameof(GetStaff), new { id }, result);
+    }
+
+    /// <summary>Promote or demote a staff member's administrator role for the clinic portal.</summary>
+    [HttpPut("{id:guid}/staff/{userId:guid}/role", Name = "UpdateClinicStaffRole")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateStaffRole(
+        Guid id,
+        Guid userId,
+        [FromBody] UpdateClinicStaffRoleRequest body,
+        CancellationToken cancellationToken)
+    {
+        var updated = await mediator.Send(
+            new UpdateClinicStaffRoleCommand
+            {
+                ClinicId = id,
+                UserId = userId,
+                IsAdministrator = body.IsAdministrator
+            },
+            cancellationToken);
+        return updated ? NoContent() : NotFound();
     }
 
     /// <summary>Resend the clinic portal invitation email to a staff member who has not signed in yet.</summary>
