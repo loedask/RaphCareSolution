@@ -259,5 +259,33 @@ public class EmailPasswordAuthService(
         return (true, null, user);
     }
 
+    public async Task<(bool Success, string? Error)> ChangePasswordAsync(
+        Guid userId,
+        string currentPassword,
+        string newPassword,
+        CancellationToken cancellationToken = default)
+    {
+        if (userId == Guid.Empty)
+            return (false, "User is required.");
+
+        var credential = await _identityDbContext.EmailPasswordCredentials
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken)
+            .ConfigureAwait(false);
+        if (credential is null)
+            return (false, "This account uses Microsoft sign-in. Use the Microsoft password reset option.");
+
+        var verification = _passwordHasher.VerifyHashedPassword(credential.Email, credential.PasswordHash, currentPassword);
+        if (verification == PasswordVerificationResult.Failed)
+            return (false, "Current password is incorrect.");
+
+        if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 8)
+            return (false, "New password must be at least 8 characters.");
+
+        credential.PasswordHash = _passwordHasher.HashPassword(credential.Email, newPassword);
+        credential.UpdatedAt = _clock.UtcNow;
+        await _identityDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return (true, null);
+    }
+
     private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
 }

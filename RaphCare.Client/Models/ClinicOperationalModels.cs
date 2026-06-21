@@ -72,3 +72,24 @@ public sealed class CreateProviderScheduleRequest
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
 }
+
+public sealed class BookClinicAppointmentRequest
+{
+    public Guid PatientId { get; set; }
+    public Guid ProviderId { get; set; }
+    public DateTime ScheduledStart { get; set; }
+    public DateTime ScheduledEnd { get; set; }
+    public string Type { get; set; } = "InPerson";
+    public string? Reason { get; set; }
+}
+
+public sealed class ClinicPatientAppointmentSummary
+{
+    public Guid Id { get; set; }
+    public DateTime ScheduledStart { get; set; }
+    public DateTime ScheduledEnd { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+    public string ProviderName { get; set; } = string.Empty;
+}

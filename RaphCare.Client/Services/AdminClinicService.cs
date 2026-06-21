@@ -842,6 +842,67 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicAppointmentListItem>> BookAppointmentAsync(
+        Guid clinicId,
+        BookClinicAppointmentRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/appointments", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can book appointments.";
+                return Response<ClinicAppointmentListItem>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<AppointmentListItemDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicAppointmentListItem>.Failure("Could not book appointment.");
+
+            return Response<ClinicAppointmentListItem>.Success(MapAppointment(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicAppointmentListItem>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<bool>> RevokePatientAccessAsync(
+        Guid clinicId,
+        Guid patientId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .DeleteAsync($"api/admin/clinics/{clinicId}/patients/{patientId}", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<bool>.Success(true);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Patient not found or access already revoked.", 404);
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                error = "Only hospital administrators can revoke patient access.";
+            return Response<bool>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     private static ClinicStaffMember MapStaff(ClinicStaffMemberDto dto) => new()
     {
         UserId = dto.UserId,
@@ -947,7 +1008,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         GrantedAt = dto.GrantedAt,
         GrantedByRule = dto.GrantedByRule,
         Notes = dto.Notes,
-        RecentVisits = dto.RecentVisits?
+            RecentVisits = dto.RecentVisits?
             .Select(v => new ClinicPatientVisitSummary
             {
                 Id = v.Id,
@@ -956,6 +1017,18 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 VisitType = v.VisitType,
                 Status = v.Status,
                 Summary = v.Summary
+            })
+            .ToList() ?? [],
+            Appointments = dto.Appointments?
+            .Select(a => new ClinicPatientAppointmentSummary
+            {
+                Id = a.Id,
+                ScheduledStart = a.ScheduledStart,
+                ScheduledEnd = a.ScheduledEnd,
+                Type = a.Type,
+                Status = a.Status,
+                Reason = a.Reason,
+                ProviderName = a.ProviderName
             })
             .ToList() ?? []
     };
@@ -1124,6 +1197,18 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string GrantedByRule { get; set; } = string.Empty;
         public string? Notes { get; set; }
         public List<PatientVisitDto>? RecentVisits { get; set; }
+        public List<PatientAppointmentDto>? Appointments { get; set; }
+    }
+
+    private sealed class PatientAppointmentDto
+    {
+        public Guid Id { get; set; }
+        public DateTime ScheduledStart { get; set; }
+        public DateTime ScheduledEnd { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string? Reason { get; set; }
+        public string ProviderName { get; set; } = string.Empty;
     }
 
     private sealed class PatientVisitDto

@@ -57,4 +57,7 @@ public interface IAuthService
     /// True if the user has a valid stored session (token present and not expired).
     /// </summary>
     Task<bool> IsAuthenticatedAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>Returns how the active session was created (email/password API vs Entra MSAL).</summary>
+    Task<AuthAccountKind> GetAccountKindAsync(CancellationToken cancellationToken = default);
 }

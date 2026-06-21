@@ -178,5 +178,20 @@ public class PatientClinicAccessService(
 
         await _clinicalDbContext.SaveChangesAsync(ct).ConfigureAwait(false);
     }
+
+    public async Task RevokeClinicAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct)
+    {
+        var existing = await _clinicalDbContext.PatientClinicAccesses
+            .FirstOrDefaultAsync(a => a.PatientId == patientId && a.ClinicId == clinicId && a.IsActive, ct)
+            .ConfigureAwait(false);
+
+        if (existing is null)
+            return;
+
+        existing.IsActive = false;
+        existing.LastValidatedAt = _clock.UtcNow;
+        _clinicalDbContext.PatientClinicAccesses.Update(existing);
+        await _clinicalDbContext.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
 }
 

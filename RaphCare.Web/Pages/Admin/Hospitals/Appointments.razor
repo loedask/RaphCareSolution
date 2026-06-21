@@ -16,6 +16,70 @@
     {
         <div class="alert alert-error">@_error</div>
     }
+    @if (!string.IsNullOrEmpty(_success))
+    {
+        <div class="alert alert-success">@_success</div>
+    }
+
+    @if (_isAdministrator)
+    {
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Scheduling</p>
+                    <h2>Book appointment</h2>
+                </div>
+            </header>
+            <div class="admin-page-card-body">
+                <div class="form-grid">
+                    <label>
+                        Patient
+                        <select class="form-control" @bind="_bookPatientId">
+                            <option value="">Select patient…</option>
+                            @foreach (var patient in _patients)
+                            {
+                                <option value="@patient.PatientId">@patient.FirstName @patient.LastName</option>
+                            }
+                        </select>
+                    </label>
+                    <label>
+                        Provider
+                        <select class="form-control" @bind="_bookProviderId">
+                            <option value="">Select provider…</option>
+                            @foreach (var provider in _providers)
+                            {
+                                <option value="@provider.ProviderId">@provider.DisplayName</option>
+                            }
+                        </select>
+                    </label>
+                    <label>
+                        Type
+                        <select class="form-control" @bind="_bookType">
+                            <option value="InPerson">In person</option>
+                            <option value="Telemedicine">Telemedicine</option>
+                        </select>
+                    </label>
+                    <label>
+                        Start (UTC)
+                        <input class="form-control" type="datetime-local" @bind="_scheduledStart" @bind:format="yyyy-MM-ddTHH:mm" />
+                    </label>
+                    <label>
+                        End (UTC)
+                        <input class="form-control" type="datetime-local" @bind="_scheduledEnd" @bind:format="yyyy-MM-ddTHH:mm" />
+                    </label>
+                    <label>
+                        Reason
+                        <input class="form-control" @bind="_bookReason" placeholder="Optional" />
+                    </label>
+                </div>
+                <div class="admin-page-actions">
+                    <button type="button" class="btn btn-primary" disabled="@_booking" @onclick="BookAppointmentAsync">
+                        @(_booking ? "Booking…" : "Book appointment")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
 
     <div class="admin-page-card">
         <div class="admin-page-card-body">
@@ -84,7 +148,7 @@
     </div>
 
     <div class="admin-page-actions">
-        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId?tab=overview">← Back to hospital</a>
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId?tab=appointments">← Back to hospital</a>
     </div>
 </section>
 
@@ -95,14 +159,25 @@
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private bool _loading = true;
+    private bool _booking;
+    private bool _isAdministrator;
     private string? _error;
+    private string? _success;
     private string _clinicName = "this hospital";
     private string _rangeFilter = "upcoming";
+    private string _bookPatientId = string.Empty;
+    private string _bookProviderId = string.Empty;
+    private string _bookType = "InPerson";
+    private string _bookReason = string.Empty;
+    private DateTime _scheduledStart = DateTime.UtcNow.Date.AddHours(9);
+    private DateTime _scheduledEnd = DateTime.UtcNow.Date.AddHours(9).AddMinutes(30);
     private int _pageNumber = 1;
     private const int PageSize = 20;
     private int _pageCount = 1;
     private int _totalCount;
     private IReadOnlyList<ClinicAppointmentListItem> _appointments = Array.Empty<ClinicAppointmentListItem>();
+    private IReadOnlyList<ClinicPatientListItem> _patients = Array.Empty<ClinicPatientListItem>();
+    private IReadOnlyList<ClinicProviderListItem> _providers = Array.Empty<ClinicProviderListItem>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,9 +186,67 @@
         if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
         {
             _clinicName = clinicResponse.Data.Name;
+            _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
+        if (_isAdministrator)
+            await LoadBookFormDataAsync();
+
+        await LoadAppointmentsAsync();
+    }
+
+    private async Task LoadBookFormDataAsync()
+    {
+        var patientsTask = AdminClinicService.GetPatientsAsync(ClinicId, 1, 100);
+        var providersTask = AdminClinicService.GetProvidersAsync(ClinicId);
+        await Task.WhenAll(patientsTask, providersTask).ConfigureAwait(false);
+
+        if (patientsTask.Result.IsSuccess && patientsTask.Result.Data is not null)
+            _patients = patientsTask.Result.Data.Items;
+
+        if (providersTask.Result.IsSuccess && providersTask.Result.Data is not null)
+            _providers = providersTask.Result.Data;
+    }
+
+    private async Task BookAppointmentAsync()
+    {
+        if (!Guid.TryParse(_bookPatientId, out var patientId) || !Guid.TryParse(_bookProviderId, out var providerId))
+        {
+            _error = "Select a patient and provider.";
+            return;
+        }
+
+        if (_scheduledEnd <= _scheduledStart)
+        {
+            _error = "End time must be after start time.";
+            return;
+        }
+
+        _booking = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.BookAppointmentAsync(ClinicId, new BookClinicAppointmentRequest
+        {
+            PatientId = patientId,
+            ProviderId = providerId,
+            ScheduledStart = DateTime.SpecifyKind(_scheduledStart, DateTimeKind.Utc),
+            ScheduledEnd = DateTime.SpecifyKind(_scheduledEnd, DateTimeKind.Utc),
+            Type = _bookType,
+            Reason = string.IsNullOrWhiteSpace(_bookReason) ? null : _bookReason.Trim()
+        });
+        _booking = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not book appointment.";
+            return;
+        }
+
+        _success = "Appointment booked.";
+        _bookReason = string.Empty;
+        _pageNumber = 1;
+        _rangeFilter = "upcoming";
         await LoadAppointmentsAsync();
     }
 

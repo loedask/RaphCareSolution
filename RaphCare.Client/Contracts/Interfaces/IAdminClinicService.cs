@@ -31,4 +31,6 @@ public interface IAdminClinicService
     Task<Response<ClinicProviderSchedule>> CreateProviderScheduleAsync(Guid clinicId, Guid providerId, CreateProviderScheduleRequest request, CancellationToken cancellationToken = default);
     Task<Response<bool>> DeleteProviderScheduleAsync(Guid clinicId, Guid providerId, Guid scheduleId, CancellationToken cancellationToken = default);
     Task<Response<PagedClinicAppointments>> GetAppointmentsAsync(Guid clinicId, int pageNumber = 1, int pageSize = 20, DateTime? fromUtc = null, DateTime? toUtc = null, string? status = null, CancellationToken cancellationToken = default);
+    Task<Response<ClinicAppointmentListItem>> BookAppointmentAsync(Guid clinicId, BookClinicAppointmentRequest request, CancellationToken cancellationToken = default);
+    Task<Response<bool>> RevokePatientAccessAsync(Guid clinicId, Guid patientId, CancellationToken cancellationToken = default);
 }

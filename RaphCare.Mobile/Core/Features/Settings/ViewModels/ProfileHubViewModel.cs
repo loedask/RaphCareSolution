@@ -19,14 +19,21 @@ public sealed class ProfileHubViewModel : BaseViewModel
 {
     private readonly IAuthService _auth;
     private readonly IPatientProfileService _profileApi;
+    private readonly IPatientEmergencyContactsService _emergencyContactsApi;
     private readonly ILocalPatientProfileStore _localProfile;
+    private int _emergencyContactCount;
     private string _displayName = string.Empty;
     private string _emailLine = string.Empty;
 
-    public ProfileHubViewModel(IAuthService auth, IPatientProfileService profileApi, ILocalPatientProfileStore localProfile)
+    public ProfileHubViewModel(
+        IAuthService auth,
+        IPatientProfileService profileApi,
+        IPatientEmergencyContactsService emergencyContactsApi,
+        ILocalPatientProfileStore localProfile)
     {
         _auth = auth ?? throw new ArgumentNullException(nameof(auth));
         _profileApi = profileApi ?? throw new ArgumentNullException(nameof(profileApi));
+        _emergencyContactsApi = emergencyContactsApi ?? throw new ArgumentNullException(nameof(emergencyContactsApi));
         _localProfile = localProfile ?? throw new ArgumentNullException(nameof(localProfile));
 
         Title = T("ProfileHubTitle");
@@ -68,7 +75,15 @@ public sealed class ProfileHubViewModel : BaseViewModel
 
     public async Task LoadAsync()
     {
+        var contactsTask = _emergencyContactsApi.GetMyEmergencyContactsAsync(CancellationToken.None);
         var response = await _profileApi.GetMyProfileAsync(CancellationToken.None).ConfigureAwait(false);
+
+        var contactsResponse = await contactsTask.ConfigureAwait(false);
+        if (contactsResponse.IsSuccess && contactsResponse.Data is not null)
+            _emergencyContactCount = contactsResponse.Data.Count;
+        else
+            _emergencyContactCount = _localProfile.GetEmergencyContacts().Count;
+
         if (response.IsSuccess && response.Data is { } data)
         {
             _localProfile.FirstName = data.FirstName;
@@ -253,7 +268,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
 
     private string EmergencyContactsSubtitle()
     {
-        var count = _localProfile.GetEmergencyContacts().Count;
+        var count = _emergencyContactCount;
         return count == 0
             ? T("ProfileEmergencyContactsHint")
             : string.Format(CultureInfo.CurrentCulture, T("ProfileEmergencyContactsCountFormat"), count);

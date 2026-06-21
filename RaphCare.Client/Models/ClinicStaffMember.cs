@@ -54,6 +54,7 @@ public sealed class ClinicPatientDetail
     public string GrantedByRule { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public IReadOnlyList<ClinicPatientVisitSummary> RecentVisits { get; set; } = Array.Empty<ClinicPatientVisitSummary>();
+    public IReadOnlyList<ClinicPatientAppointmentSummary> Appointments { get; set; } = Array.Empty<ClinicPatientAppointmentSummary>();
 }
 
 public sealed class ClinicPatientVisitSummary

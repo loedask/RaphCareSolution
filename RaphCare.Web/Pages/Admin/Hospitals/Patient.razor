@@ -1,5 +1,6 @@
 @page "/admin/hospitals/{ClinicId:guid}/patients/{PatientId:guid}"
 @layout AdminLayout
+@inject NavigationManager Navigation
 
 <PageTitle>@(_patient is null ? "Patient" : $"{_patient.FirstName} {_patient.LastName}") — RaphCare Admin</PageTitle>
 
@@ -22,6 +23,11 @@
             </div>
             <span class="badge badge-success">@_patient.AccessType</span>
         </header>
+
+        @if (!string.IsNullOrEmpty(_actionError))
+        {
+            <div class="alert alert-error">@_actionError</div>
+        }
 
         <div class="admin-page-card">
             <header class="admin-page-card-head">
@@ -77,6 +83,59 @@
                         </div>
                     }
                 </dl>
+                @if (_isAdministrator)
+                {
+                    <div class="admin-page-actions">
+                        <button type="button" class="btn btn-ghost" disabled="@_revoking" @onclick="RevokeAccessAsync">
+                            @(_revoking ? "Revoking…" : "Revoke hospital access")
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Scheduling</p>
+                    <h2>Appointments</h2>
+                    <p class="admin-page-lead">Bookings at this hospital.</p>
+                </div>
+                <span class="admin-progress-pill">@_patient.Appointments.Count appointment@(_patient.Appointments.Count == 1 ? "" : "s")</span>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_patient.Appointments.Count == 0)
+                {
+                    <p class="text-muted">No appointments recorded yet.</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Provider</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var appt in _patient.Appointments)
+                                {
+                                    <tr>
+                                        <td>@appt.ScheduledStart.ToString("dd MMM yyyy HH:mm")</td>
+                                        <td>@appt.ProviderName</td>
+                                        <td>@appt.Type</td>
+                                        <td>@appt.Status</td>
+                                        <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? "—" : appt.Reason)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
 
@@ -137,7 +196,10 @@
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private bool _loading = true;
+    private bool _revoking;
+    private bool _isAdministrator;
     private string? _error;
+    private string? _actionError;
     private string _clinicName = "this hospital";
     private ClinicPatientDetail? _patient;
 
@@ -152,6 +214,7 @@
         if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
         {
             _clinicName = clinicResponse.Data.Name;
+            _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
@@ -164,5 +227,21 @@
             _patient = response.Data;
         else
             _error = response.ErrorMessage ?? "Could not load patient.";
+    }
+
+    private async Task RevokeAccessAsync()
+    {
+        _revoking = true;
+        _actionError = null;
+        var response = await AdminClinicService.RevokePatientAccessAsync(ClinicId, PatientId);
+        _revoking = false;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not revoke access.";
+            return;
+        }
+
+        Navigation.NavigateTo(BackUrl);
     }
 }

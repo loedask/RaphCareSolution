@@ -44,6 +44,9 @@ public class EntraAuthService : IAuthService
 
     private const string AccessTokenKey = "access_token";
     private const string ExpiresOnKey = "expires_on";
+    private const string AuthProviderKey = "auth_provider";
+    private const string AuthProviderEmail = "email";
+    private const string AuthProviderEntra = "entra";
 
     private readonly IPublicClientApplication? _msalClient;
     private readonly EntraAuthOptions _options;
@@ -218,6 +221,7 @@ public class EntraAuthService : IAuthService
     {
         await SecureStorage.Default.SetAsync(AccessTokenKey, accessToken).ConfigureAwait(false);
         await SecureStorage.Default.SetAsync(ExpiresOnKey, expiresOnUtc.ToString("O")).ConfigureAwait(false);
+        await SecureStorage.Default.SetAsync(AuthProviderKey, AuthProviderEmail).ConfigureAwait(false);
     }
 
     public async Task SignOutAsync(CancellationToken cancellationToken = default)
@@ -231,6 +235,7 @@ public class EntraAuthService : IAuthService
 
         SecureStorage.Default.Remove(AccessTokenKey);
         SecureStorage.Default.Remove(ExpiresOnKey);
+        SecureStorage.Default.Remove(AuthProviderKey);
     }
 
     public async Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken = default)
@@ -263,9 +268,29 @@ public class EntraAuthService : IAuthService
         return !string.IsNullOrEmpty(token);
     }
 
+    public async Task<AuthAccountKind> GetAccountKindAsync(CancellationToken cancellationToken = default)
+    {
+        var stored = await SecureStorage.Default.GetAsync(AuthProviderKey).ConfigureAwait(false);
+        if (string.Equals(stored, AuthProviderEmail, StringComparison.Ordinal))
+            return AuthAccountKind.Email;
+        if (string.Equals(stored, AuthProviderEntra, StringComparison.Ordinal))
+            return AuthAccountKind.Entra;
+
+        if (_msalClient is not null)
+        {
+            var accounts = await _msalClient.GetAccountsAsync().ConfigureAwait(false);
+            if (accounts.Any())
+                return AuthAccountKind.Entra;
+        }
+
+        var token = await SecureStorage.Default.GetAsync(AccessTokenKey).ConfigureAwait(false);
+        return string.IsNullOrEmpty(token) ? AuthAccountKind.Unknown : AuthAccountKind.Email;
+    }
+
     private static async Task StoreTokensAsync(AuthenticationResult result)
     {
         await SecureStorage.Default.SetAsync(AccessTokenKey, result.AccessToken).ConfigureAwait(false);
         await SecureStorage.Default.SetAsync(ExpiresOnKey, result.ExpiresOn.ToString("O")).ConfigureAwait(false);
+        await SecureStorage.Default.SetAsync(AuthProviderKey, AuthProviderEntra).ConfigureAwait(false);
     }
 }

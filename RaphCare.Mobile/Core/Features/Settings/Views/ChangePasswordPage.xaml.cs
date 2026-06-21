@@ -12,4 +12,11 @@ public partial class ChangePasswordPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is ChangePasswordViewModel vm)
+            await vm.LoadAsync();
+    }
 }

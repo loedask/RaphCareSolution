@@ -14,6 +14,18 @@ public sealed class AdminClinicPatientDetailDto
     public string GrantedByRule { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public IReadOnlyList<AdminClinicPatientVisitDto> RecentVisits { get; set; } = Array.Empty<AdminClinicPatientVisitDto>();
+    public IReadOnlyList<AdminClinicPatientAppointmentDto> Appointments { get; set; } = Array.Empty<AdminClinicPatientAppointmentDto>();
+}
+
+public sealed class AdminClinicPatientAppointmentDto
+{
+    public Guid Id { get; set; }
+    public DateTime ScheduledStart { get; set; }
+    public DateTime ScheduledEnd { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+    public string ProviderName { get; set; } = string.Empty;
 }
 
 public sealed class AdminClinicPatientVisitDto

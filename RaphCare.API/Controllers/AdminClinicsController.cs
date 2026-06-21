@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.DTOs;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicAppointment;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicProvider;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicProviderSchedule;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicProviderSchedule;
@@ -10,6 +11,7 @@ using RaphCare.Application.Features.Organization.Commands.DeleteAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.EnsureClinicMembership;
 using RaphCare.Application.Features.Organization.Commands.GrantAdminClinicPatientAccess;
 using RaphCare.Application.Features.Organization.Commands.InviteClinicStaff;
+using RaphCare.Application.Features.Organization.Commands.RevokeAdminClinicPatientAccess;
 using RaphCare.Application.Features.Organization.Commands.RegisterClinic;
 using RaphCare.Application.Features.Organization.Commands.RemoveClinicStaff;
 using RaphCare.Application.Features.Organization.Commands.ResendClinicStaffInvitation;
@@ -134,6 +136,19 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
         return result is null
             ? NotFound()
             : CreatedAtAction(nameof(GetPatientById), new { id, patientId = result.PatientId }, result);
+    }
+
+    /// <summary>Revoke a patient's access to this hospital.</summary>
+    [HttpDelete("{id:guid}/patients/{patientId:guid}", Name = "RevokeAdminClinicPatientAccess")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RevokePatientAccess(Guid id, Guid patientId, CancellationToken cancellationToken)
+    {
+        var revoked = await mediator.Send(
+            new RevokeAdminClinicPatientAccessCommand { ClinicId = id, PatientId = patientId },
+            cancellationToken);
+        return revoked ? NoContent() : NotFound();
     }
 
     /// <summary>Link the current user to a hospital (idempotent).</summary>
@@ -470,5 +485,32 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Book an appointment for a patient at this hospital.</summary>
+    [HttpPost("{id:guid}/appointments", Name = "CreateAdminClinicAppointment")]
+    [ProducesResponseType(typeof(AdminClinicAppointmentListItemDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> CreateAppointment(
+        Guid id,
+        [FromBody] CreateAdminClinicAppointmentRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicAppointmentCommand
+            {
+                ClinicId = id,
+                PatientId = body.PatientId,
+                ProviderId = body.ProviderId,
+                ScheduledStart = body.ScheduledStart,
+                ScheduledEnd = body.ScheduledEnd,
+                Type = body.Type,
+                Reason = body.Reason
+            },
+            cancellationToken);
+        return result is null
+            ? NotFound()
+            : CreatedAtAction(nameof(GetAppointments), new { id }, result);
     }
 }

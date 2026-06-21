@@ -61,6 +61,8 @@ public static class ServiceRegistration
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
         services.AddTransient<IPatientMedicalInfoService>(sp => new PatientMedicalInfoService(
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
+        services.AddTransient<IPatientAccountService>(sp => new PatientAccountService(
+            sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
         services.AddTransient<IPatientNotificationsService>(sp => new PatientNotificationsService(
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
         services.AddTransient<IPatientAiAssistantService>(sp => new PatientAiAssistantService(

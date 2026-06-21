@@ -5,7 +5,9 @@ using RaphCare.Application.Features.Organization.DTOs;
 
 namespace RaphCare.Persistence;
 
-public sealed class AdminClinicPatientQueryService(ClinicalDbContext clinicalDbContext)
+public sealed class AdminClinicPatientQueryService(
+    ClinicalDbContext clinicalDbContext,
+    IProfessionalUserLookupService professionalUserLookupService)
     : IAdminClinicPatientQueryService
 {
     public async Task<PagedResult<AdminClinicPatientListItemDto>> GetPatientsAsync(
@@ -101,6 +103,60 @@ public sealed class AdminClinicPatientQueryService(ClinicalDbContext clinicalDbC
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        var appointments = await clinicalDbContext.Appointments
+            .AsNoTracking()
+            .Where(a => a.ClinicId == clinicId && a.PatientId == patientId && !a.IsCancelled)
+            .OrderByDescending(a => a.ScheduledStart)
+            .Take(10)
+            .Select(a => new
+            {
+                a.Id,
+                a.ProviderId,
+                a.ScheduledStart,
+                a.ScheduledEnd,
+                a.Type,
+                a.Status,
+                a.Reason
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var providerIds = appointments.Select(a => a.ProviderId).Distinct().ToList();
+        var providers = providerIds.Count == 0
+            ? []
+            : await clinicalDbContext.Set<Domain.Organization.Provider>()
+                .AsNoTracking()
+                .Where(p => providerIds.Contains(p.Id))
+                .Select(p => new { p.Id, p.ApplicationUserId })
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+        var userIds = providers.Select(p => p.ApplicationUserId).Distinct().ToList();
+        var users = userIds.Count == 0
+            ? []
+            : await professionalUserLookupService.GetUsersByIdsAsync(userIds, cancellationToken).ConfigureAwait(false);
+        var usersById = users.ToDictionary(u => u.Id);
+        var providerNames = providers.ToDictionary(
+            p => p.Id,
+            p => usersById.TryGetValue(p.ApplicationUserId, out var u)
+                ? (string.IsNullOrWhiteSpace(u.DisplayName) ? u.Email : u.DisplayName) ?? "Provider"
+                : "Provider");
+
+        var appointmentDtos = appointments.Select(a =>
+        {
+            providerNames.TryGetValue(a.ProviderId, out var name);
+            return new AdminClinicPatientAppointmentDto
+            {
+                Id = a.Id,
+                ScheduledStart = a.ScheduledStart,
+                ScheduledEnd = a.ScheduledEnd,
+                Type = a.Type,
+                Status = a.Status,
+                Reason = a.Reason,
+                ProviderName = name ?? "Provider"
+            };
+        }).ToList();
+
         return new AdminClinicPatientDetailDto
         {
             PatientId = row.patient.Id,
@@ -114,7 +170,8 @@ public sealed class AdminClinicPatientQueryService(ClinicalDbContext clinicalDbC
             GrantedAt = row.access.GrantedAt,
             GrantedByRule = row.access.GrantedByRule,
             Notes = row.access.Notes,
-            RecentVisits = recentVisits
+            RecentVisits = recentVisits,
+            Appointments = appointmentDtos
         };
     }
 }
