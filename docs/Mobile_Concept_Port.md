@@ -169,12 +169,12 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Insurance | `Insurance.tsx` | `InsurancePage` (+ add / detail) | ☑ |
 | Billing | `PaymentMethods.tsx`, `BillingHistory.tsx`, `UpgradePlan.tsx` | `BillingPage`, `AddPaymentMethodPage` | ☑ |
 | Request call | `RequestCall.tsx` | `RequestCallPage` | ☑ |
-| Consultation | `Consultation.tsx` | `TelehealthJoinPage` (Agora video on Android) | ☑ |
+| Consultation | `Consultation.tsx` | `TelehealthJoinPage` (full-screen in-call UI; Agora on Android) | ☑ |
 | Personal information | `PersonalInformation.tsx` | `PersonalInformationPage` | ☑ |
-| Change password | `ChangePassword.tsx` | `ChangePasswordPage` | ☑ |
+| Change password | `ChangePassword.tsx` | `ChangePasswordPage` (email: `api/patient/account/change-password`; Entra: SSPR) | ☑ |
 | Language | `Language.tsx` | `LanguageSettingsPage` | ☑ |
-| Medical information | `MedicalInformation.tsx` | `MedicalInformationPage` | ☑ |
-| Emergency contacts | `EmergencyContacts.tsx` | `EmergencyContactsPage` | ☑ |
+| Medical information | `MedicalInformation.tsx` | `MedicalInformationPage` (`api/patient/medical-info`) | ☑ |
+| Emergency contacts | `EmergencyContacts.tsx` | `EmergencyContactsPage` (`api/patient/emergency-contacts`) | ☑ |
 
 *(Extend the table as you implement each flow.)*
 
