@@ -52,7 +52,7 @@ public sealed class UpdateAdminClinicHandler(
             pageSize: 1,
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        var updated = page.Items.FirstOrDefault();
+        var updated = page.Items.Count > 0 ? page.Items[0] : null;
         if (updated is null)
             return null;
 

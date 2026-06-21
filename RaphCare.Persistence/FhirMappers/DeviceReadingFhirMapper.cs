@@ -10,7 +10,7 @@ public sealed class DeviceReadingFhirMapper : IDeviceReadingFhirMapper
     private const string Loinc = "http://loinc.org";
     private const string ObservationCategory = "http://terminology.hl7.org/CodeSystem/observation-category";
 
-    public Task<FhirObservationDto> MapToObservationAsync(DeviceReading reading, Device _, CancellationToken ct)
+    public Task<FhirObservationDto> MapToObservationAsync(DeviceReading reading, Device device, CancellationToken ct)
     {
         var subjectRef = $"Patient/{reading.PatientId}";
         var dto = new FhirObservationDto

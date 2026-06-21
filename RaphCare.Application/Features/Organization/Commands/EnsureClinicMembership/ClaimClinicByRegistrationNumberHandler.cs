@@ -24,7 +24,7 @@ public sealed class ClaimClinicByRegistrationNumberHandler(
             pageSize: 1,
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        var clinic = page.Items.FirstOrDefault();
+        var clinic = page.Items.Count > 0 ? page.Items[0] : null;
         if (clinic is null)
             return null;
 

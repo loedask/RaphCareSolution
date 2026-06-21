@@ -32,6 +32,18 @@ public abstract class Enumeration(int id, string name) : IEquatable<Enumeration>
 
     public static bool operator !=(Enumeration? left, Enumeration? right) => !(left == right);
 
+    public static bool operator <(Enumeration? left, Enumeration? right) =>
+        left is null ? right is not null : right is not null && left.CompareTo(right) < 0;
+
+    public static bool operator <=(Enumeration? left, Enumeration? right) =>
+        left is null || right is null ? left is null && right is null : left.CompareTo(right) <= 0;
+
+    public static bool operator >(Enumeration? left, Enumeration? right) =>
+        left is not null && right is not null && left.CompareTo(right) > 0;
+
+    public static bool operator >=(Enumeration? left, Enumeration? right) =>
+        left is not null && (right is null || left.CompareTo(right) >= 0);
+
     /// <summary>
     /// Returns all defined values for the enumeration type T.
     /// </summary>

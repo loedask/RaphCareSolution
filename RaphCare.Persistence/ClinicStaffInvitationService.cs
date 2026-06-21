@@ -25,7 +25,7 @@ public sealed class ClinicStaffInvitationService(
         var users = await professionalUserLookupService
             .GetUsersByIdsAsync([userId], cancellationToken)
             .ConfigureAwait(false);
-        var user = users.FirstOrDefault();
+        var user = users.Count > 0 ? users[0] : null;
         if (user is null)
             throw new InvalidOperationException("Staff member not found.");
 

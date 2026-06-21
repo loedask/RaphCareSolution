@@ -128,7 +128,7 @@ public static class DbContextModelBuilderExtensions
         modelBuilder.Entity(clrType).HasQueryFilter(Expression.Lambda(body, parameter));
     }
 
-    private static Expression BuildPrincipalNotSoftDeleted(ParameterExpression parameter, IMutableForeignKey fk)
+    private static BinaryExpression BuildPrincipalNotSoftDeleted(ParameterExpression parameter, IMutableForeignKey fk)
     {
         var navigation = fk.DependentToPrincipal!;
         var navProperty = Expression.Property(parameter, navigation.Name);

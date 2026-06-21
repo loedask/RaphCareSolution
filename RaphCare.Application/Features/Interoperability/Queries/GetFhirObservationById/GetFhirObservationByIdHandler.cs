@@ -28,7 +28,7 @@ public sealed class GetFhirObservationByIdHandler(
             applyDefaultIdOrdering: false,
             cancellationToken).ConfigureAwait(false);
 
-        var row = paged.Items.FirstOrDefault();
+        var row = paged.Items.Count > 0 ? paged.Items[0] : null;
         if (row?.Device is null || row.Device.ClinicId != clinicId)
             throw new NotFoundException(nameof(DeviceReading), request.Id);
 

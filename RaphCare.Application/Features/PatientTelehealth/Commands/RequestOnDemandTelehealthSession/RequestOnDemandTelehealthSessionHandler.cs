@@ -116,7 +116,7 @@ public sealed class RequestOnDemandTelehealthSessionHandler(
             pageSize: 1,
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        var first = page.Items.FirstOrDefault();
+        var first = page.Items.Count > 0 ? page.Items[0] : null;
         if (first is null)
         {
             throw new ValidationException(new[]
@@ -152,7 +152,7 @@ public sealed class RequestOnDemandTelehealthSessionHandler(
             pageSize: 1,
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        var first = page.Items.FirstOrDefault();
+        var first = page.Items.Count > 0 ? page.Items[0] : null;
         if (first is null)
         {
             throw new ValidationException(new[]

@@ -15,7 +15,7 @@ using RaphCare.Mobile.Core.Common.ViewModels;
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
 /// <summary>In-app recording then multipart upload to <c>api/onboarding/voice</c> (after OTP-verified phone).</summary>
-public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
+public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, IDisposable
 {
     private readonly IVoiceOnboardingService _voice;
     private readonly OnboardingOptions _onboarding;
@@ -482,5 +482,12 @@ public class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable
         {
             // ignore
         }
+    }
+
+    public void Dispose()
+    {
+        _speechCts?.Cancel();
+        _speechCts?.Dispose();
+        _speechCts = null;
     }
 }

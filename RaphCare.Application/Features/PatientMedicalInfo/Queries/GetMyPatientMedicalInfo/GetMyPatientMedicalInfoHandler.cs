@@ -25,7 +25,7 @@ public sealed class GetMyPatientMedicalInfoHandler(
             applyDefaultIdOrdering: false,
             cancellationToken).ConfigureAwait(false);
 
-        var profile = page.Items.FirstOrDefault();
+        var profile = page.Items.Count > 0 ? page.Items[0] : null;
         if (profile is null)
             return new MyPatientMedicalInfoDto();
 

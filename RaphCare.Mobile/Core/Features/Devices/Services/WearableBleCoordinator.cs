@@ -13,7 +13,7 @@ namespace RaphCare.Mobile.Core.Features.Devices.Services;
 /// BLE scan or connect for E580/E585-class bracelets via Plugin.BLE.
 /// Subscribes to all notify characteristics; parses standard Heart Rate (0x2A37) and PLX SpO₂ (0x2A60 / 0x2A5F) when present, otherwise surfaces raw hex for OEM analysis.
 /// </summary>
-public sealed class WearableBleCoordinator : IWearableBleCoordinator
+public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposable
 {
     private readonly IAdapter _adapter = CrossBluetoothLE.Current.Adapter;
     private readonly ConcurrentDictionary<Guid, IDevice> _devices = new();
@@ -272,4 +272,6 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
 
         _notifyHandlers.Clear();
     }
+
+    public void Dispose() => _connectGate.Dispose();
 }

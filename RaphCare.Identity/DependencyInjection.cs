@@ -97,7 +97,7 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IEnumerable<SecurityKey> ResolveSigningKeys(
+    private static List<SecurityKey> ResolveSigningKeys(
         string rawToken,
         SecurityToken securityToken,
         string entraAuthority,

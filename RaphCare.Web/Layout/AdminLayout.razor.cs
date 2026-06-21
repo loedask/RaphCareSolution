@@ -106,5 +106,6 @@ public partial class AdminLayout
     {
         Navigation.LocationChanged -= OnLocationChanged;
         ClinicContext.Changed -= OnClinicContextChanged;
+        GC.SuppressFinalize(this);
     }
 }

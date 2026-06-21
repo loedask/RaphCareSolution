@@ -29,10 +29,6 @@
         {
             <div class="alert alert-error">@_actionError</div>
         }
-        @if (!string.IsNullOrEmpty(_actionSuccess))
-        {
-            <div class="alert alert-success">@_actionSuccess</div>
-        }
 
         <div class="admin-page-card">
             <header class="admin-page-card-head">
@@ -333,7 +329,6 @@
     private bool _isAdministrator;
     private string? _error;
     private string? _actionError;
-    private string? _actionSuccess;
     private string _clinicName = "this hospital";
     private string _clinicTimeZone = "UTC";
     private string _timeZoneLabel = "hospital time";

@@ -46,7 +46,7 @@ public sealed class HelpFaqViewModel : BaseViewModel
         }
     }
 
-    public async Task OpenItemAsync(PatientSupportFaqItemViewModel? item)
+    public static async Task OpenItemAsync(PatientSupportFaqItemViewModel? item)
     {
         if (item is null)
             return;

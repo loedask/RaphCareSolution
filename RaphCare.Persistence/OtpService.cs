@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -75,14 +76,13 @@ public class OtpService(IdentityDbContext dbContext, IDateTimeProvider clock) : 
     {
         var bytes = RandomNumberGenerator.GetBytes(4);
         var value = BitConverter.ToUInt32(bytes, 0) % 1_000_000;
-        return value.ToString("D6");
+        return value.ToString("D6", CultureInfo.InvariantCulture);
     }
 
     private static string HashCode(string code)
     {
-        using var sha = SHA256.Create();
         var bytes = Encoding.UTF8.GetBytes(code);
-        var hash = sha.ComputeHash(bytes);
+        var hash = SHA256.HashData(bytes);
         return Convert.ToHexString(hash);
     }
 }

@@ -58,7 +58,7 @@ public sealed class RegisterMyDeviceHandler : IRequestHandler<RegisterMyDeviceCo
             false,
             cancellationToken).ConfigureAwait(false);
 
-        var existing = existingPaged.Items.FirstOrDefault();
+        var existing = existingPaged.Items.Count > 0 ? existingPaged.Items[0] : null;
         if (existing != null)
         {
             var myAssignment = await _assignments.SearchAsync(

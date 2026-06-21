@@ -2,7 +2,7 @@ namespace RaphCare.Mobile.Core.Infrastructure.Composition;
 
 /// <summary>
 /// Resolves services for Shell <see cref="Microsoft.Maui.Controls.Shell"/> pages that must expose a parameterless constructor for XAML <c>DataTemplate</c>.
-/// Prefers <see cref="Microsoft.Maui.Application.Current"/>.Handler.MauiContext.Services when available; falls back to the root provider set at startup (e.g. before the window is shown).
+/// Prefers <see cref="Microsoft.Maui.Controls.Application.Current"/>.Handler.MauiContext.Services when available; falls back to the root provider set at startup (e.g. before the window is shown).
 /// </summary>
 public static class MobileServiceHub
 {

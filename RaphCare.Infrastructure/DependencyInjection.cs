@@ -2,7 +2,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Application.Common.Configuration;
 using RaphCare.Application.Common.Interfaces;
-using RaphCare.Application.Common.Configuration;
 using RaphCare.Infrastructure.Configuration;
 using RaphCare.Infrastructure.Persistence;
 using RaphCare.Infrastructure.Persistence.Interceptors;

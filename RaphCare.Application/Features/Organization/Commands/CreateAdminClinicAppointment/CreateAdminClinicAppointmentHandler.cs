@@ -67,7 +67,7 @@ public sealed class CreateAdminClinicAppointmentHandler(
         var users = await professionalUserLookupService
             .GetUsersByIdsAsync([provider.ApplicationUserId], cancellationToken)
             .ConfigureAwait(false);
-        var user = users.FirstOrDefault();
+        var user = users.Count > 0 ? users[0] : null;
         var providerName = user is null
             ? "Provider"
             : string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName;

@@ -23,7 +23,7 @@ public sealed class LanguageSettingsViewModel : BaseViewModel
             MainThread.BeginInvokeOnMainThread(async () =>
                 await Shell.Current.DisplayAlertAsync(
                     Title,
-                    string.Format(T("LanguageSettingsUpdatedFormat"), option.Native),
+                    Format(T("LanguageSettingsUpdatedFormat"), option.Native),
                     T("CommonOk")));
         });
     }

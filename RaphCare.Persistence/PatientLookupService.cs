@@ -8,10 +8,10 @@ public sealed class PatientLookupService(ClinicalDbContext clinicalDbContext) : 
 {
     public async Task<Patient?> FindByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        var normalized = email.Trim().ToLowerInvariant();
+        var trimmedEmail = email.Trim();
         return await clinicalDbContext.Patients
             .AsNoTracking()
-            .Where(p => !p.IsDeleted && p.Email != null && p.Email.ToLower() == normalized)
+            .Where(p => !p.IsDeleted && p.Email != null && string.Equals(p.Email, trimmedEmail, StringComparison.OrdinalIgnoreCase))
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
     }

@@ -31,7 +31,7 @@ public sealed class UpdateMyPatientMedicalInfoHandler(
             applyDefaultIdOrdering: false,
             cancellationToken).ConfigureAwait(false);
 
-        var profile = page.Items.FirstOrDefault();
+        var profile = page.Items.Count > 0 ? page.Items[0] : null;
         if (profile is null)
         {
             profile = new Domain.Patients.PatientProfile { PatientId = patientId };

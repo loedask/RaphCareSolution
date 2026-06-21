@@ -11,7 +11,7 @@ namespace RaphCare.Mobile.Platforms.Android.Telehealth;
 /// Joins an Agora channel using Maven <c>io.agora.rtc:full-sdk</c> (no Agora UI kit).
 /// Uses <see cref="Java.Lang.Reflect"/> because <c>AndroidJavaObject</c> is not exposed on net10 reference assemblies.
 /// </summary>
-public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
+public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession, IDisposable
 {
     private readonly object _sync = new();
     private Java.Lang.Object? _engine;
@@ -126,7 +126,7 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
                 {
                     var canvasClass = Class.ForName("io.agora.rtc2.video.VideoCanvas");
                     var viewClass = Class.ForName("android.view.View");
-                    var ctor = canvasClass.GetConstructor(viewClass, Integer.Type, Integer.Type);
+                    var ctor = canvasClass.GetConstructor([viewClass!, Integer.Type!, Integer.Type!]);
                     var canvas = ctor.NewInstance(_local, Integer.ValueOf(1), Integer.ValueOf(0));
                     var setup = _engine.Class.GetMethod("setupLocalVideo", canvasClass);
                     setup.Invoke(_engine, canvas);
@@ -208,19 +208,19 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
 
     private static void InvokeBool(Java.Lang.Object target, string name, bool value)
     {
-        var m = target.Class.GetMethod(name, [Java.Lang.Boolean.Type]);
+        var m = target.Class.GetMethod(name, [Java.Lang.Boolean.Type!]);
         m.Invoke(target, [Java.Lang.Boolean.ValueOf(value)]);
     }
 
     private static void InvokeOptionsBool(Java.Lang.Object options, string setter, bool value)
     {
-        var m = options.Class.GetMethod(setter, [Java.Lang.Boolean.Type]);
+        var m = options.Class.GetMethod(setter, [Java.Lang.Boolean.Type!]);
         m.Invoke(options, [Java.Lang.Boolean.ValueOf(value)]);
     }
 
     private static void InvokeOptionsInt(Java.Lang.Object options, string setter, int value)
     {
-        var m = options.Class.GetMethod(setter, [Integer.Type]);
+        var m = options.Class.GetMethod(setter, [Integer.Type!]);
         m.Invoke(options, [Integer.ValueOf(value)]);
     }
 
@@ -258,6 +258,18 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
             {
                 Log.Warn("RaphCareRtc", ex.ToString());
             }
+        }
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            StopAsync().GetAwaiter().GetResult();
+        }
+        catch (System.Exception ex)
+        {
+            Log.Warn("RaphCareRtc", ex.ToString());
         }
     }
 
@@ -310,7 +322,7 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
         {
             var canvasClass = Class.ForName("io.agora.rtc2.video.VideoCanvas");
             var viewClass = Class.ForName("android.view.View");
-            var ctor = canvasClass.GetConstructor(viewClass, Integer.Type, Integer.Type);
+            var ctor = canvasClass.GetConstructor([viewClass!, Integer.Type!, Integer.Type!]);
             var canvas = ctor.NewInstance(remote, Integer.ValueOf(1), Integer.ValueOf(remoteUid));
             var setup = engine.Class.GetMethod("setupRemoteVideo", canvasClass);
             setup.Invoke(engine, canvas);

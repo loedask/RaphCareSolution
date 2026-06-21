@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace RaphCare.Domain.Common;
 
 /// <summary>UTC ↔ clinic-local conversion using the hospital's configured time zone id.</summary>
@@ -51,5 +53,5 @@ public static class ClinicTimeZoneHelper
     }
 
     public static string FormatClinicLocal(DateTime utc, string? timeZoneId, string format = "dd MMM yyyy HH:mm")
-        => ToClinicLocal(utc, timeZoneId).ToString(format);
+        => ToClinicLocal(utc, timeZoneId).ToString(format, CultureInfo.InvariantCulture);
 }

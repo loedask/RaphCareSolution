@@ -151,10 +151,9 @@ public sealed class BillingViewModel : BaseViewModel
             }
 
             _carePlan = care.Data;
-            var culture = CultureInfo.CurrentCulture;
-            CurrentPlanSummary = string.Format(culture, T("BillingCurrentPlanFormat"), _carePlan.PlanDisplayName, _carePlan.Status);
+            CurrentPlanSummary = Format(T("BillingCurrentPlanFormat"), _carePlan.PlanDisplayName, _carePlan.Status);
             if (_carePlan.RenewsOn is { } r)
-                CurrentPlanSummary += " · " + string.Format(culture, T("BillingRenewsFormat"), r.ToLocalTime().ToString("d", culture));
+                CurrentPlanSummary += " · " + Format(T("BillingRenewsFormat"), r.ToLocalTime().ToString("d", CultureInfo.CurrentCulture));
 
             PlanOptions.Clear();
             foreach (var p in plans.Data.Where(x => x.Tier != _carePlan.Tier))

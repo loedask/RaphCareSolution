@@ -23,7 +23,7 @@ public sealed class EnsureClinicMembershipHandler(
             pageNumber: 1,
             pageSize: 1,
             cancellationToken: cancellationToken).ConfigureAwait(false);
-        var clinic = clinicPage.Items.FirstOrDefault();
+        var clinic = clinicPage.Items.Count > 0 ? clinicPage.Items[0] : null;
         if (clinic is null)
             return false;
 

@@ -26,10 +26,10 @@ public partial class HelpFaqPage : ContentPage
         if (BindingContext is not HelpFaqViewModel vm)
             return;
 
-        if (e.CurrentSelection.FirstOrDefault() is not PatientSupportFaqItemViewModel item)
+        if (e.CurrentSelection.Count == 0 || e.CurrentSelection[0] is not PatientSupportFaqItemViewModel item)
             return;
 
         FaqList.SelectedItem = null;
-        await vm.OpenItemAsync(item);
+        await HelpFaqViewModel.OpenItemAsync(item);
     }
 }

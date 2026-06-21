@@ -64,7 +64,7 @@ public sealed class AdminClinicProviderQueryService(
         var users = await professionalUserLookupService
             .GetUsersByIdsAsync([provider.ApplicationUserId], cancellationToken)
             .ConfigureAwait(false);
-        var user = users.FirstOrDefault();
+        var user = users.Count > 0 ? users[0] : null;
 
         return new AdminClinicProviderDetailDto
         {

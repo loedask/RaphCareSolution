@@ -102,7 +102,9 @@ public sealed partial class FirebasePatientPushNotificationSender(
                 {
                     FirebaseApp.Create(new AppOptions
                     {
-                        Credential = GoogleCredential.FromFile(credentialPath),
+                        Credential = Google.Apis.Auth.OAuth2.CredentialFactory
+                            .FromFile<ServiceAccountCredential>(credentialPath)
+                            .ToGoogleCredential(),
                     });
                 }
 

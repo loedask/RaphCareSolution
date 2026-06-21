@@ -147,8 +147,9 @@ public sealed class ProfileHubViewModel : BaseViewModel
         FileResult? picked = null;
         try
         {
-            picked = await MainThread.InvokeOnMainThreadAsync(() =>
-                MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions { Title = T("ProfilePhotoPickerTitle") }));
+            var results = await MainThread.InvokeOnMainThreadAsync(() =>
+                MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions { Title = T("ProfilePhotoPickerTitle") }));
+            picked = results is { Count: > 0 } ? results[0] : null;
         }
         catch (FeatureNotSupportedException)
         {
@@ -344,7 +345,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
         var count = _emergencyContactCount;
         return count == 0
             ? T("ProfileEmergencyContactsHint")
-            : string.Format(CultureInfo.CurrentCulture, T("ProfileEmergencyContactsCountFormat"), count);
+            : Format(T("ProfileEmergencyContactsCountFormat"), count);
     }
 
     private async Task SignOutAsync()

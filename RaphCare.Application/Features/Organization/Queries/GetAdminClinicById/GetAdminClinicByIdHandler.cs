@@ -29,7 +29,7 @@ public sealed class GetAdminClinicByIdHandler(
             pageSize: 1,
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        var entity = clinic.Items.FirstOrDefault();
+        var entity = clinic.Items.Count > 0 ? clinic.Items[0] : null;
         if (entity is null)
             return null;
 

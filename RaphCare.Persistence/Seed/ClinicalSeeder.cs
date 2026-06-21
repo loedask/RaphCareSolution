@@ -49,7 +49,6 @@ public static class ClinicalSeeder
         {
             var clinic = new Clinic
             {
-                Id = ClinicalSeedIds.DemoClinicId,
                 Name = "RaphCare Demo Clinic",
                 RegistrationNumber = "REG-DEMO-001",
                 Country = "South Africa",
@@ -57,6 +56,7 @@ public static class ClinicalSeeder
                 IsActive = true
             };
             context.Clinics.Add(clinic);
+            context.Entry(clinic).Property(c => c.Id).CurrentValue = ClinicalSeedIds.DemoClinicId;
             await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             LogExampleClinicSeeded(logger, null);
         }
@@ -73,7 +73,8 @@ public static class ClinicalSeeder
         ILogger logger,
         CancellationToken cancellationToken)
     {
-        if (await context.Providers.AnyAsync(p => p.IsActive && !p.IsDeleted, cancellationToken).ConfigureAwait(false))
+        var providers = context.Set<Provider>();
+        if (await providers.AnyAsync(p => p.IsActive && !p.IsDeleted, cancellationToken).ConfigureAwait(false))
             return;
 
         var clinicId = await context.Clinics
@@ -87,15 +88,16 @@ public static class ClinicalSeeder
         if (clinicId == Guid.Empty)
             return;
 
-        context.Providers.Add(new Provider
+        var provider = new Provider
         {
-            Id = ClinicalSeedIds.DemoProviderId,
             ClinicId = clinicId,
             ApplicationUserId = ClinicalSeedIds.DemoProviderApplicationUserId,
             LicenseNumber = "DEMO-LIC-001",
             IsActive = true,
             JoinedAt = DateTime.UtcNow
-        });
+        };
+        providers.Add(provider);
+        context.Entry(provider).Property(p => p.Id).CurrentValue = ClinicalSeedIds.DemoProviderId;
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         LogDemoProviderSeeded(logger, null);
     }

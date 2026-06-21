@@ -38,7 +38,7 @@ public sealed class RemoveMyPaymentMethodHandler(
                 50,
                 applyDefaultIdOrdering: false,
                 cancellationToken).ConfigureAwait(false);
-            var replacement = others.Items.FirstOrDefault();
+            var replacement = others.Items.Count > 0 ? others.Items[0] : null;
             if (replacement is not null)
             {
                 replacement.IsDefault = true;

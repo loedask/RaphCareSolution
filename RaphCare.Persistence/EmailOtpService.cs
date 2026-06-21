@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -73,7 +74,7 @@ public sealed class EmailOtpService(IdentityDbContext dbContext, IDateTimeProvid
     {
         var bytes = RandomNumberGenerator.GetBytes(4);
         var value = BitConverter.ToUInt32(bytes, 0) % 1_000_000;
-        return value.ToString("D6");
+        return value.ToString("D6", CultureInfo.InvariantCulture);
     }
 
     private static string HashCode(string code)

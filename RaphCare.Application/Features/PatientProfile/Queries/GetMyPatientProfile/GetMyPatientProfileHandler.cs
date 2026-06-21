@@ -30,7 +30,7 @@ public sealed class GetMyPatientProfileHandler(
             applyDefaultIdOrdering: false,
             cancellationToken).ConfigureAwait(false);
 
-        var profile = profilePage.Items.FirstOrDefault();
+        var profile = profilePage.Items.Count > 0 ? profilePage.Items[0] : null;
         string? photoUrl = !string.IsNullOrWhiteSpace(profile?.ProfilePhotoRelativePath)
             ? PatientProfilePhotoUrls.RelativePhotoPath
             : null;
