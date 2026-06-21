@@ -51,7 +51,7 @@ public sealed class HomeViewModel : BaseViewModel
         OpenNotificationsCommand = new Command(async () =>
             await AppNavigator.GoToFeatureAsync(AppNavigator.Notifications, T("HomeHubNotifications")));
         RequestCallCommand = new Command(async () =>
-            await AppNavigator.GoToFeatureAsync(AppNavigator.CareTelehealth, T("HomeRequestCall")));
+            await AppNavigator.GoToFeatureAsync(AppNavigator.RequestCall, T("HomeRequestCall")));
         SeeAllAppointmentsCommand = new Command(async () =>
             await AppNavigator.GoToFeatureAsync(AppNavigator.Appointments, T("HomeHubAppointments")));
         OpenUpcomingAppointmentCommand = new Command(async () =>

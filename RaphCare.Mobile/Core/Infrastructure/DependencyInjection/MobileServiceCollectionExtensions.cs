@@ -93,6 +93,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AddInsuranceProfileViewModel>();
         services.AddTransient<InsuranceProfileDetailViewModel>();
         services.AddTransient<CareTelehealthViewModel>();
+        services.AddTransient<RequestCallViewModel>();
         services.AddTransient<TelehealthJoinViewModel>(sp => new TelehealthJoinViewModel(
             sp.GetRequiredService<IPatientTelehealthService>(),
             sp.GetRequiredService<ITelehealthRtcSession>()));
@@ -117,6 +118,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<InsuranceProfileDetailPage>();
         services.AddTransient<AddInsuranceProfilePage>();
         services.AddTransient<CareTelehealthPage>();
+        services.AddTransient<RequestCallPage>();
         services.AddTransient<TelehealthJoinPage>();
         services.AddTransient<DevicesViewModel>();
         services.AddTransient<DevicesPage>();
@@ -138,10 +140,20 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AiAssistantPage>();
         services.AddTransient<ProfileHubViewModel>();
         services.AddTransient<EditProfileViewModel>();
+        services.AddTransient<PersonalInformationViewModel>();
+        services.AddTransient<ChangePasswordViewModel>();
+        services.AddTransient<LanguageSettingsViewModel>();
+        services.AddTransient<MedicalInformationViewModel>();
+        services.AddTransient<EmergencyContactsViewModel>();
         services.AddTransient<PrivacySettingsViewModel>();
         services.AddTransient<HelpSupportViewModel>();
         services.AddTransient<SettingsPage>();
         services.AddTransient<EditProfilePage>();
+        services.AddTransient<PersonalInformationPage>();
+        services.AddTransient<ChangePasswordPage>();
+        services.AddTransient<LanguageSettingsPage>();
+        services.AddTransient<MedicalInformationPage>();
+        services.AddTransient<EmergencyContactsPage>();
         services.AddTransient<PrivacyPage>();
         services.AddTransient<HelpSupportPage>();
         services.AddTransient<UnderConstructionPage>();

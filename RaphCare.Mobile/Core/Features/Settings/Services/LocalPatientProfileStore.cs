@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text.Json;
+using RaphCare.Mobile.Core.Features.Settings.Models;
 
 namespace RaphCare.Mobile.Core.Features.Settings.Services;
 
@@ -57,5 +59,63 @@ public sealed class LocalPatientProfileStore : ILocalPatientProfileStore
     {
         get => Preferences.Get(Prefix + nameof(PrivacyTwoFactor), false);
         set => Preferences.Set(Prefix + nameof(PrivacyTwoFactor), value);
+    }
+
+    public string Address
+    {
+        get => Preferences.Get(Prefix + nameof(Address), string.Empty);
+        set => Preferences.Set(Prefix + nameof(Address), value ?? string.Empty);
+    }
+
+    public string BloodType
+    {
+        get => Preferences.Get(Prefix + nameof(BloodType), string.Empty);
+        set => Preferences.Set(Prefix + nameof(BloodType), value ?? string.Empty);
+    }
+
+    public string Allergies
+    {
+        get => Preferences.Get(Prefix + nameof(Allergies), string.Empty);
+        set => Preferences.Set(Prefix + nameof(Allergies), value ?? string.Empty);
+    }
+
+    public string ChronicConditions
+    {
+        get => Preferences.Get(Prefix + nameof(ChronicConditions), string.Empty);
+        set => Preferences.Set(Prefix + nameof(ChronicConditions), value ?? string.Empty);
+    }
+
+    public string Medications
+    {
+        get => Preferences.Get(Prefix + nameof(Medications), string.Empty);
+        set => Preferences.Set(Prefix + nameof(Medications), value ?? string.Empty);
+    }
+
+    public string PrimaryDoctor
+    {
+        get => Preferences.Get(Prefix + nameof(PrimaryDoctor), string.Empty);
+        set => Preferences.Set(Prefix + nameof(PrimaryDoctor), value ?? string.Empty);
+    }
+
+    public IReadOnlyList<StoredEmergencyContact> GetEmergencyContacts()
+    {
+        var json = Preferences.Get(Prefix + "EmergencyContactsJson", string.Empty);
+        if (string.IsNullOrWhiteSpace(json))
+            return Array.Empty<StoredEmergencyContact>();
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<StoredEmergencyContact>>(json) ?? [];
+        }
+        catch (JsonException)
+        {
+            return Array.Empty<StoredEmergencyContact>();
+        }
+    }
+
+    public void SetEmergencyContacts(IReadOnlyList<StoredEmergencyContact> contacts)
+    {
+        var json = JsonSerializer.Serialize(contacts);
+        Preferences.Set(Prefix + "EmergencyContactsJson", json);
     }
 }

@@ -12,4 +12,14 @@ public interface ILocalPatientProfileStore
 
     bool PrivacyDataSharing { get; set; }
     bool PrivacyTwoFactor { get; set; }
+
+    string Address { get; set; }
+    string BloodType { get; set; }
+    string Allergies { get; set; }
+    string ChronicConditions { get; set; }
+    string Medications { get; set; }
+    string PrimaryDoctor { get; set; }
+
+    IReadOnlyList<Models.StoredEmergencyContact> GetEmergencyContacts();
+    void SetEmergencyContacts(IReadOnlyList<Models.StoredEmergencyContact> contacts);
 }

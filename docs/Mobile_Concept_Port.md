@@ -124,12 +124,13 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/account-created` | AccountCreated | `AccountCreatedPage` |
 | `/home` | Home | `HomePage` |
 | `/appointments`, `/book-appointment`, `/appointment-details` | Appointments, BookAppointment, AppointmentDetails | `AppointmentsPage`, `BookAppointmentPage`, `AppointmentDetailPage` (patient API) |
-| `/request-call`, `/consultation` | RequestCall, Consultation | Care / telehealth |
+| `/request-call`, `/consultation` | RequestCall, Consultation | `RequestCallPage` → `CareTelehealthPage` / `TelehealthJoinPage` |
 | `/records`, `/health-record-details` | HealthRecords, HealthRecordDetails | Records |
 | `/devices` | ConnectedDevices | `DevicesPage` (BLE E580/E585-class — see `docs/11_Devices_BLE_E580_E585.md`; fleet/packages — `docs/13_Patient_Device_Packages_and_Fleet.md`) |
 | `/insurance` | Insurance | Insurance |
 | `/family-members` | FamilyMembers | Profile / account |
-| `/payment-methods`, `/billing-history`, `/upgrade-plan` | Payment*, Billing*, UpgradePlan | Billing |
+| `/personal-information`, `/change-password`, `/language`, `/medical-information`, `/emergency-contacts` | Profile sub-pages | `PersonalInformationPage`, `ChangePasswordPage`, `LanguageSettingsPage`, `MedicalInformationPage`, `EmergencyContactsPage` |
+| `/payment-methods`, `/billing-history`, `/upgrade-plan` | Payment*, Billing*, UpgradePlan | `BillingPage` (combined hub) |
 | `/mental-health` | MentalHealth | Mental health |
 | `/profile`, `/edit-profile`, … | Profile, EditProfile, … | `SettingsPage` (hub), `EditProfilePage` |
 | `/notifications`, `/privacy`, `/help-support` | … | `NotificationsPage` (patient API), `PrivacyPage`, `HelpSupportPage` |
@@ -163,6 +164,17 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Help & support | `HelpSupport.tsx` | `HelpSupportPage` | ☑ |
 | Notifications | (concept notifications) | `NotificationsPage` (list, mark read, push registration API) | ☑ |
 | AI assistant | `AIAssistant` | `AiAssistantPage` (`POST api/patient/ai-assistant/chat`, no auto PHI) | ☑ |
+| Appointments | `Appointments.tsx`, `BookAppointment.tsx`, `AppointmentDetails.tsx` | `AppointmentsPage`, `BookAppointmentPage`, `AppointmentDetailPage` | ☑ |
+| Health records | `HealthRecords.tsx`, `HealthRecordDetails.tsx` | `RecordsPage`, `HealthRecordDetailPage` | ☑ |
+| Insurance | `Insurance.tsx` | `InsurancePage` (+ add / detail) | ☑ |
+| Billing | `PaymentMethods.tsx`, `BillingHistory.tsx`, `UpgradePlan.tsx` | `BillingPage`, `AddPaymentMethodPage` | ☑ |
+| Request call | `RequestCall.tsx` | `RequestCallPage` | ☑ |
+| Consultation | `Consultation.tsx` | `TelehealthJoinPage` (Agora video on Android) | ☑ |
+| Personal information | `PersonalInformation.tsx` | `PersonalInformationPage` | ☑ |
+| Change password | `ChangePassword.tsx` | `ChangePasswordPage` | ☑ |
+| Language | `Language.tsx` | `LanguageSettingsPage` | ☑ |
+| Medical information | `MedicalInformation.tsx` | `MedicalInformationPage` | ☑ |
+| Emergency contacts | `EmergencyContacts.tsx` | `EmergencyContactsPage` | ☑ |
 
 *(Extend the table as you implement each flow.)*
 

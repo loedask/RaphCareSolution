@@ -9,6 +9,7 @@ using RaphCare.Mobile.Core.Features.Settings.Models;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.Services.Auth;
+using RaphCare.Mobile.Core.Common.Services.Localization;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
@@ -132,14 +133,14 @@ public sealed class ProfileHubViewModel : BaseViewModel
                     Title = T("ProfilePersonalInformation"),
                     Subtitle = T("ProfilePersonalInformationHint"),
                     IconGlyph = "👤",
-                    TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.EditProfile)),
+                    TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.PersonalInformation)),
                 },
                 new ProfileMenuRowModel
                 {
                     Title = T("ProfileChangePassword"),
                     Subtitle = T("ProfileChangePasswordHint"),
                     IconGlyph = "🔒",
-                    TapCommand = new Command(async () => await ComingSoonAsync()),
+                    TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.ChangePassword)),
                 },
                 new ProfileMenuRowModel
                 {
@@ -147,7 +148,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
                     Subtitle = CurrentLanguageSubtitle(),
                     IconGlyph = "🌐",
                     ShowSeparator = false,
-                    TapCommand = new Command(async () => await LanguageHintAsync()),
+                    TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.LanguageSettings)),
                 },
             ]),
         });
@@ -162,14 +163,14 @@ public sealed class ProfileHubViewModel : BaseViewModel
                     Title = T("ProfileMedicalInformation"),
                     Subtitle = T("ProfileMedicalInformationHint"),
                     IconGlyph = "❤️",
-                    TapCommand = new Command(async () => await ComingSoonAsync()),
+                    TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.MedicalInformation)),
                 },
                 new ProfileMenuRowModel
                 {
                     Title = T("ProfileEmergencyContacts"),
-                    Subtitle = T("ProfileEmergencyContactsHint"),
+                    Subtitle = EmergencyContactsSubtitle(),
                     IconGlyph = "📞",
-                    TapCommand = new Command(async () => await ComingSoonAsync()),
+                    TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.EmergencyContacts)),
                 },
                 new ProfileMenuRowModel
                 {
@@ -248,23 +249,14 @@ public sealed class ProfileHubViewModel : BaseViewModel
         });
     }
 
-    private static string CurrentLanguageSubtitle() =>
-        Format(T("ProfileLanguageCurrentFormat"), CultureInfo.CurrentUICulture.NativeName);
+    private static string CurrentLanguageSubtitle() => AppLanguagePreference.CurrentNativeName;
 
-    private async Task ComingSoonAsync()
+    private string EmergencyContactsSubtitle()
     {
-        var title = Title;
-        await MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(title, T("ProfileFeatureComingSoon"), T("CommonOk")));
-    }
-
-    private static async Task LanguageHintAsync()
-    {
-        await MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(
-                T("ProfileLanguage"),
-                T("ProfileLanguageHintBody"),
-                T("CommonOk")));
+        var count = _localProfile.GetEmergencyContacts().Count;
+        return count == 0
+            ? T("ProfileEmergencyContactsHint")
+            : string.Format(CultureInfo.CurrentCulture, T("ProfileEmergencyContactsCountFormat"), count);
     }
 
     private async Task SignOutAsync()

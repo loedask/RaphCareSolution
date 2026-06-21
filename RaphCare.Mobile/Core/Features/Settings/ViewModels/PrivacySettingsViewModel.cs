@@ -21,9 +21,7 @@ public sealed class PrivacySettingsViewModel : BaseViewModel
         _profile = profile ?? throw new ArgumentNullException(nameof(profile));
         _auth = auth ?? throw new ArgumentNullException(nameof(auth));
         Title = T("PrivacyTitle");
-        ChangePasswordCommand = new Command(async () =>
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-                await Shell.Current.DisplayAlertAsync(Title, T("ProfileFeatureComingSoon"), T("CommonOk"))));
+        ChangePasswordCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.ChangePassword));
         DownloadDataCommand = new Command(async () =>
             await MainThread.InvokeOnMainThreadAsync(async () =>
                 await Shell.Current.DisplayAlertAsync(

@@ -52,6 +52,13 @@ public static class AppNavigator
     /// <summary>Help &amp; support (concept <c>/help-support</c>).</summary>
     public const string HelpSupport = "HelpSupportPage";
 
+    public const string PersonalInformation = "PersonalInformationPage";
+    public const string ChangePassword = "ChangePasswordPage";
+    public const string LanguageSettings = "LanguageSettingsPage";
+    public const string MedicalInformation = "MedicalInformationPage";
+    public const string EmergencyContacts = "EmergencyContactsPage";
+    public const string RequestCall = "RequestCallPage";
+
     public const string UnderConstruction = "UnderConstructionPage";
 
     /// <summary>Care and telehealth: session list (Agora join info + Twilio SMS from API).</summary>
@@ -114,8 +121,14 @@ public static class AppNavigator
         Routing.RegisterRoute(EditProfile, typeof(EditProfilePage));
         Routing.RegisterRoute(Privacy, typeof(PrivacyPage));
         Routing.RegisterRoute(HelpSupport, typeof(HelpSupportPage));
+        Routing.RegisterRoute(PersonalInformation, typeof(PersonalInformationPage));
+        Routing.RegisterRoute(ChangePassword, typeof(ChangePasswordPage));
+        Routing.RegisterRoute(LanguageSettings, typeof(LanguageSettingsPage));
+        Routing.RegisterRoute(MedicalInformation, typeof(MedicalInformationPage));
+        Routing.RegisterRoute(EmergencyContacts, typeof(EmergencyContactsPage));
 
         Routing.RegisterRoute(CareTelehealth, typeof(CareTelehealthPage));
+        Routing.RegisterRoute(RequestCall, typeof(RequestCallPage));
         Routing.RegisterRoute(TelehealthJoin, typeof(TelehealthJoinPage));
 
         Routing.RegisterRoute(Devices, typeof(DevicesPage));
@@ -177,6 +190,7 @@ public static class AppNavigator
             FamilyMembers => (FeatureFlags.FamilyMembersEnabled, FamilyMembers),
             AiAssistant => (FeatureFlags.AiAssistantEnabled, AiAssistant),
             Notifications => (FeatureFlags.NotificationsEnabled, Notifications),
+            RequestCall => (FeatureFlags.CareTelehealthEnabled, RequestCall),
             _ => (true, route)
         };
     }
