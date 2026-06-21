@@ -1,14 +1,17 @@
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
+using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.MedicalInfo;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
-/// <summary>Medical summary (concept <c>MedicalInformation.tsx</c>). Stored locally until clinical API expands.</summary>
+/// <summary>Medical summary (concept <c>MedicalInformation.tsx</c>). Synced via <c>api/patient/medical-info</c>.</summary>
 public sealed class MedicalInformationViewModel : BaseViewModel
 {
+    private readonly IPatientMedicalInfoService _api;
     private readonly ILocalPatientProfileStore _local;
     private string _bloodType = string.Empty;
     private string _allergies = string.Empty;
@@ -17,9 +20,10 @@ public sealed class MedicalInformationViewModel : BaseViewModel
     private string _primaryDoctor = string.Empty;
     private int _bloodTypeIndex = -1;
 
-    public MedicalInformationViewModel(ILocalPatientProfileStore local)
+    public MedicalInformationViewModel(IPatientMedicalInfoService api, ILocalPatientProfileStore local)
     {
-        _local = local;
+        _api = api ?? throw new ArgumentNullException(nameof(api));
+        _local = local ?? throw new ArgumentNullException(nameof(local));
         Title = T("MedicalInformationTitle");
         BloodTypeLabel = T("MedicalInformationBloodType");
         AllergiesLabel = T("MedicalInformationAllergies");
@@ -82,7 +86,29 @@ public sealed class MedicalInformationViewModel : BaseViewModel
 
     public ICommand SaveCommand { get; }
 
-    public void LoadFromStore()
+    public async Task LoadAsync()
+    {
+        if (IsBusy) return;
+        IsBusy = true;
+        try
+        {
+            var response = await _api.GetMyMedicalInfoAsync(CancellationToken.None).ConfigureAwait(false);
+            if (response.IsSuccess && response.Data is { } data)
+            {
+                ApplyFromApi(data);
+                CopyToLocal(data);
+                return;
+            }
+
+            LoadFromLocal();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private void LoadFromLocal()
     {
         BloodType = _local.BloodType;
         BloodTypeIndex = BloodTypeOptions.ToList().IndexOf(BloodType);
@@ -92,18 +118,68 @@ public sealed class MedicalInformationViewModel : BaseViewModel
         PrimaryDoctor = _local.PrimaryDoctor;
     }
 
+    private void ApplyFromApi(MyPatientMedicalInfoViewModel data)
+    {
+        BloodType = data.BloodType;
+        BloodTypeIndex = BloodTypeOptions.ToList().IndexOf(BloodType);
+        Allergies = data.Allergies;
+        ChronicConditions = data.ChronicConditions;
+        Medications = data.Medications;
+        PrimaryDoctor = data.PrimaryDoctor;
+    }
+
     private async Task SaveAsync()
     {
-        _local.BloodType = BloodType.Trim();
-        _local.Allergies = Allergies.Trim();
-        _local.ChronicConditions = ChronicConditions.Trim();
-        _local.Medications = Medications.Trim();
-        _local.PrimaryDoctor = PrimaryDoctor.Trim();
-
-        await MainThread.InvokeOnMainThreadAsync(async () =>
+        if (IsBusy) return;
+        IsBusy = true;
+        try
         {
-            await Shell.Current.DisplayAlertAsync(Title, T("MedicalInformationSaved"), T("CommonOk"));
-            await Shell.Current.GoToAsync("..");
-        });
+            var request = new MyPatientMedicalInfoUpdateRequest
+            {
+                BloodType = BloodType.Trim(),
+                Allergies = Allergies.Trim(),
+                ChronicConditions = ChronicConditions.Trim(),
+                Medications = Medications.Trim(),
+                PrimaryDoctor = PrimaryDoctor.Trim(),
+            };
+
+            var response = await _api.UpdateMyMedicalInfoAsync(request, CancellationToken.None).ConfigureAwait(false);
+            if (!response.IsSuccess)
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                    await Shell.Current.DisplayAlertAsync(Title, T("MedicalInformationSaveFailed"), T("CommonOk")));
+                return;
+            }
+
+            CopyToLocal(request);
+
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                await Shell.Current.DisplayAlertAsync(Title, T("MedicalInformationSaved"), T("CommonOk"));
+                await Shell.Current.GoToAsync("..");
+            });
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
+
+    private void CopyToLocal(MyPatientMedicalInfoViewModel data)
+    {
+        _local.BloodType = data.BloodType;
+        _local.Allergies = data.Allergies;
+        _local.ChronicConditions = data.ChronicConditions;
+        _local.Medications = data.Medications;
+        _local.PrimaryDoctor = data.PrimaryDoctor;
+    }
+
+    private void CopyToLocal(MyPatientMedicalInfoUpdateRequest data) => CopyToLocal(new MyPatientMedicalInfoViewModel
+    {
+        BloodType = data.BloodType,
+        Allergies = data.Allergies,
+        ChronicConditions = data.ChronicConditions,
+        Medications = data.Medications,
+        PrimaryDoctor = data.PrimaryDoctor,
+    });
 }

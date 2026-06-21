@@ -1509,7 +1509,10 @@ Accessible. Intelligent. Human.</value>
     <value>Primary doctor</value>
   </data>
   <data name="MedicalInformationSaved" xml:space="preserve">
-    <value>Medical information saved on this device.</value>
+    <value>Medical information saved.</value>
+  </data>
+  <data name="MedicalInformationSaveFailed" xml:space="preserve">
+    <value>Could not save medical information. Try again.</value>
   </data>
   <data name="EmergencyContactsTitle" xml:space="preserve">
     <value>Emergency contacts</value>
@@ -1546,6 +1549,12 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="EmergencyContactsMissingFields" xml:space="preserve">
     <value>Enter name, relationship, and phone.</value>
+  </data>
+  <data name="EmergencyContactsLoadFailed" xml:space="preserve">
+    <value>Could not load emergency contacts from the server.</value>
+  </data>
+  <data name="EmergencyContactsSaveFailed" xml:space="preserve">
+    <value>Could not save emergency contact. Try again.</value>
   </data>
   <data name="ProfileEmergencyContactsCountFormat" xml:space="preserve">
     <value>{0} contacts saved</value>

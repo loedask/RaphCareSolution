@@ -13,10 +13,10 @@ public partial class MedicalInformationPage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         if (BindingContext is MedicalInformationViewModel vm)
-            vm.LoadFromStore();
+            await vm.LoadAsync();
     }
 }

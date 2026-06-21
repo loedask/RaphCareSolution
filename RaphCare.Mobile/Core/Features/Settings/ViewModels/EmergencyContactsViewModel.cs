@@ -2,25 +2,29 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
+using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Settings.Models;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
-/// <summary>Emergency contacts (concept <c>EmergencyContacts.tsx</c>).</summary>
+/// <summary>Emergency contacts (concept <c>EmergencyContacts.tsx</c>). Synced via <c>api/patient/emergency-contacts</c>.</summary>
 public sealed class EmergencyContactsViewModel : BaseViewModel
 {
+    private readonly IPatientEmergencyContactsService _api;
     private readonly ILocalPatientProfileStore _local;
     private bool _showForm;
     private Guid? _editId;
     private string _formName = string.Empty;
     private string _formRelationship = string.Empty;
     private string _formPhone = string.Empty;
+    private string? _errorMessage;
 
-    public EmergencyContactsViewModel(ILocalPatientProfileStore local)
+    public EmergencyContactsViewModel(IPatientEmergencyContactsService api, ILocalPatientProfileStore local)
     {
-        _local = local;
+        _api = api ?? throw new ArgumentNullException(nameof(api));
+        _local = local ?? throw new ArgumentNullException(nameof(local));
         Title = T("EmergencyContactsTitle");
         AddButtonText = T("EmergencyContactsAdd");
         SaveContactText = T("EmergencyContactsSave");
@@ -31,17 +35,26 @@ public sealed class EmergencyContactsViewModel : BaseViewModel
         RelationshipLabel = T("EmergencyContactsRelationship");
         PhoneLabel = T("EmergencyContactsPhone");
         EmptyText = T("EmergencyContactsEmpty");
+        RemovedText = T("EmergencyContactsRemoved");
         CancelFormButtonText = T("CommonCancel");
 
         Contacts = new ObservableCollection<StoredEmergencyContact>();
+        Contacts.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ShowEmpty));
         AddCommand = new Command(() => ShowFormFor(null));
         CancelFormCommand = new Command(ResetForm);
-        SaveFormCommand = new Command(SaveForm);
+        SaveFormCommand = new Command(async () => await SaveFormAsync());
         EditCommand = new Command<StoredEmergencyContact>(c => ShowFormFor(c));
-        RemoveCommand = new Command<StoredEmergencyContact>(RemoveContact);
+        RemoveCommand = new Command<StoredEmergencyContact>(async c => await RemoveContactAsync(c));
+        RefreshCommand = new Command(async () => await LoadAsync());
     }
 
     public ObservableCollection<StoredEmergencyContact> Contacts { get; }
+
+    public string? ErrorMessage
+    {
+        get => _errorMessage;
+        set => SetProperty(ref _errorMessage, value);
+    }
 
     public bool ShowForm
     {
@@ -84,21 +97,65 @@ public sealed class EmergencyContactsViewModel : BaseViewModel
     public string RemovedText { get; }
     public string CancelFormButtonText { get; }
 
-    public bool ShowEmpty => !IsBusy && Contacts.Count == 0;
+    public bool ShowEmpty => !IsBusy && Contacts.Count == 0 && string.IsNullOrEmpty(ErrorMessage);
 
     public ICommand AddCommand { get; }
     public ICommand CancelFormCommand { get; }
     public ICommand SaveFormCommand { get; }
     public ICommand EditCommand { get; }
     public ICommand RemoveCommand { get; }
+    public ICommand RefreshCommand { get; }
 
-    public void LoadFromStore()
+    public async Task LoadAsync()
+    {
+        if (IsBusy) return;
+        ErrorMessage = null;
+        IsBusy = true;
+        OnPropertyChanged(nameof(ShowEmpty));
+        try
+        {
+            var response = await _api.GetMyEmergencyContactsAsync(CancellationToken.None).ConfigureAwait(false);
+            if (!response.IsSuccess || response.Data is null)
+            {
+                ErrorMessage = response.ErrorMessage ?? T("EmergencyContactsLoadFailed");
+                LoadFromLocalCache();
+                return;
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Contacts.Clear();
+                foreach (var c in response.Data)
+                {
+                    Contacts.Add(new StoredEmergencyContact
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Relationship = c.Relationship ?? string.Empty,
+                        Phone = c.PhoneNumber ?? string.Empty,
+                    });
+                }
+
+                SyncLocalCache();
+                OnPropertyChanged(nameof(ShowEmpty));
+            });
+        }
+        finally
+        {
+            IsBusy = false;
+            OnPropertyChanged(nameof(ShowEmpty));
+        }
+    }
+
+    private void LoadFromLocalCache()
     {
         Contacts.Clear();
         foreach (var c in _local.GetEmergencyContacts())
             Contacts.Add(c);
         OnPropertyChanged(nameof(ShowEmpty));
     }
+
+    private void SyncLocalCache() => _local.SetEmergencyContacts(Contacts.ToList());
 
     private void ShowFormFor(StoredEmergencyContact? contact)
     {
@@ -132,49 +189,81 @@ public sealed class EmergencyContactsViewModel : BaseViewModel
         OnPropertyChanged(nameof(SaveFormButtonText));
     }
 
-    private void SaveForm()
+    private async Task SaveFormAsync()
     {
         if (string.IsNullOrWhiteSpace(FormName) || string.IsNullOrWhiteSpace(FormRelationship) || string.IsNullOrWhiteSpace(FormPhone))
         {
-            MainThread.BeginInvokeOnMainThread(async () =>
-                await Shell.Current.DisplayAlertAsync(Title, T("EmergencyContactsMissingFields"), T("CommonOk")));
+            await AlertAsync(T("EmergencyContactsMissingFields"));
             return;
         }
 
-        if (_editId is { } id)
+        if (IsBusy) return;
+        IsBusy = true;
+        try
         {
-            var existing = Contacts.FirstOrDefault(c => c.Id == id);
-            if (existing is not null)
+            if (_editId is { } id)
             {
-                existing.Name = FormName.Trim();
-                existing.Relationship = FormRelationship.Trim();
-                existing.Phone = FormPhone.Trim();
+                var res = await _api.UpdateEmergencyContactAsync(
+                    id,
+                    FormName.Trim(),
+                    FormRelationship.Trim(),
+                    FormPhone.Trim(),
+                    email: null,
+                    CancellationToken.None).ConfigureAwait(false);
+                if (!res.IsSuccess)
+                {
+                    await AlertAsync(res.ErrorMessage ?? T("EmergencyContactsSaveFailed"));
+                    return;
+                }
             }
-        }
-        else
-        {
-            Contacts.Add(new StoredEmergencyContact
+            else
             {
-                Name = FormName.Trim(),
-                Relationship = FormRelationship.Trim(),
-                Phone = FormPhone.Trim(),
-            });
+                var res = await _api.AddEmergencyContactAsync(
+                    FormName.Trim(),
+                    FormRelationship.Trim(),
+                    FormPhone.Trim(),
+                    email: null,
+                    CancellationToken.None).ConfigureAwait(false);
+                if (!res.IsSuccess)
+                {
+                    await AlertAsync(res.ErrorMessage ?? T("EmergencyContactsSaveFailed"));
+                    return;
+                }
+            }
+
+            ResetForm();
+            await LoadAsync().ConfigureAwait(false);
         }
-
-        Persist();
-        ResetForm();
-        OnPropertyChanged(nameof(ShowEmpty));
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
-    private void RemoveContact(StoredEmergencyContact? contact)
+    private async Task RemoveContactAsync(StoredEmergencyContact? contact)
     {
-        if (contact is null) return;
-        Contacts.Remove(contact);
-        Persist();
-        OnPropertyChanged(nameof(ShowEmpty));
-        MainThread.BeginInvokeOnMainThread(async () =>
-            await Shell.Current.DisplayAlertAsync(Title, RemovedText, T("CommonOk")));
+        if (contact is null || IsBusy) return;
+        IsBusy = true;
+        try
+        {
+            var res = await _api.RemoveEmergencyContactAsync(contact.Id, CancellationToken.None).ConfigureAwait(false);
+            if (!res.IsSuccess)
+            {
+                await AlertAsync(res.ErrorMessage ?? T("EmergencyContactsSaveFailed"));
+                return;
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+                await Shell.Current.DisplayAlertAsync(Title, RemovedText, T("CommonOk")));
+            await LoadAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
-    private void Persist() => _local.SetEmergencyContacts(Contacts.ToList());
+    private static Task AlertAsync(string message) =>
+        MainThread.InvokeOnMainThreadAsync(async () =>
+            await Shell.Current.DisplayAlertAsync(T("EmergencyContactsTitle"), message, T("CommonOk")));
 }
