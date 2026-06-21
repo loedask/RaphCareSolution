@@ -21,6 +21,13 @@
                 <span class="admin-nav-icon" aria-hidden="true">⌂</span>
                 Hospitals
             </NavLink>
+            @if (ClinicContext.CurrentClinicId is Guid clinicId)
+            {
+                <NavLink class="admin-nav-link" href="@($"/admin/hospitals/{clinicId}/appointments")">
+                    <span class="admin-nav-icon" aria-hidden="true">📅</span>
+                    Appointments
+                </NavLink>
+            }
 
             <div class="admin-nav-section">Onboarding</div>
             <NavLink class="admin-nav-link" href="/admin/hospitals/register">

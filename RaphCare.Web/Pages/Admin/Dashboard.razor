@@ -1,26 +1,41 @@
 @page "/admin"
 @layout AdminLayout
+@implements IDisposable
 
 <PageTitle>RaphCare Admin</PageTitle>
 
 <section class="admin-page">
     <header class="admin-page-header">
         <div>
-            <h1>Platform overview</h1>
+            <h1>@(_dashboard?.ClinicName ?? "Platform overview")</h1>
             <p class="admin-page-lead">
-                @if (!string.IsNullOrWhiteSpace(ClinicContext.CurrentClinicName))
+                @if (_dashboard is not null)
                 {
-                    <span>Active hospital: <strong>@ClinicContext.CurrentClinicName</strong>. </span>
+                    <span>Hospital dashboard for your active context.</span>
                 }
-                Manage hospital onboarding and your linked organizations.
+                else if (ClinicContext.CurrentClinicId is null && _clinics.Count > 1)
+                {
+                    <span>Select a hospital from the top bar to see scoped metrics.</span>
+                }
+                else
+                {
+                    <span>Manage hospital onboarding and your linked organizations.</span>
+                }
             </p>
         </div>
-        <a class="btn btn-primary" href="/admin/hospitals/register">+ Register hospital</a>
+        @if (ClinicContext.CurrentClinicId is Guid clinicId)
+        {
+            <a class="btn btn-secondary" href="/admin/hospitals/@clinicId">Hospital details</a>
+        }
+        else
+        {
+            <a class="btn btn-primary" href="/admin/hospitals/register">+ Register hospital</a>
+        }
     </header>
 
     @if (_loading)
     {
-        <p class="text-muted">Loading hospitals…</p>
+        <p class="text-muted">Loading dashboard…</p>
     }
     else if (_authRequired)
     {
@@ -37,6 +52,94 @@
     else if (!string.IsNullOrEmpty(_error))
     {
         <div class="alert alert-error">@_error</div>
+    }
+    else if (_dashboard is not null)
+    {
+        <div class="stat-grid">
+            <div class="stat-card stat-card-blue">
+                <div class="stat-card-top">
+                    <span class="stat-label">Patients</span>
+                    <span class="stat-icon" aria-hidden="true">👤</span>
+                </div>
+                <div class="stat-value">@_dashboard.PatientCount</div>
+            </div>
+            <div class="stat-card stat-card-green">
+                <div class="stat-card-top">
+                    <span class="stat-label">Staff</span>
+                    <span class="stat-icon" aria-hidden="true">◎</span>
+                </div>
+                <div class="stat-value">@_dashboard.StaffCount</div>
+            </div>
+            <div class="stat-card stat-card-violet">
+                <div class="stat-card-top">
+                    <span class="stat-label">Providers</span>
+                    <span class="stat-icon" aria-hidden="true">⚕</span>
+                </div>
+                <div class="stat-value">@_dashboard.ProviderCount</div>
+            </div>
+            <div class="stat-card stat-card-blue">
+                <div class="stat-card-top">
+                    <span class="stat-label">Facilities</span>
+                    <span class="stat-icon" aria-hidden="true">⌂</span>
+                </div>
+                <div class="stat-value">@_dashboard.FacilityCount</div>
+            </div>
+            <div class="stat-card stat-card-green">
+                <div class="stat-card-top">
+                    <span class="stat-label">Today</span>
+                    <span class="stat-icon" aria-hidden="true">📅</span>
+                </div>
+                <div class="stat-value">@_dashboard.AppointmentsTodayCount</div>
+            </div>
+            <div class="stat-card stat-card-violet">
+                <div class="stat-card-top">
+                    <span class="stat-label">Next 7 days</span>
+                    <span class="stat-icon" aria-hidden="true">→</span>
+                </div>
+                <div class="stat-value">@_dashboard.UpcomingAppointmentsCount</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Upcoming appointments</h3>
+                <a class="card-header-link" href="/admin/hospitals/@_dashboard.ClinicId/appointments">View all →</a>
+            </div>
+            @if (_dashboard.UpcomingAppointments.Count == 0)
+            {
+                <div class="admin-page-card-body">
+                    <p class="text-muted">No upcoming appointments in the next 7 days.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>When</th>
+                                <th>Patient</th>
+                                <th>Provider</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appt in _dashboard.UpcomingAppointments)
+                            {
+                                <tr>
+                                    <td>@appt.ScheduledStart.ToString("dd MMM yyyy HH:mm")</td>
+                                    <td>@appt.PatientName</td>
+                                    <td>@appt.ProviderName</td>
+                                    <td>@appt.Type</td>
+                                    <td>@appt.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
     }
     else
     {
@@ -121,6 +224,7 @@
     private bool _loading = true;
     private bool _authRequired;
     private string? _error;
+    private ClinicDashboard? _dashboard;
     private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
 
     private string _signInReturnUrl =>
@@ -128,15 +232,51 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await AdminClinicService.GetClinicsAsync();
-        _loading = false;
-        if (response.IsSuccess && response.Data is not null)
+        ClinicContext.Changed += OnClinicContextChanged;
+        await LoadAsync();
+    }
+
+    private void OnClinicContextChanged() => _ = ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        await LoadAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        _error = null;
+        _dashboard = null;
+
+        var clinicsResponse = await AdminClinicService.GetClinicsAsync();
+        if (!clinicsResponse.IsSuccess || clinicsResponse.Data is null)
         {
-            _clinics = response.Data;
+            _loading = false;
+            _error = clinicsResponse.ErrorMessage ?? "Could not load hospitals.";
+            _authRequired = clinicsResponse.StatusCode is 401 or 403;
             return;
         }
 
-        _error = response.ErrorMessage ?? "Could not load hospitals.";
-        _authRequired = response.StatusCode is 401 or 403;
+        _clinics = clinicsResponse.Data;
+
+        if (ClinicContext.CurrentClinicId is Guid clinicId)
+        {
+            var dashboardResponse = await AdminClinicService.GetDashboardAsync(clinicId);
+            _loading = false;
+            if (dashboardResponse.IsSuccess && dashboardResponse.Data is not null)
+            {
+                _dashboard = dashboardResponse.Data;
+                return;
+            }
+
+            _error = dashboardResponse.ErrorMessage ?? "Could not load hospital dashboard.";
+            return;
+        }
+
+        _loading = false;
     }
+
+    public void Dispose() => ClinicContext.Changed -= OnClinicContextChanged;
 }

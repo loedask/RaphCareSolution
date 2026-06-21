@@ -685,6 +685,163 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicDashboard>> GetDashboardAsync(Guid clinicId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client.GetAsync($"api/admin/clinics/{clinicId}/dashboard", cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicDashboard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicDashboard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+            var dto = await response.Content.ReadFromJsonAsync<DashboardDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicDashboard>.Failure("Could not load dashboard.");
+            return Response<ClinicDashboard>.Success(MapDashboard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicDashboard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<IReadOnlyList<ClinicProviderListItem>>> GetProvidersAsync(Guid clinicId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client.GetAsync($"api/admin/clinics/{clinicId}/providers", cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<IReadOnlyList<ClinicProviderListItem>>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<IReadOnlyList<ClinicProviderListItem>>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+            var items = await response.Content.ReadFromJsonAsync<List<ProviderListItemDto>>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            IReadOnlyList<ClinicProviderListItem> providers = items?.Select(MapProvider).ToList() ?? [];
+            return Response<IReadOnlyList<ClinicProviderListItem>>.Success(providers);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<IReadOnlyList<ClinicProviderListItem>>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicProviderDetail>> GetProviderDetailAsync(Guid clinicId, Guid providerId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client.GetAsync($"api/admin/clinics/{clinicId}/providers/{providerId}", cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicProviderDetail>.Failure("Provider not found.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicProviderDetail>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+            var dto = await response.Content.ReadFromJsonAsync<ProviderDetailDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicProviderDetail>.Failure("Could not load provider.");
+            return Response<ClinicProviderDetail>.Success(MapProviderDetail(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicProviderDetail>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicProviderListItem>> CreateProviderAsync(Guid clinicId, Guid userId, string? licenseNumber = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client.PostAsJsonAsync($"api/admin/clinics/{clinicId}/providers", new { userId, licenseNumber }, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can add providers.";
+                return Response<ClinicProviderListItem>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<ProviderListItemDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicProviderListItem>.Failure("Could not add provider.");
+            return Response<ClinicProviderListItem>.Success(MapProvider(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicProviderListItem>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicProviderSchedule>> CreateProviderScheduleAsync(Guid clinicId, Guid providerId, CreateProviderScheduleRequest request, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client.PostAsJsonAsync($"api/admin/clinics/{clinicId}/providers/{providerId}/schedules", request, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicProviderSchedule>.Failure("Provider not found.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicProviderSchedule>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+            var dto = await response.Content.ReadFromJsonAsync<ProviderScheduleDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicProviderSchedule>.Failure("Could not add schedule slot.");
+            return Response<ClinicProviderSchedule>.Success(MapSchedule(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicProviderSchedule>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<bool>> DeleteProviderScheduleAsync(Guid clinicId, Guid providerId, Guid scheduleId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client.DeleteAsync($"api/admin/clinics/{clinicId}/providers/{providerId}/schedules/{scheduleId}", cancellationToken).ConfigureAwait(false);
+            if (response.IsSuccessStatusCode) return Response<bool>.Success(true);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Schedule slot not found.", 404);
+            return Response<bool>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<PagedClinicAppointments>> GetAppointmentsAsync(
+        Guid clinicId,
+        int pageNumber = 1,
+        int pageSize = 20,
+        DateTime? fromUtc = null,
+        DateTime? toUtc = null,
+        string? status = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var query = $"api/admin/clinics/{clinicId}/appointments?pageNumber={pageNumber}&pageSize={pageSize}";
+            if (fromUtc is { } from) query += $"&fromUtc={Uri.EscapeDataString(from.ToString("O"))}";
+            if (toUtc is { } to) query += $"&toUtc={Uri.EscapeDataString(to.ToString("O"))}";
+            if (!string.IsNullOrWhiteSpace(status)) query += $"&status={Uri.EscapeDataString(status.Trim())}";
+            using var response = await client.GetAsync(query, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<PagedClinicAppointments>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<PagedClinicAppointments>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+            var page = await response.Content.ReadFromJsonAsync<PagedAppointmentsDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (page?.Items is null) return Response<PagedClinicAppointments>.Failure("Could not load appointments.");
+            return Response<PagedClinicAppointments>.Success(new PagedClinicAppointments
+            {
+                Items = page.Items.Select(MapAppointment).ToList(),
+                TotalCount = page.TotalCount,
+                PageNumber = page.PageNumber,
+                PageSize = page.PageSize
+            });
+        }
+        catch (HttpRequestException)
+        {
+            return Response<PagedClinicAppointments>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     private static ClinicStaffMember MapStaff(ClinicStaffMemberDto dto) => new()
     {
         UserId = dto.UserId,
@@ -803,6 +960,64 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             .ToList() ?? []
     };
 
+    private static ClinicDashboard MapDashboard(DashboardDto dto) => new()
+    {
+        ClinicId = dto.ClinicId,
+        ClinicName = dto.ClinicName,
+        PatientCount = dto.PatientCount,
+        StaffCount = dto.StaffCount,
+        ProviderCount = dto.ProviderCount,
+        FacilityCount = dto.FacilityCount,
+        AppointmentsTodayCount = dto.AppointmentsTodayCount,
+        UpcomingAppointmentsCount = dto.UpcomingAppointmentsCount,
+        UpcomingAppointments = dto.UpcomingAppointments?.Select(MapAppointment).ToList() ?? []
+    };
+
+    private static ClinicProviderListItem MapProvider(ProviderListItemDto dto) => new()
+    {
+        ProviderId = dto.ProviderId,
+        ApplicationUserId = dto.ApplicationUserId,
+        DisplayName = dto.DisplayName,
+        Email = dto.Email,
+        LicenseNumber = dto.LicenseNumber,
+        IsActive = dto.IsActive,
+        ScheduleSlotCount = dto.ScheduleSlotCount
+    };
+
+    private static ClinicProviderDetail MapProviderDetail(ProviderDetailDto dto) => new()
+    {
+        ProviderId = dto.ProviderId,
+        ApplicationUserId = dto.ApplicationUserId,
+        DisplayName = dto.DisplayName,
+        Email = dto.Email,
+        LicenseNumber = dto.LicenseNumber,
+        IsActive = dto.IsActive,
+        Schedules = dto.Schedules?.Select(MapSchedule).ToList() ?? []
+    };
+
+    private static ClinicProviderSchedule MapSchedule(ProviderScheduleDto dto) => new()
+    {
+        Id = dto.Id,
+        Day = dto.Day,
+        StartTime = dto.StartTime,
+        EndTime = dto.EndTime,
+        IsRecurring = dto.IsRecurring
+    };
+
+    private static ClinicAppointmentListItem MapAppointment(AppointmentListItemDto dto) => new()
+    {
+        Id = dto.Id,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName,
+        ProviderId = dto.ProviderId,
+        ProviderName = dto.ProviderName,
+        ScheduledStart = dto.ScheduledStart,
+        ScheduledEnd = dto.ScheduledEnd,
+        Type = dto.Type,
+        Status = dto.Status,
+        Reason = dto.Reason
+    };
+
     private sealed class PagedClinicsDto
     {
         public List<ClinicListItemDto>? Items { get; set; }
@@ -919,5 +1134,71 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string VisitType { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string? Summary { get; set; }
+    }
+
+    private sealed class DashboardDto
+    {
+        public Guid ClinicId { get; set; }
+        public string ClinicName { get; set; } = string.Empty;
+        public int PatientCount { get; set; }
+        public int StaffCount { get; set; }
+        public int ProviderCount { get; set; }
+        public int FacilityCount { get; set; }
+        public int AppointmentsTodayCount { get; set; }
+        public int UpcomingAppointmentsCount { get; set; }
+        public List<AppointmentListItemDto>? UpcomingAppointments { get; set; }
+    }
+
+    private sealed class ProviderListItemDto
+    {
+        public Guid ProviderId { get; set; }
+        public Guid ApplicationUserId { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string LicenseNumber { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
+        public int ScheduleSlotCount { get; set; }
+    }
+
+    private sealed class ProviderDetailDto
+    {
+        public Guid ProviderId { get; set; }
+        public Guid ApplicationUserId { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string LicenseNumber { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
+        public List<ProviderScheduleDto>? Schedules { get; set; }
+    }
+
+    private sealed class ProviderScheduleDto
+    {
+        public Guid Id { get; set; }
+        public DayOfWeek Day { get; set; }
+        public TimeSpan StartTime { get; set; }
+        public TimeSpan EndTime { get; set; }
+        public bool IsRecurring { get; set; }
+    }
+
+    private sealed class PagedAppointmentsDto
+    {
+        public List<AppointmentListItemDto>? Items { get; set; }
+        public int TotalCount { get; set; }
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+    }
+
+    private sealed class AppointmentListItemDto
+    {
+        public Guid Id { get; set; }
+        public Guid PatientId { get; set; }
+        public string PatientName { get; set; } = string.Empty;
+        public Guid ProviderId { get; set; }
+        public string ProviderName { get; set; } = string.Empty;
+        public DateTime ScheduledStart { get; set; }
+        public DateTime ScheduledEnd { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string? Reason { get; set; }
     }
 }

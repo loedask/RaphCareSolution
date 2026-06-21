@@ -1,0 +1,242 @@
+@page "/admin/hospitals/{ClinicId:guid}/providers/{ProviderId:guid}"
+@layout AdminLayout
+
+<PageTitle>@(_provider?.DisplayName ?? "Provider") — RaphCare Admin</PageTitle>
+
+<section class="admin-page">
+    @if (_loading)
+    {
+        <p class="text-muted">Loading provider…</p>
+    }
+    else if (_provider is null)
+    {
+        <div class="alert alert-error">@(_error ?? "Provider not found.")</div>
+        <a class="btn btn-secondary" href="@BackUrl">← Back to hospital</a>
+    }
+    else
+    {
+        <header class="admin-page-header">
+            <div>
+                <h1>@_provider.DisplayName</h1>
+                <p class="admin-page-lead">Weekly schedule at @_clinicName</p>
+            </div>
+            <span class="badge @(_provider.IsActive ? "badge-success" : "badge-muted")">
+                @(_provider.IsActive ? "Active" : "Inactive")
+            </span>
+        </header>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Profile</p>
+                    <h2>Provider details</h2>
+                </div>
+            </header>
+            <div class="admin-page-card-body">
+                <dl class="admin-detail-grid">
+                    <div>
+                        <dt>Email</dt>
+                        <dd>@_provider.Email</dd>
+                    </div>
+                    <div>
+                        <dt>License</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(_provider.LicenseNumber) ? "—" : _provider.LicenseNumber)</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Availability</p>
+                    <h2>Weekly schedule</h2>
+                </div>
+                <span class="admin-progress-pill">@_provider.Schedules.Count slot@(_provider.Schedules.Count == 1 ? "" : "s")</span>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_isAdministrator)
+                {
+                    <div class="admin-inline-form">
+                        <h3>Add schedule slot</h3>
+                        <div class="form-grid">
+                            <label>
+                                Day
+                                <select class="form-control" @bind="_scheduleDay">
+                                    @foreach (var day in _days)
+                                    {
+                                        <option value="@day">@day</option>
+                                    }
+                                </select>
+                            </label>
+                            <label>
+                                Start
+                                <input class="form-control" type="time" @bind="_startTime" />
+                            </label>
+                            <label>
+                                End
+                                <input class="form-control" type="time" @bind="_endTime" />
+                            </label>
+                        </div>
+                        <div class="admin-page-actions">
+                            <button type="button" class="btn btn-primary" disabled="@_savingSchedule" @onclick="AddScheduleAsync">
+                                @(_savingSchedule ? "Adding…" : "Add slot")
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                @if (_provider.Schedules.Count == 0)
+                {
+                    <p class="text-muted">No schedule slots yet.</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    @if (_isAdministrator)
+                                    {
+                                        <th></th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var slot in _provider.Schedules)
+                                {
+                                    <tr>
+                                        <td>@slot.Day</td>
+                                        <td>@slot.StartTime.ToString(@"hh\:mm")</td>
+                                        <td>@slot.EndTime.ToString(@"hh\:mm")</td>
+                                        @if (_isAdministrator)
+                                        {
+                                            <td>
+                                                <button type="button"
+                                                        class="btn btn-ghost btn-sm"
+                                                        disabled="@(_deletingScheduleId == slot.Id)"
+                                                        @onclick="() => DeleteScheduleAsync(slot.Id)">
+                                                    @(_deletingScheduleId == slot.Id ? "Removing…" : "Remove")
+                                                </button>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-actions">
+            <a class="btn btn-secondary" href="@BackUrl">← Back to hospital</a>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+    [Parameter] public Guid ProviderId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+
+    private static readonly DayOfWeek[] _days =
+    [
+        DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
+        DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+    ];
+
+    private bool _loading = true;
+    private bool _isAdministrator;
+    private bool _savingSchedule;
+    private Guid? _deletingScheduleId;
+    private string? _error;
+    private string _clinicName = "this hospital";
+    private ClinicProviderDetail? _provider;
+    private DayOfWeek _scheduleDay = DayOfWeek.Monday;
+    private TimeOnly? _startTime = new(9, 0);
+    private TimeOnly? _endTime = new(17, 0);
+
+    private string BackUrl => $"/admin/hospitals/{ClinicId}?tab=providers";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
+        if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
+        {
+            _clinicName = clinicResponse.Data.Name;
+            _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+
+        await LoadProviderAsync();
+    }
+
+    private async Task LoadProviderAsync()
+    {
+        _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetProviderDetailAsync(ClinicId, ProviderId);
+        _loading = false;
+
+        if (response.IsSuccess && response.Data is not null)
+            _provider = response.Data;
+        else
+            _error = response.ErrorMessage ?? "Could not load provider.";
+    }
+
+    private async Task AddScheduleAsync()
+    {
+        if (_startTime is not { } start || _endTime is not { } end)
+        {
+            _error = "Enter valid start and end times.";
+            return;
+        }
+
+        if (end <= start)
+        {
+            _error = "End time must be after start time.";
+            return;
+        }
+
+        _savingSchedule = true;
+        _error = null;
+        var response = await AdminClinicService.CreateProviderScheduleAsync(ClinicId, ProviderId, new CreateProviderScheduleRequest
+        {
+            Day = _scheduleDay,
+            StartTime = start.ToTimeSpan(),
+            EndTime = end.ToTimeSpan()
+        });
+        _savingSchedule = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not add schedule slot.";
+            return;
+        }
+
+        await LoadProviderAsync();
+    }
+
+    private async Task DeleteScheduleAsync(Guid scheduleId)
+    {
+        _deletingScheduleId = scheduleId;
+        _error = null;
+        var response = await AdminClinicService.DeleteProviderScheduleAsync(ClinicId, ProviderId, scheduleId);
+        _deletingScheduleId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not remove schedule slot.";
+            return;
+        }
+
+        await LoadProviderAsync();
+    }
+}

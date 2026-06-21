@@ -24,4 +24,11 @@ public interface IAdminClinicService
     Task<Response<FacilityListItem>> CreateFacilityAsync(Guid clinicId, SaveFacilityRequest request, CancellationToken cancellationToken = default);
     Task<Response<FacilityListItem>> UpdateFacilityAsync(Guid clinicId, Guid facilityId, SaveFacilityRequest request, CancellationToken cancellationToken = default);
     Task<Response<bool>> DeleteFacilityAsync(Guid clinicId, Guid facilityId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicDashboard>> GetDashboardAsync(Guid clinicId, CancellationToken cancellationToken = default);
+    Task<Response<IReadOnlyList<ClinicProviderListItem>>> GetProvidersAsync(Guid clinicId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicProviderDetail>> GetProviderDetailAsync(Guid clinicId, Guid providerId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicProviderListItem>> CreateProviderAsync(Guid clinicId, Guid userId, string? licenseNumber = null, CancellationToken cancellationToken = default);
+    Task<Response<ClinicProviderSchedule>> CreateProviderScheduleAsync(Guid clinicId, Guid providerId, CreateProviderScheduleRequest request, CancellationToken cancellationToken = default);
+    Task<Response<bool>> DeleteProviderScheduleAsync(Guid clinicId, Guid providerId, Guid scheduleId, CancellationToken cancellationToken = default);
+    Task<Response<PagedClinicAppointments>> GetAppointmentsAsync(Guid clinicId, int pageNumber = 1, int pageSize = 20, DateTime? fromUtc = null, DateTime? toUtc = null, string? status = null, CancellationToken cancellationToken = default);
 }

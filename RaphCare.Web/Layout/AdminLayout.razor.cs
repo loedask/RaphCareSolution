@@ -74,6 +74,18 @@ public partial class AdminLayout
                 ("Hospitals", "/admin/hospitals", false),
                 ("Register hospital", "/admin/hospitals/register", true)
             ],
+            _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path.EndsWith("/appointments", StringComparison.Ordinal) =>
+            [
+                ("RaphCare", "/admin", false),
+                ("Hospitals", "/admin/hospitals", false),
+                ("Appointments", path, true)
+            ],
+            _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path.Contains("/providers/", StringComparison.Ordinal) =>
+            [
+                ("RaphCare", "/admin", false),
+                ("Hospitals", "/admin/hospitals", false),
+                ("Provider", path, true)
+            ],
             _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path != "/admin/hospitals/register" =>
             [
                 ("RaphCare", "/admin", false),

@@ -2,6 +2,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.DTOs;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicProvider;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicProviderSchedule;
+using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicProviderSchedule;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.EnsureClinicMembership;
@@ -17,6 +20,10 @@ using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinics;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicStaff;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicAppointments;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicDashboard;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicProviderById;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicProviders;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicPatientById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicPatients;
 
@@ -338,5 +345,130 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             new DeleteAdminFacilityCommand { ClinicId = id, FacilityId = facilityId },
             cancellationToken);
         return deleted ? NoContent() : NotFound();
+    }
+
+    /// <summary>Dashboard metrics scoped to this hospital.</summary>
+    [HttpGet("{id:guid}/dashboard", Name = "GetAdminClinicDashboard")]
+    [ProducesResponseType(typeof(AdminClinicDashboardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetDashboard(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetAdminClinicDashboardQuery { ClinicId = id }, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>List providers linked to this hospital.</summary>
+    [HttpGet("{id:guid}/providers", Name = "GetAdminClinicProviders")]
+    [ProducesResponseType(typeof(IReadOnlyList<AdminClinicProviderListItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetProviders(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetAdminClinicProvidersQuery { ClinicId = id }, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Get one provider with weekly schedule.</summary>
+    [HttpGet("{id:guid}/providers/{providerId:guid}", Name = "GetAdminClinicProviderById")]
+    [ProducesResponseType(typeof(AdminClinicProviderDetailDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetProviderById(Guid id, Guid providerId, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicProviderByIdQuery { ClinicId = id, ProviderId = providerId },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Link a staff member as a clinical provider for this hospital.</summary>
+    [HttpPost("{id:guid}/providers", Name = "CreateAdminClinicProvider")]
+    [ProducesResponseType(typeof(AdminClinicProviderListItemDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> CreateProvider(
+        Guid id,
+        [FromBody] CreateAdminClinicProviderRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicProviderCommand
+            {
+                ClinicId = id,
+                UserId = body.UserId,
+                LicenseNumber = body.LicenseNumber
+            },
+            cancellationToken);
+        return result is null
+            ? NotFound()
+            : CreatedAtAction(nameof(GetProviderById), new { id, providerId = result.ProviderId }, result);
+    }
+
+    /// <summary>Add a recurring weekly schedule slot for a provider.</summary>
+    [HttpPost("{id:guid}/providers/{providerId:guid}/schedules", Name = "CreateAdminClinicProviderSchedule")]
+    [ProducesResponseType(typeof(AdminClinicProviderScheduleDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateProviderSchedule(
+        Guid id,
+        Guid providerId,
+        [FromBody] CreateAdminClinicProviderScheduleRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicProviderScheduleCommand
+            {
+                ClinicId = id,
+                ProviderId = providerId,
+                Day = body.Day,
+                StartTime = body.StartTime,
+                EndTime = body.EndTime
+            },
+            cancellationToken);
+        return result is null ? NotFound() : CreatedAtAction(nameof(GetProviderById), new { id, providerId }, result);
+    }
+
+    /// <summary>Remove a provider schedule slot.</summary>
+    [HttpDelete("{id:guid}/providers/{providerId:guid}/schedules/{scheduleId:guid}", Name = "DeleteAdminClinicProviderSchedule")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteProviderSchedule(
+        Guid id,
+        Guid providerId,
+        Guid scheduleId,
+        CancellationToken cancellationToken)
+    {
+        var deleted = await mediator.Send(
+            new DeleteAdminClinicProviderScheduleCommand
+            {
+                ClinicId = id,
+                ProviderId = providerId,
+                ScheduleId = scheduleId
+            },
+            cancellationToken);
+        return deleted ? NoContent() : NotFound();
+    }
+
+    /// <summary>List appointments for this hospital.</summary>
+    [HttpGet("{id:guid}/appointments", Name = "GetAdminClinicAppointments")]
+    [ProducesResponseType(typeof(PagedResult<AdminClinicAppointmentListItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAppointments(
+        Guid id,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] DateTime? fromUtc = null,
+        [FromQuery] DateTime? toUtc = null,
+        [FromQuery] string? status = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicAppointmentsQuery
+            {
+                ClinicId = id,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                FromUtc = fromUtc,
+                ToUtc = toUtc,
+                Status = status
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
     }
 }

@@ -38,6 +38,14 @@
                 <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                 Patients
             </button>
+            <button type="button" class="admin-detail-tab @(_tab == "providers" ? "active" : "")" @onclick='() => SetTab("providers")'>
+                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2 4 4 .5-3 3 .8 4.5L12 13l-3.8 1.5.8-4.5-3-3 4-.5z"/><circle cx="12" cy="12" r="3"/></svg>
+                Providers
+            </button>
+            <button type="button" class="admin-detail-tab @(_tab == "appointments" ? "active" : "")" @onclick='() => SetTab("appointments")'>
+                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                Appointments
+            </button>
             <button type="button" class="admin-detail-tab @(_tab == "staff" ? "active" : "")" @onclick='() => SetTab("staff")'>
                 <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3.1-6 7-6"/><circle cx="17" cy="9" r="2.5"/><path d="M14 20c0-2.5 2.2-4.5 5-4.5"/></svg>
                 Staff
@@ -296,6 +304,135 @@
                 </div>
             </div>
         }
+        else if (_tab == "providers")
+        {
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Clinical team</p>
+                        <h1>Providers</h1>
+                        <p class="admin-page-lead">Clinicians who can receive appointments at this hospital.</p>
+                    </div>
+                    <span class="admin-progress-pill">@_providers.Count provider@(_providers.Count == 1 ? "" : "s")</span>
+                </header>
+                <div class="admin-page-card-body">
+                    @if (_isAdministrator)
+                    {
+                        <div class="admin-inline-form">
+                            <h3>Add provider</h3>
+                            <p class="text-muted">Link a staff member as a clinical provider.</p>
+                            <div class="claim-form-row">
+                                <select class="form-control" @bind="_selectedStaffUserId">
+                                    <option value="">Select staff member…</option>
+                                    @foreach (var member in _staffCandidates)
+                                    {
+                                        <option value="@member.UserId">@member.DisplayName (@member.Email)</option>
+                                    }
+                                </select>
+                                <input class="form-control" @bind="_providerLicense" placeholder="License # (optional)" />
+                                <button type="button" class="btn btn-primary" disabled="@_addingProvider" @onclick="AddProviderAsync">
+                                    @(_addingProvider ? "Adding…" : "Add provider")
+                                </button>
+                            </div>
+                        </div>
+                    }
+
+                    @if (_loadingProviders)
+                    {
+                        <p class="text-muted">Loading providers…</p>
+                    }
+                    else if (_providers.Count == 0)
+                    {
+                        <p class="text-muted">No providers linked yet. Add a staff member as a provider to manage schedules.</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>License</th>
+                                        <th>Schedule</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var provider in _providers)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="/admin/hospitals/@ClinicId/providers/@provider.ProviderId">
+                                                    <strong>@provider.DisplayName</strong>
+                                                </a>
+                                            </td>
+                                            <td>@provider.Email</td>
+                                            <td>@(string.IsNullOrWhiteSpace(provider.LicenseNumber) ? "—" : provider.LicenseNumber)</td>
+                                            <td>@provider.ScheduleSlotCount slot@(provider.ScheduleSlotCount == 1 ? "" : "s")</td>
+                                            <td>
+                                                <span class="badge @(provider.IsActive ? "badge-success" : "badge-muted")">
+                                                    @(provider.IsActive ? "Active" : "Inactive")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (_tab == "appointments")
+        {
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Scheduling</p>
+                        <h1>Appointments</h1>
+                        <p class="admin-page-lead">Upcoming bookings at this hospital.</p>
+                    </div>
+                    <a class="btn btn-secondary btn-sm" href="/admin/hospitals/@ClinicId/appointments">Full list →</a>
+                </header>
+                <div class="admin-page-card-body">
+                    @if (_loadingAppointments)
+                    {
+                        <p class="text-muted">Loading appointments…</p>
+                    }
+                    else if (_appointmentPreview.Count == 0)
+                    {
+                        <p class="text-muted">No upcoming appointments in the next 30 days.</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>When</th>
+                                        <th>Patient</th>
+                                        <th>Provider</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appt in _appointmentPreview)
+                                    {
+                                        <tr>
+                                            <td>@appt.ScheduledStart.ToString("dd MMM yyyy HH:mm")</td>
+                                            <td>@appt.PatientName</td>
+                                            <td>@appt.ProviderName</td>
+                                            <td>@appt.Status</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
         else if (_tab == "staff")
         {
             <div class="admin-page-card">
@@ -444,6 +581,9 @@
     private bool _loading = true;
     private bool _loadingStaff;
     private bool _loadingPatients;
+    private bool _loadingProviders;
+    private bool _loadingAppointments;
+    private bool _addingProvider;
     private bool _savingFacility;
     private bool _savingClinic;
     private bool _inviting;
@@ -459,6 +599,8 @@
     private string _tab = "overview";
     private string _inviteEmail = string.Empty;
     private string _grantPatientEmail = string.Empty;
+    private string _providerLicense = string.Empty;
+    private string _selectedStaffUserId = string.Empty;
     private string _patientSearch = string.Empty;
     private string _patientSearchApplied = string.Empty;
     private int _patientPageNumber = 1;
@@ -469,9 +611,13 @@
     private ClinicDetail? _detail;
     private IReadOnlyList<ClinicStaffMember> _staff = Array.Empty<ClinicStaffMember>();
     private IReadOnlyList<ClinicPatientListItem> _patients = Array.Empty<ClinicPatientListItem>();
+    private IReadOnlyList<ClinicProviderListItem> _providers = Array.Empty<ClinicProviderListItem>();
+    private IReadOnlyList<ClinicAppointmentListItem> _appointmentPreview = Array.Empty<ClinicAppointmentListItem>();
+    private IReadOnlyList<ClinicStaffMember> _staffCandidates = Array.Empty<ClinicStaffMember>();
     private int _patientTotalCount;
     private bool _staffLoaded;
     private bool _patientsLoaded;
+    private bool _providersLoaded;
     private SaveFacilityRequest _facilityForm = new();
     private UpdateClinicRequest _clinicForm = new();
 
@@ -480,13 +626,17 @@
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
         await LoadDetailAsync();
 
-        if (!string.IsNullOrWhiteSpace(TabQuery) && TabQuery is "overview" or "facilities" or "patients" or "staff")
+        if (!string.IsNullOrWhiteSpace(TabQuery) && TabQuery is "overview" or "facilities" or "patients" or "providers" or "appointments" or "staff")
         {
             _tab = TabQuery;
             if (_tab == "staff" && !_staffLoaded)
                 await LoadStaffAsync();
             else if (_tab == "patients" && !_patientsLoaded)
                 await LoadPatientsAsync();
+            else if (_tab == "providers" && !_providersLoaded)
+                await LoadProvidersAsync();
+            else if (_tab == "appointments")
+                await LoadAppointmentsPreviewAsync();
         }
     }
 
@@ -614,6 +764,76 @@
             await LoadStaffAsync();
         else if (tab == "patients" && !_patientsLoaded)
             await LoadPatientsAsync();
+        else if (tab == "providers" && !_providersLoaded)
+            await LoadProvidersAsync();
+        else if (tab == "appointments")
+            await LoadAppointmentsPreviewAsync();
+    }
+
+    private async Task LoadProvidersAsync()
+    {
+        _loadingProviders = true;
+        _actionError = null;
+
+        if (!_staffLoaded)
+            await LoadStaffAsync();
+
+        var response = await AdminClinicService.GetProvidersAsync(ClinicId);
+        _loadingProviders = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _providers = response.Data;
+            _providersLoaded = true;
+            var existingUserIds = _providers.Select(p => p.ApplicationUserId).ToHashSet();
+            _staffCandidates = _staff
+                .Where(m => m.UserId is not null && !m.IsPendingInvitation && !existingUserIds.Contains(m.UserId.Value))
+                .ToList();
+        }
+        else
+            _actionError = response.ErrorMessage ?? "Could not load providers.";
+    }
+
+    private async Task LoadAppointmentsPreviewAsync()
+    {
+        _loadingAppointments = true;
+        _actionError = null;
+        var from = DateTime.UtcNow.Date;
+        var response = await AdminClinicService.GetAppointmentsAsync(ClinicId, 1, 10, from, from.AddDays(30));
+        _loadingAppointments = false;
+
+        if (response.IsSuccess && response.Data is not null)
+            _appointmentPreview = response.Data.Items;
+        else
+            _actionError = response.ErrorMessage ?? "Could not load appointments.";
+    }
+
+    private async Task AddProviderAsync()
+    {
+        if (!Guid.TryParse(_selectedStaffUserId, out var userId))
+        {
+            _actionError = "Select a staff member.";
+            return;
+        }
+
+        _addingProvider = true;
+        _actionError = null;
+        var response = await AdminClinicService.CreateProviderAsync(
+            ClinicId,
+            userId,
+            string.IsNullOrWhiteSpace(_providerLicense) ? null : _providerLicense.Trim());
+        _addingProvider = false;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not add provider.";
+            return;
+        }
+
+        _selectedStaffUserId = string.Empty;
+        _providerLicense = string.Empty;
+        _providersLoaded = false;
+        await LoadProvidersAsync();
     }
 
     private void ResetClinicForm(ClinicDetail detail)

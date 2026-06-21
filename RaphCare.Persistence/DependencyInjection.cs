@@ -155,6 +155,9 @@ public static class DependencyInjection
         services.AddScoped<IClinicStaffInvitationService, ClinicStaffInvitationService>();
         services.AddScoped<IClinicStaffPendingInvitationService, ClinicStaffPendingInvitationService>();
         services.AddScoped<IAdminClinicPatientQueryService, AdminClinicPatientQueryService>();
+        services.AddScoped<IAdminClinicProviderQueryService, AdminClinicProviderQueryService>();
+        services.AddScoped<IAdminClinicAppointmentQueryService, AdminClinicAppointmentQueryService>();
+        services.AddScoped<IAdminClinicDashboardQueryService, AdminClinicDashboardQueryService>();
         services.AddScoped<IPatientLookupService, PatientLookupService>();
         services.AddScoped<IEmailOtpService, EmailOtpService>();
         services.AddScoped<IOtpService, OtpService>();
@@ -177,6 +180,8 @@ public static class DependencyInjection
         services.AddScoped<IRepository<PatientExternalId>>(sp => new EfRepository<PatientExternalId, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Clinic>>(sp => new EfRepository<Clinic, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Facility>>(sp => new EfRepository<Facility, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<Provider>>(sp => new EfRepository<Provider, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<ProviderSchedule>>(sp => new EfRepository<ProviderSchedule, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<VoiceRecording>>(sp => new EfRepository<VoiceRecording, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Visit>>(sp => new EfRepository<Visit, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<VitalSignRecord>>(sp => new EfRepository<VitalSignRecord, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));

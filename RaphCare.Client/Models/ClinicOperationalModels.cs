@@ -1,0 +1,74 @@
+namespace RaphCare.Client.Models;
+
+public sealed class ClinicDashboard
+{
+    public Guid ClinicId { get; set; }
+    public string ClinicName { get; set; } = string.Empty;
+    public int PatientCount { get; set; }
+    public int StaffCount { get; set; }
+    public int ProviderCount { get; set; }
+    public int FacilityCount { get; set; }
+    public int AppointmentsTodayCount { get; set; }
+    public int UpcomingAppointmentsCount { get; set; }
+    public IReadOnlyList<ClinicAppointmentListItem> UpcomingAppointments { get; set; } = Array.Empty<ClinicAppointmentListItem>();
+}
+
+public sealed class ClinicProviderListItem
+{
+    public Guid ProviderId { get; set; }
+    public Guid ApplicationUserId { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string LicenseNumber { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+    public int ScheduleSlotCount { get; set; }
+}
+
+public sealed class ClinicProviderDetail
+{
+    public Guid ProviderId { get; set; }
+    public Guid ApplicationUserId { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string LicenseNumber { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+    public IReadOnlyList<ClinicProviderSchedule> Schedules { get; set; } = Array.Empty<ClinicProviderSchedule>();
+}
+
+public sealed class ClinicProviderSchedule
+{
+    public Guid Id { get; set; }
+    public DayOfWeek Day { get; set; }
+    public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
+    public bool IsRecurring { get; set; }
+}
+
+public sealed class ClinicAppointmentListItem
+{
+    public Guid Id { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public Guid ProviderId { get; set; }
+    public string ProviderName { get; set; } = string.Empty;
+    public DateTime ScheduledStart { get; set; }
+    public DateTime ScheduledEnd { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+}
+
+public sealed class PagedClinicAppointments
+{
+    public IReadOnlyList<ClinicAppointmentListItem> Items { get; set; } = Array.Empty<ClinicAppointmentListItem>();
+    public int TotalCount { get; set; }
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
+}
+
+public sealed class CreateProviderScheduleRequest
+{
+    public DayOfWeek Day { get; set; }
+    public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
+}
