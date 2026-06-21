@@ -1056,6 +1056,7 @@ a:hover { text-decoration: underline; }
 .alert { padding: 0.75rem 1rem; border-radius: 0.65rem; margin-bottom: 1rem; font-size: 0.875rem; }
 .alert-error { background: #fef2f2; color: var(--rc-error); border: 1px solid #fecaca; }
 .alert-info { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.alert-success { background: #d1fae5; color: var(--rc-success); border: 1px solid #a7f3d0; }
 
 .admin-alert-text { margin: 0; }
 .admin-alert-hint { margin: 0.65rem 0 0.85rem; font-size: 0.85rem; line-height: 1.5; }

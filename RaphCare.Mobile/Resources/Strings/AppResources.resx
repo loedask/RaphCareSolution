@@ -1004,6 +1004,54 @@ Accessible. Intelligent. Human.</value>
   <data name="CareTelehealthVideoStartFailed" xml:space="preserve">
     <value>Could not start the video session.</value>
   </data>
+  <data name="ConsultationJoin" xml:space="preserve">
+    <value>Join consultation</value>
+  </data>
+  <data name="ConsultationJoinPrompt" xml:space="preserve">
+    <value>Your provider will join shortly. Tap below when you are ready to start video.</value>
+  </data>
+  <data name="ConsultationProviderDefault" xml:space="preserve">
+    <value>Your care provider</value>
+  </data>
+  <data name="ConsultationProviderSubtitle" xml:space="preserve">
+    <value>Licensed healthcare provider</value>
+  </data>
+  <data name="ConsultationConnected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="ConsultationMute" xml:space="preserve">
+    <value>Mute</value>
+  </data>
+  <data name="ConsultationUnmute" xml:space="preserve">
+    <value>Unmute</value>
+  </data>
+  <data name="ConsultationVideoOn" xml:space="preserve">
+    <value>Video on</value>
+  </data>
+  <data name="ConsultationVideoOff" xml:space="preserve">
+    <value>Video off</value>
+  </data>
+  <data name="ConsultationChat" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="ConsultationChatComingSoon" xml:space="preserve">
+    <value>In-call chat is coming soon.</value>
+  </data>
+  <data name="ConsultationHangUp" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="ChangePasswordSuccess" xml:space="preserve">
+    <value>Your password was updated.</value>
+  </data>
+  <data name="ChangePasswordFailed" xml:space="preserve">
+    <value>Could not update your password. Check your current password and try again.</value>
+  </data>
+  <data name="ChangePasswordTooShort" xml:space="preserve">
+    <value>New password must be at least 8 characters.</value>
+  </data>
+  <data name="ChangePasswordEntraReset" xml:space="preserve">
+    <value>Open Microsoft password reset</value>
+  </data>
   <data name="DevicesPageTitle" xml:space="preserve">
     <value>Devices &amp; wearables</value>
   </data>
@@ -1479,7 +1527,7 @@ Accessible. Intelligent. Human.</value>
     <value>New passwords do not match.</value>
   </data>
   <data name="ChangePasswordEmailGuidance" xml:space="preserve">
-    <value>For email sign-in, use Forgot password on the sign-in screen until in-app password change is available.</value>
+    <value>Enter your current password and choose a new one.</value>
   </data>
   <data name="ChangePasswordNoResetUrl" xml:space="preserve">
     <value>Password reset URL is not configured.</value>

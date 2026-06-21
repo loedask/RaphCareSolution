@@ -9,10 +9,11 @@ using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 
-public sealed class TelehealthJoinViewModel : BaseViewModel
+public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
 {
     private readonly IPatientTelehealthService _telehealth;
     private readonly ITelehealthRtcSession _rtc;
+    private readonly bool _showVideoSection;
     private string _fullToken = string.Empty;
     private Guid _sessionId;
     private string _channel = string.Empty;
@@ -26,9 +27,12 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     private int _joinUid;
     private bool _rtcConfigured;
     private bool _inCall;
-
-    private readonly string _videoHintText;
-    private readonly bool _showVideoSection;
+    private bool _isMuted;
+    private bool _isVideoOff;
+    private string _callDurationText = "00:00";
+    private string _providerDisplayName = string.Empty;
+    private System.Threading.Timer? _callTimer;
+    private DateTimeOffset _callStarted;
 
     public TelehealthJoinViewModel(IPatientTelehealthService telehealth, ITelehealthRtcSession rtc)
     {
@@ -42,13 +46,20 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
         CopyTokenLabel = T("CareTelehealthCopyToken");
         SmsLabel = T("CareTelehealthSendSms");
         BackLabel = T("CareTelehealthBack");
-        StartVideoLabel = T("CareTelehealthStartVideo");
+        StartVideoLabel = T("ConsultationJoin");
         EndVideoLabel = T("CareTelehealthEndVideo");
         LocalVideoLabel = T("CareTelehealthLocalVideo");
         RemoteVideoLabel = T("CareTelehealthRemoteVideo");
-        _videoHintText = DeviceInfo.Current.Platform == DevicePlatform.Android
-            ? T("CareTelehealthVideoHintAndroid")
-            : T("CareTelehealthVideoHintOther");
+        ProviderSubtitle = T("ConsultationProviderSubtitle");
+        ConnectionBadgeText = T("ConsultationConnected");
+        MuteLabel = T("ConsultationMute");
+        UnmuteLabel = T("ConsultationUnmute");
+        VideoOnLabel = T("ConsultationVideoOn");
+        VideoOffLabel = T("ConsultationVideoOff");
+        ChatLabel = T("ConsultationChat");
+        HangUpLabel = T("ConsultationHangUp");
+        JoinPromptText = T("ConsultationJoinPrompt");
+        _providerDisplayName = T("ConsultationProviderDefault");
         _showVideoSection = DeviceInfo.Current.Platform == DevicePlatform.Android;
 
         RefreshCommand = new Command(async () => await LoadAsync());
@@ -57,6 +68,11 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
         BackCommand = new Command(async () => await GoBackAsync());
         StartVideoCommand = new Command(async () => await StartVideoAsync(), () => CanStartVideo && !InCall);
         EndVideoCommand = new Command(async () => await EndVideoAsync(), () => InCall);
+        ToggleMuteCommand = new Command(() => IsMuted = !IsMuted);
+        ToggleVideoCommand = new Command(() => IsVideoOff = !IsVideoOff);
+        OpenChatCommand = new Command(async () =>
+            await Shell.Current.DisplayAlertAsync(Title, T("ConsultationChatComingSoon"), T("CommonOk")));
+        HangUpCommand = new Command(async () => await HangUpAsync());
     }
 
     public string ChannelLabel { get; }
@@ -70,10 +86,60 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     public string EndVideoLabel { get; }
     public string LocalVideoLabel { get; }
     public string RemoteVideoLabel { get; }
-
-    public string VideoHintText => _videoHintText;
+    public string ProviderSubtitle { get; }
+    public string ConnectionBadgeText { get; }
+    public string MuteLabel { get; }
+    public string UnmuteLabel { get; }
+    public string VideoOnLabel { get; }
+    public string VideoOffLabel { get; }
+    public string ChatLabel { get; }
+    public string HangUpLabel { get; }
+    public string JoinPromptText { get; }
 
     public bool ShowVideoSection => _showVideoSection;
+    public bool ShowSetupLayout => !InCall;
+    public bool ShowConsultationLayout => InCall;
+
+    public string ProviderDisplayName
+    {
+        get => _providerDisplayName;
+        set => SetProperty(ref _providerDisplayName, value);
+    }
+
+    public string CallDurationText
+    {
+        get => _callDurationText;
+        private set => SetProperty(ref _callDurationText, value);
+    }
+
+    public string MuteButtonText => IsMuted ? UnmuteLabel : MuteLabel;
+    public string VideoButtonText => IsVideoOff ? VideoOnLabel : VideoOffLabel;
+
+    public bool IsMuted
+    {
+        get => _isMuted;
+        set
+        {
+            if (_isMuted == value)
+                return;
+            _isMuted = value;
+            OnPropertyChanged(nameof(IsMuted));
+            OnPropertyChanged(nameof(MuteButtonText));
+        }
+    }
+
+    public bool IsVideoOff
+    {
+        get => _isVideoOff;
+        set
+        {
+            if (_isVideoOff == value)
+                return;
+            _isVideoOff = value;
+            OnPropertyChanged(nameof(IsVideoOff));
+            OnPropertyChanged(nameof(VideoButtonText));
+        }
+    }
 
     public string ChannelText
     {
@@ -120,10 +186,17 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
                 return;
             _inCall = value;
             OnPropertyChanged(nameof(InCall));
-            (StartVideoCommand as Command)?.ChangeCanExecute();
-            (EndVideoCommand as Command)?.ChangeCanExecute();
+            OnPropertyChanged(nameof(ShowSetupLayout));
+            OnPropertyChanged(nameof(ShowConsultationLayout));
             OnPropertyChanged(nameof(ShowStartVideo));
             OnPropertyChanged(nameof(ShowEndVideo));
+            (StartVideoCommand as Command)?.ChangeCanExecute();
+            (EndVideoCommand as Command)?.ChangeCanExecute();
+
+            if (_inCall)
+                StartCallTimer();
+            else
+                StopCallTimer();
         }
     }
 
@@ -141,6 +214,10 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
     public ICommand BackCommand { get; }
     public ICommand StartVideoCommand { get; }
     public ICommand EndVideoCommand { get; }
+    public ICommand ToggleMuteCommand { get; }
+    public ICommand ToggleVideoCommand { get; }
+    public ICommand OpenChatCommand { get; }
+    public ICommand HangUpCommand { get; }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
@@ -148,7 +225,6 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
             _sessionId = id;
     }
 
-    /// <summary>Called from the join page when native preview surfaces are ready (Android: TextureView).</summary>
     public void BindRtcSurfaces(object? localPlatformView, object? remotePlatformView) =>
         _rtc.BindVideoSurfaces(localPlatformView, remotePlatformView);
 
@@ -198,6 +274,9 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
         {
             IsBusy = false;
         }
+
+        if (CanStartVideo && _showVideoSection && !InCall)
+            await StartVideoAsync().ConfigureAwait(false);
     }
 
     private async Task StartVideoAsync()
@@ -214,7 +293,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
 
             if (!result.Success)
             {
-                await Shell.Current.DisplayAlertAsync(Title, result.ErrorMessage ?? T("CareTelehealthVideoStartFailed"), "OK");
+                await Shell.Current.DisplayAlertAsync(Title, result.ErrorMessage ?? T("CareTelehealthVideoStartFailed"), T("CommonOk"));
                 return;
             }
 
@@ -240,6 +319,12 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
         }
     }
 
+    private async Task HangUpAsync()
+    {
+        await EndVideoAsync().ConfigureAwait(false);
+        await SafeShellNavigator.GoToAsync("..");
+    }
+
     private async Task GoBackAsync()
     {
         await _rtc.StopAsync(CancellationToken.None).ConfigureAwait(false);
@@ -247,16 +332,35 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
         await SafeShellNavigator.GoToAsync("..");
     }
 
+    private void StartCallTimer()
+    {
+        _callStarted = DateTimeOffset.UtcNow;
+        _callTimer?.Dispose();
+        _callTimer = new System.Threading.Timer(_ =>
+        {
+            var elapsed = DateTimeOffset.UtcNow - _callStarted;
+            MainThread.BeginInvokeOnMainThread(() =>
+                CallDurationText = elapsed.ToString(@"mm\:ss", CultureInfo.InvariantCulture));
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+
+    private void StopCallTimer()
+    {
+        _callTimer?.Dispose();
+        _callTimer = null;
+        CallDurationText = "00:00";
+    }
+
     private async Task CopyTokenAsync()
     {
         if (string.IsNullOrEmpty(_fullToken))
         {
-            await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthTokenUnset"), "OK");
+            await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthTokenUnset"), T("CommonOk"));
             return;
         }
 
         await Clipboard.Default.SetTextAsync(_fullToken);
-        await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthCopied"), "OK");
+        await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthCopied"), T("CommonOk"));
     }
 
     private async Task SendSmsAsync()
@@ -268,15 +372,17 @@ public sealed class TelehealthJoinViewModel : BaseViewModel
             var response = await _telehealth.SendSessionSmsAsync(_sessionId, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
             {
-                await Shell.Current.DisplayAlertAsync(Title, response.ErrorMessage ?? T("CareTelehealthSmsFailed"), "OK");
+                await Shell.Current.DisplayAlertAsync(Title, response.ErrorMessage ?? T("CareTelehealthSmsFailed"), T("CommonOk"));
                 return;
             }
 
-            await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthSmsSent"), "OK");
+            await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthSmsSent"), T("CommonOk"));
         }
         finally
         {
             IsBusy = false;
         }
     }
+
+    public void Dispose() => _callTimer?.Dispose();
 }

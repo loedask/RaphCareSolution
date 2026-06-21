@@ -12,6 +12,11 @@ public partial class TelehealthJoinPage : ContentPage, IQueryAttributable
     {
         InitializeComponent();
         BindingContext = viewModel;
+        viewModel.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(TelehealthJoinViewModel.InCall))
+                TryBindRtcSurfaces();
+        };
         LocalPreview.HandlerChanged += (_, _) => TryBindRtcSurfaces();
         RemotePreview.HandlerChanged += (_, _) => TryBindRtcSurfaces();
     }
