@@ -1019,6 +1019,12 @@ Accessible. Intelligent. Human.</value>
   <data name="ConsultationConnected" xml:space="preserve">
     <value>Connected</value>
   </data>
+  <data name="ConsultationConnecting" xml:space="preserve">
+    <value>Connecting…</value>
+  </data>
+  <data name="ConsultationWaitingProvider" xml:space="preserve">
+    <value>Waiting for provider</value>
+  </data>
   <data name="ConsultationMute" xml:space="preserve">
     <value>Mute</value>
   </data>

@@ -31,6 +31,8 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
     private bool _isVideoOff;
     private string _callDurationText = "00:00";
     private string _providerDisplayName = string.Empty;
+    private string _connectionBadgeText = string.Empty;
+    private bool _remoteParticipantPresent;
     private System.Threading.Timer? _callTimer;
     private DateTimeOffset _callStarted;
 
@@ -51,7 +53,6 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         LocalVideoLabel = T("CareTelehealthLocalVideo");
         RemoteVideoLabel = T("CareTelehealthRemoteVideo");
         ProviderSubtitle = T("ConsultationProviderSubtitle");
-        ConnectionBadgeText = T("ConsultationConnected");
         MuteLabel = T("ConsultationMute");
         UnmuteLabel = T("ConsultationUnmute");
         VideoOnLabel = T("ConsultationVideoOn");
@@ -60,7 +61,12 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         HangUpLabel = T("ConsultationHangUp");
         JoinPromptText = T("ConsultationJoinPrompt");
         _providerDisplayName = T("ConsultationProviderDefault");
+        _connectionBadgeText = T("ConsultationConnecting");
         _showVideoSection = DeviceInfo.Current.Platform == DevicePlatform.Android;
+
+        _rtc.ChannelJoined += OnRtcChannelJoined;
+        _rtc.RemoteUserJoined += OnRtcRemoteUserJoined;
+        _rtc.RemoteUserLeft += OnRtcRemoteUserLeft;
 
         RefreshCommand = new Command(async () => await LoadAsync());
         CopyTokenCommand = new Command(async () => await CopyTokenAsync());
@@ -68,8 +74,8 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         BackCommand = new Command(async () => await GoBackAsync());
         StartVideoCommand = new Command(async () => await StartVideoAsync(), () => CanStartVideo && !InCall);
         EndVideoCommand = new Command(async () => await EndVideoAsync(), () => InCall);
-        ToggleMuteCommand = new Command(() => IsMuted = !IsMuted);
-        ToggleVideoCommand = new Command(() => IsVideoOff = !IsVideoOff);
+        ToggleMuteCommand = new Command(async () => await ToggleMuteAsync());
+        ToggleVideoCommand = new Command(async () => await ToggleVideoAsync());
         OpenChatCommand = new Command(async () =>
             await Shell.Current.DisplayAlertAsync(Title, T("ConsultationChatComingSoon"), T("CommonOk")));
         HangUpCommand = new Command(async () => await HangUpAsync());
@@ -87,7 +93,6 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
     public string LocalVideoLabel { get; }
     public string RemoteVideoLabel { get; }
     public string ProviderSubtitle { get; }
-    public string ConnectionBadgeText { get; }
     public string MuteLabel { get; }
     public string UnmuteLabel { get; }
     public string VideoOnLabel { get; }
@@ -110,6 +115,12 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
     {
         get => _callDurationText;
         private set => SetProperty(ref _callDurationText, value);
+    }
+
+    public string ConnectionBadgeText
+    {
+        get => _connectionBadgeText;
+        private set => SetProperty(ref _connectionBadgeText, value);
     }
 
     public string MuteButtonText => IsMuted ? UnmuteLabel : MuteLabel;
@@ -250,6 +261,9 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
             }
 
             var j = response.Data;
+            if (!string.IsNullOrWhiteSpace(j.ProviderDisplayName))
+                ProviderDisplayName = j.ProviderDisplayName.Trim();
+
             ChannelText = j.ChannelName;
             UidText = j.Uid.ToString(CultureInfo.InvariantCulture);
             AppIdText = string.IsNullOrEmpty(j.AppId) ? "—" : j.AppId;
@@ -284,6 +298,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         if (!CanStartVideo)
             return;
 
+        ConnectionBadgeText = T("ConsultationConnecting");
         IsBusy = true;
         try
         {
@@ -298,11 +313,57 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
             }
 
             InCall = true;
+            UpdateConnectionBadge();
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    private async Task ToggleMuteAsync()
+    {
+        if (!InCall)
+            return;
+
+        var next = !IsMuted;
+        await _rtc.SetMicrophoneMutedAsync(next, CancellationToken.None).ConfigureAwait(false);
+        IsMuted = next;
+    }
+
+    private async Task ToggleVideoAsync()
+    {
+        if (!InCall)
+            return;
+
+        var nextOff = !IsVideoOff;
+        await _rtc.SetCameraEnabledAsync(!nextOff, CancellationToken.None).ConfigureAwait(false);
+        IsVideoOff = nextOff;
+    }
+
+    private void OnRtcChannelJoined(object? sender, EventArgs e) =>
+        MainThread.BeginInvokeOnMainThread(UpdateConnectionBadge);
+
+    private void OnRtcRemoteUserJoined(object? sender, int uid)
+    {
+        _remoteParticipantPresent = true;
+        MainThread.BeginInvokeOnMainThread(UpdateConnectionBadge);
+    }
+
+    private void OnRtcRemoteUserLeft(object? sender, int uid)
+    {
+        _remoteParticipantPresent = false;
+        MainThread.BeginInvokeOnMainThread(UpdateConnectionBadge);
+    }
+
+    private void UpdateConnectionBadge()
+    {
+        if (!InCall)
+            return;
+
+        ConnectionBadgeText = _remoteParticipantPresent
+            ? T("ConsultationConnected")
+            : T("ConsultationWaitingProvider");
     }
 
     private async Task EndVideoAsync()
@@ -312,6 +373,9 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         {
             await _rtc.StopAsync(CancellationToken.None).ConfigureAwait(false);
             InCall = false;
+            _remoteParticipantPresent = false;
+            IsMuted = false;
+            IsVideoOff = false;
         }
         finally
         {
@@ -384,5 +448,11 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         }
     }
 
-    public void Dispose() => _callTimer?.Dispose();
+    public void Dispose()
+    {
+        _callTimer?.Dispose();
+        _rtc.ChannelJoined -= OnRtcChannelJoined;
+        _rtc.RemoteUserJoined -= OnRtcRemoteUserJoined;
+        _rtc.RemoteUserLeft -= OnRtcRemoteUserLeft;
+    }
 }

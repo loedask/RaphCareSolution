@@ -65,7 +65,8 @@ public sealed class PatientTelehealthService(HttpClient httpClient) : BaseHttpSe
             TokenExpiresAtUnix = d.TokenExpiresAtUnix,
             RtcConfigured = d.RtcConfigured,
             Status = d.Status ?? string.Empty,
-            ScheduledStart = d.ScheduledStart
+            ScheduledStart = d.ScheduledStart,
+            ProviderDisplayName = d.ProviderDisplayName,
         });
     }
 
@@ -91,5 +92,6 @@ public sealed class PatientTelehealthService(HttpClient httpClient) : BaseHttpSe
         public bool RtcConfigured { get; set; }
         public string? Status { get; set; }
         public DateTime ScheduledStart { get; set; }
+        public string? ProviderDisplayName { get; set; }
     }
 }

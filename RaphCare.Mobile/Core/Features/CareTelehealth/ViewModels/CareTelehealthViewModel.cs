@@ -78,11 +78,16 @@ public sealed class CareTelehealthViewModel : BaseViewModel
     private static TeleSessionListDisplayItem MapItem(PatientTeleSessionListItemViewModel s, CultureInfo culture)
     {
         var when = s.ScheduledStart.ToLocalTime().ToString("g", culture);
+        var platform = string.IsNullOrWhiteSpace(s.Platform)
+            ? T("CareTelehealthPlatformUnknown")
+            : string.Equals(s.Platform, "Agora", StringComparison.OrdinalIgnoreCase)
+                ? "Agora"
+                : s.Platform;
         return new TeleSessionListDisplayItem
         {
             Id = s.Id,
             PrimaryLine = $"{when} · {s.Status}",
-            SecondaryLine = string.IsNullOrWhiteSpace(s.Platform) ? T("CareTelehealthPlatformUnknown") : s.Platform
+            SecondaryLine = platform
         };
     }
 }

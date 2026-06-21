@@ -36,4 +36,16 @@ public class ApplicationUserStore(IdentityDbContext context) : IApplicationUserS
         _context.Users.Update(user);
         await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    public async Task<ApplicationUser?> FindByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        if (id == Guid.Empty)
+            return null;
+
+        return await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+    }
 }

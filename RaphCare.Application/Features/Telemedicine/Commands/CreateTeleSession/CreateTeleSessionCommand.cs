@@ -1,4 +1,5 @@
 using MediatR;
+using RaphCare.Application.Common;
 
 namespace RaphCare.Application.Features.Telemedicine.Commands.CreateTeleSession;
 
@@ -10,6 +11,6 @@ public class CreateTeleSessionCommand : IRequest<Guid>
     public Guid PatientId { get; set; }
     public Guid ProviderId { get; set; }
     public DateTime ScheduledStart { get; set; }
-    public string Platform { get; set; } = string.Empty;
+    public string Platform { get; set; } = TelehealthPlatforms.Agora;
 }
 

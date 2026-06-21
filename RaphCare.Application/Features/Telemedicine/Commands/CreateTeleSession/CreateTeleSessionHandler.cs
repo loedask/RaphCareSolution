@@ -1,4 +1,5 @@
 using MediatR;
+using RaphCare.Application.Common;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Telemedicine;
 
@@ -34,7 +35,7 @@ public class CreateTeleSessionHandler : IRequestHandler<CreateTeleSessionCommand
             ProviderId = request.ProviderId,
             ScheduledStart = request.ScheduledStart,
             Status = "Scheduled",
-            Platform = request.Platform,
+            Platform = string.IsNullOrWhiteSpace(request.Platform) ? TelehealthPlatforms.Agora : request.Platform.Trim(),
             IsSecure = true
         };
 
