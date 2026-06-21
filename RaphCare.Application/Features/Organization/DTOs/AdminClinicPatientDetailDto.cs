@@ -44,8 +44,8 @@ public sealed class AdminClinicPatientVisitDto
 public sealed class AdminClinicPatientVitalDto
 {
     public string Type { get; set; } = string.Empty;
-    public string Value { get; set; } = string.Empty;
-    public string Unit { get; set; } = string.Empty;
+    public decimal Value { get; set; }
+    public string? Unit { get; set; }
     public DateTime RecordedAt { get; set; }
     public string? VisitType { get; set; }
 }
