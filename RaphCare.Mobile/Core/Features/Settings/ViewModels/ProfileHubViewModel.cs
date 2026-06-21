@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Media;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Settings.Models;
 using RaphCare.Mobile.Core.Features.Settings.Services;
@@ -24,6 +25,8 @@ public sealed class ProfileHubViewModel : BaseViewModel
     private int _emergencyContactCount;
     private string _displayName = string.Empty;
     private string _emailLine = string.Empty;
+    private ImageSource? _profilePhoto;
+    private bool _hasProfilePhoto;
 
     public ProfileHubViewModel(
         IAuthService auth,
@@ -39,9 +42,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
         Title = T("ProfileHubTitle");
         EditProfileCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.EditProfile));
         SignOutCommand = new Command(async () => await SignOutAsync());
-        OpenPhotoCommand = new Command(async () =>
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-                await Shell.Current.DisplayAlertAsync(Title, T("ProfilePhotoComingSoon"), T("CommonOk"))));
+        OpenPhotoCommand = new Command(async () => await PickAndUploadPhotoAsync());
         Sections = new ObservableCollection<ProfileSectionModel>();
         AppVersionLabel = $"{T("ProfileAppName")} v{AppInfo.Current.VersionString}";
         InsuranceBadgeText = T("ProfileInsuranceBadge");
@@ -62,6 +63,22 @@ public sealed class ProfileHubViewModel : BaseViewModel
     {
         get => _emailLine;
         private set => SetProperty(ref _emailLine, value);
+    }
+
+    public ImageSource? ProfilePhoto
+    {
+        get => _profilePhoto;
+        private set
+        {
+            SetProperty(ref _profilePhoto, value);
+            HasProfilePhoto = value is not null;
+        }
+    }
+
+    public bool HasProfilePhoto
+    {
+        get => _hasProfilePhoto;
+        private set => SetProperty(ref _hasProfilePhoto, value);
     }
 
     public string InsuranceBadgeText { get; }
@@ -93,6 +110,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
             _localProfile.DateOfBirth = data.DateOfBirth;
             _localProfile.Gender = data.Gender;
             await ApplyProfileDisplayAsync(data.FirstName, data.LastName, data.Email).ConfigureAwait(false);
+            await LoadProfilePhotoAsync(!string.IsNullOrWhiteSpace(data.ProfilePhotoUrl)).ConfigureAwait(false);
             return;
         }
 
@@ -102,6 +120,61 @@ public sealed class ProfileHubViewModel : BaseViewModel
         var first = _localProfile.FirstName.Trim();
         var last = _localProfile.LastName.Trim();
         await ApplyProfileDisplayAsync(first, last, _localProfile.Email.Trim(), claimName, claimEmail).ConfigureAwait(false);
+        await LoadProfilePhotoAsync(false).ConfigureAwait(false);
+    }
+
+    private async Task LoadProfilePhotoAsync(bool mayHavePhoto)
+    {
+        if (!mayHavePhoto)
+        {
+            await MainThread.InvokeOnMainThreadAsync(() => ProfilePhoto = null);
+            return;
+        }
+
+        var photoResponse = await _profileApi.GetProfilePhotoBytesAsync(CancellationToken.None).ConfigureAwait(false);
+        if (!photoResponse.IsSuccess || photoResponse.Data is not { Length: > 0 } bytes)
+        {
+            await MainThread.InvokeOnMainThreadAsync(() => ProfilePhoto = null);
+            return;
+        }
+
+        await MainThread.InvokeOnMainThreadAsync(() =>
+            ProfilePhoto = ImageSource.FromStream(() => new MemoryStream(bytes)));
+    }
+
+    private async Task PickAndUploadPhotoAsync()
+    {
+        FileResult? picked = null;
+        try
+        {
+            picked = await MainThread.InvokeOnMainThreadAsync(() =>
+                MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions { Title = T("ProfilePhotoPickerTitle") }));
+        }
+        catch (FeatureNotSupportedException)
+        {
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+                await Shell.Current.DisplayAlertAsync(Title, T("ProfilePhotoComingSoon"), T("CommonOk")));
+            return;
+        }
+
+        if (picked is null)
+            return;
+
+        await using var stream = await picked.OpenReadAsync();
+        var response = await _profileApi.UploadProfilePhotoAsync(
+            stream,
+            picked.FileName,
+            picked.ContentType ?? "image/jpeg",
+            CancellationToken.None).ConfigureAwait(false);
+
+        if (!response.IsSuccess)
+        {
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+                await Shell.Current.DisplayAlertAsync(Title, T("ProfilePhotoUploadFailed"), T("CommonOk")));
+            return;
+        }
+
+        await LoadProfilePhotoAsync(true);
     }
 
     private Task ApplyProfileDisplayAsync(

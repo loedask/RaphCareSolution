@@ -14,6 +14,7 @@ public sealed class RequestOnDemandTelehealthSessionHandler(
     IRepository<Visit> visits,
     IRepository<TeleSession> teleSessions,
     IRepository<Provider> providers,
+    IRepository<Clinic> clinics,
     IPatientClinicAccessService patientClinics,
     ICurrentUserService currentUser,
     IDateTimeProvider clock,
@@ -23,6 +24,7 @@ public sealed class RequestOnDemandTelehealthSessionHandler(
     private readonly IRepository<Visit> _visits = visits;
     private readonly IRepository<TeleSession> _teleSessions = teleSessions;
     private readonly IRepository<Provider> _providers = providers;
+    private readonly IRepository<Clinic> _clinics = clinics;
     private readonly IPatientClinicAccessService _patientClinics = patientClinics;
     private readonly ICurrentUserService _currentUser = currentUser;
     private readonly IDateTimeProvider _clock = clock;
@@ -34,7 +36,6 @@ public sealed class RequestOnDemandTelehealthSessionHandler(
             ?? throw new ForbiddenAccessException("A patient profile is required for telehealth.");
 
         var clinicId = await ResolveClinicIdAsync(patientId, request.ClinicId, cancellationToken).ConfigureAwait(false);
-        await _patientClinics.EnsureClinicAccessAsync(patientId, clinicId, cancellationToken).ConfigureAwait(false);
 
         var providerId = await ResolveProviderIdAsync(clinicId, request.ProviderId, cancellationToken).ConfigureAwait(false);
         var now = _clock.UtcNow;
@@ -91,19 +92,41 @@ public sealed class RequestOnDemandTelehealthSessionHandler(
     private async Task<Guid> ResolveClinicIdAsync(Guid patientId, Guid? requestedClinicId, CancellationToken cancellationToken)
     {
         if (requestedClinicId is { } clinic && clinic != Guid.Empty)
+        {
+            var exists = await _clinics.GetByIdAsync(clinic, cancellationToken).ConfigureAwait(false);
+            if (exists is null || !exists.IsActive)
+            {
+                throw new ValidationException(new[]
+                {
+                    new ValidationFailure(nameof(RequestOnDemandTelehealthSessionCommand.ClinicId),
+                        "The selected clinic is not available.")
+                });
+            }
+
             return clinic;
+        }
 
         var accessible = await _patientClinics.GetAccessibleClinicIdsAsync(patientId, cancellationToken).ConfigureAwait(false);
-        if (accessible.Length == 0)
+        if (accessible.Length > 0)
+            return accessible[0];
+
+        var page = await _clinics.SearchAsync(
+            q => q.Where(c => c.IsActive),
+            pageNumber: 1,
+            pageSize: 1,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        var first = page.Items.FirstOrDefault();
+        if (first is null)
         {
             throw new ValidationException(new[]
             {
                 new ValidationFailure(nameof(RequestOnDemandTelehealthSessionCommand.ClinicId),
-                    "No clinic is linked to your profile. Book an appointment or contact support.")
+                    "No clinic is available for on-demand telehealth. Contact support.")
             });
         }
 
-        return accessible[0];
+        return first.Id;
     }
 
     private async Task<Guid> ResolveProviderIdAsync(Guid clinicId, Guid? requestedProviderId, CancellationToken cancellationToken)

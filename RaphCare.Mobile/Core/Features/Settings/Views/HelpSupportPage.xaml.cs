@@ -12,4 +12,11 @@ public partial class HelpSupportPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is HelpSupportViewModel vm)
+            await vm.LoadAsync();
+    }
 }

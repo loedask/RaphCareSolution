@@ -2,11 +2,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Application.Common.Configuration;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Application.Common.Configuration;
 using RaphCare.Infrastructure.Configuration;
 using RaphCare.Infrastructure.Persistence;
 using RaphCare.Infrastructure.Persistence.Interceptors;
 using RaphCare.Infrastructure.Services;
 using RaphCare.Infrastructure.StandaloneEmergency;
+using RaphCare.Infrastructure.Storage;
 using RaphCare.Infrastructure.Telehealth;
 using RaphCare.Infrastructure.Notifications;
 
@@ -66,6 +68,12 @@ public static class DependencyInjection
 
         services.Configure<PatientMentalHealthContentOptions>(configuration.GetSection(PatientMentalHealthContentOptions.SectionName));
         services.AddSingleton<IPatientMentalHealthContentProvider, OptionsPatientMentalHealthContentProvider>();
+
+        services.Configure<PatientSupportOptions>(configuration.GetSection(PatientSupportOptions.SectionName));
+        services.AddSingleton<IPatientSupportContentProvider, OptionsPatientSupportContentProvider>();
+
+        services.Configure<PatientProfilePhotoOptions>(configuration.GetSection(PatientProfilePhotoOptions.SectionName));
+        services.AddScoped<IPatientProfilePhotoStorage, LocalPatientProfilePhotoStorage>();
 
         services.Configure<PatientAssistantAiOptions>(configuration.GetSection(PatientAssistantAiOptions.SectionName));
 

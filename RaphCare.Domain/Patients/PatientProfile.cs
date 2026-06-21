@@ -25,5 +25,8 @@ public class PatientProfile : BaseEntity
     /// <summary>Free-text medications as entered by the patient.</summary>
     public string? SelfReportedMedications { get; set; }
 
+    /// <summary>Relative storage key for the patient-uploaded profile photo (e.g. <c>{patientId}.jpg</c>).</summary>
+    public string? ProfilePhotoRelativePath { get; set; }
+
     public Patient Patient { get; set; } = null!;
 }

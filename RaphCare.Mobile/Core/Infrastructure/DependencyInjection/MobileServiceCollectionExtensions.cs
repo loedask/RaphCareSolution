@@ -147,6 +147,8 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<EmergencyContactsViewModel>();
         services.AddTransient<PrivacySettingsViewModel>();
         services.AddTransient<HelpSupportViewModel>();
+        services.AddTransient<HelpFaqViewModel>();
+        services.AddTransient<SupportMessageViewModel>();
         services.AddTransient<SettingsPage>();
         services.AddTransient<EditProfilePage>();
         services.AddTransient<PersonalInformationPage>();
@@ -156,6 +158,8 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<EmergencyContactsPage>();
         services.AddTransient<PrivacyPage>();
         services.AddTransient<HelpSupportPage>();
+        services.AddTransient<HelpFaqPage>();
+        services.AddTransient<SupportMessagePage>();
         services.AddTransient<UnderConstructionPage>();
         services.AddTransient<BlazorHostPage>();
         services.AddTransient<AppShell>();

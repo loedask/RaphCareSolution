@@ -16,7 +16,8 @@
                     <Border BackgroundColor="{StaticResource SecondaryColor}"
                             StrokeThickness="0"
                             HorizontalOptions="Fill"
-                            VerticalOptions="Fill">
+                            VerticalOptions="Fill"
+                            IsVisible="{Binding HasProfilePhoto, Converter={StaticResource InvertedBoolConverter}}">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="24" />
                         </Border.StrokeShape>
@@ -25,6 +26,15 @@
                                HorizontalOptions="Center"
                                VerticalOptions="Center" />
                     </Border>
+                    <Image Source="{Binding ProfilePhoto}"
+                           Aspect="AspectFill"
+                           IsVisible="{Binding HasProfilePhoto}"
+                           HorizontalOptions="Fill"
+                           VerticalOptions="Fill">
+                        <Image.Clip>
+                            <RoundRectangleGeometry Rect="0,0,96,96" CornerRadius="24" />
+                        </Image.Clip>
+                    </Image>
                     <Button FontSize="12"
                             WidthRequest="36"
                             HeightRequest="36"

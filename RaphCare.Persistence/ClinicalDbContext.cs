@@ -30,6 +30,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<MoodLog> MoodLogs => Set<MoodLog>();
     public DbSet<PatientInAppNotification> PatientInAppNotifications => Set<PatientInAppNotification>();
     public DbSet<PatientPushDevice> PatientPushDevices => Set<PatientPushDevice>();
+    public DbSet<PatientSupportMessage> PatientSupportMessages => Set<PatientSupportMessage>();
     public DbSet<ClinicStaffMembership> ClinicStaffMemberships => Set<ClinicStaffMembership>();
     public DbSet<ClinicStaffInvitation> ClinicStaffInvitations => Set<ClinicStaffInvitation>();
 

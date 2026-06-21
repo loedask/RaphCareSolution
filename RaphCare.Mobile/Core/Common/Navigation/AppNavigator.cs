@@ -52,6 +52,9 @@ public static class AppNavigator
     /// <summary>Help &amp; support (concept <c>/help-support</c>).</summary>
     public const string HelpSupport = "HelpSupportPage";
 
+    public const string HelpFaq = "HelpFaqPage";
+    public const string SupportMessage = "SupportMessagePage";
+
     public const string PersonalInformation = "PersonalInformationPage";
     public const string ChangePassword = "ChangePasswordPage";
     public const string LanguageSettings = "LanguageSettingsPage";
@@ -121,6 +124,8 @@ public static class AppNavigator
         Routing.RegisterRoute(EditProfile, typeof(EditProfilePage));
         Routing.RegisterRoute(Privacy, typeof(PrivacyPage));
         Routing.RegisterRoute(HelpSupport, typeof(HelpSupportPage));
+        Routing.RegisterRoute(HelpFaq, typeof(HelpFaqPage));
+        Routing.RegisterRoute(SupportMessage, typeof(SupportMessagePage));
         Routing.RegisterRoute(PersonalInformation, typeof(PersonalInformationPage));
         Routing.RegisterRoute(ChangePassword, typeof(ChangePasswordPage));
         Routing.RegisterRoute(LanguageSettings, typeof(LanguageSettingsPage));

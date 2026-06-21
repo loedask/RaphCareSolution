@@ -10,4 +10,5 @@ public sealed class MyPatientProfileDto
     public string? PhoneNumber { get; set; }
     public DateTime DateOfBirth { get; set; }
     public string Gender { get; set; } = string.Empty;
+    public string? ProfilePhotoUrl { get; set; }
 }

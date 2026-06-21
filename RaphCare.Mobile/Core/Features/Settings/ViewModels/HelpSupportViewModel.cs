@@ -1,6 +1,8 @@
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
+using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
@@ -8,8 +10,15 @@ namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 /// <summary>Help &amp; support (concept <c>HelpSupport.tsx</c>).</summary>
 public sealed class HelpSupportViewModel : BaseViewModel
 {
-    public HelpSupportViewModel()
+    private readonly IPatientSupportService _support;
+    private string _callSubtitle = string.Empty;
+    private string _emailSubtitle = string.Empty;
+    private string? _phoneUri;
+    private string? _mailUri;
+
+    public HelpSupportViewModel(IPatientSupportService support)
     {
+        _support = support ?? throw new ArgumentNullException(nameof(support));
         Title = T("HelpSupportTitle");
         ContactSectionTitle = T("HelpContactSection");
         TipsSectionTitle = T("HelpTipsSection");
@@ -17,18 +26,20 @@ public sealed class HelpSupportViewModel : BaseViewModel
         Tip2 = T("HelpTip2");
         Tip3 = T("HelpTip3");
         Tip4 = T("HelpTip4");
-        FaqCommand = new Command(async () => await ToastComingSoonAsync(T("HelpFaq")));
-        MessageCommand = new Command(async () => await ToastComingSoonAsync(T("HelpSendMessage")));
-        CallCommand = new Command(async () => await OpenUriAsync(T("HelpSupportPhoneUri")));
-        EmailCommand = new Command(async () => await OpenUriAsync(T("HelpSupportMailUri")));
+        FaqCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.HelpFaq));
+        MessageCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.SupportMessage));
+        CallCommand = new Command(async () => await OpenUriAsync(_phoneUri));
+        EmailCommand = new Command(async () => await OpenUriAsync(_mailUri));
         FaqTitle = T("HelpFaq");
         FaqSubtitle = T("HelpFaqSubtitle");
         MessageTitle = T("HelpSendMessage");
         MessageSubtitle = T("HelpSendMessageSubtitle");
         CallTitle = T("HelpCallSupport");
-        CallSubtitle = T("HelpCallSubtitle");
         EmailTitle = T("HelpEmailSupport");
-        EmailSubtitle = T("HelpEmailSubtitle");
+        _callSubtitle = T("HelpCallSubtitle");
+        _emailSubtitle = T("HelpEmailSubtitle");
+        _phoneUri = T("HelpSupportPhoneUri");
+        _mailUri = T("HelpSupportMailUri");
         AppVersionLabel = $"{T("ProfileAppName")} v{AppInfo.Current.VersionString}";
     }
 
@@ -37,9 +48,19 @@ public sealed class HelpSupportViewModel : BaseViewModel
     public string MessageTitle { get; }
     public string MessageSubtitle { get; }
     public string CallTitle { get; }
-    public string CallSubtitle { get; }
     public string EmailTitle { get; }
-    public string EmailSubtitle { get; }
+
+    public string CallSubtitle
+    {
+        get => _callSubtitle;
+        private set => SetProperty(ref _callSubtitle, value);
+    }
+
+    public string EmailSubtitle
+    {
+        get => _emailSubtitle;
+        private set => SetProperty(ref _emailSubtitle, value);
+    }
 
     public string ContactSectionTitle { get; }
     public string TipsSectionTitle { get; }
@@ -54,9 +75,25 @@ public sealed class HelpSupportViewModel : BaseViewModel
     public ICommand CallCommand { get; }
     public ICommand EmailCommand { get; }
 
-    private static async Task ToastComingSoonAsync(string title) =>
-        await MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(title, T("ProfileFeatureComingSoon"), T("CommonOk")));
+    public async Task LoadAsync()
+    {
+        var response = await _support.GetContentAsync(CancellationToken.None).ConfigureAwait(false);
+        if (!response.IsSuccess || response.Data is null)
+            return;
+
+        var data = response.Data;
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            if (!string.IsNullOrWhiteSpace(data.SupportPhoneDisplay))
+                CallSubtitle = data.SupportPhoneDisplay;
+            if (!string.IsNullOrWhiteSpace(data.SupportEmail))
+                EmailSubtitle = data.SupportEmail;
+            if (!string.IsNullOrWhiteSpace(data.SupportPhoneE164))
+                _phoneUri = $"tel:{data.SupportPhoneE164.Trim()}";
+            if (!string.IsNullOrWhiteSpace(data.SupportEmail))
+                _mailUri = $"mailto:{data.SupportEmail.Trim()}";
+        });
+    }
 
     private static async Task OpenUriAsync(string? uri)
     {

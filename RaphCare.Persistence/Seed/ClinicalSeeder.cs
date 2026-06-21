@@ -24,6 +24,12 @@ public static class ClinicalSeeder
             new EventId(2, nameof(LogExampleClinicSeeded)),
             "Example clinic seeded.");
 
+    private static readonly Action<ILogger, Exception?> LogDemoProviderSeeded =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            new EventId(3, nameof(LogDemoProviderSeeded)),
+            "Demo telehealth provider seeded.");
+
     /// <summary>
     /// Seeds a default demo clinic when none exist.
     /// </summary>
@@ -38,22 +44,59 @@ public static class ClinicalSeeder
         var context = scopedProvider.GetService<ClinicalDbContext>();
         if (context == null) return;
 
-        if (await context.Clinics.AnyAsync(cancellationToken).ConfigureAwait(false))
+        var anyClinics = await context.Clinics.AnyAsync(cancellationToken).ConfigureAwait(false);
+        if (!anyClinics)
+        {
+            var clinic = new Clinic
+            {
+                Id = ClinicalSeedIds.DemoClinicId,
+                Name = "RaphCare Demo Clinic",
+                RegistrationNumber = "REG-DEMO-001",
+                Country = "South Africa",
+                TimeZone = "South Africa Standard Time",
+                IsActive = true
+            };
+            context.Clinics.Add(clinic);
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            LogExampleClinicSeeded(logger, null);
+        }
+        else
         {
             LogClinicAlreadySeeded(logger, null);
-            return;
         }
 
-        var clinic = new Clinic
+        await EnsureDemoTelehealthProviderAsync(context, logger, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task EnsureDemoTelehealthProviderAsync(
+        ClinicalDbContext context,
+        ILogger logger,
+        CancellationToken cancellationToken)
+    {
+        if (await context.Providers.AnyAsync(p => p.IsActive && !p.IsDeleted, cancellationToken).ConfigureAwait(false))
+            return;
+
+        var clinicId = await context.Clinics
+            .Where(c => c.IsActive)
+            .OrderBy(c => c.Id == ClinicalSeedIds.DemoClinicId ? 0 : 1)
+            .ThenBy(c => c.CreatedAt)
+            .Select(c => c.Id)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (clinicId == Guid.Empty)
+            return;
+
+        context.Providers.Add(new Provider
         {
-            Name = "RaphCare Demo Clinic",
-            RegistrationNumber = "REG-DEMO-001",
-            Country = "South Africa",
-            TimeZone = "South Africa Standard Time",
-            IsActive = true
-        };
-        context.Clinics.Add(clinic);
+            Id = ClinicalSeedIds.DemoProviderId,
+            ClinicId = clinicId,
+            ApplicationUserId = ClinicalSeedIds.DemoProviderApplicationUserId,
+            LicenseNumber = "DEMO-LIC-001",
+            IsActive = true,
+            JoinedAt = DateTime.UtcNow
+        });
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        LogExampleClinicSeeded(logger, null);
+        LogDemoProviderSeeded(logger, null);
     }
 }
