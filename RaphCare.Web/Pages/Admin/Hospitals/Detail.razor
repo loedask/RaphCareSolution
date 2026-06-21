@@ -216,6 +216,20 @@
                     <span class="admin-progress-pill">@_patientTotalCount patient@(_patientTotalCount == 1 ? "" : "s")</span>
                 </header>
                 <div class="admin-page-card-body">
+                    @if (_isAdministrator)
+                    {
+                        <div class="admin-inline-form">
+                            <h3>Grant patient access</h3>
+                            <p class="text-muted">Link an existing patient account to this hospital by email.</p>
+                            <div class="claim-form-row">
+                                <input class="form-control" @bind="_grantPatientEmail" placeholder="patient@email.com" />
+                                <button type="button" class="btn btn-primary" disabled="@_grantingPatient" @onclick="GrantPatientAccessAsync">
+                                    @(_grantingPatient ? "Granting…" : "Grant access")
+                                </button>
+                            </div>
+                        </div>
+                    }
+
                     <div class="admin-table-toolbar">
                         <div class="claim-form-row">
                             <input class="form-control"
@@ -255,7 +269,11 @@
                                     @foreach (var patient in _patients)
                                     {
                                         <tr>
-                                            <td><strong>@patient.FirstName @patient.LastName</strong></td>
+                                            <td>
+                                                <a href="/admin/hospitals/@ClinicId/patients/@patient.PatientId">
+                                                    <strong>@patient.FirstName @patient.LastName</strong>
+                                                </a>
+                                            </td>
                                             <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
                                             <td>@patient.AccessType</td>
                                             <td>@patient.GrantedAt.ToString("dd MMM yyyy")</td>
@@ -418,6 +436,7 @@
 
 @code {
     [Parameter] public Guid ClinicId { get; set; }
+    [SupplyParameterFromQuery(Name = "tab")] public string? TabQuery { get; set; }
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
@@ -428,6 +447,7 @@
     private bool _savingFacility;
     private bool _savingClinic;
     private bool _inviting;
+    private bool _grantingPatient;
     private Guid? _deletingFacilityId;
     private Guid? _removingUserId;
     private Guid? _resendingUserId;
@@ -438,6 +458,7 @@
     private string? _actionError;
     private string _tab = "overview";
     private string _inviteEmail = string.Empty;
+    private string _grantPatientEmail = string.Empty;
     private string _patientSearch = string.Empty;
     private string _patientSearchApplied = string.Empty;
     private int _patientPageNumber = 1;
@@ -458,6 +479,15 @@
     {
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
         await LoadDetailAsync();
+
+        if (!string.IsNullOrWhiteSpace(TabQuery) && TabQuery is "overview" or "facilities" or "patients" or "staff")
+        {
+            _tab = TabQuery;
+            if (_tab == "staff" && !_staffLoaded)
+                await LoadStaffAsync();
+            else if (_tab == "patients" && !_patientsLoaded)
+                await LoadPatientsAsync();
+        }
     }
 
     private async Task LoadDetailAsync()
@@ -717,6 +747,24 @@
 
         _inviteEmail = string.Empty;
         await LoadStaffAsync();
+    }
+
+    private async Task GrantPatientAccessAsync()
+    {
+        _grantingPatient = true;
+        _actionError = null;
+        var response = await AdminClinicService.GrantPatientAccessAsync(ClinicId, _grantPatientEmail.Trim());
+        _grantingPatient = false;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? "Could not grant patient access.";
+            return;
+        }
+
+        _grantPatientEmail = string.Empty;
+        _patientsLoaded = false;
+        await LoadPatientsAsync();
     }
 
     private async Task ResendInvitationAsync(Guid userId)

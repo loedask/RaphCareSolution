@@ -5,6 +5,7 @@ using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.EnsureClinicMembership;
+using RaphCare.Application.Features.Organization.Commands.GrantAdminClinicPatientAccess;
 using RaphCare.Application.Features.Organization.Commands.InviteClinicStaff;
 using RaphCare.Application.Features.Organization.Commands.RegisterClinic;
 using RaphCare.Application.Features.Organization.Commands.RemoveClinicStaff;
@@ -16,6 +17,7 @@ using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinics;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicStaff;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicPatientById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicPatients;
 
 namespace RaphCare.API.Controllers;
@@ -87,6 +89,44 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             new GetAdminClinicPatientsQuery { ClinicId = id, PageNumber = pageNumber, PageSize = pageSize, Search = search },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Get one patient linked to this hospital (summary and recent visits).</summary>
+    [HttpGet("{id:guid}/patients/{patientId:guid}", Name = "GetAdminClinicPatientById")]
+    [ProducesResponseType(typeof(AdminClinicPatientDetailDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPatientById(
+        Guid id,
+        Guid patientId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicPatientByIdQuery { ClinicId = id, PatientId = patientId },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Grant an existing patient access to this hospital by email.</summary>
+    [HttpPost("{id:guid}/patients", Name = "GrantAdminClinicPatientAccess")]
+    [ProducesResponseType(typeof(AdminClinicPatientListItemDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GrantPatientAccess(
+        Guid id,
+        [FromBody] GrantAdminClinicPatientAccessRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GrantAdminClinicPatientAccessCommand
+            {
+                ClinicId = id,
+                Email = body.Email,
+                Notes = body.Notes
+            },
+            cancellationToken);
+        return result is null
+            ? NotFound()
+            : CreatedAtAction(nameof(GetPatientById), new { id, patientId = result.PatientId }, result);
     }
 
     /// <summary>Link the current user to a hospital (idempotent).</summary>

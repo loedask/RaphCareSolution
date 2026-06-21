@@ -1,0 +1,168 @@
+@page "/admin/hospitals/{ClinicId:guid}/patients/{PatientId:guid}"
+@layout AdminLayout
+
+<PageTitle>@(_patient is null ? "Patient" : $"{_patient.FirstName} {_patient.LastName}") — RaphCare Admin</PageTitle>
+
+<section class="admin-page">
+    @if (_loading)
+    {
+        <p class="text-muted">Loading patient…</p>
+    }
+    else if (_patient is null)
+    {
+        <div class="alert alert-error">@(_error ?? "Patient not found.")</div>
+        <a class="btn btn-secondary" href="@BackUrl">← Back to hospital</a>
+    }
+    else
+    {
+        <header class="admin-page-header">
+            <div>
+                <h1>@_patient.FirstName @_patient.LastName</h1>
+                <p class="admin-page-lead">Patient summary for @_clinicName</p>
+            </div>
+            <span class="badge badge-success">@_patient.AccessType</span>
+        </header>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Demographics</p>
+                    <h2>Profile</h2>
+                </div>
+            </header>
+            <div class="admin-page-card-body">
+                <dl class="admin-detail-grid">
+                    <div>
+                        <dt>Date of birth</dt>
+                        <dd>@_patient.DateOfBirth.ToString("dd MMM yyyy")</dd>
+                    </div>
+                    <div>
+                        <dt>Gender</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(_patient.Gender) ? "—" : _patient.Gender)</dd>
+                    </div>
+                    <div>
+                        <dt>Email</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(_patient.Email) ? "—" : _patient.Email)</dd>
+                    </div>
+                    <div>
+                        <dt>Phone</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(_patient.PhoneNumber) ? "—" : _patient.PhoneNumber)</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Hospital link</p>
+                    <h2>Access</h2>
+                </div>
+            </header>
+            <div class="admin-page-card-body">
+                <dl class="admin-detail-grid">
+                    <div>
+                        <dt>Granted</dt>
+                        <dd>@_patient.GrantedAt.ToString("dd MMM yyyy")</dd>
+                    </div>
+                    <div>
+                        <dt>Rule</dt>
+                        <dd>@_patient.GrantedByRule</dd>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(_patient.Notes))
+                    {
+                        <div class="admin-detail-grid-full">
+                            <dt>Notes</dt>
+                            <dd>@_patient.Notes</dd>
+                        </div>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Clinical</p>
+                    <h2>Recent visits</h2>
+                    <p class="admin-page-lead">Encounters at this hospital.</p>
+                </div>
+                <span class="admin-progress-pill">@_patient.RecentVisits.Count visit@(_patient.RecentVisits.Count == 1 ? "" : "s")</span>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_patient.RecentVisits.Count == 0)
+                {
+                    <p class="text-muted">No visits recorded yet for this patient at this hospital.</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Summary</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var visit in _patient.RecentVisits)
+                                {
+                                    <tr>
+                                        <td>@visit.VisitStart.ToString("dd MMM yyyy HH:mm")</td>
+                                        <td>@visit.VisitType</td>
+                                        <td>@visit.Status</td>
+                                        <td>@(string.IsNullOrWhiteSpace(visit.Summary) ? "—" : visit.Summary)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-actions">
+            <a class="btn btn-secondary" href="@BackUrl">← Back to hospital</a>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+    [Parameter] public Guid PatientId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+
+    private bool _loading = true;
+    private string? _error;
+    private string _clinicName = "this hospital";
+    private ClinicPatientDetail? _patient;
+
+    private string BackUrl => $"/admin/hospitals/{ClinicId}?tab=patients";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        _clinicName = ClinicContext.CurrentClinicName ?? _clinicName;
+
+        var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
+        if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
+        {
+            _clinicName = clinicResponse.Data.Name;
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+
+        _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetPatientDetailAsync(ClinicId, PatientId);
+        _loading = false;
+
+        if (response.IsSuccess && response.Data is not null)
+            _patient = response.Data;
+        else
+            _error = response.ErrorMessage ?? "Could not load patient.";
+    }
+}

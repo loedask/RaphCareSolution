@@ -9,6 +9,8 @@ public interface IAdminClinicService
     Task<Response<ClinicDetail>> GetClinicAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicDetail>> UpdateClinicAsync(Guid clinicId, UpdateClinicRequest request, CancellationToken cancellationToken = default);
     Task<Response<PagedClinicPatients>> GetPatientsAsync(Guid clinicId, int pageNumber = 1, int pageSize = 20, string? search = null, CancellationToken cancellationToken = default);
+    Task<Response<ClinicPatientDetail>> GetPatientDetailAsync(Guid clinicId, Guid patientId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicPatientListItem>> GrantPatientAccessAsync(Guid clinicId, string email, string? notes = null, CancellationToken cancellationToken = default);
     Task<Response<bool>> EnsureMembershipAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<Guid?>> ClaimByRegistrationNumberAsync(string registrationNumber, CancellationToken cancellationToken = default);
     Task<Response<RegisterClinicResult>> RegisterClinicAsync(RegisterClinicRequest request, CancellationToken cancellationToken = default);

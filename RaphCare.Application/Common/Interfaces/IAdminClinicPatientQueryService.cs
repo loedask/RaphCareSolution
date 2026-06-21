@@ -11,4 +11,9 @@ public interface IAdminClinicPatientQueryService
         int pageSize,
         string? search = null,
         CancellationToken cancellationToken = default);
+
+    Task<AdminClinicPatientDetailDto?> GetPatientDetailAsync(
+        Guid clinicId,
+        Guid patientId,
+        CancellationToken cancellationToken = default);
 }

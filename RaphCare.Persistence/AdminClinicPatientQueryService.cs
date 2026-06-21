@@ -64,4 +64,57 @@ public sealed class AdminClinicPatientQueryService(ClinicalDbContext clinicalDbC
             PageSize = pageSize
         };
     }
+
+    public async Task<AdminClinicPatientDetailDto?> GetPatientDetailAsync(
+        Guid clinicId,
+        Guid patientId,
+        CancellationToken cancellationToken = default)
+    {
+        var row = await clinicalDbContext.PatientClinicAccesses
+            .AsNoTracking()
+            .Where(a => a.ClinicId == clinicId && a.PatientId == patientId && a.IsActive)
+            .Join(
+                clinicalDbContext.Patients.AsNoTracking().Where(p => !p.IsDeleted),
+                access => access.PatientId,
+                patient => patient.Id,
+                (access, patient) => new { access, patient })
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (row is null)
+            return null;
+
+        var recentVisits = await clinicalDbContext.Visits
+            .AsNoTracking()
+            .Where(v => v.ClinicId == clinicId && v.PatientId == patientId)
+            .OrderByDescending(v => v.VisitStart)
+            .Take(10)
+            .Select(v => new AdminClinicPatientVisitDto
+            {
+                Id = v.Id,
+                VisitStart = v.VisitStart,
+                VisitEnd = v.VisitEnd,
+                VisitType = v.VisitType,
+                Status = v.Status,
+                Summary = v.Summary
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return new AdminClinicPatientDetailDto
+        {
+            PatientId = row.patient.Id,
+            FirstName = row.patient.FirstName,
+            LastName = row.patient.LastName,
+            DateOfBirth = row.patient.DateOfBirth,
+            Gender = row.patient.Gender,
+            Email = row.patient.Email,
+            PhoneNumber = row.patient.PhoneNumber,
+            AccessType = row.access.AccessType.ToString(),
+            GrantedAt = row.access.GrantedAt,
+            GrantedByRule = row.access.GrantedByRule,
+            Notes = row.access.Notes,
+            RecentVisits = recentVisits
+        };
+    }
 }

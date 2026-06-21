@@ -40,6 +40,32 @@ public sealed class PagedClinicPatients
     public int PageSize { get; set; }
 }
 
+public sealed class ClinicPatientDetail
+{
+    public Guid PatientId { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public DateTime DateOfBirth { get; set; }
+    public string Gender { get; set; } = string.Empty;
+    public string? Email { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string AccessType { get; set; } = string.Empty;
+    public DateTime GrantedAt { get; set; }
+    public string GrantedByRule { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+    public IReadOnlyList<ClinicPatientVisitSummary> RecentVisits { get; set; } = Array.Empty<ClinicPatientVisitSummary>();
+}
+
+public sealed class ClinicPatientVisitSummary
+{
+    public Guid Id { get; set; }
+    public DateTime VisitStart { get; set; }
+    public DateTime? VisitEnd { get; set; }
+    public string VisitType { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string? Summary { get; set; }
+}
+
 public sealed class SaveFacilityRequest
 {
     public string Name { get; set; } = string.Empty;

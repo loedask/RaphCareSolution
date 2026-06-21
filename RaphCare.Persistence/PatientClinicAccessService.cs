@@ -140,5 +140,43 @@ public class PatientClinicAccessService(
         // Persist grant so future reads/authorizations are stable.
         await _clinicalDbContext.SaveChangesAsync(ct).ConfigureAwait(false);
     }
+
+    public async Task GrantManualAccessAsync(Guid patientId, Guid clinicId, string? notes, CancellationToken ct)
+    {
+        var now = _clock.UtcNow;
+
+        var existing = await _clinicalDbContext.PatientClinicAccesses
+            .FirstOrDefaultAsync(a => a.PatientId == patientId && a.ClinicId == clinicId, ct)
+            .ConfigureAwait(false);
+
+        if (existing is null)
+        {
+            _clinicalDbContext.PatientClinicAccesses.Add(new PatientClinicAccess
+            {
+                PatientId = patientId,
+                ClinicId = clinicId,
+                AccessType = PatientClinicAccessType.ManualGrant,
+                GrantedAt = now,
+                GrantedByRule = "AdminGrant",
+                LastValidatedAt = now,
+                IsActive = true,
+                Notes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim()
+            });
+        }
+        else
+        {
+            existing.AccessType = PatientClinicAccessType.ManualGrant;
+            existing.GrantedAt = now;
+            existing.GrantedByRule = "AdminGrant";
+            existing.LastValidatedAt = now;
+            existing.IsActive = true;
+            if (!string.IsNullOrWhiteSpace(notes))
+                existing.Notes = notes.Trim();
+
+            _clinicalDbContext.PatientClinicAccesses.Update(existing);
+        }
+
+        await _clinicalDbContext.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
 }
 

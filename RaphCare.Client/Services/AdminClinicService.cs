@@ -182,6 +182,88 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicPatientDetail>> GetPatientDetailAsync(
+        Guid clinicId,
+        Guid patientId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/patients/{patientId}", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicPatientDetail>.Failure("Patient not found or you do not have access.", 404);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                return Response<ClinicPatientDetail>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<PatientDetailDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (dto is null)
+                return Response<ClinicPatientDetail>.Failure("Could not load patient.");
+
+            return Response<ClinicPatientDetail>.Success(MapPatientDetail(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicPatientDetail>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicPatientListItem>> GrantPatientAccessAsync(
+        Guid clinicId,
+        string email,
+        string? notes = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/patients", new { email, notes }, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can grant patient access.";
+                return Response<ClinicPatientListItem>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<PatientListItemDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (dto is null)
+                return Response<ClinicPatientListItem>.Failure("Could not grant patient access.");
+
+            return Response<ClinicPatientListItem>.Success(new ClinicPatientListItem
+            {
+                PatientId = dto.PatientId,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                DateOfBirth = dto.DateOfBirth,
+                AccessType = dto.AccessType,
+                GrantedAt = dto.GrantedAt
+            });
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicPatientListItem>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<bool>> EnsureMembershipAsync(Guid clinicId, CancellationToken cancellationToken = default)
     {
         try
@@ -695,6 +777,32 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             .ToList() ?? []
     };
 
+    private static ClinicPatientDetail MapPatientDetail(PatientDetailDto dto) => new()
+    {
+        PatientId = dto.PatientId,
+        FirstName = dto.FirstName,
+        LastName = dto.LastName,
+        DateOfBirth = dto.DateOfBirth,
+        Gender = dto.Gender,
+        Email = dto.Email,
+        PhoneNumber = dto.PhoneNumber,
+        AccessType = dto.AccessType,
+        GrantedAt = dto.GrantedAt,
+        GrantedByRule = dto.GrantedByRule,
+        Notes = dto.Notes,
+        RecentVisits = dto.RecentVisits?
+            .Select(v => new ClinicPatientVisitSummary
+            {
+                Id = v.Id,
+                VisitStart = v.VisitStart,
+                VisitEnd = v.VisitEnd,
+                VisitType = v.VisitType,
+                Status = v.Status,
+                Summary = v.Summary
+            })
+            .ToList() ?? []
+    };
+
     private sealed class PagedClinicsDto
     {
         public List<ClinicListItemDto>? Items { get; set; }
@@ -785,5 +893,31 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public DateTime DateOfBirth { get; set; }
         public string AccessType { get; set; } = string.Empty;
         public DateTime GrantedAt { get; set; }
+    }
+
+    private sealed class PatientDetailDto
+    {
+        public Guid PatientId { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public DateTime DateOfBirth { get; set; }
+        public string Gender { get; set; } = string.Empty;
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string AccessType { get; set; } = string.Empty;
+        public DateTime GrantedAt { get; set; }
+        public string GrantedByRule { get; set; } = string.Empty;
+        public string? Notes { get; set; }
+        public List<PatientVisitDto>? RecentVisits { get; set; }
+    }
+
+    private sealed class PatientVisitDto
+    {
+        public Guid Id { get; set; }
+        public DateTime VisitStart { get; set; }
+        public DateTime? VisitEnd { get; set; }
+        public string VisitType { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string? Summary { get; set; }
     }
 }
