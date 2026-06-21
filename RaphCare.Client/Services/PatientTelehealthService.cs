@@ -1,6 +1,7 @@
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Api;
+using RaphCare.Client.Models.Appointments;
 using RaphCare.Client.Models.Telehealth;
 using RaphCare.Client.Services.Base;
 
@@ -72,6 +73,69 @@ public sealed class PatientTelehealthService(HttpClient httpClient) : BaseHttpSe
 
     public Task<Response<bool>> SendSessionSmsAsync(Guid teleSessionId, CancellationToken cancellationToken = default) =>
         PostNoContentAsync($"api/patient/telehealth/sessions/{teleSessionId}/notify-sms", body: null, cancellationToken);
+
+    public async Task<Response<Guid>> RequestOnDemandSessionAsync(
+        Guid? clinicId = null,
+        Guid? providerId = null,
+        string? callMode = null,
+        CancellationToken cancellationToken = default)
+    {
+        var body = new { clinicId, providerId, callMode };
+        var result = await PostAsync<CreatedGuidApiResponse>("api/patient/telehealth/sessions/request", body, cancellationToken)
+            .ConfigureAwait(false);
+        if (!result.IsSuccess || result.Data is null)
+            return Response<Guid>.Failure(result.ErrorMessage ?? "Could not start telehealth session.", result.StatusCode);
+        return Response<Guid>.Success(result.Data.Id);
+    }
+
+    public async Task<Response<IReadOnlyList<TelehealthChatMessageViewModel>>> GetSessionChatAsync(
+        Guid teleSessionId,
+        int pageSize = 50,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await GetAsync<IReadOnlyList<ChatDto>>(
+                $"api/patient/telehealth/sessions/{teleSessionId}/chat?pageSize={pageSize}",
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (!result.IsSuccess)
+            return Response<IReadOnlyList<TelehealthChatMessageViewModel>>.Failure(result.ErrorMessage ?? "Could not load chat.", result.StatusCode);
+
+        var list = (result.Data ?? Array.Empty<ChatDto>()).Select(MapChat).ToList();
+        return Response<IReadOnlyList<TelehealthChatMessageViewModel>>.Success(list);
+    }
+
+    public async Task<Response<Guid>> SendChatMessageAsync(
+        Guid teleSessionId,
+        string message,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await PostAsync<CreatedGuidApiResponse>(
+                $"api/patient/telehealth/sessions/{teleSessionId}/chat",
+                new { message },
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (!result.IsSuccess || result.Data is null)
+            return Response<Guid>.Failure(result.ErrorMessage ?? "Send failed.", result.StatusCode);
+        return Response<Guid>.Success(result.Data.Id);
+    }
+
+    private static TelehealthChatMessageViewModel MapChat(ChatDto d) => new()
+    {
+        Id = d.Id,
+        Message = d.Message ?? string.Empty,
+        SentAt = d.SentAt,
+        IsMine = d.IsMine,
+        IsSystemMessage = d.IsSystemMessage
+    };
+
+    private sealed class ChatDto
+    {
+        public Guid Id { get; set; }
+        public string? Message { get; set; }
+        public DateTime SentAt { get; set; }
+        public bool IsMine { get; set; }
+        public bool IsSystemMessage { get; set; }
+    }
 
     private sealed class TeleSessionListItemDto
     {

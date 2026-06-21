@@ -1,17 +1,29 @@
+using System.Globalization;
 using System.Windows.Input;
+using Microsoft.Extensions.Options;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
+using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Common.Configuration;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 
-/// <summary>Request a telehealth call (concept <c>RequestCall.tsx</c>).</summary>
+/// <summary>Request a telehealth call (concept <c>RequestCall.tsx</c>). Creates an on-demand Agora session via API.</summary>
 public sealed class RequestCallViewModel : BaseViewModel
 {
+    private readonly IPatientTelehealthService _telehealth;
+    private readonly AppointmentsMobileOptions _appointments;
     private string _state = "idle";
     private string _mode = "video";
 
-    public RequestCallViewModel()
+    public RequestCallViewModel(
+        IPatientTelehealthService telehealth,
+        IOptions<AppointmentsMobileOptions> appointments)
     {
+        _telehealth = telehealth ?? throw new ArgumentNullException(nameof(telehealth));
+        _appointments = appointments.Value;
         Title = T("RequestCallTitle");
         VideoModeText = T("RequestCallModeVideo");
         AudioModeText = T("RequestCallModeAudio");
@@ -92,13 +104,36 @@ public sealed class RequestCallViewModel : BaseViewModel
     private async Task StartCallFlowAsync()
     {
         State = "checking";
-        await Task.Delay(1500);
+        await Task.Delay(800);
+
+        var clinicId = ParseGuid(_appointments.DefaultClinicId);
+        var providerId = ParseGuid(_appointments.DefaultProviderId);
+
         State = "connecting";
-        await Task.Delay(1500);
+        var response = await _telehealth
+            .RequestOnDemandSessionAsync(clinicId, providerId, Mode, CancellationToken.None)
+            .ConfigureAwait(false);
+
+        if (!response.IsSuccess || response.Data == Guid.Empty)
+        {
+            State = "idle";
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+                await Shell.Current.DisplayAlertAsync(
+                    Title,
+                    response.ErrorMessage ?? T("RequestCallFailed"),
+                    T("CommonOk")));
+            return;
+        }
+
         State = "queue";
-        await Task.Delay(4000);
+        await Task.Delay(1200);
         State = "connected";
-        await Task.Delay(1500);
-        await SafeShellNavigator.GoToAsync(AppNavigator.CareTelehealth);
+        await Task.Delay(600);
+
+        var sessionId = response.Data.ToString("D", CultureInfo.InvariantCulture);
+        await SafeShellNavigator.GoToAsync($"{AppNavigator.TelehealthJoin}?sessionId={sessionId}");
     }
+
+    private static Guid? ParseGuid(string? value) =>
+        Guid.TryParse(value, out var id) && id != Guid.Empty ? id : null;
 }

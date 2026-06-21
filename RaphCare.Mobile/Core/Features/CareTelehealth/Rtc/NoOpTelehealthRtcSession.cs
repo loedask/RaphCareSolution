@@ -14,7 +14,7 @@ public sealed class NoOpTelehealthRtcSession : ITelehealthRtcSession
     }
 
     public Task<TelehealthRtcStartResult> StartAsync(TelehealthRtcJoinParameters parameters, CancellationToken cancellationToken = default) =>
-        Task.FromResult(new TelehealthRtcStartResult(false, "Native Agora video is only enabled on Android in this build."));
+        Task.FromResult(new TelehealthRtcStartResult(false, "Native Agora video is enabled on Android. On iOS, run tools/download-agora-ios-framework.ps1 and build on a Mac."));
 
     public Task StopAsync(CancellationToken cancellationToken = default)
     {

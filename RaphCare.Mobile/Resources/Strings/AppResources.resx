@@ -1043,6 +1043,21 @@ Accessible. Intelligent. Human.</value>
   <data name="ConsultationChatComingSoon" xml:space="preserve">
     <value>In-call chat is coming soon.</value>
   </data>
+  <data name="ConsultationChatSend" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="ConsultationChatClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ConsultationChatEmpty" xml:space="preserve">
+    <value>No messages yet. Say hello to your provider.</value>
+  </data>
+  <data name="ConsultationChatSendFailed" xml:space="preserve">
+    <value>Could not send your message.</value>
+  </data>
+  <data name="RequestCallFailed" xml:space="preserve">
+    <value>Could not start a telehealth session. Make sure you are linked to a clinic or set default clinic in app settings.</value>
+  </data>
   <data name="ConsultationHangUp" xml:space="preserve">
     <value>End</value>
   </data>

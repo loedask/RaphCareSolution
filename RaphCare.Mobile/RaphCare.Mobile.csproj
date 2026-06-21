@@ -92,6 +92,11 @@
         <AndroidMavenLibrary Include="io.agora.rtc:full-sdk" Version="4.5.2" Bind="false" VerifyDependencies="false" />
     </ItemGroup>
 
+    <!-- iOS: after running tools/download-agora-ios-framework.ps1, embed AgoraRtcKit for native video. -->
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' AND Exists('Platforms\iOS\AgoraRtcKit\AgoraRtcKit.xcframework')">
+        <NativeReference Include="Platforms\iOS\AgoraRtcKit\AgoraRtcKit.xcframework" Kind="Framework" />
+    </ItemGroup>
+
     <!-- Optional: HBand vendor SDK (https://github.com/HBandSDK/Android_Ble_SDK). Run tools/download-hband-android-libs.ps1; see docs/12_HBand_SDK_Integration.md. Embeds JARs only — C# still needs a binding project to call VPOperateManager. -->
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' AND Exists('Platforms\Android\libs\vpbluetooth-1.18.aar') AND Exists('Platforms\Android\libs\vpprotocol-2.3.48.15.aar') AND Exists('Platforms\Android\libs\gson-2.2.4.jar')">
         <AndroidLibrary Include="Platforms\Android\libs\vpbluetooth-1.18.aar" />

@@ -1,8 +1,10 @@
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.Telehealth;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Rtc;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
@@ -33,6 +35,9 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
     private string _providerDisplayName = string.Empty;
     private string _connectionBadgeText = string.Empty;
     private bool _remoteParticipantPresent;
+    private bool _isChatOpen;
+    private string _chatInput = string.Empty;
+    private System.Threading.Timer? _chatPollTimer;
     private System.Threading.Timer? _callTimer;
     private DateTimeOffset _callStarted;
 
@@ -64,6 +69,11 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         _connectionBadgeText = T("ConsultationConnecting");
         _showVideoSection = DeviceInfo.Current.Platform == DevicePlatform.Android;
 
+        ChatSendLabel = T("ConsultationChatSend");
+        ChatCloseLabel = T("ConsultationChatClose");
+        ChatEmptyText = T("ConsultationChatEmpty");
+        ChatMessages = new ObservableCollection<TelehealthChatMessageViewModel>();
+
         _rtc.ChannelJoined += OnRtcChannelJoined;
         _rtc.RemoteUserJoined += OnRtcRemoteUserJoined;
         _rtc.RemoteUserLeft += OnRtcRemoteUserLeft;
@@ -76,8 +86,9 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         EndVideoCommand = new Command(async () => await EndVideoAsync(), () => InCall);
         ToggleMuteCommand = new Command(async () => await ToggleMuteAsync());
         ToggleVideoCommand = new Command(async () => await ToggleVideoAsync());
-        OpenChatCommand = new Command(async () =>
-            await Shell.Current.DisplayAlertAsync(Title, T("ConsultationChatComingSoon"), T("CommonOk")));
+        OpenChatCommand = new Command(async () => await OpenChatAsync());
+        CloseChatCommand = new Command(() => IsChatOpen = false);
+        SendChatCommand = new Command(async () => await SendChatAsync(), () => !string.IsNullOrWhiteSpace(ChatInput));
         HangUpCommand = new Command(async () => await HangUpAsync());
     }
 
@@ -100,6 +111,40 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
     public string ChatLabel { get; }
     public string HangUpLabel { get; }
     public string JoinPromptText { get; }
+    public string ChatSendLabel { get; }
+    public string ChatCloseLabel { get; }
+    public string ChatEmptyText { get; }
+
+    public ObservableCollection<TelehealthChatMessageViewModel> ChatMessages { get; }
+
+    public bool IsChatOpen
+    {
+        get => _isChatOpen;
+        set
+        {
+            if (_isChatOpen == value)
+                return;
+            _isChatOpen = value;
+            OnPropertyChanged(nameof(IsChatOpen));
+            if (_isChatOpen)
+                StartChatPolling();
+            else
+                StopChatPolling();
+        }
+    }
+
+    public string ChatInput
+    {
+        get => _chatInput;
+        set
+        {
+            SetProperty(ref _chatInput, value);
+            (SendChatCommand as Command)?.ChangeCanExecute();
+        }
+    }
+
+    public ICommand CloseChatCommand { get; }
+    public ICommand SendChatCommand { get; }
 
     public bool ShowVideoSection => _showVideoSection;
     public bool ShowSetupLayout => !InCall;
@@ -385,6 +430,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
 
     private async Task HangUpAsync()
     {
+        IsChatOpen = false;
         await EndVideoAsync().ConfigureAwait(false);
         await SafeShellNavigator.GoToAsync("..");
     }
@@ -451,8 +497,74 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
     public void Dispose()
     {
         _callTimer?.Dispose();
+        StopChatPolling();
         _rtc.ChannelJoined -= OnRtcChannelJoined;
         _rtc.RemoteUserJoined -= OnRtcRemoteUserJoined;
         _rtc.RemoteUserLeft -= OnRtcRemoteUserLeft;
+    }
+
+    private async Task OpenChatAsync()
+    {
+        if (_sessionId == Guid.Empty)
+            return;
+
+        IsChatOpen = true;
+        await RefreshChatAsync().ConfigureAwait(false);
+    }
+
+    private async Task SendChatAsync()
+    {
+        if (_sessionId == Guid.Empty || string.IsNullOrWhiteSpace(ChatInput))
+            return;
+
+        var text = ChatInput.Trim();
+        ChatInput = string.Empty;
+        var response = await _telehealth.SendChatMessageAsync(_sessionId, text, CancellationToken.None).ConfigureAwait(false);
+        if (!response.IsSuccess)
+        {
+            await Shell.Current.DisplayAlertAsync(Title, response.ErrorMessage ?? T("ConsultationChatSendFailed"), T("CommonOk"));
+            return;
+        }
+
+        await RefreshChatAsync().ConfigureAwait(false);
+    }
+
+    private void StartChatPolling()
+    {
+        _chatPollTimer?.Dispose();
+        _chatPollTimer = new System.Threading.Timer(async _ =>
+        {
+            try
+            {
+                await RefreshChatAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                // Polling is best-effort during the call.
+            }
+        }, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
+    }
+
+    private void StopChatPolling()
+    {
+        _chatPollTimer?.Dispose();
+        _chatPollTimer = null;
+    }
+
+    private async Task RefreshChatAsync()
+    {
+        if (_sessionId == Guid.Empty)
+            return;
+
+        var response = await _telehealth.GetSessionChatAsync(_sessionId, 50, CancellationToken.None).ConfigureAwait(false);
+        if (!response.IsSuccess || response.Data is null)
+            return;
+
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            ChatMessages.Clear();
+            foreach (var m in response.Data)
+                ChatMessages.Add(m);
+        });
     }
 }

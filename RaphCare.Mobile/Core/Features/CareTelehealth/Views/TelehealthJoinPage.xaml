@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:care="clr-namespace:RaphCare.Mobile.Core.Features.CareTelehealth.Views"
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels"
+             xmlns:telehealth="clr-namespace:RaphCare.Client.Models.Telehealth;assembly=RaphCare.Client"
              x:Class="RaphCare.Mobile.Core.Features.CareTelehealth.Views.TelehealthJoinPage"
              x:DataType="vm:TelehealthJoinViewModel"
              Shell.NavBarIsVisible="False"
@@ -123,6 +124,56 @@
                            TextColor="{StaticResource PrimaryForegroundColor}"
                            VerticalOptions="Center" />
                 </Grid>
+            </Grid>
+
+            <!-- In-call chat (HTTP-backed TeleSessionChat, not Agora Signaling) -->
+            <Grid Grid.RowSpan="2"
+                  IsVisible="{Binding IsChatOpen}"
+                  BackgroundColor="#CC000000"
+                  Padding="16,48,16,24">
+                <Border BackgroundColor="{StaticResource CardColor}"
+                        StrokeThickness="0"
+                        Padding="12"
+                        VerticalOptions="End"
+                        MaximumHeightRequest="420">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding ChatLabel}"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource ForegroundColor}" />
+                            <Button Grid.Column="1"
+                                    Text="{Binding ChatCloseLabel}"
+                                    Command="{Binding CloseChatCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource PrimaryColor}" />
+                        </Grid>
+                        <CollectionView Grid.Row="1"
+                                        ItemsSource="{Binding ChatMessages}"
+                                        EmptyView="{Binding ChatEmptyText}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="telehealth:TelehealthChatMessageViewModel">
+                                    <VerticalStackLayout Padding="0,4" Spacing="2">
+                                        <Label Text="{Binding Message}"
+                                               FontSize="14"
+                                               TextColor="{StaticResource ForegroundColor}"
+                                               LineBreakMode="WordWrap" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <Entry Grid.Row="2"
+                               Text="{Binding ChatInput}"
+                               Placeholder="{Binding ChatLabel}"
+                               ReturnCommand="{Binding SendChatCommand}" />
+                        <Button Grid.Row="3"
+                                Text="{Binding ChatSendLabel}"
+                                Command="{Binding SendChatCommand}"
+                                Style="{StaticResource PrimaryButton}" />
+                    </Grid>
+                </Border>
             </Grid>
 
             <Grid Grid.Row="1"
