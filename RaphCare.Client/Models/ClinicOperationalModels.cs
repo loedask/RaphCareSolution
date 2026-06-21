@@ -83,6 +83,14 @@ public sealed class BookClinicAppointmentRequest
     public string? Reason { get; set; }
 }
 
+public sealed class RescheduleClinicAppointmentRequest
+{
+    public Guid? ProviderId { get; set; }
+    public DateTime ScheduledStart { get; set; }
+    public DateTime ScheduledEnd { get; set; }
+    public string? Reason { get; set; }
+}
+
 public sealed class ClinicPatientAppointmentSummary
 {
     public Guid Id { get; set; }
@@ -92,4 +100,37 @@ public sealed class ClinicPatientAppointmentSummary
     public string Status { get; set; } = string.Empty;
     public string? Reason { get; set; }
     public string ProviderName { get; set; } = string.Empty;
+}
+
+public sealed class ClinicPatientVitalSummary
+{
+    public string Type { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+    public string Unit { get; set; } = string.Empty;
+    public DateTime RecordedAt { get; set; }
+    public string? VisitType { get; set; }
+}
+
+public sealed class ClinicPatientDeviceReadingSummary
+{
+    public string Kind { get; set; } = string.Empty;
+    public string ReadingType { get; set; } = string.Empty;
+    public decimal PrimaryValue { get; set; }
+    public string Unit { get; set; } = string.Empty;
+    public DateTime RecordedAt { get; set; }
+    public int? HeartRateBpm { get; set; }
+    public decimal? SpO2Percent { get; set; }
+}
+
+public sealed class ClinicPatientDeviceRollupSummary
+{
+    public DateOnly Date { get; set; }
+    public int HeartRateSampleCount { get; set; }
+    public decimal? AvgHeartRateBpm { get; set; }
+    public int? MinHeartRateBpm { get; set; }
+    public int? MaxHeartRateBpm { get; set; }
+    public int SpO2SampleCount { get; set; }
+    public decimal? AvgSpO2Percent { get; set; }
+    public decimal? MinSpO2Percent { get; set; }
+    public decimal? MaxSpO2Percent { get; set; }
 }

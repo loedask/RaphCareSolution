@@ -1,5 +1,6 @@
 @page "/admin/hospitals/{ClinicId:guid}/appointments"
 @layout AdminLayout
+@using RaphCare.Domain.Common
 
 <PageTitle>Appointments — RaphCare Admin</PageTitle>
 
@@ -7,7 +8,7 @@
     <header class="admin-page-header">
         <div>
             <h1>Appointments</h1>
-            <p class="admin-page-lead">Scheduled visits for @_clinicName.</p>
+            <p class="admin-page-lead">Scheduled visits for @_clinicName. Times shown in @_timeZoneLabel.</p>
         </div>
         <span class="admin-progress-pill">@_totalCount appointment@(_totalCount == 1 ? "" : "s")</span>
     </header>
@@ -60,11 +61,11 @@
                         </select>
                     </label>
                     <label>
-                        Start (UTC)
+                        Start (@_timeZoneLabel)
                         <input class="form-control" type="datetime-local" @bind="_scheduledStart" @bind:format="yyyy-MM-ddTHH:mm" />
                     </label>
                     <label>
-                        End (UTC)
+                        End (@_timeZoneLabel)
                         <input class="form-control" type="datetime-local" @bind="_scheduledEnd" @bind:format="yyyy-MM-ddTHH:mm" />
                     </label>
                     <label>
@@ -79,6 +80,49 @@
                 </div>
             </div>
         </div>
+
+        @if (_rescheduleId is Guid rescheduleId)
+        {
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Scheduling</p>
+                        <h2>Reschedule appointment</h2>
+                    </div>
+                </header>
+                <div class="admin-page-card-body">
+                    <div class="form-grid">
+                        <label>
+                            Provider
+                            <select class="form-control" @bind="_rescheduleProviderId">
+                                @foreach (var provider in _providers)
+                                {
+                                    <option value="@provider.ProviderId">@provider.DisplayName</option>
+                                }
+                            </select>
+                        </label>
+                        <label>
+                            Start (@_timeZoneLabel)
+                            <input class="form-control" type="datetime-local" @bind="_rescheduleStart" @bind:format="yyyy-MM-ddTHH:mm" />
+                        </label>
+                        <label>
+                            End (@_timeZoneLabel)
+                            <input class="form-control" type="datetime-local" @bind="_rescheduleEnd" @bind:format="yyyy-MM-ddTHH:mm" />
+                        </label>
+                        <label>
+                            Reason
+                            <input class="form-control" @bind="_rescheduleReason" placeholder="Optional" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions">
+                        <button type="button" class="btn btn-primary" disabled="@_rescheduling" @onclick="ConfirmRescheduleAsync">
+                            @(_rescheduling ? "Saving…" : "Save changes")
+                        </button>
+                        <button type="button" class="btn btn-secondary" @onclick="CancelRescheduleForm">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
     }
 
     <div class="admin-page-card">
@@ -114,13 +158,17 @@
                                 <th>Type</th>
                                 <th>Status</th>
                                 <th>Reason</th>
+                                @if (_isAdministrator)
+                                {
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var appt in _appointments)
                             {
                                 <tr>
-                                    <td>@appt.ScheduledStart.ToString("dd MMM yyyy HH:mm")</td>
+                                    <td>@FormatLocal(appt.ScheduledStart)</td>
                                     <td>
                                         <a href="/admin/hospitals/@ClinicId/patients/@appt.PatientId">@appt.PatientName</a>
                                     </td>
@@ -128,6 +176,19 @@
                                     <td>@appt.Type</td>
                                     <td>@appt.Status</td>
                                     <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? "—" : appt.Reason)</td>
+                                    @if (_isAdministrator && appt.Status != "Cancelled")
+                                    {
+                                        <td class="admin-table-actions">
+                                            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => StartReschedule(appt)">Reschedule</button>
+                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@(_cancellingId == appt.Id)" @onclick="() => CancelAppointmentAsync(appt.Id)">
+                                                @(_cancellingId == appt.Id ? "…" : "Cancel")
+                                            </button>
+                                        </td>
+                                    }
+                                    else if (_isAdministrator)
+                                    {
+                                        <td></td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -160,17 +221,26 @@
 
     private bool _loading = true;
     private bool _booking;
+    private bool _rescheduling;
     private bool _isAdministrator;
     private string? _error;
     private string? _success;
     private string _clinicName = "this hospital";
+    private string _clinicTimeZone = "UTC";
+    private string _timeZoneLabel = "hospital time";
     private string _rangeFilter = "upcoming";
     private string _bookPatientId = string.Empty;
     private string _bookProviderId = string.Empty;
     private string _bookType = "InPerson";
     private string _bookReason = string.Empty;
-    private DateTime _scheduledStart = DateTime.UtcNow.Date.AddHours(9);
-    private DateTime _scheduledEnd = DateTime.UtcNow.Date.AddHours(9).AddMinutes(30);
+    private DateTime _scheduledStart;
+    private DateTime _scheduledEnd;
+    private Guid? _rescheduleId;
+    private Guid? _cancellingId;
+    private string _rescheduleProviderId = string.Empty;
+    private string _rescheduleReason = string.Empty;
+    private DateTime _rescheduleStart;
+    private DateTime _rescheduleEnd;
     private int _pageNumber = 1;
     private const int PageSize = 20;
     private int _pageCount = 1;
@@ -187,6 +257,9 @@
         {
             _clinicName = clinicResponse.Data.Name;
             _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            _clinicTimeZone = clinicResponse.Data.TimeZone;
+            _timeZoneLabel = string.IsNullOrWhiteSpace(_clinicTimeZone) ? "hospital time" : _clinicTimeZone;
+            SetDefaultBookingTimes();
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
@@ -195,6 +268,19 @@
 
         await LoadAppointmentsAsync();
     }
+
+    private void SetDefaultBookingTimes()
+    {
+        var localNow = ClinicTimeZoneHelper.ToClinicLocal(DateTime.UtcNow, _clinicTimeZone);
+        _scheduledStart = localNow.Date.AddHours(9);
+        _scheduledEnd = localNow.Date.AddHours(9).AddMinutes(30);
+    }
+
+    private string FormatLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private DateTime ToUtc(DateTime clinicLocal) =>
+        ClinicTimeZoneHelper.ToUtcFromClinicLocal(clinicLocal, _clinicTimeZone);
 
     private async Task LoadBookFormDataAsync()
     {
@@ -230,8 +316,8 @@
         {
             PatientId = patientId,
             ProviderId = providerId,
-            ScheduledStart = DateTime.SpecifyKind(_scheduledStart, DateTimeKind.Utc),
-            ScheduledEnd = DateTime.SpecifyKind(_scheduledEnd, DateTimeKind.Utc),
+            ScheduledStart = ToUtc(_scheduledStart),
+            ScheduledEnd = ToUtc(_scheduledEnd),
             Type = _bookType,
             Reason = string.IsNullOrWhiteSpace(_bookReason) ? null : _bookReason.Trim()
         });
@@ -250,6 +336,73 @@
         await LoadAppointmentsAsync();
     }
 
+    private void StartReschedule(ClinicAppointmentListItem appt)
+    {
+        _rescheduleId = appt.Id;
+        _rescheduleProviderId = appt.ProviderId.ToString();
+        _rescheduleReason = appt.Reason ?? string.Empty;
+        _rescheduleStart = ClinicTimeZoneHelper.ToClinicLocal(appt.ScheduledStart, _clinicTimeZone);
+        _rescheduleEnd = ClinicTimeZoneHelper.ToClinicLocal(appt.ScheduledEnd, _clinicTimeZone);
+        _error = null;
+        _success = null;
+    }
+
+    private void CancelRescheduleForm() => _rescheduleId = null;
+
+    private async Task ConfirmRescheduleAsync()
+    {
+        if (_rescheduleId is not Guid appointmentId || !Guid.TryParse(_rescheduleProviderId, out var providerId))
+            return;
+
+        if (_rescheduleEnd <= _rescheduleStart)
+        {
+            _error = "End time must be after start time.";
+            return;
+        }
+
+        _rescheduling = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.RescheduleAppointmentAsync(ClinicId, appointmentId, new RescheduleClinicAppointmentRequest
+        {
+            ProviderId = providerId,
+            ScheduledStart = ToUtc(_rescheduleStart),
+            ScheduledEnd = ToUtc(_rescheduleEnd),
+            Reason = _rescheduleReason
+        });
+        _rescheduling = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not reschedule appointment.";
+            return;
+        }
+
+        _success = "Appointment rescheduled.";
+        _rescheduleId = null;
+        await LoadAppointmentsAsync();
+    }
+
+    private async Task CancelAppointmentAsync(Guid appointmentId)
+    {
+        _cancellingId = appointmentId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CancelAppointmentAsync(ClinicId, appointmentId);
+        _cancellingId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not cancel appointment.";
+            return;
+        }
+
+        _success = "Appointment cancelled.";
+        if (_rescheduleId == appointmentId)
+            _rescheduleId = null;
+        await LoadAppointmentsAsync();
+    }
+
     private async Task LoadAppointmentsAsync()
     {
         _loading = true;
@@ -257,17 +410,16 @@
 
         DateTime? from = null;
         DateTime? to = null;
-        var today = DateTime.UtcNow.Date;
+        var nowUtc = DateTime.UtcNow;
 
         switch (_rangeFilter)
         {
             case "today":
-                from = today;
-                to = today.AddDays(1).AddTicks(-1);
+                (from, to) = ClinicTimeZoneHelper.GetClinicDayUtcRange(nowUtc, _clinicTimeZone);
                 break;
             case "upcoming":
-                from = today;
-                to = today.AddDays(30);
+                from = nowUtc.Date;
+                to = nowUtc.Date.AddDays(30);
                 break;
         }
 

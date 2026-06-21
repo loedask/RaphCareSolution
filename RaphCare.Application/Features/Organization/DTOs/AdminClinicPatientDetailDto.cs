@@ -15,6 +15,9 @@ public sealed class AdminClinicPatientDetailDto
     public string? Notes { get; set; }
     public IReadOnlyList<AdminClinicPatientVisitDto> RecentVisits { get; set; } = Array.Empty<AdminClinicPatientVisitDto>();
     public IReadOnlyList<AdminClinicPatientAppointmentDto> Appointments { get; set; } = Array.Empty<AdminClinicPatientAppointmentDto>();
+    public IReadOnlyList<AdminClinicPatientVitalDto> RecentVitals { get; set; } = Array.Empty<AdminClinicPatientVitalDto>();
+    public IReadOnlyList<AdminClinicPatientDeviceReadingDto> RecentDeviceReadings { get; set; } = Array.Empty<AdminClinicPatientDeviceReadingDto>();
+    public IReadOnlyList<AdminClinicPatientDeviceRollupDto> DeviceDailyRollups { get; set; } = Array.Empty<AdminClinicPatientDeviceRollupDto>();
 }
 
 public sealed class AdminClinicPatientAppointmentDto
@@ -36,4 +39,37 @@ public sealed class AdminClinicPatientVisitDto
     public string VisitType { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string? Summary { get; set; }
+}
+
+public sealed class AdminClinicPatientVitalDto
+{
+    public string Type { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+    public string Unit { get; set; } = string.Empty;
+    public DateTime RecordedAt { get; set; }
+    public string? VisitType { get; set; }
+}
+
+public sealed class AdminClinicPatientDeviceReadingDto
+{
+    public string Kind { get; set; } = string.Empty;
+    public string ReadingType { get; set; } = string.Empty;
+    public decimal PrimaryValue { get; set; }
+    public string Unit { get; set; } = string.Empty;
+    public DateTime RecordedAt { get; set; }
+    public int? HeartRateBpm { get; set; }
+    public decimal? SpO2Percent { get; set; }
+}
+
+public sealed class AdminClinicPatientDeviceRollupDto
+{
+    public DateOnly Date { get; set; }
+    public int HeartRateSampleCount { get; set; }
+    public decimal? AvgHeartRateBpm { get; set; }
+    public int? MinHeartRateBpm { get; set; }
+    public int? MaxHeartRateBpm { get; set; }
+    public int SpO2SampleCount { get; set; }
+    public decimal? AvgSpO2Percent { get; set; }
+    public decimal? MinSpO2Percent { get; set; }
+    public decimal? MaxSpO2Percent { get; set; }
 }

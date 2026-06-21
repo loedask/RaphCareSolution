@@ -55,6 +55,9 @@ public sealed class ClinicPatientDetail
     public string? Notes { get; set; }
     public IReadOnlyList<ClinicPatientVisitSummary> RecentVisits { get; set; } = Array.Empty<ClinicPatientVisitSummary>();
     public IReadOnlyList<ClinicPatientAppointmentSummary> Appointments { get; set; } = Array.Empty<ClinicPatientAppointmentSummary>();
+    public IReadOnlyList<ClinicPatientVitalSummary> RecentVitals { get; set; } = Array.Empty<ClinicPatientVitalSummary>();
+    public IReadOnlyList<ClinicPatientDeviceReadingSummary> RecentDeviceReadings { get; set; } = Array.Empty<ClinicPatientDeviceReadingSummary>();
+    public IReadOnlyList<ClinicPatientDeviceRollupSummary> DeviceDailyRollups { get; set; } = Array.Empty<ClinicPatientDeviceRollupSummary>();
 }
 
 public sealed class ClinicPatientVisitSummary

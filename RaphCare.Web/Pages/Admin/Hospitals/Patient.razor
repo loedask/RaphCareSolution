@@ -1,5 +1,6 @@
 @page "/admin/hospitals/{ClinicId:guid}/patients/{PatientId:guid}"
 @layout AdminLayout
+@using RaphCare.Domain.Common
 @inject NavigationManager Navigation
 
 <PageTitle>@(_patient is null ? "Patient" : $"{_patient.FirstName} {_patient.LastName}") — RaphCare Admin</PageTitle>
@@ -19,7 +20,7 @@
         <header class="admin-page-header">
             <div>
                 <h1>@_patient.FirstName @_patient.LastName</h1>
-                <p class="admin-page-lead">Patient summary for @_clinicName</p>
+                <p class="admin-page-lead">Patient chart for @_clinicName · times in @_timeZoneLabel</p>
             </div>
             <span class="badge badge-success">@_patient.AccessType</span>
         </header>
@@ -27,6 +28,10 @@
         @if (!string.IsNullOrEmpty(_actionError))
         {
             <div class="alert alert-error">@_actionError</div>
+        }
+        @if (!string.IsNullOrEmpty(_actionSuccess))
+        {
+            <div class="alert alert-success">@_actionSuccess</div>
         }
 
         <div class="admin-page-card">
@@ -97,6 +102,120 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
+                    <p class="admin-page-eyebrow">Wearables</p>
+                    <h2>Device readings</h2>
+                    <p class="admin-page-lead">Recent synced vitals from patient devices (last 7 days summary).</p>
+                </div>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_patient.DeviceDailyRollups.Count == 0 && _patient.RecentDeviceReadings.Count == 0)
+                {
+                    <p class="text-muted">No device readings synced for this patient yet.</p>
+                }
+                else
+                {
+                    @if (_patient.DeviceDailyRollups.Count > 0)
+                    {
+                        <div class="chart-rollup-grid">
+                            @foreach (var day in _patient.DeviceDailyRollups)
+                            {
+                                <div class="chart-rollup-day">
+                                    <div class="chart-rollup-date">@day.Date.ToString("dd MMM")</div>
+                                    @if (day.AvgHeartRateBpm is { } hr)
+                                    {
+                                        <div class="chart-rollup-metric" title="Heart rate avg/min/max">
+                                            <span class="chart-rollup-label">HR</span>
+                                            <span class="chart-rollup-value">@hr.ToString("0") bpm</span>
+                                            <div class="chart-rollup-bar" style="width: @(Math.Min(100, (int)hr))%"></div>
+                                        </div>
+                                    }
+                                    @if (day.AvgSpO2Percent is { } spo2)
+                                    {
+                                        <div class="chart-rollup-metric chart-rollup-metric-spo2" title="SpO₂ avg">
+                                            <span class="chart-rollup-label">SpO₂</span>
+                                            <span class="chart-rollup-value">@spo2.ToString("0")%</span>
+                                            <div class="chart-rollup-bar" style="width: @spo2%"></div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (_patient.RecentDeviceReadings.Count > 0)
+                    {
+                        <div class="table-wrap" style="margin-top: 1rem;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Recorded</th>
+                                        <th>Type</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var reading in _patient.RecentDeviceReadings)
+                                    {
+                                        <tr>
+                                            <td>@FormatLocal(reading.RecordedAt)</td>
+                                            <td>@reading.ReadingType</td>
+                                            <td>@FormatDeviceValue(reading)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Clinical</p>
+                    <h2>Visit vitals</h2>
+                    <p class="admin-page-lead">Vitals recorded during encounters at this hospital.</p>
+                </div>
+                <span class="admin-progress-pill">@_patient.RecentVitals.Count vital@(_patient.RecentVitals.Count == 1 ? "" : "s")</span>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_patient.RecentVitals.Count == 0)
+                {
+                    <p class="text-muted">No visit vitals recorded yet.</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Recorded</th>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th>Visit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var vital in _patient.RecentVitals)
+                                {
+                                    <tr>
+                                        <td>@FormatLocal(vital.RecordedAt)</td>
+                                        <td>@vital.Type</td>
+                                        <td>@vital.Value @vital.Unit</td>
+                                        <td>@(vital.VisitType ?? "—")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
                     <p class="admin-page-eyebrow">Scheduling</p>
                     <h2>Appointments</h2>
                     <p class="admin-page-lead">Bookings at this hospital.</p>
@@ -106,7 +225,7 @@
             <div class="admin-page-card-body">
                 @if (_patient.Appointments.Count == 0)
                 {
-                    <p class="text-muted">No appointments recorded yet.</p>
+                    <p class="text-muted">No appointments recorded yet. <a href="/admin/hospitals/@ClinicId/appointments">Book one</a>.</p>
                 }
                 else
                 {
@@ -119,17 +238,31 @@
                                     <th>Type</th>
                                     <th>Status</th>
                                     <th>Reason</th>
+                                    @if (_isAdministrator)
+                                    {
+                                        <th></th>
+                                    }
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var appt in _patient.Appointments)
                                 {
                                     <tr>
-                                        <td>@appt.ScheduledStart.ToString("dd MMM yyyy HH:mm")</td>
+                                        <td>@FormatLocal(appt.ScheduledStart)</td>
                                         <td>@appt.ProviderName</td>
                                         <td>@appt.Type</td>
                                         <td>@appt.Status</td>
                                         <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? "—" : appt.Reason)</td>
+                                        @if (_isAdministrator && appt.Status != "Cancelled")
+                                        {
+                                            <td class="admin-table-actions">
+                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments">Manage</a>
+                                            </td>
+                                        }
+                                        else if (_isAdministrator)
+                                        {
+                                            <td></td>
+                                        }
                                     </tr>
                                 }
                             </tbody>
@@ -169,7 +302,7 @@
                                 @foreach (var visit in _patient.RecentVisits)
                                 {
                                     <tr>
-                                        <td>@visit.VisitStart.ToString("dd MMM yyyy HH:mm")</td>
+                                        <td>@FormatLocal(visit.VisitStart)</td>
                                         <td>@visit.VisitType</td>
                                         <td>@visit.Status</td>
                                         <td>@(string.IsNullOrWhiteSpace(visit.Summary) ? "—" : visit.Summary)</td>
@@ -200,7 +333,10 @@
     private bool _isAdministrator;
     private string? _error;
     private string? _actionError;
+    private string? _actionSuccess;
     private string _clinicName = "this hospital";
+    private string _clinicTimeZone = "UTC";
+    private string _timeZoneLabel = "hospital time";
     private ClinicPatientDetail? _patient;
 
     private string BackUrl => $"/admin/hospitals/{ClinicId}?tab=patients";
@@ -215,9 +351,16 @@
         {
             _clinicName = clinicResponse.Data.Name;
             _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            _clinicTimeZone = clinicResponse.Data.TimeZone;
+            _timeZoneLabel = string.IsNullOrWhiteSpace(_clinicTimeZone) ? "hospital time" : _clinicTimeZone;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
+        await LoadPatientAsync();
+    }
+
+    private async Task LoadPatientAsync()
+    {
         _loading = true;
         _error = null;
         var response = await AdminClinicService.GetPatientDetailAsync(ClinicId, PatientId);
@@ -227,6 +370,18 @@
             _patient = response.Data;
         else
             _error = response.ErrorMessage ?? "Could not load patient.";
+    }
+
+    private string FormatLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private static string FormatDeviceValue(ClinicPatientDeviceReadingSummary reading)
+    {
+        if (reading.HeartRateBpm is int hr)
+            return $"{hr} bpm";
+        if (reading.SpO2Percent is decimal spo2)
+            return $"{spo2:0}%";
+        return $"{reading.PrimaryValue} {reading.Unit}".Trim();
     }
 
     private async Task RevokeAccessAsync()

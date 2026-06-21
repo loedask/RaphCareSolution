@@ -2,12 +2,17 @@ using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Domain.Clinical;
+using RaphCare.Domain.Devices;
 
 namespace RaphCare.Persistence;
 
 public sealed class AdminClinicPatientQueryService(
     ClinicalDbContext clinicalDbContext,
-    IProfessionalUserLookupService professionalUserLookupService)
+    DeviceDbContext deviceDbContext,
+    IProfessionalUserLookupService professionalUserLookupService,
+    IDeviceReadingRollupService deviceReadingRollupService,
+    IDateTimeProvider clock)
     : IAdminClinicPatientQueryService
 {
     public async Task<PagedResult<AdminClinicPatientListItemDto>> GetPatientsAsync(
@@ -157,6 +162,61 @@ public sealed class AdminClinicPatientQueryService(
             };
         }).ToList();
 
+        var recentVitals = await clinicalDbContext.Set<VitalSignRecord>()
+            .AsNoTracking()
+            .Join(
+                clinicalDbContext.Visits.AsNoTracking()
+                    .Where(v => v.ClinicId == clinicId && v.PatientId == patientId),
+                vital => vital.VisitId,
+                visit => visit.Id,
+                (vital, visit) => new { vital, visit })
+            .OrderByDescending(x => x.vital.RecordedAt)
+            .Take(15)
+            .Select(x => new AdminClinicPatientVitalDto
+            {
+                Type = x.vital.Type,
+                Value = x.vital.Value,
+                Unit = x.vital.Unit,
+                RecordedAt = x.vital.RecordedAt,
+                VisitType = x.visit.VisitType
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var recentDeviceRows = await deviceDbContext.Set<DeviceReading>()
+            .AsNoTracking()
+            .Join(
+                deviceDbContext.Set<Device>().AsNoTracking(),
+                r => r.DeviceId,
+                d => d.Id,
+                (r, d) => new { r, d })
+            .Where(x => x.r.PatientId == patientId && x.d.ClinicId == clinicId)
+            .OrderByDescending(x => x.r.RecordedAt)
+            .Take(10)
+            .Select(x => x.r)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var recentDeviceReadings = recentDeviceRows.Select(MapDeviceReading).ToList();
+
+        var rollupTo = clock.UtcNow;
+        var rollupFrom = rollupTo.AddDays(-7);
+        var rollups = await deviceReadingRollupService
+            .GetDailyRollupsAsync(patientId, clinicId, rollupFrom, rollupTo, cancellationToken)
+            .ConfigureAwait(false);
+        var rollupDtos = rollups.Select(r => new AdminClinicPatientDeviceRollupDto
+        {
+            Date = r.Date,
+            HeartRateSampleCount = r.HeartRateSampleCount,
+            AvgHeartRateBpm = r.AvgHeartRateBpm,
+            MinHeartRateBpm = r.MinHeartRateBpm,
+            MaxHeartRateBpm = r.MaxHeartRateBpm,
+            SpO2SampleCount = r.SpO2SampleCount,
+            AvgSpO2Percent = r.AvgSpO2Percent,
+            MinSpO2Percent = r.MinSpO2Percent,
+            MaxSpO2Percent = r.MaxSpO2Percent
+        }).ToList();
+
         return new AdminClinicPatientDetailDto
         {
             PatientId = row.patient.Id,
@@ -171,7 +231,36 @@ public sealed class AdminClinicPatientQueryService(
             GrantedByRule = row.access.GrantedByRule,
             Notes = row.access.Notes,
             RecentVisits = recentVisits,
-            Appointments = appointmentDtos
+            Appointments = appointmentDtos,
+            RecentVitals = recentVitals,
+            RecentDeviceReadings = recentDeviceReadings,
+            DeviceDailyRollups = rollupDtos
         };
+    }
+
+    private static AdminClinicPatientDeviceReadingDto MapDeviceReading(DeviceReading r)
+    {
+        var dto = new AdminClinicPatientDeviceReadingDto
+        {
+            Kind = r.ReadingType,
+            ReadingType = r.ReadingType,
+            PrimaryValue = r.PrimaryValue,
+            Unit = r.Unit,
+            RecordedAt = r.RecordedAt
+        };
+
+        switch (r)
+        {
+            case HeartRateReading hr:
+                dto.Kind = nameof(HeartRateReading);
+                dto.HeartRateBpm = (int)hr.HeartRate;
+                break;
+            case PulseOximeterReading po:
+                dto.Kind = nameof(PulseOximeterReading);
+                dto.SpO2Percent = po.SpO2;
+                break;
+        }
+
+        return dto;
     }
 }

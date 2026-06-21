@@ -1062,6 +1062,17 @@ a:hover { text-decoration: underline; }
 .admin-alert-hint { margin: 0.65rem 0 0.85rem; font-size: 0.85rem; line-height: 1.5; }
 .admin-shell .btn-sm { padding: 0.4rem 0.85rem; font-size: 0.8rem; }
 
+.admin-table-actions { display: flex; gap: 0.35rem; flex-wrap: wrap; white-space: nowrap; }
+
+.chart-rollup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); gap: 0.75rem; }
+.chart-rollup-day { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.65rem; padding: 0.65rem; }
+.chart-rollup-date { font-size: 0.75rem; font-weight: 700; color: var(--rc-muted); margin-bottom: 0.5rem; }
+.chart-rollup-metric { margin-bottom: 0.45rem; }
+.chart-rollup-label { font-size: 0.65rem; font-weight: 700; color: var(--rc-muted); text-transform: uppercase; }
+.chart-rollup-value { display: block; font-size: 0.85rem; font-weight: 600; margin: 0.15rem 0; }
+.chart-rollup-bar { height: 4px; border-radius: 999px; background: linear-gradient(90deg, #60a5fa, #2563eb); max-width: 100%; }
+.chart-rollup-metric-spo2 .chart-rollup-bar { background: linear-gradient(90deg, #34d399, #059669); }
+
 .verification-row { display: flex; gap: 0.5rem; }
 .verification-row .form-control { flex: 1; }
 

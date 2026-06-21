@@ -1,5 +1,6 @@
 @page "/admin"
 @layout AdminLayout
+@using RaphCare.Domain.Common
 @implements IDisposable
 
 <PageTitle>RaphCare Admin</PageTitle>
@@ -128,7 +129,7 @@
                             @foreach (var appt in _dashboard.UpcomingAppointments)
                             {
                                 <tr>
-                                    <td>@appt.ScheduledStart.ToString("dd MMM yyyy HH:mm")</td>
+                                    <td>@ClinicTimeZoneHelper.FormatClinicLocal(appt.ScheduledStart, _clinicTimeZone)</td>
                                     <td>@appt.PatientName</td>
                                     <td>@appt.ProviderName</td>
                                     <td>@appt.Type</td>
@@ -226,6 +227,7 @@
     private string? _error;
     private ClinicDashboard? _dashboard;
     private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
+    private string _clinicTimeZone = "UTC";
 
     private string _signInReturnUrl =>
         $"/professional/signin?returnUrl={Uri.EscapeDataString(AdminPath)}";
@@ -263,15 +265,21 @@
 
         if (ClinicContext.CurrentClinicId is Guid clinicId)
         {
-            var dashboardResponse = await AdminClinicService.GetDashboardAsync(clinicId);
+            var clinicTask = AdminClinicService.GetClinicAsync(clinicId);
+            var dashboardTask = AdminClinicService.GetDashboardAsync(clinicId);
+            await Task.WhenAll(clinicTask, dashboardTask).ConfigureAwait(false);
+
+            if (clinicTask.Result.IsSuccess && clinicTask.Result.Data is not null)
+                _clinicTimeZone = clinicTask.Result.Data.TimeZone;
+
             _loading = false;
-            if (dashboardResponse.IsSuccess && dashboardResponse.Data is not null)
+            if (dashboardTask.Result.IsSuccess && dashboardTask.Result.Data is not null)
             {
-                _dashboard = dashboardResponse.Data;
+                _dashboard = dashboardTask.Result.Data;
                 return;
             }
 
-            _error = dashboardResponse.ErrorMessage ?? "Could not load hospital dashboard.";
+            _error = dashboardTask.Result.ErrorMessage ?? "Could not load hospital dashboard.";
             return;
         }
 

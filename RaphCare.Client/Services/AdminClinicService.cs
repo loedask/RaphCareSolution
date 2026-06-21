@@ -874,6 +874,68 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<bool>> CancelAppointmentAsync(
+        Guid clinicId,
+        Guid appointmentId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .DeleteAsync($"api/admin/clinics/{clinicId}/appointments/{appointmentId}", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<bool>.Success(true);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Appointment not found.", 404);
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                error = "Only hospital administrators can cancel appointments.";
+            return Response<bool>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicAppointmentListItem>> RescheduleAppointmentAsync(
+        Guid clinicId,
+        Guid appointmentId,
+        RescheduleClinicAppointmentRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/appointments/{appointmentId}", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can reschedule appointments.";
+                return Response<ClinicAppointmentListItem>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<AppointmentListItemDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicAppointmentListItem>.Failure("Could not reschedule appointment.");
+
+            return Response<ClinicAppointmentListItem>.Success(MapAppointment(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicAppointmentListItem>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<bool>> RevokePatientAccessAsync(
         Guid clinicId,
         Guid patientId,
@@ -1029,6 +1091,42 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 Status = a.Status,
                 Reason = a.Reason,
                 ProviderName = a.ProviderName
+            })
+            .ToList() ?? [],
+            RecentVitals = dto.RecentVitals?
+            .Select(v => new ClinicPatientVitalSummary
+            {
+                Type = v.Type,
+                Value = v.Value,
+                Unit = v.Unit,
+                RecordedAt = v.RecordedAt,
+                VisitType = v.VisitType
+            })
+            .ToList() ?? [],
+            RecentDeviceReadings = dto.RecentDeviceReadings?
+            .Select(r => new ClinicPatientDeviceReadingSummary
+            {
+                Kind = r.Kind,
+                ReadingType = r.ReadingType,
+                PrimaryValue = r.PrimaryValue,
+                Unit = r.Unit,
+                RecordedAt = r.RecordedAt,
+                HeartRateBpm = r.HeartRateBpm,
+                SpO2Percent = r.SpO2Percent
+            })
+            .ToList() ?? [],
+            DeviceDailyRollups = dto.DeviceDailyRollups?
+            .Select(r => new ClinicPatientDeviceRollupSummary
+            {
+                Date = r.Date,
+                HeartRateSampleCount = r.HeartRateSampleCount,
+                AvgHeartRateBpm = r.AvgHeartRateBpm,
+                MinHeartRateBpm = r.MinHeartRateBpm,
+                MaxHeartRateBpm = r.MaxHeartRateBpm,
+                SpO2SampleCount = r.SpO2SampleCount,
+                AvgSpO2Percent = r.AvgSpO2Percent,
+                MinSpO2Percent = r.MinSpO2Percent,
+                MaxSpO2Percent = r.MaxSpO2Percent
             })
             .ToList() ?? []
     };
@@ -1198,6 +1296,42 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string? Notes { get; set; }
         public List<PatientVisitDto>? RecentVisits { get; set; }
         public List<PatientAppointmentDto>? Appointments { get; set; }
+        public List<PatientVitalDto>? RecentVitals { get; set; }
+        public List<PatientDeviceReadingDto>? RecentDeviceReadings { get; set; }
+        public List<PatientDeviceRollupDto>? DeviceDailyRollups { get; set; }
+    }
+
+    private sealed class PatientVitalDto
+    {
+        public string Type { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
+        public string Unit { get; set; } = string.Empty;
+        public DateTime RecordedAt { get; set; }
+        public string? VisitType { get; set; }
+    }
+
+    private sealed class PatientDeviceReadingDto
+    {
+        public string Kind { get; set; } = string.Empty;
+        public string ReadingType { get; set; } = string.Empty;
+        public decimal PrimaryValue { get; set; }
+        public string Unit { get; set; } = string.Empty;
+        public DateTime RecordedAt { get; set; }
+        public int? HeartRateBpm { get; set; }
+        public decimal? SpO2Percent { get; set; }
+    }
+
+    private sealed class PatientDeviceRollupDto
+    {
+        public DateOnly Date { get; set; }
+        public int HeartRateSampleCount { get; set; }
+        public decimal? AvgHeartRateBpm { get; set; }
+        public int? MinHeartRateBpm { get; set; }
+        public int? MaxHeartRateBpm { get; set; }
+        public int SpO2SampleCount { get; set; }
+        public decimal? AvgSpO2Percent { get; set; }
+        public decimal? MinSpO2Percent { get; set; }
+        public decimal? MaxSpO2Percent { get; set; }
     }
 
     private sealed class PatientAppointmentDto

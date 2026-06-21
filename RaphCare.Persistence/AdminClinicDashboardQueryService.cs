@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Domain.Common;
 
 namespace RaphCare.Persistence;
 
@@ -38,25 +39,27 @@ public sealed class AdminClinicDashboardQueryService(
             .CountAsync(p => p.ClinicId == clinicId && !p.IsDeleted && p.IsActive, cancellationToken)
             .ConfigureAwait(false);
 
-        var today = clock.UtcNow.Date;
-        var tomorrow = today.AddDays(1);
-        var weekAhead = today.AddDays(7);
+        var todayUtc = clock.UtcNow;
+        var (todayStartUtc, todayEndUtc) = ClinicTimeZoneHelper.GetClinicDayUtcRange(todayUtc, clinic.TimeZone);
+        var weekAheadUtc = todayStartUtc.AddDays(7);
 
         var appointmentsTodayCount = await clinicalDbContext.Appointments
             .AsNoTracking()
             .CountAsync(
-                a => a.ClinicId == clinicId && !a.IsCancelled && a.ScheduledStart >= today && a.ScheduledStart < tomorrow,
+                a => a.ClinicId == clinicId && !a.IsCancelled
+                     && a.ScheduledStart >= todayStartUtc && a.ScheduledStart <= todayEndUtc,
                 cancellationToken)
             .ConfigureAwait(false);
 
         var upcomingAppointments = await adminClinicAppointmentQueryService
-            .GetAppointmentsAsync(clinicId, 1, 5, today, weekAhead, cancellationToken: cancellationToken)
+            .GetAppointmentsAsync(clinicId, 1, 5, todayStartUtc, weekAheadUtc, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var upcomingCount = await clinicalDbContext.Appointments
             .AsNoTracking()
             .CountAsync(
-                a => a.ClinicId == clinicId && !a.IsCancelled && a.ScheduledStart >= today && a.ScheduledStart < weekAhead,
+                a => a.ClinicId == clinicId && !a.IsCancelled
+                     && a.ScheduledStart >= todayStartUtc && a.ScheduledStart < weekAheadUtc,
                 cancellationToken)
             .ConfigureAwait(false);
 
