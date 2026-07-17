@@ -19,48 +19,57 @@
                    TextColor="{StaticResource MutedForegroundColor}"
                    Margin="0,0,0,32" />
 
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                <shared:InputField Grid.Column="0" LabelText="{Binding FirstNameLabel}" Placeholder="{Binding PlaceholderFirst}" Text="{Binding FirstName}" />
-                <shared:InputField Grid.Column="1" LabelText="{Binding LastNameLabel}" Placeholder="{Binding PlaceholderLast}" Text="{Binding LastName}" />
-            </Grid>
-            <shared:InputField LabelText="{Binding EmailLabel}" Placeholder="{Binding PlaceholderEmail}" Keyboard="Email" Text="{Binding Email}" />
-            <shared:InputField LabelText="{Binding PasswordLabel}" Placeholder="{Binding PlaceholderPassword}" IsPassword="True" Text="{Binding Password}" />
+            <VerticalStackLayout Spacing="16"
+                                 IsVisible="{Binding AwaitingVerification, Converter={StaticResource InvertedBoolConverter}}">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <shared:InputField Grid.Column="0" LabelText="{Binding FirstNameLabel}" Placeholder="{Binding PlaceholderFirst}" Text="{Binding FirstName}" />
+                    <shared:InputField Grid.Column="1" LabelText="{Binding LastNameLabel}" Placeholder="{Binding PlaceholderLast}" Text="{Binding LastName}" />
+                </Grid>
+                <shared:InputField LabelText="{Binding EmailLabel}" Placeholder="{Binding PlaceholderEmail}" Keyboard="Email" Text="{Binding Email}" />
+                <shared:InputField LabelText="{Binding PasswordLabel}" Placeholder="{Binding PlaceholderPassword}" IsPassword="True" Text="{Binding Password}" />
 
-            <Label Text="{Binding VerificationCodeLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <shared:InputField Grid.Column="0"
-                                   Placeholder="{Binding PlaceholderVerificationCode}"
-                                   Keyboard="Numeric"
-                                   Text="{Binding VerificationCode}" />
-                <Button Grid.Column="1"
-                        Text="{Binding SendCodeButtonText}"
-                        Style="{StaticResource AuthSecondaryButton}"
-                        Command="{Binding SendCodeCommand}"
-                        VerticalOptions="End"
-                        Padding="16,12" />
-            </Grid>
+                <Label Text="{Binding ClinicLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Label Text="{Binding ClinicHint}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" FontSize="12" />
+                <Picker ItemsSource="{Binding Clinics}"
+                        ItemDisplayBinding="{Binding DisplayName}"
+                        SelectedItem="{Binding SelectedClinic}"
+                        Title="{Binding ClinicLabel}" />
+            </VerticalStackLayout>
 
-            <Label Text="{Binding StatusMessage}"
-                   TextColor="{StaticResource MutedForegroundColor}"
-                   FontSize="12"
-                   IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   Margin="0,-8,0,0" />
+            <VerticalStackLayout Spacing="16"
+                                 IsVisible="{Binding AwaitingVerification}">
+                <Label Text="{Binding VerificationCodeLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <shared:InputField Grid.Column="0"
+                                       Placeholder="{Binding PlaceholderVerificationCode}"
+                                       Keyboard="Numeric"
+                                       Text="{Binding VerificationCode}" />
+                    <Button Grid.Column="1"
+                            Text="{Binding SendCodeButtonText}"
+                            Style="{StaticResource AuthSecondaryButton}"
+                            Command="{Binding SendCodeCommand}"
+                            VerticalOptions="End"
+                            Padding="16,12" />
+                </Grid>
 
-            <Label Text="{Binding ClinicLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
-            <Label Text="{Binding ClinicHint}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" FontSize="12" />
-            <Picker ItemsSource="{Binding Clinics}"
-                    ItemDisplayBinding="{Binding DisplayName}"
-                    SelectedItem="{Binding SelectedClinic}"
-                    Title="{Binding ClinicLabel}" />
+                <Label Text="{Binding StatusMessage}"
+                       TextColor="{StaticResource MutedForegroundColor}"
+                       FontSize="12"
+                       IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                       Margin="0,-8,0,0" />
+            </VerticalStackLayout>
 
             <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorColor}" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" FontSize="12" Margin="0,-8,0,0" />
 
             <shared:GradientButton Text="{Binding ContinueText}"
-                    Command="{Binding RegisterCommand}"
+                    Command="{Binding ContinueCommand}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                     Margin="0,32,0,0" />
 
-            <HorizontalStackLayout Margin="0,24,0,0" HorizontalOptions="Center" Spacing="4">
+            <HorizontalStackLayout Margin="0,24,0,0"
+                                   HorizontalOptions="Center"
+                                   Spacing="4"
+                                   IsVisible="{Binding AwaitingVerification, Converter={StaticResource InvertedBoolConverter}}">
                 <Label Text="{Binding AlreadyHaveText}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
                 <Button Text="{Binding SignInLinkText}" Style="{StaticResource TextButton}" Padding="0" Command="{Binding SignInCommand}" />
             </HorizontalStackLayout>

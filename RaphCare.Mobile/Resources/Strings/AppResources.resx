@@ -321,7 +321,13 @@ Accessible. Intelligent. Human.</value>
     <value>Create with email</value>
   </data>
   <data name="RegisterEmailSubtitle" xml:space="preserve">
-    <value>Fill in your details and verify your email with the code we send you.</value>
+    <value>Fill in your details to create your account.</value>
+  </data>
+  <data name="RegisterEmailVerifySubtitle" xml:space="preserve">
+    <value>Enter the verification code we sent to your email.</value>
+  </data>
+  <data name="RegisterEmailVerifyButton" xml:space="preserve">
+    <value>Verify and create account</value>
   </data>
   <data name="RegisterEmailFirstName" xml:space="preserve">
     <value>First name</value>
