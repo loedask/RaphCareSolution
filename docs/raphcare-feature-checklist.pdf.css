@@ -1,0 +1,69 @@
+/* Print stylesheet for docs/raphcare-feature-checklist.pdf */
+body {
+  font-family: "Segoe UI", Calibri, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.45;
+  color: #1a1a1a;
+  max-width: 100%;
+}
+
+h1 {
+  font-size: 20pt;
+  margin-bottom: 0.4em;
+}
+
+h2 {
+  font-size: 14pt;
+  margin-top: 1.4em;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.2em;
+}
+
+h3 {
+  font-size: 12pt;
+  margin-top: 1.1em;
+}
+
+code {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.92em;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.8em 0;
+  font-size: 10pt;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 0.35em 0.5em;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #f3f3f3;
+}
+
+ul,
+ol {
+  padding-left: 1.4em;
+}
+
+li {
+  margin: 0.2em 0;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 1.5em 0;
+}
+
+a {
+  color: #0b5fff;
+  text-decoration: none;
+}

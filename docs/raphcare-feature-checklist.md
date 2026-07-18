@@ -1,5 +1,7 @@
 # RaphCare feature checklist
 
+PDF companion: [`raphcare-feature-checklist.pdf`](raphcare-feature-checklist.pdf) (regenerate with `scripts/Export-RaphCareFeatureChecklistPdf.ps1` whenever this file changes).
+
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in `docs/Mobile_Concept_Port.md`; release gates stay in `docs/Mobile_Release_Ready_Checklist.md`.
 
 **How to mark items**

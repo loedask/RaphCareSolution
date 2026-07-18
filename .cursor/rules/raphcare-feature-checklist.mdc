@@ -7,6 +7,8 @@ alwaysApply: true
 
 Whenever you implement, finish, or materially change a feature on **API**, **Web admin**, **`RaphCare.Client`**, or **Mobile**, **update** `docs/raphcare-feature-checklist.md` in the same change set.
 
+**Always keep a PDF next to the markdown:** `docs/raphcare-feature-checklist.pdf`. Whenever the `.md` changes, regenerate the PDF in the same change set (see below). Do not leave the PDF stale.
+
 ## What to update
 
 1. Mark completed items `[x]`.
@@ -14,6 +16,13 @@ Whenever you implement, finish, or materially change a feature on **API**, **Web
 3. Adjust `(partial)` / `(blocked: …)` / `(out of scope)` notes so they match reality.
 4. Set **Last reviewed** to today’s date.
 5. If you invent a new feature area, add a checklist row under the right step (admin outpatient, inpatient, patient mobile, or staff APIs).
+6. Regenerate **`docs/raphcare-feature-checklist.pdf`** after any markdown edit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareFeatureChecklistPdf.ps1
+```
+
+Styles live in `docs/raphcare-feature-checklist.pdf.css`; options in `docs/raphcare-feature-checklist.pdf.json`. Commit the updated `.pdf` with the `.md`.
 
 ## Related docs (do not replace the checklist)
 
