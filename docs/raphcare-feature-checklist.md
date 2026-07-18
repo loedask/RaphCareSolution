@@ -14,7 +14,7 @@ Track progress across **API**, **Web admin panel**, and **Mobile** (patient app)
 
 **Layer order for new HTTP contracts**
 
-Backend (API + Application + Persistence) → `RaphCare.Client` → Web / Mobile. Do not duplicate API contracts inside Mobile.
+Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
 Last reviewed: 2026-07-18
 
@@ -22,7 +22,7 @@ Last reviewed: 2026-07-18
 
 ## Step 1: Admin clinic / hospital ops (outpatient)
 
-Work under `api/admin/clinics` → `IAdminClinicService` → Blazor `Pages/Admin/Hospitals/*`.
+Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/Hospitals/*`.
 
 ### API + Client
 
@@ -51,7 +51,7 @@ Work under `api/admin/clinics` → `IAdminClinicService` → Blazor `Pages/Admin
 
 ### Mobile
 
-- [ ] Admin / clinician hospital ops `(out of scope)` — patient app only; admin stays on Web
+- [ ] Admin / clinician hospital ops `(out of scope)`: patient app only; admin stays on Web
 
 ### Step 1 status
 
@@ -59,7 +59,7 @@ Work under `api/admin/clinics` → `IAdminClinicService` → Blazor `Pages/Admin
 
 ---
 
-## Step 2: Inpatient (wards / beds / admissions) — MVP
+## Step 2: Inpatient (wards / beds / admissions), MVP
 
 New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `AddInpatientBedsAndAdmissions`, `AdminClinicsController` inpatient actions, Client methods, Web `Inpatient.razor`.
 
@@ -68,7 +68,7 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 - [x] Domain entities + EF configs + migration
 - [x] `GET {clinicId}/inpatient/board`
 - [x] `POST {clinicId}/wards` / `rooms` / `beds`
-- [x] `POST {clinicId}/admissions` (admit; one active stay; bed Available → Occupied)
+- [x] `POST {clinicId}/admissions` (admit; one active stay; bed Available -> Occupied)
 - [x] `POST {clinicId}/admissions/{id}/discharge` (free bed)
 - [x] `IAdminClinicInpatientQueryService` board aggregation
 - [ ] Update / deactivate / delete ward, room, bed
@@ -86,13 +86,13 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ### Admin panel (Web)
 
-- [x] `/admin/hospitals/{id}/inpatient` — occupancy stats, add capacity, admit, active list + discharge, beds-by-ward map
+- [x] `/admin/hospitals/{id}/inpatient`: occupancy stats, add capacity, admit, active list + discharge, beds-by-ward map
 - [x] Nav link from hospital detail
 - [ ] Edit / delete / deactivate capacity UI `(blocked: API)`
 - [ ] Maintenance toggle UI `(blocked: API)`
 - [ ] Bed transfer UI `(blocked: API)`
 - [ ] Admission history / detail
-- [ ] Discharge notes field in UI `(partial)` — API accepts notes; UI may not expose them yet
+- [ ] Discharge notes field in UI `(partial)`: API accepts notes; UI may not expose them yet
 - [ ] Patient picker beyond first page (100) `(partial)`
 
 ### Mobile
@@ -102,14 +102,14 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ### Docs
 
-- [ ] `docs/03_Domain_Modules.md` — Ward / Room / Bed / InpatientAdmission
-- [ ] `docs/05_Database_Design.md` — inpatient tables
-- [ ] `docs/06_Key_Workflows.md` — admit / discharge
-- [ ] `docs/00_Change_Log.md` — inpatient entry
+- [ ] `docs/03_Domain_Modules.md`: Ward / Room / Bed / InpatientAdmission
+- [ ] `docs/05_Database_Design.md`: inpatient tables
+- [ ] `docs/06_Key_Workflows.md`: admit / discharge
+- [ ] `docs/00_Change_Log.md`: inpatient entry
 
 ### Step 2 status
 
-**MVP done on API → Client → Web.** Remaining rows are capacity lifecycle, transfer, history, and docs. Do not start clinician Mobile for this until product asks for it.
+**MVP done on API -> Client -> Web.** Remaining rows are capacity lifecycle, transfer, history, and docs. Do not start clinician Mobile for this until product asks for it.
 
 ---
 
@@ -122,8 +122,8 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 - [x] Landing / welcome
 - [x] Sign-in (email) + verify email
 - [x] Register options: email / phone / voice
-- [x] Phone OTP send / verify → API JWT
-- [x] Voice onboarding (record → API)
+- [x] Phone OTP send / verify -> API JWT
+- [x] Voice onboarding (record -> API)
 - [x] Account created
 - [x] Home dashboard + quick links
 - [x] Feature-flagged navigation / under-construction fallback
@@ -148,9 +148,9 @@ Screen visual parity table is marked done in `Mobile_Concept_Port.md` (last pass
 
 ### Mobile cross-cutting left
 
-- [ ] iOS Agora RTC wiring `(partial)` — Android Agora in; see `docs/10_Agora_Twilio_Setup.md`
-- [ ] Push in production `(partial)` — FCM when Firebase service account configured; else no-op
-- [ ] AI assistant production LLM `(partial)` — needs `PatientAssistant` Azure OpenAI config
+- [ ] iOS Agora RTC wiring `(partial)`: Android Agora in; see `docs/10_Agora_Twilio_Setup.md`
+- [ ] Push in production `(partial)`: FCM when Firebase service account configured; else no-op
+- [ ] AI assistant production LLM `(partial)`: needs `PatientAssistant` Azure OpenAI config
 - [ ] Dark mode resource dictionary `(out of scope for v1)` unless product reverses
 - [ ] Deep links / NotFound route UX
 - [ ] Prod feature-flag rollout plan filled in `Mobile_Release_Ready_Checklist.md`
@@ -158,11 +158,11 @@ Screen visual parity table is marked done in `Mobile_Concept_Port.md` (last pass
 
 ### Admin panel
 
-- [ ] Patient-app verticals on Web `(out of scope)` — patients use Mobile; staff use admin hospital flows
+- [ ] Patient-app verticals on Web `(out of scope)`: patients use Mobile; staff use admin hospital flows
 
 ### Step 3 status
 
-**Concept screens and patient APIs are largely in.** Remaining work is platform/ops polish (iOS RTC, push/LLM config, flags, release verification)—not greenfield features.
+**Concept screens and patient APIs are largely in.** Remaining work is platform/ops polish (iOS RTC, push/LLM config, flags, release verification), not greenfield features.
 
 ---
 
@@ -172,18 +172,18 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 - [x] `PatientsController`, `ClinicalController`, `AppointmentsController` (staff-shaped)
 - [x] `DevicesController`, `TelemedicineController`, `BillingController`, `InsuranceController`
-- [x] `MentalHealthController` (staff assessments — placeholder data until persistence)
+- [x] `MentalHealthController` (staff assessments: placeholder data until persistence)
 - [x] `AIController`, `ReportingController`
 - [x] FHIR export (`api/fhir`)
 - [x] Standalone emergency webhook
-- [ ] Staff mental-health assessments persistence `(partial)` — list exists; real store TBD
+- [ ] Staff mental-health assessments persistence `(partial)`: list exists; real store TBD
 - [ ] Reporting depth / real dashboards beyond placeholders `(partial)` as product defines
 
 ---
 
 ## Cross-cutting
 
-- [x] Solution layers: Domain → Application → Persistence / Infrastructure / Identity → API; Client → Web / Mobile
+- [x] Solution layers: Domain -> Application -> Persistence / Infrastructure / Identity -> API; Client -> Web / Mobile
 - [x] `RaphCare.Client` + `AddRaphCareClient` for Web and Mobile
 - [x] Dual auth: Entra JWT (staff) + patient OTP / email JWT
 - [x] MPI / patient merge pipeline (see audit docs)

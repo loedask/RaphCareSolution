@@ -13,8 +13,8 @@ Whenever you implement, finish, or materially change a feature on **API**, **Web
 
 1. Mark completed items `[x]`.
 2. Leave incomplete items `[ ]`.
-3. Adjust `(partial)` / `(blocked: …)` / `(out of scope)` notes so they match reality.
-4. Set **Last reviewed** to today’s date.
+3. Adjust `(partial)` / `(blocked: ...)` / `(out of scope)` notes so they match reality.
+4. Set **Last reviewed** to today's date.
 5. If you invent a new feature area, add a checklist row under the right step (admin outpatient, inpatient, patient mobile, or staff APIs).
 6. Regenerate **`docs/raphcare-feature-checklist.pdf`** after any markdown edit:
 
@@ -26,23 +26,27 @@ Styles live in `docs/raphcare-feature-checklist.pdf.css`; options in `docs/raphc
 
 ## Related docs (do not replace the checklist)
 
-- **Mobile visual parity** — `docs/Mobile_Concept_Port.md` (tokens, route map, screen table). Update when concept or MAUI UI changes.
-- **Mobile release gates** — `docs/Mobile_Release_Ready_Checklist.md` (flags, quality bar). Update when rollout or cross-cutting readiness changes.
-- **Layer order** — backend first, then Client, then Web / Mobile (see **raphcare-solution-layers**).
+- **Mobile visual parity:** `docs/Mobile_Concept_Port.md` (tokens, route map, screen table). Update when concept or MAUI UI changes.
+- **Mobile release gates:** `docs/Mobile_Release_Ready_Checklist.md` (flags, quality bar). Update when rollout or cross-cutting readiness changes.
+- **Layer order:** backend first, then Client, then Web / Mobile (see **raphcare-solution-layers**).
 
 ## Step exit / polish
 
-Treat each numbered step’s remaining open rows as the exit criteria for that step:
+Treat each numbered step's remaining open rows as the exit criteria for that step:
 
 - Do not treat a step as done while non-blocked product rows are still `[ ]`.
-- For **Mobile** screens, mark checklist / parity done only when the flow is usable **and** matches the concept for spacing, cards, empty states, and branding (see `Mobile_Concept_Port.md`)—not when only a stub or under-construction page exists.
+- For **Mobile** screens, mark checklist / parity done only when the flow is usable **and** matches the concept for spacing, cards, empty states, and branding (see `Mobile_Concept_Port.md`). Do not mark done for a stub or under-construction page.
 - For **admin Web**, match existing `Pages/Admin/Hospitals/*` patterns (layout, alerts, empty states) in the same change set as the feature wire-up.
-- Move an item out of `(blocked: …)` when the API (or Client) now exists and is wired.
+- Move an item out of `(blocked: ...)` when the API (or Client) now exists and is wired.
 
 ## Do / don't
 
 - Do update the checklist when the feature is usable end-to-end on the intended surface(s).
 - Do add Client + UI checklist rows when you add a new HTTP contract.
 - Don't mark admin or mobile UI done if only the API handler exists.
-- Don't skip the checklist update because the code change was “small.”
+- Don't skip the checklist update because the code change was "small."
 - Don't invent Mobile admin/inpatient rows unless product explicitly scopes a clinician app (checklist marks those out of scope today).
+
+## Copy
+
+Follow **human-sounding-copy**: no em dashes, no brochure tone in checklist notes or status lines.
