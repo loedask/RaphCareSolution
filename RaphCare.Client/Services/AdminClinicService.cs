@@ -768,6 +768,39 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<bool>> SetProviderActiveAsync(
+        Guid clinicId,
+        Guid providerId,
+        bool isActive,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/providers/{providerId}/active",
+                    new { isActive },
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<bool>.Success(true);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Provider not found.", 404);
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                error = "Only hospital administrators can change provider status.";
+            return Response<bool>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<ClinicProviderSchedule>> CreateProviderScheduleAsync(Guid clinicId, Guid providerId, CreateProviderScheduleRequest request, CancellationToken cancellationToken = default)
     {
         try
@@ -1110,6 +1143,53 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         catch (HttpRequestException)
         {
             return Response<IReadOnlyList<ClinicDeviceListItem>>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicTeleJoinInfo>> StartTeleSessionAsync(
+        Guid clinicId,
+        Guid appointmentId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/appointments/{appointmentId}/tele-session", null, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can start telehealth sessions.";
+                return Response<ClinicTeleJoinInfo>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<TeleJoinInfoDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicTeleJoinInfo>.Failure("Could not start telehealth session.");
+
+            return Response<ClinicTeleJoinInfo>.Success(new ClinicTeleJoinInfo
+            {
+                TeleSessionId = dto.TeleSessionId,
+                VisitId = dto.VisitId,
+                AppointmentId = dto.AppointmentId,
+                ChannelName = dto.ChannelName,
+                Uid = dto.Uid,
+                AppId = dto.AppId,
+                RtcToken = dto.RtcToken,
+                TokenExpiresAtUnix = dto.TokenExpiresAtUnix,
+                RtcConfigured = dto.RtcConfigured,
+                Status = dto.Status,
+                ScheduledStart = dto.ScheduledStart,
+                PatientName = dto.PatientName,
+                ProviderDisplayName = dto.ProviderDisplayName
+            });
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicTeleJoinInfo>.Failure("We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -1660,5 +1740,22 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string Status { get; set; } = string.Empty;
         public Guid? AssignedPatientId { get; set; }
         public string? AssignedPatientName { get; set; }
+    }
+
+    private sealed class TeleJoinInfoDto
+    {
+        public Guid TeleSessionId { get; set; }
+        public Guid VisitId { get; set; }
+        public Guid AppointmentId { get; set; }
+        public string ChannelName { get; set; } = string.Empty;
+        public uint Uid { get; set; }
+        public string? AppId { get; set; }
+        public string? RtcToken { get; set; }
+        public long TokenExpiresAtUnix { get; set; }
+        public bool RtcConfigured { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime ScheduledStart { get; set; }
+        public string? PatientName { get; set; }
+        public string? ProviderDisplayName { get; set; }
     }
 }

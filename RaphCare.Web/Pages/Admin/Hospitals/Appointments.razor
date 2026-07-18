@@ -180,6 +180,10 @@
                                     @if (_isAdministrator && appt.Status != "Cancelled")
                                     {
                                         <td class="admin-table-actions">
+                                            @if (string.Equals(appt.Type, "Telemedicine", StringComparison.OrdinalIgnoreCase) && appt.Status != "Completed")
+                                            {
+                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments/@appt.Id/tele">Join telehealth</a>
+                                            }
                                             @if (appt.ActiveVisitId is Guid visitId)
                                             {
                                                 <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/visits/@visitId">Open visit</a>
@@ -304,7 +308,7 @@
             _patients = patientsTask.Result.Data.Items;
 
         if (providersTask.Result.IsSuccess && providersTask.Result.Data is not null)
-            _providers = providersTask.Result.Data;
+            _providers = providersTask.Result.Data.Where(p => p.IsActive).ToList();
     }
 
     private async Task BookAppointmentAsync()

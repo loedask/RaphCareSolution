@@ -25,6 +25,11 @@
             </span>
         </header>
 
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="alert alert-error">@_error</div>
+        }
+
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
@@ -43,6 +48,23 @@
                         <dd>@(string.IsNullOrWhiteSpace(_provider.LicenseNumber) ? "—" : _provider.LicenseNumber)</dd>
                     </div>
                 </dl>
+                @if (_isAdministrator)
+                {
+                    <div class="admin-page-actions" style="margin-top: 1rem;">
+                        @if (_provider.IsActive)
+                        {
+                            <button type="button" class="btn btn-ghost" disabled="@_togglingActive" @onclick="() => SetActiveAsync(false)">
+                                @(_togglingActive ? "Updating…" : "Deactivate provider")
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary" disabled="@_togglingActive" @onclick="() => SetActiveAsync(true)">
+                                @(_togglingActive ? "Updating…" : "Reactivate provider")
+                            </button>
+                        }
+                    </div>
+                }
             </div>
         </div>
 
@@ -154,6 +176,7 @@
     private bool _loading = true;
     private bool _isAdministrator;
     private bool _savingSchedule;
+    private bool _togglingActive;
     private Guid? _deletingScheduleId;
     private string? _error;
     private string _clinicName = "this hospital";
@@ -173,6 +196,22 @@
             _clinicName = clinicResponse.Data.Name;
             _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+
+        await LoadProviderAsync();
+    }
+
+    private async Task SetActiveAsync(bool isActive)
+    {
+        _togglingActive = true;
+        _error = null;
+        var response = await AdminClinicService.SetProviderActiveAsync(ClinicId, ProviderId, isActive);
+        _togglingActive = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not update provider status.";
+            return;
         }
 
         await LoadProviderAsync();

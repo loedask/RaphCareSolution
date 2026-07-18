@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicAppointment;
+using RaphCare.Application.Features.Organization.Commands.SetAdminClinicProviderActive;
+using RaphCare.Application.Features.Organization.Commands.StartAdminClinicTeleSession;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicAppointment;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicProvider;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicProviderSchedule;
@@ -423,6 +425,28 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             : CreatedAtAction(nameof(GetProviderById), new { id, providerId = result.ProviderId }, result);
     }
 
+    /// <summary>Activate or deactivate a clinical provider for this hospital.</summary>
+    [HttpPost("{id:guid}/providers/{providerId:guid}/active", Name = "SetAdminClinicProviderActive")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetProviderActive(
+        Guid id,
+        Guid providerId,
+        [FromBody] SetAdminClinicProviderActiveRequest body,
+        CancellationToken cancellationToken)
+    {
+        var updated = await mediator.Send(
+            new SetAdminClinicProviderActiveCommand
+            {
+                ClinicId = id,
+                ProviderId = providerId,
+                IsActive = body.IsActive
+            },
+            cancellationToken);
+        return updated ? NoContent() : NotFound();
+    }
+
     /// <summary>Add a recurring weekly schedule slot for a provider.</summary>
     [HttpPost("{id:guid}/providers/{providerId:guid}/schedules", Name = "CreateAdminClinicProviderSchedule")]
     [ProducesResponseType(typeof(AdminClinicProviderScheduleDto), StatusCodes.Status201Created)]
@@ -655,6 +679,23 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetDevices(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetAdminClinicDevicesQuery { ClinicId = id }, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Start or resume a telehealth session for a telemedicine appointment (returns Agora join credentials).</summary>
+    [HttpPost("{id:guid}/appointments/{appointmentId:guid}/tele-session", Name = "StartAdminClinicTeleSession")]
+    [ProducesResponseType(typeof(AdminClinicTeleJoinInfoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> StartTeleSession(
+        Guid id,
+        Guid appointmentId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new StartAdminClinicTeleSessionCommand { ClinicId = id, AppointmentId = appointmentId },
+            cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 }

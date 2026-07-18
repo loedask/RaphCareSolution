@@ -12,3 +12,8 @@ public sealed class CreateAdminClinicProviderScheduleRequest
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
 }
+
+public sealed class SetAdminClinicProviderActiveRequest
+{
+    public bool IsActive { get; set; }
+}
