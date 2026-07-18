@@ -95,10 +95,24 @@ public sealed class AdminClinicAppointmentQueryService(
                 ? (string.IsNullOrWhiteSpace(u.DisplayName) ? u.Email : u.DisplayName)
                 : "Provider");
 
+        var appointmentIds = rows.Select(r => r.Id).ToList();
+        var openVisits = await clinicalDbContext.Visits
+            .AsNoTracking()
+            .Where(v => appointmentIds.Contains(v.AppointmentId)
+                        && v.Status != "Completed"
+                        && v.Status != "Cancelled")
+            .Select(v => new { v.AppointmentId, v.Id })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+        var visitByAppointment = openVisits
+            .GroupBy(v => v.AppointmentId)
+            .ToDictionary(g => g.Key, g => g.First().Id);
+
         var items = rows.Select(r =>
         {
             patientsById.TryGetValue(r.PatientId, out var patient);
             providerNames.TryGetValue(r.ProviderId, out var providerName);
+            visitByAppointment.TryGetValue(r.Id, out var visitId);
             return new AdminClinicAppointmentListItemDto
             {
                 Id = r.Id,
@@ -110,7 +124,8 @@ public sealed class AdminClinicAppointmentQueryService(
                 ScheduledEnd = r.ScheduledEnd,
                 Type = r.Type,
                 Status = r.Status,
-                Reason = r.Reason
+                Reason = r.Reason,
+                ActiveVisitId = visitId == Guid.Empty ? null : visitId
             };
         }).ToList();
 

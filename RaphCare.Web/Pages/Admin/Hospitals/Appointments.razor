@@ -1,6 +1,7 @@
 @page "/admin/hospitals/{ClinicId:guid}/appointments"
 @layout AdminLayout
 @using RaphCare.Domain.Common
+@inject NavigationManager Navigation
 
 <PageTitle>Appointments — RaphCare Admin</PageTitle>
 
@@ -179,6 +180,16 @@
                                     @if (_isAdministrator && appt.Status != "Cancelled")
                                     {
                                         <td class="admin-table-actions">
+                                            @if (appt.ActiveVisitId is Guid visitId)
+                                            {
+                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/visits/@visitId">Open visit</a>
+                                            }
+                                            else if (appt.Status != "Completed")
+                                            {
+                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@(_startingVisitId == appt.Id)" @onclick="() => StartVisitAsync(appt.Id)">
+                                                    @(_startingVisitId == appt.Id ? "…" : "Start visit")
+                                                </button>
+                                            }
                                             <button type="button" class="btn btn-ghost btn-sm" @onclick="() => StartReschedule(appt)">Reschedule</button>
                                             <button type="button" class="btn btn-ghost btn-sm" disabled="@(_cancellingId == appt.Id)" @onclick="() => CancelAppointmentAsync(appt.Id)">
                                                 @(_cancellingId == appt.Id ? "…" : "Cancel")
@@ -237,6 +248,7 @@
     private DateTime _scheduledEnd;
     private Guid? _rescheduleId;
     private Guid? _cancellingId;
+    private Guid? _startingVisitId;
     private string _rescheduleProviderId = string.Empty;
     private string _rescheduleReason = string.Empty;
     private DateTime _rescheduleStart;
@@ -381,6 +393,23 @@
         _success = "Appointment rescheduled.";
         _rescheduleId = null;
         await LoadAppointmentsAsync();
+    }
+
+    private async Task StartVisitAsync(Guid appointmentId)
+    {
+        _startingVisitId = appointmentId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.StartVisitAsync(ClinicId, appointmentId);
+        _startingVisitId = null;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? "Could not start visit.";
+            return;
+        }
+
+        Navigation.NavigateTo($"/admin/hospitals/{ClinicId}/visits/{response.Data.Id}");
     }
 
     private async Task CancelAppointmentAsync(Guid appointmentId)

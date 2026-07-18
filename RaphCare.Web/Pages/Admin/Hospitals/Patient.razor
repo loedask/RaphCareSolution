@@ -122,15 +122,17 @@
                                         <div class="chart-rollup-metric" title="Heart rate avg/min/max">
                                             <span class="chart-rollup-label">HR</span>
                                             <span class="chart-rollup-value">@hr.ToString("0") bpm</span>
-                                            <div class="chart-rollup-bar" style="width: @(Math.Min(100, (int)hr))%"></div>
+                                            <span class="chart-rollup-range">@day.MinHeartRateBpm–@day.MaxHeartRateBpm</span>
+                                            <div class="chart-rollup-bar" style="width: @(Math.Clamp((int)(hr / 1.6m), 8, 100))%"></div>
                                         </div>
                                     }
                                     @if (day.AvgSpO2Percent is { } spo2)
                                     {
-                                        <div class="chart-rollup-metric chart-rollup-metric-spo2" title="SpO₂ avg">
+                                        <div class="chart-rollup-metric chart-rollup-metric-spo2" title="SpO₂ avg/min/max">
                                             <span class="chart-rollup-label">SpO₂</span>
                                             <span class="chart-rollup-value">@spo2.ToString("0")%</span>
-                                            <div class="chart-rollup-bar" style="width: @spo2%"></div>
+                                            <span class="chart-rollup-range">@day.MinSpO2Percent–@day.MaxSpO2Percent</span>
+                                            <div class="chart-rollup-bar" style="width: @Math.Clamp((int)spo2, 8, 100)%"></div>
                                         </div>
                                     }
                                 </div>
@@ -298,7 +300,9 @@
                                 @foreach (var visit in _patient.RecentVisits)
                                 {
                                     <tr>
-                                        <td>@FormatLocal(visit.VisitStart)</td>
+                                        <td>
+                                            <a href="/admin/hospitals/@ClinicId/visits/@visit.Id">@FormatLocal(visit.VisitStart)</a>
+                                        </td>
                                         <td>@visit.VisitType</td>
                                         <td>@visit.Status</td>
                                         <td>@(string.IsNullOrWhiteSpace(visit.Summary) ? "—" : visit.Summary)</td>

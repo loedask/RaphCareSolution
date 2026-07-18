@@ -56,6 +56,7 @@ public sealed class ClinicAppointmentListItem
     public string Type { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string? Reason { get; set; }
+    public Guid? ActiveVisitId { get; set; }
 }
 
 public sealed class PagedClinicAppointments
@@ -133,4 +134,50 @@ public sealed class ClinicPatientDeviceRollupSummary
     public decimal? AvgSpO2Percent { get; set; }
     public decimal? MinSpO2Percent { get; set; }
     public decimal? MaxSpO2Percent { get; set; }
+}
+
+public sealed class ClinicVisitDetail
+{
+    public Guid Id { get; set; }
+    public Guid ClinicId { get; set; }
+    public Guid AppointmentId { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public Guid ProviderId { get; set; }
+    public string ProviderName { get; set; } = string.Empty;
+    public DateTime VisitStart { get; set; }
+    public DateTime? VisitEnd { get; set; }
+    public string VisitType { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string? Summary { get; set; }
+    public IReadOnlyList<ClinicVisitVital> Vitals { get; set; } = Array.Empty<ClinicVisitVital>();
+}
+
+public sealed class ClinicVisitVital
+{
+    public Guid Id { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public decimal Value { get; set; }
+    public string? Unit { get; set; }
+    public DateTime RecordedAt { get; set; }
+}
+
+public sealed class RecordVisitVitalRequest
+{
+    public string Type { get; set; } = string.Empty;
+    public decimal Value { get; set; }
+    public string? Unit { get; set; }
+    public DateTime? RecordedAt { get; set; }
+}
+
+public sealed class ClinicDeviceListItem
+{
+    public Guid Id { get; set; }
+    public string SerialNumber { get; set; } = string.Empty;
+    public string Model { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+    public bool IsAssigned { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public Guid? AssignedPatientId { get; set; }
+    public string? AssignedPatientName { get; set; }
 }

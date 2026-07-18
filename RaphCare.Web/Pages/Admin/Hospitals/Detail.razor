@@ -46,6 +46,10 @@
                 <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                 Appointments
             </button>
+            <button type="button" class="admin-detail-tab @(_tab == "devices" ? "active" : "")" @onclick='() => SetTab("devices")'>
+                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+                Devices
+            </button>
             <button type="button" class="admin-detail-tab @(_tab == "staff" ? "active" : "")" @onclick='() => SetTab("staff")'>
                 <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3.1-6 7-6"/><circle cx="17" cy="9" r="2.5"/><path d="M14 20c0-2.5 2.2-4.5 5-4.5"/></svg>
                 Staff
@@ -433,6 +437,70 @@
                 </div>
             </div>
         }
+        else if (_tab == "devices")
+        {
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Fleet</p>
+                        <h1>Devices</h1>
+                        <p class="admin-page-lead">Monitoring devices registered to this hospital.</p>
+                    </div>
+                    <span class="admin-progress-pill">@_devices.Count device@(_devices.Count == 1 ? "" : "s")</span>
+                </header>
+                <div class="admin-page-card-body">
+                    @if (_loadingDevices)
+                    {
+                        <p class="text-muted">Loading devices…</p>
+                    }
+                    else if (_devices.Count == 0)
+                    {
+                        <p class="text-muted">No devices registered for this hospital yet. Devices appear after patient wearables sync or staff provisioning via the Devices API.</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Serial</th>
+                                        <th>Model</th>
+                                        <th>Status</th>
+                                        <th>Assigned to</th>
+                                        <th>Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var device in _devices)
+                                    {
+                                        <tr>
+                                            <td><code>@device.SerialNumber</code></td>
+                                            <td>@(string.IsNullOrWhiteSpace(device.Model) ? "—" : device.Model)</td>
+                                            <td>@(string.IsNullOrWhiteSpace(device.Status) ? "—" : device.Status)</td>
+                                            <td>
+                                                @if (device.AssignedPatientId is Guid patientId)
+                                                {
+                                                    <a href="/admin/hospitals/@ClinicId/patients/@patientId">@(device.AssignedPatientName ?? "Patient")</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Unassigned</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge @(device.IsActive ? "badge-success" : "badge-muted")">
+                                                    @(device.IsActive ? "Active" : "Inactive")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
         else if (_tab == "staff")
         {
             <div class="admin-page-card">
@@ -580,6 +648,7 @@
 
     private bool _loading = true;
     private bool _loadingStaff;
+    private bool _loadingDevices;
     private bool _loadingPatients;
     private bool _loadingProviders;
     private bool _loadingAppointments;
@@ -613,11 +682,13 @@
     private IReadOnlyList<ClinicPatientListItem> _patients = Array.Empty<ClinicPatientListItem>();
     private IReadOnlyList<ClinicProviderListItem> _providers = Array.Empty<ClinicProviderListItem>();
     private IReadOnlyList<ClinicAppointmentListItem> _appointmentPreview = Array.Empty<ClinicAppointmentListItem>();
+    private IReadOnlyList<ClinicDeviceListItem> _devices = Array.Empty<ClinicDeviceListItem>();
     private IReadOnlyList<ClinicStaffMember> _staffCandidates = Array.Empty<ClinicStaffMember>();
     private int _patientTotalCount;
     private bool _staffLoaded;
     private bool _patientsLoaded;
     private bool _providersLoaded;
+    private bool _devicesLoaded;
     private SaveFacilityRequest _facilityForm = new();
     private UpdateClinicRequest _clinicForm = new();
 
@@ -626,7 +697,7 @@
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
         await LoadDetailAsync();
 
-        if (!string.IsNullOrWhiteSpace(TabQuery) && TabQuery is "overview" or "facilities" or "patients" or "providers" or "appointments" or "staff")
+        if (!string.IsNullOrWhiteSpace(TabQuery) && TabQuery is "overview" or "facilities" or "patients" or "providers" or "appointments" or "devices" or "staff")
         {
             _tab = TabQuery;
             if (_tab == "staff" && !_staffLoaded)
@@ -637,6 +708,8 @@
                 await LoadProvidersAsync();
             else if (_tab == "appointments")
                 await LoadAppointmentsPreviewAsync();
+            else if (_tab == "devices" && !_devicesLoaded)
+                await LoadDevicesAsync();
         }
     }
 
@@ -768,6 +841,24 @@
             await LoadProvidersAsync();
         else if (tab == "appointments")
             await LoadAppointmentsPreviewAsync();
+        else if (tab == "devices" && !_devicesLoaded)
+            await LoadDevicesAsync();
+    }
+
+    private async Task LoadDevicesAsync()
+    {
+        _loadingDevices = true;
+        _actionError = null;
+        var response = await AdminClinicService.GetDevicesAsync(ClinicId);
+        _loadingDevices = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _devices = response.Data;
+            _devicesLoaded = true;
+        }
+        else
+            _actionError = response.ErrorMessage ?? "Could not load devices.";
     }
 
     private async Task LoadProvidersAsync()

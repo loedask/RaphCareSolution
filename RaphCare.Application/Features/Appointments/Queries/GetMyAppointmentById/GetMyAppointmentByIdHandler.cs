@@ -23,7 +23,7 @@ public class GetMyAppointmentByIdHandler : IRequestHandler<GetMyAppointmentByIdQ
             ?? throw new ForbiddenAccessException("A patient profile is required to view appointments.");
 
         var appointment = await _repository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
-        if (appointment is null || appointment.PatientId != patientId)
+        if (appointment is null || appointment.PatientId != patientId || appointment.IsCancelled)
             throw new NotFoundException(nameof(Appointment), request.Id);
 
         return new AppointmentDto

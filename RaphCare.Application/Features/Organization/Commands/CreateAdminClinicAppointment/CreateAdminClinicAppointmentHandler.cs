@@ -15,6 +15,8 @@ public sealed class CreateAdminClinicAppointmentHandler(
     IPatientClinicAccessService patientClinicAccessService,
     IRepository<Appointment> appointmentRepository,
     IRepository<Provider> providerRepository,
+    IRepository<ProviderSchedule> providerScheduleRepository,
+    IRepository<Clinic> clinicRepository,
     IRepository<Patient> patientRepository,
     IProfessionalUserLookupService professionalUserLookupService,
     IUnitOfWork unitOfWork)
@@ -45,6 +47,29 @@ public sealed class CreateAdminClinicAppointmentHandler(
         var provider = await providerRepository.GetByIdAsync(request.ProviderId, cancellationToken).ConfigureAwait(false);
         if (provider is null || provider.IsDeleted || provider.ClinicId != request.ClinicId || !provider.IsActive)
             throw new BusinessRuleException("Provider not found for this hospital.");
+
+        await AppointmentSchedulingGuard.EnsureNoProviderConflictAsync(
+                appointmentRepository,
+                request.ClinicId,
+                request.ProviderId,
+                request.ScheduledStart,
+                request.ScheduledEnd,
+                excludeAppointmentId: null,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        var schedulesPage = await providerScheduleRepository.SearchAsync(
+            q => q.Where(s => s.ProviderId == request.ProviderId),
+            1,
+            50,
+            applyDefaultIdOrdering: false,
+            cancellationToken).ConfigureAwait(false);
+        var clinic = await clinicRepository.GetByIdAsync(request.ClinicId, cancellationToken).ConfigureAwait(false);
+        AppointmentSchedulingGuard.EnsureFitsWeeklySchedule(
+            schedulesPage.Items,
+            request.ScheduledStart,
+            request.ScheduledEnd,
+            clinic?.TimeZone);
 
         var appointment = new Appointment
         {

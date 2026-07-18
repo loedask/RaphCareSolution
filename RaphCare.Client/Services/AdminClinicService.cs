@@ -936,6 +936,183 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicVisitDetail>> StartVisitAsync(
+        Guid clinicId,
+        Guid appointmentId,
+        string? summary = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/appointments/{appointmentId}/visit",
+                    new { summary },
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can start visits.";
+                return Response<ClinicVisitDetail>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitDetailDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitDetail>.Failure("Could not start visit.");
+
+            return Response<ClinicVisitDetail>.Success(MapVisit(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitDetail>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitDetail>> GetVisitAsync(
+        Guid clinicId,
+        Guid visitId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/visits/{visitId}", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicVisitDetail>.Failure("Visit not found.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicVisitDetail>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitDetailDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitDetail>.Failure("Could not load visit.");
+
+            return Response<ClinicVisitDetail>.Success(MapVisit(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitDetail>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitDetail>> CompleteVisitAsync(
+        Guid clinicId,
+        Guid visitId,
+        string? summary = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/visits/{visitId}/complete",
+                    new { summary },
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can complete visits.";
+                return Response<ClinicVisitDetail>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitDetailDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitDetail>.Failure("Could not complete visit.");
+
+            return Response<ClinicVisitDetail>.Success(MapVisit(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitDetail>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitVital>> RecordVisitVitalAsync(
+        Guid clinicId,
+        Guid visitId,
+        RecordVisitVitalRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/vitals", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can record vitals.";
+                return Response<ClinicVisitVital>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitVitalDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitVital>.Failure("Could not record vital.");
+
+            return Response<ClinicVisitVital>.Success(new ClinicVisitVital
+            {
+                Id = dto.Id,
+                Type = dto.Type,
+                Value = dto.Value,
+                Unit = dto.Unit,
+                RecordedAt = dto.RecordedAt
+            });
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitVital>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<IReadOnlyList<ClinicDeviceListItem>>> GetDevicesAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/devices", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<IReadOnlyList<ClinicDeviceListItem>>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<IReadOnlyList<ClinicDeviceListItem>>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var items = await response.Content.ReadFromJsonAsync<List<DeviceListItemDto>>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            return Response<IReadOnlyList<ClinicDeviceListItem>>.Success(
+                items?.Select(d => new ClinicDeviceListItem
+                {
+                    Id = d.Id,
+                    SerialNumber = d.SerialNumber,
+                    Model = d.Model,
+                    IsActive = d.IsActive,
+                    IsAssigned = d.IsAssigned,
+                    Status = d.Status,
+                    AssignedPatientId = d.AssignedPatientId,
+                    AssignedPatientName = d.AssignedPatientName
+                }).ToList() ?? []);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<IReadOnlyList<ClinicDeviceListItem>>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<bool>> RevokePatientAccessAsync(
         Guid clinicId,
         Guid patientId,
@@ -1186,7 +1363,32 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         ScheduledEnd = dto.ScheduledEnd,
         Type = dto.Type,
         Status = dto.Status,
-        Reason = dto.Reason
+        Reason = dto.Reason,
+        ActiveVisitId = dto.ActiveVisitId
+    };
+
+    private static ClinicVisitDetail MapVisit(VisitDetailDto dto) => new()
+    {
+        Id = dto.Id,
+        ClinicId = dto.ClinicId,
+        AppointmentId = dto.AppointmentId,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName,
+        ProviderId = dto.ProviderId,
+        ProviderName = dto.ProviderName,
+        VisitStart = dto.VisitStart,
+        VisitEnd = dto.VisitEnd,
+        VisitType = dto.VisitType,
+        Status = dto.Status,
+        Summary = dto.Summary,
+        Vitals = dto.Vitals?.Select(v => new ClinicVisitVital
+        {
+            Id = v.Id,
+            Type = v.Type,
+            Value = v.Value,
+            Unit = v.Unit,
+            RecordedAt = v.RecordedAt
+        }).ToList() ?? []
     };
 
     private sealed class PagedClinicsDto
@@ -1419,5 +1621,44 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string Type { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string? Reason { get; set; }
+        public Guid? ActiveVisitId { get; set; }
+    }
+
+    private sealed class VisitDetailDto
+    {
+        public Guid Id { get; set; }
+        public Guid ClinicId { get; set; }
+        public Guid AppointmentId { get; set; }
+        public Guid PatientId { get; set; }
+        public string PatientName { get; set; } = string.Empty;
+        public Guid ProviderId { get; set; }
+        public string ProviderName { get; set; } = string.Empty;
+        public DateTime VisitStart { get; set; }
+        public DateTime? VisitEnd { get; set; }
+        public string VisitType { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string? Summary { get; set; }
+        public List<VisitVitalDto>? Vitals { get; set; }
+    }
+
+    private sealed class VisitVitalDto
+    {
+        public Guid Id { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public decimal Value { get; set; }
+        public string? Unit { get; set; }
+        public DateTime RecordedAt { get; set; }
+    }
+
+    private sealed class DeviceListItemDto
+    {
+        public Guid Id { get; set; }
+        public string SerialNumber { get; set; } = string.Empty;
+        public string Model { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
+        public bool IsAssigned { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public Guid? AssignedPatientId { get; set; }
+        public string? AssignedPatientName { get; set; }
     }
 }

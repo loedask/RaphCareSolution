@@ -14,6 +14,8 @@ public sealed class RescheduleAdminClinicAppointmentHandler(
     IUserRoleAssignmentService roleAssignmentService,
     IRepository<Appointment> appointmentRepository,
     IRepository<Provider> providerRepository,
+    IRepository<ProviderSchedule> providerScheduleRepository,
+    IRepository<Clinic> clinicRepository,
     IRepository<Patient> patientRepository,
     IProfessionalUserLookupService professionalUserLookupService,
     IUnitOfWork unitOfWork)
@@ -50,6 +52,29 @@ public sealed class RescheduleAdminClinicAppointmentHandler(
         var patient = await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken).ConfigureAwait(false);
         if (patient is null || patient.IsDeleted)
             throw new BusinessRuleException("Patient not found.");
+
+        await AppointmentSchedulingGuard.EnsureNoProviderConflictAsync(
+                appointmentRepository,
+                request.ClinicId,
+                providerId,
+                request.ScheduledStart,
+                request.ScheduledEnd,
+                excludeAppointmentId: appointment.Id,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        var schedulesPage = await providerScheduleRepository.SearchAsync(
+            q => q.Where(s => s.ProviderId == providerId),
+            1,
+            50,
+            applyDefaultIdOrdering: false,
+            cancellationToken).ConfigureAwait(false);
+        var clinic = await clinicRepository.GetByIdAsync(request.ClinicId, cancellationToken).ConfigureAwait(false);
+        AppointmentSchedulingGuard.EnsureFitsWeeklySchedule(
+            schedulesPage.Items,
+            request.ScheduledStart,
+            request.ScheduledEnd,
+            clinic?.TimeZone);
 
         appointment.ProviderId = providerId;
         appointment.ScheduledStart = request.ScheduledStart;

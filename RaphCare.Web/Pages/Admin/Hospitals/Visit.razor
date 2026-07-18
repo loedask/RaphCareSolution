@@ -1,0 +1,262 @@
+@page "/admin/hospitals/{ClinicId:guid}/visits/{VisitId:guid}"
+@layout AdminLayout
+@using RaphCare.Domain.Common
+@inject NavigationManager Navigation
+
+<PageTitle>@(_visit is null ? "Visit" : $"Visit — {_visit.PatientName}") — RaphCare Admin</PageTitle>
+
+<section class="admin-page">
+    @if (_loading)
+    {
+        <p class="text-muted">Loading visit…</p>
+    }
+    else if (_visit is null)
+    {
+        <div class="alert alert-error">@(_error ?? "Visit not found.")</div>
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">← Back to appointments</a>
+    }
+    else
+    {
+        <header class="admin-page-header">
+            <div>
+                <h1>Visit — @_visit.PatientName</h1>
+                <p class="admin-page-lead">@_visit.VisitType · @_visit.ProviderName · times in @_timeZoneLabel</p>
+            </div>
+            <span class="badge @(_visit.Status == "Completed" ? "badge-muted" : "badge-success")">@_visit.Status</span>
+        </header>
+
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="alert alert-error">@_error</div>
+        }
+        @if (!string.IsNullOrEmpty(_success))
+        {
+            <div class="alert alert-success">@_success</div>
+        }
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Encounter</p>
+                    <h2>Details</h2>
+                </div>
+            </header>
+            <div class="admin-page-card-body">
+                <dl class="admin-detail-grid">
+                    <div>
+                        <dt>Started</dt>
+                        <dd>@FormatLocal(_visit.VisitStart)</dd>
+                    </div>
+                    <div>
+                        <dt>Ended</dt>
+                        <dd>@(_visit.VisitEnd is { } end ? FormatLocal(end) : "—")</dd>
+                    </div>
+                    <div>
+                        <dt>Patient</dt>
+                        <dd><a href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">@_visit.PatientName</a></dd>
+                    </div>
+                    <div>
+                        <dt>Provider</dt>
+                        <dd>@_visit.ProviderName</dd>
+                    </div>
+                </dl>
+                @if (!string.IsNullOrWhiteSpace(_visit.Summary))
+                {
+                    <p class="hint" style="margin-top: 1rem;">@_visit.Summary</p>
+                }
+                @if (_isAdministrator && _visit.Status == "InProgress")
+                {
+                    <div class="admin-page-actions" style="margin-top: 1rem;">
+                        <label>
+                            Summary
+                            <input class="form-control" @bind="_completeSummary" placeholder="Optional visit summary" />
+                        </label>
+                        <button type="button" class="btn btn-primary" disabled="@_completing" @onclick="CompleteVisitAsync">
+                            @(_completing ? "Completing…" : "Complete visit")
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Clinical</p>
+                    <h2>Vitals</h2>
+                </div>
+                <span class="admin-progress-pill">@_visit.Vitals.Count vital@(_visit.Vitals.Count == 1 ? "" : "s")</span>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_isAdministrator && _visit.Status == "InProgress")
+                {
+                    <div class="form-grid" style="margin-bottom: 1rem;">
+                        <label>
+                            Type
+                            <select class="form-control" @bind="_vitalType">
+                                <option value="HR">Heart rate</option>
+                                <option value="BP">Blood pressure</option>
+                                <option value="Temp">Temperature</option>
+                                <option value="SpO2">SpO₂</option>
+                                <option value="Weight">Weight</option>
+                            </select>
+                        </label>
+                        <label>
+                            Value
+                            <input class="form-control" type="number" step="0.1" @bind="_vitalValue" />
+                        </label>
+                        <label>
+                            Unit
+                            <input class="form-control" @bind="_vitalUnit" placeholder="bpm, °C, %" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                        <button type="button" class="btn btn-primary" disabled="@_recording" @onclick="RecordVitalAsync">
+                            @(_recording ? "Saving…" : "Record vital")
+                        </button>
+                    </div>
+                }
+
+                @if (_visit.Vitals.Count == 0)
+                {
+                    <p class="text-muted">No vitals recorded yet.</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Recorded</th>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var vital in _visit.Vitals)
+                                {
+                                    <tr>
+                                        <td>@FormatLocal(vital.RecordedAt)</td>
+                                        <td>@vital.Type</td>
+                                        <td>@vital.Value @(vital.Unit ?? "")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-actions">
+            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">← Appointments</a>
+            <a class="btn btn-ghost" href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">Patient chart</a>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+    [Parameter] public Guid VisitId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _isAdministrator;
+    private bool _recording;
+    private bool _completing;
+    private string? _error;
+    private string? _success;
+    private string _clinicTimeZone = "UTC";
+    private string _timeZoneLabel = "hospital time";
+    private ClinicVisitDetail? _visit;
+    private string _vitalType = "HR";
+    private decimal _vitalValue;
+    private string _vitalUnit = "bpm";
+    private string _completeSummary = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
+        if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
+        {
+            _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            _clinicTimeZone = clinicResponse.Data.TimeZone;
+            _timeZoneLabel = string.IsNullOrWhiteSpace(_clinicTimeZone) ? "hospital time" : _clinicTimeZone;
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+
+        await LoadVisitAsync();
+    }
+
+    private async Task LoadVisitAsync()
+    {
+        _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetVisitAsync(ClinicId, VisitId);
+        _loading = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _visit = response.Data;
+            _completeSummary = response.Data.Summary ?? string.Empty;
+        }
+        else
+            _error = response.ErrorMessage ?? "Could not load visit.";
+    }
+
+    private string FormatLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private async Task RecordVitalAsync()
+    {
+        _recording = true;
+        _error = null;
+        _success = null;
+
+        if (_vitalType is "HR") _vitalUnit = string.IsNullOrWhiteSpace(_vitalUnit) ? "bpm" : _vitalUnit;
+        if (_vitalType is "Temp") _vitalUnit = string.IsNullOrWhiteSpace(_vitalUnit) ? "°C" : _vitalUnit;
+        if (_vitalType is "SpO2") _vitalUnit = string.IsNullOrWhiteSpace(_vitalUnit) ? "%" : _vitalUnit;
+
+        var response = await AdminClinicService.RecordVisitVitalAsync(ClinicId, VisitId, new RecordVisitVitalRequest
+        {
+            Type = _vitalType,
+            Value = _vitalValue,
+            Unit = _vitalUnit
+        });
+        _recording = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not record vital.";
+            return;
+        }
+
+        _success = "Vital recorded.";
+        _vitalValue = 0;
+        await LoadVisitAsync();
+    }
+
+    private async Task CompleteVisitAsync()
+    {
+        _completing = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CompleteVisitAsync(
+            ClinicId,
+            VisitId,
+            string.IsNullOrWhiteSpace(_completeSummary) ? null : _completeSummary.Trim());
+        _completing = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not complete visit.";
+            return;
+        }
+
+        _visit = response.Data;
+        _success = "Visit completed.";
+    }
+}

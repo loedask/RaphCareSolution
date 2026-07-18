@@ -1070,6 +1070,7 @@ a:hover { text-decoration: underline; }
 .chart-rollup-metric { margin-bottom: 0.45rem; }
 .chart-rollup-label { font-size: 0.65rem; font-weight: 700; color: var(--rc-muted); text-transform: uppercase; }
 .chart-rollup-value { display: block; font-size: 0.85rem; font-weight: 600; margin: 0.15rem 0; }
+.chart-rollup-range { display: block; font-size: 0.65rem; color: var(--rc-muted); margin-bottom: 0.25rem; }
 .chart-rollup-bar { height: 4px; border-radius: 999px; background: linear-gradient(90deg, #60a5fa, #2563eb); max-width: 100%; }
 .chart-rollup-metric-spo2 .chart-rollup-bar { background: linear-gradient(90deg, #34d399, #059669); }
 
