@@ -182,6 +182,95 @@ public sealed class ClinicDeviceListItem
     public string? AssignedPatientName { get; set; }
 }
 
+public sealed class ClinicInpatientBoard
+{
+    public Guid ClinicId { get; set; }
+    public int TotalBeds { get; set; }
+    public int AvailableBeds { get; set; }
+    public int OccupiedBeds { get; set; }
+    public int ActiveAdmissions { get; set; }
+    public IReadOnlyList<ClinicWard> Wards { get; set; } = Array.Empty<ClinicWard>();
+    public IReadOnlyList<ClinicAdmission> ActiveAdmissionsList { get; set; } = Array.Empty<ClinicAdmission>();
+}
+
+public sealed class ClinicWard
+{
+    public Guid Id { get; set; }
+    public Guid FacilityId { get; set; }
+    public string FacilityName { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Code { get; set; }
+    public bool IsActive { get; set; }
+    public IReadOnlyList<ClinicRoom> Rooms { get; set; } = Array.Empty<ClinicRoom>();
+}
+
+public sealed class ClinicRoom
+{
+    public Guid Id { get; set; }
+    public Guid WardId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? RoomType { get; set; }
+    public bool IsActive { get; set; }
+    public IReadOnlyList<ClinicBed> Beds { get; set; } = Array.Empty<ClinicBed>();
+}
+
+public sealed class ClinicBed
+{
+    public Guid Id { get; set; }
+    public Guid RoomId { get; set; }
+    public string Label { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+    public Guid? CurrentAdmissionId { get; set; }
+    public Guid? CurrentPatientId { get; set; }
+    public string? CurrentPatientName { get; set; }
+}
+
+public sealed class ClinicAdmission
+{
+    public Guid Id { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public Guid BedId { get; set; }
+    public string BedLabel { get; set; } = string.Empty;
+    public string RoomName { get; set; } = string.Empty;
+    public string WardName { get; set; } = string.Empty;
+    public string FacilityName { get; set; } = string.Empty;
+    public DateTime AdmittedAt { get; set; }
+    public DateTime? DischargedAt { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+    public string? Notes { get; set; }
+}
+
+public sealed class CreateWardRequest
+{
+    public Guid FacilityId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Code { get; set; }
+}
+
+public sealed class CreateRoomRequest
+{
+    public Guid WardId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? RoomType { get; set; }
+}
+
+public sealed class CreateBedRequest
+{
+    public Guid RoomId { get; set; }
+    public string Label { get; set; } = string.Empty;
+}
+
+public sealed class AdmitPatientRequest
+{
+    public Guid PatientId { get; set; }
+    public Guid BedId { get; set; }
+    public string? Reason { get; set; }
+    public string? Notes { get; set; }
+}
+
 public sealed class ClinicTeleJoinInfo
 {
     public Guid TeleSessionId { get; set; }

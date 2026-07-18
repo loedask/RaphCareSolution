@@ -33,6 +33,10 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<PatientSupportMessage> PatientSupportMessages => Set<PatientSupportMessage>();
     public DbSet<ClinicStaffMembership> ClinicStaffMemberships => Set<ClinicStaffMembership>();
     public DbSet<ClinicStaffInvitation> ClinicStaffInvitations => Set<ClinicStaffInvitation>();
+    public DbSet<Ward> Wards => Set<Ward>();
+    public DbSet<Room> Rooms => Set<Room>();
+    public DbSet<Bed> Beds => Set<Bed>();
+    public DbSet<InpatientAdmission> InpatientAdmissions => Set<InpatientAdmission>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,6 +58,10 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new ClinicStaffInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new VitalSignRecordConfiguration());
         modelBuilder.ApplyConfiguration(new ServiceOfferingConfiguration());
+        modelBuilder.ApplyConfiguration(new WardConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomConfiguration());
+        modelBuilder.ApplyConfiguration(new BedConfiguration());
+        modelBuilder.ApplyConfiguration(new InpatientAdmissionConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

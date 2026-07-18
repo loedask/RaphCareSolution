@@ -1146,6 +1146,178 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicInpatientBoard>> GetInpatientBoardAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/inpatient/board", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicInpatientBoard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicInpatientBoard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<InpatientBoardDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicInpatientBoard>.Failure("Could not load inpatient board.");
+
+            return Response<ClinicInpatientBoard>.Success(MapInpatientBoard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicInpatientBoard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicWard>> CreateWardAsync(
+        Guid clinicId,
+        CreateWardRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/wards", request, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can create wards.";
+                return Response<ClinicWard>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<WardDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicWard>.Failure("Could not create ward.");
+            return Response<ClinicWard>.Success(MapWard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicWard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicRoom>> CreateRoomAsync(
+        Guid clinicId,
+        CreateRoomRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/rooms", request, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can create rooms.";
+                return Response<ClinicRoom>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<RoomDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicRoom>.Failure("Could not create room.");
+            return Response<ClinicRoom>.Success(MapRoom(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicRoom>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicBed>> CreateBedAsync(
+        Guid clinicId,
+        CreateBedRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/beds", request, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can create beds.";
+                return Response<ClinicBed>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<BedDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicBed>.Failure("Could not create bed.");
+            return Response<ClinicBed>.Success(MapBed(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicBed>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicAdmission>> AdmitPatientAsync(
+        Guid clinicId,
+        AdmitPatientRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/admissions", request, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can admit patients.";
+                return Response<ClinicAdmission>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<AdmissionDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicAdmission>.Failure("Could not admit patient.");
+            return Response<ClinicAdmission>.Success(MapAdmission(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicAdmission>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicAdmission>> DischargeAdmissionAsync(
+        Guid clinicId,
+        Guid admissionId,
+        string? notes = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/admissions/{admissionId}/discharge",
+                    new { notes },
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can discharge patients.";
+                return Response<ClinicAdmission>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<AdmissionDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicAdmission>.Failure("Could not discharge patient.");
+            return Response<ClinicAdmission>.Success(MapAdmission(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicAdmission>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<ClinicTeleJoinInfo>> StartTeleSessionAsync(
         Guid clinicId,
         Guid appointmentId,
@@ -1757,5 +1929,127 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public DateTime ScheduledStart { get; set; }
         public string? PatientName { get; set; }
         public string? ProviderDisplayName { get; set; }
+    }
+
+    private static ClinicInpatientBoard MapInpatientBoard(InpatientBoardDto dto) => new()
+    {
+        ClinicId = dto.ClinicId,
+        TotalBeds = dto.TotalBeds,
+        AvailableBeds = dto.AvailableBeds,
+        OccupiedBeds = dto.OccupiedBeds,
+        ActiveAdmissions = dto.ActiveAdmissions,
+        Wards = dto.Wards?.Select(MapWard).ToList() ?? [],
+        ActiveAdmissionsList = dto.ActiveAdmissionsList?.Select(MapAdmission).ToList() ?? []
+    };
+
+    private static ClinicWard MapWard(WardDto dto) => new()
+    {
+        Id = dto.Id,
+        FacilityId = dto.FacilityId,
+        FacilityName = dto.FacilityName,
+        Name = dto.Name,
+        Code = dto.Code,
+        IsActive = dto.IsActive,
+        Rooms = dto.Rooms?.Select(MapRoom).ToList() ?? []
+    };
+
+    private static ClinicRoom MapRoom(RoomDto dto) => new()
+    {
+        Id = dto.Id,
+        WardId = dto.WardId,
+        Name = dto.Name,
+        RoomType = dto.RoomType,
+        IsActive = dto.IsActive,
+        Beds = dto.Beds?.Select(MapBed).ToList() ?? []
+    };
+
+    private static ClinicBed MapBed(BedDto dto) => new()
+    {
+        Id = dto.Id,
+        RoomId = dto.RoomId,
+        Label = dto.Label,
+        Status = dto.Status,
+        IsActive = dto.IsActive,
+        CurrentAdmissionId = dto.CurrentAdmissionId,
+        CurrentPatientId = dto.CurrentPatientId,
+        CurrentPatientName = dto.CurrentPatientName
+    };
+
+    private static ClinicAdmission MapAdmission(AdmissionDto dto) => new()
+    {
+        Id = dto.Id,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName,
+        BedId = dto.BedId,
+        BedLabel = dto.BedLabel,
+        RoomName = dto.RoomName,
+        WardName = dto.WardName,
+        FacilityName = dto.FacilityName,
+        AdmittedAt = dto.AdmittedAt,
+        DischargedAt = dto.DischargedAt,
+        Status = dto.Status,
+        Reason = dto.Reason,
+        Notes = dto.Notes
+    };
+
+    private sealed class InpatientBoardDto
+    {
+        public Guid ClinicId { get; set; }
+        public int TotalBeds { get; set; }
+        public int AvailableBeds { get; set; }
+        public int OccupiedBeds { get; set; }
+        public int ActiveAdmissions { get; set; }
+        public List<WardDto>? Wards { get; set; }
+        public List<AdmissionDto>? ActiveAdmissionsList { get; set; }
+    }
+
+    private sealed class WardDto
+    {
+        public Guid Id { get; set; }
+        public Guid FacilityId { get; set; }
+        public string FacilityName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string? Code { get; set; }
+        public bool IsActive { get; set; }
+        public List<RoomDto>? Rooms { get; set; }
+    }
+
+    private sealed class RoomDto
+    {
+        public Guid Id { get; set; }
+        public Guid WardId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? RoomType { get; set; }
+        public bool IsActive { get; set; }
+        public List<BedDto>? Beds { get; set; }
+    }
+
+    private sealed class BedDto
+    {
+        public Guid Id { get; set; }
+        public Guid RoomId { get; set; }
+        public string Label { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
+        public Guid? CurrentAdmissionId { get; set; }
+        public Guid? CurrentPatientId { get; set; }
+        public string? CurrentPatientName { get; set; }
+    }
+
+    private sealed class AdmissionDto
+    {
+        public Guid Id { get; set; }
+        public Guid PatientId { get; set; }
+        public string PatientName { get; set; } = string.Empty;
+        public Guid BedId { get; set; }
+        public string BedLabel { get; set; } = string.Empty;
+        public string RoomName { get; set; } = string.Empty;
+        public string WardName { get; set; } = string.Empty;
+        public string FacilityName { get; set; } = string.Empty;
+        public DateTime AdmittedAt { get; set; }
+        public DateTime? DischargedAt { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string? Reason { get; set; }
+        public string? Notes { get; set; }
     }
 }

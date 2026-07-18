@@ -1078,6 +1078,13 @@ a:hover { text-decoration: underline; }
 .tele-player { background: #0f172a; border-radius: 0.75rem; min-height: 18rem; overflow: hidden; }
 .tele-player-local { position: absolute; right: 1rem; bottom: 1rem; width: 10rem; min-height: 7rem; border: 2px solid #fff; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
 
+.bed-chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.bed-chip { display: inline-flex; flex-direction: column; min-width: 3.5rem; padding: 0.45rem 0.6rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #e2e8f0; background: #f8fafc; }
+.bed-chip small { font-weight: 500; font-size: 0.65rem; color: var(--rc-muted); margin-top: 0.15rem; max-width: 7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bed-chip-free { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
+.bed-chip-occupied { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+.bed-chip-other { background: #f1f5f9; color: var(--rc-muted); }
+
 .verification-row { display: flex; gap: 0.5rem; }
 .verification-row .form-control { flex: 1; }
 

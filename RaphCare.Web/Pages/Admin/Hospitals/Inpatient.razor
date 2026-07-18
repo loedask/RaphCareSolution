@@ -1,0 +1,504 @@
+@page "/admin/hospitals/{ClinicId:guid}/inpatient"
+@layout AdminLayout
+@using RaphCare.Domain.Common
+
+<PageTitle>Inpatient — RaphCare Admin</PageTitle>
+
+<section class="admin-page">
+    <header class="admin-page-header">
+        <div>
+            <h1>Inpatient</h1>
+            <p class="admin-page-lead">Wards, rooms, beds, and admissions for @_clinicName.</p>
+        </div>
+        @if (_board is not null)
+        {
+            <span class="admin-progress-pill">@_board.OccupiedBeds / @_board.TotalBeds occupied</span>
+        }
+    </header>
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="alert alert-error">@_error</div>
+    }
+    @if (!string.IsNullOrEmpty(_success))
+    {
+        <div class="alert alert-success">@_success</div>
+    }
+
+    @if (_loading)
+    {
+        <p class="text-muted">Loading inpatient board…</p>
+    }
+    else if (_board is not null)
+    {
+        <div class="stat-grid" style="margin-bottom: 1.25rem;">
+            <div class="stat-card stat-card-blue">
+                <div class="stat-card-top"><span class="stat-label">Beds</span></div>
+                <div class="stat-value">@_board.TotalBeds</div>
+            </div>
+            <div class="stat-card stat-card-green">
+                <div class="stat-card-top"><span class="stat-label">Available</span></div>
+                <div class="stat-value">@_board.AvailableBeds</div>
+            </div>
+            <div class="stat-card stat-card-violet">
+                <div class="stat-card-top"><span class="stat-label">Occupied</span></div>
+                <div class="stat-value">@_board.OccupiedBeds</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-top"><span class="stat-label">Admissions</span></div>
+                <div class="stat-value">@_board.ActiveAdmissions</div>
+            </div>
+        </div>
+
+        @if (_isAdministrator)
+        {
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Setup</p>
+                        <h2>Add capacity</h2>
+                    </div>
+                </header>
+                <div class="admin-page-card-body">
+                    <div class="form-grid">
+                        <label>
+                            Facility (ward)
+                            <select class="form-control" @bind="_wardFacilityId">
+                                <option value="">Select facility…</option>
+                                @foreach (var f in _physicalFacilities)
+                                {
+                                    <option value="@f.Id">@f.Name</option>
+                                }
+                            </select>
+                        </label>
+                        <label>
+                            Ward name
+                            <input class="form-control" @bind="_wardName" placeholder="e.g. Medical Ward A" />
+                        </label>
+                        <label>
+                            Code
+                            <input class="form-control" @bind="_wardCode" placeholder="Optional" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions">
+                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateWardAsync">Add ward</button>
+                    </div>
+
+                    <div class="form-grid" style="margin-top: 1.25rem;">
+                        <label>
+                            Ward (room)
+                            <select class="form-control" @bind="_roomWardId">
+                                <option value="">Select ward…</option>
+                                @foreach (var w in _board.Wards)
+                                {
+                                    <option value="@w.Id">@w.Name (@w.FacilityName)</option>
+                                }
+                            </select>
+                        </label>
+                        <label>
+                            Room name
+                            <input class="form-control" @bind="_roomName" placeholder="e.g. 101" />
+                        </label>
+                        <label>
+                            Room type
+                            <input class="form-control" @bind="_roomType" placeholder="Optional" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions">
+                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateRoomAsync">Add room</button>
+                    </div>
+
+                    <div class="form-grid" style="margin-top: 1.25rem;">
+                        <label>
+                            Room (bed)
+                            <select class="form-control" @bind="_bedRoomId">
+                                <option value="">Select room…</option>
+                                @foreach (var room in _allRooms)
+                                {
+                                    <option value="@room.Id">@room.WardName — @room.Name</option>
+                                }
+                            </select>
+                        </label>
+                        <label>
+                            Bed label
+                            <input class="form-control" @bind="_bedLabel" placeholder="e.g. A" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions">
+                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateBedAsync">Add bed</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-page-card">
+                <header class="admin-page-card-head">
+                    <div>
+                        <p class="admin-page-eyebrow">Care</p>
+                        <h2>Admit patient</h2>
+                    </div>
+                </header>
+                <div class="admin-page-card-body">
+                    <div class="form-grid">
+                        <label>
+                            Patient
+                            <select class="form-control" @bind="_admitPatientId">
+                                <option value="">Select patient…</option>
+                                @foreach (var p in _patients)
+                                {
+                                    <option value="@p.PatientId">@p.FirstName @p.LastName</option>
+                                }
+                            </select>
+                        </label>
+                        <label>
+                            Available bed
+                            <select class="form-control" @bind="_admitBedId">
+                                <option value="">Select bed…</option>
+                                @foreach (var bed in _availableBeds)
+                                {
+                                    <option value="@bed.Id">@bed.Display</option>
+                                }
+                            </select>
+                        </label>
+                        <label>
+                            Reason
+                            <input class="form-control" @bind="_admitReason" placeholder="Optional" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions">
+                        <button type="button" class="btn btn-primary" disabled="@_saving" @onclick="AdmitAsync">Admit</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Board</p>
+                    <h2>Active admissions</h2>
+                </div>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_board.ActiveAdmissionsList.Count == 0)
+                {
+                    <p class="text-muted">No patients currently admitted.</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Location</th>
+                                    <th>Admitted</th>
+                                    <th>Reason</th>
+                                    @if (_isAdministrator)
+                                    {
+                                        <th></th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var adm in _board.ActiveAdmissionsList)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="/admin/hospitals/@ClinicId/patients/@adm.PatientId">@adm.PatientName</a>
+                                        </td>
+                                        <td>@adm.FacilityName · @adm.WardName · @adm.RoomName · Bed @adm.BedLabel</td>
+                                        <td>@ClinicTimeZoneHelper.FormatClinicLocal(adm.AdmittedAt, _clinicTimeZone)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(adm.Reason) ? "—" : adm.Reason)</td>
+                                        @if (_isAdministrator)
+                                        {
+                                            <td>
+                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@(_dischargingId == adm.Id)" @onclick="() => DischargeAsync(adm.Id)">
+                                                    @(_dischargingId == adm.Id ? "…" : "Discharge")
+                                                </button>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
+                    <p class="admin-page-eyebrow">Map</p>
+                    <h2>Beds by ward</h2>
+                </div>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_board.Wards.Count == 0)
+                {
+                    <p class="text-muted">No wards yet. Add a physical facility, then create a ward, rooms, and beds.</p>
+                }
+                else
+                {
+                    @foreach (var ward in _board.Wards)
+                    {
+                        <div class="inpatient-ward" style="margin-bottom: 1.25rem;">
+                            <h3>@ward.Name <span class="text-muted">· @ward.FacilityName</span></h3>
+                            @if (ward.Rooms.Count == 0)
+                            {
+                                <p class="text-muted">No rooms in this ward.</p>
+                            }
+                            else
+                            {
+                                @foreach (var room in ward.Rooms)
+                                {
+                                    <div style="margin: 0.75rem 0;">
+                                        <strong>Room @room.Name</strong>
+                                        @(string.IsNullOrWhiteSpace(room.RoomType) ? "" : $" ({room.RoomType})")
+                                        <div class="bed-chip-row">
+                                            @foreach (var bed in room.Beds)
+                                            {
+                                                <span class="bed-chip @(bed.Status == "Occupied" ? "bed-chip-occupied" : bed.Status == "Available" ? "bed-chip-free" : "bed-chip-other")"
+                                                      title="@(bed.CurrentPatientName ?? bed.Status)">
+                                                    @bed.Label
+                                                    @if (!string.IsNullOrWhiteSpace(bed.CurrentPatientName))
+                                                    {
+                                                        <small>@bed.CurrentPatientName</small>
+                                                    }
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+
+    <div class="admin-page-actions">
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">← Back to hospital</a>
+    </div>
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _saving;
+    private bool _isAdministrator;
+    private Guid? _dischargingId;
+    private string? _error;
+    private string? _success;
+    private string _clinicName = "this hospital";
+    private string _clinicTimeZone = "UTC";
+    private ClinicInpatientBoard? _board;
+    private IReadOnlyList<FacilityListItem> _physicalFacilities = Array.Empty<FacilityListItem>();
+    private IReadOnlyList<ClinicPatientListItem> _patients = Array.Empty<ClinicPatientListItem>();
+
+    private string _wardFacilityId = string.Empty;
+    private string _wardName = string.Empty;
+    private string _wardCode = string.Empty;
+    private string _roomWardId = string.Empty;
+    private string _roomName = string.Empty;
+    private string _roomType = string.Empty;
+    private string _bedRoomId = string.Empty;
+    private string _bedLabel = string.Empty;
+    private string _admitPatientId = string.Empty;
+    private string _admitBedId = string.Empty;
+    private string _admitReason = string.Empty;
+
+    private sealed record RoomOption(Guid Id, string WardName, string Name);
+    private sealed record BedOption(Guid Id, string Display);
+
+    private IEnumerable<RoomOption> _allRooms =>
+        _board?.Wards.SelectMany(w => w.Rooms.Select(r => new RoomOption(r.Id, w.Name, r.Name)))
+        ?? Enumerable.Empty<RoomOption>();
+
+    private IEnumerable<BedOption> _availableBeds =>
+        _board?.Wards
+            .SelectMany(w => w.Rooms.SelectMany(r => r.Beds
+                .Where(b => b.IsActive && b.Status == "Available")
+                .Select(b => new BedOption(b.Id, $"{w.Name} · {r.Name} · Bed {b.Label}"))))
+        ?? Enumerable.Empty<BedOption>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
+        if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
+        {
+            _clinicName = clinicResponse.Data.Name;
+            _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            _clinicTimeZone = clinicResponse.Data.TimeZone;
+            _physicalFacilities = clinicResponse.Data.Facilities.Where(f => !f.IsVirtual).ToList();
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+
+        if (_isAdministrator)
+        {
+            var patients = await AdminClinicService.GetPatientsAsync(ClinicId, 1, 100);
+            if (patients.IsSuccess && patients.Data is not null)
+                _patients = patients.Data.Items;
+        }
+
+        await LoadBoardAsync();
+    }
+
+    private async Task LoadBoardAsync()
+    {
+        _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetInpatientBoardAsync(ClinicId);
+        _loading = false;
+
+        if (response.IsSuccess && response.Data is not null)
+            _board = response.Data;
+        else
+            _error = response.ErrorMessage ?? "Could not load inpatient board.";
+    }
+
+    private async Task CreateWardAsync()
+    {
+        if (!Guid.TryParse(_wardFacilityId, out var facilityId) || string.IsNullOrWhiteSpace(_wardName))
+        {
+            _error = "Select a facility and enter a ward name.";
+            return;
+        }
+
+        _saving = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CreateWardAsync(ClinicId, new CreateWardRequest
+        {
+            FacilityId = facilityId,
+            Name = _wardName.Trim(),
+            Code = string.IsNullOrWhiteSpace(_wardCode) ? null : _wardCode.Trim()
+        });
+        _saving = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not create ward.";
+            return;
+        }
+
+        _success = "Ward created.";
+        _wardName = string.Empty;
+        _wardCode = string.Empty;
+        await LoadBoardAsync();
+    }
+
+    private async Task CreateRoomAsync()
+    {
+        if (!Guid.TryParse(_roomWardId, out var wardId) || string.IsNullOrWhiteSpace(_roomName))
+        {
+            _error = "Select a ward and enter a room name.";
+            return;
+        }
+
+        _saving = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CreateRoomAsync(ClinicId, new CreateRoomRequest
+        {
+            WardId = wardId,
+            Name = _roomName.Trim(),
+            RoomType = string.IsNullOrWhiteSpace(_roomType) ? null : _roomType.Trim()
+        });
+        _saving = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not create room.";
+            return;
+        }
+
+        _success = "Room created.";
+        _roomName = string.Empty;
+        _roomType = string.Empty;
+        await LoadBoardAsync();
+    }
+
+    private async Task CreateBedAsync()
+    {
+        if (!Guid.TryParse(_bedRoomId, out var roomId) || string.IsNullOrWhiteSpace(_bedLabel))
+        {
+            _error = "Select a room and enter a bed label.";
+            return;
+        }
+
+        _saving = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CreateBedAsync(ClinicId, new CreateBedRequest
+        {
+            RoomId = roomId,
+            Label = _bedLabel.Trim()
+        });
+        _saving = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not create bed.";
+            return;
+        }
+
+        _success = "Bed created.";
+        _bedLabel = string.Empty;
+        await LoadBoardAsync();
+    }
+
+    private async Task AdmitAsync()
+    {
+        if (!Guid.TryParse(_admitPatientId, out var patientId) || !Guid.TryParse(_admitBedId, out var bedId))
+        {
+            _error = "Select a patient and an available bed.";
+            return;
+        }
+
+        _saving = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.AdmitPatientAsync(ClinicId, new AdmitPatientRequest
+        {
+            PatientId = patientId,
+            BedId = bedId,
+            Reason = string.IsNullOrWhiteSpace(_admitReason) ? null : _admitReason.Trim()
+        });
+        _saving = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not admit patient.";
+            return;
+        }
+
+        _success = "Patient admitted.";
+        _admitReason = string.Empty;
+        await LoadBoardAsync();
+    }
+
+    private async Task DischargeAsync(Guid admissionId)
+    {
+        _dischargingId = admissionId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.DischargeAdmissionAsync(ClinicId, admissionId);
+        _dischargingId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? "Could not discharge patient.";
+            return;
+        }
+
+        _success = "Patient discharged.";
+        await LoadBoardAsync();
+    }
+}

@@ -2,6 +2,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.DTOs;
+using RaphCare.Application.Features.Organization.Commands.AdmitAdminClinicPatient;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicBed;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicRoom;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicWard;
+using RaphCare.Application.Features.Organization.Commands.DischargeAdminClinicAdmission;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicInpatientBoard;
 using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicAppointment;
 using RaphCare.Application.Features.Organization.Commands.SetAdminClinicProviderActive;
 using RaphCare.Application.Features.Organization.Commands.StartAdminClinicTeleSession;
@@ -679,6 +685,126 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetDevices(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetAdminClinicDevicesQuery { ClinicId = id }, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Inpatient board: wards, rooms, beds, and active admissions.</summary>
+    [HttpGet("{id:guid}/inpatient/board", Name = "GetAdminClinicInpatientBoard")]
+    [ProducesResponseType(typeof(AdminClinicInpatientBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetInpatientBoard(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetAdminClinicInpatientBoardQuery { ClinicId = id }, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Create a ward under a facility.</summary>
+    [HttpPost("{id:guid}/wards", Name = "CreateAdminClinicWard")]
+    [ProducesResponseType(typeof(AdminClinicWardDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateWard(
+        Guid id,
+        [FromBody] CreateAdminClinicWardRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicWardCommand
+            {
+                ClinicId = id,
+                FacilityId = body.FacilityId,
+                Name = body.Name,
+                Code = body.Code
+            },
+            cancellationToken);
+        return result is null ? NotFound() : CreatedAtAction(nameof(GetInpatientBoard), new { id }, result);
+    }
+
+    /// <summary>Create a room under a ward.</summary>
+    [HttpPost("{id:guid}/rooms", Name = "CreateAdminClinicRoom")]
+    [ProducesResponseType(typeof(AdminClinicRoomDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateRoom(
+        Guid id,
+        [FromBody] CreateAdminClinicRoomRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicRoomCommand
+            {
+                ClinicId = id,
+                WardId = body.WardId,
+                Name = body.Name,
+                RoomType = body.RoomType
+            },
+            cancellationToken);
+        return result is null ? NotFound() : CreatedAtAction(nameof(GetInpatientBoard), new { id }, result);
+    }
+
+    /// <summary>Create a bed under a room.</summary>
+    [HttpPost("{id:guid}/beds", Name = "CreateAdminClinicBed")]
+    [ProducesResponseType(typeof(AdminClinicBedDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateBed(
+        Guid id,
+        [FromBody] CreateAdminClinicBedRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicBedCommand
+            {
+                ClinicId = id,
+                RoomId = body.RoomId,
+                Label = body.Label
+            },
+            cancellationToken);
+        return result is null ? NotFound() : CreatedAtAction(nameof(GetInpatientBoard), new { id }, result);
+    }
+
+    /// <summary>Admit a patient to a bed.</summary>
+    [HttpPost("{id:guid}/admissions", Name = "AdmitAdminClinicPatient")]
+    [ProducesResponseType(typeof(AdminClinicAdmissionDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AdmitPatient(
+        Guid id,
+        [FromBody] AdmitAdminClinicPatientRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new AdmitAdminClinicPatientCommand
+            {
+                ClinicId = id,
+                PatientId = body.PatientId,
+                BedId = body.BedId,
+                Reason = body.Reason,
+                Notes = body.Notes
+            },
+            cancellationToken);
+        return result is null ? NotFound() : CreatedAtAction(nameof(GetInpatientBoard), new { id }, result);
+    }
+
+    /// <summary>Discharge an inpatient admission.</summary>
+    [HttpPost("{id:guid}/admissions/{admissionId:guid}/discharge", Name = "DischargeAdminClinicAdmission")]
+    [ProducesResponseType(typeof(AdminClinicAdmissionDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DischargeAdmission(
+        Guid id,
+        Guid admissionId,
+        [FromBody] DischargeAdminClinicAdmissionRequest? body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new DischargeAdminClinicAdmissionCommand
+            {
+                ClinicId = id,
+                AdmissionId = admissionId,
+                Notes = body?.Notes
+            },
+            cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 
