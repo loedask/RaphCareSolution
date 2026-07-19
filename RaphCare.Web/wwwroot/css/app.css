@@ -1398,9 +1398,15 @@ a:hover { text-decoration: underline; }
 .auth-card .back-link {
     display: inline-block;
     margin-bottom: 1rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font: inherit;
     font-size: 0.8rem;
     color: var(--rc-muted);
     text-decoration: none;
+    cursor: pointer;
+    text-align: left;
 }
 
 .auth-card .back-link:hover { color: var(--rc-primary); text-decoration: none; }

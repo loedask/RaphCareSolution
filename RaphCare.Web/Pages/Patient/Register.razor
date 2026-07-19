@@ -4,9 +4,13 @@
 <PageTitle>Register — Patient</PageTitle>
 
 <div class="auth-card auth-card-form">
-    <a class="back-link" href="/">← Back</a>
+    <button type="button" class="back-link" @onclick="GoBack">← Back</button>
     <h2 class="auth-card-title">Create patient account</h2>
-    <p class="auth-card-subtitle">Verify your email to confirm you're a real user.</p>
+    <p class="auth-card-subtitle">
+        @(_awaitingCode
+            ? "Enter the verification code we sent to your email."
+            : "Fill in your details to create your account.")
+    </p>
 
     @if (!string.IsNullOrEmpty(_error))
     {
@@ -19,50 +23,61 @@
 
     <EditForm Model="_model" OnValidSubmit="SubmitAsync">
         <div class="form-grid single-column">
-            <div class="form-field">
-                <label>First name</label>
-                <InputText class="form-control" @bind-Value="_model.FirstName" />
-            </div>
-            <div class="form-field">
-                <label>Last name</label>
-                <InputText class="form-control" @bind-Value="_model.LastName" />
-            </div>
-            <div class="form-field">
-                <label>Email</label>
-                <InputText class="form-control" @bind-Value="_model.Email" type="email" />
-            </div>
-            <div class="form-field">
-                <label>Password</label>
-                <InputText class="form-control" @bind-Value="_model.Password" type="password" />
-            </div>
-            <div class="form-field">
-                <label>Clinic (optional)</label>
-                <InputSelect class="form-control" @bind-Value="_selectedClinicId">
-                    <option value="">No clinic yet</option>
-                    @foreach (var clinic in _clinics)
-                    {
-                        <option value="@clinic.Id">@clinic.Name</option>
-                    }
-                </InputSelect>
-            </div>
-            <div class="form-field verification-field">
-                <label>Verification code</label>
-                <div class="verification-row">
-                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="6-digit code" maxlength="6" />
-                    <button type="button" class="btn btn-secondary" disabled="@_sendingCode" @onclick="SendCodeAsync">
-                        @(_sendingCode ? "Sending…" : "Send code")
-                    </button>
+            @if (!_awaitingCode)
+            {
+                <div class="form-field">
+                    <label>First name</label>
+                    <InputText class="form-control" @bind-Value="_model.FirstName" />
                 </div>
-            </div>
+                <div class="form-field">
+                    <label>Last name</label>
+                    <InputText class="form-control" @bind-Value="_model.LastName" />
+                </div>
+                <div class="form-field">
+                    <label>Email</label>
+                    <InputText class="form-control" @bind-Value="_model.Email" type="email" />
+                </div>
+                <div class="form-field">
+                    <label>Password</label>
+                    <InputText class="form-control" @bind-Value="_model.Password" type="password" />
+                </div>
+                <div class="form-field">
+                    <label>Clinic (optional)</label>
+                    <InputSelect class="form-control" @bind-Value="_selectedClinicId">
+                        <option value="">No clinic yet</option>
+                        @foreach (var clinic in _clinics)
+                        {
+                            <option value="@clinic.Id">@clinic.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+            }
+            else
+            {
+                <div class="form-field verification-field">
+                    <label>Verification code</label>
+                    <div class="verification-row">
+                        <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="6-digit code" maxlength="6" />
+                        <button type="button" class="btn btn-secondary" disabled="@_sendingCode" @onclick="SendCodeAsync">
+                            @(_sendingCode ? "Sending…" : "Send code")
+                        </button>
+                    </div>
+                </div>
+            }
         </div>
         <div class="form-actions" style="margin-top: 1rem;">
             <button class="btn btn-primary" type="submit" disabled="@_busy">
-                @(_busy ? "Creating account…" : "Create account")
+                @(_busy
+                    ? (_awaitingCode ? "Creating account…" : "Sending code…")
+                    : (_awaitingCode ? "Verify and create account" : "Continue"))
             </button>
         </div>
     </EditForm>
 
-    <p class="auth-card-foot">Already registered? <a href="/patient/signin">Sign in</a></p>
+    @if (!_awaitingCode)
+    {
+        <p class="auth-card-foot">Already registered? <a href="/patient/signin">Sign in</a></p>
+    }
 </div>
 
 @code {
@@ -75,6 +90,7 @@
     private string _selectedClinicId = string.Empty;
     private bool _busy;
     private bool _sendingCode;
+    private bool _awaitingCode;
     private string? _error;
     private string? _status;
 
@@ -83,6 +99,20 @@
         var response = await EmailAuth.GetRegistrationClinicsAsync();
         if (response.IsSuccess && response.Data is not null)
             _clinics = response.Data;
+    }
+
+    private void GoBack()
+    {
+        if (_awaitingCode)
+        {
+            _awaitingCode = false;
+            _model.VerificationCode = string.Empty;
+            _error = null;
+            _status = null;
+            return;
+        }
+
+        Navigation.NavigateTo("/");
     }
 
     private async Task SendCodeAsync()
@@ -98,13 +128,10 @@
             return;
         }
 
-        var response = await EmailAuth.SendEmailVerificationAsync(_model.Email.Trim());
+        var sent = await TrySendCodeAsync();
         _sendingCode = false;
-
-        if (response.IsSuccess)
+        if (sent)
             _status = "Verification code sent. Check your inbox.";
-        else
-            _error = response.ErrorMessage ?? "Could not send verification email.";
     }
 
     private async Task SubmitAsync()
@@ -112,6 +139,34 @@
         _error = null;
         _status = null;
 
+        if (!_awaitingCode)
+        {
+            await AdvanceToVerificationAsync();
+            return;
+        }
+
+        await RegisterAsync();
+    }
+
+    private async Task AdvanceToVerificationAsync()
+    {
+        if (!ValidateDetails())
+            return;
+
+        _busy = true;
+        var sent = await TrySendCodeAsync();
+        _busy = false;
+
+        if (!sent)
+            return;
+
+        _model.VerificationCode = string.Empty;
+        _awaitingCode = true;
+        _status = "Verification code sent. Check your inbox.";
+    }
+
+    private async Task RegisterAsync()
+    {
         if (string.IsNullOrWhiteSpace(_model.VerificationCode))
         {
             _error = "Enter the 6-digit verification code from your email. Tap Send code if you have not received one yet.";
@@ -144,6 +199,45 @@
 
         await WebAuth.StoreSessionAsync(response.Data.Token, WebAccountKind.Patient);
         Navigation.NavigateTo("/patient/welcome", replace: true);
+    }
+
+    private async Task<bool> TrySendCodeAsync()
+    {
+        var response = await EmailAuth.SendEmailVerificationAsync(_model.Email.Trim());
+        if (response.IsSuccess)
+            return true;
+
+        _error = response.ErrorMessage ?? "Could not send verification email.";
+        return false;
+    }
+
+    private bool ValidateDetails()
+    {
+        if (string.IsNullOrWhiteSpace(_model.FirstName))
+        {
+            _error = "Please enter your first name.";
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(_model.LastName))
+        {
+            _error = "Please enter your last name.";
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(_model.Email))
+        {
+            _error = "Please enter your email.";
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(_model.Password))
+        {
+            _error = "Please enter a password.";
+            return false;
+        }
+
+        return true;
     }
 
     private sealed class RegisterModel
