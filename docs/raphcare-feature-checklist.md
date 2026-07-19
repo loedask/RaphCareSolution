@@ -2,6 +2,8 @@
 
 PDF companion: [`raphcare-feature-checklist.pdf`](raphcare-feature-checklist.pdf) (regenerate with `scripts/Export-RaphCareFeatureChecklistPdf.ps1` whenever this file changes).
 
+Plain-language twin for non-technical partners: [`raphcare-feature-checklist-partner.md`](raphcare-feature-checklist-partner.md) (and its PDF). Keep both in sync when status changes.
+
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in `docs/Mobile_Concept_Port.md`; release gates stay in `docs/Mobile_Release_Ready_Checklist.md`.
 
 **How to mark items**
@@ -16,7 +18,7 @@ Track progress across **API**, **Web admin panel**, and **Mobile** (patient app)
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-07-18
+Last reviewed: 2026-07-18 (device coverage + partner twin)
 
 ---
 
@@ -146,15 +148,58 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 
 Screen visual parity table is marked done in `Mobile_Concept_Port.md` (last pass). Re-check when the React concept changes.
 
+### Mobile device coverage (phones, OS, wearables)
+
+Phones / OS targets:
+
+- [x] Android app build and run path (primary day-to-day target)
+- [ ] iOS app build and run path verified on a physical iPhone `(partial)`: project targets iOS; release spot-check still open
+- [ ] Same major flows verified on **both** Android and iOS before calling a vertical release-ready (use `Mobile_Release_Ready_Checklist.md` per-screen table)
+- [ ] Windows MAUI target `(out of scope for BLE / most device work)`: BLE not active on Windows in this solution
+- [ ] Mac Catalyst as a BLE test host `(optional)`: supported for Bluetooth perms; not a patient ship target
+
+Telehealth video on device:
+
+- [x] Android in-call UI + Agora RTC wiring
+- [ ] iOS AgoraRtcKit (xcframework) wiring `(blocked / partial)`: see `docs/10_Agora_Twilio_Setup.md`
+- [ ] End-to-end video call on a real Android phone
+- [ ] End-to-end video call on a real iPhone `(blocked: iOS Agora)`
+
+Push notifications on device:
+
+- [x] App can register a push device token with the API
+- [ ] Android FCM delivery in a configured environment `(partial)`: needs Firebase service account on API
+- [ ] iOS push delivery (APNs / FCM path) verified on a physical iPhone `(partial)`
+- [ ] Push off / no-op when Firebase is not configured (expected today)
+
+Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`):
+
+- [x] Devices screen: BLE scan, connect, disconnect
+- [x] E580 / E585 name filter (`E585E580DeviceFilter`) + "show all BLE" fallback
+- [x] Android Bluetooth / Nearby devices permission flow
+- [x] iOS Bluetooth usage string (`Info.plist`)
+- [x] Heart-rate GATT read when the band exposes standard HR (`0x2A37`)
+- [x] Vitals sync to API + offline outbox retry (`FileVitalsSyncOutbox`)
+- [ ] Full HBand SDK (VPOperate) C# binding path `(partial)`: not fully implemented; see `docs/12_HBand_SDK_Integration.md`
+- [ ] Background BLE delivery limits tested on Android and iOS `(partial)`
+- [ ] Y6 Pro (4G SOS / fall / emergency fleet workflow) end-to-end in app `(partial / product path)`: fleet doc exists; app vertical still thinner than E580/E585 BLE path
+- [ ] Clinic-facing view of patient device readings beyond admin devices list `(partial)`
+
+Permissions / hardware UX:
+
+- [x] Bluetooth permission prompts documented for Android 12+ and iOS
+- [ ] Camera / mic permission path for telehealth verified on both OS `(partial)`
+- [ ] Airplane / no-network degraded behavior spot-checked on a real phone
+- [ ] Low-battery / Bluetooth-off empty states feel clear on Devices
+
 ### Mobile cross-cutting left
 
-- [ ] iOS Agora RTC wiring `(partial)`: Android Agora in; see `docs/10_Agora_Twilio_Setup.md`
-- [ ] Push in production `(partial)`: FCM when Firebase service account configured; else no-op
 - [ ] AI assistant production LLM `(partial)`: needs `PatientAssistant` Azure OpenAI config
 - [ ] Dark mode resource dictionary `(out of scope for v1)` unless product reverses
 - [ ] Deep links / NotFound route UX
 - [ ] Prod feature-flag rollout plan filled in `Mobile_Release_Ready_Checklist.md`
-- [ ] iOS + Android release verification per screen (use release checklist tables)
+- [ ] Accessibility spot-check on phone (labels, contrast, key flows)
+- [ ] Store packaging: icons, splash, package ids, privacy strings for Play / App Store
 
 ### Admin panel
 
@@ -162,7 +207,7 @@ Screen visual parity table is marked done in `Mobile_Concept_Port.md` (last pass
 
 ### Step 3 status
 
-**Concept screens and patient APIs are largely in.** Remaining work is platform/ops polish (iOS RTC, push/LLM config, flags, release verification), not greenfield features.
+**Concept screens and patient APIs are largely in.** Device coverage is broader than UI parity: Android is ahead of iOS for video; BLE E580/E585 path exists; Y6 and full HBand SDK still open. Remaining work is phone/OS verification, iOS Agora, push config, flags, and store packaging.
 
 ---
 
@@ -200,7 +245,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
 | **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient MVP |
-| **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; release / platform gaps |
+| **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---
 
@@ -208,8 +253,13 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 | Doc | Use for |
 |-----|---------|
+| `raphcare-feature-checklist-partner.md` | Plain-language status for non-technical partners |
 | `Mobile_Concept_Port.md` | Tokens, route map, screen visual parity |
 | `Mobile_Release_Ready_Checklist.md` | Flags, quality bar, release backlog |
 | `09_Mobile_App_Guide.md` | Mobile structure, DI, config |
+| `11_Devices_BLE_E580_E585.md` | BLE bands (E580 / E585) |
+| `12_HBand_SDK_Integration.md` | HBand SDK binding path |
+| `13_Patient_Device_Packages_and_Fleet.md` | Y6 / E580 / E585 fleet SKUs |
+| `10_Agora_Twilio_Setup.md` | Telehealth RTC setup |
 | `02_Solution_Structure.md` | Project layout |
 | `06_Key_Workflows.md` | Workflow narratives (update when inpatient ships docs) |

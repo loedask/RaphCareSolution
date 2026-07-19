@@ -1,52 +1,57 @@
 ---
-description: Keep docs/raphcare-feature-checklist.md updated when API, admin, or mobile features change
+description: Keep feature checklists (engineering + partner) and their PDFs updated
 alwaysApply: true
 ---
 
 # RaphCare Feature Checklist Updates
 
-Whenever you implement, finish, or materially change a feature on **API**, **Web admin**, **`RaphCare.Client`**, or **Mobile**, **update** `docs/raphcare-feature-checklist.md` in the same change set.
+Whenever you implement, finish, or materially change a feature on **API**, **Web admin**, **`RaphCare.Client`**, or **Mobile**, update **both** checklists in the same change set:
 
-**Always keep a PDF next to the markdown:** `docs/raphcare-feature-checklist.pdf`. Whenever the `.md` changes, regenerate the PDF in the same change set (see below). Do not leave the PDF stale.
+1. **Engineering:** `docs/raphcare-feature-checklist.md` (APIs, Client, file-level detail, device matrix).
+2. **Partner:** `docs/raphcare-feature-checklist-partner.md` (same steps, plain language, no jargon).
 
-## What to update
-
-1. Mark completed items `[x]`.
-2. Leave incomplete items `[ ]`.
-3. Adjust `(partial)` / `(blocked: ...)` / `(out of scope)` notes so they match reality.
-4. Set **Last reviewed** to today's date.
-5. If you invent a new feature area, add a checklist row under the right step (admin outpatient, inpatient, patient mobile, or staff APIs).
-6. Regenerate **`docs/raphcare-feature-checklist.pdf`** after any markdown edit:
+**Always keep PDFs next to the markdown.** Whenever either `.md` changes, regenerate PDFs in the same change set. Do not leave PDFs stale.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareFeatureChecklistPdf.ps1
 ```
 
-Styles live in `docs/raphcare-feature-checklist.pdf.css`; options in `docs/raphcare-feature-checklist.pdf.json`. Commit the updated `.pdf` with the `.md`.
+Optional: `-Which engineering` or `-Which partner`. Default is `all`.
 
-## Related docs (do not replace the checklist)
+Styles: `docs/raphcare-feature-checklist.pdf.css`. Configs: `docs/*.pdf.json` next to each markdown. Commit updated `.pdf` files with the `.md` files.
 
-- **Mobile visual parity:** `docs/Mobile_Concept_Port.md` (tokens, route map, screen table). Update when concept or MAUI UI changes.
-- **Mobile release gates:** `docs/Mobile_Release_Ready_Checklist.md` (flags, quality bar). Update when rollout or cross-cutting readiness changes.
-- **Layer order:** backend first, then Client, then Web / Mobile (see **raphcare-solution-layers**).
+## What to update
+
+1. Mark completed items `[x]` (engineering) or **Done** (partner tables).
+2. Leave incomplete items open; keep `(partial)` / `(blocked: ...)` / `(out of scope)` honest on the engineering doc.
+3. Mirror status on the partner doc with simple words (Done / Partial / Not started / Not for mobile).
+4. Set **Last reviewed** on **both** docs to today's date.
+5. If you invent a new feature area, add a row under the right step in **both** docs.
+6. When changing **phones / OS / wearables / push / video**, update the **Mobile device coverage** section (engineering) and the **Phones and devices** table (partner).
+
+## Related docs (do not replace the checklists)
+
+- **Mobile visual parity:** `docs/Mobile_Concept_Port.md`
+- **Mobile release gates:** `docs/Mobile_Release_Ready_Checklist.md`
+- **Wearables / fleet:** `docs/11_Devices_BLE_E580_E585.md`, `docs/12_HBand_SDK_Integration.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`
+- **Layer order:** backend first, then Client, then Web / Mobile (see **raphcare-solution-layers**)
 
 ## Step exit / polish
 
-Treat each numbered step's remaining open rows as the exit criteria for that step:
-
-- Do not treat a step as done while non-blocked product rows are still `[ ]`.
-- For **Mobile** screens, mark checklist / parity done only when the flow is usable **and** matches the concept for spacing, cards, empty states, and branding (see `Mobile_Concept_Port.md`). Do not mark done for a stub or under-construction page.
-- For **admin Web**, match existing `Pages/Admin/Hospitals/*` patterns (layout, alerts, empty states) in the same change set as the feature wire-up.
-- Move an item out of `(blocked: ...)` when the API (or Client) now exists and is wired.
+- Do not treat a step as done while non-blocked product rows are still open.
+- For **Mobile** screens, mark done only when the flow is usable and matches the concept (see `Mobile_Concept_Port.md`). Do not mark done for a stub page.
+- For **admin Web**, match existing `Pages/Admin/Hospitals/*` patterns in the same change set as the wire-up.
+- Move an item out of blocked when the API (or Client) now exists and is wired.
 
 ## Do / don't
 
-- Do update the checklist when the feature is usable end-to-end on the intended surface(s).
-- Do add Client + UI checklist rows when you add a new HTTP contract.
+- Do update **both** checklists when status changes.
+- Do add Client + UI rows when you add a new HTTP contract.
 - Don't mark admin or mobile UI done if only the API handler exists.
 - Don't skip the checklist update because the code change was "small."
-- Don't invent Mobile admin/inpatient rows unless product explicitly scopes a clinician app (checklist marks those out of scope today).
+- Don't invent Mobile admin/inpatient rows unless product scopes a clinician app.
+- Don't put class names, routes, or build commands in the **partner** doc.
 
 ## Copy
 
-Follow **human-sounding-copy**: no em dashes, no brochure tone in checklist notes or status lines.
+Follow **human-sounding-copy**: no em dashes, no brochure tone. Partner doc: short sentences a non-developer can skim.

@@ -1,32 +1,69 @@
-# Regenerates docs/raphcare-feature-checklist.pdf from the markdown source.
+# Regenerates feature checklist PDFs from markdown sources.
 # Requires Node.js (npx) and network on first run for md-to-pdf.
 param(
-    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path,
+    [ValidateSet("engineering", "partner", "all")]
+    [string]$Which = "all"
 )
 
 $ErrorActionPreference = "Stop"
 
-$md = Join-Path $RepoRoot "docs\raphcare-feature-checklist.md"
-$pdf = Join-Path $RepoRoot "docs\raphcare-feature-checklist.pdf"
-$config = Join-Path $RepoRoot "docs\raphcare-feature-checklist.pdf.json"
+$docs = Join-Path $RepoRoot "docs"
 
-if (-not (Test-Path $md)) {
-    throw "Checklist markdown not found: $md"
-}
-if (-not (Test-Path $config)) {
-    throw "PDF config not found: $config"
-}
+function Export-ChecklistPdf {
+    param(
+        [Parameter(Mandatory = $true)][string]$BaseName
+    )
 
-Push-Location (Join-Path $RepoRoot "docs")
-try {
-    npx --yes md-to-pdf "raphcare-feature-checklist.md" --config-file "raphcare-feature-checklist.pdf.json"
+    $md = Join-Path $docs "$BaseName.md"
+    $pdf = Join-Path $docs "$BaseName.pdf"
+    $config = Join-Path $docs "$BaseName.pdf.json"
+    $tempMd = Join-Path $docs "$BaseName.__export__.md"
+    $tempPdf = Join-Path $docs "$BaseName.__export__.pdf"
 
-    if (-not (Test-Path $pdf)) {
-        throw "PDF was not created at $pdf"
+    if (-not (Test-Path $md)) {
+        throw "Checklist markdown not found: $md"
+    }
+    if (-not (Test-Path $config)) {
+        throw "PDF config not found: $config"
     }
 
-    Write-Host "Wrote $pdf"
+    Copy-Item -Path $md -Destination $tempMd -Force
+
+    Push-Location $docs
+    try {
+        npx --yes md-to-pdf "$BaseName.__export__.md" --config-file "$BaseName.pdf.json"
+        if ($LASTEXITCODE -ne 0) {
+            throw "md-to-pdf failed for $BaseName (exit $LASTEXITCODE)"
+        }
+        if (-not (Test-Path $tempPdf)) {
+            throw "PDF was not created at $tempPdf"
+        }
+
+        try {
+            Move-Item -Path $tempPdf -Destination $pdf -Force
+        }
+        catch {
+            $fallback = Join-Path $docs "$BaseName.pdf.new"
+            Move-Item -Path $tempPdf -Destination $fallback -Force
+            throw "Could not overwrite $pdf (file may be open in a viewer). Fresh PDF saved as $fallback. Close the old PDF, replace it with the .pdf.new file, then delete .pdf.new."
+        }
+
+        Write-Host "Wrote $pdf"
+    }
+    finally {
+        Pop-Location
+        Remove-Item -Path $tempMd -Force -ErrorAction SilentlyContinue
+        # leave tempPdf only if move failed
+    }
 }
-finally {
-    Pop-Location
+
+$targets = switch ($Which) {
+    "engineering" { @("raphcare-feature-checklist") }
+    "partner" { @("raphcare-feature-checklist-partner") }
+    default { @("raphcare-feature-checklist", "raphcare-feature-checklist-partner") }
+}
+
+foreach ($name in $targets) {
+    Export-ChecklistPdf -BaseName $name
 }
