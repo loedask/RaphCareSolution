@@ -165,7 +165,7 @@ Use this path to verify **on-demand video** end-to-end on an **Android** emulato
 
 ### 6.1 API
 
-1. Ensure **`AgoraRtc:AppId`** and **`AppCertificate`** are set in **`RaphCare.API/appsettings.json`** (or User Secrets).
+1. Ensure **`AgoraRtc:AppId`** and **`AppCertificate`** are set in **`RaphCare.API/appsettings.json`** (or User Secrets). Optional smoke: **`tools/verify-agora-rtc-config.ps1`** (mints a token; does not print secrets).
 2. Run the API in **Development** so EF migrations apply (includes demo clinic/provider seeding and telehealth tables).
 3. Confirm Swagger shows **`POST /api/patient/telehealth/sessions/request`**.
 

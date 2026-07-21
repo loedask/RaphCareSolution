@@ -6,13 +6,15 @@
 
 ## High-level summary of changes
 
-Inpatient lifecycle completed in admin (capacity edit/delete, maintenance, transfer, admission history). Staff mental-health assessments persisted; reporting dashboard snapshot seeded. Mobile push device registration wired for demos; admin topbar search enabled. Companion docs updated for inpatient tables and workflows.
+Inpatient lifecycle completed in admin (capacity edit/delete, maintenance, transfer, admission history). Staff mental-health assessments persisted; reporting dashboard snapshot seeded. Mobile push device registration wired for demos; admin topbar search enabled. Y6 emergency events on admin patient chart. Agora server token path verified (Crc32.NET fix + smoke script). Companion docs updated.
 
 ## Modules modified
 
-- **RaphCare.API / Application / Client / Web:** Admin inpatient update/delete/status/transfer/history endpoints and UI.
+- **RaphCare.API / Application / Client / Web:** Admin inpatient update/delete/status/transfer/history endpoints and UI; Y6 emergency events on admin patient chart.
 - **RaphCare.Persistence:** MentalHealthAssessments migration; ClinicalSeeder inpatient capacity + demo patient/assessment; ReportingSeeder dashboard snapshot.
+- **RaphCare.Infrastructure:** Explicit **Crc32.NET** reference for Agora token minting.
 - **RaphCare.Mobile:** Push registration service; iOS Agora session scaffolding.
+- **tools:** `verify-agora-rtc-config.ps1` Agora token smoke.
 
 ## Database changes
 

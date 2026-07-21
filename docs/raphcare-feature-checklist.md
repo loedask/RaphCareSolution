@@ -161,8 +161,9 @@ Phones / OS targets:
 Telehealth video on device:
 
 - [x] Android in-call UI + Agora RTC wiring
+- [x] API Agora token mint verified (`tools/verify-agora-rtc-config.ps1`)
 - [ ] iOS AgoraRtcKit (xcframework) wiring `(blocked / partial)`: see `docs/10_Agora_Twilio_Setup.md`
-- [ ] End-to-end video call on a real Android phone
+- [ ] End-to-end video call on a real Android phone `(manual)`: server token OK; needs camera device — see `docs/10_Agora_Twilio_Setup.md` §2.7
 - [ ] End-to-end video call on a real iPhone `(blocked: iOS Agora)`
 
 Push notifications on device:

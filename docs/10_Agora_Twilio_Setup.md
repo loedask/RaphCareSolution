@@ -163,6 +163,18 @@ If Agora is **not** configured on the server, join info may still return **AppId
 
 ### 2.7 Testing Agora end-to-end
 
+**Server token smoke (automated):**
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-agora-rtc-config.ps1
+```
+
+Confirms **`AgoraRtc`** is set and **`AgoraRtcTokenService`** can mint a token (does **not** print secrets). Requires the **`Crc32.NET`** package on **Infrastructure** (AgoraDynamicKey dependency that the NuGet package does not declare).
+
+**Verified (2026-07-21):** API config + token mint path **PASS**. Dual-participant Android video still needs a device/emulator with camera (manual).
+
+**Device E2E (manual):**
+
 1. Configure **AgoraRtc** on the API and deploy or run locally with secrets.
 2. Ensure a **telehealth session** exists for the patient and **join info** returns a non-empty **RtcToken** and **`RtcConfigured: true`**.
 3. Run the **Android** app, open **Care & telehealth**, start video for that session, and verify local preview and (with a second participant or Agora’s sample) remote video.
@@ -189,8 +201,9 @@ If Agora is **not** configured on the server, join info may still return **AppId
 **Agora**
 
 - [ ] RTC project created; **App ID** and **App Certificate** copied.
-- [ ] **`AgoraRtc`** section set on the API; certificate **never** in mobile repo.
-- [ ] API returns join info with **`RtcConfigured`** and token for a test session.
+- [x] **`AgoraRtc`** section set on the API; certificate **never** in mobile repo.
+- [x] API token mint smoke (`tools/verify-agora-rtc-config.ps1`) — verified 2026-07-21.
+- [ ] API returns join info with **`RtcConfigured`** and token for a test session (device/API running).
 - [ ] Android app tested on device/emulator with camera.
 
 ---

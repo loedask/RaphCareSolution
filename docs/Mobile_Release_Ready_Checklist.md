@@ -64,7 +64,7 @@ Use the **route ↔ MAUI** table in **`Mobile_Concept_Port.md`** as the spine. E
 
 Use this as a reminder list; close each item or mark **N/A** with a short rationale in your release notes.
 
-- **Telehealth RTC:** Android Agora vs **iOS / other platforms** (`ITelehealthRtcSession` registration in **`MobileServiceCollectionExtensions`**). iOS still needs **AgoraRtcKit** (xcframework) wiring—see **`docs/10_Agora_Twilio_Setup.md`**.
+- **Telehealth RTC:** Android Agora vs **iOS / other platforms** (`ITelehealthRtcSession` registration in **`MobileServiceCollectionExtensions`**). API token path verified via **`tools/verify-agora-rtc-config.ps1`**. iOS still needs **AgoraRtcKit** (xcframework) wiring—see **`docs/10_Agora_Twilio_Setup.md`**.
 - **AI assistant:** When **`PatientAssistant`** (`AzureOpenAiEndpoint`, `AzureOpenAiApiKey`, `AzureOpenAiDeployment`) is set in API config, **`AIService`** calls Azure OpenAI chat; otherwise **`PlaceholderReply`** is used.
 - **Push:** When **`FirebasePush:ServiceAccountJsonPath`** points to a valid Firebase service-account JSON file, **`FirebasePatientPushNotificationSender`** sends FCM to tokens from **`PatientPushDevices`**; otherwise **`NoOpPatientPushNotificationSender`** runs.
 - **Devices:** Vitals sync to API; **offline queue** — **`IVitalsSyncOutbox`** / **`FileVitalsSyncOutbox`** (JSON under app data, max 50 batches) retries on next Devices visit or after a successful sync.
