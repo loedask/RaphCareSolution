@@ -60,9 +60,38 @@ public sealed class PatientDeviceEmergencyEventViewModel
     public string? CaregiverNotificationSummary { get; set; }
 }
 
+/// <summary>Clinic-wide emergency row (<c>api/clinical/emergency-events</c>).</summary>
+public sealed class ClinicDeviceEmergencyEventViewModel
+{
+    public Guid Id { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public Guid DeviceId { get; set; }
+    public string SerialNumber { get; set; } = string.Empty;
+    public string Model { get; set; } = string.Empty;
+    public string EventType { get; set; } = string.Empty;
+    public DateTime OccurredAtUtc { get; set; }
+    public DateTime ReceivedAtUtc { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public double? HorizontalAccuracyMeters { get; set; }
+    public string? ExternalCorrelationId { get; set; }
+    public bool CaregiversNotified { get; set; }
+    public DateTime? CaregiversNotifiedAtUtc { get; set; }
+    public string? CaregiverNotificationSummary { get; set; }
+}
+
 public sealed class PagedPatientDeviceEmergencyEventsViewModel
 {
     public IReadOnlyList<PatientDeviceEmergencyEventViewModel> Items { get; set; } = [];
+    public int TotalCount { get; set; }
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
+}
+
+public sealed class PagedClinicDeviceEmergencyEventsViewModel
+{
+    public IReadOnlyList<ClinicDeviceEmergencyEventViewModel> Items { get; set; } = [];
     public int TotalCount { get; set; }
     public int PageNumber { get; set; }
     public int PageSize { get; set; }

@@ -99,7 +99,7 @@ What patients see on Android / iPhone.
 | Weather and lifestyle pushes to the watch | Not for clinical v1 | Watch needs an app for weather; not a patient vital |
 | Full vendor band SDK (HBand) on Android | Partial | Download libs + app bridge in place; hardware prove-out next |
 | Full vendor band SDK on iPhone | Not started | Android first |
-| **Y6 Pro** emergency 4G watch flow | Partial | Webhook + SMS + **clinic patient chart** events; OEM mapping / push alerts still future |
+| **Y6 Pro** emergency 4G watch flow | Partial | Webhook + SMS + **clinic patient chart** + hospital **Devices** emergency board; OEM mapping / push alerts still future |
 | Windows PC build of the app | Not for BLE | Bluetooth patient devices are for phones, not the Windows target |
 
 **Wearable feature list (survives changing watch models):** `docs/14_Wearable_Capability_Catalog.md`

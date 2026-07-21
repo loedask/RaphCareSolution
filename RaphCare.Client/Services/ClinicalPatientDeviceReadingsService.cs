@@ -84,6 +84,32 @@ public sealed class ClinicalPatientDeviceReadingsService(HttpClient httpClient)
         });
     }
 
+    public async Task<Response<PagedClinicDeviceEmergencyEventsViewModel>> GetClinicEmergencyEventsAsync(
+        int pageNumber = 1,
+        int pageSize = 20,
+        DateTime? occurredFromUtc = null,
+        DateTime? occurredToUtc = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = BuildEmergencyQuery(pageNumber, pageSize, occurredFromUtc, occurredToUtc);
+        var result = await GetAsync<PagedApiResult<ClinicEmergencyEventDto>>(
+                $"api/Clinical/emergency-events{query}",
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PagedClinicDeviceEmergencyEventsViewModel>.Failure(result.ErrorMessage ?? "Could not load events.", result.StatusCode);
+
+        var dto = result.Data;
+        return Response<PagedClinicDeviceEmergencyEventsViewModel>.Success(new PagedClinicDeviceEmergencyEventsViewModel
+        {
+            Items = (dto.Items ?? Array.Empty<ClinicEmergencyEventDto>()).Select(MapClinicEmergency).ToList(),
+            TotalCount = dto.TotalCount,
+            PageNumber = dto.PageNumber,
+            PageSize = dto.PageSize
+        });
+    }
+
     private static string BuildQuery(int pageNumber, int pageSize, string? readingType, DateTime? from, DateTime? to)
     {
         var parts = new List<string>
@@ -172,6 +198,27 @@ public sealed class ClinicalPatientDeviceReadingsService(HttpClient httpClient)
             CaregiverNotificationSummary = d.CaregiverNotificationSummary
         };
 
+    private static ClinicDeviceEmergencyEventViewModel MapClinicEmergency(ClinicEmergencyEventDto d) =>
+        new()
+        {
+            Id = d.Id,
+            PatientId = d.PatientId,
+            PatientName = string.IsNullOrWhiteSpace(d.PatientName) ? "Patient" : d.PatientName.Trim(),
+            DeviceId = d.DeviceId,
+            SerialNumber = d.SerialNumber ?? string.Empty,
+            Model = d.Model ?? string.Empty,
+            EventType = d.EventType ?? string.Empty,
+            OccurredAtUtc = d.OccurredAtUtc,
+            ReceivedAtUtc = d.ReceivedAtUtc,
+            Latitude = d.Latitude,
+            Longitude = d.Longitude,
+            HorizontalAccuracyMeters = d.HorizontalAccuracyMeters,
+            ExternalCorrelationId = d.ExternalCorrelationId,
+            CaregiversNotified = d.CaregiversNotified,
+            CaregiversNotifiedAtUtc = d.CaregiversNotifiedAtUtc,
+            CaregiverNotificationSummary = d.CaregiverNotificationSummary
+        };
+
     private sealed class DeviceReadingDto
     {
         public Guid Id { get; set; }
@@ -205,6 +252,26 @@ public sealed class ClinicalPatientDeviceReadingsService(HttpClient httpClient)
     private sealed class EmergencyEventDto
     {
         public Guid Id { get; set; }
+        public Guid DeviceId { get; set; }
+        public string? SerialNumber { get; set; }
+        public string? Model { get; set; }
+        public string? EventType { get; set; }
+        public DateTime OccurredAtUtc { get; set; }
+        public DateTime ReceivedAtUtc { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public double? HorizontalAccuracyMeters { get; set; }
+        public string? ExternalCorrelationId { get; set; }
+        public bool CaregiversNotified { get; set; }
+        public DateTime? CaregiversNotifiedAtUtc { get; set; }
+        public string? CaregiverNotificationSummary { get; set; }
+    }
+
+    private sealed class ClinicEmergencyEventDto
+    {
+        public Guid Id { get; set; }
+        public Guid PatientId { get; set; }
+        public string? PatientName { get; set; }
         public Guid DeviceId { get; set; }
         public string? SerialNumber { get; set; }
         public string? Model { get; set; }

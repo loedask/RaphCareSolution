@@ -195,7 +195,7 @@ Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_P
 - [ ] ECG / PPG capture + sync `(not started)`: domain `ECGReading` exists; no patient sync / BLE yet
 - [ ] Glucose / body composition / Health Glance from band `(not started)`: gate clinical use; see guardrails in `docs/14`
 - [ ] Weather / companion pushes to watch `(out of scope for clinical v1)` unless product expands lifestyle parity
-- [ ] Y6 Pro (4G SOS / fall / emergency fleet workflow) end-to-end in app `(partial / product path)`: fleet doc exists; app vertical still thinner than E580/E585 BLE path
+- [ ] Y6 Pro (4G SOS / fall / emergency fleet workflow) end-to-end in app `(partial / product path)`: webhook + SMS + clinic admin UI (patient chart + hospital Devices board); OEM mapping / push alerts / full app vertical still open
 - [ ] Clinic-facing view of patient device readings beyond admin devices list `(partial)`
 
 Permissions / hardware UX:
@@ -234,6 +234,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 - [x] `AIController`, `ReportingController`
 - [x] FHIR export (`api/fhir`)
 - [x] Standalone emergency webhook
+- [x] Clinic admin surfaces emergency events (patient chart + hospital Devices board)
 - [ ] Staff mental-health assessments persistence `(partial)`: list exists; real store TBD
 - [ ] Reporting depth / real dashboards beyond placeholders `(partial)` as product defines
 
