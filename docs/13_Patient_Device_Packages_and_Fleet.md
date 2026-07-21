@@ -50,13 +50,14 @@ Patient falls or triggers SOS
 
 - **RaphCare SafeCare Plan** (or “Emergency Monitoring Package”)  
 - Includes: Y6 Pro emergency watch, SOS monitoring, fall detection, location tracking, emergency call routing.
+- **Clinic visibility:** Admin patient chart (`/admin/hospitals/{id}/patients/{patientId}`) lists emergency events from `GET api/clinical/patients/{patientId}/emergency-events` (requires `X-Clinic-Id`).
 
 ### Engineering status in this repository
 
 | Area | Status |
 |------|--------|
 | **Mobile BLE vertical** | **Out of scope** — Y6 Pro is **not** an E580/E585 BLE bracelet; it does not use the same in-app BLE scan/connect flow. |
-| **Backend ingestion (Vertical 7)** | **Implemented (MVP)** — **`POST api/integrations/standalone-emergency/events`** (anonymous + HMAC when `StandaloneEmergency:WebhookSharedSecret` is set). JSON maps device by **`serialNumber`** to **`Devices`**, requires an **active `DeviceAssignment`**, persists **`DeviceEmergencyEvents`**, sends **SMS** to patient **`EmergencyContact`** phones via **`ISmsService`** (Twilio when configured). Staff: **`GET api/clinical/patients/{patientId}/emergency-events`**. OEM-specific payload mapping and push/in-app clinic alerts remain **future** work. |
+| **Backend ingestion (Vertical 7)** | **Implemented (MVP)** — **`POST api/integrations/standalone-emergency/events`** (anonymous + HMAC when `StandaloneEmergency:WebhookSharedSecret` is set). JSON maps device by **`serialNumber`** to **`Devices`**, requires an **active `DeviceAssignment`**, persists **`DeviceEmergencyEvents`**, sends **SMS** to patient **`EmergencyContact`** phones via **`ISmsService`** (Twilio when configured). Staff: **`GET api/clinical/patients/{patientId}/emergency-events`**; **admin patient chart** lists those events. OEM-specific payload mapping and push/in-app clinic alerts remain **future** work. |
 | **Documentation** | This doc + **`docs/08_External_Integrations.md`**; configure secrets in **`StandaloneEmergency`** (see API `appsettings.Development.json` sample). |
 
 ---

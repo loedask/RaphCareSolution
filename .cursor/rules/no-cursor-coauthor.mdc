@@ -1,11 +1,17 @@
 ---
-description: Prevent Cursor attribution in Git commits
+description: Never attribute Git commits to Cursor as author or co-author
 alwaysApply: true
 ---
 
-# Git Commit Attribution
+# No Cursor co-author
 
-- Never add Cursor, Cursor Agent, or any AI tool as a commit author or co-author.
-- Never add `Co-authored-by: Cursor <cursoragent@cursor.com>` or similar AI attribution to commit messages.
-- Before completing a commit or release, verify the resulting commit message contains no Cursor or AI attribution.
-- Preserve only human authorship information explicitly configured by the repository owner.
+- Never mention Cursor as a commit author or co-author.
+- Never add this trailer (or any variant) to commit messages:
+
+```
+Co-authored-by: Cursor <cursoragent@cursor.com>
+```
+
+- Also forbid: `Co-authored-by: Cursor Agent`, `cursoragent@cursor.com`, or any other AI/Cursor attribution line.
+- If a tool or hook injects Cursor co-author text, remove it before finishing the commit.
+- Preserve only human authorship configured by the repository owner.

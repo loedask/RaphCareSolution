@@ -1,6 +1,7 @@
 @page "/admin/hospitals/{ClinicId:guid}/patients/{PatientId:guid}"
 @layout AdminLayout
 @using RaphCare.Domain.Common
+@using RaphCare.Client.Models.Clinical
 @inject NavigationManager Navigation
 
 <PageTitle>@(_patient is null ? "Patient" : $"{_patient.FirstName} {_patient.LastName}") — RaphCare Admin</PageTitle>
@@ -171,6 +172,76 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
+                    <p class="admin-page-eyebrow">Y6 / 4G emergency</p>
+                    <h2>Emergency events</h2>
+                    <p class="admin-page-lead">SOS, fall, and other standalone emergency alerts for this patient.</p>
+                </div>
+                <span class="admin-progress-pill">@_emergencyTotal event@(_emergencyTotal == 1 ? "" : "s")</span>
+            </header>
+            <div class="admin-page-card-body">
+                @if (_loadingEmergencies)
+                {
+                    <p class="text-muted">Loading emergency events…</p>
+                }
+                else if (!string.IsNullOrEmpty(_emergencyError))
+                {
+                    <div class="alert alert-error">@_emergencyError</div>
+                }
+                else if (_emergencyEvents.Count == 0)
+                {
+                    <p class="text-muted">No emergency events recorded for this patient at this hospital.</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Occurred</th>
+                                    <th>Type</th>
+                                    <th>Device</th>
+                                    <th>Location</th>
+                                    <th>Caregivers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ev in _emergencyEvents)
+                                {
+                                    <tr>
+                                        <td>@FormatLocal(ev.OccurredAtUtc)</td>
+                                        <td><span class="badge badge-error">@ev.EventType</span></td>
+                                        <td>@(string.IsNullOrWhiteSpace(ev.Model) ? ev.SerialNumber : $"{ev.Model} · {ev.SerialNumber}")</td>
+                                        <td>@FormatLocation(ev)</td>
+                                        <td>
+                                            @if (ev.CaregiversNotified)
+                                            {
+                                                <span title="@(ev.CaregiverNotificationSummary ?? "")">Notified @(ev.CaregiversNotifiedAtUtc is null ? "" : FormatLocal(ev.CaregiversNotifiedAtUtc.Value))</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">—</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (_emergencyTotal > _emergencyEvents.Count)
+                    {
+                        <div class="admin-page-actions">
+                            <button type="button" class="btn btn-secondary" disabled="@_loadingEmergencies" @onclick="LoadMoreEmergenciesAsync">
+                                Load more (@_emergencyEvents.Count of @_emergencyTotal)
+                            </button>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="admin-page-card">
+            <header class="admin-page-card-head">
+                <div>
                     <p class="admin-page-eyebrow">Clinical</p>
                     <h2>Visit vitals</h2>
                     <p class="admin-page-lead">Vitals recorded during encounters at this hospital.</p>
@@ -326,17 +397,24 @@
     [Parameter] public Guid PatientId { get; set; }
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicalPatientDeviceReadingsService DeviceReadingsService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private bool _loading = true;
+    private bool _loadingEmergencies;
     private bool _revoking;
     private bool _isAdministrator;
     private string? _error;
     private string? _actionError;
+    private string? _emergencyError;
     private string _clinicName = "this hospital";
     private string _clinicTimeZone = "UTC";
     private string _timeZoneLabel = "hospital time";
     private ClinicPatientDetail? _patient;
+    private List<PatientDeviceEmergencyEventViewModel> _emergencyEvents = [];
+    private int _emergencyTotal;
+    private int _emergencyPage = 1;
+    private const int EmergencyPageSize = 20;
 
     private string BackUrl => $"/admin/hospitals/{ClinicId}?tab=patients";
 
@@ -356,6 +434,8 @@
         }
 
         await LoadPatientAsync();
+        if (_patient is not null)
+            await LoadEmergenciesAsync(reset: true);
     }
 
     private async Task LoadPatientAsync()
@@ -371,8 +451,53 @@
             _error = response.ErrorMessage ?? "Could not load patient.";
     }
 
+    private async Task LoadEmergenciesAsync(bool reset)
+    {
+        if (reset)
+        {
+            _emergencyPage = 1;
+            _emergencyEvents = [];
+            _emergencyTotal = 0;
+        }
+
+        _loadingEmergencies = true;
+        _emergencyError = null;
+        var response = await DeviceReadingsService.GetEmergencyEventsAsync(
+            PatientId, _emergencyPage, EmergencyPageSize);
+        _loadingEmergencies = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _emergencyError = response.ErrorMessage ?? "Could not load emergency events.";
+            return;
+        }
+
+        if (reset)
+            _emergencyEvents = response.Data.Items.ToList();
+        else
+            _emergencyEvents.AddRange(response.Data.Items);
+
+        _emergencyTotal = response.Data.TotalCount;
+    }
+
+    private async Task LoadMoreEmergenciesAsync()
+    {
+        _emergencyPage++;
+        await LoadEmergenciesAsync(reset: false);
+    }
+
     private string FormatLocal(DateTime utc) =>
         ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private static string FormatLocation(PatientDeviceEmergencyEventViewModel ev)
+    {
+        if (ev.Latitude is null || ev.Longitude is null)
+            return "—";
+        var coords = $"{ev.Latitude:0.#####}, {ev.Longitude:0.#####}";
+        if (ev.HorizontalAccuracyMeters is { } acc)
+            return $"{coords} (±{acc:0} m)";
+        return coords;
+    }
 
     private static string FormatDeviceValue(ClinicPatientDeviceReadingSummary reading)
     {
