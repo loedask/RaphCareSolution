@@ -78,7 +78,7 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 - [x] Transfer patient between beds
 - [x] Admission history / get-by-id
 - [x] Soft-delete or archive capacity
-- [ ] Demo seed sample wards / beds `(optional)`
+- [x] Demo seed sample wards / beds `(optional)`
 
 ### Client
 
@@ -104,14 +104,14 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ### Docs
 
-- [ ] `docs/03_Domain_Modules.md`: Ward / Room / Bed / InpatientAdmission
-- [ ] `docs/05_Database_Design.md`: inpatient tables
-- [ ] `docs/06_Key_Workflows.md`: admit / discharge
-- [ ] `docs/00_Change_Log.md`: inpatient entry
+- [x] `docs/03_Domain_Modules.md`: Ward / Room / Bed / InpatientAdmission
+- [x] `docs/05_Database_Design.md`: inpatient tables
+- [x] `docs/06_Key_Workflows.md`: admit / discharge
+- [x] `docs/00_Change_Log.md`: inpatient entry
 
 ### Step 2 status
 
-**Lifecycle complete on API → Client → Web** (update/deactivate/delete capacity, maintenance, transfer, history, discharge notes, patient search). Optional: demo seed + companion docs. Do not start clinician Mobile for this until product asks for it.
+**Lifecycle complete on API → Client → Web** (update/deactivate/delete capacity, maintenance, transfer, history, discharge notes, patient search). Demo seed + companion docs done. Do not start clinician Mobile for this until product asks for it.
 
 ---
 
@@ -244,7 +244,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 - [x] `RaphCare.Client` + `AddRaphCareClient` for Web and Mobile
 - [x] Dual auth: Entra JWT (staff) + patient OTP / email JWT
 - [x] MPI / patient merge pipeline (see audit docs)
-- [ ] Inpatient documented in companion docs (Step 2 docs rows)
+- [x] Inpatient documented in companion docs (Step 2 docs rows)
 - [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API
 
 ---

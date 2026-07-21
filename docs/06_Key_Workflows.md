@@ -42,7 +42,8 @@
 ## Admin Flow
 
 - **Auth:** Admin uses Entra; role "Administrator" maps to RequireAdmin policy. TenantResolutionMiddleware requires X-Clinic-Id for /api/*.
-- **Seeding:** DatabaseSeeder runs IdentitySeeder (roles/permissions), ClinicalSeeder (demo clinic), InsuranceSeeder (sample plan), DeviceSeeder and BillingSeeder (placeholders). Invoked separately (e.g. at startup or via a one-off); not part of API request pipeline.
+- **Inpatient:** Admin opens `/admin/hospitals/{id}/inpatient`. Board shows occupancy; admins add/edit wards/rooms/beds, admit, transfer, set Maintenance, and discharge with optional notes. History via `GET …/admissions`.
+- **Seeding:** DatabaseSeeder runs IdentitySeeder (roles/permissions), ClinicalSeeder (demo clinic, telehealth provider, demo patient + MH assessment, inpatient facility/ward/room/beds), InsuranceSeeder (sample plan), DeviceSeeder and BillingSeeder (placeholders), ReportingSeeder (demo dashboard snapshot). Invoked separately (e.g. at startup or via a one-off); not part of API request pipeline.
 - **Reporting:** GET api/reporting/dashboard (clinicId, snapshotDate) returns dashboard data; handler uses GetDashboardSnapshotQuery; data from AIDbContext (DashboardSnapshots) and related aggregates.
 - **Migrations:** In Development, ApplyMigrationsAsync runs at API startup and applies all six DbContext migrations.
 

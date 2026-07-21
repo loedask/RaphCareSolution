@@ -2,6 +2,27 @@
 
 ## Date
 
+2026-07-21
+
+## High-level summary of changes
+
+Inpatient lifecycle completed in admin (capacity edit/delete, maintenance, transfer, admission history). Staff mental-health assessments persisted; reporting dashboard snapshot seeded. Mobile push device registration wired for demos; admin topbar search enabled. Companion docs updated for inpatient tables and workflows.
+
+## Modules modified
+
+- **RaphCare.API / Application / Client / Web:** Admin inpatient update/delete/status/transfer/history endpoints and UI.
+- **RaphCare.Persistence:** MentalHealthAssessments migration; ClinicalSeeder inpatient capacity + demo patient/assessment; ReportingSeeder dashboard snapshot.
+- **RaphCare.Mobile:** Push registration service; iOS Agora session scaffolding.
+
+## Database changes
+
+- **Clinical:** MentalHealthAssessments table; demo seed for Facility / Ward / Room / Beds when empty.
+- **AI:** Demo DashboardSnapshots row for demo clinic.
+
+---
+
+## Date
+
 2026-03-15
 
 ## High-level summary of changes
