@@ -19,8 +19,9 @@ public sealed class PatientPushRegistrationService(
     private readonly IAuthService _auth = auth;
     private readonly IPushDeviceTokenProvider _tokenProvider = tokenProvider;
     private readonly IPatientNotificationsService _notifications = notifications;
-    private readonly SemaphoreSlim _gate = new(1, 1);
+    private readonly object _sync = new();
     private string? _lastRegisteredToken;
+    private bool _inFlight;
 
     public async Task RegisterCurrentDeviceAsync(CancellationToken cancellationToken = default)
     {
@@ -30,15 +31,24 @@ public sealed class PatientPushRegistrationService(
         if (!await _auth.IsAuthenticatedAsync(cancellationToken).ConfigureAwait(false))
             return;
 
-        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        lock (_sync)
+        {
+            if (_inFlight)
+                return;
+            _inFlight = true;
+        }
+
         try
         {
             var token = await _tokenProvider.GetTokenAsync(cancellationToken).ConfigureAwait(false);
             if (token is null || string.IsNullOrWhiteSpace(token.Token))
                 return;
 
-            if (string.Equals(_lastRegisteredToken, token.Token, StringComparison.Ordinal))
-                return;
+            lock (_sync)
+            {
+                if (string.Equals(_lastRegisteredToken, token.Token, StringComparison.Ordinal))
+                    return;
+            }
 
             var response = await _notifications.RegisterPushDeviceAsync(
                 new RegisterPatientPushDeviceRequest
@@ -49,11 +59,15 @@ public sealed class PatientPushRegistrationService(
                 cancellationToken).ConfigureAwait(false);
 
             if (response.IsSuccess)
-                _lastRegisteredToken = token.Token;
+            {
+                lock (_sync)
+                    _lastRegisteredToken = token.Token;
+            }
         }
         finally
         {
-            _gate.Release();
+            lock (_sync)
+                _inFlight = false;
         }
     }
 }
