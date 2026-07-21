@@ -7,6 +7,13 @@ public sealed class CreateAdminClinicWardRequest
     public string? Code { get; set; }
 }
 
+public sealed class UpdateAdminClinicWardRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Code { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
 public sealed class CreateAdminClinicRoomRequest
 {
     public Guid WardId { get; set; }
@@ -14,10 +21,28 @@ public sealed class CreateAdminClinicRoomRequest
     public string? RoomType { get; set; }
 }
 
+public sealed class UpdateAdminClinicRoomRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? RoomType { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
 public sealed class CreateAdminClinicBedRequest
 {
     public Guid RoomId { get; set; }
     public string Label { get; set; } = string.Empty;
+}
+
+public sealed class UpdateAdminClinicBedRequest
+{
+    public string Label { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class SetAdminClinicBedStatusRequest
+{
+    public string Status { get; set; } = string.Empty;
 }
 
 public sealed class AdmitAdminClinicPatientRequest
@@ -30,5 +55,11 @@ public sealed class AdmitAdminClinicPatientRequest
 
 public sealed class DischargeAdminClinicAdmissionRequest
 {
+    public string? Notes { get; set; }
+}
+
+public sealed class TransferAdminClinicAdmissionRequest
+{
+    public Guid TargetBedId { get; set; }
     public string? Notes { get; set; }
 }

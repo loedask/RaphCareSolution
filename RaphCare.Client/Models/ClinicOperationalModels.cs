@@ -188,6 +188,7 @@ public sealed class ClinicInpatientBoard
     public int TotalBeds { get; set; }
     public int AvailableBeds { get; set; }
     public int OccupiedBeds { get; set; }
+    public int MaintenanceBeds { get; set; }
     public int ActiveAdmissions { get; set; }
     public IReadOnlyList<ClinicWard> Wards { get; set; } = Array.Empty<ClinicWard>();
     public IReadOnlyList<ClinicAdmission> ActiveAdmissionsList { get; set; } = Array.Empty<ClinicAdmission>();
@@ -269,6 +270,45 @@ public sealed class AdmitPatientRequest
     public Guid BedId { get; set; }
     public string? Reason { get; set; }
     public string? Notes { get; set; }
+}
+
+public sealed class UpdateWardRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Code { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class UpdateRoomRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? RoomType { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class UpdateBedRequest
+{
+    public string Label { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class SetBedStatusRequest
+{
+    public string Status { get; set; } = string.Empty;
+}
+
+public sealed class TransferAdmissionRequest
+{
+    public Guid TargetBedId { get; set; }
+    public string? Notes { get; set; }
+}
+
+public sealed class PagedClinicAdmissions
+{
+    public IReadOnlyList<ClinicAdmission> Items { get; set; } = Array.Empty<ClinicAdmission>();
+    public int TotalCount { get; set; }
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
 }
 
 public sealed class ClinicTeleJoinInfo

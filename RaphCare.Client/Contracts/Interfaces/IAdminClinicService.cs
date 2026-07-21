@@ -42,10 +42,20 @@ public interface IAdminClinicService
     Task<Response<IReadOnlyList<ClinicDeviceListItem>>> GetDevicesAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicInpatientBoard>> GetInpatientBoardAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicWard>> CreateWardAsync(Guid clinicId, CreateWardRequest request, CancellationToken cancellationToken = default);
+    Task<Response<ClinicWard>> UpdateWardAsync(Guid clinicId, Guid wardId, UpdateWardRequest request, CancellationToken cancellationToken = default);
+    Task<Response<bool>> DeleteWardAsync(Guid clinicId, Guid wardId, CancellationToken cancellationToken = default);
     Task<Response<ClinicRoom>> CreateRoomAsync(Guid clinicId, CreateRoomRequest request, CancellationToken cancellationToken = default);
+    Task<Response<ClinicRoom>> UpdateRoomAsync(Guid clinicId, Guid roomId, UpdateRoomRequest request, CancellationToken cancellationToken = default);
+    Task<Response<bool>> DeleteRoomAsync(Guid clinicId, Guid roomId, CancellationToken cancellationToken = default);
     Task<Response<ClinicBed>> CreateBedAsync(Guid clinicId, CreateBedRequest request, CancellationToken cancellationToken = default);
+    Task<Response<ClinicBed>> UpdateBedAsync(Guid clinicId, Guid bedId, UpdateBedRequest request, CancellationToken cancellationToken = default);
+    Task<Response<ClinicBed>> SetBedStatusAsync(Guid clinicId, Guid bedId, string status, CancellationToken cancellationToken = default);
+    Task<Response<bool>> DeleteBedAsync(Guid clinicId, Guid bedId, CancellationToken cancellationToken = default);
     Task<Response<ClinicAdmission>> AdmitPatientAsync(Guid clinicId, AdmitPatientRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicAdmission>> DischargeAdmissionAsync(Guid clinicId, Guid admissionId, string? notes = null, CancellationToken cancellationToken = default);
+    Task<Response<ClinicAdmission>> TransferAdmissionAsync(Guid clinicId, Guid admissionId, TransferAdmissionRequest request, CancellationToken cancellationToken = default);
+    Task<Response<PagedClinicAdmissions>> GetAdmissionsAsync(Guid clinicId, int pageNumber = 1, int pageSize = 20, string? status = null, CancellationToken cancellationToken = default);
+    Task<Response<ClinicAdmission>> GetAdmissionByIdAsync(Guid clinicId, Guid admissionId, CancellationToken cancellationToken = default);
     Task<Response<ClinicTeleJoinInfo>> StartTeleSessionAsync(Guid clinicId, Guid appointmentId, CancellationToken cancellationToken = default);
     Task<Response<bool>> RevokePatientAccessAsync(Guid clinicId, Guid patientId, CancellationToken cancellationToken = default);
 }

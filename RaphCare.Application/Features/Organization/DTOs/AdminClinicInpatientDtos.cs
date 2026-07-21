@@ -6,6 +6,7 @@ public sealed class AdminClinicInpatientBoardDto
     public int TotalBeds { get; set; }
     public int AvailableBeds { get; set; }
     public int OccupiedBeds { get; set; }
+    public int MaintenanceBeds { get; set; }
     public int ActiveAdmissions { get; set; }
     public IReadOnlyList<AdminClinicWardDto> Wards { get; set; } = Array.Empty<AdminClinicWardDto>();
     public IReadOnlyList<AdminClinicAdmissionDto> ActiveAdmissionsList { get; set; } = Array.Empty<AdminClinicAdmissionDto>();

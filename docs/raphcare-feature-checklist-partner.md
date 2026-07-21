@@ -46,15 +46,15 @@ Overnight stays: set up rooms and beds, put a patient in a bed, discharge them.
 |------|--------|-----------------|
 | See bed board (how many free / full) | Done | Open Inpatient on a hospital in admin |
 | Add ward, room, bed | Done | Admins can create capacity |
-| Admit a patient to a bed | Done | Pick a patient and an available bed |
-| Discharge (free the bed) | Done | End an active stay |
-| Edit or remove wards / rooms / beds later | Not started | Create only for now |
-| Mark a bed "maintenance" | Not started | Status exists in the design, not in the screens yet |
-| Move a patient to another bed | Not started | |
-| Past admission history | Not started | Active stays only today |
+| Admit a patient to a bed | Done | Search patients and pick an available bed |
+| Discharge (free the bed) | Done | End an active stay with optional notes |
+| Edit or remove wards / rooms / beds later | Done | Edit, deactivate, or delete; archives if history exists |
+| Mark a bed "maintenance" | Done | Toggle Available ↔ Maintenance on free beds |
+| Move a patient to another bed | Done | Transfer on the active admissions board |
+| Past admission history | Done | Filterable history list with load more |
 | Same board in the **phone app** | Not for mobile | Unless we later build a clinician app |
 
-**Bottom line:** basic inpatient is usable in admin web. Richer bed management still to come.
+**Bottom line:** inpatient lifecycle is complete in admin web (capacity, maintenance, transfer, history).
 
 ---
 

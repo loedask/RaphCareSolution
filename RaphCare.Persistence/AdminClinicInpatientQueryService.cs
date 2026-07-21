@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
 
@@ -47,6 +48,7 @@ public sealed class AdminClinicInpatientQueryService(ClinicalDbContext clinicalD
         var allBeds = wards.SelectMany(w => w.Rooms).SelectMany(r => r.Beds).Where(b => b.IsActive).ToList();
         var available = allBeds.Count(b => b.Status == "Available");
         var occupied = allBeds.Count(b => b.Status == "Occupied");
+        var maintenance = allBeds.Count(b => b.Status == "Maintenance");
 
         return new AdminClinicInpatientBoardDto
         {
@@ -54,6 +56,7 @@ public sealed class AdminClinicInpatientQueryService(ClinicalDbContext clinicalD
             TotalBeds = allBeds.Count,
             AvailableBeds = available,
             OccupiedBeds = occupied,
+            MaintenanceBeds = maintenance,
             ActiveAdmissions = activeAdmissions.Count,
             Wards = wards.Select(w => new AdminClinicWardDto
             {
@@ -93,22 +96,90 @@ public sealed class AdminClinicInpatientQueryService(ClinicalDbContext clinicalD
                             }).ToList()
                     }).ToList()
             }).ToList(),
-            ActiveAdmissionsList = activeAdmissions.Select(a => new AdminClinicAdmissionDto
-            {
-                Id = a.Id,
-                PatientId = a.PatientId,
-                PatientName = a.Patient is null ? "Patient" : $"{a.Patient.FirstName} {a.Patient.LastName}".Trim(),
-                BedId = a.BedId,
-                BedLabel = a.Bed?.Label ?? "—",
-                RoomName = a.Bed?.Room?.Name ?? "—",
-                WardName = a.Bed?.Room?.Ward?.Name ?? "—",
-                FacilityName = a.Bed?.Room?.Ward?.Facility?.Name ?? "—",
-                AdmittedAt = a.AdmittedAt,
-                DischargedAt = a.DischargedAt,
-                Status = a.Status,
-                Reason = a.Reason,
-                Notes = a.Notes
-            }).ToList()
+            ActiveAdmissionsList = activeAdmissions.Select(MapAdmission).ToList()
         };
     }
+
+    public async Task<PagedResult<AdminClinicAdmissionDto>?> GetAdmissionsAsync(
+        Guid clinicId,
+        int pageNumber,
+        int pageSize,
+        string? status = null,
+        CancellationToken cancellationToken = default)
+    {
+        var clinicExists = await clinicalDbContext.Clinics
+            .AsNoTracking()
+            .AnyAsync(c => c.Id == clinicId && !c.IsDeleted, cancellationToken)
+            .ConfigureAwait(false);
+        if (!clinicExists)
+            return null;
+
+        var query = clinicalDbContext.InpatientAdmissions
+            .AsNoTracking()
+            .Where(a => a.ClinicId == clinicId);
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            var normalized = status.Trim();
+            query = query.Where(a => a.Status == normalized);
+        }
+
+        var total = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+
+        var items = await query
+            .Include(a => a.Patient)
+            .Include(a => a.Bed)
+                .ThenInclude(b => b.Room)
+                    .ThenInclude(r => r.Ward)
+                        .ThenInclude(w => w.Facility)
+            .OrderByDescending(a => a.AdmittedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return new PagedResult<AdminClinicAdmissionDto>
+        {
+            Items = items.Select(MapAdmission).ToList(),
+            TotalCount = total,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
+    public async Task<AdminClinicAdmissionDto?> GetAdmissionByIdAsync(
+        Guid clinicId,
+        Guid admissionId,
+        CancellationToken cancellationToken = default)
+    {
+        var admission = await clinicalDbContext.InpatientAdmissions
+            .AsNoTracking()
+            .Where(a => a.Id == admissionId && a.ClinicId == clinicId)
+            .Include(a => a.Patient)
+            .Include(a => a.Bed)
+                .ThenInclude(b => b.Room)
+                    .ThenInclude(r => r.Ward)
+                        .ThenInclude(w => w.Facility)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return admission is null ? null : MapAdmission(admission);
+    }
+
+    private static AdminClinicAdmissionDto MapAdmission(Domain.Clinical.InpatientAdmission a) => new()
+    {
+        Id = a.Id,
+        PatientId = a.PatientId,
+        PatientName = a.Patient is null ? "Patient" : $"{a.Patient.FirstName} {a.Patient.LastName}".Trim(),
+        BedId = a.BedId,
+        BedLabel = a.Bed?.Label ?? "—",
+        RoomName = a.Bed?.Room?.Name ?? "—",
+        WardName = a.Bed?.Room?.Ward?.Name ?? "—",
+        FacilityName = a.Bed?.Room?.Ward?.Facility?.Name ?? "—",
+        AdmittedAt = a.AdmittedAt,
+        DischargedAt = a.DischargedAt,
+        Status = a.Status,
+        Reason = a.Reason,
+        Notes = a.Notes
+    };
 }

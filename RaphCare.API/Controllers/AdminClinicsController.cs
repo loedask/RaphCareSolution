@@ -6,7 +6,17 @@ using RaphCare.Application.Features.Organization.Commands.AdmitAdminClinicPatien
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicBed;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicRoom;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicWard;
+using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicBed;
+using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicRoom;
+using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicWard;
 using RaphCare.Application.Features.Organization.Commands.DischargeAdminClinicAdmission;
+using RaphCare.Application.Features.Organization.Commands.SetAdminClinicBedStatus;
+using RaphCare.Application.Features.Organization.Commands.TransferAdminClinicAdmission;
+using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicBed;
+using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicRoom;
+using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicWard;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicAdmissionById;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicAdmissions;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicInpatientBoard;
 using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicAppointment;
 using RaphCare.Application.Features.Organization.Commands.SetAdminClinicProviderActive;
@@ -804,6 +814,196 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
                 AdmissionId = admissionId,
                 Notes = body?.Notes
             },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Update a ward.</summary>
+    [HttpPut("{id:guid}/wards/{wardId:guid}", Name = "UpdateAdminClinicWard")]
+    [ProducesResponseType(typeof(AdminClinicWardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateWard(
+        Guid id,
+        Guid wardId,
+        [FromBody] UpdateAdminClinicWardRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new UpdateAdminClinicWardCommand
+            {
+                ClinicId = id,
+                WardId = wardId,
+                Name = body.Name,
+                Code = body.Code,
+                IsActive = body.IsActive
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Delete or archive a ward (archives when admission history exists).</summary>
+    [HttpDelete("{id:guid}/wards/{wardId:guid}", Name = "DeleteAdminClinicWard")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteWard(Guid id, Guid wardId, CancellationToken cancellationToken)
+    {
+        var deleted = await mediator.Send(
+            new DeleteAdminClinicWardCommand { ClinicId = id, WardId = wardId },
+            cancellationToken);
+        return deleted ? NoContent() : NotFound();
+    }
+
+    /// <summary>Update a room.</summary>
+    [HttpPut("{id:guid}/rooms/{roomId:guid}", Name = "UpdateAdminClinicRoom")]
+    [ProducesResponseType(typeof(AdminClinicRoomDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateRoom(
+        Guid id,
+        Guid roomId,
+        [FromBody] UpdateAdminClinicRoomRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new UpdateAdminClinicRoomCommand
+            {
+                ClinicId = id,
+                RoomId = roomId,
+                Name = body.Name,
+                RoomType = body.RoomType,
+                IsActive = body.IsActive
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Delete or archive a room.</summary>
+    [HttpDelete("{id:guid}/rooms/{roomId:guid}", Name = "DeleteAdminClinicRoom")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteRoom(Guid id, Guid roomId, CancellationToken cancellationToken)
+    {
+        var deleted = await mediator.Send(
+            new DeleteAdminClinicRoomCommand { ClinicId = id, RoomId = roomId },
+            cancellationToken);
+        return deleted ? NoContent() : NotFound();
+    }
+
+    /// <summary>Update a bed label / active flag.</summary>
+    [HttpPut("{id:guid}/beds/{bedId:guid}", Name = "UpdateAdminClinicBed")]
+    [ProducesResponseType(typeof(AdminClinicBedDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateBed(
+        Guid id,
+        Guid bedId,
+        [FromBody] UpdateAdminClinicBedRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new UpdateAdminClinicBedCommand
+            {
+                ClinicId = id,
+                BedId = bedId,
+                Label = body.Label,
+                IsActive = body.IsActive
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Set bed status to Available or Maintenance.</summary>
+    [HttpPut("{id:guid}/beds/{bedId:guid}/status", Name = "SetAdminClinicBedStatus")]
+    [ProducesResponseType(typeof(AdminClinicBedDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetBedStatus(
+        Guid id,
+        Guid bedId,
+        [FromBody] SetAdminClinicBedStatusRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new SetAdminClinicBedStatusCommand
+            {
+                ClinicId = id,
+                BedId = bedId,
+                Status = body.Status
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Delete or archive a bed.</summary>
+    [HttpDelete("{id:guid}/beds/{bedId:guid}", Name = "DeleteAdminClinicBed")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteBed(Guid id, Guid bedId, CancellationToken cancellationToken)
+    {
+        var deleted = await mediator.Send(
+            new DeleteAdminClinicBedCommand { ClinicId = id, BedId = bedId },
+            cancellationToken);
+        return deleted ? NoContent() : NotFound();
+    }
+
+    /// <summary>Transfer an active admission to another available bed.</summary>
+    [HttpPost("{id:guid}/admissions/{admissionId:guid}/transfer", Name = "TransferAdminClinicAdmission")]
+    [ProducesResponseType(typeof(AdminClinicAdmissionDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> TransferAdmission(
+        Guid id,
+        Guid admissionId,
+        [FromBody] TransferAdminClinicAdmissionRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new TransferAdminClinicAdmissionCommand
+            {
+                ClinicId = id,
+                AdmissionId = admissionId,
+                TargetBedId = body.TargetBedId,
+                Notes = body.Notes
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Paged admission history for a hospital.</summary>
+    [HttpGet("{id:guid}/admissions", Name = "GetAdminClinicAdmissions")]
+    [ProducesResponseType(typeof(PagedResult<AdminClinicAdmissionDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAdmissions(
+        Guid id,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? status = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicAdmissionsQuery
+            {
+                ClinicId = id,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Status = status
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Get one admission by id.</summary>
+    [HttpGet("{id:guid}/admissions/{admissionId:guid}", Name = "GetAdminClinicAdmissionById")]
+    [ProducesResponseType(typeof(AdminClinicAdmissionDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAdmissionById(Guid id, Guid admissionId, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicAdmissionByIdQuery { ClinicId = id, AdmissionId = admissionId },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }

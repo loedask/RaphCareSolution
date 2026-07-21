@@ -73,29 +73,29 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 - [x] `POST {clinicId}/admissions` (admit; one active stay; bed Available -> Occupied)
 - [x] `POST {clinicId}/admissions/{id}/discharge` (free bed)
 - [x] `IAdminClinicInpatientQueryService` board aggregation
-- [ ] Update / deactivate / delete ward, room, bed
-- [ ] Set bed status to `Maintenance` (status exists on domain; unused in handlers)
-- [ ] Transfer patient between beds
-- [ ] Admission history / get-by-id
-- [ ] Soft-delete or archive capacity
+- [x] Update / deactivate / delete ward, room, bed
+- [x] Set bed status to `Maintenance` (status exists on domain; unused in handlers)
+- [x] Transfer patient between beds
+- [x] Admission history / get-by-id
+- [x] Soft-delete or archive capacity
 - [ ] Demo seed sample wards / beds `(optional)`
 
 ### Client
 
 - [x] `GetInpatientBoardAsync`, `CreateWard/Room/BedAsync`, `AdmitPatientAsync`, `DischargeAdmissionAsync`
 - [x] Models in `ClinicOperationalModels` (`ClinicInpatientBoard`, ward/room/bed/admission)
-- [ ] Client methods for update / maintenance / transfer `(blocked: API)`
+- [x] Client methods for update / maintenance / transfer / admission history
 
 ### Admin panel (Web)
 
 - [x] `/admin/hospitals/{id}/inpatient`: occupancy stats, add capacity, admit, active list + discharge, beds-by-ward map
 - [x] Nav link from hospital detail
-- [ ] Edit / delete / deactivate capacity UI `(blocked: API)`
-- [ ] Maintenance toggle UI `(blocked: API)`
-- [ ] Bed transfer UI `(blocked: API)`
-- [ ] Admission history / detail
-- [ ] Discharge notes field in UI `(partial)`: API accepts notes; UI may not expose them yet
-- [ ] Patient picker beyond first page (100) `(partial)`
+- [x] Edit / delete / deactivate capacity UI
+- [x] Maintenance toggle UI
+- [x] Bed transfer UI
+- [x] Admission history / detail
+- [x] Discharge notes field in UI
+- [x] Patient picker beyond first page (100) `(search + page size 50)`
 
 ### Mobile
 
@@ -111,7 +111,7 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ### Step 2 status
 
-**MVP done on API -> Client -> Web.** Remaining rows are capacity lifecycle, transfer, history, and docs. Do not start clinician Mobile for this until product asks for it.
+**Lifecycle complete on API → Client → Web** (update/deactivate/delete capacity, maintenance, transfer, history, discharge notes, patient search). Optional: demo seed + companion docs. Do not start clinician Mobile for this until product asks for it.
 
 ---
 
@@ -253,10 +253,10 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 | Surface | Primary owner | Status snapshot |
 |---------|---------------|-----------------|
-| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient MVP complete |
+| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient MVP |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

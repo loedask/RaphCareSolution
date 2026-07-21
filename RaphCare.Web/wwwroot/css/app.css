@@ -1083,7 +1083,17 @@ a:hover { text-decoration: underline; }
 .bed-chip small { font-weight: 500; font-size: 0.65rem; color: var(--rc-muted); margin-top: 0.15rem; max-width: 7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bed-chip-free { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
 .bed-chip-occupied { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+.bed-chip-maintenance { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
 .bed-chip-other { background: #f1f5f9; color: var(--rc-muted); }
+.bed-chip-wrap { display: flex; flex-direction: column; gap: 0.25rem; }
+.bed-chip-actions { flex-wrap: wrap; }
+.inpatient-ward-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.35rem; }
+.inpatient-actions { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.inpatient-action-panel { margin-top: 1rem; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 0.75rem; background: #f8fafc; }
+.inpatient-action-panel h3 { margin: 0 0 0.75rem; font-size: 1rem; }
+.inpatient-search-row { display: flex; gap: 0.5rem; align-items: center; }
+.inpatient-search-row .form-control { flex: 1; }
+.inpatient-checkbox { display: flex; align-items: center; gap: 0.5rem; margin-top: 1.6rem; }
 
 .verification-row { display: flex; gap: 0.5rem; }
 .verification-row .form-control { flex: 1; }

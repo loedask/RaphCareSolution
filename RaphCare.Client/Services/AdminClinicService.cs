@@ -1202,6 +1202,63 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicWard>> UpdateWardAsync(
+        Guid clinicId,
+        Guid wardId,
+        UpdateWardRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/wards/{wardId}", request, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can update wards.";
+                return Response<ClinicWard>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<WardDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicWard>.Failure("Could not update ward.");
+            return Response<ClinicWard>.Success(MapWard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicWard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<bool>> DeleteWardAsync(
+        Guid clinicId,
+        Guid wardId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .DeleteAsync($"api/admin/clinics/{clinicId}/wards/{wardId}", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Ward not found.", 404);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can delete wards.";
+                return Response<bool>.Failure(error, (int)response.StatusCode);
+            }
+            return Response<bool>.Success(true);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<ClinicRoom>> CreateRoomAsync(
         Guid clinicId,
         CreateRoomRequest request,
@@ -1230,6 +1287,63 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicRoom>> UpdateRoomAsync(
+        Guid clinicId,
+        Guid roomId,
+        UpdateRoomRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/rooms/{roomId}", request, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can update rooms.";
+                return Response<ClinicRoom>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<RoomDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicRoom>.Failure("Could not update room.");
+            return Response<ClinicRoom>.Success(MapRoom(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicRoom>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<bool>> DeleteRoomAsync(
+        Guid clinicId,
+        Guid roomId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .DeleteAsync($"api/admin/clinics/{clinicId}/rooms/{roomId}", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Room not found.", 404);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can delete rooms.";
+                return Response<bool>.Failure(error, (int)response.StatusCode);
+            }
+            return Response<bool>.Success(true);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<ClinicBed>> CreateBedAsync(
         Guid clinicId,
         CreateBedRequest request,
@@ -1255,6 +1369,95 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         catch (HttpRequestException)
         {
             return Response<ClinicBed>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicBed>> UpdateBedAsync(
+        Guid clinicId,
+        Guid bedId,
+        UpdateBedRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/beds/{bedId}", request, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can update beds.";
+                return Response<ClinicBed>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<BedDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicBed>.Failure("Could not update bed.");
+            return Response<ClinicBed>.Success(MapBed(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicBed>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicBed>> SetBedStatusAsync(
+        Guid clinicId,
+        Guid bedId,
+        string status,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/beds/{bedId}/status",
+                    new SetBedStatusRequest { Status = status },
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can change bed status.";
+                return Response<ClinicBed>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<BedDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicBed>.Failure("Could not update bed status.");
+            return Response<ClinicBed>.Success(MapBed(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicBed>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<bool>> DeleteBedAsync(
+        Guid clinicId,
+        Guid bedId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .DeleteAsync($"api/admin/clinics/{clinicId}/beds/{bedId}", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Bed not found.", 404);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can delete beds.";
+                return Response<bool>.Failure(error, (int)response.StatusCode);
+            }
+            return Response<bool>.Success(true);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -1310,6 +1513,102 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             }
             var dto = await response.Content.ReadFromJsonAsync<AdmissionDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
             if (dto is null) return Response<ClinicAdmission>.Failure("Could not discharge patient.");
+            return Response<ClinicAdmission>.Success(MapAdmission(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicAdmission>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicAdmission>> TransferAdmissionAsync(
+        Guid clinicId,
+        Guid admissionId,
+        TransferAdmissionRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/admissions/{admissionId}/transfer",
+                    request,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can transfer patients.";
+                return Response<ClinicAdmission>.Failure(error, (int)response.StatusCode);
+            }
+            var dto = await response.Content.ReadFromJsonAsync<AdmissionDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicAdmission>.Failure("Could not transfer patient.");
+            return Response<ClinicAdmission>.Success(MapAdmission(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicAdmission>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<PagedClinicAdmissions>> GetAdmissionsAsync(
+        Guid clinicId,
+        int pageNumber = 1,
+        int pageSize = 20,
+        string? status = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var query = $"api/admin/clinics/{clinicId}/admissions?pageNumber={pageNumber}&pageSize={pageSize}";
+            if (!string.IsNullOrWhiteSpace(status))
+                query += $"&status={Uri.EscapeDataString(status.Trim())}";
+
+            using var response = await client.GetAsync(query, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<PagedClinicAdmissions>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<PagedClinicAdmissions>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var page = await response.Content.ReadFromJsonAsync<PagedAdmissionsDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (page?.Items is null)
+                return Response<PagedClinicAdmissions>.Failure("Could not load admissions.");
+
+            return Response<PagedClinicAdmissions>.Success(new PagedClinicAdmissions
+            {
+                Items = page.Items.Select(MapAdmission).ToList(),
+                TotalCount = page.TotalCount,
+                PageNumber = page.PageNumber,
+                PageSize = page.PageSize
+            });
+        }
+        catch (HttpRequestException)
+        {
+            return Response<PagedClinicAdmissions>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicAdmission>> GetAdmissionByIdAsync(
+        Guid clinicId,
+        Guid admissionId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/admissions/{admissionId}", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicAdmission>.Failure("Admission not found.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicAdmission>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<AdmissionDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null) return Response<ClinicAdmission>.Failure("Could not load admission.");
             return Response<ClinicAdmission>.Success(MapAdmission(dto));
         }
         catch (HttpRequestException)
@@ -1937,6 +2236,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         TotalBeds = dto.TotalBeds,
         AvailableBeds = dto.AvailableBeds,
         OccupiedBeds = dto.OccupiedBeds,
+        MaintenanceBeds = dto.MaintenanceBeds,
         ActiveAdmissions = dto.ActiveAdmissions,
         Wards = dto.Wards?.Select(MapWard).ToList() ?? [],
         ActiveAdmissionsList = dto.ActiveAdmissionsList?.Select(MapAdmission).ToList() ?? []
@@ -1992,12 +2292,21 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         Notes = dto.Notes
     };
 
+    private sealed class PagedAdmissionsDto
+    {
+        public List<AdmissionDto>? Items { get; set; }
+        public int TotalCount { get; set; }
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+    }
+
     private sealed class InpatientBoardDto
     {
         public Guid ClinicId { get; set; }
         public int TotalBeds { get; set; }
         public int AvailableBeds { get; set; }
         public int OccupiedBeds { get; set; }
+        public int MaintenanceBeds { get; set; }
         public int ActiveAdmissions { get; set; }
         public List<WardDto>? Wards { get; set; }
         public List<AdmissionDto>? ActiveAdmissionsList { get; set; }
