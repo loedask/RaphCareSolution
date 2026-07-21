@@ -67,10 +67,59 @@
                 </nav>
             </div>
             <div class="admin-topbar-right">
-                <label class="admin-search">
-                    <span class="admin-search-icon" aria-hidden="true">⌕</span>
-                    <input type="search" placeholder="Search hospitals, facilities…" disabled />
-                </label>
+                <div class="admin-search-wrap">
+                    <label class="admin-search">
+                        <span class="admin-search-icon" aria-hidden="true">⌕</span>
+                        <input type="search"
+                               placeholder="Search hospitals, patients…"
+                               value="@_searchQuery"
+                               @oninput="OnSearchInputAsync"
+                               @onfocus="() => _searchOpen = !string.IsNullOrWhiteSpace(_searchQuery)"
+                               @onkeydown="OnSearchKeyDown"
+                               autocomplete="off" />
+                    </label>
+                    @if (_searchOpen && (!string.IsNullOrWhiteSpace(_searchQuery) || _patientResults.Count > 0))
+                    {
+                        <div class="admin-search-menu" role="listbox" aria-label="Search results">
+                            @if (_hospitalResults.Count > 0)
+                            {
+                                <div class="admin-search-group">Hospitals</div>
+                                @foreach (var clinic in _hospitalResults)
+                                {
+                                    <button type="button"
+                                            class="admin-search-item"
+                                            role="option"
+                                            @onclick="() => NavigateToHospitalAsync(clinic.Id, clinic.Name)">
+                                        <span class="admin-search-item-name">@clinic.Name</span>
+                                        <span class="admin-search-item-meta">@clinic.RegistrationNumber</span>
+                                    </button>
+                                }
+                            }
+                            @if (ClinicContext.CurrentClinicId is not null)
+                            {
+                                <div class="admin-search-group">Patients @(_searchingPatients ? "(searching…)" : "")</div>
+                                @if (_patientResults.Count == 0 && !_searchingPatients && _searchQuery.Trim().Length >= 2)
+                                {
+                                    <div class="admin-search-empty">No patients match “@_searchQuery.Trim()”.</div>
+                                }
+                                @foreach (var patient in _patientResults)
+                                {
+                                    <button type="button"
+                                            class="admin-search-item"
+                                            role="option"
+                                            @onclick="() => NavigateToPatient(patient.PatientId)">
+                                        <span class="admin-search-item-name">@patient.FirstName @patient.LastName</span>
+                                        <span class="admin-search-item-meta">Patient</span>
+                                    </button>
+                                }
+                            }
+                            else if (_hospitalResults.Count == 0 && _searchQuery.Trim().Length >= 1)
+                            {
+                                <div class="admin-search-empty">No hospitals match. Select a hospital to search patients.</div>
+                            }
+                        </div>
+                    }
+                </div>
                 @if (ClinicContext.MyClinics.Count > 1)
                 {
                     <div class="admin-clinic-switcher">
