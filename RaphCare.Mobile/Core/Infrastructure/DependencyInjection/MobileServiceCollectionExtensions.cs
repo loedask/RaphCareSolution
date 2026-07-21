@@ -25,6 +25,8 @@ using RaphCare.Mobile.Core.Features.AiAssistant.Views;
 #if ANDROID
 using RaphCare.Mobile.Platforms.Android.Telehealth;
 using RaphCare.Mobile.Platforms.Android.HBand;
+#elif IOS
+using RaphCare.Mobile.Platforms.iOS.Telehealth;
 #endif
 using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Home.ViewModels;
@@ -32,6 +34,7 @@ using RaphCare.Mobile.Core.Features.Home.Views;
 using RaphCare.Mobile.Core.Features.Hybrid.Views;
 using RaphCare.Mobile.Core.Features.Insurance.ViewModels;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
+using RaphCare.Mobile.Core.Features.Notifications.Services;
 using RaphCare.Mobile.Core.Features.Records.ViewModels;
 using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Services;
@@ -66,10 +69,16 @@ public static class MobileServiceCollectionExtensions
 #if ANDROID
         services.AddSingleton<ITelehealthRtcSession, AgoraAndroidTelehealthRtcSession>();
         services.AddSingleton<IHBandWearableBridge, HBandAndroidWearableBridge>();
+#elif IOS
+        services.AddSingleton<ITelehealthRtcSession, AgoraIosTelehealthRtcSession>();
+        services.AddSingleton<IHBandWearableBridge, UnavailableHBandWearableBridge>();
 #else
         services.AddSingleton<ITelehealthRtcSession, NoOpTelehealthRtcSession>();
         services.AddSingleton<IHBandWearableBridge, UnavailableHBandWearableBridge>();
 #endif
+
+        services.AddSingleton<IPushDeviceTokenProvider, LocalDevelopmentPushDeviceTokenProvider>();
+        services.AddSingleton<IPatientPushRegistrationService, PatientPushRegistrationService>();
 
         services.AddSingleton<IWearableBleCoordinator, WearableBleCoordinator>();
 

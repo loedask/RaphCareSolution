@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using RaphCare.Mobile.Core.Features.Home.Models;
+using RaphCare.Mobile.Core.Features.Notifications.Services;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.Services.Auth;
@@ -13,12 +14,14 @@ namespace RaphCare.Mobile.Core.Features.Home.ViewModels;
 public sealed class HomeViewModel : BaseViewModel
 {
     private readonly IAuthService _auth;
+    private readonly IPatientPushRegistrationService _pushRegistration;
     private string _greeting = string.Empty;
     private string _userDisplayName = string.Empty;
 
-    public HomeViewModel(IAuthService auth)
+    public HomeViewModel(IAuthService auth, IPatientPushRegistrationService pushRegistration)
     {
         _auth = auth ?? throw new ArgumentNullException(nameof(auth));
+        _pushRegistration = pushRegistration ?? throw new ArgumentNullException(nameof(pushRegistration));
 
         Title = T("HomePageTitle");
 
@@ -133,6 +136,15 @@ public sealed class HomeViewModel : BaseViewModel
         var (name, _) = JwtClaimsReader.ReadDisplayClaims(token);
         var displayName = ResolveFirstName(name);
         await MainThread.InvokeOnMainThreadAsync(() => UserDisplayName = displayName);
+
+        try
+        {
+            await _pushRegistration.RegisterCurrentDeviceAsync(CancellationToken.None).ConfigureAwait(false);
+        }
+        catch
+        {
+            // Push registration is best-effort for demos; ignore token/API failures here.
+        }
     }
 
     private static string ResolveFirstName(string? fullName)

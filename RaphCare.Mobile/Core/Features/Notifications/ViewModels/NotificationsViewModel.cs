@@ -4,6 +4,7 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Notifications;
 using RaphCare.Mobile.Core.Common.ViewModels;
+using RaphCare.Mobile.Core.Features.Notifications.Services;
 
 namespace RaphCare.Mobile.Core.Features.Notifications.ViewModels;
 
@@ -11,11 +12,15 @@ namespace RaphCare.Mobile.Core.Features.Notifications.ViewModels;
 public sealed class NotificationsViewModel : BaseViewModel
 {
     private readonly IPatientNotificationsService _notifications;
+    private readonly IPatientPushRegistrationService _pushRegistration;
     private string? _errorMessage;
 
-    public NotificationsViewModel(IPatientNotificationsService notifications)
+    public NotificationsViewModel(
+        IPatientNotificationsService notifications,
+        IPatientPushRegistrationService pushRegistration)
     {
         _notifications = notifications ?? throw new ArgumentNullException(nameof(notifications));
+        _pushRegistration = pushRegistration ?? throw new ArgumentNullException(nameof(pushRegistration));
         Title = T("NotificationsTitle");
 
     RefreshButtonText = T("NotificationsRefresh");
@@ -58,6 +63,8 @@ public sealed class NotificationsViewModel : BaseViewModel
         IsBusy = true;
         try
         {
+            await _pushRegistration.RegisterCurrentDeviceAsync(CancellationToken.None).ConfigureAwait(false);
+
             var response = await _notifications.GetMyNotificationsAsync(CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {

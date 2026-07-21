@@ -153,7 +153,13 @@ If Agora is **not** configured on the server, join info may still return **AppId
 - **Registration:** `MobileServiceCollectionExtensions` registers **`AgoraAndroidTelehealthRtcSession`** on Android.
 - **Permissions:** Camera (and related) must be granted at runtime; **AndroidManifest** includes camera permission; **iOS/MacCatalyst Info.plist** includes camera usage strings for builds that include those targets.
 
-**Note:** Native Agora video is **implemented for Android** in this solution; **iOS / Mac Catalyst / Windows** may still show placeholders or no-op RTC until equivalent native wiring is added.
+**Note:** Native Agora video is **implemented for Android**. **iOS** registers **`AgoraIosTelehealthRtcSession`** (camera/mic + framework detection); embed AgoraRtcKit via **`tools/download-agora-ios-framework.ps1`** and complete ObjC join on a Mac. Other platforms use **`NoOpTelehealthRtcSession`**.
+
+### 2.6a Push device registration (Mobile)
+
+- After sign-in (Home refresh) and when opening Notifications, Mobile calls **`PUT api/patient/notifications/push-device`** via **`IPatientPushRegistrationService`**.
+- Default token provider is a **stable local demo token** (`LocalDevelopmentPushDeviceTokenProvider`) so registration works without FCM/APNs SDKs.
+- Server delivery still needs **`FirebasePush:ServiceAccountJsonPath`** on the API for real FCM; otherwise **`NoOpPatientPushNotificationSender`** logs only.
 
 ### 2.7 Testing Agora end-to-end
 
