@@ -5,25 +5,21 @@ using RaphCare.Domain.Reporting;
 
 namespace RaphCare.Application.Features.Reporting.Queries.GetDashboardSnapshot;
 
-public class GetDashboardSnapshotHandler : IRequestHandler<GetDashboardSnapshotQuery, DashboardSnapshotDto>
+public sealed class GetDashboardSnapshotHandler(IRepository<DashboardSnapshot> repository)
+    : IRequestHandler<GetDashboardSnapshotQuery, DashboardSnapshotDto>
 {
-    private readonly IRepository<DashboardSnapshot> _repository;
-
-    public GetDashboardSnapshotHandler(IRepository<DashboardSnapshot> repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<DashboardSnapshotDto> Handle(GetDashboardSnapshotQuery request, CancellationToken cancellationToken)
     {
-        // Simplified: choose latest snapshot on/ before requested date for the clinic.
-        var snapshots = await _repository.ListAsync(cancellationToken);
+        var page = await repository.SearchAsync(
+            q => q
+                .Where(s => s.ClinicId == request.ClinicId && s.SnapshotDate <= request.SnapshotDate)
+                .OrderByDescending(s => s.SnapshotDate),
+            1,
+            1,
+            applyDefaultIdOrdering: false,
+            cancellationToken).ConfigureAwait(false);
 
-        var snapshot = snapshots
-            .Where(s => s.ClinicId == request.ClinicId && s.SnapshotDate <= request.SnapshotDate)
-            .OrderByDescending(s => s.SnapshotDate)
-            .FirstOrDefault();
-
+        var snapshot = page.Items.Count > 0 ? page.Items[0] : null;
         if (snapshot is null)
         {
             return new DashboardSnapshotDto
@@ -44,4 +40,3 @@ public class GetDashboardSnapshotHandler : IRequestHandler<GetDashboardSnapshotQ
         };
     }
 }
-

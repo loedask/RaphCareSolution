@@ -35,6 +35,7 @@ public static class DatabaseSeeder
             await InsuranceSeeder.SeedAsync(scopedProvider, logger, cancellationToken).ConfigureAwait(false);
             await DeviceSeeder.SeedAsync(scopedProvider, logger, cancellationToken).ConfigureAwait(false);
             await BillingSeeder.SeedAsync(scopedProvider, logger, cancellationToken).ConfigureAwait(false);
+            await ReportingSeeder.SeedAsync(scopedProvider, logger, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
