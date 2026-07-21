@@ -2,7 +2,8 @@ namespace RaphCare.Mobile.Core.Features.Devices.HBand;
 
 /// <summary>
 /// Pointers to the public HBandSDK GitHub ecosystem used by many E580/E585-class bands.
-/// RaphCare’s default BLE implementation uses Plugin.BLE; full vendor protocol support requires the native SDKs — see docs/12_HBand_SDK_Integration.md.
+/// Android: <see cref="IHBandWearableBridge"/> calls <c>VPOperateManager</c> via JNI when AARs are present
+/// (see <c>tools/download-hband-android-libs.ps1</c> and docs/12). Plugin.BLE remains the scan + GATT fallback.
 /// </summary>
 public static class HBandSdkInfo
 {

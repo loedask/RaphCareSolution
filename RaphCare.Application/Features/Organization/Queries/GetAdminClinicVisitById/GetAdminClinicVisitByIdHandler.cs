@@ -48,7 +48,7 @@ public sealed class GetAdminClinicVisitByIdHandler(
             var users = await professionalUserLookupService
                 .GetUsersByIdsAsync([provider.ApplicationUserId], cancellationToken)
                 .ConfigureAwait(false);
-            var user = users.FirstOrDefault();
+            var user = users.Count > 0 ? users[0] : null;
             if (user is not null)
                 providerName = string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName;
         }

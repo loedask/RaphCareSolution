@@ -42,7 +42,7 @@ These bands are **BLE peripherals**. RaphCare does not replace the manufacturer�
 
 1. Open **Devices & wearables**.
 2. Tap **Scan** and wait for the scan cycle to finish (up to ~30 seconds).
-3. **Filtered list (default):** Only peripherals whose **advertised name** matches the patterns in `E585E580DeviceFilter` (e.g. names containing `E580`, `E585`, `YSC`, `Bracelet`, `SmartBand`) appear. If your band uses a different name, use the on-screen control to switch to **show all BLE devices**, then identify your device by name or signal strength (RSSI).
+3. **Filtered list (default):** Only peripherals whose **advertised name** matches the patterns in `E585E580DeviceFilter` (e.g. names containing `ET580`, `ET585`, `E580`, `E585`, `YSC`, `Bracelet`, `SmartBand`) appear. If your band uses a different name, use the on-screen control to switch to **show all BLE devices**, then identify your device by name or signal strength (RSSI).
 4. Tap **Connect** on the row for your device. The app connects over GATT and subscribes to **notifications** on all characteristics that support them.
 5. **Heart rate:** If the firmware exposes the standard **Heart Rate** service (`0x180D`) and **Heart Rate Measurement** (`0x2A37`), the UI shows **Heart rate: N bpm**. Otherwise you will see **Raw: …** hex for engineering analysis.
 6. **SpO₂ (when standard PLX is exposed):** If the band notifies **PLX Continuous Measurement** (`0x2A60`) or **PLX Spot-check** (`0x2A5F`) under the Pulse Oximeter service (`0x1822`), the app parses **IEEE-11073 SFLOAT** SpO₂ (and optional pulse) and shows **SpO₂: N %**. Many OEM bracelets use **proprietary** characteristics instead — then only **Raw** appears until you add a vendor parser or HBand SDK.
@@ -78,13 +78,14 @@ These bands are **BLE peripherals**. RaphCare does not replace the manufacturer�
 
 ## OEM naming and protocol
 
-E580/E585 devices are often sold under **varying Bluetooth advertisement names**. The code filters by substrings such as `E580`, `E585`, `YSC`, `Bracelet`, `SmartBand` — adjust in `E585E580DeviceFilter` when you know the exact names your fleet uses.
+E580/E585 devices are often sold under **varying Bluetooth advertisement names**. On-device **Device Info** may show **ET580** / **ET585** while the BLE advertisement uses the same or a shortened form. The code filters by substrings such as `ET580`, `ET585`, `E580`, `E585`, `YSC`, `Bracelet`, `SmartBand` — adjust in `E585E580DeviceFilter` when you know the exact names your fleet uses.
 
 **Proprietary GATT:** Many bands expose **custom** services/characteristics. RaphCare subscribes to **all notify-capable** characteristics after connect. If the device exposes **standard Heart Rate Measurement**, parsers in `BleGattHeartRateParser` fill **Heart rate: N bpm**; otherwise you see **Raw: &lt;hex&gt;** for engineering work (mapping OEM payloads is vendor-specific and may require the manufacturer SDK or a capture from **nRF Connect** / **Bluetooth HCI snoop**).
 
 ## Next steps (not in this slice)
 
-- **Patient API** to upload readings (`DeviceReading` / vitals) — follow backend → NSwag → Client → Mobile (see solution layer rules).
+- **Full band + live + background goals:** see **`docs/14_Wearable_Capability_Catalog.md`** (product contract) and **`docs/12_HBand_SDK_Integration.md`** (vendor SDK binding).
+- Expand **patient API** beyond HR / SpO₂ batches when Domain types land (activity, sleep, …).
 - **Bonding / pairing** flows if the hardware requires it.
 - **Background** delivery (platform-specific limits apply).
 

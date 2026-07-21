@@ -13,7 +13,7 @@ Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-ch
 - **Not started:** not built yet (or not planned for that product surface).
 - **Not for mobile:** staff/admin work stays in the web admin panel on purpose.
 
-Last reviewed: 2026-07-18
+Last reviewed: 2026-07-21
 
 ---
 
@@ -90,12 +90,21 @@ What patients see on Android / iPhone.
 | Video visit on a real iPhone | Not started | Needs iOS video kit wiring |
 | Push alerts on Android | Partial | Needs Firebase configured on the server |
 | Push alerts on iPhone | Partial | Needs store / push setup + a real device test |
-| Connect **E580 / E585** style Bluetooth bands | Partial | Scan, connect, heart rate when the band supports it; offline retry exists |
-| Full vendor band SDK (HBand) | Not started | Documented path; not finished in the app |
+| Connect **E580 / E585** style Bluetooth bands | Partial | Scan includes ET580 / ET585 labels; heart rate / oxygen only when the band speaks standard Bluetooth health profiles |
+| Live heart rate and blood oxygen in the app | Partial | Android vendor path wired; confirm on your ET580 / ET585 samples |
+| Auto sync and background monitoring | Not started | Manual sync exists; background sync not finished |
+| Full band health history (like the vendor companion app) | Partial | Connect and live HR/SpO₂ started; activity/sleep/history still open |
+| Activity (steps, calories, distance), sleep, stress | Not started | On the watches; not in RaphCare yet |
+| Body temp, ECG, glucose-style screens from the band | Not started | Documented; clinical use of optical glucose stays gated |
+| Weather and lifestyle pushes to the watch | Not for clinical v1 | Watch needs an app for weather; not a patient vital |
+| Full vendor band SDK (HBand) on Android | Partial | Download libs + app bridge in place; hardware prove-out next |
+| Full vendor band SDK on iPhone | Not started | Android first |
 | **Y6 Pro** emergency 4G watch flow | Partial | Product plan exists; app path thinner than the Bluetooth bands |
 | Windows PC build of the app | Not for BLE | Bluetooth patient devices are for phones, not the Windows target |
 
-**Bottom line:** the patient app screens are largely there. Catch-up work is mostly **iPhone video**, **real push**, **wearables depth**, and **testing the same flows on both phone types**.
+**Wearable feature list (survives changing watch models):** `docs/14_Wearable_Capability_Catalog.md`
+
+**Bottom line:** the patient app screens are largely there. Catch-up work is mostly **iPhone video**, **real push**, **wearables depth** (live vitals, full sync, background), and **testing the same flows on both phone types**.
 
 ---
 
@@ -126,5 +135,6 @@ What patients see on Android / iPhone.
 |-----|----------------|
 | This file | Partners, product, demos |
 | `raphcare-feature-checklist.md` | Engineers |
+| `14_Wearable_Capability_Catalog.md` | Watch/band features RaphCare should support (even if the model changes) |
 | `Mobile_Release_Ready_Checklist.md` | Release / pilot go-live |
 | `13_Patient_Device_Packages_and_Fleet.md` | Watch / band product packages |

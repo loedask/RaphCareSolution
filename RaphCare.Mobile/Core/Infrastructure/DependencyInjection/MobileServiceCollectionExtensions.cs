@@ -24,7 +24,9 @@ using RaphCare.Mobile.Core.Features.AiAssistant.ViewModels;
 using RaphCare.Mobile.Core.Features.AiAssistant.Views;
 #if ANDROID
 using RaphCare.Mobile.Platforms.Android.Telehealth;
+using RaphCare.Mobile.Platforms.Android.HBand;
 #endif
+using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Home.ViewModels;
 using RaphCare.Mobile.Core.Features.Home.Views;
 using RaphCare.Mobile.Core.Features.Hybrid.Views;
@@ -63,8 +65,10 @@ public static class MobileServiceCollectionExtensions
 
 #if ANDROID
         services.AddSingleton<ITelehealthRtcSession, AgoraAndroidTelehealthRtcSession>();
+        services.AddSingleton<IHBandWearableBridge, HBandAndroidWearableBridge>();
 #else
         services.AddSingleton<ITelehealthRtcSession, NoOpTelehealthRtcSession>();
+        services.AddSingleton<IHBandWearableBridge, UnavailableHBandWearableBridge>();
 #endif
 
         services.AddSingleton<IWearableBleCoordinator, WearableBleCoordinator>();

@@ -336,12 +336,14 @@ public sealed class DevicesViewModel : BaseViewModel
             StatusHint = T("DevicesConnected");
             SyncResultText = null;
 
-            // Best-effort default SKU from advertised name
+            // Best-effort default SKU from advertised name (ET580/ET585 on-device labels included)
             var connected = _ble.DiscoveredDevices.FirstOrDefault(d => d.Id == deviceId);
             var name = connected?.Name ?? "";
-            if (name.Contains("E580", StringComparison.OrdinalIgnoreCase))
+            if (name.Contains("ET580", StringComparison.OrdinalIgnoreCase)
+                || name.Contains("E580", StringComparison.OrdinalIgnoreCase))
                 ModelSku = PatientProvisionedDeviceSkus.E580;
-            else if (name.Contains("E585", StringComparison.OrdinalIgnoreCase))
+            else if (name.Contains("ET585", StringComparison.OrdinalIgnoreCase)
+                     || name.Contains("E585", StringComparison.OrdinalIgnoreCase))
                 ModelSku = PatientProvisionedDeviceSkus.E585;
 
             if (DisconnectCommand is Command d)

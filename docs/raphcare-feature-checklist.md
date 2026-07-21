@@ -18,7 +18,7 @@ Track progress across **API**, **Web admin panel**, and **Mobile** (patient app)
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-07-18 (device coverage + partner twin)
+Last reviewed: 2026-07-21 (HBand Android JNI bridge Phase 1)
 
 ---
 
@@ -172,16 +172,28 @@ Push notifications on device:
 - [ ] iOS push delivery (APNs / FCM path) verified on a physical iPhone `(partial)`
 - [ ] Push off / no-op when Firebase is not configured (expected today)
 
-Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`):
+Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`, **`docs/14_Wearable_Capability_Catalog.md`**):
 
 - [x] Devices screen: BLE scan, connect, disconnect
-- [x] E580 / E585 name filter (`E585E580DeviceFilter`) + "show all BLE" fallback
+- [x] E580 / E585 name filter (`E585E580DeviceFilter`, includes `ET580` / `ET585`) + "show all BLE" fallback
 - [x] Android Bluetooth / Nearby devices permission flow
 - [x] iOS Bluetooth usage string (`Info.plist`)
 - [x] Heart-rate GATT read when the band exposes standard HR (`0x2A37`)
-- [x] Vitals sync to API + offline outbox retry (`FileVitalsSyncOutbox`)
-- [ ] Full HBand SDK (VPOperate) C# binding path `(partial)`: not fully implemented; see `docs/12_HBand_SDK_Integration.md`
-- [ ] Background BLE delivery limits tested on Android and iOS `(partial)`
+- [x] SpO₂ GATT read when the band exposes standard PLX (`0x2A5F` / `0x2A60`)
+- [x] Vitals sync to API + offline outbox retry (`FileVitalsSyncOutbox`) — HR / SpO₂ batches only
+- [x] SKU-agnostic wearable capability catalog documented (`docs/14_Wearable_Capability_Catalog.md`)
+- [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: needs physical ET580/ET585 verification; iOS not wired
+- [ ] Reliable full band data (HBand-class parity for in-scope metrics) `(partial)`: Phase 1 HR/SpO₂ hooks in; activity/sleep/history still open — see `docs/14`
+- [ ] Full typed HBand SDK C# binding project `(out of scope for Phase 1)`: JNI bridge used instead; optional later — see `docs/12_HBand_SDK_Integration.md`
+- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: wired; awaiting device test
+- [ ] Auto sync / background monitoring of band readings `(partial)`: manual sync + outbox exist; background unproven; OS limits in `docs/14`
+- [ ] Activity (steps / kcal / distance / goals) domain + sync + mobile `(not started)`
+- [ ] Sleep domain + sync + mobile `(not started)`
+- [ ] Stress domain + sync + mobile `(not started)`
+- [ ] Body temperature domain + sync + mobile `(not started)`
+- [ ] ECG / PPG capture + sync `(not started)`: domain `ECGReading` exists; no patient sync / BLE yet
+- [ ] Glucose / body composition / Health Glance from band `(not started)`: gate clinical use; see guardrails in `docs/14`
+- [ ] Weather / companion pushes to watch `(out of scope for clinical v1)` unless product expands lifestyle parity
 - [ ] Y6 Pro (4G SOS / fall / emergency fleet workflow) end-to-end in app `(partial / product path)`: fleet doc exists; app vertical still thinner than E580/E585 BLE path
 - [ ] Clinic-facing view of patient device readings beyond admin devices list `(partial)`
 
@@ -207,7 +219,7 @@ Permissions / hardware UX:
 
 ### Step 3 status
 
-**Concept screens and patient APIs are largely in.** Device coverage is broader than UI parity: Android is ahead of iOS for video; BLE E580/E585 path exists; Y6 and full HBand SDK still open. Remaining work is phone/OS verification, iOS Agora, push config, flags, and store packaging.
+**Concept screens and patient APIs are largely in.** Device coverage is broader than UI parity: Android is ahead of iOS for video; BLE E580/E585 path exists; wearable **capability catalog** is in `docs/14`; Y6 and full HBand SDK still open. Remaining work is phone/OS verification, iOS Agora, push config, flags, store packaging, and wearables depth (live HR/SpO₂ via vendor protocol, auto sync / background, activity/sleep).
 
 ---
 
@@ -260,6 +272,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | `11_Devices_BLE_E580_E585.md` | BLE bands (E580 / E585) |
 | `12_HBand_SDK_Integration.md` | HBand SDK binding path |
 | `13_Patient_Device_Packages_and_Fleet.md` | Y6 / E580 / E585 fleet SKUs |
+| `14_Wearable_Capability_Catalog.md` | SKU-agnostic band features + delivery phases |
 | `10_Agora_Twilio_Setup.md` | Telehealth RTC setup |
 | `02_Solution_Structure.md` | Project layout |
 | `06_Key_Workflows.md` | Workflow narratives (update when inpatient ships docs) |

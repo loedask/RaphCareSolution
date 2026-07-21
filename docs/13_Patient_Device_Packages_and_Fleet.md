@@ -3,6 +3,7 @@
 RaphCare may supply **watches and bracelets** to patients as part of subscription or care packages. This document is the **product + engineering** reference for the three SKUs in scope for the current vertical exercise, and how the **solution** is expected to support them over time.
 
 **BLE implementation detail:** E580 / E585-class bands — see **`docs/11_Devices_BLE_E580_E585.md`** and **`docs/12_HBand_SDK_Integration.md`**.  
+**Feature contract (SKU-agnostic):** what RaphCare should support from bands (HR, SpO₂, activity, sleep, …) — **`docs/14_Wearable_Capability_Catalog.md`**.  
 **Kernel SKU constants (mobile):** `RaphCare.Mobile.Kernel` — `PatientProvisionedDeviceSkus`.
 
 ---
@@ -89,7 +90,7 @@ Sensor reading on device
 
 | Area | Status |
 |------|--------|
-| **Mobile** | **In progress** — `DevicesPage`, `WearableBleCoordinator` (Plugin.BLE), name filter includes **E585**; optional **HBand** native SDK path documented in **`docs/12_HBand_SDK_Integration.md`**. |
+| **Mobile** | **In progress** — `DevicesPage`, `WearableBleCoordinator` (Plugin.BLE scan), Android **HBand** JNI bridge for connect + live HR/SpO₂ when AARs present (`docs/12`). |
 | **API** | **Patient vitals upload** — **`api/patient/devices`** (register + **`POST …/readings`**). Regenerate **NSwag**, then extend **Client** + MAUI sync. Staff **`api/Devices`** registry remains separate. |
 
 ---
@@ -126,4 +127,5 @@ Same as **E585** for app and API; filter and docs treat **E580** and **E585** as
 |-----|---------|
 | **11** | BLE E580/E585 in MAUI, permissions, troubleshooting |
 | **12** | HBand SDK repos, optional AARs, binding-project next step |
+| **14** | Wearable capability catalog (features survive SKU changes) |
 | **10** | Twilio SMS (relevant for alerting workflows) |

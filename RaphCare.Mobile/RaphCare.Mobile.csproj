@@ -97,11 +97,21 @@
         <NativeReference Include="Platforms\iOS\AgoraRtcKit\AgoraRtcKit.xcframework" Kind="Framework" />
     </ItemGroup>
 
-    <!-- Optional: HBand vendor SDK (https://github.com/HBandSDK/Android_Ble_SDK). Run tools/download-hband-android-libs.ps1; see docs/12_HBand_SDK_Integration.md. Embeds JARs only — C# still needs a binding project to call VPOperateManager. -->
-    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' AND Exists('Platforms\Android\libs\vpbluetooth-1.18.aar') AND Exists('Platforms\Android\libs\vpprotocol-2.3.48.15.aar') AND Exists('Platforms\Android\libs\gson-2.2.4.jar')">
-        <AndroidLibrary Include="Platforms\Android\libs\vpbluetooth-1.18.aar" />
-        <AndroidLibrary Include="Platforms\Android\libs\vpprotocol-2.3.48.15.aar" />
-        <AndroidJavaLibrary Include="Platforms\Android\libs\gson-2.2.4.jar" />
+    <!-- HBand / Veepoo vendor SDK (optional). Run tools/download-hband-android-libs.ps1. Bind=false — C# uses Platforms/Android/HBand JNI bridge. See docs/12.
+         Do not embed gson-*.jar: GoogleGson is already pulled in and duplicates break D8. -->
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' AND Exists('Platforms\Android\libs\vpbluetooth-1.20.aar') AND Exists('Platforms\Android\libs\vpprotocol-2.3.71.15.aar')">
+        <AndroidLibrary Include="Platforms\Android\libs\vpbluetooth-1.20.aar" Bind="false" />
+        <AndroidLibrary Include="Platforms\Android\libs\vpprotocol-2.3.71.15.aar" Bind="false" />
+        <AndroidLibrary Include="Platforms\Android\libs\JL_Watch_V1.13.1_11214-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\JL_Watch_V1.13.1_11214-release.aar')" />
+        <AndroidLibrary Include="Platforms\Android\libs\jl_rcsp_V0.7.2_527-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\jl_rcsp_V0.7.2_527-release.aar')" />
+        <AndroidLibrary Include="Platforms\Android\libs\jl_bt_ota_V1.10.0_10931-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\jl_bt_ota_V1.10.0_10931-release.aar')" />
+        <AndroidLibrary Include="Platforms\Android\libs\BmpConvert_V1.6.0_10604-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\BmpConvert_V1.6.0_10604-release.aar')" />
+        <AndroidLibrary Include="Platforms\Android\libs\abpartool-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\abpartool-release.aar')" />
+        <AndroidMavenLibrary Include="no.nordicsemi.android.support.v18:scanner" Version="1.4.2" Bind="false" VerifyDependencies="false" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <PackageReference Include="Xamarin.AndroidX.LocalBroadcastManager" Version="1.1.0.16" />
     </ItemGroup>
 
 </Project>
