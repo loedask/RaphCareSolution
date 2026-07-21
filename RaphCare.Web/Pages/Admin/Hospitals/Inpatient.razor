@@ -401,8 +401,7 @@
                                                                 ? "bed-chip-maintenance"
                                                                 : "bed-chip-other";
                                                 <div class="bed-chip-wrap">
-                                                    <span class="bed-chip @chipClass"
-                                                          title="@(bed.CurrentPatientName ?? bed.Status)@(bed.IsActive ? "" : " (inactive)")">
+                                                    <span class="bed-chip @chipClass" title="@BedTitle(bed)">
                                                         @bed.Label
                                                         @if (!string.IsNullOrWhiteSpace(bed.CurrentPatientName))
                                                         {
@@ -418,11 +417,11 @@
                                                         <div class="inpatient-actions bed-chip-actions">
                                                             @if (bed.Status == "Available" && bed.IsActive)
                                                             {
-                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => SetBedStatusAsync(bed.Id, "Maintenance")">Maintenance</button>
+                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="@(() => SetBedStatusAsync(bed.Id, MaintenanceStatus))">Maintenance</button>
                                                             }
                                                             else if (bed.Status == "Maintenance" && bed.IsActive)
                                                             {
-                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => SetBedStatusAsync(bed.Id, "Available")">Clear</button>
+                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="@(() => SetBedStatusAsync(bed.Id, AvailableStatus))">Clear</button>
                                                             }
                                                             <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditBed(bed)">Edit</button>
                                                             <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteBedAsync(bed.Id)">Delete</button>
@@ -1109,6 +1108,15 @@
 
         _success = "Bed removed.";
         await LoadBoardAsync();
+    }
+
+    private const string AvailableStatus = "Available";
+    private const string MaintenanceStatus = "Maintenance";
+
+    private static string BedTitle(ClinicBed bed)
+    {
+        var label = bed.CurrentPatientName ?? bed.Status;
+        return bed.IsActive ? label : $"{label} (inactive)";
     }
 
     private void ClearMessages()
