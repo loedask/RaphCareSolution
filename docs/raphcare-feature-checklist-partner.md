@@ -13,7 +13,7 @@ Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-ch
 - **Not started:** not built yet (or not planned for that product surface).
 - **Not for mobile:** staff/admin work stays in the web admin panel on purpose.
 
-Last reviewed: 2026-07-21
+Last reviewed: 2026-08-01
 
 ---
 
@@ -84,6 +84,8 @@ What patients see on Android / iPhone.
 | Area | Status | Notes |
 |------|--------|-------|
 | Run on **Android** phones | Done | Main day-to-day test target |
+| Host API + admin web for remote Android testers | Partial | Runbook and scripts are ready; finish Azure signup, deploy, and Play Internal invite |
+| Play Store internal test package id | Partial | Android id set to a stable Yindula id; upload via Play Console still needed |
 | Run on **iPhone** | Partial | App can target iOS; full release checks still open |
 | Same feature checked on **both** Android and iPhone before "ready" | Not started | Use the release checklist when locking a release |
 | Video visit on a real Android phone | Partial | Wiring is in; confirm on hardware |

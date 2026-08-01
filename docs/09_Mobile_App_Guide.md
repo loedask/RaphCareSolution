@@ -2,6 +2,8 @@
 
 **Run the patient app + API (demo checklist, ports, Entra, flags):** [Mobile_Demo_Launch_Guide.md](./Mobile_Demo_Launch_Guide.md).
 
+**Hosted Azure test API + Google Play Internal (Android):** [Mobile_Android_Test_Hosting.md](./Mobile_Android_Test_Hosting.md).
+
 ## Where code goes
 
 | Area | Use for |

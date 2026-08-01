@@ -11,6 +11,7 @@ This doc is the **single runbook** to get **RaphCare.API** and **RaphCare.Mobile
 | Mobile project layout, flags, voice clinic | [09_Mobile_App_Guide.md](./09_Mobile_App_Guide.md) |
 | Agora / Twilio (telehealth, SMS) | [10_Agora_Twilio_Setup.md](./10_Agora_Twilio_Setup.md) |
 | Release / completeness bar | [Mobile_Release_Ready_Checklist.md](./Mobile_Release_Ready_Checklist.md) |
+| Azure test host + Play Internal | [Mobile_Android_Test_Hosting.md](./Mobile_Android_Test_Hosting.md) |
 
 ---
 

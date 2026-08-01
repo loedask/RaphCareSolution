@@ -33,6 +33,9 @@ public static class MauiProgram
 
 #if DEBUG
         builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+#else
+        // Release / Play test builds: hosted API URL (override via publish script before packaging).
+        builder.Configuration.AddJsonFile("appsettings.TestHosting.json", optional: true, reloadOnChange: true);
 #endif
 
         builder.Configuration.AddUserSecrets(typeof(App).Assembly, optional: true);

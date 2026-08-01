@@ -29,3 +29,10 @@ _agoraProbe/AgoraProbe/obj/
 RaphCare.Mobile/Platforms/Android/libs/*.aar
 RaphCare.Mobile/Platforms/Android/libs/*.jar
 obj/
+
+# Local Azure / Play publish outputs and signing material (never commit)
+artifacts/
+*.keystore
+*.jks
+raphcare-upload.keystore
+

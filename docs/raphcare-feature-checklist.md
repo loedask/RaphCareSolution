@@ -18,7 +18,7 @@ Track progress across **API**, **Web admin panel**, and **Mobile** (patient app)
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-07-21 (HBand Android JNI bridge Phase 1)
+Last reviewed: 2026-08-01 (Android Azure test hosting + Play Internal runbook)
 
 ---
 
@@ -212,7 +212,7 @@ Permissions / hardware UX:
 - [ ] Deep links / NotFound route UX
 - [ ] Prod feature-flag rollout plan filled in `Mobile_Release_Ready_Checklist.md`
 - [ ] Accessibility spot-check on phone (labels, contrast, key flows)
-- [ ] Store packaging: icons, splash, package ids, privacy strings for Play / App Store
+- [x] Store packaging: icons, splash, package ids, privacy strings for Play / App Store `(partial)`: Android package id `com.yindula.raphcare`; Azure + Play Internal runbook in `docs/Mobile_Android_Test_Hosting.md`; Play Console upload and iOS store still manual
 
 ### Admin panel
 

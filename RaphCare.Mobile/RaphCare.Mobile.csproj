@@ -25,10 +25,10 @@
         <!-- XAML: use runtime inflation (SourceGen had issues with ResourceDictionary/Styles) -->
 
         <!-- Display name -->
-        <ApplicationTitle>RaphCare.Mobile</ApplicationTitle>
+        <ApplicationTitle>RaphCare</ApplicationTitle>
 
-        <!-- App Identifier -->
-        <ApplicationId>com.companyname.raphcare.mobile</ApplicationId>
+        <!-- App Identifier (stable before Play listing; do not change casually) -->
+        <ApplicationId>com.yindula.raphcare</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -47,6 +47,27 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
+
+    <!-- Optional Release signing for Play upload. Pass from publish script / CI secrets; never commit the keystore. -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Release' And '$(RaphCareAndroidKeystore)' != '' And Exists('$(RaphCareAndroidKeystore)')">
+        <AndroidKeyStore>true</AndroidKeyStore>
+        <AndroidSigningKeyStore>$(RaphCareAndroidKeystore)</AndroidSigningKeyStore>
+        <AndroidSigningStorePass>$(RaphCareAndroidKeystorePass)</AndroidSigningStorePass>
+        <AndroidSigningKeyAlias>$(RaphCareAndroidKeyAlias)</AndroidSigningKeyAlias>
+        <AndroidSigningKeyPass>$(RaphCareAndroidKeyPass)</AndroidSigningKeyPass>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="appsettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="appsettings.TestHosting.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
     <ItemGroup>
         <!-- App Icon -->

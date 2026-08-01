@@ -17,6 +17,11 @@ public sealed class AgoraIosTelehealthRtcSession : ITelehealthRtcSession
     public event EventHandler<int>? RemoteUserJoined;
     public event EventHandler<int>? RemoteUserLeft;
 
+    // Used once AgoraRtcEngineKit join callbacks are wired (parity with Android session).
+    internal void OnChannelJoined() => ChannelJoined?.Invoke(this, EventArgs.Empty);
+    internal void OnRemoteUserJoined(int remoteUid) => RemoteUserJoined?.Invoke(this, remoteUid);
+    internal void OnRemoteUserLeft(int remoteUid) => RemoteUserLeft?.Invoke(this, remoteUid);
+
     public bool IsActive
     {
         get

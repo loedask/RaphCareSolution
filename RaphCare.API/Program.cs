@@ -49,9 +49,23 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("RaphCareWebAdmin", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5177",
-                "https://localhost:7092")
+        var origins = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "http://localhost:5177",
+            "https://localhost:7092"
+        };
+
+        foreach (var origin in builder.Configuration.GetSection("Cors:WebAdminOrigins").Get<string[]>() ?? [])
+        {
+            if (!string.IsNullOrWhiteSpace(origin))
+                origins.Add(origin.Trim().TrimEnd('/'));
+        }
+
+        var portalBaseUrl = builder.Configuration["RaphCare:WebPortalBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(portalBaseUrl))
+            origins.Add(portalBaseUrl.Trim().TrimEnd('/'));
+
+        policy.WithOrigins(origins.ToArray())
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
