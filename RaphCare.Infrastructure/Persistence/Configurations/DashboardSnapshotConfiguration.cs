@@ -11,7 +11,7 @@ public class DashboardSnapshotConfiguration : IEntityTypeConfiguration<Dashboard
     {
         builder.ToTable("DashboardSnapshots");
         builder.HasKey(e => e.Id);
-        builder.Property(e => e.SnapshotJson).IsRequired();
+        builder.Property(e => e.SnapshotJson).IsRequired().HasMaxLength(4000);
         builder.HasIndex(e => e.ClinicId);
         builder.HasIndex(e => e.SnapshotDate);
         builder.HasIndex(e => new { e.ClinicId, e.SnapshotDate }).IsUnique();
