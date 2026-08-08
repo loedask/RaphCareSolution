@@ -1,4 +1,4 @@
-# Regenerates feature checklist PDFs from markdown sources.
+# Regenerates feature checklist PDFs from markdown sources under docs/checklist.
 # Requires Node.js (npx) and network on first run for md-to-pdf.
 param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path,
@@ -8,18 +8,18 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$docs = Join-Path $RepoRoot "docs"
+$docsChecklist = Join-Path $RepoRoot "docs\checklist"
 
 function Export-ChecklistPdf {
     param(
         [Parameter(Mandatory = $true)][string]$BaseName
     )
 
-    $md = Join-Path $docs "$BaseName.md"
-    $pdf = Join-Path $docs "$BaseName.pdf"
-    $config = Join-Path $docs "$BaseName.pdf.json"
-    $tempMd = Join-Path $docs "$BaseName.__export__.md"
-    $tempPdf = Join-Path $docs "$BaseName.__export__.pdf"
+    $md = Join-Path $docsChecklist "$BaseName.md"
+    $pdf = Join-Path $docsChecklist "$BaseName.pdf"
+    $config = Join-Path $docsChecklist "$BaseName.pdf.json"
+    $tempMd = Join-Path $docsChecklist "$BaseName.__export__.md"
+    $tempPdf = Join-Path $docsChecklist "$BaseName.__export__.pdf"
 
     if (-not (Test-Path $md)) {
         throw "Checklist markdown not found: $md"
@@ -30,7 +30,7 @@ function Export-ChecklistPdf {
 
     Copy-Item -Path $md -Destination $tempMd -Force
 
-    Push-Location $docs
+    Push-Location $docsChecklist
     try {
         npx --yes md-to-pdf "$BaseName.__export__.md" --config-file "$BaseName.pdf.json"
         if ($LASTEXITCODE -ne 0) {
@@ -44,7 +44,7 @@ function Export-ChecklistPdf {
             Move-Item -Path $tempPdf -Destination $pdf -Force
         }
         catch {
-            $fallback = Join-Path $docs "$BaseName.pdf.new"
+            $fallback = Join-Path $docsChecklist "$BaseName.pdf.new"
             Move-Item -Path $tempPdf -Destination $fallback -Force
             throw "Could not overwrite $pdf (file may be open in a viewer). Fresh PDF saved as $fallback. Close the old PDF, replace it with the .pdf.new file, then delete .pdf.new."
         }

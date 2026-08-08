@@ -4,25 +4,34 @@ PDF companion: [`raphcare-feature-checklist.pdf`](raphcare-feature-checklist.pdf
 
 Plain-language twin for non-technical partners: [`raphcare-feature-checklist-partner.md`](raphcare-feature-checklist-partner.md) (and its PDF). Keep both in sync when status changes.
 
-Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in `docs/Mobile_Concept_Port.md`; release gates stay in `docs/Mobile_Release_Ready_Checklist.md`.
+Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
-**How to mark items**
+**Overall completion (this checklist):** **78%**  
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **82%**
 
-- `[x]` done
-- `[ ]` not done
-- `(partial)` in the note when something works but is thinner than the intended product
-- `(blocked: ...)` when another layer must land first
-- `(out of scope)` when intentionally not planned for that surface
+**How to mark items and score %**
+
+- `[x]` done = 100% of that item
+- `[x] ... (partial)` = 50%
+- `[ ] ... (partial)` = 25% (started, mostly open)
+- `[ ]` not done = 0%
+- `(blocked: ...)` still scored (usually 0% or 25% if also partial)
+- `(out of scope)` and open `(optional)` items are **excluded** from section and overall %
+- Vertical table rows (API / Client / Mobile UI) count as one item = average of the three cells
+- Section % = average of that section's scored items
+- Overall % = average of all scored items in Steps 1-4 plus Cross-cutting
+
+Each step ends with a short status note and its section %. Recalculate when you change checkboxes.
 
 **Layer order for new HTTP contracts**
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-08-08 (RaphCare.Web.Host for Linux App Service)
+Last reviewed: 2026-08-08
 
 ---
 
-## Step 1: Admin clinic / hospital ops (outpatient)
+## Step 1: Admin clinic / hospital ops (outpatient) - 100%
 
 Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/Hospitals/*`.
 
@@ -57,11 +66,11 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**Complete.** Outpatient hospital admin is end-to-end on API + Client + Web.
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Web. Clinician Mobile stays out of scope.
 
 ---
 
-## Step 2: Inpatient (wards / beds / admissions), MVP
+## Step 2: Inpatient (wards / beds / admissions), MVP - 100%
 
 New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `AddInpatientBedsAndAdmissions`, `AdminClinicsController` inpatient actions, Client methods, Web `Inpatient.razor`.
 
@@ -111,11 +120,11 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ### Step 2 status
 
-**Lifecycle complete on API → Client → Web** (update/deactivate/delete capacity, maintenance, transfer, history, discharge notes, patient search). Demo seed + companion docs done. Do not start clinician Mobile for this until product asks for it.
+**100%.** Lifecycle complete on API → Client → Web (capacity, maintenance, transfer, history, discharge notes, patient search). Demo seed + companion docs done. Do not start clinician Mobile for this until product asks for it.
 
 ---
 
-## Step 3: Patient Mobile (concept parity + APIs)
+## Step 3: Patient Mobile (concept parity + APIs) - 60%
 
 Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobile.Kernel` / `FeatureFlags`.
 
@@ -155,6 +164,7 @@ Phones / OS targets:
 - [x] Android app build and run path (primary day-to-day target)
 - [ ] iOS app build and run path verified on a physical iPhone `(partial)`: project targets iOS; release spot-check still open
 - [ ] Same major flows verified on **both** Android and iOS before calling a vertical release-ready (use `Mobile_Release_Ready_Checklist.md` per-screen table)
+
 - [ ] Windows MAUI target `(out of scope for BLE / most device work)`: BLE not active on Windows in this solution
 - [ ] Mac Catalyst as a BLE test host `(optional)`: supported for Bluetooth perms; not a patient ship target
 
@@ -163,7 +173,7 @@ Telehealth video on device:
 - [x] Android in-call UI + Agora RTC wiring
 - [x] API Agora token mint verified (`tools/verify-agora-rtc-config.ps1`)
 - [ ] iOS AgoraRtcKit (xcframework) wiring `(blocked / partial)`: see `docs/10_Agora_Twilio_Setup.md`
-- [ ] End-to-end video call on a real Android phone `(manual)`: server token OK; needs camera device — see `docs/10_Agora_Twilio_Setup.md` §2.7
+- [ ] End-to-end video call on a real Android phone `(manual)`: server token OK; needs camera device. See `docs/10_Agora_Twilio_Setup.md` §2.7
 - [ ] End-to-end video call on a real iPhone `(blocked: iOS Agora)`
 
 Push notifications on device:
@@ -181,11 +191,11 @@ Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_P
 - [x] iOS Bluetooth usage string (`Info.plist`)
 - [x] Heart-rate GATT read when the band exposes standard HR (`0x2A37`)
 - [x] SpO₂ GATT read when the band exposes standard PLX (`0x2A5F` / `0x2A60`)
-- [x] Vitals sync to API + offline outbox retry (`FileVitalsSyncOutbox`) — HR / SpO₂ batches only
+- [x] Vitals sync to API + offline outbox retry (`FileVitalsSyncOutbox`): HR / SpO₂ batches only
 - [x] SKU-agnostic wearable capability catalog documented (`docs/14_Wearable_Capability_Catalog.md`)
 - [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: needs physical ET580/ET585 verification; iOS not wired
-- [ ] Reliable full band data (HBand-class parity for in-scope metrics) `(partial)`: Phase 1 HR/SpO₂ hooks in; activity/sleep/history still open — see `docs/14`
-- [ ] Full typed HBand SDK C# binding project `(out of scope for Phase 1)`: JNI bridge used instead; optional later — see `docs/12_HBand_SDK_Integration.md`
+- [ ] Reliable full band data (HBand-class parity for in-scope metrics) `(partial)`: Phase 1 HR/SpO₂ hooks in; activity/sleep/history still open. See `docs/14`
+- [ ] Full typed HBand SDK C# binding project `(out of scope for Phase 1)`: JNI bridge used instead; optional later. See `docs/12_HBand_SDK_Integration.md`
 - [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: wired; awaiting device test
 - [ ] Auto sync / background monitoring of band readings `(partial)`: manual sync + outbox exist; background unproven; OS limits in `docs/14`
 - [ ] Activity (steps / kcal / distance / goals) domain + sync + mobile `(not started)`
@@ -220,11 +230,11 @@ Permissions / hardware UX:
 
 ### Step 3 status
 
-**Concept screens and patient APIs are largely in.** Device coverage is broader than UI parity: Android is ahead of iOS for video; BLE E580/E585 path exists; wearable **capability catalog** is in `docs/14`; Y6 and full HBand SDK still open. Remaining work is phone/OS verification, iOS Agora, push config, flags, store packaging, and wearables depth (live HR/SpO₂ via vendor protocol, auto sync / background, activity/sleep).
+**60%.** Concept screens and patient APIs are largely in. Android is ahead of iOS for video; BLE E580/E585 path exists; wearable catalog is in `docs/14`. Catch-up: phone/OS verification, iOS Agora, push config, store packaging, and wearables depth (live HR/SpO₂, auto sync, activity/sleep and related metrics).
 
 ---
 
-## Step 4: Staff / shared clinical APIs (non-admin-clinic)
+## Step 4: Staff / shared clinical APIs (non-admin-clinic) - 83%
 
 Broader API surface used by staff tools or integrations (not the patient app primary path).
 
@@ -238,9 +248,13 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 - [ ] Staff mental-health assessments persistence `(partial)`: list exists; real store TBD
 - [ ] Reporting depth / real dashboards beyond placeholders `(partial)` as product defines
 
+### Step 4 status
+
+**83%.** Core staff and integration controllers are in. Mental-health persistence and reporting depth still thin.
+
 ---
 
-## Cross-cutting
+## Cross-cutting - 83%
 
 - [x] Solution layers: Domain -> Application -> Persistence / Infrastructure / Identity -> API; Client -> Web / Mobile
 - [x] `RaphCare.Client` + `AddRaphCareClient` for Web and Mobile
@@ -248,6 +262,26 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 - [x] MPI / patient merge pipeline (see audit docs)
 - [x] Inpatient documented in companion docs (Step 2 docs rows)
 - [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API
+
+### Cross-cutting status
+
+**83%.** Platform wiring is solid. Missing an automated E2E smoke against a running API.
+
+---
+
+## Rollup
+
+| Area | % | Notes |
+|------|--:|-------|
+| Step 1 Admin outpatient | 100% | Clinician Mobile out of scope |
+| Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
+| Step 3 Patient Mobile | 60% | iOS video, push, wearables depth |
+| Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
+| Cross-cutting | 83% | E2E smoke open |
+| **Overall (scored items)** | **78%** | Out of scope / open optional excluded |
+| **Without wearable Phase 2+ metrics** | **82%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+
+**Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then E2E smoke script.
 
 ---
 
@@ -268,13 +302,13 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | Doc | Use for |
 |-----|---------|
 | `raphcare-feature-checklist-partner.md` | Plain-language status for non-technical partners |
-| `Mobile_Concept_Port.md` | Tokens, route map, screen visual parity |
+| [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md) | Tokens, route map, screen visual parity |
 | `Mobile_Release_Ready_Checklist.md` | Flags, quality bar, release backlog |
-| `09_Mobile_App_Guide.md` | Mobile structure, DI, config |
-| `11_Devices_BLE_E580_E585.md` | BLE bands (E580 / E585) |
-| `12_HBand_SDK_Integration.md` | HBand SDK binding path |
-| `13_Patient_Device_Packages_and_Fleet.md` | Y6 / E580 / E585 fleet SKUs |
-| `14_Wearable_Capability_Catalog.md` | SKU-agnostic band features + delivery phases |
-| `10_Agora_Twilio_Setup.md` | Telehealth RTC setup |
-| `02_Solution_Structure.md` | Project layout |
-| `06_Key_Workflows.md` | Workflow narratives (update when inpatient ships docs) |
+| [`../09_Mobile_App_Guide.md`](../09_Mobile_App_Guide.md) | Mobile structure, DI, config |
+| [`../11_Devices_BLE_E580_E585.md`](../11_Devices_BLE_E580_E585.md) | BLE bands (E580 / E585) |
+| [`../12_HBand_SDK_Integration.md`](../12_HBand_SDK_Integration.md) | HBand SDK binding path |
+| [`../13_Patient_Device_Packages_and_Fleet.md`](../13_Patient_Device_Packages_and_Fleet.md) | Y6 / E580 / E585 fleet SKUs |
+| [`../14_Wearable_Capability_Catalog.md`](../14_Wearable_Capability_Catalog.md) | SKU-agnostic band features + delivery phases |
+| [`../10_Agora_Twilio_Setup.md`](../10_Agora_Twilio_Setup.md) | Telehealth RTC setup |
+| [`../02_Solution_Structure.md`](../02_Solution_Structure.md) | Project layout |
+| [`../06_Key_Workflows.md`](../06_Key_Workflows.md) | Workflow narratives (update when inpatient ships docs) |

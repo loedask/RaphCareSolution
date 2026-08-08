@@ -7,8 +7,8 @@ alwaysApply: true
 
 Whenever you implement, finish, or materially change a feature on **API**, **Web admin**, **`RaphCare.Client`**, or **Mobile**, update **both** checklists in the same change set:
 
-1. **Engineering:** `docs/raphcare-feature-checklist.md` (APIs, Client, file-level detail, device matrix).
-2. **Partner:** `docs/raphcare-feature-checklist-partner.md` (same steps, plain language, no jargon).
+1. **Engineering:** `docs/checklist/raphcare-feature-checklist.md` (APIs, Client, file-level detail, device matrix).
+2. **Partner:** `docs/checklist/raphcare-feature-checklist-partner.md` (same steps, plain language, no jargon).
 
 **Always keep PDFs next to the markdown.** Whenever either `.md` changes, regenerate PDFs in the same change set. Do not leave PDFs stale.
 
@@ -18,21 +18,22 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareFeatu
 
 Optional: `-Which engineering` or `-Which partner`. Default is `all`.
 
-Styles: `docs/raphcare-feature-checklist.pdf.css`. Configs: `docs/*.pdf.json` next to each markdown. Commit updated `.pdf` files with the `.md` files.
+Styles: `docs/checklist/raphcare-feature-checklist.pdf.css`. Configs: `docs/checklist/*.pdf.json` next to each markdown. Commit updated `.pdf` files with the `.md` files.
 
 ## What to update
 
 1. Mark completed items `[x]` (engineering) or **Done** (partner tables).
 2. Leave incomplete items open; keep `(partial)` / `(blocked: ...)` / `(out of scope)` honest on the engineering doc.
 3. Mirror status on the partner doc with simple words (Done / Partial / Not started / Not for mobile).
-4. Set **Last reviewed** on **both** docs to today's date.
-5. If you invent a new feature area, add a row under the right step in **both** docs.
-6. When changing **phones / OS / wearables / push / video**, update the **Mobile device coverage** section (engineering) and the **Phones and devices** table (partner).
+4. **Recalculate completion %** on both docs (overall at top, each section heading, status note, and Rollup table). Use the scoring rules already written in each file (same idea as BOQ_PREAP: done 100, done-partial 50, open-partial 25, open 0; exclude out-of-scope / "not for …" from the average).
+5. Set **Last reviewed** on **both** docs to today's date.
+6. If you invent a new feature area, add a row under the right step in **both** docs.
+7. When changing **phones / OS / wearables / push / video**, update the **Mobile device coverage** section (engineering) and the **Phones and devices** table (partner).
 
 ## Related docs (do not replace the checklists)
 
 - **Mobile visual parity:** `docs/Mobile_Concept_Port.md`
-- **Mobile release gates:** `docs/Mobile_Release_Ready_Checklist.md`
+- **Mobile release gates:** `docs/checklist/Mobile_Release_Ready_Checklist.md`
 - **Wearables / fleet:** `docs/11_Devices_BLE_E580_E585.md`, `docs/12_HBand_SDK_Integration.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`
 - **Layer order:** backend first, then Client, then Web / Mobile (see **raphcare-solution-layers**)
 

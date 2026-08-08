@@ -6,18 +6,24 @@ PDF: [`raphcare-feature-checklist-partner.pdf`](raphcare-feature-checklist-partn
 
 Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md)
 
+**Overall completion:** **74%**
+
 **How to read this**
 
-- **Done:** you can use it today (in admin web, patient app, or both as noted).
-- **Partial:** something works, but a piece is missing or only works on one phone type.
-- **Not started:** not built yet (or not planned for that product surface).
-- **Not for mobile:** staff/admin work stays in the web admin panel on purpose.
+- **Done** = 100% of that row
+- **Partial** = 50%
+- **Not started** = 0%
+- **Not for mobile** / **Not for clinical v1** / **Not for BLE** = left out of the % on purpose
+- Section % = average of that section's scored rows
+- Overall % = average of all scored rows in sections 1-4
+
+Each section shows its % in the heading. Numbers stay in sync with the engineering checklist when status changes.
 
 Last reviewed: 2026-08-08
 
 ---
 
-## 1. Hospital admin (outpatient)
+## 1. Hospital admin (outpatient) - 100%
 
 What staff do in the **web admin panel** for day-to-day clinic work (not overnight beds).
 
@@ -34,11 +40,11 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Dashboard numbers | Done | See clinic metrics |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line:** outpatient hospital admin is ready on the web.
+**Bottom line (100%):** outpatient hospital admin is ready on the web.
 
 ---
 
-## 2. Inpatient (wards, beds, admit / discharge)
+## 2. Inpatient (wards, beds, admit / discharge) - 100%
 
 Overnight stays: set up rooms and beds, put a patient in a bed, discharge them.
 
@@ -54,11 +60,11 @@ Overnight stays: set up rooms and beds, put a patient in a bed, discharge them.
 | Past admission history | Done | Filterable history list with load more |
 | Same board in the **phone app** | Not for mobile | Unless we later build a clinician app |
 
-**Bottom line:** inpatient lifecycle is complete in admin web (capacity, maintenance, transfer, history).
+**Bottom line (100%):** inpatient lifecycle is complete in admin web (capacity, maintenance, transfer, history).
 
 ---
 
-## 3. Patient phone app
+## 3. Patient phone app - 58%
 
 What patients see on Android / iPhone.
 
@@ -106,11 +112,11 @@ What patients see on Android / iPhone.
 
 **Wearable feature list (survives changing watch models):** `docs/14_Wearable_Capability_Catalog.md`
 
-**Bottom line:** the patient app screens are largely there. Catch-up work is mostly **iPhone video**, **real push**, **wearables depth** (live vitals, full sync, background), and **testing the same flows on both phone types**.
+**Bottom line (58%):** the patient app screens are largely there. Catch-up work is mostly **iPhone video**, **real push**, **wearables depth** (live vitals, full sync, background), and **testing the same flows on both phone types**.
 
 ---
 
-## 4. Other staff / system pieces
+## 4. Other staff / system pieces - 80%
 
 | Area | Status | Notes |
 |------|--------|-------|
@@ -119,6 +125,20 @@ What patients see on Android / iPhone.
 | Emergency webhook | Done | Integration hook |
 | Staff mental-health assessment store | Partial | List exists; deeper storage later |
 | Reporting / big dashboards | Partial | Grows with product needs |
+
+**Bottom line (80%):** core APIs and hooks are in; deeper mental-health storage and reporting grow with product needs.
+
+---
+
+## Rollup
+
+| Area | % | Notes |
+|------|--:|-------|
+| 1. Hospital admin (outpatient) | 100% | Ready on web |
+| 2. Inpatient | 100% | Ready on web |
+| 3. Patient phone app | 58% | iPhone video, push, wearables |
+| 4. Other staff / system | 80% | Storage and reporting polish |
+| **Overall** | **74%** | Excludes "not for mobile / clinical / BLE" rows |
 
 ---
 
@@ -137,6 +157,6 @@ What patients see on Android / iPhone.
 |-----|----------------|
 | This file | Partners, product, demos |
 | `raphcare-feature-checklist.md` | Engineers |
-| `14_Wearable_Capability_Catalog.md` | Watch/band features RaphCare should support (even if the model changes) |
+| [`../14_Wearable_Capability_Catalog.md`](../14_Wearable_Capability_Catalog.md) | Watch/band features RaphCare should support (even if the model changes) |
 | `Mobile_Release_Ready_Checklist.md` | Release / pilot go-live |
-| `13_Patient_Device_Packages_and_Fleet.md` | Watch / band product packages |
+| [`../13_Patient_Device_Packages_and_Fleet.md`](../13_Patient_Device_Packages_and_Fleet.md) | Watch / band product packages |

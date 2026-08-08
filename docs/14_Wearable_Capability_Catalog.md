@@ -159,4 +159,4 @@ Device Info on samples used names **ET585** / **ET580** (see name filter in `E58
 2. Update **On sample watches** / SKU notes in `docs/13`.  
 3. Adjust `E585E580DeviceFilter` (or successor) for advertisement names.  
 4. Re-run nRF Connect + HBand SDK compatibility; do **not** assume GATT UUIDs stay identical.  
-5. Update both feature checklists (`raphcare-feature-checklist.md` and partner twin) and regenerate PDFs.
+5. Update both feature checklists under `docs/checklist/` (`raphcare-feature-checklist.md` and partner twin) and regenerate PDFs.

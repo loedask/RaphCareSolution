@@ -10,7 +10,7 @@ This doc is the **single runbook** to get **RaphCare.API** and **RaphCare.Mobile
 | Phone OTP behavior | [06_Key_Workflows.md](./06_Key_Workflows.md) |
 | Mobile project layout, flags, voice clinic | [09_Mobile_App_Guide.md](./09_Mobile_App_Guide.md) |
 | Agora / Twilio (telehealth, SMS) | [10_Agora_Twilio_Setup.md](./10_Agora_Twilio_Setup.md) |
-| Release / completeness bar | [Mobile_Release_Ready_Checklist.md](./Mobile_Release_Ready_Checklist.md) |
+| Release / completeness bar | [Mobile_Release_Ready_Checklist.md](./checklist/Mobile_Release_Ready_Checklist.md) |
 | Azure test host + Play Internal | [Mobile_Android_Test_Hosting.md](./Mobile_Android_Test_Hosting.md) |
 
 ---
@@ -153,7 +153,7 @@ Using **`http://10.0.2.2:5281/`** with the API **`http`** profile is often the s
 | **Telehealth / Agora** (Android in-app video) | **`AgoraRtc`** on API — [10_Agora_Twilio_Setup.md](./10_Agora_Twilio_Setup.md) |
 | **Real SMS** | **`Twilio`** on API when not using Development log OTP |
 | **AI assistant (real model)** | **`PatientAssistant`** Azure OpenAI keys on API — see API **`appsettings.json`** / checklist |
-| **Push notifications** | **`FirebasePush:ServiceAccountJsonPath`** on API — [Mobile_Release_Ready_Checklist.md](./Mobile_Release_Ready_Checklist.md) |
+| **Push notifications** | **`FirebasePush:ServiceAccountJsonPath`** on API — [Mobile_Release_Ready_Checklist.md](./checklist/Mobile_Release_Ready_Checklist.md) |
 | **Appointments demo defaults** | **`Appointments:DefaultClinicId`** / **`DefaultProviderId`** in mobile **`appsettings.Development.json`** — seeded demo IDs: `11111111-1111-1111-1111-111111111101` (clinic) and `11111111-1111-1111-1111-111111111102` (provider) |
 
 None of these are required to **open the app**, sign in (Entra or phone OTP), and browse **Settings** and other enabled areas.
