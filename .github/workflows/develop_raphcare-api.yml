@@ -1,7 +1,7 @@
 # Docs: https://github.com/Azure/webapps-deploy
-# Deploys RaphCare.API -> Azure App Service "raphcareapi"
+# Deploys RaphCare.API -> Azure App Service "raphcare-api"
 
-name: Build and deploy API - raphcareapi
+name: Build and deploy API - raphcare-api
 
 on:
   push:
@@ -64,6 +64,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'raphcareapi'
+          app-name: 'raphcare-api'
           slot-name: 'Production'
           package: .
