@@ -31,7 +31,7 @@ Client  ←  referenced by Web / Mobile (HTTP + DTOs only; not a vertical “lay
 - **Identity** — Entra JWT validation, provisioning, role mapping. References **Application + Domain**. Does **not** reference **Persistence** (store implementation lives in Persistence).
 - **API** — Controllers, middleware, Swagger, startup. References **Application, Infrastructure, Persistence, Identity**. **No business rules** in controllers—**`IMediator`** only.
 - **Client** — Shared HTTP client layer (**`I*Service`** facades, **`BaseHttpService`**, **`IAccessTokenProvider`** hook for Bearer). Used by **Web** and **Mobile**; do **not** duplicate API contracts inside Mobile beyond UI state.
-- **Web** — Blazor WASM UI; uses **Client** (and typically auth like the rest of the stack).
+- **Web** — Blazor WASM UI (`RaphCare.Web`); Linux App Service hosting uses thin **`RaphCare.Web.Host`** (SPA fallback). Uses **Client**.
 - **Mobile** — MAUI app; **Kernel** (flags, `AuthResult`) + **Client** for API; see **raphcare-mobile** rule and **docs/09_Mobile_App_Guide.md**.
 
 ## One-line responsibilities
@@ -45,7 +45,7 @@ Client  ←  referenced by Web / Mobile (HTTP + DTOs only; not a vertical “lay
 | **Identity** | Entra/JWT options, token validation, provisioning pipeline | EF mappings for clinical data |
 | **API** | REST surface, middleware, DI composition entry for the host | MediatR handler bodies; domain rules |
 | **Client** | Hand-written **`I*Service`** + **`HttpClient`**, **`AddRaphCareClient`** | Domain entities; app use cases |
-| **Web** | Blazor UI, WASM host concerns | Duplicating Application handlers |
+| **Web** | Blazor UI (`RaphCare.Web`); Linux host (`RaphCare.Web.Host`) | Duplicating Application handlers |
 | **Mobile** | Shell, pages, VMs, platform auth bridge to **`IAccessTokenProvider`** | Hand-rolled duplicate of **Client** API types |
 | **Mobile.Kernel** | Small **net10.0** types shared with tests (flags, auth result) | MAUI or HTTP |
 

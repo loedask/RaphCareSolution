@@ -11,7 +11,8 @@
 | RaphCare.Persistence | DbContexts, EF configurations, repositories, migrations, seeders |
 | RaphCare.Identity | Entra ID JWT validation, user provisioning, role mapping |
 | RaphCare.Client | Shared API client (generated client, base HTTP service, feature services, AutoMapper) |
-| RaphCare.Web | Blazor WebAssembly front-end |
+| RaphCare.Web | Blazor WebAssembly admin UI (run locally with `dotnet run`) |
+| RaphCare.Web.Host | Thin ASP.NET host that serves `RaphCare.Web` for Linux App Service (SPA fallback) |
 | RaphCare.Mobile | .NET MAUI mobile app |
 
 ## Folder Breakdown by Project
@@ -72,6 +73,12 @@
 
 ### RaphCare.Web
 - Blazor WASM structure (App, components, pages, etc.); references RaphCare.Client
+- Local development: `dotnet run --project RaphCare.Web`
+
+### RaphCare.Web.Host
+- Thin ASP.NET Core host (`UseBlazorFrameworkFiles`, static files, `MapFallbackToFile("index.html")`)
+- Project reference to **RaphCare.Web**; publish this project (not WASM alone) to **Linux** App Service
+- Same approach as Bobeta `Bobeta.Web.Host`
 
 ### RaphCare.Mobile.Kernel
 - **net10.0** class library (no MAUI): `AuthResult`, `FeatureFlags`, `FeatureFlagOptions` — same CLR namespaces as before (`RaphCare.Mobile.Core.Common.*`) so the MAUI app references this assembly for shared, testable primitives. Unit tests target Kernel only.

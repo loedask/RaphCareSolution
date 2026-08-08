@@ -7,13 +7,13 @@ Runbook to put the **patient Android app** and **hosted API / admin Web** online
 | Piece | Azure / Google resource |
 |-------|-------------------------|
 | Patient Android app | Google Play **Internal testing** track |
-| API | App Service `raphcare-api-test` (default name) |
-| Admin Web (Blazor WASM) | Storage static website |
-| Database | Azure SQL database `raphcare` |
-| Sign-in | Entra app registrations in your tenant |
+| API | App Service `raphcare-api` |
+| Admin Web (Blazor WASM) | Linux App Service `raphcare` via **`RaphCare.Web.Host`** |
+| Database | Azure SQL database |
+| Sign-in | Entra app registrations in your tenant (optional for phone OTP) |
 | Ops mailbox | `raphcare@yindula.com` |
 
-Default resource group: **`rg-raphcare-test`**.
+Default resource group: **`raphcare_group`** (or `rg-raphcare-test` from scripts).
 
 ## Scripts (repo)
 
@@ -25,7 +25,7 @@ Default resource group: **`rg-raphcare-test`**.
 | [`scripts/Set-RaphCareAzureTestAppSettings.ps1`](../scripts/Set-RaphCareAzureTestAppSettings.ps1) | Push connection string, Entra, JWT, CORS, SMTP into App Service |
 | [`scripts/Update-RaphCareAzureSqlMigrations.ps1`](../scripts/Update-RaphCareAzureSqlMigrations.ps1) | Apply all EF contexts to Azure SQL |
 | [`scripts/Publish-RaphCareApiToAzure.ps1`](../scripts/Publish-RaphCareApiToAzure.ps1) | `dotnet publish` + zip deploy API |
-| [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish Blazor WASM to `$web` container |
+| [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish **`RaphCare.Web.Host`** (linux-x64) to App Service `raphcare` |
 | [`scripts/New-RaphCareAndroidUploadKeystore.ps1`](../scripts/New-RaphCareAndroidUploadKeystore.ps1) | Create upload keystore (gitignored path) |
 | [`scripts/Publish-RaphCareAndroidPlay.ps1`](../scripts/Publish-RaphCareAndroidPlay.ps1) | Signed Release AAB for Play Internal |
 
@@ -38,7 +38,7 @@ App Service names in this setup:
 | Azure App Service | Project | Workflow |
 |-------------------|---------|----------|
 | **`raphcare-api`** | `RaphCare.API` | [`.github/workflows/develop_raphcare-api.yml`](../.github/workflows/develop_raphcare-api.yml) |
-| **`raphcare`** | `RaphCare.Web` (Blazor WASM `wwwroot`) | [`.github/workflows/develop_raphcare.yml`](../.github/workflows/develop_raphcare.yml) |
+| **`raphcare`** | `RaphCare.Web.Host` (serves WASM) | [`.github/workflows/develop_raphcare.yml`](../.github/workflows/develop_raphcare.yml) |
 
 Both deploy from **`develop`**. Path filters avoid rebuilding Mobile on every push.
 
@@ -139,8 +139,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareWebT
 
 Smoke:
 
-- Open `https://<api-app>.azurewebsites.net/` (expect no Swagger in Production).
-- Open the static Web URL; admin UI should call the API (CORS uses `RaphCare:WebPortalBaseUrl` / `Cors:WebAdminOrigins`).
+- Open `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net/` (expect no Swagger in Production).
+- Open `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net/`; admin UI should call the API (CORS uses `RaphCare:WebPortalBaseUrl` / `Cors:WebAdminOrigins`).
 - Sign in with an Entra user that has the right app role, or exercise phone OTP if Twilio is configured.
 
 ### Code notes already in the repo
@@ -148,6 +148,7 @@ Smoke:
 - API CORS reads `Cors:WebAdminOrigins` and `RaphCare:WebPortalBaseUrl` ([`Program.cs`](../RaphCare.API/Program.cs)).
 - Mobile package id: **`com.yindula.raphcare`**.
 - Release builds load [`appsettings.TestHosting.json`](../RaphCare.Mobile/appsettings.TestHosting.json) (API base URL). Publish scripts rewrite that URL to match your App Service hostname.
+- **Linux Web publish:** use **`RaphCare.Web.Host`** (Zip Deploy / GitHub Actions), not standalone `RaphCare.Web`. Local admin UI can still `dotnet run` on `RaphCare.Web`.
 
 ---
 

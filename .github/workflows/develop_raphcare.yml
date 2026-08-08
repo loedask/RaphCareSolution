@@ -1,5 +1,5 @@
 # Docs: https://github.com/Azure/webapps-deploy
-# Deploys RaphCare.Web (Blazor WASM) -> Azure App Service "raphcare"
+# Deploys RaphCare.Web.Host (serves Blazor WASM) -> Azure App Service "raphcare" (Linux)
 
 name: Build and deploy Web - raphcare
 
@@ -9,6 +9,7 @@ on:
       - develop
     paths:
       - 'RaphCare.Web/**'
+      - 'RaphCare.Web.Host/**'
       - 'RaphCare.Client/**'
       - 'RaphCare.Domain/**'
       - 'Directory.Build.props'
@@ -40,14 +41,19 @@ jobs:
           printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Web/wwwroot/appsettings.json
           cat RaphCare.Web/wwwroot/appsettings.json
 
-      - name: Publish Web
-        run: dotnet publish RaphCare.Web/RaphCare.Web.csproj -c Release -o ./publish-web
+      - name: Publish Web Host (linux-x64)
+        run: >
+          dotnet publish RaphCare.Web.Host/RaphCare.Web.Host.csproj
+          -c Release
+          -r linux-x64
+          --self-contained false
+          -o ./publish-web
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: raphcare-web
-          path: ./publish-web/wwwroot
+          path: ./publish-web
 
   deploy:
     runs-on: ubuntu-latest

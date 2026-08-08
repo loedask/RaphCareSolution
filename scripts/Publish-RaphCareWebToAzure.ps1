@@ -1,10 +1,16 @@
 <#
 .SYNOPSIS
-  Publishes RaphCare.Web (Blazor WASM) to the Azure Storage static website ($web).
+  Publishes RaphCare.Web.Host (Linux) and zip-deploys it to App Service "raphcare".
+.NOTES
+  Do not publish RaphCare.Web alone to Linux App Service. Standalone Blazor WASM is static files;
+  the thin host provides SPA fallback and correct framework MIME types (same pattern as Bobeta.Web.Host).
 #>
 [CmdletBinding()]
 param(
-    [string] $EnvironmentJsonPath = ""
+    [string] $EnvironmentJsonPath = "",
+    [string] $WebAppName = "raphcare",
+    [string] $ResourceGroup = "raphcare_group",
+    [string] $ApiBaseUrl = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,38 +18,49 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 if (-not $EnvironmentJsonPath) {
     $EnvironmentJsonPath = Join-Path $repoRoot "artifacts\azure-test-environment.json"
 }
-if (-not (Test-Path $EnvironmentJsonPath)) {
-    throw "Missing $EnvironmentJsonPath. Run New-RaphCareAzureTestEnvironment.ps1 first."
-}
 
 az account show -o none 2>$null
 if ($LASTEXITCODE -ne 0) { throw "Azure CLI is not logged in. Run: az login" }
 
-$envInfo = Get-Content $EnvironmentJsonPath -Raw | ConvertFrom-Json
-$publishDir = Join-Path $repoRoot "artifacts\publish-web"
+if (-not $ApiBaseUrl -and (Test-Path $EnvironmentJsonPath)) {
+    $ApiBaseUrl = (Get-Content $EnvironmentJsonPath -Raw | ConvertFrom-Json).apiBaseUrl
+}
+if (-not $ApiBaseUrl) {
+    $ApiBaseUrl = "https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net"
+}
+$ApiBaseUrl = $ApiBaseUrl.TrimEnd('/')
+
+if (Test-Path $EnvironmentJsonPath) {
+    $envInfo = Get-Content $EnvironmentJsonPath -Raw | ConvertFrom-Json
+    if ($envInfo.resourceGroup) { $ResourceGroup = $envInfo.resourceGroup }
+}
+
+$webAppSettingsPath = Join-Path $repoRoot "RaphCare.Web\wwwroot\appsettings.json"
+@{ ApiBaseUrl = $ApiBaseUrl } | ConvertTo-Json | Set-Content $webAppSettingsPath -Encoding UTF8
+Write-Host "ApiBaseUrl -> $ApiBaseUrl"
+
+$publishDir = Join-Path $repoRoot "artifacts\publish-web-host"
+$zipPath = Join-Path $repoRoot "artifacts\raphcare-web-host.zip"
 Remove-Item -Recurse -Force $publishDir -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $publishDir | Out-Null
 
-Write-Host "dotnet publish RaphCare.Web ..."
-dotnet publish (Join-Path $repoRoot "RaphCare.Web\RaphCare.Web.csproj") `
+Write-Host "dotnet publish RaphCare.Web.Host (linux-x64) ..."
+dotnet publish (Join-Path $repoRoot "RaphCare.Web.Host\RaphCare.Web.Host.csproj") `
     -c Release `
+    -r linux-x64 `
+    --self-contained false `
     -o $publishDir
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
 
-$wwwroot = Join-Path $publishDir "wwwroot"
-if (-not (Test-Path $wwwroot)) {
-    throw "Expected wwwroot under $publishDir"
-}
+if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+Compress-Archive -Path (Join-Path $publishDir "*") -DestinationPath $zipPath -Force
 
-$appsettingsPath = Join-Path $wwwroot "appsettings.json"
-@{ ApiBaseUrl = $envInfo.apiBaseUrl.TrimEnd('/') } | ConvertTo-Json | Set-Content $appsettingsPath -Encoding UTF8
-
-Write-Host "Uploading to `$web on $($envInfo.storageAccountName) ..."
-az storage blob upload-batch `
-    --account-name $envInfo.storageAccountName `
-    --destination '$web' `
-    --source $wwwroot `
-    --overwrite true `
+Write-Host "Deploying to $WebAppName ..."
+az webapp deploy `
+    --resource-group $ResourceGroup `
+    --name $WebAppName `
+    --src-path $zipPath `
+    --type zip `
     -o none
 
-Write-Host "Web published: $($envInfo.webPortalBaseUrl)"
+Write-Host "Web host published to App Service $WebAppName"
