@@ -15,7 +15,7 @@ on:
       - 'RaphCare.Infrastructure/**'
       - 'RaphCare.Persistence/**'
       - 'Directory.Build.props'
-      - '.github/workflows/develop_raphcareapi.yml'
+      - '.github/workflows/develop_raphcare-api.yml'
   workflow_dispatch:
 
 jobs:

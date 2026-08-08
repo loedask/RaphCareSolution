@@ -37,7 +37,7 @@ App Service names in this setup:
 
 | Azure App Service | Project | Workflow |
 |-------------------|---------|----------|
-| **`raphcareapi`** | `RaphCare.API` | [`.github/workflows/develop_raphcareapi.yml`](../.github/workflows/develop_raphcareapi.yml) |
+| **`raphcareapi`** | `RaphCare.API` | [`.github/workflows/develop_raphcare-api.yml`](../.github/workflows/develop_raphcare-api.yml) |
 | **`raphcare`** | `RaphCare.Web` (Blazor WASM `wwwroot`) | [`.github/workflows/develop_raphcare.yml`](../.github/workflows/develop_raphcare.yml) |
 
 Both deploy from **`develop`**. Path filters avoid rebuilding Mobile on every push.
