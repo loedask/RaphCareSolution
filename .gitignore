@@ -16,6 +16,8 @@ RaphCare.Web/obj/
 RaphCare.Client/obj/
 RaphCare.Mobile/bin/
 RaphCare.Web/bin/
+RaphCare.Web.Host/obj/
+RaphCare.Web.Host/bin/
 RaphCare.Client/bin/
 RaphCare.Mobile.Kernel/obj/
 RaphCare.Mobile.Kernel/bin/
