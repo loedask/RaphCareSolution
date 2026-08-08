@@ -13,7 +13,8 @@ public static class DatabaseMigrationExtensions
 
         var env = services.GetRequiredService<IWebHostEnvironment>();
 
-        if (!env.IsDevelopment())
+        // Local Development and Azure Staging / test hosts. Production stays manual / CI migrate.
+        if (!env.IsDevelopment() && !env.IsStaging())
             return;
 
         var contexts = new DbContext[]

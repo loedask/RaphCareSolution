@@ -36,7 +36,7 @@ if (-not $WebPortalBaseUrl) { $WebPortalBaseUrl = $envInfo.webPortalBaseUrl }
 
 $authority = "https://login.microsoftonline.com/$TenantId/v2.0"
 $settings = @(
-    "ASPNETCORE_ENVIRONMENT=Production"
+    "ASPNETCORE_ENVIRONMENT=Staging"
     "ConnectionStrings__DefaultConnection=$($envInfo.connectionString)"
     "Entra__TenantId=$TenantId"
     "Entra__Authority=$authority"

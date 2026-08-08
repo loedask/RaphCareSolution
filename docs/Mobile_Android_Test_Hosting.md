@@ -122,11 +122,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Set-RaphCareAzureTes
 
 ## Phase 3: Database migrations
 
-Production does **not** auto-migrate. From a machine that can reach Azure SQL (firewall rule for your IP is added by the provision script):
+Set App Service **`ASPNETCORE_ENVIRONMENT=Staging`** on **raphcare-api**. Startup then runs `ApplyMigrationsAsync` (migrate + seed) automatically.
+
+You can still migrate from a PC that can reach Azure SQL:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Update-RaphCareAzureSqlMigrations.ps1
 ```
+
+Production should keep **`ASPNETCORE_ENVIRONMENT=Production`** (no auto-migrate).
 
 ---
 

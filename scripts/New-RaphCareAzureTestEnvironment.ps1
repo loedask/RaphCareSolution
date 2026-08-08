@@ -117,7 +117,7 @@ az webapp config appsettings set `
     --resource-group $ResourceGroup `
     --name $ApiAppName `
     --settings `
-        ASPNETCORE_ENVIRONMENT=Production `
+        ASPNETCORE_ENVIRONMENT=Staging `
         WEBSITE_RUN_FROM_PACKAGE=1 `
     -o none
 

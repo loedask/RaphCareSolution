@@ -24,6 +24,6 @@ RaphCare is a healthcare platform supporting clinical workflows, patient managem
 
 ## Deployment Model
 
-- **API:** Single deployable (ASP.NET Core host). Migrations run automatically in Development only via `ApplyMigrationsAsync` at startup. Swagger and root-URL redirect to `/swagger` are enabled in Development only.
+- **API:** Single deployable (ASP.NET Core host). Migrations run automatically in **Development** and **Staging** via `ApplyMigrationsAsync` at startup. Swagger and root-URL redirect to `/swagger` are enabled in Development only.
 - **Databases:** One or more SQL Server databases; each bounded context can use a dedicated connection string (e.g. DefaultConnection, IdentityConnection, ClinicalConnection, DeviceConnection, InsuranceConnection) or share one.
 - **Clients:** Blazor WASM and MAUI consume the API via RaphCare.Client; base URL and auth are configured at host level (no hardcoded base URL in client).

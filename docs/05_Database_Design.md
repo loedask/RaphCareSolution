@@ -34,5 +34,5 @@ Entity configurations are applied via EF Core model builder (configurations in I
 ## Migration Strategy
 
 - Migrations are generated and stored in RaphCare.Persistence (assembly RaphCare.Persistence). Each DbContext has its own set of migrations.
-- **ApplyMigrationsAsync** (DatabaseMigrationExtensions, in App/Extensions): runs only in Development. Creates a scope and calls `Database.MigrateAsync()` on ClinicalDbContext, DeviceDbContext, InsuranceDbContext, BillingDbContext, AIDbContext, IdentityDbContext in that order. Invoked from API Program.cs after Build, before Run.
+- **ApplyMigrationsAsync** (DatabaseMigrationExtensions, in App/Extensions): runs in **Development** and **Staging**. Creates a scope and calls `Database.MigrateAsync()` on ClinicalDbContext, DeviceDbContext, InsuranceDbContext, BillingDbContext, AIDbContext, IdentityDbContext in that order, then seeds. Invoked from API Program.cs after Build, before Run. Production does not auto-migrate.
 - Production: migrations are not auto-applied by this code; deploy via your own process (e.g. CI/CD or manual).

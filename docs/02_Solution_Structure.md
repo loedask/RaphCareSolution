@@ -20,7 +20,7 @@
 ### RaphCare.API
 - **Controllers/** — REST controllers (Patients, Appointments, Clinical, Devices, Insurance, Billing, Telemedicine, MentalHealth, AI, Reporting, Auth, VoiceOnboarding); all use `api/[controller]` and MediatR; AuthController at `api/auth/otp` (POST send, POST verify); VoiceOnboardingController at `api/onboarding` (POST voice, multipart); PatientsController uses `Name` on actions for Swagger operationId (GetPatientById, GetPatientsPaginated, CreatePatient, UpdatePatient)
 - **App/Middleware/** — ExceptionHandlingMiddleware, TenantResolutionMiddleware, AuditMiddleware
-- **App/Extensions/** — DatabaseMigrationExtensions (ApplyMigrationsAsync for Development), SwaggerExtensions (AddRaphCareSwagger, UseRaphCareSwagger; root redirect to /swagger in Development)
+- **App/Extensions/** — DatabaseMigrationExtensions (ApplyMigrationsAsync for Development and Staging), SwaggerExtensions (AddRaphCareSwagger, UseRaphCareSwagger; root redirect to /swagger in Development)
 - **App/Contracts/** — CreatePatientResponse (OpenAPI response type for POST patients)
 
 ### RaphCare.Application

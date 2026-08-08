@@ -76,10 +76,10 @@ builder.Services.AddRaphCareSwagger();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
-{
     app.UseRaphCareSwagger();
+
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
     await app.ApplyMigrationsAsync();
-}
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Development: mobile emulator calls http://10.0.2.2:5281; HTTPS redirect breaks on untrusted dev certs.
