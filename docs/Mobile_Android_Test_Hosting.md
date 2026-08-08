@@ -52,11 +52,19 @@ In the GitHub repo → **Settings → Secrets and variables → Actions**:
 | `AZURE_SUBSCRIPTION_ID` | Shared subscription id |
 | `AZURE_CLIENT_ID_RAPHCAREAPI` | User-assigned identity client id for **raphcare-api** |
 | `AZURE_CLIENT_ID_RAPHCARE` | User-assigned identity client id for **raphcare** |
-| `RAPHCARE_API_BASE_URL` (variable, optional) | Web `ApiBaseUrl`; default `https://raphcare-api.azurewebsites.net` |
+| `RAPHCARE_API_BASE_URL` (variable, optional) | Web `ApiBaseUrl`; default `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net` |
 
 Wire each App Service identity for GitHub OIDC (Deployment Center user-assigned identity, or federated credential on the managed identity). If Azure already created secret names like `AZUREAPPSERVICE_CLIENTID_...`, either rename them to match the table or edit the workflow `secrets.*` keys to match Azure's names.
 
-After first API deploy, set App Service **Configuration** on **raphcare-api** (SQL connection string, Entra, JWT, CORS including the **raphcare** origin).
+After first API deploy, set App Service **Configuration** on **raphcare-api** (SQL connection string, Entra, JWT, CORS). Use these origins for direct app-to-API calls (no API Management):
+
+- `RaphCare__WebPortalBaseUrl` = `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net`
+- `Cors__WebAdminOrigins__0` = `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net`
+
+| App | URL |
+|-----|-----|
+| Web (`raphcare`) | `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net` |
+| API (`raphcare-api`) | `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net` |
 
 ---
 

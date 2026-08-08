@@ -34,7 +34,7 @@ jobs:
         run: |
           api_base="${{ vars.RAPHCARE_API_BASE_URL }}"
           if [ -z "$api_base" ]; then
-            api_base="https://raphcare-api.azurewebsites.net"
+            api_base="https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net"
           fi
           api_base="${api_base%/}"
           printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Web/wwwroot/appsettings.json
