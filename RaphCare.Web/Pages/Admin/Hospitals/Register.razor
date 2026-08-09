@@ -1,41 +1,43 @@
 @page "/admin/hospitals/register"
 @layout AdminLayout
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>Register hospital — RaphCare Admin</PageTitle>
+<PageTitle>@AppResources.T("HospitalsRegister_PageTitle")</PageTitle>
 
 @if (_completed && _result is not null)
 {
     <section class="admin-page onboarding-success">
         <div class="success-card">
             <div class="success-icon" aria-hidden="true">✓</div>
-            <h1>@_result.Name is registered</h1>
-            <p class="text-muted">The hospital is active on the platform. Patients can select it during registration once staff are provisioned.</p>
+            <h1>@AppResources.Format("Common_HospitalRegisteredTitle", _result.Name)</h1>
+            <p class="text-muted">@AppResources.T("Common_HospitalRegisteredLead")</p>
 
             <div class="review-grid">
                 <div class="review-item">
-                    <span class="review-label">Hospital ID</span>
+                    <span class="review-label">@AppResources.T("Common_HospitalId")</span>
                     <span class="review-value"><code>@_result.ClinicId</code></span>
                 </div>
                 @if (_result.PrimaryFacilityName is not null)
                 {
                     <div class="review-item">
-                        <span class="review-label">Primary facility</span>
+                        <span class="review-label">@AppResources.T("Common_PrimaryFacility")</span>
                         <span class="review-value">@_result.PrimaryFacilityName</span>
                     </div>
                 }
                 @if (!string.IsNullOrWhiteSpace(_draft.AdminEmail))
                 {
                     <div class="review-item">
-                        <span class="review-label">Admin contact (pending)</span>
+                        <span class="review-label">@AppResources.T("Common_AdminContactPending")</span>
                         <span class="review-value">@_draft.AdminFullName — @_draft.AdminEmail</span>
                     </div>
                 }
             </div>
 
             <div class="admin-page-actions">
-                <a class="btn btn-primary" href="/admin/hospitals/@_result.ClinicId">Open hospital</a>
-                <a class="btn btn-secondary" href="/admin/hospitals">View all hospitals</a>
-                <button type="button" class="btn btn-secondary" @onclick="StartAnotherAsync">Register another</button>
+                <a class="btn btn-primary" href="/admin/hospitals/@_result.ClinicId">@AppResources.T("Common_OpenHospital")</a>
+                <a class="btn btn-secondary" href="/admin/hospitals">@AppResources.T("Common_ViewAllHospitals")</a>
+                <button type="button" class="btn btn-secondary" @onclick="StartAnotherAsync">@AppResources.T("Common_RegisterAnother")</button>
             </div>
         </div>
     </section>
@@ -43,8 +45,8 @@
 else
 {
     <section class="admin-page onboarding-page">
-        <div class="lifecycle-stepper" aria-label="Onboarding progress">
-            @foreach (var s in _steps)
+        <div class="lifecycle-stepper" aria-label="@AppResources.T("Common_OnboardingProgressAria")">
+            @foreach (var s in Steps)
             {
                 var done = s.Id < _step;
                 var active = s.Id == _step;
@@ -72,15 +74,15 @@ else
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Hospital onboarding · Step @_step of @_stepCount</p>
-                    <h1>@_stepMeta.Title</h1>
-                    @if (!string.IsNullOrEmpty(_stepMeta.Subtitle))
+                    <p class="admin-page-eyebrow">@AppResources.Format("Common_HospitalOnboardingEyebrow", _step, _stepCount)</p>
+                    <h1>@StepMeta.Title</h1>
+                    @if (!string.IsNullOrEmpty(StepMeta.Subtitle))
                     {
-                        <p class="admin-page-lead">@_stepMeta.Subtitle</p>
+                        <p class="admin-page-lead">@StepMeta.Subtitle</p>
                     }
                 </div>
                 <div class="admin-page-head-meta">
-                    <span class="admin-progress-pill">@_progressPercent% complete</span>
+                    <span class="admin-progress-pill">@AppResources.Format("Common_PercentComplete", _progressPercent)</span>
                 </div>
             </header>
 
@@ -95,8 +97,8 @@ else
                     <p class="admin-alert-text">@_submitError</p>
                     @if (_authRetryRequired)
                     {
-                        <p class="admin-alert-hint">Your hospital details are saved on this device. Sign in again, then return here to finish registration.</p>
-                        <a class="btn btn-secondary btn-sm" href="@_signInReturnUrl">Sign in and continue</a>
+                        <p class="admin-alert-hint">@AppResources.T("Common_AuthRetryHint")</p>
+                        <a class="btn btn-secondary btn-sm" href="@_signInReturnUrl">@AppResources.T("Common_SignInAndContinue")</a>
                     }
                 </div>
             }
@@ -105,22 +107,22 @@ else
                 @switch (_step)
                 {
                     case 1:
-                        <p class="onboarding-intro">Register a new healthcare organization on RaphCare. This wizard collects hospital identity, a primary facility, and an administrator contact for follow-up provisioning.</p>
+                        <p class="onboarding-intro">@AppResources.T("HospitalsRegister_Intro")</p>
                         <div class="feature-card-grid">
                             <div class="feature-card">
                                 <div class="feature-card-icon hospital">⌂</div>
-                                <h3>Hospital tenant</h3>
-                                <p>Creates the clinic record and regional settings for your organization.</p>
+                                <h3>@AppResources.T("HospitalsRegister_FeatureTenantTitle")</h3>
+                                <p>@AppResources.T("HospitalsRegister_FeatureTenantDesc")</p>
                             </div>
                             <div class="feature-card">
                                 <div class="feature-card-icon facility">◎</div>
-                                <h3>Primary facility</h3>
-                                <p>Add a physical campus or virtual telehealth site as the first location.</p>
+                                <h3>@AppResources.T("HospitalsRegister_FeatureFacilityTitle")</h3>
+                                <p>@AppResources.T("HospitalsRegister_FeatureFacilityDesc")</p>
                             </div>
                             <div class="feature-card">
                                 <div class="feature-card-icon admin">👤</div>
-                                <h3>Administrator</h3>
-                                <p>Capture who will manage the hospital on the platform.</p>
+                                <h3>@AppResources.T("HospitalsRegister_FeatureAdminTitle")</h3>
+                                <p>@AppResources.T("HospitalsRegister_FeatureAdminDesc")</p>
                             </div>
                         </div>
                         break;
@@ -128,28 +130,28 @@ else
                     case 2:
                         <div class="form-grid">
                             <div class="form-field span-2">
-                                <label for="name">Hospital name *</label>
-                                <InputText id="name" class="form-control" @bind-Value="_draft.Name" placeholder="e.g. RaphCare General Hospital" />
+                                <label for="name">@AppResources.T("HospitalsRegister_HospitalNameLabel")</label>
+                                <InputText id="name" class="form-control" @bind-Value="_draft.Name" placeholder="@AppResources.T("HospitalsRegister_HospitalNamePlaceholder")" />
                             </div>
                             <div class="form-field">
-                                <label for="reg">Registration number *</label>
-                                <InputText id="reg" class="form-control" @bind-Value="_draft.RegistrationNumber" placeholder="e.g. HPCSA-12345" />
+                                <label for="reg">@AppResources.T("HospitalsRegister_RegNumberLabel")</label>
+                                <InputText id="reg" class="form-control" @bind-Value="_draft.RegistrationNumber" placeholder="@AppResources.T("HospitalsRegister_RegNumberPlaceholder")" />
                             </div>
                             <div class="form-field">
-                                <label for="country">Country *</label>
+                                <label for="country">@AppResources.T("HospitalsRegister_CountryLabel")</label>
                                 <InputSelect id="country" class="form-control" @bind-Value="_draft.Country">
-                                    @foreach (var c in _countries)
+                                    @foreach (var c in CountryOptions)
                                     {
-                                        <option value="@c">@c</option>
+                                        <option value="@c.Value">@AppResources.T(c.ResourceKey)</option>
                                     }
                                 </InputSelect>
                             </div>
                             <div class="form-field span-2">
-                                <label for="tz">Time zone *</label>
+                                <label for="tz">@AppResources.T("HospitalsRegister_TimeZoneLabel")</label>
                                 <InputSelect id="tz" class="form-control" @bind-Value="_draft.TimeZone">
-                                    @foreach (var tz in _timeZones)
+                                    @foreach (var tz in TimeZoneOptions)
                                     {
-                                        <option value="@tz">@tz</option>
+                                        <option value="@tz.Value">@AppResources.T(tz.ResourceKey)</option>
                                     }
                                 </InputSelect>
                             </div>
@@ -159,21 +161,21 @@ else
                     case 3:
                         <div class="form-grid">
                             <div class="form-field span-2">
-                                <label for="facName">Facility name</label>
-                                <InputText id="facName" class="form-control" @bind-Value="_draft.FacilityName" placeholder="e.g. Main campus" />
+                                <label for="facName">@AppResources.T("HospitalsRegister_FacilityNameLabel")</label>
+                                <InputText id="facName" class="form-control" @bind-Value="_draft.FacilityName" placeholder="@AppResources.T("HospitalsRegister_FacilityNamePlaceholder")" />
                             </div>
                             <div class="form-field span-2">
-                                <label for="address">Street address</label>
+                                <label for="address">@AppResources.T("HospitalsRegister_StreetAddressLabel")</label>
                                 <InputText id="address" class="form-control" @bind-Value="_draft.FacilityAddress" />
                             </div>
                             <div class="form-field">
-                                <label for="city">City</label>
+                                <label for="city">@AppResources.T("HospitalsRegister_CityLabel")</label>
                                 <InputText id="city" class="form-control" @bind-Value="_draft.FacilityCity" />
                             </div>
                             <div class="form-field checkbox-field">
                                 <label>
                                     <InputCheckbox @bind-Value="_draft.IsVirtualFacility" />
-                                    Virtual / telehealth-only site
+                                    @AppResources.T("HospitalsRegister_VirtualFacilityCheckbox")
                                 </label>
                             </div>
                         </div>
@@ -182,46 +184,46 @@ else
                     case 4:
                         <div class="form-grid">
                             <div class="form-field">
-                                <label for="adminName">Administrator full name</label>
-                                <InputText id="adminName" class="form-control" @bind-Value="_draft.AdminFullName" placeholder="e.g. Dr. Jane Smith" />
+                                <label for="adminName">@AppResources.T("HospitalsRegister_AdminNameLabel")</label>
+                                <InputText id="adminName" class="form-control" @bind-Value="_draft.AdminFullName" placeholder="@AppResources.T("HospitalsRegister_AdminNamePlaceholder")" />
                             </div>
                             <div class="form-field">
-                                <label for="adminEmail">Administrator email</label>
-                                <InputText id="adminEmail" class="form-control" @bind-Value="_draft.AdminEmail" type="email" placeholder="admin@hospital.org" />
+                                <label for="adminEmail">@AppResources.T("HospitalsRegister_AdminEmailLabel")</label>
+                                <InputText id="adminEmail" class="form-control" @bind-Value="_draft.AdminEmail" type="email" placeholder="@AppResources.T("HospitalsRegister_AdminEmailPlaceholder")" />
                             </div>
                         </div>
-                        <p class="hint">Admin accounts will be linked via email sign-in. Contact details are stored for follow-up provisioning.</p>
+                        <p class="hint">@AppResources.T("HospitalsRegister_AdminHint")</p>
                         break;
 
                     case 5:
                         <div class="review-grid">
                             <div class="review-item">
-                                <span class="review-label">Hospital</span>
+                                <span class="review-label">@AppResources.T("HospitalsRegister_ReviewHospital")</span>
                                 <span class="review-value">@_draft.Name</span>
                             </div>
                             <div class="review-item">
-                                <span class="review-label">Registration #</span>
+                                <span class="review-label">@AppResources.T("Common_RegistrationNumberShort")</span>
                                 <span class="review-value">@_draft.RegistrationNumber</span>
                             </div>
                             <div class="review-item">
-                                <span class="review-label">Country</span>
-                                <span class="review-value">@_draft.Country</span>
+                                <span class="review-label">@AppResources.T("Common_Country")</span>
+                                <span class="review-value">@LocalizeCountry(_draft.Country)</span>
                             </div>
                             <div class="review-item">
-                                <span class="review-label">Time zone</span>
-                                <span class="review-value">@_draft.TimeZone</span>
+                                <span class="review-label">@AppResources.T("Common_TimeZone")</span>
+                                <span class="review-value">@LocalizeTimeZone(_draft.TimeZone)</span>
                             </div>
                             @if (!string.IsNullOrWhiteSpace(_draft.FacilityName))
                             {
                                 <div class="review-item">
-                                    <span class="review-label">Primary facility</span>
-                                    <span class="review-value">@_draft.FacilityName @(_draft.IsVirtualFacility ? "(virtual)" : "")</span>
+                                    <span class="review-label">@AppResources.T("Common_PrimaryFacility")</span>
+                                    <span class="review-value">@_draft.FacilityName @(_draft.IsVirtualFacility ? AppResources.T("Common_VirtualSuffix") : "")</span>
                                 </div>
                             }
                             @if (!string.IsNullOrWhiteSpace(_draft.AdminEmail))
                             {
                                 <div class="review-item">
-                                    <span class="review-label">Administrator</span>
+                                    <span class="review-label">@AppResources.T("Common_Administrator")</span>
                                     <span class="review-value">@_draft.AdminFullName — @_draft.AdminEmail</span>
                                 </div>
                             }
@@ -234,23 +236,23 @@ else
                 <div class="admin-page-actions">
                     @if (_step > 1)
                     {
-                        <button type="button" class="btn btn-secondary" @onclick="GoBackAsync" disabled="@_submitting">Back</button>
+                        <button type="button" class="btn btn-secondary" @onclick="GoBackAsync" disabled="@_submitting">@AppResources.T("Common_BackButton")</button>
                     }
                     else
                     {
-                        <a class="btn btn-ghost" href="/admin/hospitals">Cancel</a>
+                        <a class="btn btn-ghost" href="/admin/hospitals">@AppResources.T("Common_Cancel")</a>
                     }
 
                     <div class="admin-page-actions-right">
                         @if (_step < _stepCount)
                         {
-                            <button type="button" class="btn btn-ghost" @onclick="GoNextAsync">Skip step</button>
-                            <button type="button" class="btn btn-primary" @onclick="GoNextAsync" disabled="@(!CanContinue)">Continue →</button>
+                            <button type="button" class="btn btn-ghost" @onclick="GoNextAsync">@AppResources.T("Common_SkipStep")</button>
+                            <button type="button" class="btn btn-primary" @onclick="GoNextAsync" disabled="@(!CanContinue)">@AppResources.T("Common_ContinueArrow")</button>
                         }
                         else
                         {
                             <button type="button" class="btn btn-primary" @onclick="SubmitAsync" disabled="@(_submitting || !CanContinue)">
-                                @(_submitting ? "Registering…" : "Register hospital")
+                                @(_submitting ? AppResources.T("Common_Registering") : AppResources.T("Common_RegisterHospital"))
                             </button>
                         }
                     </div>
@@ -262,6 +264,8 @@ else
 
 @code {
     private const string RegisterPath = "/admin/hospitals/register";
+    private const string DefaultCountry = "South Africa";
+    private const string DefaultTimeZone = "South Africa Standard Time";
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IHospitalOnboardingStorage OnboardingStorage { get; set; } = default!;
@@ -283,39 +287,45 @@ else
     private string _signInReturnUrl =>
         $"/professional/signin?returnUrl={Uri.EscapeDataString(RegisterPath)}";
 
-    private readonly (int Id, string Label)[] _steps =
+    private static readonly (string Value, string ResourceKey)[] CountryOptions =
     [
-        (1, "Welcome"),
-        (2, "Hospital"),
-        (3, "Facility"),
-        (4, RaphCareRoles.Administrator),
-        (5, "Review")
+        ("South Africa", "HospitalsRegister_Country_SouthAfrica"),
+        ("Kenya", "HospitalsRegister_Country_Kenya"),
+        ("Nigeria", "HospitalsRegister_Country_Nigeria"),
+        ("Ghana", "HospitalsRegister_Country_Ghana"),
+        ("United Kingdom", "HospitalsRegister_Country_UnitedKingdom"),
+        ("United States", "HospitalsRegister_Country_UnitedStates"),
+        ("Other", "HospitalsRegister_Country_Other")
     ];
 
-    private readonly string[] _countries =
+    private static readonly (string Value, string ResourceKey)[] TimeZoneOptions =
     [
-        "South Africa", "Kenya", "Nigeria", "Ghana", "United Kingdom", "United States", "Other"
+        ("South Africa Standard Time", "HospitalsRegister_TimeZone_SAST"),
+        ("UTC", "HospitalsRegister_TimeZone_UTC"),
+        ("GMT Standard Time", "HospitalsRegister_TimeZone_GMT"),
+        ("W. Europe Standard Time", "HospitalsRegister_TimeZone_WEurope"),
+        ("Eastern Standard Time", "HospitalsRegister_TimeZone_Eastern"),
+        ("Central European Standard Time", "HospitalsRegister_TimeZone_CentralEurope")
     ];
 
-    private readonly string[] _timeZones =
+    private (int Id, string Label)[] Steps =>
     [
-        "South Africa Standard Time",
-        "UTC",
-        "GMT Standard Time",
-        "W. Europe Standard Time",
-        "Eastern Standard Time",
-        "Central European Standard Time"
+        (1, AppResources.T("HospitalsRegister_StepWelcome")),
+        (2, AppResources.T("HospitalsRegister_StepHospital")),
+        (3, AppResources.T("HospitalsRegister_StepFacility")),
+        (4, AppResources.T("HospitalsRegister_StepAdministrator")),
+        (5, AppResources.T("HospitalsRegister_StepReview"))
     ];
 
     private int _progressPercent => (int)Math.Round(_step / (double)_stepCount * 100);
 
-    private (string Title, string Subtitle) _stepMeta => _step switch
+    private (string Title, string Subtitle) StepMeta => _step switch
     {
-        1 => ("Welcome to hospital onboarding", "A short setup to register a new healthcare organization on RaphCare."),
-        2 => ("Hospital identity", "Legal name, registration number, and regional settings."),
-        3 => ("Primary facility", "Optional first site — physical campus or virtual telehealth hub."),
-        4 => ("Administrator contact", "Who will manage this hospital on the platform."),
-        5 => ("Review and register", "Confirm details before creating the hospital tenant."),
+        1 => (AppResources.T("HospitalsRegister_Step1Title"), AppResources.T("HospitalsRegister_Step1Subtitle")),
+        2 => (AppResources.T("HospitalsRegister_Step2Title"), AppResources.T("HospitalsRegister_Step2Subtitle")),
+        3 => (AppResources.T("HospitalsRegister_Step3Title"), AppResources.T("HospitalsRegister_Step3Subtitle")),
+        4 => (AppResources.T("HospitalsRegister_Step4Title"), AppResources.T("HospitalsRegister_Step4Subtitle")),
+        5 => (AppResources.T("HospitalsRegister_Step5Title"), AppResources.T("HospitalsRegister_Step5Subtitle")),
         _ => ("", "")
     };
 
@@ -330,14 +340,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
+
         var saved = await OnboardingStorage.LoadAsync().ConfigureAwait(false);
         if (saved is null || !saved.HasHospitalDetails)
             return;
 
         ApplySavedDraft(saved);
         _resumeMessage = saved.Step >= _stepCount
-            ? "We restored your saved hospital details. Review and tap Register hospital when you are ready."
-            : $"We restored your saved progress from step {saved.Step}. You can continue where you left off.";
+            ? AppResources.T("Common_ResumeReadyReview")
+            : AppResources.Format("Common_ResumeFromStep", saved.Step);
     }
 
     private void ApplySavedDraft(HospitalOnboardingDraft saved)
@@ -345,14 +357,36 @@ else
         _step = Math.Clamp(saved.Step, 1, _stepCount);
         _draft.Name = saved.Name;
         _draft.RegistrationNumber = saved.RegistrationNumber;
-        _draft.Country = string.IsNullOrWhiteSpace(saved.Country) ? "South Africa" : saved.Country;
-        _draft.TimeZone = string.IsNullOrWhiteSpace(saved.TimeZone) ? "South Africa Standard Time" : saved.TimeZone;
+        _draft.Country = string.IsNullOrWhiteSpace(saved.Country) ? DefaultCountry : saved.Country;
+        _draft.TimeZone = string.IsNullOrWhiteSpace(saved.TimeZone) ? DefaultTimeZone : saved.TimeZone;
         _draft.FacilityName = saved.FacilityName;
         _draft.FacilityAddress = saved.FacilityAddress;
         _draft.FacilityCity = saved.FacilityCity;
         _draft.IsVirtualFacility = saved.IsVirtualFacility;
         _draft.AdminFullName = saved.AdminFullName;
         _draft.AdminEmail = saved.AdminEmail;
+    }
+
+    private static string LocalizeCountry(string value)
+    {
+        foreach (var (optionValue, key) in CountryOptions)
+        {
+            if (string.Equals(optionValue, value, StringComparison.Ordinal))
+                return AppResources.T(key);
+        }
+
+        return value;
+    }
+
+    private static string LocalizeTimeZone(string value)
+    {
+        foreach (var (optionValue, key) in TimeZoneOptions)
+        {
+            if (string.Equals(optionValue, value, StringComparison.Ordinal))
+                return AppResources.T(key);
+        }
+
+        return value;
     }
 
     private async Task PersistDraftAsync()
@@ -423,7 +457,7 @@ else
             return;
         }
 
-        _submitError = response.ErrorMessage ?? "Registration failed.";
+        _submitError = response.ErrorMessage ?? AppResources.T("Common_RegistrationFailed");
         _authRetryRequired = response.StatusCode is 401 or 403;
         await PersistDraftAsync().ConfigureAwait(false);
     }
@@ -440,12 +474,16 @@ else
         await OnboardingStorage.ClearAsync().ConfigureAwait(false);
     }
 
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
     private sealed class OnboardingDraft
     {
         public string Name { get; set; } = string.Empty;
         public string RegistrationNumber { get; set; } = string.Empty;
-        public string Country { get; set; } = "South Africa";
-        public string TimeZone { get; set; } = "South Africa Standard Time";
+        public string Country { get; set; } = DefaultCountry;
+        public string TimeZone { get; set; } = DefaultTimeZone;
         public string FacilityName { get; set; } = string.Empty;
         public string FacilityAddress { get; set; } = string.Empty;
         public string FacilityCity { get; set; } = string.Empty;
@@ -457,8 +495,8 @@ else
         {
             Name = string.Empty;
             RegistrationNumber = string.Empty;
-            Country = "South Africa";
-            TimeZone = "South Africa Standard Time";
+            Country = DefaultCountry;
+            TimeZone = DefaultTimeZone;
             FacilityName = string.Empty;
             FacilityAddress = string.Empty;
             FacilityCity = string.Empty;

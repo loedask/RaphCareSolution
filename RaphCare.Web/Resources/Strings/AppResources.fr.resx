@@ -1,0 +1,2095 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Common_AppName" xml:space="preserve">
+    <value>RaphCare</value>
+  </data>
+  <data name="Common_SignOut" xml:space="preserve">
+    <value>Se déconnecter</value>
+  </data>
+  <data name="Common_SignIn" xml:space="preserve">
+    <value>Se connecter</value>
+  </data>
+  <data name="Common_SignInAgain" xml:space="preserve">
+    <value>Connectez-vous à nouveau</value>
+  </data>
+  <data name="Common_CreateAccount" xml:space="preserve">
+    <value>Créer un compte</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Common_Back" xml:space="preserve">
+    <value>← Retour</value>
+  </data>
+  <data name="Common_BackToHome" xml:space="preserve">
+    <value>Retour à la maison</value>
+  </data>
+  <data name="Common_BackToHospitals" xml:space="preserve">
+    <value>← Retour aux hôpitaux</value>
+  </data>
+  <data name="Common_BackToHospital" xml:space="preserve">
+    <value>← Retour à l&apos;hôpital</value>
+  </data>
+  <data name="Common_BackToAppointments" xml:space="preserve">
+    <value>← Retour aux rendez-vous</value>
+  </data>
+  <data name="Common_PleaseWait" xml:space="preserve">
+    <value>S&apos;il vous plaît, attendez…</value>
+  </data>
+  <data name="Common_Continue" xml:space="preserve">
+    <value>Continuer</value>
+  </data>
+  <data name="Common_ContinueArrow" xml:space="preserve">
+    <value>Continuer →</value>
+  </data>
+  <data name="Common_VerifyAndSignIn" xml:space="preserve">
+    <value>Vérifiez et connectez-vous →</value>
+  </data>
+  <data name="Common_VerifyAndCreateAccount" xml:space="preserve">
+    <value>Vérifier et créer un compte</value>
+  </data>
+  <data name="Common_Sending" xml:space="preserve">
+    <value>Envoi…</value>
+  </data>
+  <data name="Common_SendCode" xml:space="preserve">
+    <value>Envoyer le code</value>
+  </data>
+  <data name="Common_CreatingAccount" xml:space="preserve">
+    <value>Création d&apos;un compte…</value>
+  </data>
+  <data name="Common_SendingCode" xml:space="preserve">
+    <value>Envoi du code…</value>
+  </data>
+  <data name="Common_Saving" xml:space="preserve">
+    <value>Économie…</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Sauvegarder</value>
+  </data>
+  <data name="Common_SaveChanges" xml:space="preserve">
+    <value>Enregistrer les modifications</value>
+  </data>
+  <data name="Common_Loading" xml:space="preserve">
+    <value>Chargement…</value>
+  </data>
+  <data name="Common_Search" xml:space="preserve">
+    <value>Recherche</value>
+  </data>
+  <data name="Common_Apply" xml:space="preserve">
+    <value>Appliquer</value>
+  </data>
+  <data name="Common_Previous" xml:space="preserve">
+    <value>Précédent</value>
+  </data>
+  <data name="Common_Next" xml:space="preserve">
+    <value>Suivant</value>
+  </data>
+  <data name="Common_Edit" xml:space="preserve">
+    <value>Modifier</value>
+  </data>
+  <data name="Common_Delete" xml:space="preserve">
+    <value>Supprimer</value>
+  </data>
+  <data name="Common_Remove" xml:space="preserve">
+    <value>Retirer</value>
+  </data>
+  <data name="Common_Removing" xml:space="preserve">
+    <value>Suppression…</value>
+  </data>
+  <data name="Common_Deleting" xml:space="preserve">
+    <value>Suppression…</value>
+  </data>
+  <data name="Common_Adding" xml:space="preserve">
+    <value>Ajout…</value>
+  </data>
+  <data name="Common_Inviting" xml:space="preserve">
+    <value>Attrayant…</value>
+  </data>
+  <data name="Common_Invite" xml:space="preserve">
+    <value>Inviter</value>
+  </data>
+  <data name="Common_ResendInvite" xml:space="preserve">
+    <value>Renvoyer l&apos;invitation</value>
+  </data>
+  <data name="Common_Cancelling" xml:space="preserve">
+    <value>Annulation…</value>
+  </data>
+  <data name="Common_Open" xml:space="preserve">
+    <value>Ouvrir →</value>
+  </data>
+  <data name="Common_ViewAll" xml:space="preserve">
+    <value>Voir tout →</value>
+  </data>
+  <data name="Common_Optional" xml:space="preserve">
+    <value>Facultatif</value>
+  </data>
+  <data name="Common_EmptyCell" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="Common_Active" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="Common_Inactive" xml:space="preserve">
+    <value>Inactif</value>
+  </data>
+  <data name="Common_Patient" xml:space="preserve">
+    <value>Patient</value>
+  </data>
+  <data name="Common_Provider" xml:space="preserve">
+    <value>Fournisseur</value>
+  </data>
+  <data name="Common_Professional" xml:space="preserve">
+    <value>Professionnel</value>
+  </data>
+  <data name="Common_Email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="Common_Password" xml:space="preserve">
+    <value>Mot de passe</value>
+  </data>
+  <data name="Common_FirstName" xml:space="preserve">
+    <value>Prénom</value>
+  </data>
+  <data name="Common_LastName" xml:space="preserve">
+    <value>Nom de famille</value>
+  </data>
+  <data name="Common_VerificationCode" xml:space="preserve">
+    <value>Le code de vérification</value>
+  </data>
+  <data name="Common_VerificationCodePlaceholder" xml:space="preserve">
+    <value>Code à 6 chiffres</value>
+  </data>
+  <data name="Common_SignInFailed" xml:space="preserve">
+    <value>La connexion a échoué.</value>
+  </data>
+  <data name="Common_RegistrationFailed" xml:space="preserve">
+    <value>L&apos;enregistrement a échoué.</value>
+  </data>
+  <data name="Common_CouldNotSendVerificationEmail" xml:space="preserve">
+    <value>Impossible d&apos;envoyer l&apos;e-mail de vérification.</value>
+  </data>
+  <data name="Common_VerificationCodeSentEmail" xml:space="preserve">
+    <value>Nous avons envoyé un code de vérification à votre adresse e-mail.</value>
+  </data>
+  <data name="Common_EnterEmailBeforeCode" xml:space="preserve">
+    <value>Entrez votre e-mail avant de demander un code de vérification.</value>
+  </data>
+  <data name="Common_CodeSentCheckInbox" xml:space="preserve">
+    <value>Code de vérification envoyé. Vérifiez votre boîte de réception.</value>
+  </data>
+  <data name="Common_CodeSentCheckInboxSpam" xml:space="preserve">
+    <value>Code de vérification envoyé. Vérifiez votre boîte de réception (et votre dossier spam).</value>
+  </data>
+  <data name="Common_EnterSixDigitCodeHint" xml:space="preserve">
+    <value>Entrez le code de vérification à 6 chiffres de votre e-mail. Appuyez sur Envoyer le code si vous n’en avez pas encore reçu.</value>
+  </data>
+  <data name="Common_CodeMustBeSixDigits" xml:space="preserve">
+    <value>Le code de vérification doit comporter exactement 6 chiffres.</value>
+  </data>
+  <data name="Common_PleaseEnterFirstName" xml:space="preserve">
+    <value>Veuillez saisir votre prénom.</value>
+  </data>
+  <data name="Common_PleaseEnterLastName" xml:space="preserve">
+    <value>Veuillez entrer votre nom de famille.</value>
+  </data>
+  <data name="Common_PleaseEnterEmail" xml:space="preserve">
+    <value>Veuillez entrer votre email.</value>
+  </data>
+  <data name="Common_PleaseEnterPassword" xml:space="preserve">
+    <value>Veuillez saisir un mot de passe.</value>
+  </data>
+  <data name="Common_HealthcareProfessional" xml:space="preserve">
+    <value>Professionnel de santé</value>
+  </data>
+  <data name="Common_ClinicPortal" xml:space="preserve">
+    <value>Portail de la clinique</value>
+  </data>
+  <data name="Common_ClinicAdministrator" xml:space="preserve">
+    <value>Administrateur de clinique</value>
+  </data>
+  <data name="Common_Dashboard" xml:space="preserve">
+    <value>Tableau de bord</value>
+  </data>
+  <data name="Common_Hospitals" xml:space="preserve">
+    <value>Hôpitaux</value>
+  </data>
+  <data name="Common_Appointments" xml:space="preserve">
+    <value>Rendez-vous</value>
+  </data>
+  <data name="Common_RegisterHospital" xml:space="preserve">
+    <value>Inscrire l&apos;hôpital</value>
+  </data>
+  <data name="Common_RegisterHospitalButton" xml:space="preserve">
+    <value>+ Inscrire l&apos;hôpital</value>
+  </data>
+  <data name="Common_HospitalDetails" xml:space="preserve">
+    <value>Détails de l&apos;hôpital</value>
+  </data>
+  <data name="Common_MyHospitals" xml:space="preserve">
+    <value>Mes hôpitaux</value>
+  </data>
+  <data name="Common_YourHospitals" xml:space="preserve">
+    <value>Vos hôpitaux</value>
+  </data>
+  <data name="Common_Name" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="Common_Country" xml:space="preserve">
+    <value>Pays</value>
+  </data>
+  <data name="Common_Facilities" xml:space="preserve">
+    <value>Installations</value>
+  </data>
+  <data name="Common_Status" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="Common_When" xml:space="preserve">
+    <value>Quand</value>
+  </data>
+  <data name="Common_Type" xml:space="preserve">
+    <value>Taper</value>
+  </data>
+  <data name="Common_Reason" xml:space="preserve">
+    <value>Raison</value>
+  </data>
+  <data name="Common_Notes" xml:space="preserve">
+    <value>Remarques</value>
+  </data>
+  <data name="Common_Registered" xml:space="preserve">
+    <value>Inscrit</value>
+  </data>
+  <data name="Common_CouldNotLoadHospitals" xml:space="preserve">
+    <value>Impossible de charger les hôpitaux.</value>
+  </data>
+  <data name="Common_FinishRegisteringHospital" xml:space="preserve">
+    <value>Terminez l&apos;enregistrement de votre hôpital</value>
+  </data>
+  <data name="Common_PlatformOverview" xml:space="preserve">
+    <value>Présentation de la plateforme</value>
+  </data>
+  <data name="Common_SelectHospital" xml:space="preserve">
+    <value>Sélectionnez l&apos;hôpital</value>
+  </data>
+  <data name="Common_NoClinicYet" xml:space="preserve">
+    <value>Pas encore de clinique</value>
+  </data>
+  <data name="Common_ClinicOptional" xml:space="preserve">
+    <value>Clinique (facultatif)</value>
+  </data>
+  <data name="Common_EndTimeAfterStart" xml:space="preserve">
+    <value>L&apos;heure de fin doit être postérieure à l&apos;heure de début.</value>
+  </data>
+  <data name="Common_LoadMore" xml:space="preserve">
+    <value>Charger davantage ({0} sur {1})</value>
+  </data>
+  <data name="Common_PageOf" xml:space="preserve">
+    <value>Page {0} de {1} · {2}</value>
+  </data>
+  <data name="Common_Notified" xml:space="preserve">
+    <value>Notifié</value>
+  </data>
+  <data name="Common_Unassigned" xml:space="preserve">
+    <value>Non attribué</value>
+  </data>
+  <data name="Common_Physical" xml:space="preserve">
+    <value>Physique</value>
+  </data>
+  <data name="Common_Virtual" xml:space="preserve">
+    <value>Virtuel</value>
+  </data>
+  <data name="Common_VirtualSuffix" xml:space="preserve">
+    <value>(virtuel)</value>
+  </data>
+  <data name="Common_PendingRegistration" xml:space="preserve">
+    <value>En attente d&apos;inscription</value>
+  </data>
+  <data name="Common_PendingSignIn" xml:space="preserve">
+    <value>En attente de connexion</value>
+  </data>
+  <data name="Common_MakeAdmin" xml:space="preserve">
+    <value>Faire administrateur</value>
+  </data>
+  <data name="Common_RemoveAdmin" xml:space="preserve">
+    <value>Supprimer l&apos;administrateur</value>
+  </data>
+  <data name="Common_CouldNotLoadStaff" xml:space="preserve">
+    <value>Impossible de charger le personnel.</value>
+  </data>
+  <data name="Common_CouldNotLoadPatients" xml:space="preserve">
+    <value>Impossible de charger les patients.</value>
+  </data>
+  <data name="Common_CouldNotLoadProviders" xml:space="preserve">
+    <value>Impossible de charger les fournisseurs.</value>
+  </data>
+  <data name="Common_CouldNotLoadAppointments" xml:space="preserve">
+    <value>Impossible de charger les rendez-vous.</value>
+  </data>
+  <data name="Common_CouldNotLoadDevices" xml:space="preserve">
+    <value>Impossible de charger les appareils.</value>
+  </data>
+  <data name="Common_CouldNotLoadEmergencyEvents" xml:space="preserve">
+    <value>Impossible de charger les événements d&apos;urgence.</value>
+  </data>
+  <data name="Common_CouldNotResendInvitation" xml:space="preserve">
+    <value>Impossible de renvoyer l&apos;invitation.</value>
+  </data>
+  <data name="Common_CouldNotCancelInvitation" xml:space="preserve">
+    <value>Impossible d&apos;annuler l&apos;invitation.</value>
+  </data>
+  <data name="Common_SelectStaffMember" xml:space="preserve">
+    <value>Sélectionnez un membre du personnel.</value>
+  </data>
+  <data name="Common_HospitalNotFound" xml:space="preserve">
+    <value>Hôpital introuvable.</value>
+  </data>
+  <data name="Common_PatientNotFound" xml:space="preserve">
+    <value>Patient introuvable.</value>
+  </data>
+  <data name="Common_ProviderNotFound" xml:space="preserve">
+    <value>Fournisseur introuvable.</value>
+  </data>
+  <data name="Common_VisitNotFound" xml:space="preserve">
+    <value>Visite introuvable.</value>
+  </data>
+  <data name="Common_CouldNotLoadHospital" xml:space="preserve">
+    <value>Impossible de charger l&apos;hôpital.</value>
+  </data>
+  <data name="Common_CouldNotLoadHospitalDashboard" xml:space="preserve">
+    <value>Impossible de charger le tableau de bord de l&apos;hôpital.</value>
+  </data>
+  <data name="Common_CouldNotLinkHospital" xml:space="preserve">
+    <value>Impossible de relier l&apos;hôpital.</value>
+  </data>
+  <data name="Common_RegistrationNumber" xml:space="preserve">
+    <value>Numéro d&apos;enregistrement</value>
+  </data>
+  <data name="Common_RegistrationNumberShort" xml:space="preserve">
+    <value>Inscription #</value>
+  </data>
+  <data name="Common_RegistrationNumberPlaceholder" xml:space="preserve">
+    <value>par ex. 12345</value>
+  </data>
+  <data name="Common_LinkHospital" xml:space="preserve">
+    <value>Lien vers l&apos;hôpital</value>
+  </data>
+  <data name="Common_Linking" xml:space="preserve">
+    <value>Enchaînement…</value>
+  </data>
+  <data name="Common_HospitalId" xml:space="preserve">
+    <value>Numéro d&apos;identification de l&apos;hôpital</value>
+  </data>
+  <data name="Common_PrimaryFacility" xml:space="preserve">
+    <value>Installation principale</value>
+  </data>
+  <data name="Common_Administrator" xml:space="preserve">
+    <value>Administrateur</value>
+  </data>
+  <data name="Common_Review" xml:space="preserve">
+    <value>Revoir</value>
+  </data>
+  <data name="Common_Welcome" xml:space="preserve">
+    <value>Bienvenue</value>
+  </data>
+  <data name="Common_Hospital" xml:space="preserve">
+    <value>Hôpital</value>
+  </data>
+  <data name="Common_Facility" xml:space="preserve">
+    <value>Facilité</value>
+  </data>
+  <data name="Common_BackButton" xml:space="preserve">
+    <value>Dos</value>
+  </data>
+  <data name="Common_SkipStep" xml:space="preserve">
+    <value>Sauter l&apos;étape</value>
+  </data>
+  <data name="Common_Registering" xml:space="preserve">
+    <value>Enregistrement…</value>
+  </data>
+  <data name="Common_PercentComplete" xml:space="preserve">
+    <value>{0}% terminé</value>
+  </data>
+  <data name="Common_OnboardingProgressAria" xml:space="preserve">
+    <value>Progression de l&apos;intégration</value>
+  </data>
+  <data name="Common_HospitalOnboardingEyebrow" xml:space="preserve">
+    <value>Intégration à l&apos;hôpital · Étape {0} de {1}</value>
+  </data>
+  <data name="Common_OpenHospital" xml:space="preserve">
+    <value>Hôpital ouvert</value>
+  </data>
+  <data name="Common_ViewAllHospitals" xml:space="preserve">
+    <value>Voir tous les hôpitaux</value>
+  </data>
+  <data name="Common_RegisterAnother" xml:space="preserve">
+    <value>Enregistrez-en un autre</value>
+  </data>
+  <data name="Common_HospitalRegisteredTitle" xml:space="preserve">
+    <value>{0} est enregistré</value>
+  </data>
+  <data name="Common_HospitalRegisteredLead" xml:space="preserve">
+    <value>L&apos;hôpital est actif sur la plateforme. Les patients peuvent le sélectionner lors de l’inscription une fois que le personnel est mis à disposition.</value>
+  </data>
+  <data name="Common_AdminContactPending" xml:space="preserve">
+    <value>Contact administrateur (en attente)</value>
+  </data>
+  <data name="Common_SignInAndContinue" xml:space="preserve">
+    <value>Connectez-vous et continuez</value>
+  </data>
+  <data name="Common_AuthRetryHint" xml:space="preserve">
+    <value>Les détails de votre hôpital sont enregistrés sur cet appareil. Connectez-vous à nouveau, puis revenez ici pour terminer l&apos;inscription.</value>
+  </data>
+  <data name="Common_ResumeReadyReview" xml:space="preserve">
+    <value>Nous avons restauré vos informations hospitalières enregistrées. Vérifiez et appuyez sur Enregistrer l&apos;hôpital lorsque vous êtes prêt.</value>
+  </data>
+  <data name="Common_ResumeFromStep" xml:space="preserve">
+    <value>Nous avons restauré votre progression enregistrée à partir de l&apos;étape {0}. Vous pouvez continuer là où vous vous êtes arrêté.</value>
+  </data>
+  <data name="Common_TimeZone" xml:space="preserve">
+    <value>Fuseau horaire</value>
+  </data>
+  <data name="Common_Address" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="Common_City" xml:space="preserve">
+    <value>Ville</value>
+  </data>
+  <data name="Common_StreetAddress" xml:space="preserve">
+    <value>Adresse de la rue</value>
+  </data>
+  <data name="Common_MainCampusPlaceholder" xml:space="preserve">
+    <value>Campus principal</value>
+  </data>
+  <data name="Common_JohannesburgPlaceholder" xml:space="preserve">
+    <value>Johannesbourg</value>
+  </data>
+  <data name="Common_LoadingPatients" xml:space="preserve">
+    <value>Chargement des patients…</value>
+  </data>
+  <data name="Common_LoadingProviders" xml:space="preserve">
+    <value>Chargement des fournisseurs…</value>
+  </data>
+  <data name="Common_LoadingAppointments" xml:space="preserve">
+    <value>Chargement des rendez-vous…</value>
+  </data>
+  <data name="Common_LoadingDevices" xml:space="preserve">
+    <value>Chargement des appareils…</value>
+  </data>
+  <data name="Common_LoadingEmergencyEvents" xml:space="preserve">
+    <value>Chargement des événements d&apos;urgence…</value>
+  </data>
+  <data name="Common_LoadingStaff" xml:space="preserve">
+    <value>Chargement du personnel…</value>
+  </data>
+  <data name="Common_LoadingHospital" xml:space="preserve">
+    <value>Chargement de l&apos;hôpital…</value>
+  </data>
+  <data name="Common_LoadingPatient" xml:space="preserve">
+    <value>Chargement du patient…</value>
+  </data>
+  <data name="Common_LoadingProvider" xml:space="preserve">
+    <value>Chargement du fournisseur…</value>
+  </data>
+  <data name="Common_LoadingVisit" xml:space="preserve">
+    <value>Chargement de la visite…</value>
+  </data>
+  <data name="Common_LoadingDashboard" xml:space="preserve">
+    <value>Chargement du tableau de bord…</value>
+  </data>
+  <data name="Common_GrantAccess" xml:space="preserve">
+    <value>Accorder l&apos;accès</value>
+  </data>
+  <data name="Common_Granting" xml:space="preserve">
+    <value>Octroi…</value>
+  </data>
+  <data name="Common_DateOfBirth" xml:space="preserve">
+    <value>Date de naissance</value>
+  </data>
+  <data name="Common_Access" xml:space="preserve">
+    <value>Accéder</value>
+  </data>
+  <data name="Common_Granted" xml:space="preserve">
+    <value>Accordé</value>
+  </data>
+  <data name="Common_License" xml:space="preserve">
+    <value>Licence</value>
+  </data>
+  <data name="Common_Schedule" xml:space="preserve">
+    <value>Calendrier</value>
+  </data>
+  <data name="Common_Roles" xml:space="preserve">
+    <value>Rôles</value>
+  </data>
+  <data name="Common_Joined" xml:space="preserve">
+    <value>Rejoint</value>
+  </data>
+  <data name="Common_Serial" xml:space="preserve">
+    <value>En série</value>
+  </data>
+  <data name="Common_Model" xml:space="preserve">
+    <value>Modèle</value>
+  </data>
+  <data name="Common_AssignedTo" xml:space="preserve">
+    <value>Attribué à</value>
+  </data>
+  <data name="Common_Occurred" xml:space="preserve">
+    <value>S&apos;est produit</value>
+  </data>
+  <data name="Common_Location" xml:space="preserve">
+    <value>Emplacement</value>
+  </data>
+  <data name="Common_Caregivers" xml:space="preserve">
+    <value>Soignants</value>
+  </data>
+  <data name="Common_DateTime" xml:space="preserve">
+    <value>Date et heure</value>
+  </data>
+  <data name="Common_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Common_Summary" xml:space="preserve">
+    <value>Résumé</value>
+  </data>
+  <data name="Common_Recorded" xml:space="preserve">
+    <value>Enregistré</value>
+  </data>
+  <data name="Common_Value" xml:space="preserve">
+    <value>Valeur</value>
+  </data>
+  <data name="Common_Visit" xml:space="preserve">
+    <value>Visite</value>
+  </data>
+  <data name="Common_Today" xml:space="preserve">
+    <value>Aujourd&apos;hui</value>
+  </data>
+  <data name="Common_Next7Days" xml:space="preserve">
+    <value>7 prochains jours</value>
+  </data>
+  <data name="Common_Staff" xml:space="preserve">
+    <value>Personnel</value>
+  </data>
+  <data name="Common_PatientsStat" xml:space="preserve">
+    <value>Patients</value>
+  </data>
+  <data name="Common_ProvidersStat" xml:space="preserve">
+    <value>Fournisseurs</value>
+  </data>
+  <data name="Common_Devices" xml:space="preserve">
+    <value>Appareils</value>
+  </data>
+  <data name="Common_Inpatient" xml:space="preserve">
+    <value>Patient hospitalisé</value>
+  </data>
+  <data name="Common_Overview" xml:space="preserve">
+    <value>Aperçu</value>
+  </data>
+  <data name="Common_FullList" xml:space="preserve">
+    <value>Liste complète →</value>
+  </data>
+  <data name="Common_SelectPatient" xml:space="preserve">
+    <value>Sélectionnez le patient…</value>
+  </data>
+  <data name="Common_SelectProvider" xml:space="preserve">
+    <value>Sélectionnez le fournisseur…</value>
+  </data>
+  <data name="Common_SelectStaffMemberOption" xml:space="preserve">
+    <value>Sélectionnez un membre du personnel…</value>
+  </data>
+  <data name="Common_LicenseOptionalPlaceholder" xml:space="preserve">
+    <value>Numéro de licence (facultatif)</value>
+  </data>
+  <data name="Common_AddProvider" xml:space="preserve">
+    <value>Ajouter un fournisseur</value>
+  </data>
+  <data name="Common_SearchByNameEmailPhone" xml:space="preserve">
+    <value>Rechercher par nom, e-mail ou téléphone</value>
+  </data>
+  <data name="Common_GrantPatientAccessTitle" xml:space="preserve">
+    <value>Accorder l’accès aux patients</value>
+  </data>
+  <data name="Common_GrantPatientAccessLead" xml:space="preserve">
+    <value>Liez un compte patient existant à cet hôpital par e-mail.</value>
+  </data>
+  <data name="Common_PatientEmailPlaceholder" xml:space="preserve">
+    <value>patient@email.com</value>
+  </data>
+  <data name="Common_ColleagueEmailPlaceholder" xml:space="preserve">
+    <value>collègue@hospital.com</value>
+  </data>
+  <data name="Common_InviteStaffTitle" xml:space="preserve">
+    <value>Inviter le personnel</value>
+  </data>
+  <data name="Common_InviteStaffHint" xml:space="preserve">
+    <value>Invitez des collègues par e-mail. S&apos;ils n&apos;ont pas encore de compte RaphCare, ils recevront un lien d&apos;inscription.</value>
+  </data>
+  <data name="Common_OnlyAdminsInviteStaff" xml:space="preserve">
+    <value>Seuls les administrateurs de l&apos;hôpital peuvent inviter ou gérer du personnel.</value>
+  </data>
+  <data name="Common_AddFacility" xml:space="preserve">
+    <value>Ajouter une installation</value>
+  </data>
+  <data name="Common_EditFacility" xml:space="preserve">
+    <value>Modifier l&apos;installation</value>
+  </data>
+  <data name="Common_AddFacilityButton" xml:space="preserve">
+    <value>Ajouter une installation</value>
+  </data>
+  <data name="Common_VirtualSiteCheckbox" xml:space="preserve">
+    <value>Site virtuel (pas d&apos;adresse physique)</value>
+  </data>
+  <data name="Common_HospitalIsActive" xml:space="preserve">
+    <value>L&apos;hôpital est actif</value>
+  </data>
+  <data name="Common_OrganizationDetails" xml:space="preserve">
+    <value>Détails de l&apos;organisation</value>
+  </data>
+  <data name="Common_UpdateHospitalLead" xml:space="preserve">
+    <value>Mettez à jour le nom de votre hôpital, votre pays et votre fuseau horaire.</value>
+  </data>
+  <data name="Common_HospitalProfileEyebrow" xml:space="preserve">
+    <value>Profil de l&apos;hôpital</value>
+  </data>
+  <data name="Common_LocationsEyebrow" xml:space="preserve">
+    <value>Emplacements</value>
+  </data>
+  <data name="Common_PhysicalCampusesLead" xml:space="preserve">
+    <value>Campus physiques et sites virtuels pour cet hôpital.</value>
+  </data>
+  <data name="Common_FacilityCountLabel" xml:space="preserve">
+    <value>Établissement {0}</value>
+  </data>
+  <data name="Common_FacilityCountLabelPlural" xml:space="preserve">
+    <value>Installations {0}</value>
+  </data>
+  <data name="Common_NoFacilitiesYet" xml:space="preserve">
+    <value>Pas encore d&apos;installations. Ajoutez votre premier emplacement ci-dessus.</value>
+  </data>
+  <data name="Common_CareRecipientsEyebrow" xml:space="preserve">
+    <value>Bénéficiaires de soins</value>
+  </data>
+  <data name="Common_PatientsLead" xml:space="preserve">
+    <value>Patients qui ont accès à cet hôpital.</value>
+  </data>
+  <data name="Common_PatientCountLabel" xml:space="preserve">
+    <value>Patient {0}</value>
+  </data>
+  <data name="Common_PatientCountLabelPlural" xml:space="preserve">
+    <value>Patients {0}</value>
+  </data>
+  <data name="Common_NoPatientsLinked" xml:space="preserve">
+    <value>Aucun patient lié à cet hôpital pour l&apos;instant.</value>
+  </data>
+  <data name="Common_NoPatientsMatchSearch" xml:space="preserve">
+    <value>Aucun patient ne correspond à votre recherche.</value>
+  </data>
+  <data name="Common_ClinicalTeamEyebrow" xml:space="preserve">
+    <value>Équipe clinique</value>
+  </data>
+  <data name="Common_ProvidersLead" xml:space="preserve">
+    <value>Cliniciens qui peuvent recevoir des rendez-vous dans cet hôpital.</value>
+  </data>
+  <data name="Common_ProviderCountLabel" xml:space="preserve">
+    <value>Fournisseur {0}</value>
+  </data>
+  <data name="Common_ProviderCountLabelPlural" xml:space="preserve">
+    <value>Fournisseurs {0}</value>
+  </data>
+  <data name="Common_AddProviderTitle" xml:space="preserve">
+    <value>Ajouter un fournisseur</value>
+  </data>
+  <data name="Common_AddProviderLead" xml:space="preserve">
+    <value>Associez un membre du personnel en tant que prestataire clinique.</value>
+  </data>
+  <data name="Common_NoProvidersYet" xml:space="preserve">
+    <value>Aucun fournisseur lié pour l&apos;instant. Ajoutez un membre du personnel en tant que fournisseur pour gérer les plannings.</value>
+  </data>
+  <data name="Common_ScheduleSlotCount" xml:space="preserve">
+    <value>Emplacement {0}</value>
+  </data>
+  <data name="Common_ScheduleSlotCountPlural" xml:space="preserve">
+    <value>Emplacements {0}</value>
+  </data>
+  <data name="Common_SchedulingEyebrow" xml:space="preserve">
+    <value>Planification</value>
+  </data>
+  <data name="Common_AppointmentsLead" xml:space="preserve">
+    <value>Réservations à venir dans cet hôpital.</value>
+  </data>
+  <data name="Common_NoUpcomingAppointments30Days" xml:space="preserve">
+    <value>Aucun rendez-vous à venir dans les 30 prochains jours.</value>
+  </data>
+  <data name="Common_FleetEyebrow" xml:space="preserve">
+    <value>Flotte</value>
+  </data>
+  <data name="Common_DevicesLead" xml:space="preserve">
+    <value>Appareils de surveillance enregistrés auprès de cet hôpital.</value>
+  </data>
+  <data name="Common_DeviceCountLabel" xml:space="preserve">
+    <value>Appareil {0}</value>
+  </data>
+  <data name="Common_DeviceCountLabelPlural" xml:space="preserve">
+    <value>Appareils {0}</value>
+  </data>
+  <data name="Common_NoDevicesYet" xml:space="preserve">
+    <value>Aucun appareil enregistré pour cet hôpital pour l&apos;instant. Les appareils apparaissent après la synchronisation des appareils portables des patients ou la mise à disposition du personnel via l&apos;API Appareils.</value>
+  </data>
+  <data name="Common_EmergencyEyebrow" xml:space="preserve">
+    <value>Urgence Y6 / 4G</value>
+  </data>
+  <data name="Common_EmergencyEventsTitle" xml:space="preserve">
+    <value>Événements d&apos;urgence</value>
+  </data>
+  <data name="Common_EmergencyEventsLeadClinic" xml:space="preserve">
+    <value>Alertes SOS récentes, de chute et d&apos;urgence autonomes dans cet hôpital.</value>
+  </data>
+  <data name="Common_EmergencyEventsLeadPatient" xml:space="preserve">
+    <value>SOS, chute et autres alertes d&apos;urgence autonomes pour ce patient.</value>
+  </data>
+  <data name="Common_EventCountLabel" xml:space="preserve">
+    <value>Événement {0}</value>
+  </data>
+  <data name="Common_EventCountLabelPlural" xml:space="preserve">
+    <value>Événements {0}</value>
+  </data>
+  <data name="Common_NoEmergencyEventsClinic" xml:space="preserve">
+    <value>Aucun événement d&apos;urgence enregistré pour cet hôpital pour le moment.</value>
+  </data>
+  <data name="Common_NoEmergencyEventsPatient" xml:space="preserve">
+    <value>Aucun événement d&apos;urgence enregistré pour ce patient dans cet hôpital.</value>
+  </data>
+  <data name="Common_TeamEyebrow" xml:space="preserve">
+    <value>Équipe</value>
+  </data>
+  <data name="Common_StaffLead" xml:space="preserve">
+    <value>Professionnels liés à cet hôpital. Les administrateurs peuvent inviter des collègues par e-mail.</value>
+  </data>
+  <data name="Common_MemberCountLabel" xml:space="preserve">
+    <value>Membre {0}</value>
+  </data>
+  <data name="Common_MemberCountLabelPlural" xml:space="preserve">
+    <value>Membres {0}</value>
+  </data>
+  <data name="Common_NoStaffYet" xml:space="preserve">
+    <value>Aucun membre du personnel n&apos;est encore lié.</value>
+  </data>
+  <data name="Common_HospitalSectionsAria" xml:space="preserve">
+    <value>Sections hospitalières</value>
+  </data>
+  <data name="Common_RoomLabel" xml:space="preserve">
+    <value>Chambre {0}</value>
+  </data>
+  <data name="Common_InactiveLower" xml:space="preserve">
+    <value>inactif</value>
+  </data>
+  <data name="Common_Room" xml:space="preserve">
+    <value>Chambre</value>
+  </data>
+  <data name="Common_Bed" xml:space="preserve">
+    <value>Lit</value>
+  </data>
+  <data name="Common_BedLabel" xml:space="preserve">
+    <value>Étiquette de lit</value>
+  </data>
+  <data name="Common_Deactivate" xml:space="preserve">
+    <value>Désactiver</value>
+  </data>
+  <data name="Common_Reactivate" xml:space="preserve">
+    <value>Réactiver</value>
+  </data>
+  <data name="Common_Clear" xml:space="preserve">
+    <value>Clair</value>
+  </data>
+  <data name="Common_Maintenance" xml:space="preserve">
+    <value>Entretien</value>
+  </data>
+  <data name="Common_ConfirmDischarge" xml:space="preserve">
+    <value>Confirmer la sortie</value>
+  </data>
+  <data name="Common_ConfirmTransfer" xml:space="preserve">
+    <value>Confirmer le transfert</value>
+  </data>
+  <data name="Common_Transfer" xml:space="preserve">
+    <value>Transfert</value>
+  </data>
+  <data name="Common_Discharge" xml:space="preserve">
+    <value>Décharge</value>
+  </data>
+  <data name="Common_Admit" xml:space="preserve">
+    <value>Admettre</value>
+  </data>
+  <data name="Common_All" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="Common_Available" xml:space="preserve">
+    <value>Disponible</value>
+  </data>
+  <data name="Common_Occupied" xml:space="preserve">
+    <value>Occupé</value>
+  </data>
+  <data name="Common_Beds" xml:space="preserve">
+    <value>Lits</value>
+  </data>
+  <data name="Common_HospitalTime" xml:space="preserve">
+    <value>temps d&apos;hôpital</value>
+  </data>
+  <data name="Common_ThisHospital" xml:space="preserve">
+    <value>cet hôpital</value>
+  </data>
+  <data name="Common_BookAppointment" xml:space="preserve">
+    <value>Prendre rendez-vous</value>
+  </data>
+  <data name="Common_Booking" xml:space="preserve">
+    <value>Réservation…</value>
+  </data>
+  <data name="Common_BookAppointmentTitle" xml:space="preserve">
+    <value>Prendre rendez-vous</value>
+  </data>
+  <data name="Common_InPerson" xml:space="preserve">
+    <value>En personne</value>
+  </data>
+  <data name="Common_Telemedicine" xml:space="preserve">
+    <value>Télémédecine</value>
+  </data>
+  <data name="Common_StartLabel" xml:space="preserve">
+    <value>Début ({0})</value>
+  </data>
+  <data name="Common_EndLabel" xml:space="preserve">
+    <value>Fin ({0})</value>
+  </data>
+  <data name="Common_RescheduleAppointment" xml:space="preserve">
+    <value>Reprogrammer un rendez-vous</value>
+  </data>
+  <data name="Common_NoAppointmentsMatchFilter" xml:space="preserve">
+    <value>Aucun rendez-vous ne correspond à ce filtre.</value>
+  </data>
+  <data name="Common_JoinTelehealth" xml:space="preserve">
+    <value>Rejoignez la télésanté</value>
+  </data>
+  <data name="Common_OpenVisit" xml:space="preserve">
+    <value>Visite ouverte</value>
+  </data>
+  <data name="Common_StartVisit" xml:space="preserve">
+    <value>Commencer la visite</value>
+  </data>
+  <data name="Common_Reschedule" xml:space="preserve">
+    <value>Reprogrammer</value>
+  </data>
+  <data name="Common_AppointmentBooked" xml:space="preserve">
+    <value>Rendez-vous pris.</value>
+  </data>
+  <data name="Common_AppointmentRescheduled" xml:space="preserve">
+    <value>Rendez-vous reporté.</value>
+  </data>
+  <data name="Common_AppointmentCancelled" xml:space="preserve">
+    <value>Rendez-vous annulé.</value>
+  </data>
+  <data name="Common_CouldNotBookAppointment" xml:space="preserve">
+    <value>Impossible de prendre rendez-vous.</value>
+  </data>
+  <data name="Common_CouldNotRescheduleAppointment" xml:space="preserve">
+    <value>Impossible de reprogrammer le rendez-vous.</value>
+  </data>
+  <data name="Common_CouldNotStartVisit" xml:space="preserve">
+    <value>Impossible de commencer la visite.</value>
+  </data>
+  <data name="Common_CouldNotCancelAppointment" xml:space="preserve">
+    <value>Impossible d&apos;annuler le rendez-vous.</value>
+  </data>
+  <data name="Common_SelectPatientAndProvider" xml:space="preserve">
+    <value>Sélectionnez un patient et un prestataire.</value>
+  </data>
+  <data name="Common_Upcoming30Days" xml:space="preserve">
+    <value>À venir (30 jours)</value>
+  </data>
+  <data name="Common_RangeToday" xml:space="preserve">
+    <value>Aujourd&apos;hui</value>
+  </data>
+  <data name="Common_RangeAll" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="Common_ScheduledVisitsLead" xml:space="preserve">
+    <value>Visites programmées pour {0}. Horaires affichés en {1}.</value>
+  </data>
+  <data name="Common_AppointmentCountLabel" xml:space="preserve">
+    <value>rendez-vous {0}</value>
+  </data>
+  <data name="Common_AppointmentCountLabelPlural" xml:space="preserve">
+    <value>{0} rendez-vous</value>
+  </data>
+  <data name="Common_DemographicsEyebrow" xml:space="preserve">
+    <value>Données démographiques</value>
+  </data>
+  <data name="Common_Profile" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="Common_HospitalLinkEyebrow" xml:space="preserve">
+    <value>Lien vers l&apos;hôpital</value>
+  </data>
+  <data name="Common_AccessSection" xml:space="preserve">
+    <value>Accéder</value>
+  </data>
+  <data name="Common_RevokeHospitalAccess" xml:space="preserve">
+    <value>Révoquer l&apos;accès à l&apos;hôpital</value>
+  </data>
+  <data name="Common_Revoking" xml:space="preserve">
+    <value>Révoquer…</value>
+  </data>
+  <data name="Common_CouldNotRevokeAccess" xml:space="preserve">
+    <value>Impossible de révoquer l&apos;accès.</value>
+  </data>
+  <data name="Common_WearablesEyebrow" xml:space="preserve">
+    <value>Appareils portables</value>
+  </data>
+  <data name="Common_DeviceReadingsTitle" xml:space="preserve">
+    <value>Lectures de l&apos;appareil</value>
+  </data>
+  <data name="Common_DeviceReadingsLead" xml:space="preserve">
+    <value>Données vitales récemment synchronisées à partir des appareils des patients (résumé des 7 derniers jours).</value>
+  </data>
+  <data name="Common_NoDeviceReadings" xml:space="preserve">
+    <value>Aucune lecture de l&apos;appareil n&apos;a encore été synchronisée pour ce patient.</value>
+  </data>
+  <data name="Common_HeartRateTitle" xml:space="preserve">
+    <value>Fréquence cardiaque moyenne/min/max</value>
+  </data>
+  <data name="Common_HeartRateLabel" xml:space="preserve">
+    <value>HR</value>
+  </data>
+  <data name="Common_HeartRateBpm" xml:space="preserve">
+    <value>{0} bpm</value>
+  </data>
+  <data name="Common_Spo2Title" xml:space="preserve">
+    <value>SpO2 moyenne/min/max</value>
+  </data>
+  <data name="Common_Spo2Label" xml:space="preserve">
+    <value>SpO2</value>
+  </data>
+  <data name="Common_VisitVitalsTitle" xml:space="preserve">
+    <value>Consulter les signes vitaux</value>
+  </data>
+  <data name="Common_VisitVitalsLead" xml:space="preserve">
+    <value>Vitalités enregistrées lors de rencontres dans cet hôpital.</value>
+  </data>
+  <data name="Common_VitalCountLabel" xml:space="preserve">
+    <value>{0} vital</value>
+  </data>
+  <data name="Common_VitalCountLabelPlural" xml:space="preserve">
+    <value>{0} signes vitaux</value>
+  </data>
+  <data name="Common_NoVisitVitals" xml:space="preserve">
+    <value>Aucun résultat de visite enregistré pour le moment.</value>
+  </data>
+  <data name="Common_NoAppointmentsPatient" xml:space="preserve">
+    <value>Aucun rendez-vous enregistré pour l&apos;instant.</value>
+  </data>
+  <data name="Common_BookOneLink" xml:space="preserve">
+    <value>Réservez-en un</value>
+  </data>
+  <data name="Common_RecentVisitsTitle" xml:space="preserve">
+    <value>Visites récentes</value>
+  </data>
+  <data name="Common_RecentVisitsLead" xml:space="preserve">
+    <value>Rencontres dans cet hôpital.</value>
+  </data>
+  <data name="Common_VisitCountLabel" xml:space="preserve">
+    <value>Visite {0}</value>
+  </data>
+  <data name="Common_VisitCountLabelPlural" xml:space="preserve">
+    <value>{0} visites</value>
+  </data>
+  <data name="Common_NoVisitsPatient" xml:space="preserve">
+    <value>Aucune visite enregistrée pour ce patient dans cet hôpital.</value>
+  </data>
+  <data name="Common_Manage" xml:space="preserve">
+    <value>Gérer</value>
+  </data>
+  <data name="Common_PatientChartLead" xml:space="preserve">
+    <value>Dossier patient pour {0}. Horaires en {1}.</value>
+  </data>
+  <data name="Common_ProviderDetailsTitle" xml:space="preserve">
+    <value>Détails du fournisseur</value>
+  </data>
+  <data name="Common_WeeklyScheduleTitle" xml:space="preserve">
+    <value>Horaire hebdomadaire</value>
+  </data>
+  <data name="Common_WeeklyScheduleLead" xml:space="preserve">
+    <value>Horaire hebdomadaire à {0}</value>
+  </data>
+  <data name="Common_AddScheduleSlot" xml:space="preserve">
+    <value>Ajouter un créneau horaire</value>
+  </data>
+  <data name="Common_Day" xml:space="preserve">
+    <value>Jour</value>
+  </data>
+  <data name="Common_Start" xml:space="preserve">
+    <value>Commencer</value>
+  </data>
+  <data name="Common_End" xml:space="preserve">
+    <value>Fin</value>
+  </data>
+  <data name="Common_AddSlot" xml:space="preserve">
+    <value>Ajouter un emplacement</value>
+  </data>
+  <data name="Common_NoScheduleSlots" xml:space="preserve">
+    <value>Aucun créneau horaire pour l&apos;instant.</value>
+  </data>
+  <data name="Common_DeactivateProvider" xml:space="preserve">
+    <value>Désactiver le fournisseur</value>
+  </data>
+  <data name="Common_ReactivateProvider" xml:space="preserve">
+    <value>Réactiver le fournisseur</value>
+  </data>
+  <data name="Common_Updating" xml:space="preserve">
+    <value>Mise à jour…</value>
+  </data>
+  <data name="Common_CouldNotUpdateProviderStatus" xml:space="preserve">
+    <value>Impossible de mettre à jour le statut du fournisseur.</value>
+  </data>
+  <data name="Common_CouldNotLoadProvider" xml:space="preserve">
+    <value>Impossible de charger le fournisseur.</value>
+  </data>
+  <data name="Common_EnterValidStartEnd" xml:space="preserve">
+    <value>Saisissez des heures de début et de fin valides.</value>
+  </data>
+  <data name="Common_CouldNotAddScheduleSlot" xml:space="preserve">
+    <value>Impossible d&apos;ajouter un créneau horaire.</value>
+  </data>
+  <data name="Common_CouldNotRemoveScheduleSlot" xml:space="preserve">
+    <value>Impossible de supprimer le créneau horaire.</value>
+  </data>
+  <data name="Common_EncounterEyebrow" xml:space="preserve">
+    <value>Rencontre</value>
+  </data>
+  <data name="Common_Details" xml:space="preserve">
+    <value>Détails</value>
+  </data>
+  <data name="Common_Started" xml:space="preserve">
+    <value>Commencé</value>
+  </data>
+  <data name="Common_Ended" xml:space="preserve">
+    <value>Terminé</value>
+  </data>
+  <data name="Common_CompleteVisit" xml:space="preserve">
+    <value>Visite complète</value>
+  </data>
+  <data name="Common_Completing" xml:space="preserve">
+    <value>Compléter…</value>
+  </data>
+  <data name="Common_VitalsTitle" xml:space="preserve">
+    <value>Vitalité</value>
+  </data>
+  <data name="Common_HeartRateOption" xml:space="preserve">
+    <value>Fréquence cardiaque</value>
+  </data>
+  <data name="Common_BloodPressureOption" xml:space="preserve">
+    <value>Pression artérielle</value>
+  </data>
+  <data name="Common_TemperatureOption" xml:space="preserve">
+    <value>Température</value>
+  </data>
+  <data name="Common_Spo2Option" xml:space="preserve">
+    <value>SpO2</value>
+  </data>
+  <data name="Common_WeightOption" xml:space="preserve">
+    <value>Poids</value>
+  </data>
+  <data name="Common_UnitPlaceholder" xml:space="preserve">
+    <value>bpm, °C, %</value>
+  </data>
+  <data name="Common_RecordVital" xml:space="preserve">
+    <value>Enregistrement vital</value>
+  </data>
+  <data name="Common_NoVitalsYet" xml:space="preserve">
+    <value>Aucun signe vital enregistré pour l&apos;instant.</value>
+  </data>
+  <data name="Common_VitalRecorded" xml:space="preserve">
+    <value>Vital enregistré.</value>
+  </data>
+  <data name="Common_CouldNotRecordVital" xml:space="preserve">
+    <value>Impossible d&apos;enregistrer l&apos;état vital.</value>
+  </data>
+  <data name="Common_VisitCompleted" xml:space="preserve">
+    <value>Visite terminée.</value>
+  </data>
+  <data name="Common_CouldNotCompleteVisit" xml:space="preserve">
+    <value>Impossible de terminer la visite.</value>
+  </data>
+  <data name="Common_CouldNotLoadVisit" xml:space="preserve">
+    <value>Impossible de charger la visite.</value>
+  </data>
+  <data name="Common_OptionalVisitSummary" xml:space="preserve">
+    <value>Résumé de visite facultatif</value>
+  </data>
+  <data name="Common_PatientChartLink" xml:space="preserve">
+    <value>Dossier des patients</value>
+  </data>
+  <data name="Common_VisitHeader" xml:space="preserve">
+    <value>Visite - {0}</value>
+  </data>
+  <data name="Common_TelehealthSession" xml:space="preserve">
+    <value>Séance de télésanté</value>
+  </data>
+  <data name="Common_Connecting" xml:space="preserve">
+    <value>De liaison…</value>
+  </data>
+  <data name="Common_PreparingTelehealth" xml:space="preserve">
+    <value>Préparation d&apos;une séance de télésanté…</value>
+  </data>
+  <data name="Common_Channel" xml:space="preserve">
+    <value>Canal</value>
+  </data>
+  <data name="Common_Session" xml:space="preserve">
+    <value>Session</value>
+  </data>
+  <data name="Common_OpenVisitChart" xml:space="preserve">
+    <value>Ouvrir le tableau des visites</value>
+  </data>
+  <data name="Common_JoinVideo" xml:space="preserve">
+    <value>Rejoindre la vidéo</value>
+  </data>
+  <data name="Common_Joining" xml:space="preserve">
+    <value>Adhésion…</value>
+  </data>
+  <data name="Common_LeaveCall" xml:space="preserve">
+    <value>Quitter l&apos;appel</value>
+  </data>
+  <data name="Common_RemoteVideoAria" xml:space="preserve">
+    <value>Vidéo à distance</value>
+  </data>
+  <data name="Common_LocalVideoAria" xml:space="preserve">
+    <value>Vidéo locale</value>
+  </data>
+  <data name="Common_CouldNotStartTelehealth" xml:space="preserve">
+    <value>Impossible de démarrer la session de télésanté.</value>
+  </data>
+  <data name="Common_AgoraNotConfigured" xml:space="preserve">
+    <value>Agora n&apos;est pas configuré sur l&apos;API. La session a été créée, mais la vidéo en direct ne peut pas démarrer tant qu&apos;Agora:AppId et Agora:AppCertificate ne sont pas définis. Voir docs/10_Agora_Twilio_Setup.md.</value>
+  </data>
+  <data name="Common_SessionReadyConfigureAgora" xml:space="preserve">
+    <value>Séance prête. Configurez Agora sur l&apos;API pour activer la vidéo en direct.</value>
+  </data>
+  <data name="Common_PageTitleAdminSuffix" xml:space="preserve">
+    <value>- Administrateur RaphCare</value>
+  </data>
+  <data name="Common_PageTitlePatientSuffix" xml:space="preserve">
+    <value>- Patient</value>
+  </data>
+  <data name="Common_PageTitleProfessionalSuffix" xml:space="preserve">
+    <value>- Professionnel de santé</value>
+  </data>
+  <data name="Common_DayMonday" xml:space="preserve">
+    <value>Lundi</value>
+  </data>
+  <data name="Common_DayTuesday" xml:space="preserve">
+    <value>Mardi</value>
+  </data>
+  <data name="Common_DayWednesday" xml:space="preserve">
+    <value>Mercredi</value>
+  </data>
+  <data name="Common_DayThursday" xml:space="preserve">
+    <value>Jeudi</value>
+  </data>
+  <data name="Common_DayFriday" xml:space="preserve">
+    <value>Vendredi</value>
+  </data>
+  <data name="Common_DaySaturday" xml:space="preserve">
+    <value>Samedi</value>
+  </data>
+  <data name="Common_DaySunday" xml:space="preserve">
+    <value>Dimanche</value>
+  </data>
+  <data name="Language_Label" xml:space="preserve">
+    <value>Langue</value>
+  </data>
+  <data name="Language_Aria" xml:space="preserve">
+    <value>Choisir la langue</value>
+  </data>
+  <data name="IndexHtml_UnhandledError" xml:space="preserve">
+    <value>Une erreur non gérée s&apos;est produite.</value>
+  </data>
+  <data name="IndexHtml_Reload" xml:space="preserve">
+    <value>Recharger</value>
+  </data>
+  <data name="AuthShell_BrandTagline" xml:space="preserve">
+    <value>Plateforme de santé connectée</value>
+  </data>
+  <data name="AuthShell_Headline" xml:space="preserve">
+    <value>Rassemblez chaque patient, clinique et équipe soignante dans une vue unique et fiable.</value>
+  </data>
+  <data name="AuthShell_Lead" xml:space="preserve">
+    <value>Enregistrez les hôpitaux, embarquez le personnel et donnez aux patients un accès sécurisé aux dossiers, aux rendez-vous et à la télésanté.</value>
+  </data>
+  <data name="AuthShell_FeatureHospitalTitle" xml:space="preserve">
+    <value>Intégration à l&apos;hôpital</value>
+  </data>
+  <data name="AuthShell_FeatureHospitalDesc" xml:space="preserve">
+    <value>Enregistrez votre clinique, vos installations et votre portail de pratique en quelques minutes.</value>
+  </data>
+  <data name="AuthShell_FeatureWorkspaceTitle" xml:space="preserve">
+    <value>Espace de travail clinique</value>
+  </data>
+  <data name="AuthShell_FeatureWorkspaceDesc" xml:space="preserve">
+    <value>Patients, visites et rapports définis par locataire de la clinique.</value>
+  </data>
+  <data name="AuthShell_FeatureVerifiedTitle" xml:space="preserve">
+    <value>Accès vérifié</value>
+  </data>
+  <data name="AuthShell_FeatureVerifiedDesc" xml:space="preserve">
+    <value>Vérification par e-mail et codes 2FA envoyés depuis votre boîte aux lettres RaphCare.</value>
+  </data>
+  <data name="AuthShell_FooterSecureSignIn" xml:space="preserve">
+    <value>Connexion sécurisée par e-mail</value>
+  </data>
+  <data name="AuthShell_FooterCopyright" xml:space="preserve">
+    <value>© {0} RaphCare</value>
+  </data>
+  <data name="AuthShell_MobileTagline" xml:space="preserve">
+    <value>Plateforme de santé</value>
+  </data>
+  <data name="Home_PageTitle" xml:space="preserve">
+    <value>RaphCare - Se connecter</value>
+  </data>
+  <data name="Home_Title" xml:space="preserve">
+    <value>Bienvenue</value>
+  </data>
+  <data name="Home_Subtitle" xml:space="preserve">
+    <value>Choisissez comment vous utiliserez RaphCare, puis connectez-vous ou créez un compte.</value>
+  </data>
+  <data name="Home_AccountTypeAria" xml:space="preserve">
+    <value>Type de compte</value>
+  </data>
+  <data name="Home_RolePatient" xml:space="preserve">
+    <value>Patient</value>
+  </data>
+  <data name="Home_RoleProfessional" xml:space="preserve">
+    <value>Professionnel de santé</value>
+  </data>
+  <data name="Home_PatientAccessTitle" xml:space="preserve">
+    <value>Accès aux patients</value>
+  </data>
+  <data name="Home_PatientAccessLead" xml:space="preserve">
+    <value>Réservez des soins, consultez les dossiers et connectez-vous à votre clinique. Expérience mobile complète disponible dans l&apos;application RaphCare.</value>
+  </data>
+  <data name="Home_PatientBullet1" xml:space="preserve">
+    <value>Email + mot de passe avec code de vérification</value>
+  </data>
+  <data name="Home_PatientBullet2" xml:space="preserve">
+    <value>Lien vers votre hôpital lors de l&apos;inscription</value>
+  </data>
+  <data name="Home_PatientBullet3" xml:space="preserve">
+    <value>Portail patient sécurisé sur web et mobile</value>
+  </data>
+  <data name="Home_ClinicPortalTitle" xml:space="preserve">
+    <value>Portail de la clinique</value>
+  </data>
+  <data name="Home_ClinicPortalLead" xml:space="preserve">
+    <value>Enregistrez votre cabinet, intégrez votre hôpital et gérez votre espace de travail clinique à partir du portail d&apos;administration.</value>
+  </data>
+  <data name="Home_ClinicBullet1" xml:space="preserve">
+    <value>Créez votre compte professionnel</value>
+  </data>
+  <data name="Home_ClinicBullet2" xml:space="preserve">
+    <value>Enregistrer l&apos;hôpital et l&apos;établissement primaire</value>
+  </data>
+  <data name="Home_ClinicBullet3" xml:space="preserve">
+    <value>Envoyez un e-mail à 2FA à chaque connexion</value>
+  </data>
+  <data name="Home_HealthcareStaffPrompt" xml:space="preserve">
+    <value>Personnel de santé ?</value>
+  </data>
+  <data name="Home_SwitchToProfessional" xml:space="preserve">
+    <value>Passer au professionnel</value>
+  </data>
+  <data name="Home_LookingForPatientPrompt" xml:space="preserve">
+    <value>Vous recherchez un accès aux patients?</value>
+  </data>
+  <data name="Home_SwitchToPatient" xml:space="preserve">
+    <value>Passer au patient</value>
+  </data>
+  <data name="NotFound_Title" xml:space="preserve">
+    <value>Introuvable</value>
+  </data>
+  <data name="NotFound_Message" xml:space="preserve">
+    <value>Désolé, le contenu que vous recherchez n&apos;existe pas.</value>
+  </data>
+  <data name="PatientSignIn_PageTitle" xml:space="preserve">
+    <value>Connexion - Patient</value>
+  </data>
+  <data name="PatientSignIn_Title" xml:space="preserve">
+    <value>Bon retour</value>
+  </data>
+  <data name="PatientSignIn_Subtitle" xml:space="preserve">
+    <value>Connectez-vous à votre compte patient. Nous vous enverrons par e-mail un code de vérification.</value>
+  </data>
+  <data name="PatientSignIn_FootNoAccount" xml:space="preserve">
+    <value>Pas de compte ?</value>
+  </data>
+  <data name="PatientSignIn_RegisterLink" xml:space="preserve">
+    <value>S&apos;inscrire comme patient</value>
+  </data>
+  <data name="PatientRegister_PageTitle" xml:space="preserve">
+    <value>S&apos;inscrire - Patient</value>
+  </data>
+  <data name="PatientRegister_Title" xml:space="preserve">
+    <value>Créer un compte patient</value>
+  </data>
+  <data name="PatientRegister_SubtitleDetails" xml:space="preserve">
+    <value>Remplissez vos coordonnées pour créer votre compte.</value>
+  </data>
+  <data name="PatientRegister_SubtitleCode" xml:space="preserve">
+    <value>Entrez le code de vérification que nous avons envoyé à votre adresse e-mail.</value>
+  </data>
+  <data name="PatientRegister_FootAlready" xml:space="preserve">
+    <value>Déjà inscrit ?</value>
+  </data>
+  <data name="PatientWelcome_PageTitle" xml:space="preserve">
+    <value>Bienvenue - Patient</value>
+  </data>
+  <data name="PatientWelcome_Title" xml:space="preserve">
+    <value>Vous êtes connecté</value>
+  </data>
+  <data name="PatientWelcome_Lead" xml:space="preserve">
+    <value>Votre compte patient est actif. Téléchargez l&apos;application mobile RaphCare pour les rendez-vous, les dossiers, la télésanté et la surveillance des appareils.</value>
+  </data>
+  <data name="ProfessionalSignIn_PageTitle" xml:space="preserve">
+    <value>Connexion - Professionnel de la santé</value>
+  </data>
+  <data name="ProfessionalSignIn_Subtitle" xml:space="preserve">
+    <value>Connectez-vous au portail de votre clinique. Nous vous enverrons par e-mail un code de vérification.</value>
+  </data>
+  <data name="ProfessionalSignIn_PendingOnboarding" xml:space="preserve">
+    <value>Vous disposez d’une inscription à l’hôpital enregistrée. Après vous être connecté, nous vous ramènerons pour le terminer.</value>
+  </data>
+  <data name="ProfessionalSignIn_FootNew" xml:space="preserve">
+    <value>Nouveau ici ?</value>
+  </data>
+  <data name="ProfessionalSignIn_CreateAccountLink" xml:space="preserve">
+    <value>Créer un compte professionnel</value>
+  </data>
+  <data name="ProfessionalRegister_PageTitle" xml:space="preserve">
+    <value>S&apos;inscrire - Professionnel de santé</value>
+  </data>
+  <data name="ProfessionalRegister_Title" xml:space="preserve">
+    <value>Créer un compte professionnel</value>
+  </data>
+  <data name="ProfessionalRegister_SubtitleDetails" xml:space="preserve">
+    <value>Remplissez vos coordonnées pour créer votre compte sur le portail de la clinique.</value>
+  </data>
+  <data name="ProfessionalRegister_SubtitleCode" xml:space="preserve">
+    <value>Entrez le code de vérification que nous avons envoyé à votre adresse e-mail.</value>
+  </data>
+  <data name="ProfessionalRegister_FootAlready" xml:space="preserve">
+    <value>Vous avez déjà un compte ?</value>
+  </data>
+  <data name="AdminLayout_BrandSub" xml:space="preserve">
+    <value>Portail de la clinique</value>
+  </data>
+  <data name="AdminLayout_NavPlatform" xml:space="preserve">
+    <value>Plate-forme</value>
+  </data>
+  <data name="AdminLayout_NavOnboarding" xml:space="preserve">
+    <value>Intégration</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbAria" xml:space="preserve">
+    <value>Fil d&apos;Ariane</value>
+  </data>
+  <data name="AdminLayout_SearchPlaceholder" xml:space="preserve">
+    <value>Rechercher des hôpitaux, des patients…</value>
+  </data>
+  <data name="AdminLayout_SearchResultsAria" xml:space="preserve">
+    <value>Résultats de la recherche</value>
+  </data>
+  <data name="AdminLayout_SearchGroupHospitals" xml:space="preserve">
+    <value>Hôpitaux</value>
+  </data>
+  <data name="AdminLayout_SearchGroupPatients" xml:space="preserve">
+    <value>Patients</value>
+  </data>
+  <data name="AdminLayout_SearchingPatients" xml:space="preserve">
+    <value>(recherche…)</value>
+  </data>
+  <data name="AdminLayout_NoPatientsMatch" xml:space="preserve">
+    <value>Aucun patient ne correspond à « {0} ».</value>
+  </data>
+  <data name="AdminLayout_NoHospitalsMatch" xml:space="preserve">
+    <value>Aucun hôpital ne correspond. Sélectionnez un hôpital pour rechercher des patients.</value>
+  </data>
+  <data name="AdminLayout_SearchResultPatientMeta" xml:space="preserve">
+    <value>Patient</value>
+  </data>
+  <data name="AdminLayout_ClinicSwitcherAria" xml:space="preserve">
+    <value>Changer d&apos;hôpital</value>
+  </data>
+  <data name="AdminLayout_ActiveHospitalTitle" xml:space="preserve">
+    <value>Contexte hospitalier actif</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbClinicPortal" xml:space="preserve">
+    <value>Portail de la clinique</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbRegisterHospital" xml:space="preserve">
+    <value>Inscrire l&apos;hôpital</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbHospitalDetails" xml:space="preserve">
+    <value>Détails de l&apos;hôpital</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
+    <value>Fournisseur</value>
+  </data>
+  <data name="Dashboard_PageTitle" xml:space="preserve">
+    <value>Administrateur RaphCare</value>
+  </data>
+  <data name="Dashboard_HospitalDashboardLead" xml:space="preserve">
+    <value>Tableau de bord hospitalier pour votre contexte actif.</value>
+  </data>
+  <data name="Dashboard_SelectHospitalLead" xml:space="preserve">
+    <value>Sélectionnez un hôpital dans la barre supérieure pour voir les mesures ciblées.</value>
+  </data>
+  <data name="Dashboard_ManageOnboardingLead" xml:space="preserve">
+    <value>Gérez l’intégration des hôpitaux et de vos organisations liées.</value>
+  </data>
+  <data name="Dashboard_AuthGuidanceLead" xml:space="preserve">
+    <value>Votre compte professionnel est prêt. Enregistrez votre hôpital pour déverrouiller le portail complet de la clinique, ou reconnectez-vous si votre session a expiré.</value>
+  </data>
+  <data name="Dashboard_StatActiveHospitals" xml:space="preserve">
+    <value>Hôpitaux actifs</value>
+  </data>
+  <data name="Dashboard_StatTotalFacilities" xml:space="preserve">
+    <value>Installations totales</value>
+  </data>
+  <data name="Dashboard_UpcomingAppointmentsTitle" xml:space="preserve">
+    <value>Rendez-vous à venir</value>
+  </data>
+  <data name="Dashboard_NoUpcoming7Days" xml:space="preserve">
+    <value>Aucun rendez-vous à venir dans les 7 prochains jours.</value>
+  </data>
+  <data name="Dashboard_EmptyNoHospitalsTitle" xml:space="preserve">
+    <value>Pas encore d&apos;hôpitaux</value>
+  </data>
+  <data name="Dashboard_EmptyNoHospitalsLead" xml:space="preserve">
+    <value>Commencez par enregistrer votre premier hôpital via l’assistant d’intégration.</value>
+  </data>
+  <data name="Dashboard_StartOnboarding" xml:space="preserve">
+    <value>Commencez l&apos;intégration</value>
+  </data>
+  <data name="HospitalsIndex_PageTitle" xml:space="preserve">
+    <value>Hôpitaux - RaphCare Administrateur</value>
+  </data>
+  <data name="HospitalsIndex_Lead" xml:space="preserve">
+    <value>Organismes de santé liés à votre compte professionnel.</value>
+  </data>
+  <data name="HospitalsIndex_AuthGuidanceLead" xml:space="preserve">
+    <value>Votre compte professionnel est créé, mais nous n&apos;avons pas encore pu charger vos hôpitaux. Poursuivez l&apos;intégration ou reconnectez-vous si votre session a expiré.</value>
+  </data>
+  <data name="HospitalsIndex_EmptyTitle" xml:space="preserve">
+    <value>Aucun hôpital lié pour l&apos;instant</value>
+  </data>
+  <data name="HospitalsIndex_EmptyLead" xml:space="preserve">
+    <value>Enregistrez un nouvel hôpital ou associez-en un que vous avez créé précédemment en utilisant son numéro d&apos;enregistrement.</value>
+  </data>
+  <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
+    <value>{0} total</value>
+  </data>
+  <data name="HospitalsRegister_PageTitle" xml:space="preserve">
+    <value>Registre de l&apos;hôpital - RaphCare Admin</value>
+  </data>
+  <data name="HospitalsRegister_StepWelcome" xml:space="preserve">
+    <value>Accueillir</value>
+  </data>
+  <data name="HospitalsRegister_StepHospital" xml:space="preserve">
+    <value>Hôpital</value>
+  </data>
+  <data name="HospitalsRegister_StepFacility" xml:space="preserve">
+    <value>Facilité</value>
+  </data>
+  <data name="HospitalsRegister_StepAdministrator" xml:space="preserve">
+    <value>Administrateur</value>
+  </data>
+  <data name="HospitalsRegister_StepReview" xml:space="preserve">
+    <value>Revoir</value>
+  </data>
+  <data name="HospitalsRegister_Step1Title" xml:space="preserve">
+    <value>Bienvenue à l&apos;intégration à l&apos;hôpital</value>
+  </data>
+  <data name="HospitalsRegister_Step1Subtitle" xml:space="preserve">
+    <value>Une courte configuration pour enregistrer un nouvel organisme de santé sur RaphCare.</value>
+  </data>
+  <data name="HospitalsRegister_Step2Title" xml:space="preserve">
+    <value>Identité de l&apos;hôpital</value>
+  </data>
+  <data name="HospitalsRegister_Step2Subtitle" xml:space="preserve">
+    <value>Nom légal, numéro d’enregistrement et paramètres régionaux.</value>
+  </data>
+  <data name="HospitalsRegister_Step3Title" xml:space="preserve">
+    <value>Installation principale</value>
+  </data>
+  <data name="HospitalsRegister_Step3Subtitle" xml:space="preserve">
+    <value>Premier site facultatif : campus physique ou hub de télésanté virtuel.</value>
+  </data>
+  <data name="HospitalsRegister_Step4Title" xml:space="preserve">
+    <value>Contact administrateur</value>
+  </data>
+  <data name="HospitalsRegister_Step4Subtitle" xml:space="preserve">
+    <value>Qui gérera cet hôpital sur la plateforme.</value>
+  </data>
+  <data name="HospitalsRegister_Step5Title" xml:space="preserve">
+    <value>Réviser et s&apos;inscrire</value>
+  </data>
+  <data name="HospitalsRegister_Step5Subtitle" xml:space="preserve">
+    <value>Confirmez les détails avant de créer le locataire de l&apos;hôpital.</value>
+  </data>
+  <data name="HospitalsRegister_Intro" xml:space="preserve">
+    <value>Enregistrez un nouvel organisme de santé sur RaphCare. Cet assistant collecte l&apos;identité de l&apos;hôpital, un établissement principal et un contact administrateur pour le suivi.</value>
+  </data>
+  <data name="HospitalsRegister_FeatureTenantTitle" xml:space="preserve">
+    <value>Locataire de l&apos;hôpital</value>
+  </data>
+  <data name="HospitalsRegister_FeatureTenantDesc" xml:space="preserve">
+    <value>Crée le dossier clinique et les paramètres régionaux de votre organisation.</value>
+  </data>
+  <data name="HospitalsRegister_FeatureFacilityTitle" xml:space="preserve">
+    <value>Installation principale</value>
+  </data>
+  <data name="HospitalsRegister_FeatureFacilityDesc" xml:space="preserve">
+    <value>Ajoutez un campus physique ou un site de télésanté virtuel comme premier emplacement.</value>
+  </data>
+  <data name="HospitalsRegister_FeatureAdminTitle" xml:space="preserve">
+    <value>Administrateur</value>
+  </data>
+  <data name="HospitalsRegister_FeatureAdminDesc" xml:space="preserve">
+    <value>Capturez qui gérera l&apos;hôpital sur la plateforme.</value>
+  </data>
+  <data name="HospitalsRegister_HospitalNameLabel" xml:space="preserve">
+    <value>Nom de l&apos;hôpital *</value>
+  </data>
+  <data name="HospitalsRegister_HospitalNamePlaceholder" xml:space="preserve">
+    <value>par ex. RaphCare Hôpital général</value>
+  </data>
+  <data name="HospitalsRegister_RegNumberLabel" xml:space="preserve">
+    <value>Numéro d&apos;enregistrement *</value>
+  </data>
+  <data name="HospitalsRegister_RegNumberPlaceholder" xml:space="preserve">
+    <value>par ex. HPCSA-12345</value>
+  </data>
+  <data name="HospitalsRegister_CountryLabel" xml:space="preserve">
+    <value>Pays *</value>
+  </data>
+  <data name="HospitalsRegister_TimeZoneLabel" xml:space="preserve">
+    <value>Fuseau horaire *</value>
+  </data>
+  <data name="HospitalsRegister_FacilityNameLabel" xml:space="preserve">
+    <value>Nom de l&apos;établissement</value>
+  </data>
+  <data name="HospitalsRegister_FacilityNamePlaceholder" xml:space="preserve">
+    <value>par ex. Campus principal</value>
+  </data>
+  <data name="HospitalsRegister_StreetAddressLabel" xml:space="preserve">
+    <value>Adresse de la rue</value>
+  </data>
+  <data name="HospitalsRegister_CityLabel" xml:space="preserve">
+    <value>Ville</value>
+  </data>
+  <data name="HospitalsRegister_VirtualFacilityCheckbox" xml:space="preserve">
+    <value>Site virtuel/télésanté uniquement</value>
+  </data>
+  <data name="HospitalsRegister_AdminNameLabel" xml:space="preserve">
+    <value>Nom complet de l&apos;administrateur</value>
+  </data>
+  <data name="HospitalsRegister_AdminNamePlaceholder" xml:space="preserve">
+    <value>par ex. Dr Jane Smith</value>
+  </data>
+  <data name="HospitalsRegister_AdminEmailLabel" xml:space="preserve">
+    <value>E-mail de l&apos;administrateur</value>
+  </data>
+  <data name="HospitalsRegister_AdminEmailPlaceholder" xml:space="preserve">
+    <value>admin@hospital.org</value>
+  </data>
+  <data name="HospitalsRegister_AdminHint" xml:space="preserve">
+    <value>Les comptes administrateur seront liés via une connexion par e-mail. Les coordonnées sont stockées pour un approvisionnement de suivi.</value>
+  </data>
+  <data name="HospitalsRegister_ReviewHospital" xml:space="preserve">
+    <value>Hôpital</value>
+  </data>
+  <data name="HospitalsRegister_Country_SouthAfrica" xml:space="preserve">
+    <value>Afrique du Sud</value>
+  </data>
+  <data name="HospitalsRegister_Country_Kenya" xml:space="preserve">
+    <value>Kenya</value>
+  </data>
+  <data name="HospitalsRegister_Country_Nigeria" xml:space="preserve">
+    <value>Nigeria</value>
+  </data>
+  <data name="HospitalsRegister_Country_Ghana" xml:space="preserve">
+    <value>Ghana</value>
+  </data>
+  <data name="HospitalsRegister_Country_UnitedKingdom" xml:space="preserve">
+    <value>Royaume-Uni</value>
+  </data>
+  <data name="HospitalsRegister_Country_UnitedStates" xml:space="preserve">
+    <value>États-Unis</value>
+  </data>
+  <data name="HospitalsRegister_Country_Other" xml:space="preserve">
+    <value>Autre</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_SAST" xml:space="preserve">
+    <value>Heure normale d’Afrique du Sud</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_UTC" xml:space="preserve">
+    <value>UTC</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_GMT" xml:space="preserve">
+    <value>Heure normale GMT</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_WEurope" xml:space="preserve">
+    <value>Heure standard de l’Europe occidentale</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_Eastern" xml:space="preserve">
+    <value>Heure normale de l&apos;Est</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_CentralEurope" xml:space="preserve">
+    <value>Heure standard d’Europe centrale</value>
+  </data>
+  <data name="HospitalDetail_PageTitleFallback" xml:space="preserve">
+    <value>Hôpital</value>
+  </data>
+  <data name="HospitalDetail_Lead" xml:space="preserve">
+    <value>Profil de l&apos;hôpital, installations et personnel.</value>
+  </data>
+  <data name="HospitalDetail_TimeZonePlaceholder" xml:space="preserve">
+    <value>Afrique/Johannesburg</value>
+  </data>
+  <data name="HospitalDetail_CouldNotUpdateHospital" xml:space="preserve">
+    <value>Impossible de mettre à jour l&apos;hôpital.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotAddFacility" xml:space="preserve">
+    <value>Impossible d&apos;ajouter des installations.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotUpdateFacility" xml:space="preserve">
+    <value>Impossible de mettre à jour l&apos;installation.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotDeleteFacility" xml:space="preserve">
+    <value>Impossible de supprimer l&apos;installation.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotInviteStaff" xml:space="preserve">
+    <value>Impossible d&apos;inviter le personnel.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotGrantPatientAccess" xml:space="preserve">
+    <value>Impossible d&apos;accorder l&apos;accès au patient.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotUpdateStaffRole" xml:space="preserve">
+    <value>Impossible de mettre à jour le rôle du personnel.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotAddProvider" xml:space="preserve">
+    <value>Impossible d&apos;ajouter un fournisseur.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotRemoveStaff" xml:space="preserve">
+    <value>Impossible de supprimer le personnel.</value>
+  </data>
+  <data name="HospitalDetail_InactiveBedSuffix" xml:space="preserve">
+    <value>(inactif)</value>
+  </data>
+  <data name="Inpatient_PageTitle" xml:space="preserve">
+    <value>Patient hospitalisé - Administrateur RaphCare</value>
+  </data>
+  <data name="Inpatient_Lead" xml:space="preserve">
+    <value>Services, chambres, lits et admissions pour {0}.</value>
+  </data>
+  <data name="Inpatient_OccupiedPill" xml:space="preserve">
+    <value>{0} / {1} occupé</value>
+  </data>
+  <data name="Inpatient_LoadingBoard" xml:space="preserve">
+    <value>Chargement du tableau des patients hospitalisés…</value>
+  </data>
+  <data name="Inpatient_SetupEyebrow" xml:space="preserve">
+    <value>Installation</value>
+  </data>
+  <data name="Inpatient_AddCapacity" xml:space="preserve">
+    <value>Ajouter de la capacité</value>
+  </data>
+  <data name="Inpatient_FacilityWardLabel" xml:space="preserve">
+    <value>Établissement (quartier)</value>
+  </data>
+  <data name="Inpatient_SelectFacility" xml:space="preserve">
+    <value>Sélectionnez l’établissement…</value>
+  </data>
+  <data name="Inpatient_WardNameLabel" xml:space="preserve">
+    <value>Nom du quartier</value>
+  </data>
+  <data name="Inpatient_WardNamePlaceholder" xml:space="preserve">
+    <value>par ex. Service médical A</value>
+  </data>
+  <data name="Inpatient_CodeLabel" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Inpatient_AddWard" xml:space="preserve">
+    <value>Ajouter une paroisse</value>
+  </data>
+  <data name="Inpatient_WardRoomLabel" xml:space="preserve">
+    <value>Salle (chambre)</value>
+  </data>
+  <data name="Inpatient_SelectWard" xml:space="preserve">
+    <value>Sélectionnez la salle…</value>
+  </data>
+  <data name="Inpatient_RoomNameLabel" xml:space="preserve">
+    <value>Nom de la pièce</value>
+  </data>
+  <data name="Inpatient_RoomNamePlaceholder" xml:space="preserve">
+    <value>par ex. 101</value>
+  </data>
+  <data name="Inpatient_RoomTypeLabel" xml:space="preserve">
+    <value>Type de chambre</value>
+  </data>
+  <data name="Inpatient_AddRoom" xml:space="preserve">
+    <value>Ajouter une pièce</value>
+  </data>
+  <data name="Inpatient_RoomBedLabel" xml:space="preserve">
+    <value>Chambre (lit)</value>
+  </data>
+  <data name="Inpatient_SelectRoom" xml:space="preserve">
+    <value>Sélectionnez la chambre…</value>
+  </data>
+  <data name="Inpatient_BedLabelPlaceholder" xml:space="preserve">
+    <value>par ex. UN</value>
+  </data>
+  <data name="Inpatient_AddBed" xml:space="preserve">
+    <value>Ajouter un lit</value>
+  </data>
+  <data name="Inpatient_CareEyebrow" xml:space="preserve">
+    <value>Soins</value>
+  </data>
+  <data name="Inpatient_AdmitPatientTitle" xml:space="preserve">
+    <value>Admettre le patient</value>
+  </data>
+  <data name="Inpatient_FindPatientLabel" xml:space="preserve">
+    <value>Trouver un patient</value>
+  </data>
+  <data name="Inpatient_NameOrPhonePlaceholder" xml:space="preserve">
+    <value>Nom ou téléphone…</value>
+  </data>
+  <data name="Inpatient_SelectPatient" xml:space="preserve">
+    <value>Sélectionnez le patient…</value>
+  </data>
+  <data name="Inpatient_AvailableBedLabel" xml:space="preserve">
+    <value>Lit disponible</value>
+  </data>
+  <data name="Inpatient_SelectBed" xml:space="preserve">
+    <value>Sélectionnez le lit…</value>
+  </data>
+  <data name="Inpatient_BoardEyebrow" xml:space="preserve">
+    <value>Conseil</value>
+  </data>
+  <data name="Inpatient_ActiveAdmissionsTitle" xml:space="preserve">
+    <value>Admissions actives</value>
+  </data>
+  <data name="Inpatient_NoPatientsAdmitted" xml:space="preserve">
+    <value>Aucun patient admis actuellement.</value>
+  </data>
+  <data name="Inpatient_LocationColumn" xml:space="preserve">
+    <value>Emplacement</value>
+  </data>
+  <data name="Inpatient_AdmittedColumn" xml:space="preserve">
+    <value>Admis</value>
+  </data>
+  <data name="Inpatient_DischargeTitle" xml:space="preserve">
+    <value>Décharge</value>
+  </data>
+  <data name="Inpatient_DischargeNotesLabel" xml:space="preserve">
+    <value>Remarques (facultatif)</value>
+  </data>
+  <data name="Inpatient_DischargeNotesPlaceholder" xml:space="preserve">
+    <value>Résumé de sortie…</value>
+  </data>
+  <data name="Inpatient_TransferBedTitle" xml:space="preserve">
+    <value>Lit de transfert</value>
+  </data>
+  <data name="Inpatient_TargetBedLabel" xml:space="preserve">
+    <value>Lit cible</value>
+  </data>
+  <data name="Inpatient_SelectAvailableBed" xml:space="preserve">
+    <value>Sélectionnez le lit disponible…</value>
+  </data>
+  <data name="Inpatient_TransferNotesPlaceholder" xml:space="preserve">
+    <value>Motif du transfert…</value>
+  </data>
+  <data name="Inpatient_MapEyebrow" xml:space="preserve">
+    <value>Carte</value>
+  </data>
+  <data name="Inpatient_BedsByWardTitle" xml:space="preserve">
+    <value>Lits par service</value>
+  </data>
+  <data name="Inpatient_NoWardsYet" xml:space="preserve">
+    <value>Pas encore de quartier. Ajoutez une installation physique, puis créez une salle, des chambres et des lits.</value>
+  </data>
+  <data name="Inpatient_NoRoomsInWard" xml:space="preserve">
+    <value>Aucune chambre dans cette salle.</value>
+  </data>
+  <data name="Inpatient_RoomTypeParen" xml:space="preserve">
+    <value>({0})</value>
+  </data>
+  <data name="Inpatient_ActiveCheckbox" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="Inpatient_HistoryEyebrow" xml:space="preserve">
+    <value>Histoire</value>
+  </data>
+  <data name="Inpatient_AdmissionHistoryTitle" xml:space="preserve">
+    <value>Historique des admissions</value>
+  </data>
+  <data name="Inpatient_StatusFilterLabel" xml:space="preserve">
+    <value>Filtre d&apos;état</value>
+  </data>
+  <data name="Inpatient_StatusAdmitted" xml:space="preserve">
+    <value>Admis</value>
+  </data>
+  <data name="Inpatient_StatusDischarged" xml:space="preserve">
+    <value>Déchargé</value>
+  </data>
+  <data name="Inpatient_NoAdmissionsMatch" xml:space="preserve">
+    <value>Aucune admission ne correspond à ce filtre.</value>
+  </data>
+  <data name="Inpatient_DischargedColumn" xml:space="preserve">
+    <value>Déchargé</value>
+  </data>
+  <data name="Inpatient_CouldNotLoadInpatientBoard" xml:space="preserve">
+    <value>Impossible de charger le tableau des patients hospitalisés.</value>
+  </data>
+  <data name="Inpatient_CouldNotLoadAdmissionHistory" xml:space="preserve">
+    <value>Impossible de charger l&apos;historique des admissions.</value>
+  </data>
+  <data name="Inpatient_CouldNotLoadMoreAdmissions" xml:space="preserve">
+    <value>Impossible de charger davantage d&apos;admissions.</value>
+  </data>
+  <data name="Inpatient_SelectFacilityAndWard" xml:space="preserve">
+    <value>Sélectionnez un établissement et entrez un nom de quartier.</value>
+  </data>
+  <data name="Inpatient_CouldNotCreateWard" xml:space="preserve">
+    <value>Impossible de créer une paroisse.</value>
+  </data>
+  <data name="Inpatient_WardCreated" xml:space="preserve">
+    <value>Quartier créé.</value>
+  </data>
+  <data name="Inpatient_SelectWardAndRoom" xml:space="preserve">
+    <value>Sélectionnez une salle et entrez un nom de chambre.</value>
+  </data>
+  <data name="Inpatient_CouldNotCreateRoom" xml:space="preserve">
+    <value>Impossible de créer de l&apos;espace.</value>
+  </data>
+  <data name="Inpatient_RoomCreated" xml:space="preserve">
+    <value>Chambre créée.</value>
+  </data>
+  <data name="Inpatient_SelectRoomAndBed" xml:space="preserve">
+    <value>Sélectionnez une chambre et entrez une étiquette de lit.</value>
+  </data>
+  <data name="Inpatient_CouldNotCreateBed" xml:space="preserve">
+    <value>Impossible de créer le lit.</value>
+  </data>
+  <data name="Inpatient_BedCreated" xml:space="preserve">
+    <value>Lit créé.</value>
+  </data>
+  <data name="Inpatient_SelectPatientAndBed" xml:space="preserve">
+    <value>Sélectionnez un patient et un lit disponible.</value>
+  </data>
+  <data name="Inpatient_CouldNotAdmitPatient" xml:space="preserve">
+    <value>Je n&apos;ai pas pu admettre le patient.</value>
+  </data>
+  <data name="Inpatient_PatientAdmitted" xml:space="preserve">
+    <value>Patient admis.</value>
+  </data>
+  <data name="Inpatient_CouldNotDischargePatient" xml:space="preserve">
+    <value>Impossible de libérer le patient.</value>
+  </data>
+  <data name="Inpatient_PatientDischarged" xml:space="preserve">
+    <value>Patient libéré.</value>
+  </data>
+  <data name="Inpatient_SelectTargetBed" xml:space="preserve">
+    <value>Sélectionnez un lit cible.</value>
+  </data>
+  <data name="Inpatient_CouldNotTransferPatient" xml:space="preserve">
+    <value>Impossible de transférer le patient.</value>
+  </data>
+  <data name="Inpatient_PatientTransferred" xml:space="preserve">
+    <value>Patient transféré.</value>
+  </data>
+  <data name="Inpatient_WardNameRequired" xml:space="preserve">
+    <value>Le nom de la paroisse est requis.</value>
+  </data>
+  <data name="Inpatient_CouldNotUpdateWard" xml:space="preserve">
+    <value>Impossible de mettre à jour le service.</value>
+  </data>
+  <data name="Inpatient_WardUpdated" xml:space="preserve">
+    <value>Quartier mis à jour.</value>
+  </data>
+  <data name="Inpatient_WardDeactivated" xml:space="preserve">
+    <value>Service désactivé.</value>
+  </data>
+  <data name="Inpatient_WardReactivated" xml:space="preserve">
+    <value>Quartier réactivé.</value>
+  </data>
+  <data name="Inpatient_CouldNotDeleteWard" xml:space="preserve">
+    <value>Impossible de supprimer la salle.</value>
+  </data>
+  <data name="Inpatient_WardRemoved" xml:space="preserve">
+    <value>Quartier supprimé.</value>
+  </data>
+  <data name="Inpatient_RoomNameRequired" xml:space="preserve">
+    <value>Le nom de la salle est obligatoire.</value>
+  </data>
+  <data name="Inpatient_CouldNotUpdateRoom" xml:space="preserve">
+    <value>Impossible de mettre à jour la chambre.</value>
+  </data>
+  <data name="Inpatient_RoomUpdated" xml:space="preserve">
+    <value>Chambre mise à jour.</value>
+  </data>
+  <data name="Inpatient_RoomDeactivated" xml:space="preserve">
+    <value>Chambre désactivée.</value>
+  </data>
+  <data name="Inpatient_RoomReactivated" xml:space="preserve">
+    <value>Salle réactivée.</value>
+  </data>
+  <data name="Inpatient_CouldNotDeleteRoom" xml:space="preserve">
+    <value>Impossible de supprimer la salle.</value>
+  </data>
+  <data name="Inpatient_RoomRemoved" xml:space="preserve">
+    <value>Chambre supprimée.</value>
+  </data>
+  <data name="Inpatient_BedLabelRequired" xml:space="preserve">
+    <value>Une étiquette de lit est requise.</value>
+  </data>
+  <data name="Inpatient_CouldNotUpdateBed" xml:space="preserve">
+    <value>Impossible de mettre à jour le lit.</value>
+  </data>
+  <data name="Inpatient_BedUpdated" xml:space="preserve">
+    <value>Lit mis à jour.</value>
+  </data>
+  <data name="Inpatient_CouldNotUpdateBedStatus" xml:space="preserve">
+    <value>Impossible de mettre à jour l&apos;état du lit.</value>
+  </data>
+  <data name="Inpatient_BedMaintenance" xml:space="preserve">
+    <value>Lit réglé à l&apos;entretien.</value>
+  </data>
+  <data name="Inpatient_BedAvailable" xml:space="preserve">
+    <value>Lit marqué disponible.</value>
+  </data>
+  <data name="Inpatient_CouldNotDeleteBed" xml:space="preserve">
+    <value>Impossible de supprimer le lit.</value>
+  </data>
+  <data name="Inpatient_BedRemoved" xml:space="preserve">
+    <value>Lit enlevé.</value>
+  </data>
+  <data name="Inpatient_LocationFormat" xml:space="preserve">
+    <value>{0} · {1} · {2} · Lit {3}</value>
+  </data>
+  <data name="Inpatient_BedDisplayFormat" xml:space="preserve">
+    <value>{0} · {1} · Lit {2}</value>
+  </data>
+  <data name="Appointments_PageTitle" xml:space="preserve">
+    <value>Rendez-vous - Administrateur RaphCare</value>
+  </data>
+  <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
+    <value>Patient</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadPatient" xml:space="preserve">
+    <value>Impossible de charger le patient.</value>
+  </data>
+  <data name="ProviderDetail_PageTitleFallback" xml:space="preserve">
+    <value>Fournisseur</value>
+  </data>
+  <data name="Visit_PageTitleFallback" xml:space="preserve">
+    <value>Visite</value>
+  </data>
+  <data name="TeleJoin_PageTitle" xml:space="preserve">
+    <value>Télésanté - Administrateur RaphCare</value>
+  </data>
+  <data name="PatientDetail_Gender" xml:space="preserve">
+    <value>Genre</value>
+  </data>
+  <data name="PatientDetail_Phone" xml:space="preserve">
+    <value>Téléphone</value>
+  </data>
+  <data name="PatientDetail_Rule" xml:space="preserve">
+    <value>Règle</value>
+  </data>
+  <data name="PatientDetail_Device" xml:space="preserve">
+    <value>Appareil</value>
+  </data>
+  <data name="PatientDetail_ClinicalEyebrow" xml:space="preserve">
+    <value>Clinique</value>
+  </data>
+  <data name="PatientDetail_AppointmentsLead" xml:space="preserve">
+    <value>Réservations dans cet hôpital.</value>
+  </data>
+  <data name="PatientDetail_Spo2Value" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="PatientDetail_LocationWithAccuracy" xml:space="preserve">
+    <value>{0} (±{1} m)</value>
+  </data>
+  <data name="ProviderDetail_AvailabilityEyebrow" xml:space="preserve">
+    <value>Disponibilité</value>
+  </data>
+  <data name="Visit_DetailLead" xml:space="preserve">
+    <value>{0} · {1} · horaires en {2}</value>
+  </data>
+  <data name="Visit_UnitLabel" xml:space="preserve">
+    <value>Unité</value>
+  </data>
+  <data name="Visit_AppointmentsNav" xml:space="preserve">
+    <value>← Rendez-vous</value>
+  </data>
+</root>

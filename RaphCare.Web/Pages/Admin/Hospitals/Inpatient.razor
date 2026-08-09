@@ -1,18 +1,20 @@
 @page "/admin/hospitals/{ClinicId:guid}/inpatient"
 @layout AdminLayout
 @using RaphCare.Domain.Common
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>Inpatient — RaphCare Admin</PageTitle>
+<PageTitle>@AppResources.T("Inpatient_PageTitle")</PageTitle>
 
 <section class="admin-page">
     <header class="admin-page-header">
         <div>
-            <h1>Inpatient</h1>
-            <p class="admin-page-lead">Wards, rooms, beds, and admissions for @_clinicName.</p>
+            <h1>@AppResources.T("Common_Inpatient")</h1>
+            <p class="admin-page-lead">@AppResources.Format("Inpatient_Lead", _clinicName)</p>
         </div>
         @if (_board is not null)
         {
-            <span class="admin-progress-pill">@_board.OccupiedBeds / @_board.TotalBeds occupied</span>
+            <span class="admin-progress-pill">@AppResources.Format("Inpatient_OccupiedPill", _board.OccupiedBeds, _board.TotalBeds)</span>
         }
     </header>
 
@@ -27,25 +29,25 @@
 
     @if (_loading)
     {
-        <p class="text-muted">Loading inpatient board…</p>
+        <p class="text-muted">@AppResources.T("Inpatient_LoadingBoard")</p>
     }
     else if (_board is not null)
     {
         <div class="stat-grid" style="margin-bottom: 1.25rem;">
             <div class="stat-card stat-card-blue">
-                <div class="stat-card-top"><span class="stat-label">Beds</span></div>
+                <div class="stat-card-top"><span class="stat-label">@AppResources.T("Common_Beds")</span></div>
                 <div class="stat-value">@_board.TotalBeds</div>
             </div>
             <div class="stat-card stat-card-green">
-                <div class="stat-card-top"><span class="stat-label">Available</span></div>
+                <div class="stat-card-top"><span class="stat-label">@AppResources.T("Common_Available")</span></div>
                 <div class="stat-value">@_board.AvailableBeds</div>
             </div>
             <div class="stat-card stat-card-violet">
-                <div class="stat-card-top"><span class="stat-label">Occupied</span></div>
+                <div class="stat-card-top"><span class="stat-label">@AppResources.T("Common_Occupied")</span></div>
                 <div class="stat-value">@_board.OccupiedBeds</div>
             </div>
             <div class="stat-card">
-                <div class="stat-card-top"><span class="stat-label">Maintenance</span></div>
+                <div class="stat-card-top"><span class="stat-label">@AppResources.T("Common_Maintenance")</span></div>
                 <div class="stat-value">@_board.MaintenanceBeds</div>
             </div>
         </div>
@@ -55,16 +57,16 @@
             <div class="admin-page-card">
                 <header class="admin-page-card-head">
                     <div>
-                        <p class="admin-page-eyebrow">Setup</p>
-                        <h2>Add capacity</h2>
+                        <p class="admin-page-eyebrow">@AppResources.T("Inpatient_SetupEyebrow")</p>
+                        <h2>@AppResources.T("Inpatient_AddCapacity")</h2>
                     </div>
                 </header>
                 <div class="admin-page-card-body">
                     <div class="form-grid">
                         <label>
-                            Facility (ward)
+                            @AppResources.T("Inpatient_FacilityWardLabel")
                             <select class="form-control" @bind="_wardFacilityId">
-                                <option value="">Select facility…</option>
+                                <option value="">@AppResources.T("Inpatient_SelectFacility")</option>
                                 @foreach (var f in _physicalFacilities)
                                 {
                                     <option value="@f.Id">@f.Name</option>
@@ -72,23 +74,23 @@
                             </select>
                         </label>
                         <label>
-                            Ward name
-                            <input class="form-control" @bind="_wardName" placeholder="e.g. Medical Ward A" />
+                            @AppResources.T("Inpatient_WardNameLabel")
+                            <input class="form-control" @bind="_wardName" placeholder="@AppResources.T("Inpatient_WardNamePlaceholder")" />
                         </label>
                         <label>
-                            Code
-                            <input class="form-control" @bind="_wardCode" placeholder="Optional" />
+                            @AppResources.T("Inpatient_CodeLabel")
+                            <input class="form-control" @bind="_wardCode" placeholder="@AppResources.T("Common_Optional")" />
                         </label>
                     </div>
                     <div class="admin-page-actions">
-                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateWardAsync">Add ward</button>
+                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateWardAsync">@AppResources.T("Inpatient_AddWard")</button>
                     </div>
 
                     <div class="form-grid" style="margin-top: 1.25rem;">
                         <label>
-                            Ward (room)
+                            @AppResources.T("Inpatient_WardRoomLabel")
                             <select class="form-control" @bind="_roomWardId">
-                                <option value="">Select ward…</option>
+                                <option value="">@AppResources.T("Inpatient_SelectWard")</option>
                                 @foreach (var w in _board.Wards.Where(x => x.IsActive))
                                 {
                                     <option value="@w.Id">@w.Name (@w.FacilityName)</option>
@@ -96,23 +98,23 @@
                             </select>
                         </label>
                         <label>
-                            Room name
-                            <input class="form-control" @bind="_roomName" placeholder="e.g. 101" />
+                            @AppResources.T("Inpatient_RoomNameLabel")
+                            <input class="form-control" @bind="_roomName" placeholder="@AppResources.T("Inpatient_RoomNamePlaceholder")" />
                         </label>
                         <label>
-                            Room type
-                            <input class="form-control" @bind="_roomType" placeholder="Optional" />
+                            @AppResources.T("Inpatient_RoomTypeLabel")
+                            <input class="form-control" @bind="_roomType" placeholder="@AppResources.T("Common_Optional")" />
                         </label>
                     </div>
                     <div class="admin-page-actions">
-                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateRoomAsync">Add room</button>
+                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateRoomAsync">@AppResources.T("Inpatient_AddRoom")</button>
                     </div>
 
                     <div class="form-grid" style="margin-top: 1.25rem;">
                         <label>
-                            Room (bed)
+                            @AppResources.T("Inpatient_RoomBedLabel")
                             <select class="form-control" @bind="_bedRoomId">
-                                <option value="">Select room…</option>
+                                <option value="">@AppResources.T("Inpatient_SelectRoom")</option>
                                 @foreach (var room in _allRooms.Where(r => r.IsActive))
                                 {
                                     <option value="@room.Id">@room.WardName — @room.Name</option>
@@ -120,12 +122,12 @@
                             </select>
                         </label>
                         <label>
-                            Bed label
-                            <input class="form-control" @bind="_bedLabel" placeholder="e.g. A" />
+                            @AppResources.T("Common_BedLabel")
+                            <input class="form-control" @bind="_bedLabel" placeholder="@AppResources.T("Inpatient_BedLabelPlaceholder")" />
                         </label>
                     </div>
                     <div class="admin-page-actions">
-                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateBedAsync">Add bed</button>
+                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateBedAsync">@AppResources.T("Inpatient_AddBed")</button>
                     </div>
                 </div>
             </div>
@@ -133,25 +135,25 @@
             <div class="admin-page-card">
                 <header class="admin-page-card-head">
                     <div>
-                        <p class="admin-page-eyebrow">Care</p>
-                        <h2>Admit patient</h2>
+                        <p class="admin-page-eyebrow">@AppResources.T("Inpatient_CareEyebrow")</p>
+                        <h2>@AppResources.T("Inpatient_AdmitPatientTitle")</h2>
                     </div>
                 </header>
                 <div class="admin-page-card-body">
                     <div class="form-grid">
                         <label>
-                            Find patient
+                            @AppResources.T("Inpatient_FindPatientLabel")
                             <div class="inpatient-search-row">
-                                <input class="form-control" @bind="_patientSearch" @bind:event="oninput" placeholder="Name or phone…" />
+                                <input class="form-control" @bind="_patientSearch" @bind:event="oninput" placeholder="@AppResources.T("Inpatient_NameOrPhonePlaceholder")" />
                                 <button type="button" class="btn btn-secondary" disabled="@_searchingPatients" @onclick="SearchPatientsAsync">
-                                    @(_searchingPatients ? "…" : "Search")
+                                    @(_searchingPatients ? AppResources.T("Common_PleaseWait") : AppResources.T("Common_Search"))
                                 </button>
                             </div>
                         </label>
                         <label>
-                            Patient
+                            @AppResources.T("Common_Patient")
                             <select class="form-control" @bind="_admitPatientId">
-                                <option value="">Select patient…</option>
+                                <option value="">@AppResources.T("Inpatient_SelectPatient")</option>
                                 @foreach (var p in _patients)
                                 {
                                     <option value="@p.PatientId">@p.FirstName @p.LastName</option>
@@ -159,9 +161,9 @@
                             </select>
                         </label>
                         <label>
-                            Available bed
+                            @AppResources.T("Inpatient_AvailableBedLabel")
                             <select class="form-control" @bind="_admitBedId">
-                                <option value="">Select bed…</option>
+                                <option value="">@AppResources.T("Inpatient_SelectBed")</option>
                                 @foreach (var bed in _availableBeds)
                                 {
                                     <option value="@bed.Id">@bed.Display</option>
@@ -169,12 +171,12 @@
                             </select>
                         </label>
                         <label>
-                            Reason
-                            <input class="form-control" @bind="_admitReason" placeholder="Optional" />
+                            @AppResources.T("Common_Reason")
+                            <input class="form-control" @bind="_admitReason" placeholder="@AppResources.T("Common_Optional")" />
                         </label>
                     </div>
                     <div class="admin-page-actions">
-                        <button type="button" class="btn btn-primary" disabled="@_saving" @onclick="AdmitAsync">Admit</button>
+                        <button type="button" class="btn btn-primary" disabled="@_saving" @onclick="AdmitAsync">@AppResources.T("Common_Admit")</button>
                     </div>
                 </div>
             </div>
@@ -183,14 +185,14 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Board</p>
-                    <h2>Active admissions</h2>
+                    <p class="admin-page-eyebrow">@AppResources.T("Inpatient_BoardEyebrow")</p>
+                    <h2>@AppResources.T("Inpatient_ActiveAdmissionsTitle")</h2>
                 </div>
             </header>
             <div class="admin-page-card-body">
                 @if (_board.ActiveAdmissionsList.Count == 0)
                 {
-                    <p class="text-muted">No patients currently admitted.</p>
+                    <p class="text-muted">@AppResources.T("Inpatient_NoPatientsAdmitted")</p>
                 }
                 else
                 {
@@ -198,10 +200,10 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Patient</th>
-                                    <th>Location</th>
-                                    <th>Admitted</th>
-                                    <th>Reason</th>
+                                    <th>@AppResources.T("Common_Patient")</th>
+                                    <th>@AppResources.T("Inpatient_LocationColumn")</th>
+                                    <th>@AppResources.T("Inpatient_AdmittedColumn")</th>
+                                    <th>@AppResources.T("Common_Reason")</th>
                                     @if (_isAdministrator)
                                     {
                                         <th></th>
@@ -215,14 +217,14 @@
                                         <td>
                                             <a href="/admin/hospitals/@ClinicId/patients/@adm.PatientId">@adm.PatientName</a>
                                         </td>
-                                        <td>@adm.FacilityName · @adm.WardName · @adm.RoomName · Bed @adm.BedLabel</td>
+                                        <td>@AppResources.Format("Inpatient_LocationFormat", adm.FacilityName, adm.WardName, adm.RoomName, adm.BedLabel)</td>
                                         <td>@ClinicTimeZoneHelper.FormatClinicLocal(adm.AdmittedAt, _clinicTimeZone)</td>
                                         <td>@(string.IsNullOrWhiteSpace(adm.Reason) ? "—" : adm.Reason)</td>
                                         @if (_isAdministrator)
                                         {
                                             <td class="inpatient-actions">
-                                                <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginTransfer(adm.Id)">Transfer</button>
-                                                <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginDischarge(adm.Id)">Discharge</button>
+                                                <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginTransfer(adm.Id)">@AppResources.T("Common_Transfer")</button>
+                                                <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginDischarge(adm.Id)">@AppResources.T("Common_Discharge")</button>
                                             </td>
                                         }
                                     </tr>
@@ -235,16 +237,16 @@
                 @if (_isAdministrator && _dischargeAdmissionId is Guid dischargeId)
                 {
                     <div class="inpatient-action-panel">
-                        <h3>Discharge</h3>
+                        <h3>@AppResources.T("Inpatient_DischargeTitle")</h3>
                         <label>
-                            Notes (optional)
-                            <textarea class="form-control" rows="2" @bind="_dischargeNotes" placeholder="Discharge summary…"></textarea>
+                            @AppResources.T("Inpatient_DischargeNotesLabel")
+                            <textarea class="form-control" rows="2" @bind="_dischargeNotes" placeholder="@AppResources.T("Inpatient_DischargeNotesPlaceholder")"></textarea>
                         </label>
                         <div class="admin-page-actions">
                             <button type="button" class="btn btn-primary" disabled="@(_dischargingId == dischargeId)" @onclick="ConfirmDischargeAsync">
-                                @(_dischargingId == dischargeId ? "…" : "Confirm discharge")
+                                @(_dischargingId == dischargeId ? AppResources.T("Common_PleaseWait") : AppResources.T("Common_ConfirmDischarge"))
                             </button>
-                            <button type="button" class="btn btn-ghost" @onclick="CancelDischarge">Cancel</button>
+                            <button type="button" class="btn btn-ghost" @onclick="CancelDischarge">@AppResources.T("Common_Cancel")</button>
                         </div>
                     </div>
                 }
@@ -252,12 +254,12 @@
                 @if (_isAdministrator && _transferAdmissionId is Guid transferId)
                 {
                     <div class="inpatient-action-panel">
-                        <h3>Transfer bed</h3>
+                        <h3>@AppResources.T("Inpatient_TransferBedTitle")</h3>
                         <div class="form-grid">
                             <label>
-                                Target bed
+                                @AppResources.T("Inpatient_TargetBedLabel")
                                 <select class="form-control" @bind="_transferBedId">
-                                    <option value="">Select available bed…</option>
+                                    <option value="">@AppResources.T("Inpatient_SelectAvailableBed")</option>
                                     @foreach (var bed in _availableBeds)
                                     {
                                         <option value="@bed.Id">@bed.Display</option>
@@ -265,15 +267,15 @@
                                 </select>
                             </label>
                             <label>
-                                Notes (optional)
-                                <input class="form-control" @bind="_transferNotes" placeholder="Transfer reason…" />
+                                @AppResources.T("Inpatient_DischargeNotesLabel")
+                                <input class="form-control" @bind="_transferNotes" placeholder="@AppResources.T("Inpatient_TransferNotesPlaceholder")" />
                             </label>
                         </div>
                         <div class="admin-page-actions">
                             <button type="button" class="btn btn-primary" disabled="@(_transferringId == transferId)" @onclick="ConfirmTransferAsync">
-                                @(_transferringId == transferId ? "…" : "Confirm transfer")
+                                @(_transferringId == transferId ? AppResources.T("Common_PleaseWait") : AppResources.T("Common_ConfirmTransfer"))
                             </button>
-                            <button type="button" class="btn btn-ghost" @onclick="CancelTransfer">Cancel</button>
+                            <button type="button" class="btn btn-ghost" @onclick="CancelTransfer">@AppResources.T("Common_Cancel")</button>
                         </div>
                     </div>
                 }
@@ -283,14 +285,14 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Map</p>
-                    <h2>Beds by ward</h2>
+                    <p class="admin-page-eyebrow">@AppResources.T("Inpatient_MapEyebrow")</p>
+                    <h2>@AppResources.T("Inpatient_BedsByWardTitle")</h2>
                 </div>
             </header>
             <div class="admin-page-card-body">
                 @if (_board.Wards.Count == 0)
                 {
-                    <p class="text-muted">No wards yet. Add a physical facility, then create a ward, rooms, and beds.</p>
+                    <p class="text-muted">@AppResources.T("Inpatient_NoWardsYet")</p>
                 }
                 else
                 {
@@ -303,17 +305,17 @@
                                     <span class="text-muted">· @ward.FacilityName</span>
                                     @if (!ward.IsActive)
                                     {
-                                        <span class="admin-progress-pill">Inactive</span>
+                                        <span class="admin-progress-pill">@AppResources.T("Common_Inactive")</span>
                                     }
                                 </h3>
                                 @if (_isAdministrator)
                                 {
                                     <div class="inpatient-actions">
-                                        <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditWard(ward)">Edit</button>
+                                        <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditWard(ward)">@AppResources.T("Common_Edit")</button>
                                         <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => ToggleWardActiveAsync(ward)">
-                                            @(ward.IsActive ? "Deactivate" : "Reactivate")
+                                            @(ward.IsActive ? AppResources.T("Common_Deactivate") : AppResources.T("Common_Reactivate"))
                                         </button>
-                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteWardAsync(ward.Id)">Delete</button>
+                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteWardAsync(ward.Id)">@AppResources.T("Common_Delete")</button>
                                     </div>
                                 }
                             </div>
@@ -323,24 +325,24 @@
                                 <div class="inpatient-action-panel">
                                     <div class="form-grid">
                                         <label>
-                                            Ward name
+                                            @AppResources.T("Inpatient_WardNameLabel")
                                             <input class="form-control" @bind="_editWardName" />
                                         </label>
                                         <label>
-                                            Code
+                                            @AppResources.T("Inpatient_CodeLabel")
                                             <input class="form-control" @bind="_editWardCode" />
                                         </label>
                                     </div>
                                     <div class="admin-page-actions">
-                                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="SaveWardAsync">Save</button>
-                                        <button type="button" class="btn btn-ghost" @onclick="CancelEditWard">Cancel</button>
+                                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="SaveWardAsync">@AppResources.T("Common_Save")</button>
+                                        <button type="button" class="btn btn-ghost" @onclick="CancelEditWard">@AppResources.T("Common_Cancel")</button>
                                     </div>
                                 </div>
                             }
 
                             @if (ward.Rooms.Count == 0)
                             {
-                                <p class="text-muted">No rooms in this ward.</p>
+                                <p class="text-muted">@AppResources.T("Inpatient_NoRoomsInWard")</p>
                             }
                             else
                             {
@@ -349,21 +351,21 @@
                                     <div style="margin: 0.75rem 0;">
                                         <div class="inpatient-ward-head">
                                             <strong>
-                                                Room @room.Name
-                                                @(string.IsNullOrWhiteSpace(room.RoomType) ? "" : $" ({room.RoomType})")
+                                                @AppResources.Format("Common_RoomLabel", room.Name)
+                                                @(string.IsNullOrWhiteSpace(room.RoomType) ? "" : AppResources.Format("Inpatient_RoomTypeParen", room.RoomType))
                                                 @if (!room.IsActive)
                                                 {
-                                                    <span class="text-muted">· inactive</span>
+                                                    <span class="text-muted">· @AppResources.T("Common_InactiveLower")</span>
                                                 }
                                             </strong>
                                             @if (_isAdministrator)
                                             {
                                                 <div class="inpatient-actions">
-                                                    <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditRoom(room)">Edit</button>
+                                                    <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditRoom(room)">@AppResources.T("Common_Edit")</button>
                                                     <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => ToggleRoomActiveAsync(room)">
-                                                        @(room.IsActive ? "Deactivate" : "Reactivate")
+                                                        @(room.IsActive ? AppResources.T("Common_Deactivate") : AppResources.T("Common_Reactivate"))
                                                     </button>
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteRoomAsync(room.Id)">Delete</button>
+                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteRoomAsync(room.Id)">@AppResources.T("Common_Delete")</button>
                                                 </div>
                                             }
                                         </div>
@@ -373,17 +375,17 @@
                                             <div class="inpatient-action-panel">
                                                 <div class="form-grid">
                                                     <label>
-                                                        Room name
+                                                        @AppResources.T("Inpatient_RoomNameLabel")
                                                         <input class="form-control" @bind="_editRoomName" />
                                                     </label>
                                                     <label>
-                                                        Room type
+                                                        @AppResources.T("Inpatient_RoomTypeLabel")
                                                         <input class="form-control" @bind="_editRoomType" />
                                                     </label>
                                                 </div>
                                                 <div class="admin-page-actions">
-                                                    <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="SaveRoomAsync">Save</button>
-                                                    <button type="button" class="btn btn-ghost" @onclick="CancelEditRoom">Cancel</button>
+                                                    <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="SaveRoomAsync">@AppResources.T("Common_Save")</button>
+                                                    <button type="button" class="btn btn-ghost" @onclick="CancelEditRoom">@AppResources.T("Common_Cancel")</button>
                                                 </div>
                                             </div>
                                         }
@@ -417,14 +419,14 @@
                                                         <div class="inpatient-actions bed-chip-actions">
                                                             @if (bed.Status == "Available" && bed.IsActive)
                                                             {
-                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="@(() => SetBedStatusAsync(bed.Id, MaintenanceStatus))">Maintenance</button>
+                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="@(() => SetBedStatusAsync(bed.Id, MaintenanceStatus))">@AppResources.T("Common_Maintenance")</button>
                                                             }
                                                             else if (bed.Status == "Maintenance" && bed.IsActive)
                                                             {
-                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="@(() => SetBedStatusAsync(bed.Id, AvailableStatus))">Clear</button>
+                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="@(() => SetBedStatusAsync(bed.Id, AvailableStatus))">@AppResources.T("Common_Clear")</button>
                                                             }
-                                                            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditBed(bed)">Edit</button>
-                                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteBedAsync(bed.Id)">Delete</button>
+                                                            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditBed(bed)">@AppResources.T("Common_Edit")</button>
+                                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteBedAsync(bed.Id)">@AppResources.T("Common_Delete")</button>
                                                         </div>
                                                     }
                                                 </div>
@@ -436,17 +438,17 @@
                                             <div class="inpatient-action-panel">
                                                 <div class="form-grid">
                                                     <label>
-                                                        Bed label
+                                                        @AppResources.T("Common_BedLabel")
                                                         <input class="form-control" @bind="_editBedLabel" />
                                                     </label>
                                                     <label class="inpatient-checkbox">
                                                         <input type="checkbox" @bind="_editBedActive" />
-                                                        Active
+                                                        @AppResources.T("Inpatient_ActiveCheckbox")
                                                     </label>
                                                 </div>
                                                 <div class="admin-page-actions">
-                                                    <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="SaveBedAsync">Save</button>
-                                                    <button type="button" class="btn btn-ghost" @onclick="CancelEditBed">Cancel</button>
+                                                    <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="SaveBedAsync">@AppResources.T("Common_Save")</button>
+                                                    <button type="button" class="btn btn-ghost" @onclick="CancelEditBed">@AppResources.T("Common_Cancel")</button>
                                                 </div>
                                             </div>
                                         }
@@ -462,30 +464,30 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">History</p>
-                    <h2>Admission history</h2>
+                    <p class="admin-page-eyebrow">@AppResources.T("Inpatient_HistoryEyebrow")</p>
+                    <h2>@AppResources.T("Inpatient_AdmissionHistoryTitle")</h2>
                 </div>
             </header>
             <div class="admin-page-card-body">
                 <div class="form-grid" style="margin-bottom: 1rem;">
                     <label>
-                        Status filter
+                        @AppResources.T("Inpatient_StatusFilterLabel")
                         <select class="form-control" @bind="_historyStatus">
-                            <option value="">All</option>
-                            <option value="Admitted">Admitted</option>
-                            <option value="Discharged">Discharged</option>
+                            <option value="">@AppResources.T("Common_All")</option>
+                            <option value="Admitted">@AppResources.T("Inpatient_StatusAdmitted")</option>
+                            <option value="Discharged">@AppResources.T("Inpatient_StatusDischarged")</option>
                         </select>
                     </label>
                     <div class="admin-page-actions" style="align-self: end;">
                         <button type="button" class="btn btn-secondary" disabled="@_loadingHistory" @onclick="LoadHistoryAsync">
-                            @(_loadingHistory ? "…" : "Apply")
+                            @(_loadingHistory ? AppResources.T("Common_PleaseWait") : AppResources.T("Common_Apply"))
                         </button>
                     </div>
                 </div>
 
                 @if (_history.Count == 0 && !_loadingHistory)
                 {
-                    <p class="text-muted">No admissions match this filter.</p>
+                    <p class="text-muted">@AppResources.T("Inpatient_NoAdmissionsMatch")</p>
                 }
                 else
                 {
@@ -493,12 +495,12 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Patient</th>
-                                    <th>Location</th>
-                                    <th>Admitted</th>
-                                    <th>Discharged</th>
-                                    <th>Status</th>
-                                    <th>Notes</th>
+                                    <th>@AppResources.T("Common_Patient")</th>
+                                    <th>@AppResources.T("Inpatient_LocationColumn")</th>
+                                    <th>@AppResources.T("Inpatient_AdmittedColumn")</th>
+                                    <th>@AppResources.T("Inpatient_DischargedColumn")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
+                                    <th>@AppResources.T("Common_Notes")</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -508,7 +510,7 @@
                                         <td>
                                             <a href="/admin/hospitals/@ClinicId/patients/@adm.PatientId">@adm.PatientName</a>
                                         </td>
-                                        <td>@adm.FacilityName · @adm.WardName · @adm.RoomName · Bed @adm.BedLabel</td>
+                                        <td>@AppResources.Format("Inpatient_LocationFormat", adm.FacilityName, adm.WardName, adm.RoomName, adm.BedLabel)</td>
                                         <td>@ClinicTimeZoneHelper.FormatClinicLocal(adm.AdmittedAt, _clinicTimeZone)</td>
                                         <td>@(adm.DischargedAt is null ? "—" : ClinicTimeZoneHelper.FormatClinicLocal(adm.DischargedAt.Value, _clinicTimeZone))</td>
                                         <td>@adm.Status</td>
@@ -522,7 +524,7 @@
                     {
                         <div class="admin-page-actions">
                             <button type="button" class="btn btn-secondary" disabled="@_loadingHistory" @onclick="LoadMoreHistoryAsync">
-                                Load more (@_history.Count of @_historyTotal)
+                                @AppResources.Format("Common_LoadMore", _history.Count, _historyTotal)
                             </button>
                         </div>
                     }
@@ -532,7 +534,7 @@
     }
 
     <div class="admin-page-actions">
-        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">← Back to hospital</a>
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
     </div>
 </section>
 
@@ -556,7 +558,7 @@
     private Guid? _editBedId;
     private string? _error;
     private string? _success;
-    private string _clinicName = "this hospital";
+    private string _clinicName = AppResources.T("Common_ThisHospital");
     private string _clinicTimeZone = "UTC";
     private ClinicInpatientBoard? _board;
     private IReadOnlyList<FacilityListItem> _physicalFacilities = Array.Empty<FacilityListItem>();
@@ -601,8 +603,15 @@
             .Where(w => w.IsActive)
             .SelectMany(w => w.Rooms.Where(r => r.IsActive).SelectMany(r => r.Beds
                 .Where(b => b.IsActive && b.Status == "Available")
-                .Select(b => new BedOption(b.Id, $"{w.Name} · {r.Name} · Bed {b.Label}"))))
+                .Select(b => new BedOption(b.Id, AppResources.Format("Inpatient_BedDisplayFormat", w.Name, r.Name, b.Label)))))
         ?? Enumerable.Empty<BedOption>();
+
+    protected override void OnInitialized() =>
+        CultureService.CultureChanged += OnCultureChanged;
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 
     protected override async Task OnInitializedAsync()
     {
@@ -634,7 +643,7 @@
         if (response.IsSuccess && response.Data is not null)
             _board = response.Data;
         else
-            _error = response.ErrorMessage ?? "Could not load inpatient board.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotLoadInpatientBoard");
     }
 
     private async Task SearchPatientsAsync()
@@ -647,7 +656,7 @@
         if (patients.IsSuccess && patients.Data is not null)
             _patients = patients.Data.Items;
         else
-            _error = patients.ErrorMessage ?? "Could not load patients.";
+            _error = patients.ErrorMessage ?? AppResources.T("Common_CouldNotLoadPatients");
     }
 
     private async Task LoadHistoryAsync()
@@ -664,7 +673,7 @@
             _historyTotal = response.Data.TotalCount;
         }
         else
-            _error = response.ErrorMessage ?? "Could not load admission history.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotLoadAdmissionHistory");
     }
 
     private async Task LoadMoreHistoryAsync()
@@ -681,14 +690,14 @@
             _historyTotal = response.Data.TotalCount;
         }
         else
-            _error = response.ErrorMessage ?? "Could not load more admissions.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotLoadMoreAdmissions");
     }
 
     private async Task CreateWardAsync()
     {
         if (!Guid.TryParse(_wardFacilityId, out var facilityId) || string.IsNullOrWhiteSpace(_wardName))
         {
-            _error = "Select a facility and enter a ward name.";
+            _error = AppResources.T("Inpatient_SelectFacilityAndWard");
             return;
         }
 
@@ -704,11 +713,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not create ward.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotCreateWard");
             return;
         }
 
-        _success = "Ward created.";
+        _success = AppResources.T("Inpatient_WardCreated");
         _wardName = string.Empty;
         _wardCode = string.Empty;
         await LoadBoardAsync();
@@ -718,7 +727,7 @@
     {
         if (!Guid.TryParse(_roomWardId, out var wardId) || string.IsNullOrWhiteSpace(_roomName))
         {
-            _error = "Select a ward and enter a room name.";
+            _error = AppResources.T("Inpatient_SelectWardAndRoom");
             return;
         }
 
@@ -734,11 +743,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not create room.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotCreateRoom");
             return;
         }
 
-        _success = "Room created.";
+        _success = AppResources.T("Inpatient_RoomCreated");
         _roomName = string.Empty;
         _roomType = string.Empty;
         await LoadBoardAsync();
@@ -748,7 +757,7 @@
     {
         if (!Guid.TryParse(_bedRoomId, out var roomId) || string.IsNullOrWhiteSpace(_bedLabel))
         {
-            _error = "Select a room and enter a bed label.";
+            _error = AppResources.T("Inpatient_SelectRoomAndBed");
             return;
         }
 
@@ -763,11 +772,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not create bed.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotCreateBed");
             return;
         }
 
-        _success = "Bed created.";
+        _success = AppResources.T("Inpatient_BedCreated");
         _bedLabel = string.Empty;
         await LoadBoardAsync();
     }
@@ -776,7 +785,7 @@
     {
         if (!Guid.TryParse(_admitPatientId, out var patientId) || !Guid.TryParse(_admitBedId, out var bedId))
         {
-            _error = "Select a patient and an available bed.";
+            _error = AppResources.T("Inpatient_SelectPatientAndBed");
             return;
         }
 
@@ -792,11 +801,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not admit patient.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotAdmitPatient");
             return;
         }
 
-        _success = "Patient admitted.";
+        _success = AppResources.T("Inpatient_PatientAdmitted");
         _admitReason = string.Empty;
         await LoadBoardAsync();
         await LoadHistoryAsync();
@@ -825,11 +834,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not discharge patient.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotDischargePatient");
             return;
         }
 
-        _success = "Patient discharged.";
+        _success = AppResources.T("Inpatient_PatientDischarged");
         await LoadBoardAsync();
         await LoadHistoryAsync();
     }
@@ -848,7 +857,7 @@
     {
         if (_transferAdmissionId is not Guid admissionId || !Guid.TryParse(_transferBedId, out var bedId))
         {
-            _error = "Select a target bed.";
+            _error = AppResources.T("Inpatient_SelectTargetBed");
             return;
         }
 
@@ -864,11 +873,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not transfer patient.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotTransferPatient");
             return;
         }
 
-        _success = "Patient transferred.";
+        _success = AppResources.T("Inpatient_PatientTransferred");
         await LoadBoardAsync();
         await LoadHistoryAsync();
     }
@@ -888,7 +897,7 @@
     {
         if (_editWardId is not Guid wardId || string.IsNullOrWhiteSpace(_editWardName))
         {
-            _error = "Ward name is required.";
+            _error = AppResources.T("Inpatient_WardNameRequired");
             return;
         }
 
@@ -907,11 +916,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not update ward.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotUpdateWard");
             return;
         }
 
-        _success = "Ward updated.";
+        _success = AppResources.T("Inpatient_WardUpdated");
         _editWardId = null;
         await LoadBoardAsync();
     }
@@ -930,11 +939,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not update ward.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotUpdateWard");
             return;
         }
 
-        _success = ward.IsActive ? "Ward deactivated." : "Ward reactivated.";
+        _success = ward.IsActive ? AppResources.T("Inpatient_WardDeactivated") : AppResources.T("Inpatient_WardReactivated");
         await LoadBoardAsync();
     }
 
@@ -947,11 +956,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not delete ward.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotDeleteWard");
             return;
         }
 
-        _success = "Ward removed.";
+        _success = AppResources.T("Inpatient_WardRemoved");
         await LoadBoardAsync();
     }
 
@@ -970,7 +979,7 @@
     {
         if (_editRoomId is not Guid roomId || string.IsNullOrWhiteSpace(_editRoomName))
         {
-            _error = "Room name is required.";
+            _error = AppResources.T("Inpatient_RoomNameRequired");
             return;
         }
 
@@ -989,11 +998,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not update room.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotUpdateRoom");
             return;
         }
 
-        _success = "Room updated.";
+        _success = AppResources.T("Inpatient_RoomUpdated");
         _editRoomId = null;
         await LoadBoardAsync();
     }
@@ -1012,11 +1021,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not update room.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotUpdateRoom");
             return;
         }
 
-        _success = room.IsActive ? "Room deactivated." : "Room reactivated.";
+        _success = room.IsActive ? AppResources.T("Inpatient_RoomDeactivated") : AppResources.T("Inpatient_RoomReactivated");
         await LoadBoardAsync();
     }
 
@@ -1029,11 +1038,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not delete room.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotDeleteRoom");
             return;
         }
 
-        _success = "Room removed.";
+        _success = AppResources.T("Inpatient_RoomRemoved");
         await LoadBoardAsync();
     }
 
@@ -1052,7 +1061,7 @@
     {
         if (_editBedId is not Guid bedId || string.IsNullOrWhiteSpace(_editBedLabel))
         {
-            _error = "Bed label is required.";
+            _error = AppResources.T("Inpatient_BedLabelRequired");
             return;
         }
 
@@ -1067,11 +1076,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not update bed.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotUpdateBed");
             return;
         }
 
-        _success = "Bed updated.";
+        _success = AppResources.T("Inpatient_BedUpdated");
         _editBedId = null;
         await LoadBoardAsync();
     }
@@ -1085,11 +1094,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not update bed status.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotUpdateBedStatus");
             return;
         }
 
-        _success = status == "Maintenance" ? "Bed set to maintenance." : "Bed marked available.";
+        _success = status == MaintenanceStatus ? AppResources.T("Inpatient_BedMaintenance") : AppResources.T("Inpatient_BedAvailable");
         await LoadBoardAsync();
     }
 
@@ -1102,11 +1111,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not delete bed.";
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotDeleteBed");
             return;
         }
 
-        _success = "Bed removed.";
+        _success = AppResources.T("Inpatient_BedRemoved");
         await LoadBoardAsync();
     }
 
@@ -1116,7 +1125,7 @@
     private static string BedTitle(ClinicBed bed)
     {
         var label = bed.CurrentPatientName ?? bed.Status;
-        return bed.IsActive ? label : $"{label} (inactive)";
+        return bed.IsActive ? label : $"{label}{AppResources.T("HospitalDetail_InactiveBedSuffix")}";
     }
 
     private void ClearMessages()

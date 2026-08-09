@@ -2,16 +2,18 @@
 @layout AdminLayout
 @using RaphCare.Domain.Common
 @inject NavigationManager Navigation
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>Appointments — RaphCare Admin</PageTitle>
+<PageTitle>@AppResources.T("Appointments_PageTitle")</PageTitle>
 
 <section class="admin-page">
     <header class="admin-page-header">
         <div>
-            <h1>Appointments</h1>
-            <p class="admin-page-lead">Scheduled visits for @_clinicName. Times shown in @_timeZoneLabel.</p>
+            <h1>@AppResources.T("Common_Appointments")</h1>
+            <p class="admin-page-lead">@AppResources.Format("Common_ScheduledVisitsLead", _clinicName, _timeZoneLabel)</p>
         </div>
-        <span class="admin-progress-pill">@_totalCount appointment@(_totalCount == 1 ? "" : "s")</span>
+        <span class="admin-progress-pill">@FormatAppointmentCount(_totalCount)</span>
     </header>
 
     @if (!string.IsNullOrEmpty(_error))
@@ -28,16 +30,16 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Scheduling</p>
-                    <h2>Book appointment</h2>
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_SchedulingEyebrow")</p>
+                    <h2>@AppResources.T("Common_BookAppointmentTitle")</h2>
                 </div>
             </header>
             <div class="admin-page-card-body">
                 <div class="form-grid">
                     <label>
-                        Patient
+                        @AppResources.T("Common_Patient")
                         <select class="form-control" @bind="_bookPatientId">
-                            <option value="">Select patient…</option>
+                            <option value="">@AppResources.T("Common_SelectPatient")</option>
                             @foreach (var patient in _patients)
                             {
                                 <option value="@patient.PatientId">@patient.FirstName @patient.LastName</option>
@@ -45,9 +47,9 @@
                         </select>
                     </label>
                     <label>
-                        Provider
+                        @AppResources.T("Common_Provider")
                         <select class="form-control" @bind="_bookProviderId">
-                            <option value="">Select provider…</option>
+                            <option value="">@AppResources.T("Common_SelectProvider")</option>
                             @foreach (var provider in _providers)
                             {
                                 <option value="@provider.ProviderId">@provider.DisplayName</option>
@@ -55,28 +57,28 @@
                         </select>
                     </label>
                     <label>
-                        Type
+                        @AppResources.T("Common_Type")
                         <select class="form-control" @bind="_bookType">
-                            <option value="InPerson">In person</option>
-                            <option value="Telemedicine">Telemedicine</option>
+                            <option value="InPerson">@AppResources.T("Common_InPerson")</option>
+                            <option value="Telemedicine">@AppResources.T("Common_Telemedicine")</option>
                         </select>
                     </label>
                     <label>
-                        Start (@_timeZoneLabel)
+                        @AppResources.Format("Common_StartLabel", _timeZoneLabel)
                         <input class="form-control" type="datetime-local" @bind="_scheduledStart" @bind:format="yyyy-MM-ddTHH:mm" />
                     </label>
                     <label>
-                        End (@_timeZoneLabel)
+                        @AppResources.Format("Common_EndLabel", _timeZoneLabel)
                         <input class="form-control" type="datetime-local" @bind="_scheduledEnd" @bind:format="yyyy-MM-ddTHH:mm" />
                     </label>
                     <label>
-                        Reason
-                        <input class="form-control" @bind="_bookReason" placeholder="Optional" />
+                        @AppResources.T("Common_Reason")
+                        <input class="form-control" @bind="_bookReason" placeholder="@AppResources.T("Common_Optional")" />
                     </label>
                 </div>
                 <div class="admin-page-actions">
                     <button type="button" class="btn btn-primary" disabled="@_booking" @onclick="BookAppointmentAsync">
-                        @(_booking ? "Booking…" : "Book appointment")
+                        @(_booking ? AppResources.T("Common_Booking") : AppResources.T("Common_BookAppointment"))
                     </button>
                 </div>
             </div>
@@ -87,14 +89,14 @@
             <div class="admin-page-card">
                 <header class="admin-page-card-head">
                     <div>
-                        <p class="admin-page-eyebrow">Scheduling</p>
-                        <h2>Reschedule appointment</h2>
+                        <p class="admin-page-eyebrow">@AppResources.T("Common_SchedulingEyebrow")</p>
+                        <h2>@AppResources.T("Common_RescheduleAppointment")</h2>
                     </div>
                 </header>
                 <div class="admin-page-card-body">
                     <div class="form-grid">
                         <label>
-                            Provider
+                            @AppResources.T("Common_Provider")
                             <select class="form-control" @bind="_rescheduleProviderId">
                                 @foreach (var provider in _providers)
                                 {
@@ -103,23 +105,23 @@
                             </select>
                         </label>
                         <label>
-                            Start (@_timeZoneLabel)
+                            @AppResources.Format("Common_StartLabel", _timeZoneLabel)
                             <input class="form-control" type="datetime-local" @bind="_rescheduleStart" @bind:format="yyyy-MM-ddTHH:mm" />
                         </label>
                         <label>
-                            End (@_timeZoneLabel)
+                            @AppResources.Format("Common_EndLabel", _timeZoneLabel)
                             <input class="form-control" type="datetime-local" @bind="_rescheduleEnd" @bind:format="yyyy-MM-ddTHH:mm" />
                         </label>
                         <label>
-                            Reason
-                            <input class="form-control" @bind="_rescheduleReason" placeholder="Optional" />
+                            @AppResources.T("Common_Reason")
+                            <input class="form-control" @bind="_rescheduleReason" placeholder="@AppResources.T("Common_Optional")" />
                         </label>
                     </div>
                     <div class="admin-page-actions">
                         <button type="button" class="btn btn-primary" disabled="@_rescheduling" @onclick="ConfirmRescheduleAsync">
-                            @(_rescheduling ? "Saving…" : "Save changes")
+                            @(_rescheduling ? AppResources.T("Common_Saving") : AppResources.T("Common_SaveChanges"))
                         </button>
-                        <button type="button" class="btn btn-secondary" @onclick="CancelRescheduleForm">Cancel</button>
+                        <button type="button" class="btn btn-secondary" @onclick="CancelRescheduleForm">@AppResources.T("Common_Cancel")</button>
                     </div>
                 </div>
             </div>
@@ -131,21 +133,21 @@
             <div class="admin-table-toolbar">
                 <div class="claim-form-row">
                     <select class="form-control" @bind="_rangeFilter">
-                        <option value="upcoming">Upcoming (30 days)</option>
-                        <option value="today">Today</option>
-                        <option value="all">All</option>
+                        <option value="upcoming">@AppResources.T("Common_Upcoming30Days")</option>
+                        <option value="today">@AppResources.T("Common_RangeToday")</option>
+                        <option value="all">@AppResources.T("Common_All")</option>
                     </select>
-                    <button type="button" class="btn btn-secondary" @onclick="LoadAppointmentsAsync">Apply</button>
+                    <button type="button" class="btn btn-secondary" @onclick="LoadAppointmentsAsync">@AppResources.T("Common_Apply")</button>
                 </div>
             </div>
 
             @if (_loading)
             {
-                <p class="text-muted">Loading appointments…</p>
+                <p class="text-muted">@AppResources.T("Common_LoadingAppointments")</p>
             }
             else if (_appointments.Count == 0)
             {
-                <p class="text-muted">No appointments match this filter.</p>
+                <p class="text-muted">@AppResources.T("Common_NoAppointmentsMatchFilter")</p>
             }
             else
             {
@@ -153,12 +155,12 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Date & time</th>
-                                <th>Patient</th>
-                                <th>Provider</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Reason</th>
+                                <th>@AppResources.T("Common_DateTime")</th>
+                                <th>@AppResources.T("Common_Patient")</th>
+                                <th>@AppResources.T("Common_Provider")</th>
+                                <th>@AppResources.T("Common_Type")</th>
+                                <th>@AppResources.T("Common_Status")</th>
+                                <th>@AppResources.T("Common_Reason")</th>
                                 @if (_isAdministrator)
                                 {
                                     <th></th>
@@ -174,29 +176,29 @@
                                         <a href="/admin/hospitals/@ClinicId/patients/@appt.PatientId">@appt.PatientName</a>
                                     </td>
                                     <td>@appt.ProviderName</td>
-                                    <td>@appt.Type</td>
+                                    <td>@DisplayAppointmentType(appt.Type)</td>
                                     <td>@appt.Status</td>
-                                    <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? "—" : appt.Reason)</td>
+                                    <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? AppResources.T("Common_EmptyCell") : appt.Reason)</td>
                                     @if (_isAdministrator && appt.Status != "Cancelled")
                                     {
                                         <td class="admin-table-actions">
                                             @if (string.Equals(appt.Type, "Telemedicine", StringComparison.OrdinalIgnoreCase) && appt.Status != "Completed")
                                             {
-                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments/@appt.Id/tele">Join telehealth</a>
+                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments/@appt.Id/tele">@AppResources.T("Common_JoinTelehealth")</a>
                                             }
                                             @if (appt.ActiveVisitId is Guid visitId)
                                             {
-                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/visits/@visitId">Open visit</a>
+                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/visits/@visitId">@AppResources.T("Common_OpenVisit")</a>
                                             }
                                             else if (appt.Status != "Completed")
                                             {
                                                 <button type="button" class="btn btn-ghost btn-sm" disabled="@(_startingVisitId == appt.Id)" @onclick="() => StartVisitAsync(appt.Id)">
-                                                    @(_startingVisitId == appt.Id ? "…" : "Start visit")
+                                                    @(_startingVisitId == appt.Id ? "…" : AppResources.T("Common_StartVisit"))
                                                 </button>
                                             }
-                                            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => StartReschedule(appt)">Reschedule</button>
+                                            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => StartReschedule(appt)">@AppResources.T("Common_Reschedule")</button>
                                             <button type="button" class="btn btn-ghost btn-sm" disabled="@(_cancellingId == appt.Id)" @onclick="() => CancelAppointmentAsync(appt.Id)">
-                                                @(_cancellingId == appt.Id ? "…" : "Cancel")
+                                                @(_cancellingId == appt.Id ? "…" : AppResources.T("Common_Cancel"))
                                             </button>
                                         </td>
                                     }
@@ -212,11 +214,11 @@
 
                 <div class="admin-pagination">
                     <span class="admin-pagination-meta">
-                        Page @_pageNumber of @_pageCount · @_totalCount appointment@(_totalCount == 1 ? "" : "s")
+                        @AppResources.Format("Common_PageOf", _pageNumber, _pageCount, FormatAppointmentCount(_totalCount))
                     </span>
                     <div class="admin-pagination-actions">
-                        <button type="button" class="btn btn-secondary btn-sm" disabled="@(_pageNumber <= 1 || _loading)" @onclick="PreviousPageAsync">Previous</button>
-                        <button type="button" class="btn btn-secondary btn-sm" disabled="@(_pageNumber >= _pageCount || _loading)" @onclick="NextPageAsync">Next</button>
+                        <button type="button" class="btn btn-secondary btn-sm" disabled="@(_pageNumber <= 1 || _loading)" @onclick="PreviousPageAsync">@AppResources.T("Common_Previous")</button>
+                        <button type="button" class="btn btn-secondary btn-sm" disabled="@(_pageNumber >= _pageCount || _loading)" @onclick="NextPageAsync">@AppResources.T("Common_Next")</button>
                     </div>
                 </div>
             }
@@ -224,7 +226,7 @@
     </div>
 
     <div class="admin-page-actions">
-        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId?tab=appointments">← Back to hospital</a>
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId?tab=appointments">@AppResources.T("Common_BackToHospital")</a>
     </div>
 </section>
 
@@ -240,9 +242,9 @@
     private bool _isAdministrator;
     private string? _error;
     private string? _success;
-    private string _clinicName = "this hospital";
+    private string _clinicName = string.Empty;
     private string _clinicTimeZone = "UTC";
-    private string _timeZoneLabel = "hospital time";
+    private string _timeZoneLabel = string.Empty;
     private string _rangeFilter = "upcoming";
     private string _bookPatientId = string.Empty;
     private string _bookProviderId = string.Empty;
@@ -267,6 +269,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
+
+        _clinicName = AppResources.T("Common_ThisHospital");
+        _timeZoneLabel = AppResources.T("Common_HospitalTime");
+
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
         var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
         if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
@@ -274,7 +281,9 @@
             _clinicName = clinicResponse.Data.Name;
             _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
-            _timeZoneLabel = string.IsNullOrWhiteSpace(_clinicTimeZone) ? "hospital time" : _clinicTimeZone;
+            _timeZoneLabel = string.IsNullOrWhiteSpace(_clinicTimeZone)
+                ? AppResources.T("Common_HospitalTime")
+                : _clinicTimeZone;
             SetDefaultBookingTimes();
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
@@ -284,6 +293,18 @@
 
         await LoadAppointmentsAsync();
     }
+
+    private static string FormatAppointmentCount(int count) =>
+        count == 1
+            ? AppResources.Format("Common_AppointmentCountLabel", count)
+            : AppResources.Format("Common_AppointmentCountLabelPlural", count);
+
+    private static string DisplayAppointmentType(string type) =>
+        string.Equals(type, "Telemedicine", StringComparison.OrdinalIgnoreCase)
+            ? AppResources.T("Common_Telemedicine")
+            : string.Equals(type, "InPerson", StringComparison.OrdinalIgnoreCase)
+                ? AppResources.T("Common_InPerson")
+                : type;
 
     private void SetDefaultBookingTimes()
     {
@@ -315,13 +336,13 @@
     {
         if (!Guid.TryParse(_bookPatientId, out var patientId) || !Guid.TryParse(_bookProviderId, out var providerId))
         {
-            _error = "Select a patient and provider.";
+            _error = AppResources.T("Common_SelectPatientAndProvider");
             return;
         }
 
         if (_scheduledEnd <= _scheduledStart)
         {
-            _error = "End time must be after start time.";
+            _error = AppResources.T("Common_EndTimeAfterStart");
             return;
         }
 
@@ -341,11 +362,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not book appointment.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotBookAppointment");
             return;
         }
 
-        _success = "Appointment booked.";
+        _success = AppResources.T("Common_AppointmentBooked");
         _bookReason = string.Empty;
         _pageNumber = 1;
         _rangeFilter = "upcoming";
@@ -372,7 +393,7 @@
 
         if (_rescheduleEnd <= _rescheduleStart)
         {
-            _error = "End time must be after start time.";
+            _error = AppResources.T("Common_EndTimeAfterStart");
             return;
         }
 
@@ -390,11 +411,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not reschedule appointment.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotRescheduleAppointment");
             return;
         }
 
-        _success = "Appointment rescheduled.";
+        _success = AppResources.T("Common_AppointmentRescheduled");
         _rescheduleId = null;
         await LoadAppointmentsAsync();
     }
@@ -409,7 +430,7 @@
 
         if (!response.IsSuccess || response.Data is null)
         {
-            _error = response.ErrorMessage ?? "Could not start visit.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotStartVisit");
             return;
         }
 
@@ -426,11 +447,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not cancel appointment.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotCancelAppointment");
             return;
         }
 
-        _success = "Appointment cancelled.";
+        _success = AppResources.T("Common_AppointmentCancelled");
         if (_rescheduleId == appointmentId)
             _rescheduleId = null;
         await LoadAppointmentsAsync();
@@ -461,7 +482,7 @@
 
         if (!response.IsSuccess || response.Data is null)
         {
-            _error = response.ErrorMessage ?? "Could not load appointments.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadAppointments");
             return;
         }
 
@@ -483,4 +504,8 @@
         _pageNumber++;
         await LoadAppointmentsAsync();
     }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 }

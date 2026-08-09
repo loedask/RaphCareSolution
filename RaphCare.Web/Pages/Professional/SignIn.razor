@@ -1,16 +1,18 @@
 @page "/professional/signin"
 @layout AuthShellLayout
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>Sign in — Healthcare professional</PageTitle>
+<PageTitle>@AppResources.T("ProfessionalSignIn_PageTitle")</PageTitle>
 
 <div class="auth-card auth-card-form">
-    <a class="back-link" href="/?role=professional">← Back</a>
-    <h2 class="auth-card-title">Welcome back</h2>
-    <p class="auth-card-subtitle">Sign in to your clinic portal. We'll email you a verification code.</p>
+    <a class="back-link" href="/?role=professional">@AppResources.T("Common_Back")</a>
+    <h2 class="auth-card-title">@AppResources.T("PatientSignIn_Title")</h2>
+    <p class="auth-card-subtitle">@AppResources.T("ProfessionalSignIn_Subtitle")</p>
 
     @if (_hasPendingOnboarding)
     {
-        <div class="alert alert-info">You have a saved hospital registration. After sign-in we'll take you back to finish it.</div>
+        <div class="alert alert-info">@AppResources.T("ProfessionalSignIn_PendingOnboarding")</div>
     }
 
     @if (!string.IsNullOrEmpty(_error))
@@ -25,29 +27,29 @@
     <EditForm Model="_model" OnValidSubmit="SubmitAsync">
         <div class="form-grid single-column">
             <div class="form-field">
-                <label>Email</label>
+                <label>@AppResources.T("Common_Email")</label>
                 <InputText class="form-control" @bind-Value="_model.Email" type="email" disabled="@_awaitingCode" />
             </div>
             <div class="form-field">
-                <label>Password</label>
+                <label>@AppResources.T("Common_Password")</label>
                 <InputText class="form-control" @bind-Value="_model.Password" type="password" disabled="@_awaitingCode" />
             </div>
             @if (_awaitingCode)
             {
                 <div class="form-field">
-                    <label>Verification code</label>
-                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="6-digit code" maxlength="6" />
+                    <label>@AppResources.T("Common_VerificationCode")</label>
+                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="6" />
                 </div>
             }
         </div>
         <div class="form-actions" style="margin-top: 1rem;">
             <button class="btn btn-primary btn-block" type="submit" disabled="@_busy">
-                @(_busy ? "Please wait…" : _awaitingCode ? "Verify and sign in →" : "Continue →")
+                @(_busy ? AppResources.T("Common_PleaseWait") : _awaitingCode ? AppResources.T("Common_VerifyAndSignIn") : AppResources.T("Common_ContinueArrow"))
             </button>
         </div>
     </EditForm>
 
-    <p class="auth-card-foot">New here? <a href="/professional/register">Create a professional account</a></p>
+    <p class="auth-card-foot">@AppResources.T("ProfessionalSignIn_FootNew") <a href="/professional/register">@AppResources.T("ProfessionalSignIn_CreateAccountLink")</a></p>
 </div>
 
 @code {
@@ -66,6 +68,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
+
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
         if (!string.IsNullOrEmpty(uri.Query))
         {
@@ -87,6 +91,8 @@
             && _returnUrl.StartsWith("/admin/hospitals/register", StringComparison.OrdinalIgnoreCase);
     }
 
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
     private async Task SubmitAsync()
     {
         _busy = true;
@@ -99,20 +105,20 @@
 
         if (!response.IsSuccess || response.Data is null)
         {
-            _error = response.ErrorMessage ?? "Sign-in failed.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_SignInFailed");
             return;
         }
 
         if (response.Data.RequiresVerification)
         {
             _awaitingCode = true;
-            _status = "We sent a verification code to your email.";
+            _status = AppResources.T("Common_VerificationCodeSentEmail");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(response.Data.Token))
         {
-            _error = "Sign-in failed.";
+            _error = AppResources.T("Common_SignInFailed");
             return;
         }
 
@@ -124,6 +130,8 @@
         !string.IsNullOrWhiteSpace(url)
         && url.StartsWith("/", StringComparison.Ordinal)
         && !url.StartsWith("//", StringComparison.Ordinal);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 
     private sealed class SignInModel
     {

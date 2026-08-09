@@ -3,25 +3,27 @@
 @using RaphCare.Domain.Common
 @using RaphCare.Client.Models.Clinical
 @inject NavigationManager Navigation
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>@(_patient is null ? "Patient" : $"{_patient.FirstName} {_patient.LastName}") — RaphCare Admin</PageTitle>
+<PageTitle>@(_patient is null ? AppResources.T("PatientDetail_PageTitleFallback") : $"{_patient.FirstName} {_patient.LastName}") @AppResources.T("Common_PageTitleAdminSuffix")</PageTitle>
 
 <section class="admin-page">
     @if (_loading)
     {
-        <p class="text-muted">Loading patient…</p>
+        <p class="text-muted">@AppResources.T("Common_LoadingPatient")</p>
     }
     else if (_patient is null)
     {
-        <div class="alert alert-error">@(_error ?? "Patient not found.")</div>
-        <a class="btn btn-secondary" href="@BackUrl">← Back to hospital</a>
+        <div class="alert alert-error">@(_error ?? AppResources.T("Common_PatientNotFound"))</div>
+        <a class="btn btn-secondary" href="@BackUrl">@AppResources.T("Common_BackToHospital")</a>
     }
     else
     {
         <header class="admin-page-header">
             <div>
                 <h1>@_patient.FirstName @_patient.LastName</h1>
-                <p class="admin-page-lead">Patient chart for @_clinicName · times in @_timeZoneLabel</p>
+                <p class="admin-page-lead">@AppResources.Format("Common_PatientChartLead", ClinicDisplayName, TimeZoneLabel)</p>
             </div>
             <span class="badge badge-success">@_patient.AccessType</span>
         </header>
@@ -34,27 +36,27 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Demographics</p>
-                    <h2>Profile</h2>
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_DemographicsEyebrow")</p>
+                    <h2>@AppResources.T("Common_Profile")</h2>
                 </div>
             </header>
             <div class="admin-page-card-body">
                 <dl class="admin-detail-grid">
                     <div>
-                        <dt>Date of birth</dt>
+                        <dt>@AppResources.T("Common_DateOfBirth")</dt>
                         <dd>@_patient.DateOfBirth.ToString("dd MMM yyyy")</dd>
                     </div>
                     <div>
-                        <dt>Gender</dt>
-                        <dd>@(string.IsNullOrWhiteSpace(_patient.Gender) ? "—" : _patient.Gender)</dd>
+                        <dt>@AppResources.T("PatientDetail_Gender")</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(_patient.Gender) ? AppResources.T("Common_EmptyCell") : _patient.Gender)</dd>
                     </div>
                     <div>
-                        <dt>Email</dt>
-                        <dd>@(string.IsNullOrWhiteSpace(_patient.Email) ? "—" : _patient.Email)</dd>
+                        <dt>@AppResources.T("Common_Email")</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(_patient.Email) ? AppResources.T("Common_EmptyCell") : _patient.Email)</dd>
                     </div>
                     <div>
-                        <dt>Phone</dt>
-                        <dd>@(string.IsNullOrWhiteSpace(_patient.PhoneNumber) ? "—" : _patient.PhoneNumber)</dd>
+                        <dt>@AppResources.T("PatientDetail_Phone")</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(_patient.PhoneNumber) ? AppResources.T("Common_EmptyCell") : _patient.PhoneNumber)</dd>
                     </div>
                 </dl>
             </div>
@@ -63,24 +65,24 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Hospital link</p>
-                    <h2>Access</h2>
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_HospitalLinkEyebrow")</p>
+                    <h2>@AppResources.T("Common_AccessSection")</h2>
                 </div>
             </header>
             <div class="admin-page-card-body">
                 <dl class="admin-detail-grid">
                     <div>
-                        <dt>Granted</dt>
+                        <dt>@AppResources.T("Common_Granted")</dt>
                         <dd>@_patient.GrantedAt.ToString("dd MMM yyyy")</dd>
                     </div>
                     <div>
-                        <dt>Rule</dt>
+                        <dt>@AppResources.T("PatientDetail_Rule")</dt>
                         <dd>@_patient.GrantedByRule</dd>
                     </div>
                     @if (!string.IsNullOrWhiteSpace(_patient.Notes))
                     {
                         <div class="admin-detail-grid-full">
-                            <dt>Notes</dt>
+                            <dt>@AppResources.T("Common_Notes")</dt>
                             <dd>@_patient.Notes</dd>
                         </div>
                     }
@@ -89,7 +91,7 @@
                 {
                     <div class="admin-page-actions">
                         <button type="button" class="btn btn-ghost" disabled="@_revoking" @onclick="RevokeAccessAsync">
-                            @(_revoking ? "Revoking…" : "Revoke hospital access")
+                            @(_revoking ? AppResources.T("Common_Revoking") : AppResources.T("Common_RevokeHospitalAccess"))
                         </button>
                     </div>
                 }
@@ -99,15 +101,15 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Wearables</p>
-                    <h2>Device readings</h2>
-                    <p class="admin-page-lead">Recent synced vitals from patient devices (last 7 days summary).</p>
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_WearablesEyebrow")</p>
+                    <h2>@AppResources.T("Common_DeviceReadingsTitle")</h2>
+                    <p class="admin-page-lead">@AppResources.T("Common_DeviceReadingsLead")</p>
                 </div>
             </header>
             <div class="admin-page-card-body">
                 @if (_patient.DeviceDailyRollups.Count == 0 && _patient.RecentDeviceReadings.Count == 0)
                 {
-                    <p class="text-muted">No device readings synced for this patient yet.</p>
+                    <p class="text-muted">@AppResources.T("Common_NoDeviceReadings")</p>
                 }
                 else
                 {
@@ -120,18 +122,18 @@
                                     <div class="chart-rollup-date">@day.Date.ToString("dd MMM")</div>
                                     @if (day.AvgHeartRateBpm is { } hr)
                                     {
-                                        <div class="chart-rollup-metric" title="Heart rate avg/min/max">
-                                            <span class="chart-rollup-label">HR</span>
-                                            <span class="chart-rollup-value">@hr.ToString("0") bpm</span>
+                                        <div class="chart-rollup-metric" title="@AppResources.T("Common_HeartRateTitle")">
+                                            <span class="chart-rollup-label">@AppResources.T("Common_HeartRateLabel")</span>
+                                            <span class="chart-rollup-value">@AppResources.Format("Common_HeartRateBpm", hr.ToString("0"))</span>
                                             <span class="chart-rollup-range">@day.MinHeartRateBpm–@day.MaxHeartRateBpm</span>
                                             <div class="chart-rollup-bar" style="width: @(Math.Clamp((int)(hr / 1.6m), 8, 100))%"></div>
                                         </div>
                                     }
                                     @if (day.AvgSpO2Percent is { } spo2)
                                     {
-                                        <div class="chart-rollup-metric chart-rollup-metric-spo2" title="SpO₂ avg/min/max">
-                                            <span class="chart-rollup-label">SpO₂</span>
-                                            <span class="chart-rollup-value">@spo2.ToString("0")%</span>
+                                        <div class="chart-rollup-metric chart-rollup-metric-spo2" title="@AppResources.T("Common_Spo2Title")">
+                                            <span class="chart-rollup-label">@AppResources.T("Common_Spo2Label")</span>
+                                            <span class="chart-rollup-value">@AppResources.Format("PatientDetail_Spo2Value", spo2.ToString("0"))</span>
                                             <span class="chart-rollup-range">@day.MinSpO2Percent–@day.MaxSpO2Percent</span>
                                             <div class="chart-rollup-bar" style="width: @Math.Clamp((int)spo2, 8, 100)%"></div>
                                         </div>
@@ -147,9 +149,9 @@
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>Recorded</th>
-                                        <th>Type</th>
-                                        <th>Value</th>
+                                        <th>@AppResources.T("Common_Recorded")</th>
+                                        <th>@AppResources.T("Common_Type")</th>
+                                        <th>@AppResources.T("Common_Value")</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -172,16 +174,16 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Y6 / 4G emergency</p>
-                    <h2>Emergency events</h2>
-                    <p class="admin-page-lead">SOS, fall, and other standalone emergency alerts for this patient.</p>
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_EmergencyEyebrow")</p>
+                    <h2>@AppResources.T("Common_EmergencyEventsTitle")</h2>
+                    <p class="admin-page-lead">@AppResources.T("Common_EmergencyEventsLeadPatient")</p>
                 </div>
-                <span class="admin-progress-pill">@_emergencyTotal event@(_emergencyTotal == 1 ? "" : "s")</span>
+                <span class="admin-progress-pill">@FormatEventCount(_emergencyTotal)</span>
             </header>
             <div class="admin-page-card-body">
                 @if (_loadingEmergencies)
                 {
-                    <p class="text-muted">Loading emergency events…</p>
+                    <p class="text-muted">@AppResources.T("Common_LoadingEmergencyEvents")</p>
                 }
                 else if (!string.IsNullOrEmpty(_emergencyError))
                 {
@@ -189,7 +191,7 @@
                 }
                 else if (_emergencyEvents.Count == 0)
                 {
-                    <p class="text-muted">No emergency events recorded for this patient at this hospital.</p>
+                    <p class="text-muted">@AppResources.T("Common_NoEmergencyEventsPatient")</p>
                 }
                 else
                 {
@@ -197,11 +199,11 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Occurred</th>
-                                    <th>Type</th>
-                                    <th>Device</th>
-                                    <th>Location</th>
-                                    <th>Caregivers</th>
+                                    <th>@AppResources.T("Common_Occurred")</th>
+                                    <th>@AppResources.T("Common_Type")</th>
+                                    <th>@AppResources.T("PatientDetail_Device")</th>
+                                    <th>@AppResources.T("Common_Location")</th>
+                                    <th>@AppResources.T("Common_Caregivers")</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -215,11 +217,11 @@
                                         <td>
                                             @if (ev.CaregiversNotified)
                                             {
-                                                <span title="@(ev.CaregiverNotificationSummary ?? "")">Notified @(ev.CaregiversNotifiedAtUtc is null ? "" : FormatLocal(ev.CaregiversNotifiedAtUtc.Value))</span>
+                                                <span title="@(ev.CaregiverNotificationSummary ?? "")">@AppResources.T("Common_Notified") @(ev.CaregiversNotifiedAtUtc is null ? "" : FormatLocal(ev.CaregiversNotifiedAtUtc.Value))</span>
                                             }
                                             else
                                             {
-                                                <span class="text-muted">—</span>
+                                                <span class="text-muted">@AppResources.T("Common_EmptyCell")</span>
                                             }
                                         </td>
                                     </tr>
@@ -231,7 +233,7 @@
                     {
                         <div class="admin-page-actions">
                             <button type="button" class="btn btn-secondary" disabled="@_loadingEmergencies" @onclick="LoadMoreEmergenciesAsync">
-                                Load more (@_emergencyEvents.Count of @_emergencyTotal)
+                                @AppResources.Format("Common_LoadMore", _emergencyEvents.Count, _emergencyTotal)
                             </button>
                         </div>
                     }
@@ -242,16 +244,16 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Clinical</p>
-                    <h2>Visit vitals</h2>
-                    <p class="admin-page-lead">Vitals recorded during encounters at this hospital.</p>
+                    <p class="admin-page-eyebrow">@AppResources.T("PatientDetail_ClinicalEyebrow")</p>
+                    <h2>@AppResources.T("Common_VisitVitalsTitle")</h2>
+                    <p class="admin-page-lead">@AppResources.T("Common_VisitVitalsLead")</p>
                 </div>
-                <span class="admin-progress-pill">@_patient.RecentVitals.Count vital@(_patient.RecentVitals.Count == 1 ? "" : "s")</span>
+                <span class="admin-progress-pill">@FormatVitalCount(_patient.RecentVitals.Count)</span>
             </header>
             <div class="admin-page-card-body">
                 @if (_patient.RecentVitals.Count == 0)
                 {
-                    <p class="text-muted">No visit vitals recorded yet.</p>
+                    <p class="text-muted">@AppResources.T("Common_NoVisitVitals")</p>
                 }
                 else
                 {
@@ -259,10 +261,10 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Recorded</th>
-                                    <th>Type</th>
-                                    <th>Value</th>
-                                    <th>Visit</th>
+                                    <th>@AppResources.T("Common_Recorded")</th>
+                                    <th>@AppResources.T("Common_Type")</th>
+                                    <th>@AppResources.T("Common_Value")</th>
+                                    <th>@AppResources.T("Common_Visit")</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -272,7 +274,7 @@
                                         <td>@FormatLocal(vital.RecordedAt)</td>
                                         <td>@vital.Type</td>
                                         <td>@vital.Value @vital.Unit</td>
-                                        <td>@(vital.VisitType ?? "—")</td>
+                                        <td>@(vital.VisitType ?? AppResources.T("Common_EmptyCell"))</td>
                                     </tr>
                                 }
                             </tbody>
@@ -285,16 +287,16 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Scheduling</p>
-                    <h2>Appointments</h2>
-                    <p class="admin-page-lead">Bookings at this hospital.</p>
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_SchedulingEyebrow")</p>
+                    <h2>@AppResources.T("Common_Appointments")</h2>
+                    <p class="admin-page-lead">@AppResources.T("PatientDetail_AppointmentsLead")</p>
                 </div>
-                <span class="admin-progress-pill">@_patient.Appointments.Count appointment@(_patient.Appointments.Count == 1 ? "" : "s")</span>
+                <span class="admin-progress-pill">@FormatAppointmentCount(_patient.Appointments.Count)</span>
             </header>
             <div class="admin-page-card-body">
                 @if (_patient.Appointments.Count == 0)
                 {
-                    <p class="text-muted">No appointments recorded yet. <a href="/admin/hospitals/@ClinicId/appointments">Book one</a>.</p>
+                    <p class="text-muted">@AppResources.T("Common_NoAppointmentsPatient") <a href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_BookOneLink")</a>.</p>
                 }
                 else
                 {
@@ -302,11 +304,11 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Provider</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
-                                    <th>Reason</th>
+                                    <th>@AppResources.T("Common_Date")</th>
+                                    <th>@AppResources.T("Common_Provider")</th>
+                                    <th>@AppResources.T("Common_Type")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
+                                    <th>@AppResources.T("Common_Reason")</th>
                                     @if (_isAdministrator)
                                     {
                                         <th></th>
@@ -321,11 +323,11 @@
                                         <td>@appt.ProviderName</td>
                                         <td>@appt.Type</td>
                                         <td>@appt.Status</td>
-                                        <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? "—" : appt.Reason)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? AppResources.T("Common_EmptyCell") : appt.Reason)</td>
                                         @if (_isAdministrator && appt.Status != "Cancelled")
                                         {
                                             <td class="admin-table-actions">
-                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments">Manage</a>
+                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_Manage")</a>
                                             </td>
                                         }
                                         else if (_isAdministrator)
@@ -344,16 +346,16 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Clinical</p>
-                    <h2>Recent visits</h2>
-                    <p class="admin-page-lead">Encounters at this hospital.</p>
+                    <p class="admin-page-eyebrow">@AppResources.T("PatientDetail_ClinicalEyebrow")</p>
+                    <h2>@AppResources.T("Common_RecentVisitsTitle")</h2>
+                    <p class="admin-page-lead">@AppResources.T("Common_RecentVisitsLead")</p>
                 </div>
-                <span class="admin-progress-pill">@_patient.RecentVisits.Count visit@(_patient.RecentVisits.Count == 1 ? "" : "s")</span>
+                <span class="admin-progress-pill">@FormatVisitCount(_patient.RecentVisits.Count)</span>
             </header>
             <div class="admin-page-card-body">
                 @if (_patient.RecentVisits.Count == 0)
                 {
-                    <p class="text-muted">No visits recorded yet for this patient at this hospital.</p>
+                    <p class="text-muted">@AppResources.T("Common_NoVisitsPatient")</p>
                 }
                 else
                 {
@@ -361,10 +363,10 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
-                                    <th>Summary</th>
+                                    <th>@AppResources.T("Common_Date")</th>
+                                    <th>@AppResources.T("Common_Type")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
+                                    <th>@AppResources.T("Common_Summary")</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -376,7 +378,7 @@
                                         </td>
                                         <td>@visit.VisitType</td>
                                         <td>@visit.Status</td>
-                                        <td>@(string.IsNullOrWhiteSpace(visit.Summary) ? "—" : visit.Summary)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(visit.Summary) ? AppResources.T("Common_EmptyCell") : visit.Summary)</td>
                                     </tr>
                                 }
                             </tbody>
@@ -387,7 +389,7 @@
         </div>
 
         <div class="admin-page-actions">
-            <a class="btn btn-secondary" href="@BackUrl">← Back to hospital</a>
+            <a class="btn btn-secondary" href="@BackUrl">@AppResources.T("Common_BackToHospital")</a>
         </div>
     }
 </section>
@@ -407,9 +409,8 @@
     private string? _error;
     private string? _actionError;
     private string? _emergencyError;
-    private string _clinicName = "this hospital";
+    private string? _clinicName;
     private string _clinicTimeZone = "UTC";
-    private string _timeZoneLabel = "hospital time";
     private ClinicPatientDetail? _patient;
     private List<PatientDeviceEmergencyEventViewModel> _emergencyEvents = [];
     private int _emergencyTotal;
@@ -418,10 +419,16 @@
 
     private string BackUrl => $"/admin/hospitals/{ClinicId}?tab=patients";
 
+    private string ClinicDisplayName => _clinicName ?? AppResources.T("Common_ThisHospital");
+
+    private string TimeZoneLabel =>
+        string.IsNullOrWhiteSpace(_clinicTimeZone) ? AppResources.T("Common_HospitalTime") : _clinicTimeZone;
+
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
-        _clinicName = ClinicContext.CurrentClinicName ?? _clinicName;
+        _clinicName = ClinicContext.CurrentClinicName;
 
         var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
         if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
@@ -429,7 +436,6 @@
             _clinicName = clinicResponse.Data.Name;
             _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
-            _timeZoneLabel = string.IsNullOrWhiteSpace(_clinicTimeZone) ? "hospital time" : _clinicTimeZone;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
@@ -437,6 +443,10 @@
         if (_patient is not null)
             await LoadEmergenciesAsync(reset: true);
     }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 
     private async Task LoadPatientAsync()
     {
@@ -448,7 +458,7 @@
         if (response.IsSuccess && response.Data is not null)
             _patient = response.Data;
         else
-            _error = response.ErrorMessage ?? "Could not load patient.";
+            _error = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotLoadPatient");
     }
 
     private async Task LoadEmergenciesAsync(bool reset)
@@ -468,7 +478,7 @@
 
         if (!response.IsSuccess || response.Data is null)
         {
-            _emergencyError = response.ErrorMessage ?? "Could not load emergency events.";
+            _emergencyError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadEmergencyEvents");
             return;
         }
 
@@ -489,24 +499,44 @@
     private string FormatLocal(DateTime utc) =>
         ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
 
-    private static string FormatLocation(PatientDeviceEmergencyEventViewModel ev)
+    private string FormatLocation(PatientDeviceEmergencyEventViewModel ev)
     {
         if (ev.Latitude is null || ev.Longitude is null)
-            return "—";
+            return AppResources.T("Common_EmptyCell");
         var coords = $"{ev.Latitude:0.#####}, {ev.Longitude:0.#####}";
         if (ev.HorizontalAccuracyMeters is { } acc)
-            return $"{coords} (±{acc:0} m)";
+            return AppResources.Format("PatientDetail_LocationWithAccuracy", coords, acc.ToString("0"));
         return coords;
     }
 
-    private static string FormatDeviceValue(ClinicPatientDeviceReadingSummary reading)
+    private string FormatDeviceValue(ClinicPatientDeviceReadingSummary reading)
     {
         if (reading.HeartRateBpm is int hr)
-            return $"{hr} bpm";
+            return AppResources.Format("Common_HeartRateBpm", hr);
         if (reading.SpO2Percent is decimal spo2)
-            return $"{spo2:0}%";
+            return AppResources.Format("PatientDetail_Spo2Value", spo2.ToString("0"));
         return $"{reading.PrimaryValue} {reading.Unit}".Trim();
     }
+
+    private static string FormatEventCount(int count) =>
+        count == 1
+            ? AppResources.Format("Common_EventCountLabel", count)
+            : AppResources.Format("Common_EventCountLabelPlural", count);
+
+    private static string FormatVitalCount(int count) =>
+        count == 1
+            ? AppResources.Format("Common_VitalCountLabel", count)
+            : AppResources.Format("Common_VitalCountLabelPlural", count);
+
+    private static string FormatAppointmentCount(int count) =>
+        count == 1
+            ? AppResources.Format("Common_AppointmentCountLabel", count)
+            : AppResources.Format("Common_AppointmentCountLabelPlural", count);
+
+    private static string FormatVisitCount(int count) =>
+        count == 1
+            ? AppResources.Format("Common_VisitCountLabel", count)
+            : AppResources.Format("Common_VisitCountLabelPlural", count);
 
     private async Task RevokeAccessAsync()
     {
@@ -517,7 +547,7 @@
 
         if (!response.IsSuccess)
         {
-            _actionError = response.ErrorMessage ?? "Could not revoke access.";
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotRevokeAccess");
             return;
         }
 

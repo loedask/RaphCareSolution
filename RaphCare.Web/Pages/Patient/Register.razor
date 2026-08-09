@@ -1,15 +1,17 @@
 @page "/patient/register"
 @layout AuthShellLayout
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>Register — Patient</PageTitle>
+<PageTitle>@AppResources.T("PatientRegister_PageTitle")</PageTitle>
 
 <div class="auth-card auth-card-form">
-    <button type="button" class="back-link" @onclick="GoBack">← Back</button>
-    <h2 class="auth-card-title">Create patient account</h2>
+    <button type="button" class="back-link" @onclick="GoBack">@AppResources.T("Common_Back")</button>
+    <h2 class="auth-card-title">@AppResources.T("PatientRegister_Title")</h2>
     <p class="auth-card-subtitle">
         @(_awaitingCode
-            ? "Enter the verification code we sent to your email."
-            : "Fill in your details to create your account.")
+            ? AppResources.T("PatientRegister_SubtitleCode")
+            : AppResources.T("PatientRegister_SubtitleDetails"))
     </p>
 
     @if (!string.IsNullOrEmpty(_error))
@@ -26,25 +28,25 @@
             @if (!_awaitingCode)
             {
                 <div class="form-field">
-                    <label>First name</label>
+                    <label>@AppResources.T("Common_FirstName")</label>
                     <InputText class="form-control" @bind-Value="_model.FirstName" />
                 </div>
                 <div class="form-field">
-                    <label>Last name</label>
+                    <label>@AppResources.T("Common_LastName")</label>
                     <InputText class="form-control" @bind-Value="_model.LastName" />
                 </div>
                 <div class="form-field">
-                    <label>Email</label>
+                    <label>@AppResources.T("Common_Email")</label>
                     <InputText class="form-control" @bind-Value="_model.Email" type="email" />
                 </div>
                 <div class="form-field">
-                    <label>Password</label>
+                    <label>@AppResources.T("Common_Password")</label>
                     <InputText class="form-control" @bind-Value="_model.Password" type="password" />
                 </div>
                 <div class="form-field">
-                    <label>Clinic (optional)</label>
+                    <label>@AppResources.T("Common_ClinicOptional")</label>
                     <InputSelect class="form-control" @bind-Value="_selectedClinicId">
-                        <option value="">No clinic yet</option>
+                        <option value="">@AppResources.T("Common_NoClinicYet")</option>
                         @foreach (var clinic in _clinics)
                         {
                             <option value="@clinic.Id">@clinic.Name</option>
@@ -55,11 +57,11 @@
             else
             {
                 <div class="form-field verification-field">
-                    <label>Verification code</label>
+                    <label>@AppResources.T("Common_VerificationCode")</label>
                     <div class="verification-row">
-                        <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="6-digit code" maxlength="6" />
+                        <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="6" />
                         <button type="button" class="btn btn-secondary" disabled="@_sendingCode" @onclick="SendCodeAsync">
-                            @(_sendingCode ? "Sending…" : "Send code")
+                            @(_sendingCode ? AppResources.T("Common_Sending") : AppResources.T("Common_SendCode"))
                         </button>
                     </div>
                 </div>
@@ -68,15 +70,15 @@
         <div class="form-actions" style="margin-top: 1rem;">
             <button class="btn btn-primary" type="submit" disabled="@_busy">
                 @(_busy
-                    ? (_awaitingCode ? "Creating account…" : "Sending code…")
-                    : (_awaitingCode ? "Verify and create account" : "Continue"))
+                    ? (_awaitingCode ? AppResources.T("Common_CreatingAccount") : AppResources.T("Common_SendingCode"))
+                    : (_awaitingCode ? AppResources.T("Common_VerifyAndCreateAccount") : AppResources.T("Common_Continue")))
             </button>
         </div>
     </EditForm>
 
     @if (!_awaitingCode)
     {
-        <p class="auth-card-foot">Already registered? <a href="/patient/signin">Sign in</a></p>
+        <p class="auth-card-foot">@AppResources.T("PatientRegister_FootAlready") <a href="/patient/signin">@AppResources.T("Common_SignIn")</a></p>
     }
 </div>
 
@@ -96,10 +98,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
         var response = await EmailAuth.GetRegistrationClinicsAsync();
         if (response.IsSuccess && response.Data is not null)
             _clinics = response.Data;
     }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
 
     private void GoBack()
     {
@@ -124,14 +129,14 @@
         if (string.IsNullOrWhiteSpace(_model.Email))
         {
             _sendingCode = false;
-            _error = "Enter your email before requesting a verification code.";
+            _error = AppResources.T("Common_EnterEmailBeforeCode");
             return;
         }
 
         var sent = await TrySendCodeAsync();
         _sendingCode = false;
         if (sent)
-            _status = "Verification code sent. Check your inbox.";
+            _status = AppResources.T("Common_CodeSentCheckInbox");
     }
 
     private async Task SubmitAsync()
@@ -162,20 +167,20 @@
 
         _model.VerificationCode = string.Empty;
         _awaitingCode = true;
-        _status = "Verification code sent. Check your inbox.";
+        _status = AppResources.T("Common_CodeSentCheckInbox");
     }
 
     private async Task RegisterAsync()
     {
         if (string.IsNullOrWhiteSpace(_model.VerificationCode))
         {
-            _error = "Enter the 6-digit verification code from your email. Tap Send code if you have not received one yet.";
+            _error = AppResources.T("Common_EnterSixDigitCodeHint");
             return;
         }
 
         if (_model.VerificationCode.Trim().Length != 6)
         {
-            _error = "Verification code must be exactly 6 digits.";
+            _error = AppResources.T("Common_CodeMustBeSixDigits");
             return;
         }
 
@@ -193,7 +198,7 @@
         _busy = false;
         if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data?.Token))
         {
-            _error = response.ErrorMessage ?? "Registration failed.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_RegistrationFailed");
             return;
         }
 
@@ -207,7 +212,7 @@
         if (response.IsSuccess)
             return true;
 
-        _error = response.ErrorMessage ?? "Could not send verification email.";
+        _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotSendVerificationEmail");
         return false;
     }
 
@@ -215,30 +220,32 @@
     {
         if (string.IsNullOrWhiteSpace(_model.FirstName))
         {
-            _error = "Please enter your first name.";
+            _error = AppResources.T("Common_PleaseEnterFirstName");
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(_model.LastName))
         {
-            _error = "Please enter your last name.";
+            _error = AppResources.T("Common_PleaseEnterLastName");
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(_model.Email))
         {
-            _error = "Please enter your email.";
+            _error = AppResources.T("Common_PleaseEnterEmail");
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(_model.Password))
         {
-            _error = "Please enter a password.";
+            _error = AppResources.T("Common_PleaseEnterPassword");
             return false;
         }
 
         return true;
     }
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 
     private sealed class RegisterModel
     {

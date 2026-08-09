@@ -24,15 +24,34 @@
     </div>
 
     <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="." class="reload">Reload</a>
+        <span data-i18n="error">An unhandled error has occurred.</span>
+        <a href="." class="reload" data-i18n="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+    <script src="js/locale.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/clinic.js"></script>
     <script src="js/onboarding.js"></script>
     <script src="js/telehealth.js"></script>
+    <script>
+      (function () {
+        var messages = {
+          en: { error: "An unhandled error has occurred.", reload: "Reload" },
+          fr: { error: "Une erreur non gérée s'est produite.", reload: "Recharger" },
+          ln: { error: "Libunga oyo ezalaki te ekomi.", reload: "Kangola lisusu" },
+          sw: { error: "Hitilafu isiyoshughulikiwa imetokea.", reload: "Pakia tena" }
+        };
+        var code = (localStorage.getItem("web_language") || "en").toLowerCase();
+        if (!messages[code]) code = "en";
+        document.documentElement.lang = code;
+        var m = messages[code];
+        var err = document.querySelector("#blazor-error-ui [data-i18n=error]");
+        var reload = document.querySelector("#blazor-error-ui [data-i18n=reload]");
+        if (err) err.textContent = m.error;
+        if (reload) reload.textContent = m.reload;
+      })();
+    </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 

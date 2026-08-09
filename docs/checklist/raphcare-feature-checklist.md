@@ -27,7 +27,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-08-08
+Last reviewed: 2026-08-09
 
 ---
 
@@ -59,6 +59,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Visit page + vitals
 - [x] Tele join page
 - [x] Admin dashboard
+- [x] Web UI language switcher (en / fr / ln / sw)
 
 ### Mobile
 
@@ -254,18 +255,19 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 ---
 
-## Cross-cutting - 83%
+## Cross-cutting - 86%
 
 - [x] Solution layers: Domain -> Application -> Persistence / Infrastructure / Identity -> API; Client -> Web / Mobile
 - [x] `RaphCare.Client` + `AddRaphCareClient` for Web and Mobile
 - [x] Dual auth: Entra JWT (staff) + patient OTP / email JWT
 - [x] MPI / patient merge pipeline (see audit docs)
 - [x] Inpatient documented in companion docs (Step 2 docs rows)
+- [x] Web UI localization (en / fr / ln / sw): `AppResources` + language picker on auth shell and admin layout
 - [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API
 
 ### Cross-cutting status
 
-**83%.** Platform wiring is solid. Missing an automated E2E smoke against a running API.
+**86%.** Platform wiring includes Web UI languages. Missing an automated E2E smoke against a running API.
 
 ---
 
@@ -277,7 +279,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 60% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
-| Cross-cutting | 83% | E2E smoke open |
+| Cross-cutting | 86% | E2E smoke open |
 | **Overall (scored items)** | **78%** | Out of scope / open optional excluded |
 | **Without wearable Phase 2+ metrics** | **82%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
@@ -292,7 +294,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle; UI en/fr/ln/sw |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

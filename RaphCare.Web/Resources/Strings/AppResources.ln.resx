@@ -1,0 +1,2095 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Common_AppName" xml:space="preserve">
+    <value>RaphCare</value>
+  </data>
+  <data name="Common_SignOut" xml:space="preserve">
+    <value>Bima na maboko</value>
+  </data>
+  <data name="Common_SignIn" xml:space="preserve">
+    <value>Kota na site</value>
+  </data>
+  <data name="Common_SignInAgain" xml:space="preserve">
+    <value>Kota lisusu</value>
+  </data>
+  <data name="Common_CreateAccount" xml:space="preserve">
+    <value>Bosala compte</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Kolongola</value>
+  </data>
+  <data name="Common_Back" xml:space="preserve">
+    <value>← Kozonga nsima</value>
+  </data>
+  <data name="Common_BackToHome" xml:space="preserve">
+    <value>Kozonga na ndako</value>
+  </data>
+  <data name="Common_BackToHospitals" xml:space="preserve">
+    <value>← Kozonga na balopitalo</value>
+  </data>
+  <data name="Common_BackToHospital" xml:space="preserve">
+    <value>← Kozonga na lopitalo</value>
+  </data>
+  <data name="Common_BackToAppointments" xml:space="preserve">
+    <value>← Kozonga na ba rendez-vous</value>
+  </data>
+  <data name="Common_PleaseWait" xml:space="preserve">
+    <value>Svp bozela...</value>
+  </data>
+  <data name="Common_Continue" xml:space="preserve">
+    <value>Kokoba</value>
+  </data>
+  <data name="Common_ContinueArrow" xml:space="preserve">
+    <value>Koba →</value>
+  </data>
+  <data name="Common_VerifyAndSignIn" xml:space="preserve">
+    <value>Verifier pe ko kota →</value>
+  </data>
+  <data name="Common_VerifyAndCreateAccount" xml:space="preserve">
+    <value>Verifier pe créer compte</value>
+  </data>
+  <data name="Common_Sending" xml:space="preserve">
+    <value>Kotinda...</value>
+  </data>
+  <data name="Common_SendCode" xml:space="preserve">
+    <value>Tinda code</value>
+  </data>
+  <data name="Common_CreatingAccount" xml:space="preserve">
+    <value>Kosala compte...</value>
+  </data>
+  <data name="Common_SendingCode" xml:space="preserve">
+    <value>Kotinda code...</value>
+  </data>
+  <data name="Common_Saving" xml:space="preserve">
+    <value>Kobomba mbongo...</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Kobikisa</value>
+  </data>
+  <data name="Common_SaveChanges" xml:space="preserve">
+    <value>Bomba mbongwana</value>
+  </data>
+  <data name="Common_Loading" xml:space="preserve">
+    <value>Ezali ko charger...</value>
+  </data>
+  <data name="Common_Search" xml:space="preserve">
+    <value>Koluka</value>
+  </data>
+  <data name="Common_Apply" xml:space="preserve">
+    <value>Kosalela</value>
+  </data>
+  <data name="Common_Previous" xml:space="preserve">
+    <value>Oyo eleki</value>
+  </data>
+  <data name="Common_Next" xml:space="preserve">
+    <value>Oyo elandi</value>
+  </data>
+  <data name="Common_Edit" xml:space="preserve">
+    <value>Kokoma</value>
+  </data>
+  <data name="Common_Delete" xml:space="preserve">
+    <value>Boma</value>
+  </data>
+  <data name="Common_Remove" xml:space="preserve">
+    <value>Kolongola</value>
+  </data>
+  <data name="Common_Removing" xml:space="preserve">
+    <value>Kolongola...</value>
+  </data>
+  <data name="Common_Deleting" xml:space="preserve">
+    <value>Kolongolama...</value>
+  </data>
+  <data name="Common_Adding" xml:space="preserve">
+    <value>Kobakisa...</value>
+  </data>
+  <data name="Common_Inviting" xml:space="preserve">
+    <value>Kobengisa...</value>
+  </data>
+  <data name="Common_Invite" xml:space="preserve">
+    <value>Kobengisa</value>
+  </data>
+  <data name="Common_ResendInvite" xml:space="preserve">
+    <value>Tinda lisusu invitation</value>
+  </data>
+  <data name="Common_Cancelling" xml:space="preserve">
+    <value>Kolongolama...</value>
+  </data>
+  <data name="Common_Open" xml:space="preserve">
+    <value>Fungola →</value>
+  </data>
+  <data name="Common_ViewAll" xml:space="preserve">
+    <value>Tala nionso →</value>
+  </data>
+  <data name="Common_Optional" xml:space="preserve">
+    <value>Soki olingi</value>
+  </data>
+  <data name="Common_EmptyCell" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="Common_Active" xml:space="preserve">
+    <value>Esalaka</value>
+  </data>
+  <data name="Common_Inactive" xml:space="preserve">
+    <value>Ezali kosala te</value>
+  </data>
+  <data name="Common_Patient" xml:space="preserve">
+    <value>Moto ya maladi</value>
+  </data>
+  <data name="Common_Provider" xml:space="preserve">
+    <value>Mopesi</value>
+  </data>
+  <data name="Common_Professional" xml:space="preserve">
+    <value>Ayebi mosala</value>
+  </data>
+  <data name="Common_Email" xml:space="preserve">
+    <value>Email na nzela ya email</value>
+  </data>
+  <data name="Common_Password" xml:space="preserve">
+    <value>Mot de passe</value>
+  </data>
+  <data name="Common_FirstName" xml:space="preserve">
+    <value>Prenom</value>
+  </data>
+  <data name="Common_LastName" xml:space="preserve">
+    <value>Nkombo ya libota</value>
+  </data>
+  <data name="Common_VerificationCode" xml:space="preserve">
+    <value>Code ya vérification</value>
+  </data>
+  <data name="Common_VerificationCodePlaceholder" xml:space="preserve">
+    <value>Code ya 6 chiffres</value>
+  </data>
+  <data name="Common_SignInFailed" xml:space="preserve">
+    <value>Kokɔta na site elongi te.</value>
+  </data>
+  <data name="Common_RegistrationFailed" xml:space="preserve">
+    <value>Kokomisa nkombo elongaki te.</value>
+  </data>
+  <data name="Common_CouldNotSendVerificationEmail" xml:space="preserve">
+    <value>Ekoki te kotinda email ya vérification.</value>
+  </data>
+  <data name="Common_VerificationCodeSentEmail" xml:space="preserve">
+    <value>Totindaki code ya vérification na email na yo.</value>
+  </data>
+  <data name="Common_EnterEmailBeforeCode" xml:space="preserve">
+    <value>Tyá email na yo liboso ya kosɛnga code ya vérification.</value>
+  </data>
+  <data name="Common_CodeSentCheckInbox" xml:space="preserve">
+    <value>Code ya vérification etindami. Tala boîte de réception na yo.</value>
+  </data>
+  <data name="Common_CodeSentCheckInboxSpam" xml:space="preserve">
+    <value>Code ya vérification etindami. Tala boîte de réception na yo (mpe dossier ya ba spam).</value>
+  </data>
+  <data name="Common_EnterSixDigitCodeHint" xml:space="preserve">
+    <value>Tyá code ya vérification ya 6 chiffres na email na yo. Finá na Tinda code soki ozwi naino moko te.</value>
+  </data>
+  <data name="Common_CodeMustBeSixDigits" xml:space="preserve">
+    <value>Code ya vérification esengeli ezala exactement 6 chiffres.</value>
+  </data>
+  <data name="Common_PleaseEnterFirstName" xml:space="preserve">
+    <value>Svp kotia kombo na yo ya liboso.</value>
+  </data>
+  <data name="Common_PleaseEnterLastName" xml:space="preserve">
+    <value>Svp kotia kombo na yo ya suka.</value>
+  </data>
+  <data name="Common_PleaseEnterEmail" xml:space="preserve">
+    <value>Svp kotisa email na yo.</value>
+  </data>
+  <data name="Common_PleaseEnterPassword" xml:space="preserve">
+    <value>Svp kotia mot de passe.</value>
+  </data>
+  <data name="Common_HealthcareProfessional" xml:space="preserve">
+    <value>Mosali ya bokolongono</value>
+  </data>
+  <data name="Common_ClinicPortal" xml:space="preserve">
+    <value>Portal ya clinique</value>
+  </data>
+  <data name="Common_ClinicAdministrator" xml:space="preserve">
+    <value>Mokambi ya kliniki</value>
+  </data>
+  <data name="Common_Dashboard" xml:space="preserve">
+    <value>Tableau de bord</value>
+  </data>
+  <data name="Common_Hospitals" xml:space="preserve">
+    <value>Ba lopitalo</value>
+  </data>
+  <data name="Common_Appointments" xml:space="preserve">
+    <value>Ba rendez-vous</value>
+  </data>
+  <data name="Common_RegisterHospital" xml:space="preserve">
+    <value>Enregistrer lopitalo</value>
+  </data>
+  <data name="Common_RegisterHospitalButton" xml:space="preserve">
+    <value>+ Kokomisa nkombo na lopitalo</value>
+  </data>
+  <data name="Common_HospitalDetails" xml:space="preserve">
+    <value>Makambo ya lopitalo</value>
+  </data>
+  <data name="Common_MyHospitals" xml:space="preserve">
+    <value>Ba lopitalo na ngai</value>
+  </data>
+  <data name="Common_YourHospitals" xml:space="preserve">
+    <value>Ba lopitalo na bino</value>
+  </data>
+  <data name="Common_Name" xml:space="preserve">
+    <value>Nkombo</value>
+  </data>
+  <data name="Common_Country" xml:space="preserve">
+    <value>Mboka</value>
+  </data>
+  <data name="Common_Facilities" xml:space="preserve">
+    <value>Bisika</value>
+  </data>
+  <data name="Common_Status" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="Common_When" xml:space="preserve">
+    <value>Ntango</value>
+  </data>
+  <data name="Common_Type" xml:space="preserve">
+    <value>Lolenge</value>
+  </data>
+  <data name="Common_Reason" xml:space="preserve">
+    <value>Ntina</value>
+  </data>
+  <data name="Common_Notes" xml:space="preserve">
+    <value>Maloba ya ntina</value>
+  </data>
+  <data name="Common_Registered" xml:space="preserve">
+    <value>Ekomisamaki nkombo</value>
+  </data>
+  <data name="Common_CouldNotLoadHospitals" xml:space="preserve">
+    <value>Ekokaki te ko charger ba lopitalo.</value>
+  </data>
+  <data name="Common_FinishRegisteringHospital" xml:space="preserve">
+    <value>Silisa kokomisa lopitalo na yo</value>
+  </data>
+  <data name="Common_PlatformOverview" xml:space="preserve">
+    <value>Botali ya mozindo ya plateforme</value>
+  </data>
+  <data name="Common_SelectHospital" xml:space="preserve">
+    <value>Pona lopitalo</value>
+  </data>
+  <data name="Common_NoClinicYet" xml:space="preserve">
+    <value>Clinique moko te nanu</value>
+  </data>
+  <data name="Common_ClinicOptional" xml:space="preserve">
+    <value>Clinique (ekoki kozala na bolingi) .</value>
+  </data>
+  <data name="Common_EndTimeAfterStart" xml:space="preserve">
+    <value>Ntango ya nsuka esengeli kozala nsima ya ngonga ya kobanda.</value>
+  </data>
+  <data name="Common_LoadMore" xml:space="preserve">
+    <value>Charger mingi ({0} ya {1})</value>
+  </data>
+  <data name="Common_PageOf" xml:space="preserve">
+    <value>Lokasa {0} ya {1} · {2} .</value>
+  </data>
+  <data name="Common_Notified" xml:space="preserve">
+    <value>Eyebisami</value>
+  </data>
+  <data name="Common_Unassigned" xml:space="preserve">
+    <value>Epesameli mosala te</value>
+  </data>
+  <data name="Common_Physical" xml:space="preserve">
+    <value>Ya nzoto</value>
+  </data>
+  <data name="Common_Virtual" xml:space="preserve">
+    <value>Na internet</value>
+  </data>
+  <data name="Common_VirtualSuffix" xml:space="preserve">
+    <value>(na internet)</value>
+  </data>
+  <data name="Common_PendingRegistration" xml:space="preserve">
+    <value>Na kozelaka bokomisi nkombo</value>
+  </data>
+  <data name="Common_PendingSignIn" xml:space="preserve">
+    <value>Na kozelaka kokɔta na site</value>
+  </data>
+  <data name="Common_MakeAdmin" xml:space="preserve">
+    <value>Sala admin</value>
+  </data>
+  <data name="Common_RemoveAdmin" xml:space="preserve">
+    <value>Longola admin</value>
+  </data>
+  <data name="Common_CouldNotLoadStaff" xml:space="preserve">
+    <value>Ekokaki te ko charger staff.</value>
+  </data>
+  <data name="Common_CouldNotLoadPatients" xml:space="preserve">
+    <value>Ekokaki te ko charger ba malades.</value>
+  </data>
+  <data name="Common_CouldNotLoadProviders" xml:space="preserve">
+    <value>Ekokaki te ko charger ba fournisseurs.</value>
+  </data>
+  <data name="Common_CouldNotLoadAppointments" xml:space="preserve">
+    <value>Ekokaki te ko charger ba rendez-vous.</value>
+  </data>
+  <data name="Common_CouldNotLoadDevices" xml:space="preserve">
+    <value>Ekokaki te ko charger ba appareils.</value>
+  </data>
+  <data name="Common_CouldNotLoadEmergencyEvents" xml:space="preserve">
+    <value>Ekokaki te ko charger ba événements ya urgence.</value>
+  </data>
+  <data name="Common_CouldNotResendInvitation" xml:space="preserve">
+    <value>Ekokaki te kotinda lisusu invitation.</value>
+  </data>
+  <data name="Common_CouldNotCancelInvitation" xml:space="preserve">
+    <value>Ekokaki te ko annuler invitation.</value>
+  </data>
+  <data name="Common_SelectStaffMember" xml:space="preserve">
+    <value>Pona mosali moko ya mosala.</value>
+  </data>
+  <data name="Common_HospitalNotFound" xml:space="preserve">
+    <value>Lopitalo ezwami te.</value>
+  </data>
+  <data name="Common_PatientNotFound" xml:space="preserve">
+    <value>Mobɛli azwami te.</value>
+  </data>
+  <data name="Common_ProviderNotFound" xml:space="preserve">
+    <value>Mopesi azwami te.</value>
+  </data>
+  <data name="Common_VisitNotFound" xml:space="preserve">
+    <value>Visite ezwami te.</value>
+  </data>
+  <data name="Common_CouldNotLoadHospital" xml:space="preserve">
+    <value>Ekokaki te ko charger lopitalo.</value>
+  </data>
+  <data name="Common_CouldNotLoadHospitalDashboard" xml:space="preserve">
+    <value>Ekokaki te ko charger tableau de bord ya lopitalo.</value>
+  </data>
+  <data name="Common_CouldNotLinkHospital" xml:space="preserve">
+    <value>Ekokaki te ko relier lopitalo.</value>
+  </data>
+  <data name="Common_RegistrationNumber" xml:space="preserve">
+    <value>Nimero ya bokomisi nkombo</value>
+  </data>
+  <data name="Common_RegistrationNumberShort" xml:space="preserve">
+    <value>Bokomisi nkombo # .</value>
+  </data>
+  <data name="Common_RegistrationNumberPlaceholder" xml:space="preserve">
+    <value>e.g. 12345. Ezali na ntina mingi</value>
+  </data>
+  <data name="Common_LinkHospital" xml:space="preserve">
+    <value>Lien lopitalo</value>
+  </data>
+  <data name="Common_Linking" xml:space="preserve">
+    <value>Kosala lien...</value>
+  </data>
+  <data name="Common_HospitalId" xml:space="preserve">
+    <value>ID ya lopitalo</value>
+  </data>
+  <data name="Common_PrimaryFacility" xml:space="preserve">
+    <value>Esika ya libosoliboso</value>
+  </data>
+  <data name="Common_Administrator" xml:space="preserve">
+    <value>Mokambi ya mosala</value>
+  </data>
+  <data name="Common_Review" xml:space="preserve">
+    <value>Kotalela</value>
+  </data>
+  <data name="Common_Welcome" xml:space="preserve">
+    <value>Boyei malamu</value>
+  </data>
+  <data name="Common_Hospital" xml:space="preserve">
+    <value>Lopitalo</value>
+  </data>
+  <data name="Common_Facility" xml:space="preserve">
+    <value>Esika</value>
+  </data>
+  <data name="Common_BackButton" xml:space="preserve">
+    <value>Mukongo</value>
+  </data>
+  <data name="Common_SkipStep" xml:space="preserve">
+    <value>Salá koleka litambe</value>
+  </data>
+  <data name="Common_Registering" xml:space="preserve">
+    <value>Kokomisa nkombo...</value>
+  </data>
+  <data name="Common_PercentComplete" xml:space="preserve">
+    <value>{0}% esili</value>
+  </data>
+  <data name="Common_OnboardingProgressAria" xml:space="preserve">
+    <value>Bokoli ya onboarding</value>
+  </data>
+  <data name="Common_HospitalOnboardingEyebrow" xml:space="preserve">
+    <value>Bokɔti na lopitalo · Etape {0} ya {1} .</value>
+  </data>
+  <data name="Common_OpenHospital" xml:space="preserve">
+    <value>Lopitalo ya polele</value>
+  </data>
+  <data name="Common_ViewAllHospitals" xml:space="preserve">
+    <value>Tala balopitalo nyonso</value>
+  </data>
+  <data name="Common_RegisterAnother" xml:space="preserve">
+    <value>Bokomisa nkombo mosusu</value>
+  </data>
+  <data name="Common_HospitalRegisteredTitle" xml:space="preserve">
+    <value>{0} ezali enregistré</value>
+  </data>
+  <data name="Common_HospitalRegisteredLead" xml:space="preserve">
+    <value>Lopitalo ezali na mosala mingi na estrade. Ba maladi bakoki kopona yango na tango ya bokomisi nkombo mbala moko basali bapesameli.</value>
+  </data>
+  <data name="Common_AdminContactPending" xml:space="preserve">
+    <value>Contact ya administrateur (enzela)</value>
+  </data>
+  <data name="Common_SignInAndContinue" xml:space="preserve">
+    <value>Kota na site mpe kobá</value>
+  </data>
+  <data name="Common_AuthRetryHint" xml:space="preserve">
+    <value>Makambo na yo ya lopitalo ebombami na aparɛyi oyo. Kota lisusu, sima zonga awa mpo na kosilisa kokomisa nkombo.</value>
+  </data>
+  <data name="Common_ResumeReadyReview" xml:space="preserve">
+    <value>Tozongisaki makambo na yo ya lopitalo oyo obombaki. Tala mpe finá Komisa nkombo na lopitalo ntango ozali pene.</value>
+  </data>
+  <data name="Common_ResumeFromStep" xml:space="preserve">
+    <value>Tozongisaki bokoli na yo oyo obombaki uta na etape {0}. Okoki kokoba esika oyo otikaki.</value>
+  </data>
+  <data name="Common_TimeZone" xml:space="preserve">
+    <value>Fuseau horaire</value>
+  </data>
+  <data name="Common_Address" xml:space="preserve">
+    <value>Adresi</value>
+  </data>
+  <data name="Common_City" xml:space="preserve">
+    <value>Engumba</value>
+  </data>
+  <data name="Common_StreetAddress" xml:space="preserve">
+    <value>Addresse ya balabala</value>
+  </data>
+  <data name="Common_MainCampusPlaceholder" xml:space="preserve">
+    <value>Campus monene</value>
+  </data>
+  <data name="Common_JohannesburgPlaceholder" xml:space="preserve">
+    <value>Johannesburg</value>
+  </data>
+  <data name="Common_LoadingPatients" xml:space="preserve">
+    <value>Ko charger ba malades...</value>
+  </data>
+  <data name="Common_LoadingProviders" xml:space="preserve">
+    <value>Chargement ya ba fournisseurs...</value>
+  </data>
+  <data name="Common_LoadingAppointments" xml:space="preserve">
+    <value>Chargement ya ba rendez-vous...</value>
+  </data>
+  <data name="Common_LoadingDevices" xml:space="preserve">
+    <value>Ko charger ba appareils...</value>
+  </data>
+  <data name="Common_LoadingEmergencyEvents" xml:space="preserve">
+    <value>Chargement ya ba événements ya urgence...</value>
+  </data>
+  <data name="Common_LoadingStaff" xml:space="preserve">
+    <value>Chargement ya basali...</value>
+  </data>
+  <data name="Common_LoadingHospital" xml:space="preserve">
+    <value>Chargement ya lopitalo...</value>
+  </data>
+  <data name="Common_LoadingPatient" xml:space="preserve">
+    <value>Chargement ya mobeli...</value>
+  </data>
+  <data name="Common_LoadingProvider" xml:space="preserve">
+    <value>Chargement ya fournisseur...</value>
+  </data>
+  <data name="Common_LoadingVisit" xml:space="preserve">
+    <value>Bozali ko charger visite...</value>
+  </data>
+  <data name="Common_LoadingDashboard" xml:space="preserve">
+    <value>Chargement ya tableau de bord...</value>
+  </data>
+  <data name="Common_GrantAccess" xml:space="preserve">
+    <value>Kopesa nzela ya kokɔta</value>
+  </data>
+  <data name="Common_Granting" xml:space="preserve">
+    <value>Kopesa...</value>
+  </data>
+  <data name="Common_DateOfBirth" xml:space="preserve">
+    <value>Mokolo ya mbotama</value>
+  </data>
+  <data name="Common_Access" xml:space="preserve">
+    <value>Kokota</value>
+  </data>
+  <data name="Common_Granted" xml:space="preserve">
+    <value>Kopesa</value>
+  </data>
+  <data name="Common_License" xml:space="preserve">
+    <value>Licence ya ndingisa</value>
+  </data>
+  <data name="Common_Schedule" xml:space="preserve">
+    <value>Manaka</value>
+  </data>
+  <data name="Common_Roles" xml:space="preserve">
+    <value>Misala ya kosala</value>
+  </data>
+  <data name="Common_Joined" xml:space="preserve">
+    <value>Basanganaki</value>
+  </data>
+  <data name="Common_Serial" xml:space="preserve">
+    <value>Sérieux na yango</value>
+  </data>
+  <data name="Common_Model" xml:space="preserve">
+    <value>Modele</value>
+  </data>
+  <data name="Common_AssignedTo" xml:space="preserve">
+    <value>Bapesameli mosala ya</value>
+  </data>
+  <data name="Common_Occurred" xml:space="preserve">
+    <value>Kosalema</value>
+  </data>
+  <data name="Common_Location" xml:space="preserve">
+    <value>Esika</value>
+  </data>
+  <data name="Common_Caregivers" xml:space="preserve">
+    <value>Bato oyo babatelaka bato</value>
+  </data>
+  <data name="Common_DateTime" xml:space="preserve">
+    <value>Date &amp; ngonga</value>
+  </data>
+  <data name="Common_Date" xml:space="preserve">
+    <value>Dati</value>
+  </data>
+  <data name="Common_Summary" xml:space="preserve">
+    <value>Na mokuse</value>
+  </data>
+  <data name="Common_Recorded" xml:space="preserve">
+    <value>Ekomamaki na enregistrement</value>
+  </data>
+  <data name="Common_Value" xml:space="preserve">
+    <value>Motuya</value>
+  </data>
+  <data name="Common_Visit" xml:space="preserve">
+    <value>Kokende kotala</value>
+  </data>
+  <data name="Common_Today" xml:space="preserve">
+    <value>Lelo</value>
+  </data>
+  <data name="Common_Next7Days" xml:space="preserve">
+    <value>Mikolo 7 oyo ekoya</value>
+  </data>
+  <data name="Common_Staff" xml:space="preserve">
+    <value>Bato ya mosala</value>
+  </data>
+  <data name="Common_PatientsStat" xml:space="preserve">
+    <value>Bato ya maladi</value>
+  </data>
+  <data name="Common_ProvidersStat" xml:space="preserve">
+    <value>Ba fournisseurs</value>
+  </data>
+  <data name="Common_Devices" xml:space="preserve">
+    <value>Ba appareils</value>
+  </data>
+  <data name="Common_Inpatient" xml:space="preserve">
+    <value>Mobɛli oyo azali na lopitalo</value>
+  </data>
+  <data name="Common_Overview" xml:space="preserve">
+    <value>Botali ya mozindo</value>
+  </data>
+  <data name="Common_FullList" xml:space="preserve">
+    <value>Liste mobimba →</value>
+  </data>
+  <data name="Common_SelectPatient" xml:space="preserve">
+    <value>Pona mobeli...</value>
+  </data>
+  <data name="Common_SelectProvider" xml:space="preserve">
+    <value>Pona mopesi...</value>
+  </data>
+  <data name="Common_SelectStaffMemberOption" xml:space="preserve">
+    <value>Pona mosali ya mosala...</value>
+  </data>
+  <data name="Common_LicenseOptionalPlaceholder" xml:space="preserve">
+    <value>Licence # (ekoki kozala ya bolingi)</value>
+  </data>
+  <data name="Common_AddProvider" xml:space="preserve">
+    <value>Bakisa mopesi</value>
+  </data>
+  <data name="Common_SearchByNameEmailPhone" xml:space="preserve">
+    <value>Luká na nkombo, na email, to na telefone</value>
+  </data>
+  <data name="Common_GrantPatientAccessTitle" xml:space="preserve">
+    <value>Pesá mobɛli nzela ya kokɔta</value>
+  </data>
+  <data name="Common_GrantPatientAccessLead" xml:space="preserve">
+    <value>Lien compte ya maladi oyo ezali na lopitalo oyo na nzela ya email.</value>
+  </data>
+  <data name="Common_PatientEmailPlaceholder" xml:space="preserve">
+    <value>mobɛli@email.com</value>
+  </data>
+  <data name="Common_ColleagueEmailPlaceholder" xml:space="preserve">
+    <value>moninga ya mosala@lopitalo.com</value>
+  </data>
+  <data name="Common_InviteStaffTitle" xml:space="preserve">
+    <value>Benga basali</value>
+  </data>
+  <data name="Common_InviteStaffHint" xml:space="preserve">
+    <value>Bengisa baninga ya mosala na nzela ya email. Soki bazali naino na compte RaphCare te, bakozwa lien ya inscription.</value>
+  </data>
+  <data name="Common_OnlyAdminsInviteStaff" xml:space="preserve">
+    <value>Kaka bakambi ya lopitalo nde bakoki kobengisa to kotambwisa basali.</value>
+  </data>
+  <data name="Common_AddFacility" xml:space="preserve">
+    <value>Bakisa esika ya kofanda</value>
+  </data>
+  <data name="Common_EditFacility" xml:space="preserve">
+    <value>Esika ya kobongisa</value>
+  </data>
+  <data name="Common_AddFacilityButton" xml:space="preserve">
+    <value>Bakisa esika ya kofanda</value>
+  </data>
+  <data name="Common_VirtualSiteCheckbox" xml:space="preserve">
+    <value>Site virtuel (addresse physique ezali te)</value>
+  </data>
+  <data name="Common_HospitalIsActive" xml:space="preserve">
+    <value>Lopitalo ezali na mosala</value>
+  </data>
+  <data name="Common_OrganizationDetails" xml:space="preserve">
+    <value>Makambo ya mikemike ya ebongiseli</value>
+  </data>
+  <data name="Common_UpdateHospitalLead" xml:space="preserve">
+    <value>Bobongola nkombo ya lopitalo na yo, mboka, mpe fuseau horaire.</value>
+  </data>
+  <data name="Common_HospitalProfileEyebrow" xml:space="preserve">
+    <value>Profil ya lopitalo</value>
+  </data>
+  <data name="Common_LocationsEyebrow" xml:space="preserve">
+    <value>Bisika ya kosala</value>
+  </data>
+  <data name="Common_PhysicalCampusesLead" xml:space="preserve">
+    <value>Ba campus physiques na ba sites virtuels pona lopitalo oyo.</value>
+  </data>
+  <data name="Common_FacilityCountLabel" xml:space="preserve">
+    <value>{0} esika ya kosala</value>
+  </data>
+  <data name="Common_FacilityCountLabelPlural" xml:space="preserve">
+    <value>{0} bisika ya mosala</value>
+  </data>
+  <data name="Common_NoFacilitiesYet" xml:space="preserve">
+    <value>Naino ba installations ezali te. Bakisa esika na yo ya liboso likolo.</value>
+  </data>
+  <data name="Common_CareRecipientsEyebrow" xml:space="preserve">
+    <value>Bato oyo bazwaka lisalisi</value>
+  </data>
+  <data name="Common_PatientsLead" xml:space="preserve">
+    <value>Ba malades oyo bazali na accès na lopitalo oyo.</value>
+  </data>
+  <data name="Common_PatientCountLabel" xml:space="preserve">
+    <value>{0} mobɛli</value>
+  </data>
+  <data name="Common_PatientCountLabelPlural" xml:space="preserve">
+    <value>{0} ba maladi</value>
+  </data>
+  <data name="Common_NoPatientsLinked" xml:space="preserve">
+    <value>Ba malades moko te azali na lien na lopitalo oyo nanu.</value>
+  </data>
+  <data name="Common_NoPatientsMatchSearch" xml:space="preserve">
+    <value>Mobɛli moko te oyo ekokani na bolukiluki na yo.</value>
+  </data>
+  <data name="Common_ClinicalTeamEyebrow" xml:space="preserve">
+    <value>Ekipi ya kliniki</value>
+  </data>
+  <data name="Common_ProvidersLead" xml:space="preserve">
+    <value>Ba cliniciens oyo bakoki kozua ba rendez-vous na lopitalo oyo.</value>
+  </data>
+  <data name="Common_ProviderCountLabel" xml:space="preserve">
+    <value>{0} mopesi</value>
+  </data>
+  <data name="Common_ProviderCountLabelPlural" xml:space="preserve">
+    <value>{0} ba fournisseurs</value>
+  </data>
+  <data name="Common_AddProviderTitle" xml:space="preserve">
+    <value>Bakisa mopesi</value>
+  </data>
+  <data name="Common_AddProviderLead" xml:space="preserve">
+    <value>Bokanga mosali ya mosala lokola mopesi ya clinique.</value>
+  </data>
+  <data name="Common_NoProvidersYet" xml:space="preserve">
+    <value>Ba fournisseurs moko te azali na lien nanu. Bakisa mosali lokola mopesi mpo na kotambwisa manaka.</value>
+  </data>
+  <data name="Common_ScheduleSlotCount" xml:space="preserve">
+    <value>{0} esika ya kofanda</value>
+  </data>
+  <data name="Common_ScheduleSlotCountPlural" xml:space="preserve">
+    <value>{0} bisika ya kofanda</value>
+  </data>
+  <data name="Common_SchedulingEyebrow" xml:space="preserve">
+    <value>Kobongisa manaka</value>
+  </data>
+  <data name="Common_AppointmentsLead" xml:space="preserve">
+    <value>Ba réservations oyo ekoya na hôpital oyo.</value>
+  </data>
+  <data name="Common_NoUpcomingAppointments30Days" xml:space="preserve">
+    <value>Ba rendez-vous ekoya te na mikolo 30 oyo ekoya.</value>
+  </data>
+  <data name="Common_FleetEyebrow" xml:space="preserve">
+    <value>Flotte ya masuwa</value>
+  </data>
+  <data name="Common_DevicesLead" xml:space="preserve">
+    <value>Ba dispositifs ya suivi oyo ekomisami na lopitalo oyo.</value>
+  </data>
+  <data name="Common_DeviceCountLabel" xml:space="preserve">
+    <value>{0} esaleli</value>
+  </data>
+  <data name="Common_DeviceCountLabelPlural" xml:space="preserve">
+    <value>{0} bisaleli</value>
+  </data>
+  <data name="Common_NoDevicesYet" xml:space="preserve">
+    <value>Ba appareils moko te ekomisami nanu pona lopitalo oyo. Ba appareils ebimaka sima ya synchronisation ya ba wearables ya maladi to fourniture ya basali na nzela ya API ya ba dispositifs.</value>
+  </data>
+  <data name="Common_EmergencyEyebrow" xml:space="preserve">
+    <value>Y6 / 4G ya mbalakaka</value>
+  </data>
+  <data name="Common_EmergencyEventsTitle" xml:space="preserve">
+    <value>Makambo ya mbalakaka</value>
+  </data>
+  <data name="Common_EmergencyEventsLeadClinic" xml:space="preserve">
+    <value>SOS ya sika, kokweya, mpe makebisi ya mbalakaka ya yango moko na lopitalo oyo mobimba.</value>
+  </data>
+  <data name="Common_EmergencyEventsLeadPatient" xml:space="preserve">
+    <value>SOS, kokweya, mpe ba alertes mosusu ya urgence autonome mpo na mobeli oyo.</value>
+  </data>
+  <data name="Common_EventCountLabel" xml:space="preserve">
+    <value>{0} likambo</value>
+  </data>
+  <data name="Common_EventCountLabelPlural" xml:space="preserve">
+    <value>{0} makambo</value>
+  </data>
+  <data name="Common_NoEmergencyEventsClinic" xml:space="preserve">
+    <value>Makambo ya mbalakaka ekomamaki naino te mpo na lopitalo oyo.</value>
+  </data>
+  <data name="Common_NoEmergencyEventsPatient" xml:space="preserve">
+    <value>Makambo ya mbalakaka moko te ekomamaki mpo na mobɛli oyo na lopitalo oyo.</value>
+  </data>
+  <data name="Common_TeamEyebrow" xml:space="preserve">
+    <value>Ekipe</value>
+  </data>
+  <data name="Common_StaffLead" xml:space="preserve">
+    <value>Ba professionnels oyo bazali na lien na lopitalo oyo. Ba administrateurs bakoki kobengisa baninga ya mosala na nzela ya email.</value>
+  </data>
+  <data name="Common_MemberCountLabel" xml:space="preserve">
+    <value>{0} mosangani</value>
+  </data>
+  <data name="Common_MemberCountLabelPlural" xml:space="preserve">
+    <value>{0} bandimi</value>
+  </data>
+  <data name="Common_NoStaffYet" xml:space="preserve">
+    <value>Staff moko te azali na lien nanu.</value>
+  </data>
+  <data name="Common_HospitalSectionsAria" xml:space="preserve">
+    <value>Biteni ya lopitalo</value>
+  </data>
+  <data name="Common_RoomLabel" xml:space="preserve">
+    <value>Chambre {0} Ezali na .</value>
+  </data>
+  <data name="Common_InactiveLower" xml:space="preserve">
+    <value>inactif</value>
+  </data>
+  <data name="Common_Room" xml:space="preserve">
+    <value>Chambre</value>
+  </data>
+  <data name="Common_Bed" xml:space="preserve">
+    <value>Mbeto</value>
+  </data>
+  <data name="Common_BedLabel" xml:space="preserve">
+    <value>Etiquette ya mbeto</value>
+  </data>
+  <data name="Common_Deactivate" xml:space="preserve">
+    <value>Désactivé</value>
+  </data>
+  <data name="Common_Reactivate" xml:space="preserve">
+    <value>Bozongisa lisusu mosala</value>
+  </data>
+  <data name="Common_Clear" xml:space="preserve">
+    <value>Polele</value>
+  </data>
+  <data name="Common_Maintenance" xml:space="preserve">
+    <value>Kobongisa</value>
+  </data>
+  <data name="Common_ConfirmDischarge" xml:space="preserve">
+    <value>Confirmer décharge</value>
+  </data>
+  <data name="Common_ConfirmTransfer" xml:space="preserve">
+    <value>Confirmer transfert</value>
+  </data>
+  <data name="Common_Transfer" xml:space="preserve">
+    <value>Kotinda esika mosusu</value>
+  </data>
+  <data name="Common_Discharge" xml:space="preserve">
+    <value>Kobimisa</value>
+  </data>
+  <data name="Common_Admit" xml:space="preserve">
+    <value>Kondima</value>
+  </data>
+  <data name="Common_All" xml:space="preserve">
+    <value>Nyonso</value>
+  </data>
+  <data name="Common_Available" xml:space="preserve">
+    <value>Ezali</value>
+  </data>
+  <data name="Common_Occupied" xml:space="preserve">
+    <value>Kozala na mosala</value>
+  </data>
+  <data name="Common_Beds" xml:space="preserve">
+    <value>Mbeto ya kolala</value>
+  </data>
+  <data name="Common_HospitalTime" xml:space="preserve">
+    <value>ngonga ya lopitalo</value>
+  </data>
+  <data name="Common_ThisHospital" xml:space="preserve">
+    <value>lopitalo oyo</value>
+  </data>
+  <data name="Common_BookAppointment" xml:space="preserve">
+    <value>Bozwa rendez-vous na buku</value>
+  </data>
+  <data name="Common_Booking" xml:space="preserve">
+    <value>Réservation ya...</value>
+  </data>
+  <data name="Common_BookAppointmentTitle" xml:space="preserve">
+    <value>Bozwa rendez-vous na buku</value>
+  </data>
+  <data name="Common_InPerson" xml:space="preserve">
+    <value>Na miso</value>
+  </data>
+  <data name="Common_Telemedicine" xml:space="preserve">
+    <value>Telemedicine na nzela ya telefone</value>
+  </data>
+  <data name="Common_StartLabel" xml:space="preserve">
+    <value>Kobanda ({0})</value>
+  </data>
+  <data name="Common_EndLabel" xml:space="preserve">
+    <value>Suka ({0})</value>
+  </data>
+  <data name="Common_RescheduleAppointment" xml:space="preserve">
+    <value>Bongisa lisusu programme ya rendez-vous</value>
+  </data>
+  <data name="Common_NoAppointmentsMatchFilter" xml:space="preserve">
+    <value>Ba rendez-vous moko te ekokani na filtre oyo.</value>
+  </data>
+  <data name="Common_JoinTelehealth" xml:space="preserve">
+    <value>Bokota na telesanté</value>
+  </data>
+  <data name="Common_OpenVisit" xml:space="preserve">
+    <value>Botali ya polele</value>
+  </data>
+  <data name="Common_StartVisit" xml:space="preserve">
+    <value>Bandá kotala</value>
+  </data>
+  <data name="Common_Reschedule" xml:space="preserve">
+    <value>Bongisa programɛ ya sika</value>
+  </data>
+  <data name="Common_AppointmentBooked" xml:space="preserve">
+    <value>Rendez-vous ezwamaki.</value>
+  </data>
+  <data name="Common_AppointmentRescheduled" xml:space="preserve">
+    <value>Rendez-vous ezongisami na programme.</value>
+  </data>
+  <data name="Common_AppointmentCancelled" xml:space="preserve">
+    <value>Rendez-vous elongolami.</value>
+  </data>
+  <data name="Common_CouldNotBookAppointment" xml:space="preserve">
+    <value>Ekokaki te kosala rendez-vous.</value>
+  </data>
+  <data name="Common_CouldNotRescheduleAppointment" xml:space="preserve">
+    <value>Ekokaki te kozongisa programme ya rendez-vous.</value>
+  </data>
+  <data name="Common_CouldNotStartVisit" xml:space="preserve">
+    <value>Ekokaki te kobanda kotala.</value>
+  </data>
+  <data name="Common_CouldNotCancelAppointment" xml:space="preserve">
+    <value>Ekokaki te ko annuler rendez-vous.</value>
+  </data>
+  <data name="Common_SelectPatientAndProvider" xml:space="preserve">
+    <value>Pona mobɛli mpe mopesi lisalisi.</value>
+  </data>
+  <data name="Common_Upcoming30Days" xml:space="preserve">
+    <value>Ekoya (mikolo 30)</value>
+  </data>
+  <data name="Common_RangeToday" xml:space="preserve">
+    <value>Lelo</value>
+  </data>
+  <data name="Common_RangeAll" xml:space="preserve">
+    <value>Nyonso</value>
+  </data>
+  <data name="Common_ScheduledVisitsLead" xml:space="preserve">
+    <value>Ba visites programmées pona {0}. Bantango oyo elakisami na {1}.</value>
+  </data>
+  <data name="Common_AppointmentCountLabel" xml:space="preserve">
+    <value>{0} rendez-vous</value>
+  </data>
+  <data name="Common_AppointmentCountLabelPlural" xml:space="preserve">
+    <value>{0} ba rendez-vous</value>
+  </data>
+  <data name="Common_DemographicsEyebrow" xml:space="preserve">
+    <value>Démographie ya bato</value>
+  </data>
+  <data name="Common_Profile" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="Common_HospitalLinkEyebrow" xml:space="preserve">
+    <value>Lien ya lopitalo</value>
+  </data>
+  <data name="Common_AccessSection" xml:space="preserve">
+    <value>Kokota</value>
+  </data>
+  <data name="Common_RevokeHospitalAccess" xml:space="preserve">
+    <value>Kolongola nzela ya kokɔta na lopitalo</value>
+  </data>
+  <data name="Common_Revoking" xml:space="preserve">
+    <value>Kolongolama...</value>
+  </data>
+  <data name="Common_CouldNotRevokeAccess" xml:space="preserve">
+    <value>Ekokaki te ko révoquer accès.</value>
+  </data>
+  <data name="Common_WearablesEyebrow" xml:space="preserve">
+    <value>Biloko oyo balataka</value>
+  </data>
+  <data name="Common_DeviceReadingsTitle" xml:space="preserve">
+    <value>Ba lectures ya appareil</value>
+  </data>
+  <data name="Common_DeviceReadingsLead" xml:space="preserve">
+    <value>Ba vitals synchronisés ya sika uta na ba appareils ya malade (bokuse ya mikolo 7 ya suka).</value>
+  </data>
+  <data name="Common_NoDeviceReadings" xml:space="preserve">
+    <value>Ba lectures ya appareil synchronisé te pona malade oyo nanu.</value>
+  </data>
+  <data name="Common_HeartRateTitle" xml:space="preserve">
+    <value>Motema ya kobɛta moyenne/min/max</value>
+  </data>
+  <data name="Common_HeartRateLabel" xml:space="preserve">
+    <value>HR</value>
+  </data>
+  <data name="Common_HeartRateBpm" xml:space="preserve">
+    <value>{0} bpm</value>
+  </data>
+  <data name="Common_Spo2Title" xml:space="preserve">
+    <value>SpO2 moyenne/min/max</value>
+  </data>
+  <data name="Common_Spo2Label" xml:space="preserve">
+    <value>SpO2</value>
+  </data>
+  <data name="Common_VisitVitalsTitle" xml:space="preserve">
+    <value>Kotala ba vitals</value>
+  </data>
+  <data name="Common_VisitVitalsLead" xml:space="preserve">
+    <value>Vitals enregistrés na tango ya ba rencontres na lopitalo oyo.</value>
+  </data>
+  <data name="Common_VitalCountLabel" xml:space="preserve">
+    <value>{0} ezali na ntina mingi</value>
+  </data>
+  <data name="Common_VitalCountLabelPlural" xml:space="preserve">
+    <value>{0} makambo ya ntina</value>
+  </data>
+  <data name="Common_NoVisitVitals" xml:space="preserve">
+    <value>Vitals ya visite moko te ekomamaki nanu.</value>
+  </data>
+  <data name="Common_NoAppointmentsPatient" xml:space="preserve">
+    <value>Ba rendez-vous ekomamaki nanu te.</value>
+  </data>
+  <data name="Common_BookOneLink" xml:space="preserve">
+    <value>Buku ya liboso</value>
+  </data>
+  <data name="Common_RecentVisitsTitle" xml:space="preserve">
+    <value>Ba visites oyo euti kosalema kala mingi te</value>
+  </data>
+  <data name="Common_RecentVisitsLead" xml:space="preserve">
+    <value>Ba rencontres na lopitalo oyo.</value>
+  </data>
+  <data name="Common_VisitCountLabel" xml:space="preserve">
+    <value>{0} botali</value>
+  </data>
+  <data name="Common_VisitCountLabelPlural" xml:space="preserve">
+    <value>{0} ba visites</value>
+  </data>
+  <data name="Common_NoVisitsPatient" xml:space="preserve">
+    <value>Ba visites moko te ekomamaki nanu mpo na mobeli oyo na lopitalo oyo.</value>
+  </data>
+  <data name="Common_Manage" xml:space="preserve">
+    <value>Kosala</value>
+  </data>
+  <data name="Common_PatientChartLead" xml:space="preserve">
+    <value>Etanda ya mobeli mpo na {0}. Tango na {1}.</value>
+  </data>
+  <data name="Common_ProviderDetailsTitle" xml:space="preserve">
+    <value>Makambo ya mopesi</value>
+  </data>
+  <data name="Common_WeeklyScheduleTitle" xml:space="preserve">
+    <value>Programme ya poso na poso</value>
+  </data>
+  <data name="Common_WeeklyScheduleLead" xml:space="preserve">
+    <value>Programme ya poso na poso na {0}</value>
+  </data>
+  <data name="Common_AddScheduleSlot" xml:space="preserve">
+    <value>Bakisa esika ya kosala programme</value>
+  </data>
+  <data name="Common_Day" xml:space="preserve">
+    <value>Mokolo</value>
+  </data>
+  <data name="Common_Start" xml:space="preserve">
+    <value>Kobanda</value>
+  </data>
+  <data name="Common_End" xml:space="preserve">
+    <value>Nsuka</value>
+  </data>
+  <data name="Common_AddSlot" xml:space="preserve">
+    <value>Bakisa esika ya kofanda</value>
+  </data>
+  <data name="Common_NoScheduleSlots" xml:space="preserve">
+    <value>Ba slots ya programme nanu te.</value>
+  </data>
+  <data name="Common_DeactivateProvider" xml:space="preserve">
+    <value>Désactivé fournisseur</value>
+  </data>
+  <data name="Common_ReactivateProvider" xml:space="preserve">
+    <value>Réactivé fournisseur</value>
+  </data>
+  <data name="Common_Updating" xml:space="preserve">
+    <value>Kosala mise à jour...</value>
+  </data>
+  <data name="Common_CouldNotUpdateProviderStatus" xml:space="preserve">
+    <value>Ekoki te kosala mikolo oyo ezalela ya mopesi.</value>
+  </data>
+  <data name="Common_CouldNotLoadProvider" xml:space="preserve">
+    <value>Ekokaki te ko charger fournisseur.</value>
+  </data>
+  <data name="Common_EnterValidStartEnd" xml:space="preserve">
+    <value>Tyá ngonga ya kobanda mpe ya nsuka oyo ezali na ntina.</value>
+  </data>
+  <data name="Common_CouldNotAddScheduleSlot" xml:space="preserve">
+    <value>Ekoki te kobakisa esika ya manaka.</value>
+  </data>
+  <data name="Common_CouldNotRemoveScheduleSlot" xml:space="preserve">
+    <value>Ekokaki te kolongola esika ya manaka.</value>
+  </data>
+  <data name="Common_EncounterEyebrow" xml:space="preserve">
+    <value>Bokutani</value>
+  </data>
+  <data name="Common_Details" xml:space="preserve">
+    <value>Makambo ya mike</value>
+  </data>
+  <data name="Common_Started" xml:space="preserve">
+    <value>Alobaki</value>
+  </data>
+  <data name="Common_Ended" xml:space="preserve">
+    <value>Esili</value>
+  </data>
+  <data name="Common_CompleteVisit" xml:space="preserve">
+    <value>Botali mobimba</value>
+  </data>
+  <data name="Common_Completing" xml:space="preserve">
+    <value>Kosilisa...</value>
+  </data>
+  <data name="Common_VitalsTitle" xml:space="preserve">
+    <value>Makambo ya ntina mingi</value>
+  </data>
+  <data name="Common_HeartRateOption" xml:space="preserve">
+    <value>Motema oyo ezali kobɛtabɛta</value>
+  </data>
+  <data name="Common_BloodPressureOption" xml:space="preserve">
+    <value>Tansiɔ́ ya makila</value>
+  </data>
+  <data name="Common_TemperatureOption" xml:space="preserve">
+    <value>Molunge</value>
+  </data>
+  <data name="Common_Spo2Option" xml:space="preserve">
+    <value>SpO2</value>
+  </data>
+  <data name="Common_WeightOption" xml:space="preserve">
+    <value>Kilo</value>
+  </data>
+  <data name="Common_UnitPlaceholder" xml:space="preserve">
+    <value>bpm, °C, % 100.</value>
+  </data>
+  <data name="Common_RecordVital" xml:space="preserve">
+    <value>Enregistrer vital</value>
+  </data>
+  <data name="Common_NoVitalsYet" xml:space="preserve">
+    <value>Vitals moko te e enregistré nanu.</value>
+  </data>
+  <data name="Common_VitalRecorded" xml:space="preserve">
+    <value>Vital enregistré.</value>
+  </data>
+  <data name="Common_CouldNotRecordVital" xml:space="preserve">
+    <value>Ekokaki te ko enregistrer vital.</value>
+  </data>
+  <data name="Common_VisitCompleted" xml:space="preserve">
+    <value>Visite esili.</value>
+  </data>
+  <data name="Common_CouldNotCompleteVisit" xml:space="preserve">
+    <value>Ekokaki te kosilisa botali.</value>
+  </data>
+  <data name="Common_CouldNotLoadVisit" xml:space="preserve">
+    <value>Ekokaki te ko charger visite.</value>
+  </data>
+  <data name="Common_OptionalVisitSummary" xml:space="preserve">
+    <value>Bokuse ya botali ya bolingi</value>
+  </data>
+  <data name="Common_PatientChartLink" xml:space="preserve">
+    <value>Etanda ya mobɛli</value>
+  </data>
+  <data name="Common_VisitHeader" xml:space="preserve">
+    <value>Botali - {0} .</value>
+  </data>
+  <data name="Common_TelehealthSession" xml:space="preserve">
+    <value>Session ya télésanté</value>
+  </data>
+  <data name="Common_Connecting" xml:space="preserve">
+    <value>Kosala boyokani...</value>
+  </data>
+  <data name="Common_PreparingTelehealth" xml:space="preserve">
+    <value>Kobongisa session ya télésanté...</value>
+  </data>
+  <data name="Common_Channel" xml:space="preserve">
+    <value>Chaîne</value>
+  </data>
+  <data name="Common_Session" xml:space="preserve">
+    <value>Eteni</value>
+  </data>
+  <data name="Common_OpenVisitChart" xml:space="preserve">
+    <value>Etanda ya botali ya polele</value>
+  </data>
+  <data name="Common_JoinVideo" xml:space="preserve">
+    <value>Bokota na video</value>
+  </data>
+  <data name="Common_Joining" xml:space="preserve">
+    <value>Kosangana na...</value>
+  </data>
+  <data name="Common_LeaveCall" xml:space="preserve">
+    <value>Tika kobenga</value>
+  </data>
+  <data name="Common_RemoteVideoAria" xml:space="preserve">
+    <value>Video ya mosika</value>
+  </data>
+  <data name="Common_LocalVideoAria" xml:space="preserve">
+    <value>Video ya mboka</value>
+  </data>
+  <data name="Common_CouldNotStartTelehealth" xml:space="preserve">
+    <value>Ekokaki te kobanda session ya telesanté.</value>
+  </data>
+  <data name="Common_AgoraNotConfigured" xml:space="preserve">
+    <value>Agora ezali configuré te na API. Session esalemaki, kasi video en direct ekoki kobanda te kino Agora:AppId mpe Agora:AppCertificate ekotia. Tala mikanda/10_Agora_Twilio_Setup.md.</value>
+  </data>
+  <data name="Common_SessionReadyConfigureAgora" xml:space="preserve">
+    <value>Session ebongami. Configurer Agora na API mpo na ko activer vidéo en direct.</value>
+  </data>
+  <data name="Common_PageTitleAdminSuffix" xml:space="preserve">
+    <value>- RaphCare Mokambi ya mosala</value>
+  </data>
+  <data name="Common_PageTitlePatientSuffix" xml:space="preserve">
+    <value>- Moto ya maladi</value>
+  </data>
+  <data name="Common_PageTitleProfessionalSuffix" xml:space="preserve">
+    <value>- Mosali ya bokolongono</value>
+  </data>
+  <data name="Common_DayMonday" xml:space="preserve">
+    <value>Mwa yambo</value>
+  </data>
+  <data name="Common_DayTuesday" xml:space="preserve">
+    <value>Mwa Mibale</value>
+  </data>
+  <data name="Common_DayWednesday" xml:space="preserve">
+    <value>Mwa Misato</value>
+  </data>
+  <data name="Common_DayThursday" xml:space="preserve">
+    <value>Mwa Minei</value>
+  </data>
+  <data name="Common_DayFriday" xml:space="preserve">
+    <value>Mwa mitano</value>
+  </data>
+  <data name="Common_DaySaturday" xml:space="preserve">
+    <value>Mwa Mposo</value>
+  </data>
+  <data name="Common_DaySunday" xml:space="preserve">
+    <value>Mwa lomingo</value>
+  </data>
+  <data name="Language_Label" xml:space="preserve">
+    <value>Lokota</value>
+  </data>
+  <data name="Language_Aria" xml:space="preserve">
+    <value>Pona monoko</value>
+  </data>
+  <data name="IndexHtml_UnhandledError" xml:space="preserve">
+    <value>Libunga oyo esimbami te esalemi.</value>
+  </data>
+  <data name="IndexHtml_Reload" xml:space="preserve">
+    <value>Recharger lisusu</value>
+  </data>
+  <data name="AuthShell_BrandTagline" xml:space="preserve">
+    <value>Plateforme ya soins de santé oyo ekangami</value>
+  </data>
+  <data name="AuthShell_Headline" xml:space="preserve">
+    <value>Mema équipe nionso ya maladi, clinique mpe ya soins na vue moko ya confiance.</value>
+  </data>
+  <data name="AuthShell_Lead" xml:space="preserve">
+    <value>Kokomisa balopitalo, basali oyo bazali na kati ya masuwa, mpe kopesa bato ya maladi nzela ya libateli ya kozwa mikanda, ba rendez-vous, mpe kolɔngɔnɔ ya nzoto na nzela ya telefone.</value>
+  </data>
+  <data name="AuthShell_FeatureHospitalTitle" xml:space="preserve">
+    <value>Kokɔtisa bato na lopitalo</value>
+  </data>
+  <data name="AuthShell_FeatureHospitalDesc" xml:space="preserve">
+    <value>Komisa clinique na yo, ba installations, mpe portail ya pratique na ba minutes.</value>
+  </data>
+  <data name="AuthShell_FeatureWorkspaceTitle" xml:space="preserve">
+    <value>Esika ya mosala ya kliniki</value>
+  </data>
+  <data name="AuthShell_FeatureWorkspaceDesc" xml:space="preserve">
+    <value>Ba maladi, botali, mpe bopesi lapolo epesamaki na mofuteli moko ya clinique.</value>
+  </data>
+  <data name="AuthShell_FeatureVerifiedTitle" xml:space="preserve">
+    <value>Accès oyo e vérifié</value>
+  </data>
+  <data name="AuthShell_FeatureVerifiedDesc" xml:space="preserve">
+    <value>Vérification ya email mpe ba codes 2FA oyo etindami uta na boîte postale na yo RaphCare.</value>
+  </data>
+  <data name="AuthShell_FooterSecureSignIn" xml:space="preserve">
+    <value>Kokɔta na email na libateli</value>
+  </data>
+  <data name="AuthShell_FooterCopyright" xml:space="preserve">
+    <value>© {0} RaphCare Ezali ndenge moko na .</value>
+  </data>
+  <data name="AuthShell_MobileTagline" xml:space="preserve">
+    <value>Plateforme ya soins de santé</value>
+  </data>
+  <data name="Home_PageTitle" xml:space="preserve">
+    <value>RaphCare - Kokota na site</value>
+  </data>
+  <data name="Home_Title" xml:space="preserve">
+    <value>Boyei malamu</value>
+  </data>
+  <data name="Home_Subtitle" xml:space="preserve">
+    <value>Pona ndenge okosalela RaphCare, sima kota to sala compte.</value>
+  </data>
+  <data name="Home_AccountTypeAria" xml:space="preserve">
+    <value>Lolenge ya kɔnti</value>
+  </data>
+  <data name="Home_RolePatient" xml:space="preserve">
+    <value>Moto ya maladi</value>
+  </data>
+  <data name="Home_RoleProfessional" xml:space="preserve">
+    <value>Mosali ya bokolongono</value>
+  </data>
+  <data name="Home_PatientAccessTitle" xml:space="preserve">
+    <value>Accès ya mobeli</value>
+  </data>
+  <data name="Home_PatientAccessLead" xml:space="preserve">
+    <value>Bosala buku ya bobateli, tala mikanda, mpe bozala na boyokani na kliniki na bino. Expérience mobile mobimba ezali na appli RaphCare.</value>
+  </data>
+  <data name="Home_PatientBullet1" xml:space="preserve">
+    <value>Email + mot de passe na code ya vérification</value>
+  </data>
+  <data name="Home_PatientBullet2" xml:space="preserve">
+    <value>Lien na lopitalo na yo na tango ya bokomisi nkombo</value>
+  </data>
+  <data name="Home_PatientBullet3" xml:space="preserve">
+    <value>Portal ya malade ya sécurité na web na mobile</value>
+  </data>
+  <data name="Home_ClinicPortalTitle" xml:space="preserve">
+    <value>Portal ya clinique</value>
+  </data>
+  <data name="Home_ClinicPortalLead" xml:space="preserve">
+    <value>Enregistrer pratique na yo, na kati ya lopitalo na yo, pe gérer esika ya mosala ya clinique na yo depuis portail ya administrateur.</value>
+  </data>
+  <data name="Home_ClinicBullet1" xml:space="preserve">
+    <value>Bosala compte professionnel na bino</value>
+  </data>
+  <data name="Home_ClinicBullet2" xml:space="preserve">
+    <value>Kokomisa lopitalo mpe esika ya liboso</value>
+  </data>
+  <data name="Home_ClinicBullet3" xml:space="preserve">
+    <value>Tinda email na 2FA na tango nionso ya bokoti</value>
+  </data>
+  <data name="Home_HealthcareStaffPrompt" xml:space="preserve">
+    <value>Basali ya bokolongono?</value>
+  </data>
+  <data name="Home_SwitchToProfessional" xml:space="preserve">
+    <value>Bobongola na professionnel</value>
+  </data>
+  <data name="Home_LookingForPatientPrompt" xml:space="preserve">
+    <value>Ozali koluka accès ya patient?</value>
+  </data>
+  <data name="Home_SwitchToPatient" xml:space="preserve">
+    <value>Bobongola na motema molai</value>
+  </data>
+  <data name="NotFound_Title" xml:space="preserve">
+    <value>Ezwami Te</value>
+  </data>
+  <data name="NotFound_Message" xml:space="preserve">
+    <value>Pardon, contenus oyo ozali koluka ezali te.</value>
+  </data>
+  <data name="PatientSignIn_PageTitle" xml:space="preserve">
+    <value>Kokota na - Mobɛli</value>
+  </data>
+  <data name="PatientSignIn_Title" xml:space="preserve">
+    <value>Boyei malamu lisusu</value>
+  </data>
+  <data name="PatientSignIn_Subtitle" xml:space="preserve">
+    <value>Kota na compte na yo ya mobeli. Tokotindela yo code ya vérification na email.</value>
+  </data>
+  <data name="PatientSignIn_FootNoAccount" xml:space="preserve">
+    <value>Compte moko te?</value>
+  </data>
+  <data name="PatientSignIn_RegisterLink" xml:space="preserve">
+    <value>Komisa nkombo lokola mobɛli</value>
+  </data>
+  <data name="PatientRegister_PageTitle" xml:space="preserve">
+    <value>Bokomisa nkombo - Mobɛli</value>
+  </data>
+  <data name="PatientRegister_Title" xml:space="preserve">
+    <value>Bosala compte ya patient</value>
+  </data>
+  <data name="PatientRegister_SubtitleDetails" xml:space="preserve">
+    <value>Tondisa ba détails na yo pona kosala compte na yo.</value>
+  </data>
+  <data name="PatientRegister_SubtitleCode" xml:space="preserve">
+    <value>Tyá code ya vérification oyo totindaki na email na yo.</value>
+  </data>
+  <data name="PatientRegister_FootAlready" xml:space="preserve">
+    <value>Ozali déjà enregistré?</value>
+  </data>
+  <data name="PatientWelcome_PageTitle" xml:space="preserve">
+    <value>Boyei malamu - Mobɛli ya motema</value>
+  </data>
+  <data name="PatientWelcome_Title" xml:space="preserve">
+    <value>Ozali ko signer na kati</value>
+  </data>
+  <data name="PatientWelcome_Lead" xml:space="preserve">
+    <value>Compte na yo ya mobeli ezali activé. Télécharger appli mobile RaphCare pona ba rendez-vous, ba dossiers, télésanté, pe suivi ya appareil.</value>
+  </data>
+  <data name="ProfessionalSignIn_PageTitle" xml:space="preserve">
+    <value>Sign in - Mosali ya bokolongono</value>
+  </data>
+  <data name="ProfessionalSignIn_Subtitle" xml:space="preserve">
+    <value>Kota na portail ya clinique na yo. Tokotindela yo code ya vérification na email.</value>
+  </data>
+  <data name="ProfessionalSignIn_PendingOnboarding" xml:space="preserve">
+    <value>Ozali na enregistrement ya lopitalo oyo ebombami. Sima ya kokota tokozongisa yo po osilisa yango.</value>
+  </data>
+  <data name="ProfessionalSignIn_FootNew" xml:space="preserve">
+    <value>Ya sika awa?</value>
+  </data>
+  <data name="ProfessionalSignIn_CreateAccountLink" xml:space="preserve">
+    <value>Bosala compte professionnel</value>
+  </data>
+  <data name="ProfessionalRegister_PageTitle" xml:space="preserve">
+    <value>Bokomisa nkombo - Mosali ya bokolongono</value>
+  </data>
+  <data name="ProfessionalRegister_Title" xml:space="preserve">
+    <value>Bosala compte professionnel</value>
+  </data>
+  <data name="ProfessionalRegister_SubtitleDetails" xml:space="preserve">
+    <value>Tondisa makambo na yo mpo na kosala compte na yo ya portail ya clinique.</value>
+  </data>
+  <data name="ProfessionalRegister_SubtitleCode" xml:space="preserve">
+    <value>Tyá code ya vérification oyo totindaki na email na yo.</value>
+  </data>
+  <data name="ProfessionalRegister_FootAlready" xml:space="preserve">
+    <value>Ozali déjà na compte?</value>
+  </data>
+  <data name="AdminLayout_BrandSub" xml:space="preserve">
+    <value>Portal ya clinique</value>
+  </data>
+  <data name="AdminLayout_NavPlatform" xml:space="preserve">
+    <value>Esika</value>
+  </data>
+  <data name="AdminLayout_NavOnboarding" xml:space="preserve">
+    <value>Kokɔta na masuwa</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbAria" xml:space="preserve">
+    <value>Limpa ya kopɔla</value>
+  </data>
+  <data name="AdminLayout_SearchPlaceholder" xml:space="preserve">
+    <value>Boluka ba lopitalo, ba malades...</value>
+  </data>
+  <data name="AdminLayout_SearchResultsAria" xml:space="preserve">
+    <value>Ba résultats ya boluki</value>
+  </data>
+  <data name="AdminLayout_SearchGroupHospitals" xml:space="preserve">
+    <value>Ba lopitalo</value>
+  </data>
+  <data name="AdminLayout_SearchGroupPatients" xml:space="preserve">
+    <value>Bato ya maladi</value>
+  </data>
+  <data name="AdminLayout_SearchingPatients" xml:space="preserve">
+    <value>(kolukaka...)</value>
+  </data>
+  <data name="AdminLayout_NoPatientsMatch" xml:space="preserve">
+    <value>Ba malades moko te ekokani na &quot;{0}&quot;.</value>
+  </data>
+  <data name="AdminLayout_NoHospitalsMatch" xml:space="preserve">
+    <value>Ba lopitalo moko te ekokani. Pona lopitalo mpo na koluka bato ya maladi.</value>
+  </data>
+  <data name="AdminLayout_SearchResultPatientMeta" xml:space="preserve">
+    <value>Moto ya maladi</value>
+  </data>
+  <data name="AdminLayout_ClinicSwitcherAria" xml:space="preserve">
+    <value>Bobongola lopitalo</value>
+  </data>
+  <data name="AdminLayout_ActiveHospitalTitle" xml:space="preserve">
+    <value>Contexte ya lopitalo ya mosala</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbClinicPortal" xml:space="preserve">
+    <value>Portal ya clinique</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbRegisterHospital" xml:space="preserve">
+    <value>Enregistrer lopitalo</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbHospitalDetails" xml:space="preserve">
+    <value>Makambo ya lopitalo</value>
+  </data>
+  <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
+    <value>Mopesi</value>
+  </data>
+  <data name="Dashboard_PageTitle" xml:space="preserve">
+    <value>RaphCare Mokambi ya mosala</value>
+  </data>
+  <data name="Dashboard_HospitalDashboardLead" xml:space="preserve">
+    <value>Tableau de bord ya lopitalo mpo na contexte active na yo.</value>
+  </data>
+  <data name="Dashboard_SelectHospitalLead" xml:space="preserve">
+    <value>Pona lopitalo moko na barre ya likolo mpo na komona ba metrics ya scoped.</value>
+  </data>
+  <data name="Dashboard_ManageOnboardingLead" xml:space="preserve">
+    <value>Gérer onboarding ya lopitalo mpe ba organisations na yo oyo ezali na lien.</value>
+  </data>
+  <data name="Dashboard_AuthGuidanceLead" xml:space="preserve">
+    <value>Compte professionnel na yo ezali prêt. Komisa lopitalo na yo mpo na kofungola portail ya clinique mobimba, to kota lisusu soki session na yo esilaki.</value>
+  </data>
+  <data name="Dashboard_StatActiveHospitals" xml:space="preserve">
+    <value>Ba lopitalo oyo ezali kosala mosala</value>
+  </data>
+  <data name="Dashboard_StatTotalFacilities" xml:space="preserve">
+    <value>Total ya ba installations</value>
+  </data>
+  <data name="Dashboard_UpcomingAppointmentsTitle" xml:space="preserve">
+    <value>Ba rendez-vous oyo ekoya</value>
+  </data>
+  <data name="Dashboard_NoUpcoming7Days" xml:space="preserve">
+    <value>Ba rendez-vous ekoya te na mikolo 7 oyo ekoya.</value>
+  </data>
+  <data name="Dashboard_EmptyNoHospitalsTitle" xml:space="preserve">
+    <value>Lopitalo moko te naino</value>
+  </data>
+  <data name="Dashboard_EmptyNoHospitalsLead" xml:space="preserve">
+    <value>Bandá na kokomisa lopitalo na yo ya liboso na nzela ya assistent ya onboarding.</value>
+  </data>
+  <data name="Dashboard_StartOnboarding" xml:space="preserve">
+    <value>Bandá kokɔta na masuwa</value>
+  </data>
+  <data name="HospitalsIndex_PageTitle" xml:space="preserve">
+    <value>Ba lopitalo - RaphCare Admin</value>
+  </data>
+  <data name="HospitalsIndex_Lead" xml:space="preserve">
+    <value>Ba organisations ya soins de santé oyo ezali na lien na compte professionnel na yo.</value>
+  </data>
+  <data name="HospitalsIndex_AuthGuidanceLead" xml:space="preserve">
+    <value>Compte professionnel na yo esalemi, kasi tokokaki nanu ko charger ba lopitalo na yo te. Koba kosala onboard to kota lisusu soki session na yo esilaki.</value>
+  </data>
+  <data name="HospitalsIndex_EmptyTitle" xml:space="preserve">
+    <value>Ba lopitalo moko te ekangami nanu</value>
+  </data>
+  <data name="HospitalsIndex_EmptyLead" xml:space="preserve">
+    <value>Komisa lopitalo ya sika, to kokangisa oyo osalaki liboso na kosalelaka nimero na yango ya bokomisi nkombo.</value>
+  </data>
+  <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
+    <value>{0} motango mobimba</value>
+  </data>
+  <data name="HospitalsRegister_PageTitle" xml:space="preserve">
+    <value>Bokomisa lopitalo - RaphCare Admin</value>
+  </data>
+  <data name="HospitalsRegister_StepWelcome" xml:space="preserve">
+    <value>Boyei malamu</value>
+  </data>
+  <data name="HospitalsRegister_StepHospital" xml:space="preserve">
+    <value>Lopitalo</value>
+  </data>
+  <data name="HospitalsRegister_StepFacility" xml:space="preserve">
+    <value>Esika</value>
+  </data>
+  <data name="HospitalsRegister_StepAdministrator" xml:space="preserve">
+    <value>Mokambi ya mosala</value>
+  </data>
+  <data name="HospitalsRegister_StepReview" xml:space="preserve">
+    <value>Kotalela</value>
+  </data>
+  <data name="HospitalsRegister_Step1Title" xml:space="preserve">
+    <value>Boyei malamu na onboarding ya lopitalo</value>
+  </data>
+  <data name="HospitalsRegister_Step1Subtitle" xml:space="preserve">
+    <value>Bobongisi mokuse mpo na kokomisa ebongiseli ya sika ya bokolongono na RaphCare.</value>
+  </data>
+  <data name="HospitalsRegister_Step2Title" xml:space="preserve">
+    <value>Identité ya lopitalo</value>
+  </data>
+  <data name="HospitalsRegister_Step2Subtitle" xml:space="preserve">
+    <value>Nkombo ya mibeko, nimero ya bokomisi nkombo, mpe ba paramètres ya etuka.</value>
+  </data>
+  <data name="HospitalsRegister_Step3Title" xml:space="preserve">
+    <value>Esika ya libosoliboso</value>
+  </data>
+  <data name="HospitalsRegister_Step3Subtitle" xml:space="preserve">
+    <value>Site ya liboso optionnel: campus physique to hub virtuel ya télésanté.</value>
+  </data>
+  <data name="HospitalsRegister_Step4Title" xml:space="preserve">
+    <value>Contact ya administrateur</value>
+  </data>
+  <data name="HospitalsRegister_Step4Subtitle" xml:space="preserve">
+    <value>Nani ako gérer lopitalo oyo na plateforme.</value>
+  </data>
+  <data name="HospitalsRegister_Step5Title" xml:space="preserve">
+    <value>Talá mpe komisa nkombo</value>
+  </data>
+  <data name="HospitalsRegister_Step5Subtitle" xml:space="preserve">
+    <value>Confirmer ba détails avant ya ko créer locataire ya lopitalo.</value>
+  </data>
+  <data name="HospitalsRegister_Intro" xml:space="preserve">
+    <value>Komisa ebongiseli ya sika ya bobateli bokolongono na RaphCare. Assistant oyo esangisi identité ya lopitalo, esika ya liboso, mpe contact ya administrateur mpo na fourniture ya suivi.</value>
+  </data>
+  <data name="HospitalsRegister_FeatureTenantTitle" xml:space="preserve">
+    <value>Mofuteli ya lopitalo</value>
+  </data>
+  <data name="HospitalsRegister_FeatureTenantDesc" xml:space="preserve">
+    <value>Ezali kosala dossier ya clinique mpe ba paramètres ya région mpo na organisation na yo.</value>
+  </data>
+  <data name="HospitalsRegister_FeatureFacilityTitle" xml:space="preserve">
+    <value>Esika ya libosoliboso</value>
+  </data>
+  <data name="HospitalsRegister_FeatureFacilityDesc" xml:space="preserve">
+    <value>Bakisa campus physique to site ya télésanté virtuelle lokola esika ya liboso.</value>
+  </data>
+  <data name="HospitalsRegister_FeatureAdminTitle" xml:space="preserve">
+    <value>Mokambi ya mosala</value>
+  </data>
+  <data name="HospitalsRegister_FeatureAdminDesc" xml:space="preserve">
+    <value>Bokanga nani akokamba lopitalo na estrade.</value>
+  </data>
+  <data name="HospitalsRegister_HospitalNameLabel" xml:space="preserve">
+    <value>Nkombo ya lopitalo * .</value>
+  </data>
+  <data name="HospitalsRegister_HospitalNamePlaceholder" xml:space="preserve">
+    <value>e.g. RaphCare Lopitalo ya monene</value>
+  </data>
+  <data name="HospitalsRegister_RegNumberLabel" xml:space="preserve">
+    <value>Motango ya bokomisi nkombo * .</value>
+  </data>
+  <data name="HospitalsRegister_RegNumberPlaceholder" xml:space="preserve">
+    <value>e.g. HPCSA-12345 na nzela ya 12345</value>
+  </data>
+  <data name="HospitalsRegister_CountryLabel" xml:space="preserve">
+    <value>Mboka *</value>
+  </data>
+  <data name="HospitalsRegister_TimeZoneLabel" xml:space="preserve">
+    <value>Fuseau horaire * .</value>
+  </data>
+  <data name="HospitalsRegister_FacilityNameLabel" xml:space="preserve">
+    <value>Nkombo ya esika ya mosala</value>
+  </data>
+  <data name="HospitalsRegister_FacilityNamePlaceholder" xml:space="preserve">
+    <value>e.g. Campus monene</value>
+  </data>
+  <data name="HospitalsRegister_StreetAddressLabel" xml:space="preserve">
+    <value>Addresse ya balabala</value>
+  </data>
+  <data name="HospitalsRegister_CityLabel" xml:space="preserve">
+    <value>Engumba</value>
+  </data>
+  <data name="HospitalsRegister_VirtualFacilityCheckbox" xml:space="preserve">
+    <value>Site virtuel / télésanté kaka</value>
+  </data>
+  <data name="HospitalsRegister_AdminNameLabel" xml:space="preserve">
+    <value>Administrateur kombo mobimba</value>
+  </data>
+  <data name="HospitalsRegister_AdminNamePlaceholder" xml:space="preserve">
+    <value>e.g. Monganga Jane Smith</value>
+  </data>
+  <data name="HospitalsRegister_AdminEmailLabel" xml:space="preserve">
+    <value>Email ya administrateur</value>
+  </data>
+  <data name="HospitalsRegister_AdminEmailPlaceholder" xml:space="preserve">
+    <value>admin@lopitalo.org</value>
+  </data>
+  <data name="HospitalsRegister_AdminHint" xml:space="preserve">
+    <value>Ba comptes ya administrateur ekozala lien na nzela ya sign-in na email. Makambo ya boyokani ebombami mpo na bopesi ya bolandi.</value>
+  </data>
+  <data name="HospitalsRegister_ReviewHospital" xml:space="preserve">
+    <value>Lopitalo</value>
+  </data>
+  <data name="HospitalsRegister_Country_SouthAfrica" xml:space="preserve">
+    <value>Afrika ya Sudi</value>
+  </data>
+  <data name="HospitalsRegister_Country_Kenya" xml:space="preserve">
+    <value>Kenya</value>
+  </data>
+  <data name="HospitalsRegister_Country_Nigeria" xml:space="preserve">
+    <value>Nigeria</value>
+  </data>
+  <data name="HospitalsRegister_Country_Ghana" xml:space="preserve">
+    <value>Ghana, mboka</value>
+  </data>
+  <data name="HospitalsRegister_Country_UnitedKingdom" xml:space="preserve">
+    <value>Royaume-Uni</value>
+  </data>
+  <data name="HospitalsRegister_Country_UnitedStates" xml:space="preserve">
+    <value>États-Unis</value>
+  </data>
+  <data name="HospitalsRegister_Country_Other" xml:space="preserve">
+    <value>Mosusu</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_SAST" xml:space="preserve">
+    <value>Afrique du Sud Ngonga ya momesano</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_UTC" xml:space="preserve">
+    <value>UTC</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_GMT" xml:space="preserve">
+    <value>GMT Ngonga ya momesano</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_WEurope" xml:space="preserve">
+    <value>W. Europe Ngonga ya momesano</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_Eastern" xml:space="preserve">
+    <value>Ngonga ya momeseno ya Ɛsti</value>
+  </data>
+  <data name="HospitalsRegister_TimeZone_CentralEurope" xml:space="preserve">
+    <value>Ngonga ya momeseno ya Mpoto ya ntei</value>
+  </data>
+  <data name="HospitalDetail_PageTitleFallback" xml:space="preserve">
+    <value>Lopitalo</value>
+  </data>
+  <data name="HospitalDetail_Lead" xml:space="preserve">
+    <value>Profil ya lopitalo, ba installations, mpe basali.</value>
+  </data>
+  <data name="HospitalDetail_TimeZonePlaceholder" xml:space="preserve">
+    <value>Afrika/Johannesburg</value>
+  </data>
+  <data name="HospitalDetail_CouldNotUpdateHospital" xml:space="preserve">
+    <value>Ekoki te kosala mise à jour ya lopitalo.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotAddFacility" xml:space="preserve">
+    <value>Ekokaki kobakisa facilité te.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotUpdateFacility" xml:space="preserve">
+    <value>Ekokaki te kosala mise à jour ya installation.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotDeleteFacility" xml:space="preserve">
+    <value>Ekokaki te ko effacer facilité.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotInviteStaff" xml:space="preserve">
+    <value>Ekokaki kobengisa basali te.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotGrantPatientAccess" xml:space="preserve">
+    <value>Ekokaki te kopesa mobeli nzela ya kokɔta.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotUpdateStaffRole" xml:space="preserve">
+    <value>Ekoki te ko mettre à jour rôle ya staff.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotAddProvider" xml:space="preserve">
+    <value>Ekoki te kobakisa mopesi.</value>
+  </data>
+  <data name="HospitalDetail_CouldNotRemoveStaff" xml:space="preserve">
+    <value>Ekokaki kolongola basali te.</value>
+  </data>
+  <data name="HospitalDetail_InactiveBedSuffix" xml:space="preserve">
+    <value>(ezali kosala te) .</value>
+  </data>
+  <data name="Inpatient_PageTitle" xml:space="preserve">
+    <value>Mobɛli oyo azali na lopitalo - RaphCare Admin</value>
+  </data>
+  <data name="Inpatient_Lead" xml:space="preserve">
+    <value>Ba quartier, ba chambre, ba mbeto, na ba admissions pona {0}.</value>
+  </data>
+  <data name="Inpatient_OccupiedPill" xml:space="preserve">
+    <value>{0} / {1} occupé</value>
+  </data>
+  <data name="Inpatient_LoadingBoard" xml:space="preserve">
+    <value>Chargement ya tableau ya ba malades hospitalisés...</value>
+  </data>
+  <data name="Inpatient_SetupEyebrow" xml:space="preserve">
+    <value>Kobongisa</value>
+  </data>
+  <data name="Inpatient_AddCapacity" xml:space="preserve">
+    <value>Bakisa makoki</value>
+  </data>
+  <data name="Inpatient_FacilityWardLabel" xml:space="preserve">
+    <value>Esika ya kosala (palwasi) .</value>
+  </data>
+  <data name="Inpatient_SelectFacility" xml:space="preserve">
+    <value>Pona esika ya kofanda...</value>
+  </data>
+  <data name="Inpatient_WardNameLabel" xml:space="preserve">
+    <value>Nkombo ya palwasi</value>
+  </data>
+  <data name="Inpatient_WardNamePlaceholder" xml:space="preserve">
+    <value>e.g. Palwasi ya monganga A</value>
+  </data>
+  <data name="Inpatient_CodeLabel" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Inpatient_AddWard" xml:space="preserve">
+    <value>Bakisa palwasi</value>
+  </data>
+  <data name="Inpatient_WardRoomLabel" xml:space="preserve">
+    <value>Palwasi (shambre) .</value>
+  </data>
+  <data name="Inpatient_SelectWard" xml:space="preserve">
+    <value>Pona quartier...</value>
+  </data>
+  <data name="Inpatient_RoomNameLabel" xml:space="preserve">
+    <value>Nkombo ya shambre</value>
+  </data>
+  <data name="Inpatient_RoomNamePlaceholder" xml:space="preserve">
+    <value>e.g. 101. Ezali na ntina mingi</value>
+  </data>
+  <data name="Inpatient_RoomTypeLabel" xml:space="preserve">
+    <value>Lolenge ya shambre</value>
+  </data>
+  <data name="Inpatient_AddRoom" xml:space="preserve">
+    <value>Bakisa esika</value>
+  </data>
+  <data name="Inpatient_RoomBedLabel" xml:space="preserve">
+    <value>Chambre (mbeto) .</value>
+  </data>
+  <data name="Inpatient_SelectRoom" xml:space="preserve">
+    <value>Pona chambre...</value>
+  </data>
+  <data name="Inpatient_BedLabelPlaceholder" xml:space="preserve">
+    <value>e.g. A</value>
+  </data>
+  <data name="Inpatient_AddBed" xml:space="preserve">
+    <value>Bakisa mbeto</value>
+  </data>
+  <data name="Inpatient_CareEyebrow" xml:space="preserve">
+    <value>Soin</value>
+  </data>
+  <data name="Inpatient_AdmitPatientTitle" xml:space="preserve">
+    <value>Kondima mobɛli</value>
+  </data>
+  <data name="Inpatient_FindPatientLabel" xml:space="preserve">
+    <value>Luka motema molai</value>
+  </data>
+  <data name="Inpatient_NameOrPhonePlaceholder" xml:space="preserve">
+    <value>Kombo to telefone...</value>
+  </data>
+  <data name="Inpatient_SelectPatient" xml:space="preserve">
+    <value>Pona mobeli...</value>
+  </data>
+  <data name="Inpatient_AvailableBedLabel" xml:space="preserve">
+    <value>Mbeto oyo ezali</value>
+  </data>
+  <data name="Inpatient_SelectBed" xml:space="preserve">
+    <value>Pona mbeto...</value>
+  </data>
+  <data name="Inpatient_BoardEyebrow" xml:space="preserve">
+    <value>Lisanga</value>
+  </data>
+  <data name="Inpatient_ActiveAdmissionsTitle" xml:space="preserve">
+    <value>Ba admissions ya active</value>
+  </data>
+  <data name="Inpatient_NoPatientsAdmitted" xml:space="preserve">
+    <value>Moto moko te ya maladi azali kokɔtisama na lopitalo na ntango oyo.</value>
+  </data>
+  <data name="Inpatient_LocationColumn" xml:space="preserve">
+    <value>Esika</value>
+  </data>
+  <data name="Inpatient_AdmittedColumn" xml:space="preserve">
+    <value>Endimisami</value>
+  </data>
+  <data name="Inpatient_DischargeTitle" xml:space="preserve">
+    <value>Kobimisa</value>
+  </data>
+  <data name="Inpatient_DischargeNotesLabel" xml:space="preserve">
+    <value>Maloba (na bolingi) .</value>
+  </data>
+  <data name="Inpatient_DischargeNotesPlaceholder" xml:space="preserve">
+    <value>Bokuse ya bolongoli...</value>
+  </data>
+  <data name="Inpatient_TransferBedTitle" xml:space="preserve">
+    <value>Mbeto ya transfert</value>
+  </data>
+  <data name="Inpatient_TargetBedLabel" xml:space="preserve">
+    <value>Mbeto ya cible</value>
+  </data>
+  <data name="Inpatient_SelectAvailableBed" xml:space="preserve">
+    <value>Pona mbeto oyo ezali...</value>
+  </data>
+  <data name="Inpatient_TransferNotesPlaceholder" xml:space="preserve">
+    <value>Ntina ya transfert...</value>
+  </data>
+  <data name="Inpatient_MapEyebrow" xml:space="preserve">
+    <value>Karte</value>
+  </data>
+  <data name="Inpatient_BedsByWardTitle" xml:space="preserve">
+    <value>Mbeto na quartier</value>
+  </data>
+  <data name="Inpatient_NoWardsYet" xml:space="preserve">
+    <value>Naino ba quartiers te. Bakisa esika ya mosuni, na nsima salá palwasi, bashambre, mpe mbeto.</value>
+  </data>
+  <data name="Inpatient_NoRoomsInWard" xml:space="preserve">
+    <value>Ba chambre te na quartier oyo.</value>
+  </data>
+  <data name="Inpatient_RoomTypeParen" xml:space="preserve">
+    <value>({0})</value>
+  </data>
+  <data name="Inpatient_ActiveCheckbox" xml:space="preserve">
+    <value>Esalaka</value>
+  </data>
+  <data name="Inpatient_HistoryEyebrow" xml:space="preserve">
+    <value>Lisolo</value>
+  </data>
+  <data name="Inpatient_AdmissionHistoryTitle" xml:space="preserve">
+    <value>Histoire ya admission</value>
+  </data>
+  <data name="Inpatient_StatusFilterLabel" xml:space="preserve">
+    <value>Filtre ya état</value>
+  </data>
+  <data name="Inpatient_StatusAdmitted" xml:space="preserve">
+    <value>Endimisami</value>
+  </data>
+  <data name="Inpatient_StatusDischarged" xml:space="preserve">
+    <value>Balongolami na mosala</value>
+  </data>
+  <data name="Inpatient_NoAdmissionsMatch" xml:space="preserve">
+    <value>Admission moko te ekokani na filtre oyo.</value>
+  </data>
+  <data name="Inpatient_DischargedColumn" xml:space="preserve">
+    <value>Balongolami na mosala</value>
+  </data>
+  <data name="Inpatient_CouldNotLoadInpatientBoard" xml:space="preserve">
+    <value>Ekokaki te ko charger tableau ya ba malades hospitalisés.</value>
+  </data>
+  <data name="Inpatient_CouldNotLoadAdmissionHistory" xml:space="preserve">
+    <value>Ekokaki te ko charger histoire ya admission.</value>
+  </data>
+  <data name="Inpatient_CouldNotLoadMoreAdmissions" xml:space="preserve">
+    <value>Ekokaki te ko charger ba admissions mingi.</value>
+  </data>
+  <data name="Inpatient_SelectFacilityAndWard" xml:space="preserve">
+    <value>Pona esika moko mpe kotia nkombo ya palwasi.</value>
+  </data>
+  <data name="Inpatient_CouldNotCreateWard" xml:space="preserve">
+    <value>Ekokaki te ko créer ward.</value>
+  </data>
+  <data name="Inpatient_WardCreated" xml:space="preserve">
+    <value>Ward akelaki.</value>
+  </data>
+  <data name="Inpatient_SelectWardAndRoom" xml:space="preserve">
+    <value>Pona palwasi mpe kotia nkombo ya shambre.</value>
+  </data>
+  <data name="Inpatient_CouldNotCreateRoom" xml:space="preserve">
+    <value>Ekokaki kosala esika te.</value>
+  </data>
+  <data name="Inpatient_RoomCreated" xml:space="preserve">
+    <value>Chambre esalemi.</value>
+  </data>
+  <data name="Inpatient_SelectRoomAndBed" xml:space="preserve">
+    <value>Pona shambre moko mpe kotia étiquette ya mbeto.</value>
+  </data>
+  <data name="Inpatient_CouldNotCreateBed" xml:space="preserve">
+    <value>Ekokaki kokela mbeto te.</value>
+  </data>
+  <data name="Inpatient_BedCreated" xml:space="preserve">
+    <value>Mbeto ekelamaki.</value>
+  </data>
+  <data name="Inpatient_SelectPatientAndBed" xml:space="preserve">
+    <value>Pona mobɛli mpe mbeto oyo ezali.</value>
+  </data>
+  <data name="Inpatient_CouldNotAdmitPatient" xml:space="preserve">
+    <value>Ekokaki te kondima mobɛli.</value>
+  </data>
+  <data name="Inpatient_PatientAdmitted" xml:space="preserve">
+    <value>Mobɛli oyo azwaki ndingisa.</value>
+  </data>
+  <data name="Inpatient_CouldNotDischargePatient" xml:space="preserve">
+    <value>Ekokaki te ko décharger malade.</value>
+  </data>
+  <data name="Inpatient_PatientDischarged" xml:space="preserve">
+    <value>Mobɛli alongolami na lopitalo.</value>
+  </data>
+  <data name="Inpatient_SelectTargetBed" xml:space="preserve">
+    <value>Pona mbeto oyo olingi kozwa.</value>
+  </data>
+  <data name="Inpatient_CouldNotTransferPatient" xml:space="preserve">
+    <value>Ekokaki te ko transferer patient.</value>
+  </data>
+  <data name="Inpatient_PatientTransferred" xml:space="preserve">
+    <value>Mobɛli oyo akómi na esika mosusu.</value>
+  </data>
+  <data name="Inpatient_WardNameRequired" xml:space="preserve">
+    <value>Nkombo ya palwasi esengeli.</value>
+  </data>
+  <data name="Inpatient_CouldNotUpdateWard" xml:space="preserve">
+    <value>Ekoki te kosala mise à jour ya quartier.</value>
+  </data>
+  <data name="Inpatient_WardUpdated" xml:space="preserve">
+    <value>Ward ezongisami na mikolo.</value>
+  </data>
+  <data name="Inpatient_WardDeactivated" xml:space="preserve">
+    <value>Ward azali désactivé.</value>
+  </data>
+  <data name="Inpatient_WardReactivated" xml:space="preserve">
+    <value>Ward azongisaki mosala.</value>
+  </data>
+  <data name="Inpatient_CouldNotDeleteWard" xml:space="preserve">
+    <value>Ekoki te ko effacer ward.</value>
+  </data>
+  <data name="Inpatient_WardRemoved" xml:space="preserve">
+    <value>Ward alongolami.</value>
+  </data>
+  <data name="Inpatient_RoomNameRequired" xml:space="preserve">
+    <value>Nkombo ya shambre esengeli.</value>
+  </data>
+  <data name="Inpatient_CouldNotUpdateRoom" xml:space="preserve">
+    <value>Ekokaki te kosala mise à jour ya chambre.</value>
+  </data>
+  <data name="Inpatient_RoomUpdated" xml:space="preserve">
+    <value>Chambre mise à jour.</value>
+  </data>
+  <data name="Inpatient_RoomDeactivated" xml:space="preserve">
+    <value>Chambre e désactivé.</value>
+  </data>
+  <data name="Inpatient_RoomReactivated" xml:space="preserve">
+    <value>Chambre ezongisami na mosala.</value>
+  </data>
+  <data name="Inpatient_CouldNotDeleteRoom" xml:space="preserve">
+    <value>Ekokaki te ko effacer esika.</value>
+  </data>
+  <data name="Inpatient_RoomRemoved" xml:space="preserve">
+    <value>Chambre elongolami.</value>
+  </data>
+  <data name="Inpatient_BedLabelRequired" xml:space="preserve">
+    <value>Esengeli kozala na étiquette ya mbeto.</value>
+  </data>
+  <data name="Inpatient_CouldNotUpdateBed" xml:space="preserve">
+    <value>Ekokaki te kosala mise à jour ya mbeto.</value>
+  </data>
+  <data name="Inpatient_BedUpdated" xml:space="preserve">
+    <value>Mbeto ezongisami na mikolo.</value>
+  </data>
+  <data name="Inpatient_CouldNotUpdateBedStatus" xml:space="preserve">
+    <value>Ekoki te kosala mikolo oyo ezalela ya mbeto.</value>
+  </data>
+  <data name="Inpatient_BedMaintenance" xml:space="preserve">
+    <value>Mbeto etiamaki na entretien.</value>
+  </data>
+  <data name="Inpatient_BedAvailable" xml:space="preserve">
+    <value>Mbeto marqué ezali.</value>
+  </data>
+  <data name="Inpatient_CouldNotDeleteBed" xml:space="preserve">
+    <value>Ekokaki te ko effacer mbeto.</value>
+  </data>
+  <data name="Inpatient_BedRemoved" xml:space="preserve">
+    <value>Mbeto elongolami.</value>
+  </data>
+  <data name="Inpatient_LocationFormat" xml:space="preserve">
+    <value>{0} · {1} · {2} · Mbeto {3} .</value>
+  </data>
+  <data name="Inpatient_BedDisplayFormat" xml:space="preserve">
+    <value>{0} · {1} · Mbeto {2} .</value>
+  </data>
+  <data name="Appointments_PageTitle" xml:space="preserve">
+    <value>Ba rendez-vous - RaphCare Admin</value>
+  </data>
+  <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
+    <value>Moto ya maladi</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadPatient" xml:space="preserve">
+    <value>Ekokaki te ko charger patient.</value>
+  </data>
+  <data name="ProviderDetail_PageTitleFallback" xml:space="preserve">
+    <value>Mopesi</value>
+  </data>
+  <data name="Visit_PageTitleFallback" xml:space="preserve">
+    <value>Kokende kotala</value>
+  </data>
+  <data name="TeleJoin_PageTitle" xml:space="preserve">
+    <value>Telesanté - RaphCare Mokambi ya mosala</value>
+  </data>
+  <data name="PatientDetail_Gender" xml:space="preserve">
+    <value>Mobali/mwasi</value>
+  </data>
+  <data name="PatientDetail_Phone" xml:space="preserve">
+    <value>Telefone</value>
+  </data>
+  <data name="PatientDetail_Rule" xml:space="preserve">
+    <value>Mobeko</value>
+  </data>
+  <data name="PatientDetail_Device" xml:space="preserve">
+    <value>Esaleli</value>
+  </data>
+  <data name="PatientDetail_ClinicalEyebrow" xml:space="preserve">
+    <value>Ya lopitalo</value>
+  </data>
+  <data name="PatientDetail_AppointmentsLead" xml:space="preserve">
+    <value>Ba rendez-vous na lopitalo oyo.</value>
+  </data>
+  <data name="PatientDetail_Spo2Value" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="PatientDetail_LocationWithAccuracy" xml:space="preserve">
+    <value>{0} (±{1} m)</value>
+  </data>
+  <data name="ProviderDetail_AvailabilityEyebrow" xml:space="preserve">
+    <value>Disponibilité</value>
+  </data>
+  <data name="Visit_DetailLead" xml:space="preserve">
+    <value>{0} · {1} · ntango na {2}</value>
+  </data>
+  <data name="Visit_UnitLabel" xml:space="preserve">
+    <value>Unité</value>
+  </data>
+  <data name="Visit_AppointmentsNav" xml:space="preserve">
+    <value>← Ba rendez-vous</value>
+  </data>
+</root>

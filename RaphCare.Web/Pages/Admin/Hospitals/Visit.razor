@@ -2,25 +2,27 @@
 @layout AdminLayout
 @using RaphCare.Domain.Common
 @inject NavigationManager Navigation
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>@(_visit is null ? "Visit" : $"Visit — {_visit.PatientName}") — RaphCare Admin</PageTitle>
+<PageTitle>@(_visit is null ? AppResources.T("Visit_PageTitleFallback") : AppResources.Format("Common_VisitHeader", _visit.PatientName)) @AppResources.T("Common_PageTitleAdminSuffix")</PageTitle>
 
 <section class="admin-page">
     @if (_loading)
     {
-        <p class="text-muted">Loading visit…</p>
+        <p class="text-muted">@AppResources.T("Common_LoadingVisit")</p>
     }
     else if (_visit is null)
     {
-        <div class="alert alert-error">@(_error ?? "Visit not found.")</div>
-        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">← Back to appointments</a>
+        <div class="alert alert-error">@(_error ?? AppResources.T("Common_VisitNotFound"))</div>
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_BackToAppointments")</a>
     }
     else
     {
         <header class="admin-page-header">
             <div>
-                <h1>Visit — @_visit.PatientName</h1>
-                <p class="admin-page-lead">@_visit.VisitType · @_visit.ProviderName · times in @_timeZoneLabel</p>
+                <h1>@AppResources.Format("Common_VisitHeader", _visit.PatientName)</h1>
+                <p class="admin-page-lead">@AppResources.Format("Visit_DetailLead", _visit.VisitType, _visit.ProviderName, TimeZoneLabel)</p>
             </div>
             <span class="badge @(_visit.Status == "Completed" ? "badge-muted" : "badge-success")">@_visit.Status</span>
         </header>
@@ -37,26 +39,26 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Encounter</p>
-                    <h2>Details</h2>
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_EncounterEyebrow")</p>
+                    <h2>@AppResources.T("Common_Details")</h2>
                 </div>
             </header>
             <div class="admin-page-card-body">
                 <dl class="admin-detail-grid">
                     <div>
-                        <dt>Started</dt>
+                        <dt>@AppResources.T("Common_Started")</dt>
                         <dd>@FormatLocal(_visit.VisitStart)</dd>
                     </div>
                     <div>
-                        <dt>Ended</dt>
-                        <dd>@(_visit.VisitEnd is { } end ? FormatLocal(end) : "—")</dd>
+                        <dt>@AppResources.T("Common_Ended")</dt>
+                        <dd>@(_visit.VisitEnd is { } end ? FormatLocal(end) : AppResources.T("Common_EmptyCell"))</dd>
                     </div>
                     <div>
-                        <dt>Patient</dt>
+                        <dt>@AppResources.T("Common_Patient")</dt>
                         <dd><a href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">@_visit.PatientName</a></dd>
                     </div>
                     <div>
-                        <dt>Provider</dt>
+                        <dt>@AppResources.T("Common_Provider")</dt>
                         <dd>@_visit.ProviderName</dd>
                     </div>
                 </dl>
@@ -68,11 +70,11 @@
                 {
                     <div class="admin-page-actions" style="margin-top: 1rem;">
                         <label>
-                            Summary
-                            <input class="form-control" @bind="_completeSummary" placeholder="Optional visit summary" />
+                            @AppResources.T("Common_Summary")
+                            <input class="form-control" @bind="_completeSummary" placeholder="@AppResources.T("Common_OptionalVisitSummary")" />
                         </label>
                         <button type="button" class="btn btn-primary" disabled="@_completing" @onclick="CompleteVisitAsync">
-                            @(_completing ? "Completing…" : "Complete visit")
+                            @(_completing ? AppResources.T("Common_Completing") : AppResources.T("Common_CompleteVisit"))
                         </button>
                     </div>
                 }
@@ -82,44 +84,44 @@
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
-                    <p class="admin-page-eyebrow">Clinical</p>
-                    <h2>Vitals</h2>
+                    <p class="admin-page-eyebrow">@AppResources.T("PatientDetail_ClinicalEyebrow")</p>
+                    <h2>@AppResources.T("Common_VitalsTitle")</h2>
                 </div>
-                <span class="admin-progress-pill">@_visit.Vitals.Count vital@(_visit.Vitals.Count == 1 ? "" : "s")</span>
+                <span class="admin-progress-pill">@FormatVitalCount(_visit.Vitals.Count)</span>
             </header>
             <div class="admin-page-card-body">
                 @if (_isAdministrator && _visit.Status == "InProgress")
                 {
                     <div class="form-grid" style="margin-bottom: 1rem;">
                         <label>
-                            Type
+                            @AppResources.T("Common_Type")
                             <select class="form-control" @bind="_vitalType">
-                                <option value="HR">Heart rate</option>
-                                <option value="BP">Blood pressure</option>
-                                <option value="Temp">Temperature</option>
-                                <option value="SpO2">SpO₂</option>
-                                <option value="Weight">Weight</option>
+                                <option value="HR">@AppResources.T("Common_HeartRateOption")</option>
+                                <option value="BP">@AppResources.T("Common_BloodPressureOption")</option>
+                                <option value="Temp">@AppResources.T("Common_TemperatureOption")</option>
+                                <option value="SpO2">@AppResources.T("Common_Spo2Option")</option>
+                                <option value="Weight">@AppResources.T("Common_WeightOption")</option>
                             </select>
                         </label>
                         <label>
-                            Value
+                            @AppResources.T("Common_Value")
                             <input class="form-control" type="number" step="0.1" @bind="_vitalValue" />
                         </label>
                         <label>
-                            Unit
-                            <input class="form-control" @bind="_vitalUnit" placeholder="bpm, °C, %" />
+                            @AppResources.T("Visit_UnitLabel")
+                            <input class="form-control" @bind="_vitalUnit" placeholder="@AppResources.T("Common_UnitPlaceholder")" />
                         </label>
                     </div>
                     <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
                         <button type="button" class="btn btn-primary" disabled="@_recording" @onclick="RecordVitalAsync">
-                            @(_recording ? "Saving…" : "Record vital")
+                            @(_recording ? AppResources.T("Common_Saving") : AppResources.T("Common_RecordVital"))
                         </button>
                     </div>
                 }
 
                 @if (_visit.Vitals.Count == 0)
                 {
-                    <p class="text-muted">No vitals recorded yet.</p>
+                    <p class="text-muted">@AppResources.T("Common_NoVitalsYet")</p>
                 }
                 else
                 {
@@ -127,9 +129,9 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Recorded</th>
-                                    <th>Type</th>
-                                    <th>Value</th>
+                                    <th>@AppResources.T("Common_Recorded")</th>
+                                    <th>@AppResources.T("Common_Type")</th>
+                                    <th>@AppResources.T("Common_Value")</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -149,8 +151,8 @@
         </div>
 
         <div class="admin-page-actions">
-            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">← Appointments</a>
-            <a class="btn btn-ghost" href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">Patient chart</a>
+            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Visit_AppointmentsNav")</a>
+            <a class="btn btn-ghost" href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">@AppResources.T("Common_PatientChartLink")</a>
         </div>
     }
 </section>
@@ -169,27 +171,33 @@
     private string? _error;
     private string? _success;
     private string _clinicTimeZone = "UTC";
-    private string _timeZoneLabel = "hospital time";
     private ClinicVisitDetail? _visit;
     private string _vitalType = "HR";
     private decimal _vitalValue;
     private string _vitalUnit = "bpm";
     private string _completeSummary = string.Empty;
 
+    private string TimeZoneLabel =>
+        string.IsNullOrWhiteSpace(_clinicTimeZone) ? AppResources.T("Common_HospitalTime") : _clinicTimeZone;
+
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
         var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
         if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
         {
             _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
-            _timeZoneLabel = string.IsNullOrWhiteSpace(_clinicTimeZone) ? "hospital time" : _clinicTimeZone;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
         await LoadVisitAsync();
     }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 
     private async Task LoadVisitAsync()
     {
@@ -204,11 +212,16 @@
             _completeSummary = response.Data.Summary ?? string.Empty;
         }
         else
-            _error = response.ErrorMessage ?? "Could not load visit.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadVisit");
     }
 
     private string FormatLocal(DateTime utc) =>
         ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private static string FormatVitalCount(int count) =>
+        count == 1
+            ? AppResources.Format("Common_VitalCountLabel", count)
+            : AppResources.Format("Common_VitalCountLabelPlural", count);
 
     private async Task RecordVitalAsync()
     {
@@ -230,11 +243,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not record vital.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotRecordVital");
             return;
         }
 
-        _success = "Vital recorded.";
+        _success = AppResources.T("Common_VitalRecorded");
         _vitalValue = 0;
         await LoadVisitAsync();
     }
@@ -252,11 +265,11 @@
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? "Could not complete visit.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotCompleteVisit");
             return;
         }
 
         _visit = response.Data;
-        _success = "Visit completed.";
+        _success = AppResources.T("Common_VisitCompleted");
     }
 }
