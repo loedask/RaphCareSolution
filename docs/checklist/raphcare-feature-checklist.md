@@ -16,7 +16,7 @@ Track progress across **API**, **Web admin panel**, and **Mobile** (patient app)
 - `[ ] ... (partial)` = 25% (started, mostly open)
 - `[ ]` not done = 0%
 - `(blocked: ...)` still scored (usually 0% or 25% if also partial)
-- `(out of scope)` and open `(optional)` items are **excluded** from section and overall %
+- `(out of scope)` and open `(optional)` / `(optional / later)` items are **excluded** from section and overall %
 - Vertical table rows (API / Client / Mobile UI) count as one item = average of the three cells
 - Section % = average of that section's scored items
 - Overall % = average of all scored items in Steps 1-4 plus Cross-cutting
@@ -27,7 +27,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-08-09
+Last reviewed: 2026-08-23
 
 ---
 
@@ -60,6 +60,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Tele join page
 - [x] Admin dashboard
 - [x] Web UI language switcher (en / fr / ln / sw)
+- [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md)
 
 ### Mobile
 
@@ -67,7 +68,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Web. Clinician Mobile stays out of scope.
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Web. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -294,7 +295,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle; UI en/fr/ln/sw |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---
@@ -312,5 +313,6 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | [`../13_Patient_Device_Packages_and_Fleet.md`](../13_Patient_Device_Packages_and_Fleet.md) | Y6 / E580 / E585 fleet SKUs |
 | [`../14_Wearable_Capability_Catalog.md`](../14_Wearable_Capability_Catalog.md) | SKU-agnostic band features + delivery phases |
 | [`../10_Agora_Twilio_Setup.md`](../10_Agora_Twilio_Setup.md) | Telehealth RTC setup |
+| [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md) | Staff phone use of web admin: responsive UI, then thin install; not a full PWA |
 | [`../02_Solution_Structure.md`](../02_Solution_Structure.md) | Project layout |
 | [`../06_Key_Workflows.md`](../06_Key_Workflows.md) | Workflow narratives (update when inpatient ships docs) |

@@ -14,12 +14,13 @@ Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-ch
 - **Partial** = 50%
 - **Not started** = 0%
 - **Not for mobile** / **Not for clinical v1** / **Not for BLE** = left out of the % on purpose
+- **Later** notes (phone use of the web admin, and similar) are left out of the % until we schedule the work
 - Section % = average of that section's scored rows
 - Overall % = average of all scored rows in sections 1-4
 
 Each section shows its % in the heading. Numbers stay in sync with the engineering checklist when status changes.
 
-Last reviewed: 2026-08-09
+Last reviewed: 2026-08-23
 
 ---
 
@@ -42,6 +43,8 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
 **Bottom line (100%):** outpatient hospital admin is ready on the web.
+
+**Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan. Detail: [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -158,6 +161,7 @@ What patients see on Android / iPhone.
 |-----|----------------|
 | This file | Partners, product, demos |
 | `raphcare-feature-checklist.md` | Engineers |
+| [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md) | Later: staff using the web admin on a phone |
 | [`../14_Wearable_Capability_Catalog.md`](../14_Wearable_Capability_Catalog.md) | Watch/band features RaphCare should support (even if the model changes) |
 | `Mobile_Release_Ready_Checklist.md` | Release / pilot go-live |
 | [`../13_Patient_Device_Packages_and_Fleet.md`](../13_Patient_Device_Packages_and_Fleet.md) | Watch / band product packages |

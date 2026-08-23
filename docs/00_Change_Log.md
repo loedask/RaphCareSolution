@@ -2,6 +2,20 @@
 
 ## Date
 
+2026-08-23
+
+## High-level summary of changes
+
+Documented the future goal that staff use the existing web admin on a phone. Direction: responsive admin UI first, then a thin home-screen install. A full PWA (offline writes, staff store app) is not the plan. No product code change.
+
+## Modules modified
+
+- **docs:** `15_Web_Admin_On_Phone.md`; pointers in system overview, solution structure, and both feature checklists.
+
+---
+
+## Date
+
 2026-07-21
 
 ## High-level summary of changes
