@@ -58,12 +58,12 @@ Wire each App Service identity for GitHub OIDC (Deployment Center user-assigned 
 
 After first API deploy, set App Service **Configuration** on **raphcare-api** (SQL connection string, Entra, JWT, CORS). Use these origins for direct app-to-API calls (no API Management):
 
-- `RaphCare__WebPortalBaseUrl` = `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net`
-- `Cors__WebAdminOrigins__0` = `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net`
+- `RaphCare__WebPortalBaseUrl` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
+- `Cors__WebAdminOrigins__0` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
 
 | App | URL |
 |-----|-----|
-| Web (`raphcare`) | `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net` |
+| Web (`raphcare`) | `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net` |
 | API (`raphcare-api`) | `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net` |
 
 ---
@@ -144,7 +144,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareWebT
 Smoke:
 
 - Open `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net/` (expect no Swagger in Production).
-- Open `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net/`; admin UI should call the API (CORS uses `RaphCare:WebPortalBaseUrl` / `Cors:WebAdminOrigins`).
+- Open `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net/`; admin UI should call the API (CORS uses `RaphCare:WebPortalBaseUrl` / `Cors:WebAdminOrigins`).
 - Sign in with an Entra user that has the right app role, or exercise phone OTP if Twilio is configured.
 
 ### Code notes already in the repo
