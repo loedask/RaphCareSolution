@@ -12,6 +12,7 @@ Runbook to put the **patient Android app** and **hosted API / admin Web** online
 | Database | Azure SQL database |
 | Sign-in | Entra app registrations in your tenant (optional for phone OTP) |
 | Ops mailbox | `raphcare@yindula.com` |
+| Store mailbox | `apps@yindula.com` (Play Console / later App Store) |
 
 Default resource group: **`raphcare_group`** (or `rg-raphcare-test` from scripts).
 
@@ -82,12 +83,13 @@ You still need a **RaphCare.Web.Host** deploy that includes the host forwarding 
 
 ---
 
-## Phase 0: Mailbox `raphcare@yindula.com`
+## Phase 0: Mailboxes `raphcare@yindula.com` and `apps@yindula.com`
 
 1. Confirm you control **yindula.com** DNS.
-2. Create mailbox **`raphcare@yindula.com`** on `mail.yindula.com` (or Microsoft 365 with that domain).
-3. Prefer signing up Azure with that address as a **Microsoft work or personal account**.
-4. Keep the SMTP password out of git. Set `Smtp__Password` on App Service later.
+2. Create mailbox **`raphcare@yindula.com`** on `mail.yindula.com` (or Microsoft 365 with that domain). This is product / ops mail (SMTP, bug reports).
+3. Create mailbox **`apps@yindula.com`** on the same host. This is the store identity (Play Console Google Account, public developer email, later Apple). Do not use `raphcare@` for the Play listing.
+4. Prefer signing up Azure with `raphcare@yindula.com` as a **Microsoft work or personal account**.
+5. Keep mailbox passwords out of git. Set `Smtp__Password` on App Service later.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Test-RaphCareMailbox.ps1
@@ -173,8 +175,78 @@ Smoke:
 
 ## Phase 5: Android signing and Play Internal
 
-1. Create a [Google Play Console](https://play.google.com/console) developer account (one-time fee).
-2. Create the upload keystore (store path and passwords outside git):
+RaphCare publishes under **Yindula** as a Play Console **Organization** account, not a personal developer account. RaphCare is a health app; Google expects organization accounts for that. Organization accounts also skip the closed-test gate that new personal accounts have (a long wait with many testers before production).
+
+You cannot change Personal to Organization later. A wrong type means a new account, another **US$25** fee, and an app transfer.
+
+A person at Yindula must finish identity checks, pay the fee, and upload company documents. Do not put government IDs, card numbers, or passwords in git or chat.
+
+Google’s own pages: [account type](https://support.google.com/googleplay/android-developer/answer/13634885), [required information](https://support.google.com/googleplay/android-developer/answer/13628312), [get started](https://support.google.com/googleplay/android-developer/answer/6112435), [identity verification](https://support.google.com/googleplay/android-developer/answer/10841920).
+
+### 5.1 Documents and field values (collect before any signup)
+
+Use the **legal** company name and registered address on every form (D-U-N-S, Google Payments, Play Console, company documents). A trading nickname that does not match CIPC / incorporation papers will fail verification.
+
+| Item | Use |
+|------|-----|
+| Legal company name and registered address | Must match D-U-N-S, Payments profile, and company docs |
+| Company website (`yindula.com` or `raphcare.com`) | Google verifies the site (often via Search Console) |
+| Mailbox **`apps@yindula.com`** | Google Account, Play contact email, and public developer email (Phase 0) |
+| Company phone | Payments profile and Play contact |
+| Government ID of the person registering (director or authorized officer) | Identity verification |
+| Company registration document (CIPC, certificate of incorporation, or VAT, as applicable) | Organization verification |
+| Card for the one-time **US$25** Play registration fee | Play Console signup |
+| **D-U-N-S number** (nine digits from Dun & Bradstreet) | Mandatory for organization Play accounts |
+
+Suggested Play fields once those match:
+
+| Play field | Suggested value |
+|------------|-----------------|
+| Developer name (public on Play) | Yindula Technologies (or **Yindula**) |
+| Organization legal name | YINDULA TECHNOLOGIES (PTY) LTD |
+| CIPC enterprise number | `2026/322140/07` |
+| Contact / developer email | `apps@yindula.com` |
+| Package name (later, when creating the app) | `com.yindula.raphcare` |
+
+Do not start Play Console **organization** signup until the D-U-N-S number is issued.
+
+### 5.2 D-U-N-S (longest wait)
+
+A [D-U-N-S number](https://www.dnb.com/duns-number.html) is a free nine-digit business id. Google will not create an organization Play account without one. Requesting it can take **up to 30 days**.
+
+1. Search Dun & Bradstreet / TransUnion for **YINDULA TECHNOLOGIES (PTY) LTD**, CIPC **`2026/322140/07`**, country South Africa. Many companies already have a number from other vendors or banks. Use that number if the legal name and address match what you will type into Google.
+2. If nothing matches, request a **free** D-U-N-S from TransUnion (`dnb@transunion.co.za`). Attach the CIPC certificate in that email only. Enter the same legal name, registered address, phone, and website you will use on Play.
+3. Wait for the number. Keep a copy with the company records (not in this repo).
+4. If Dun & Bradstreet asks which entity, pick the legal company that will own the app, not a trading name or a different subsidiary.
+
+Government-only exceptions exist in Google’s help; Yindula is not in that path.
+
+### 5.3 Google Account on `apps@yindula.com`
+
+Play Console sits on a Google Account. Use **`apps@yindula.com`**, not a personal `@gmail.com` and not `raphcare@yindula.com`. If that mailbox is already a Google Workspace user, sign in with that Workspace account and skip signup.
+
+1. Confirm you can read mail at **`apps@yindula.com`** (Phase 0).
+2. Open [Google Account signup](https://accounts.google.com/signup).
+3. Choose **Use my current email address**. Do not create a new `@gmail.com`.
+4. Enter `apps@yindula.com`, set a strong password, and complete the mailbox verification code.
+5. Turn on **2-step verification**. Prefer a company-controlled phone or a hardware key. Do not leave recovery only on one person’s personal phone.
+6. Store the password and recovery codes with the company, outside git.
+
+If Google says the address is already in use, that mailbox is already a Google Account or Workspace user. Sign in with it instead of creating a second identity.
+
+### 5.4 Play Console as Organization
+
+1. Sign in with the company Google Account at [Google Play Console](https://play.google.com/console).
+2. Pay the one-time **US$25** registration fee (credit or debit card Google accepts).
+3. Choose **Organization**, not Personal.
+4. Create or select a **Google Payments** profile for the organization. Legal name, address, and D-U-N-S must match Dun & Bradstreet and the company document you will upload.
+5. Fill organization details: legal name **Yindula Technologies (Pty) Ltd**, address, phone, website, contact name, contact email (`apps@yindula.com`), developer name (public: **Yindula** or **Yindula Technologies**).
+6. Complete verification: government ID of the registrant, official organization document, website verification. Google emails if name or address does not match the document. Fix the Payments profile or re-upload; do not invent a second legal name.
+7. Wait for Google’s approval email before creating the production-facing listing. You can still build the signed AAB locally while you wait (next subsection).
+
+### 5.5 Upload keystore and signed AAB
+
+Create the upload keystore (store path and passwords outside git):
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/New-RaphCareAndroidUploadKeystore.ps1 `
@@ -182,7 +254,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/New-RaphCareAndroidU
   -KeyPassword '<secret>'
 ```
 
-3. Build the signed AAB (updates TestHosting API URL from `artifacts/azure-test-environment.json` when present):
+Build the signed AAB (updates TestHosting API URL from `artifacts/azure-test-environment.json` when present):
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareAndroidPlay.ps1 `
@@ -190,7 +262,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareAndr
   -KeyPassword '<secret>'
 ```
 
-4. Play Console → create app **RaphCare** → package **`com.yindula.raphcare`** → **Testing → Internal testing** → upload the AAB under `artifacts/android/` → add tester Gmail accounts → copy the opt-in link.
+### 5.6 Create the app and Internal testing
+
+After the organization account is approved:
+
+1. Play Console → create app **RaphCare** → package **`com.yindula.raphcare`**.
+2. **Testing → Internal testing** → upload the AAB under `artifacts/android/`.
+3. Add tester Gmail accounts → copy the opt-in link.
 
 Optional while Play setup finishes: sideload the APK produced next to the AAB.
 
@@ -210,5 +288,6 @@ Send testers:
 ## Security
 
 - Do not commit `artifacts/`, keystores, or real JWT / SQL / SMTP passwords.
+- Do not commit D-U-N-S numbers, Play Console credentials, government IDs, or payment details. Keep those with the company.
 - Replace sample `Jwt:Secret` values before any real patient data.
 - Prefer App Service configuration (or Key Vault) over checking secrets into `appsettings.json`.
