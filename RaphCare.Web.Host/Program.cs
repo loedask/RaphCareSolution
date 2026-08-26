@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.StaticFiles;
+using RaphCare.Web.Host;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
     app.UseWebAssemblyDebugging();
+
+app.UseBlazorWasmHostConfiguration();
 
 var staticFileOptions = new StaticFileOptions
 {

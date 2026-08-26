@@ -224,7 +224,7 @@ Permissions / hardware UX:
 - [ ] Deep links / NotFound route UX
 - [ ] Prod feature-flag rollout plan filled in `Mobile_Release_Ready_Checklist.md`
 - [ ] Accessibility spot-check on phone (labels, contrast, key flows)
-- [x] Store packaging: icons, splash, package ids, privacy strings for Play / App Store `(partial)`: Android package id `com.yindula.raphcare`; Azure + Play Internal runbook; **`RaphCare.Web.Host`** for Linux App Service; Play Console upload and iOS store still manual
+- [x] Store packaging: icons, splash, package ids, privacy strings for Play / App Store `(partial)`: Android package id `com.yindula.raphcare`; Azure + Play Internal runbook; **`RaphCare.Web.Host`** for Linux App Service (Staging `ApiBaseUrl` on app **raphcare**); Play Console upload and iOS store still manual
 
 ### Admin panel
 

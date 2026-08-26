@@ -172,10 +172,13 @@ $envInfo | ConvertTo-Json -Depth 5 | Set-Content -Path $outPath -Encoding UTF8
 # Point TestHosting placeholders at this environment (hostnames only; commit only after review).
 $mobileTestHosting = Join-Path $repoRoot "RaphCare.Mobile\appsettings.TestHosting.json"
 $webTestHosting = Join-Path $repoRoot "RaphCare.Web\wwwroot\appsettings.TestHosting.json"
+$webStaging = Join-Path $repoRoot "RaphCare.Web\wwwroot\appsettings.Staging.json"
 $mobileJson = Get-Content $mobileTestHosting -Raw | ConvertFrom-Json
 $mobileJson.Api.BaseAddress = "$apiBase/"
 $mobileJson | ConvertTo-Json -Depth 5 | Set-Content $mobileTestHosting -Encoding UTF8
-@{ ApiBaseUrl = $apiBase } | ConvertTo-Json | Set-Content $webTestHosting -Encoding UTF8
+$webApiJson = @{ ApiBaseUrl = $apiBase } | ConvertTo-Json
+Set-Content $webTestHosting -Value $webApiJson -Encoding UTF8
+Set-Content $webStaging -Value $webApiJson -Encoding UTF8
 
 Write-Host ""
 Write-Host "Provisioned. Environment written to $outPath"

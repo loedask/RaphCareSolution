@@ -94,7 +94,7 @@ What patients see on Android / iPhone.
 | Area | Status | Notes |
 |------|--------|-------|
 | Run on **Android** phones | Done | Main day-to-day test target |
-| Host API + admin web for remote Android testers | Partial | API and admin web App Services exist; Linux web publish uses a small host project; finish deploy smoke and Play invite |
+| Host API + admin web for remote Android testers | Partial | API and admin web App Services exist; admin web Staging settings point at the hosted API; finish deploy smoke and Play invite |
 | Play Store internal test package id | Partial | Android id set to a stable Yindula id; upload via Play Console still needed |
 | Run on **iPhone** | Partial | App can target iOS; full release checks still open |
 | Same feature checked on **both** Android and iPhone before "ready" | Not started | Use the release checklist when locking a release |
