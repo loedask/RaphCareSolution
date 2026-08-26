@@ -1,52 +1,53 @@
 @page "/admin"
 @layout AdminLayout
 @using RaphCare.Domain.Common
+@inject IUiCultureService CultureService
 @implements IDisposable
 
-<PageTitle>RaphCare Admin</PageTitle>
+<PageTitle>@AppResources.T("Dashboard_PageTitle")</PageTitle>
 
 <section class="admin-page">
     <header class="admin-page-header">
         <div>
-            <h1>@(_dashboard?.ClinicName ?? "Platform overview")</h1>
+            <h1>@(_dashboard?.ClinicName ?? AppResources.T("Common_PlatformOverview"))</h1>
             <p class="admin-page-lead">
                 @if (_dashboard is not null)
                 {
-                    <span>Hospital dashboard for your active context.</span>
+                    <span>@AppResources.T("Dashboard_HospitalDashboardLead")</span>
                 }
                 else if (ClinicContext.CurrentClinicId is null && _clinics.Count > 1)
                 {
-                    <span>Select a hospital from the top bar to see scoped metrics.</span>
+                    <span>@AppResources.T("Dashboard_SelectHospitalLead")</span>
                 }
                 else
                 {
-                    <span>Manage hospital onboarding and your linked organizations.</span>
+                    <span>@AppResources.T("Dashboard_ManageOnboardingLead")</span>
                 }
             </p>
         </div>
         @if (ClinicContext.CurrentClinicId is Guid clinicId)
         {
-            <a class="btn btn-secondary" href="/admin/hospitals/@clinicId">Hospital details</a>
+            <a class="btn btn-secondary" href="/admin/hospitals/@clinicId">@AppResources.T("Common_HospitalDetails")</a>
         }
         else
         {
-            <a class="btn btn-primary" href="/admin/hospitals/register">+ Register hospital</a>
+            <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospitalButton")</a>
         }
     </header>
 
     @if (_loading)
     {
-        <p class="text-muted">Loading dashboard…</p>
+        <p class="text-muted">@AppResources.T("Common_LoadingDashboard")</p>
     }
     else if (_authRequired)
     {
         <div class="empty-state admin-guidance-state">
             <div class="empty-state-icon" aria-hidden="true">⌂</div>
-            <h3>Finish registering your hospital</h3>
-            <p>Your professional account is ready. Register your hospital to unlock the full clinic portal, or sign in again if your session expired.</p>
+            <h3>@AppResources.T("Common_FinishRegisteringHospital")</h3>
+            <p>@AppResources.T("Dashboard_AuthGuidanceLead")</p>
             <div class="admin-guidance-actions">
-                <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
-                <a class="btn btn-secondary" href="@_signInReturnUrl">Sign in again</a>
+                <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospital")</a>
+                <a class="btn btn-secondary" href="@_signInReturnUrl">@AppResources.T("Common_SignInAgain")</a>
             </div>
         </div>
     }
@@ -59,42 +60,42 @@
         <div class="stat-grid">
             <div class="stat-card stat-card-blue">
                 <div class="stat-card-top">
-                    <span class="stat-label">Patients</span>
+                    <span class="stat-label">@AppResources.T("Common_PatientsStat")</span>
                     <span class="stat-icon" aria-hidden="true">👤</span>
                 </div>
                 <div class="stat-value">@_dashboard.PatientCount</div>
             </div>
             <div class="stat-card stat-card-green">
                 <div class="stat-card-top">
-                    <span class="stat-label">Staff</span>
+                    <span class="stat-label">@AppResources.T("Common_Staff")</span>
                     <span class="stat-icon" aria-hidden="true">◎</span>
                 </div>
                 <div class="stat-value">@_dashboard.StaffCount</div>
             </div>
             <div class="stat-card stat-card-violet">
                 <div class="stat-card-top">
-                    <span class="stat-label">Providers</span>
+                    <span class="stat-label">@AppResources.T("Common_ProvidersStat")</span>
                     <span class="stat-icon" aria-hidden="true">⚕</span>
                 </div>
                 <div class="stat-value">@_dashboard.ProviderCount</div>
             </div>
             <div class="stat-card stat-card-blue">
                 <div class="stat-card-top">
-                    <span class="stat-label">Facilities</span>
+                    <span class="stat-label">@AppResources.T("Common_Facilities")</span>
                     <span class="stat-icon" aria-hidden="true">⌂</span>
                 </div>
                 <div class="stat-value">@_dashboard.FacilityCount</div>
             </div>
             <div class="stat-card stat-card-green">
                 <div class="stat-card-top">
-                    <span class="stat-label">Today</span>
+                    <span class="stat-label">@AppResources.T("Common_Today")</span>
                     <span class="stat-icon" aria-hidden="true">📅</span>
                 </div>
                 <div class="stat-value">@_dashboard.AppointmentsTodayCount</div>
             </div>
             <div class="stat-card stat-card-violet">
                 <div class="stat-card-top">
-                    <span class="stat-label">Next 7 days</span>
+                    <span class="stat-label">@AppResources.T("Common_Next7Days")</span>
                     <span class="stat-icon" aria-hidden="true">→</span>
                 </div>
                 <div class="stat-value">@_dashboard.UpcomingAppointmentsCount</div>
@@ -103,13 +104,13 @@
 
         <div class="card">
             <div class="card-header">
-                <h3>Upcoming appointments</h3>
-                <a class="card-header-link" href="/admin/hospitals/@_dashboard.ClinicId/appointments">View all →</a>
+                <h3>@AppResources.T("Dashboard_UpcomingAppointmentsTitle")</h3>
+                <a class="card-header-link" href="/admin/hospitals/@_dashboard.ClinicId/appointments">@AppResources.T("Common_ViewAll")</a>
             </div>
             @if (_dashboard.UpcomingAppointments.Count == 0)
             {
                 <div class="admin-page-card-body">
-                    <p class="text-muted">No upcoming appointments in the next 7 days.</p>
+                    <p class="text-muted">@AppResources.T("Dashboard_NoUpcoming7Days")</p>
                 </div>
             }
             else
@@ -118,11 +119,11 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>When</th>
-                                <th>Patient</th>
-                                <th>Provider</th>
-                                <th>Type</th>
-                                <th>Status</th>
+                                <th>@AppResources.T("Common_When")</th>
+                                <th>@AppResources.T("Common_Patient")</th>
+                                <th>@AppResources.T("Common_Provider")</th>
+                                <th>@AppResources.T("Common_Type")</th>
+                                <th>@AppResources.T("Common_Status")</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -147,21 +148,21 @@
         <div class="stat-grid">
             <div class="stat-card stat-card-blue">
                 <div class="stat-card-top">
-                    <span class="stat-label">My hospitals</span>
+                    <span class="stat-label">@AppResources.T("Common_MyHospitals")</span>
                     <span class="stat-icon" aria-hidden="true">⌂</span>
                 </div>
                 <div class="stat-value">@_clinics.Count</div>
             </div>
             <div class="stat-card stat-card-green">
                 <div class="stat-card-top">
-                    <span class="stat-label">Active hospitals</span>
+                    <span class="stat-label">@AppResources.T("Dashboard_StatActiveHospitals")</span>
                     <span class="stat-icon" aria-hidden="true">✓</span>
                 </div>
                 <div class="stat-value">@_clinics.Count(c => c.IsActive)</div>
             </div>
             <div class="stat-card stat-card-violet">
                 <div class="stat-card-top">
-                    <span class="stat-label">Total facilities</span>
+                    <span class="stat-label">@AppResources.T("Dashboard_StatTotalFacilities")</span>
                     <span class="stat-icon" aria-hidden="true">◎</span>
                 </div>
                 <div class="stat-value">@_clinics.Sum(c => c.FacilityCount)</div>
@@ -172,26 +173,26 @@
         {
             <div class="empty-state">
                 <div class="empty-state-icon" aria-hidden="true">⌂</div>
-                <h3>No hospitals yet</h3>
-                <p>Start by registering your first hospital through the onboarding wizard.</p>
-                <a class="btn btn-primary" href="/admin/hospitals/register">Start onboarding</a>
+                <h3>@AppResources.T("Dashboard_EmptyNoHospitalsTitle")</h3>
+                <p>@AppResources.T("Dashboard_EmptyNoHospitalsLead")</p>
+                <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Dashboard_StartOnboarding")</a>
             </div>
         }
         else
         {
             <div class="card">
                 <div class="card-header">
-                    <h3>Your hospitals</h3>
-                    <a class="card-header-link" href="/admin/hospitals">View all →</a>
+                    <h3>@AppResources.T("Common_YourHospitals")</h3>
+                    <a class="card-header-link" href="/admin/hospitals">@AppResources.T("Common_ViewAll")</a>
                 </div>
                 <div class="table-wrap">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Country</th>
-                                <th>Facilities</th>
-                                <th>Status</th>
+                                <th>@AppResources.T("Common_Name")</th>
+                                <th>@AppResources.T("Common_Country")</th>
+                                <th>@AppResources.T("Common_Facilities")</th>
+                                <th>@AppResources.T("Common_Status")</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -203,7 +204,7 @@
                                     <td>@clinic.FacilityCount</td>
                                     <td>
                                         <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
-                                            @(clinic.IsActive ? "Active" : "Inactive")
+                                            @(clinic.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
                                         </span>
                                     </td>
                                 </tr>
@@ -234,9 +235,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
         ClinicContext.Changed += OnClinicContextChanged;
         await LoadAsync();
     }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
 
     private void OnClinicContextChanged() => _ = ReloadAsync();
 
@@ -256,7 +260,7 @@
         if (!clinicsResponse.IsSuccess || clinicsResponse.Data is null)
         {
             _loading = false;
-            _error = clinicsResponse.ErrorMessage ?? "Could not load hospitals.";
+            _error = clinicsResponse.ErrorMessage ?? AppResources.T("Common_CouldNotLoadHospitals");
             _authRequired = clinicsResponse.StatusCode is 401 or 403;
             return;
         }
@@ -279,12 +283,16 @@
                 return;
             }
 
-            _error = dashboardTask.Result.ErrorMessage ?? "Could not load hospital dashboard.";
+            _error = dashboardTask.Result.ErrorMessage ?? AppResources.T("Common_CouldNotLoadHospitalDashboard");
             return;
         }
 
         _loading = false;
     }
 
-    public void Dispose() => ClinicContext.Changed -= OnClinicContextChanged;
+    public void Dispose()
+    {
+        CultureService.CultureChanged -= OnCultureChanged;
+        ClinicContext.Changed -= OnClinicContextChanged;
+    }
 }

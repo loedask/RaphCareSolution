@@ -74,4 +74,12 @@ $envInfo | Add-Member -NotePropertyName apiAppClientId -NotePropertyValue $ApiAp
 $envInfo | Add-Member -NotePropertyName webPortalBaseUrl -NotePropertyValue $WebPortalBaseUrl -Force
 $envInfo | ConvertTo-Json -Depth 5 | Set-Content $EnvironmentJsonPath -Encoding UTF8
 
+$webAppName = "raphcare"
+if ($envInfo.webAppName) { $webAppName = [string]$envInfo.webAppName }
+& (Join-Path $PSScriptRoot "Set-RaphCareAzureWebAppSettings.ps1") `
+    -WebAppName $webAppName `
+    -ResourceGroup $envInfo.resourceGroup `
+    -ApiBaseUrl $envInfo.apiBaseUrl `
+    -EnvironmentName "Staging"
+
 Write-Host "App settings applied. Run Update-RaphCareAzureSqlMigrations.ps1 next."

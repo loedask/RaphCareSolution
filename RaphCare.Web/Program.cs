@@ -4,6 +4,7 @@ using RaphCare.Client;
 using RaphCare.Client.Contracts;
 using RaphCare.Web;
 using RaphCare.Web.Services;
+using RaphCare.Web.Services.Localization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -18,6 +19,7 @@ builder.Services.AddScoped<IClinicContextService, ClinicContextService>();
 builder.Services.AddScoped<IAccessTokenProvider, BrowserAccessTokenProvider>();
 builder.Services.AddScoped<RaphCare.Client.Contracts.IClinicIdProvider, WebClinicIdProvider>();
 builder.Services.AddScoped<IHospitalOnboardingStorage, HospitalOnboardingStorage>();
+builder.Services.AddScoped<IUiCultureService, UiCultureService>();
 builder.Services.AddRaphCareClient(client => client.BaseAddress = new Uri(apiBase), useBearerToken: true);
 
 await builder.Build().RunAsync();

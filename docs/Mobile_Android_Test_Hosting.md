@@ -53,17 +53,31 @@ In the GitHub repo → **Settings → Secrets and variables → Actions**:
 | `AZURE_CLIENT_ID_RAPHCAREAPI` | User-assigned identity client id for **raphcare-api** |
 | `AZURE_CLIENT_ID_RAPHCARE` | User-assigned identity client id for **raphcare** |
 | `RAPHCARE_API_BASE_URL` (variable, optional) | Web `ApiBaseUrl`; default `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net` |
+| `RAPHCARE_WEB_RESOURCE_GROUP` (variable, optional) | Resource group for the **raphcare** web app; default `raphcare_group` |
 
 Wire each App Service identity for GitHub OIDC (Deployment Center user-assigned identity, or federated credential on the managed identity). If Azure already created secret names like `AZUREAPPSERVICE_CLIENTID_...`, either rename them to match the table or edit the workflow `secrets.*` keys to match Azure's names.
 
-After first API deploy, set App Service **Configuration** on **raphcare-api** (SQL connection string, Entra, JWT, CORS). Use these origins for direct app-to-API calls (no API Management):
+After first API deploy, set App Service **Configuration** on **raphcare-api** (SQL connection string, Entra, JWT, CORS, SMTP). Use these origins for direct app-to-API calls (no API Management):
 
-- `RaphCare__WebPortalBaseUrl` = `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net`
-- `Cors__WebAdminOrigins__0` = `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net`
+- `RaphCare__WebPortalBaseUrl` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
+- `Cors__WebAdminOrigins__0` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
+
+On App Service **raphcare** (the admin web host, not the API), set:
+
+- `ASPNETCORE_ENVIRONMENT` = `Staging`
+- `ApiBaseUrl` = `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net`
+
+Those two web settings are how the browser finds the API. SMTP stays on **raphcare-api**. Empty settings on **raphcare** leave the WASM client on `http://localhost:5281`.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Set-RaphCareAzureWebAppSettings.ps1
+```
+
+You still need a **RaphCare.Web.Host** deploy that includes the host forwarding code. Visual Studio Zip Deploy does not rewrite `wwwroot/appsettings.json` in source; the host reads `ApiBaseUrl` from App Service at runtime.
 
 | App | URL |
 |-----|-----|
-| Web (`raphcare`) | `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net` |
+| Web (`raphcare`) | `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net` |
 | API (`raphcare-api`) | `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net` |
 
 ---
@@ -144,7 +158,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareWebT
 Smoke:
 
 - Open `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net/` (expect no Swagger in Production).
-- Open `https://raphcare-hgffgsa3acanahgz.southafricanorth-01.azurewebsites.net/`; admin UI should call the API (CORS uses `RaphCare:WebPortalBaseUrl` / `Cors:WebAdminOrigins`).
+- Open `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net/`; admin UI should call the API (CORS uses `RaphCare:WebPortalBaseUrl` / `Cors:WebAdminOrigins`).
 - Sign in with an Entra user that has the right app role, or exercise phone OTP if Twilio is configured.
 
 ### Code notes already in the repo
@@ -153,6 +167,7 @@ Smoke:
 - Mobile package id: **`com.yindula.raphcare`**.
 - Release builds load [`appsettings.TestHosting.json`](../RaphCare.Mobile/appsettings.TestHosting.json) (API base URL). Publish scripts rewrite that URL to match your App Service hostname.
 - **Linux Web publish:** use **`RaphCare.Web.Host`** (Zip Deploy / GitHub Actions), not standalone `RaphCare.Web`. Local admin UI can still `dotnet run` on `RaphCare.Web`.
+- Hosted admin WASM: `ASPNETCORE_ENVIRONMENT=Staging` plus `ApiBaseUrl` on App Service **raphcare**. [`RaphCare.Web/wwwroot/appsettings.json`](../RaphCare.Web/wwwroot/appsettings.json) stays `localhost` for local runs. Staging overlay: [`appsettings.Staging.json`](../RaphCare.Web/wwwroot/appsettings.Staging.json).
 
 ---
 

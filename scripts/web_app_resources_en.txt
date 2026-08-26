@@ -1,0 +1,678 @@
+﻿Common_AppName|RaphCare
+Common_SignOut|Sign out
+Common_SignIn|Sign in
+Common_SignInAgain|Sign in again
+Common_CreateAccount|Create account
+Common_Cancel|Cancel
+Common_Back|← Back
+Common_BackToHome|Back to home
+Common_BackToHospitals|← Back to hospitals
+Common_BackToHospital|← Back to hospital
+Common_BackToAppointments|← Back to appointments
+Common_PleaseWait|Please wait…
+Common_Continue|Continue
+Common_ContinueArrow|Continue →
+Common_VerifyAndSignIn|Verify and sign in →
+Common_VerifyAndCreateAccount|Verify and create account
+Common_Sending|Sending…
+Common_SendCode|Send code
+Common_CreatingAccount|Creating account…
+Common_SendingCode|Sending code…
+Common_Saving|Saving…
+Common_Save|Save
+Common_SaveChanges|Save changes
+Common_Loading|Loading…
+Common_Search|Search
+Common_Apply|Apply
+Common_Previous|Previous
+Common_Next|Next
+Common_Edit|Edit
+Common_Delete|Delete
+Common_Remove|Remove
+Common_Removing|Removing…
+Common_Deleting|Deleting…
+Common_Adding|Adding…
+Common_Inviting|Inviting…
+Common_Invite|Invite
+Common_ResendInvite|Resend invite
+Common_Cancelling|Cancelling…
+Common_Open|Open →
+Common_ViewAll|View all →
+Common_Optional|Optional
+Common_EmptyCell|-
+Common_Active|Active
+Common_Inactive|Inactive
+Common_Patient|Patient
+Common_Provider|Provider
+Common_Professional|Professional
+Common_Email|Email
+Common_Password|Password
+Common_FirstName|First name
+Common_LastName|Last name
+Common_VerificationCode|Verification code
+Common_VerificationCodePlaceholder|6-digit code
+Common_SignInFailed|Sign-in failed.
+Common_RegistrationFailed|Registration failed.
+Common_CouldNotSendVerificationEmail|Could not send verification email.
+Common_VerificationCodeSentEmail|We sent a verification code to your email.
+Common_EnterEmailBeforeCode|Enter your email before requesting a verification code.
+Common_CodeSentCheckInbox|Verification code sent. Check your inbox.
+Common_CodeSentCheckInboxSpam|Verification code sent. Check your inbox (and spam folder).
+Common_EnterSixDigitCodeHint|Enter the 6-digit verification code from your email. Tap Send code if you have not received one yet.
+Common_CodeMustBeSixDigits|Verification code must be exactly 6 digits.
+Common_PleaseEnterFirstName|Please enter your first name.
+Common_PleaseEnterLastName|Please enter your last name.
+Common_PleaseEnterEmail|Please enter your email.
+Common_PleaseEnterPassword|Please enter a password.
+Common_HealthcareProfessional|Healthcare professional
+Common_ClinicPortal|Clinic portal
+Common_ClinicAdministrator|Clinic administrator
+Common_Dashboard|Dashboard
+Common_Hospitals|Hospitals
+Common_Appointments|Appointments
+Common_RegisterHospital|Register hospital
+Common_RegisterHospitalButton|+ Register hospital
+Common_HospitalDetails|Hospital details
+Common_MyHospitals|My hospitals
+Common_YourHospitals|Your hospitals
+Common_Name|Name
+Common_Country|Country
+Common_Facilities|Facilities
+Common_Status|Status
+Common_When|When
+Common_Type|Type
+Common_Reason|Reason
+Common_Notes|Notes
+Common_Registered|Registered
+Common_CouldNotLoadHospitals|Could not load hospitals.
+Common_FinishRegisteringHospital|Finish registering your hospital
+Common_PlatformOverview|Platform overview
+Common_SelectHospital|Select hospital
+Common_NoClinicYet|No clinic yet
+Common_ClinicOptional|Clinic (optional)
+Common_EndTimeAfterStart|End time must be after start time.
+Common_LoadMore|Load more ({0} of {1})
+Common_PageOf|Page {0} of {1} · {2}
+Common_Notified|Notified
+Common_Unassigned|Unassigned
+Common_Physical|Physical
+Common_Virtual|Virtual
+Common_VirtualSuffix|(virtual)
+Common_PendingRegistration|Pending registration
+Common_PendingSignIn|Pending sign-in
+Common_MakeAdmin|Make admin
+Common_RemoveAdmin|Remove admin
+Common_CouldNotLoadStaff|Could not load staff.
+Common_CouldNotLoadPatients|Could not load patients.
+Common_CouldNotLoadProviders|Could not load providers.
+Common_CouldNotLoadAppointments|Could not load appointments.
+Common_CouldNotLoadDevices|Could not load devices.
+Common_CouldNotLoadEmergencyEvents|Could not load emergency events.
+Common_CouldNotResendInvitation|Could not resend invitation.
+Common_CouldNotCancelInvitation|Could not cancel invitation.
+Common_SelectStaffMember|Select a staff member.
+Common_HospitalNotFound|Hospital not found.
+Common_PatientNotFound|Patient not found.
+Common_ProviderNotFound|Provider not found.
+Common_VisitNotFound|Visit not found.
+Common_CouldNotLoadHospital|Could not load hospital.
+Common_CouldNotLoadHospitalDashboard|Could not load hospital dashboard.
+Common_CouldNotLinkHospital|Could not link hospital.
+Common_RegistrationNumber|Registration number
+Common_RegistrationNumberShort|Registration #
+Common_RegistrationNumberPlaceholder|e.g. 12345
+Common_LinkHospital|Link hospital
+Common_Linking|Linking…
+Common_HospitalId|Hospital ID
+Common_PrimaryFacility|Primary facility
+Common_Administrator|Administrator
+Common_Review|Review
+Common_Welcome|Welcome
+Common_Hospital|Hospital
+Common_Facility|Facility
+Common_BackButton|Back
+Common_SkipStep|Skip step
+Common_Registering|Registering…
+Common_PercentComplete|{0}% complete
+Common_OnboardingProgressAria|Onboarding progress
+Common_HospitalOnboardingEyebrow|Hospital onboarding · Step {0} of {1}
+Common_OpenHospital|Open hospital
+Common_ViewAllHospitals|View all hospitals
+Common_RegisterAnother|Register another
+Common_HospitalRegisteredTitle|{0} is registered
+Common_HospitalRegisteredLead|The hospital is active on the platform. Patients can select it during registration once staff are provisioned.
+Common_AdminContactPending|Admin contact (pending)
+Common_SignInAndContinue|Sign in and continue
+Common_AuthRetryHint|Your hospital details are saved on this device. Sign in again, then return here to finish registration.
+Common_ResumeReadyReview|We restored your saved hospital details. Review and tap Register hospital when you are ready.
+Common_ResumeFromStep|We restored your saved progress from step {0}. You can continue where you left off.
+Common_TimeZone|Time zone
+Common_Address|Address
+Common_City|City
+Common_StreetAddress|Street address
+Common_MainCampusPlaceholder|Main Campus
+Common_JohannesburgPlaceholder|Johannesburg
+Common_LoadingPatients|Loading patients…
+Common_LoadingProviders|Loading providers…
+Common_LoadingAppointments|Loading appointments…
+Common_LoadingDevices|Loading devices…
+Common_LoadingEmergencyEvents|Loading emergency events…
+Common_LoadingStaff|Loading staff…
+Common_LoadingHospital|Loading hospital…
+Common_LoadingPatient|Loading patient…
+Common_LoadingProvider|Loading provider…
+Common_LoadingVisit|Loading visit…
+Common_LoadingDashboard|Loading dashboard…
+Common_GrantAccess|Grant access
+Common_Granting|Granting…
+Common_DateOfBirth|Date of birth
+Common_Access|Access
+Common_Granted|Granted
+Common_License|License
+Common_Schedule|Schedule
+Common_Roles|Roles
+Common_Joined|Joined
+Common_Serial|Serial
+Common_Model|Model
+Common_AssignedTo|Assigned to
+Common_Occurred|Occurred
+Common_Location|Location
+Common_Caregivers|Caregivers
+Common_DateTime|Date & time
+Common_Date|Date
+Common_Summary|Summary
+Common_Recorded|Recorded
+Common_Value|Value
+Common_Visit|Visit
+Common_Today|Today
+Common_Next7Days|Next 7 days
+Common_Staff|Staff
+Common_PatientsStat|Patients
+Common_ProvidersStat|Providers
+Common_Devices|Devices
+Common_Inpatient|Inpatient
+Common_Overview|Overview
+Common_FullList|Full list →
+Common_SelectPatient|Select patient…
+Common_SelectProvider|Select provider…
+Common_SelectStaffMemberOption|Select staff member…
+Common_LicenseOptionalPlaceholder|License # (optional)
+Common_AddProvider|Add provider
+Common_SearchByNameEmailPhone|Search by name, email, or phone
+Common_GrantPatientAccessTitle|Grant patient access
+Common_GrantPatientAccessLead|Link an existing patient account to this hospital by email.
+Common_PatientEmailPlaceholder|patient@email.com
+Common_ColleagueEmailPlaceholder|colleague@hospital.com
+Common_InviteStaffTitle|Invite staff
+Common_InviteStaffHint|Invite colleagues by email. If they do not have a RaphCare account yet, they will receive a registration link.
+Common_OnlyAdminsInviteStaff|Only hospital administrators can invite or manage staff.
+Common_AddFacility|Add facility
+Common_EditFacility|Edit facility
+Common_AddFacilityButton|Add facility
+Common_VirtualSiteCheckbox|Virtual site (no physical address)
+Common_HospitalIsActive|Hospital is active
+Common_OrganizationDetails|Organization details
+Common_UpdateHospitalLead|Update your hospital name, country, and time zone.
+Common_HospitalProfileEyebrow|Hospital profile
+Common_LocationsEyebrow|Locations
+Common_PhysicalCampusesLead|Physical campuses and virtual sites for this hospital.
+Common_FacilityCountLabel|{0} facility
+Common_FacilityCountLabelPlural|{0} facilities
+Common_NoFacilitiesYet|No facilities yet. Add your first location above.
+Common_CareRecipientsEyebrow|Care recipients
+Common_PatientsLead|Patients who have access to this hospital.
+Common_PatientCountLabel|{0} patient
+Common_PatientCountLabelPlural|{0} patients
+Common_NoPatientsLinked|No patients linked to this hospital yet.
+Common_NoPatientsMatchSearch|No patients match your search.
+Common_ClinicalTeamEyebrow|Clinical team
+Common_ProvidersLead|Clinicians who can receive appointments at this hospital.
+Common_ProviderCountLabel|{0} provider
+Common_ProviderCountLabelPlural|{0} providers
+Common_AddProviderTitle|Add provider
+Common_AddProviderLead|Link a staff member as a clinical provider.
+Common_NoProvidersYet|No providers linked yet. Add a staff member as a provider to manage schedules.
+Common_ScheduleSlotCount|{0} slot
+Common_ScheduleSlotCountPlural|{0} slots
+Common_SchedulingEyebrow|Scheduling
+Common_AppointmentsLead|Upcoming bookings at this hospital.
+Common_NoUpcomingAppointments30Days|No upcoming appointments in the next 30 days.
+Common_FleetEyebrow|Fleet
+Common_DevicesLead|Monitoring devices registered to this hospital.
+Common_DeviceCountLabel|{0} device
+Common_DeviceCountLabelPlural|{0} devices
+Common_NoDevicesYet|No devices registered for this hospital yet. Devices appear after patient wearables sync or staff provisioning via the Devices API.
+Common_EmergencyEyebrow|Y6 / 4G emergency
+Common_EmergencyEventsTitle|Emergency events
+Common_EmergencyEventsLeadClinic|Recent SOS, fall, and standalone emergency alerts across this hospital.
+Common_EmergencyEventsLeadPatient|SOS, fall, and other standalone emergency alerts for this patient.
+Common_EventCountLabel|{0} event
+Common_EventCountLabelPlural|{0} events
+Common_NoEmergencyEventsClinic|No emergency events recorded for this hospital yet.
+Common_NoEmergencyEventsPatient|No emergency events recorded for this patient at this hospital.
+Common_TeamEyebrow|Team
+Common_StaffLead|Professionals linked to this hospital. Administrators can invite colleagues by email.
+Common_MemberCountLabel|{0} member
+Common_MemberCountLabelPlural|{0} members
+Common_NoStaffYet|No staff linked yet.
+Common_HospitalSectionsAria|Hospital sections
+Common_RoomLabel|Room {0}
+Common_InactiveLower|inactive
+Common_Room|Room
+Common_Bed|Bed
+Common_BedLabel|Bed label
+Common_Deactivate|Deactivate
+Common_Reactivate|Reactivate
+Common_Clear|Clear
+Common_Maintenance|Maintenance
+Common_ConfirmDischarge|Confirm discharge
+Common_ConfirmTransfer|Confirm transfer
+Common_Transfer|Transfer
+Common_Discharge|Discharge
+Common_Admit|Admit
+Common_All|All
+Common_Available|Available
+Common_Occupied|Occupied
+Common_Beds|Beds
+Common_HospitalTime|hospital time
+Common_ThisHospital|this hospital
+Common_BookAppointment|Book appointment
+Common_Booking|Booking…
+Common_BookAppointmentTitle|Book appointment
+Common_InPerson|In person
+Common_Telemedicine|Telemedicine
+Common_StartLabel|Start ({0})
+Common_EndLabel|End ({0})
+Common_RescheduleAppointment|Reschedule appointment
+Common_NoAppointmentsMatchFilter|No appointments match this filter.
+Common_JoinTelehealth|Join telehealth
+Common_OpenVisit|Open visit
+Common_StartVisit|Start visit
+Common_Reschedule|Reschedule
+Common_AppointmentBooked|Appointment booked.
+Common_AppointmentRescheduled|Appointment rescheduled.
+Common_AppointmentCancelled|Appointment cancelled.
+Common_CouldNotBookAppointment|Could not book appointment.
+Common_CouldNotRescheduleAppointment|Could not reschedule appointment.
+Common_CouldNotStartVisit|Could not start visit.
+Common_CouldNotCancelAppointment|Could not cancel appointment.
+Common_SelectPatientAndProvider|Select a patient and provider.
+Common_Upcoming30Days|Upcoming (30 days)
+Common_RangeToday|Today
+Common_RangeAll|All
+Common_ScheduledVisitsLead|Scheduled visits for {0}. Times shown in {1}.
+Common_AppointmentCountLabel|{0} appointment
+Common_AppointmentCountLabelPlural|{0} appointments
+Common_DemographicsEyebrow|Demographics
+Common_Profile|Profile
+Common_HospitalLinkEyebrow|Hospital link
+Common_AccessSection|Access
+Common_RevokeHospitalAccess|Revoke hospital access
+Common_Revoking|Revoking…
+Common_CouldNotRevokeAccess|Could not revoke access.
+Common_WearablesEyebrow|Wearables
+Common_DeviceReadingsTitle|Device readings
+Common_DeviceReadingsLead|Recent synced vitals from patient devices (last 7 days summary).
+Common_NoDeviceReadings|No device readings synced for this patient yet.
+Common_HeartRateTitle|Heart rate avg/min/max
+Common_HeartRateLabel|HR
+Common_HeartRateBpm|{0} bpm
+Common_Spo2Title|SpO2 avg/min/max
+Common_Spo2Label|SpO2
+Common_VisitVitalsTitle|Visit vitals
+Common_VisitVitalsLead|Vitals recorded during encounters at this hospital.
+Common_VitalCountLabel|{0} vital
+Common_VitalCountLabelPlural|{0} vitals
+Common_NoVisitVitals|No visit vitals recorded yet.
+Common_NoAppointmentsPatient|No appointments recorded yet.
+Common_BookOneLink|Book one
+Common_RecentVisitsTitle|Recent visits
+Common_RecentVisitsLead|Encounters at this hospital.
+Common_VisitCountLabel|{0} visit
+Common_VisitCountLabelPlural|{0} visits
+Common_NoVisitsPatient|No visits recorded yet for this patient at this hospital.
+Common_Manage|Manage
+Common_PatientChartLead|Patient chart for {0}. Times in {1}.
+Common_ProviderDetailsTitle|Provider details
+Common_WeeklyScheduleTitle|Weekly schedule
+Common_WeeklyScheduleLead|Weekly schedule at {0}
+Common_AddScheduleSlot|Add schedule slot
+Common_Day|Day
+Common_Start|Start
+Common_End|End
+Common_AddSlot|Add slot
+Common_NoScheduleSlots|No schedule slots yet.
+Common_DeactivateProvider|Deactivate provider
+Common_ReactivateProvider|Reactivate provider
+Common_Updating|Updating…
+Common_CouldNotUpdateProviderStatus|Could not update provider status.
+Common_CouldNotLoadProvider|Could not load provider.
+Common_EnterValidStartEnd|Enter valid start and end times.
+Common_CouldNotAddScheduleSlot|Could not add schedule slot.
+Common_CouldNotRemoveScheduleSlot|Could not remove schedule slot.
+Common_EncounterEyebrow|Encounter
+Common_Details|Details
+Common_Started|Started
+Common_Ended|Ended
+Common_CompleteVisit|Complete visit
+Common_Completing|Completing…
+Common_VitalsTitle|Vitals
+Common_HeartRateOption|Heart rate
+Common_BloodPressureOption|Blood pressure
+Common_TemperatureOption|Temperature
+Common_Spo2Option|SpO2
+Common_WeightOption|Weight
+Common_UnitPlaceholder|bpm, °C, %
+Common_RecordVital|Record vital
+Common_NoVitalsYet|No vitals recorded yet.
+Common_VitalRecorded|Vital recorded.
+Common_CouldNotRecordVital|Could not record vital.
+Common_VisitCompleted|Visit completed.
+Common_CouldNotCompleteVisit|Could not complete visit.
+Common_CouldNotLoadVisit|Could not load visit.
+Common_OptionalVisitSummary|Optional visit summary
+Common_PatientChartLink|Patient chart
+Common_VisitHeader|Visit - {0}
+Common_TelehealthSession|Telehealth session
+Common_Connecting|Connecting…
+Common_PreparingTelehealth|Preparing telehealth session…
+Common_Channel|Channel
+Common_Session|Session
+Common_OpenVisitChart|Open visit chart
+Common_JoinVideo|Join video
+Common_Joining|Joining…
+Common_LeaveCall|Leave call
+Common_RemoteVideoAria|Remote video
+Common_LocalVideoAria|Local video
+Common_CouldNotStartTelehealth|Could not start telehealth session.
+Common_AgoraNotConfigured|Agora is not configured on the API. Session was created, but live video cannot start until Agora:AppId and Agora:AppCertificate are set. See docs/10_Agora_Twilio_Setup.md.
+Common_SessionReadyConfigureAgora|Session ready. Configure Agora on the API to enable live video.
+Common_PageTitleAdminSuffix|- RaphCare Admin
+Common_PageTitlePatientSuffix|- Patient
+Common_PageTitleProfessionalSuffix|- Healthcare professional
+Common_DayMonday|Monday
+Common_DayTuesday|Tuesday
+Common_DayWednesday|Wednesday
+Common_DayThursday|Thursday
+Common_DayFriday|Friday
+Common_DaySaturday|Saturday
+Common_DaySunday|Sunday
+Language_Label|Language
+Language_Aria|Choose language
+IndexHtml_UnhandledError|An unhandled error has occurred.
+IndexHtml_Reload|Reload
+AuthShell_BrandTagline|Connected healthcare platform
+AuthShell_Headline|Bring every patient, clinic and care team into one trusted view.
+AuthShell_Lead|Register hospitals, onboard staff, and give patients secure access to records, appointments, and telehealth.
+AuthShell_FeatureHospitalTitle|Hospital onboarding
+AuthShell_FeatureHospitalDesc|Register your clinic, facilities, and practice portal in minutes.
+AuthShell_FeatureWorkspaceTitle|Clinical workspace
+AuthShell_FeatureWorkspaceDesc|Patients, visits, and reporting scoped per clinic tenant.
+AuthShell_FeatureVerifiedTitle|Verified access
+AuthShell_FeatureVerifiedDesc|Email verification and 2FA codes sent from your RaphCare mailbox.
+AuthShell_FooterSecureSignIn|Secure email sign-in
+AuthShell_FooterCopyright|© {0} RaphCare
+AuthShell_MobileTagline|Healthcare platform
+Home_PageTitle|RaphCare - Sign in
+Home_Title|Welcome
+Home_Subtitle|Choose how you'll use RaphCare, then sign in or create an account.
+Home_AccountTypeAria|Account type
+Home_RolePatient|Patient
+Home_RoleProfessional|Healthcare professional
+Home_PatientAccessTitle|Patient access
+Home_PatientAccessLead|Book care, view records, and connect with your clinic. Full mobile experience available in the RaphCare app.
+Home_PatientBullet1|Email + password with verification code
+Home_PatientBullet2|Link to your hospital during registration
+Home_PatientBullet3|Secure patient portal on web and mobile
+Home_ClinicPortalTitle|Clinic portal
+Home_ClinicPortalLead|Register your practice, onboard your hospital, and manage your clinic workspace from the admin portal.
+Home_ClinicBullet1|Create your professional account
+Home_ClinicBullet2|Register hospital and primary facility
+Home_ClinicBullet3|Email 2FA on every sign-in
+Home_HealthcareStaffPrompt|Healthcare staff?
+Home_SwitchToProfessional|Switch to professional
+Home_LookingForPatientPrompt|Looking for patient access?
+Home_SwitchToPatient|Switch to patient
+NotFound_Title|Not Found
+NotFound_Message|Sorry, the content you are looking for does not exist.
+PatientSignIn_PageTitle|Sign in - Patient
+PatientSignIn_Title|Welcome back
+PatientSignIn_Subtitle|Sign in to your patient account. We'll email you a verification code.
+PatientSignIn_FootNoAccount|No account?
+PatientSignIn_RegisterLink|Register as a patient
+PatientRegister_PageTitle|Register - Patient
+PatientRegister_Title|Create patient account
+PatientRegister_SubtitleDetails|Fill in your details to create your account.
+PatientRegister_SubtitleCode|Enter the verification code we sent to your email.
+PatientRegister_FootAlready|Already registered?
+PatientWelcome_PageTitle|Welcome - Patient
+PatientWelcome_Title|You're signed in
+PatientWelcome_Lead|Your patient account is active. Download the RaphCare mobile app for appointments, records, telehealth, and device monitoring.
+ProfessionalSignIn_PageTitle|Sign in - Healthcare professional
+ProfessionalSignIn_Subtitle|Sign in to your clinic portal. We'll email you a verification code.
+ProfessionalSignIn_PendingOnboarding|You have a saved hospital registration. After sign-in we'll take you back to finish it.
+ProfessionalSignIn_FootNew|New here?
+ProfessionalSignIn_CreateAccountLink|Create a professional account
+ProfessionalRegister_PageTitle|Register - Healthcare professional
+ProfessionalRegister_Title|Create professional account
+ProfessionalRegister_SubtitleDetails|Fill in your details to create your clinic portal account.
+ProfessionalRegister_SubtitleCode|Enter the verification code we sent to your email.
+ProfessionalRegister_FootAlready|Already have an account?
+AdminLayout_BrandSub|Clinic portal
+AdminLayout_NavPlatform|Platform
+AdminLayout_NavOnboarding|Onboarding
+AdminLayout_BreadcrumbAria|Breadcrumb
+AdminLayout_SearchPlaceholder|Search hospitals, patients…
+AdminLayout_SearchResultsAria|Search results
+AdminLayout_SearchGroupHospitals|Hospitals
+AdminLayout_SearchGroupPatients|Patients
+AdminLayout_SearchingPatients|(searching…)
+AdminLayout_NoPatientsMatch|No patients match "{0}".
+AdminLayout_NoHospitalsMatch|No hospitals match. Select a hospital to search patients.
+AdminLayout_SearchResultPatientMeta|Patient
+AdminLayout_ClinicSwitcherAria|Switch hospital
+AdminLayout_ActiveHospitalTitle|Active hospital context
+AdminLayout_BreadcrumbClinicPortal|Clinic portal
+AdminLayout_BreadcrumbRegisterHospital|Register hospital
+AdminLayout_BreadcrumbHospitalDetails|Hospital details
+AdminLayout_BreadcrumbProvider|Provider
+Dashboard_PageTitle|RaphCare Admin
+Dashboard_HospitalDashboardLead|Hospital dashboard for your active context.
+Dashboard_SelectHospitalLead|Select a hospital from the top bar to see scoped metrics.
+Dashboard_ManageOnboardingLead|Manage hospital onboarding and your linked organizations.
+Dashboard_AuthGuidanceLead|Your professional account is ready. Register your hospital to unlock the full clinic portal, or sign in again if your session expired.
+Dashboard_StatActiveHospitals|Active hospitals
+Dashboard_StatTotalFacilities|Total facilities
+Dashboard_UpcomingAppointmentsTitle|Upcoming appointments
+Dashboard_NoUpcoming7Days|No upcoming appointments in the next 7 days.
+Dashboard_EmptyNoHospitalsTitle|No hospitals yet
+Dashboard_EmptyNoHospitalsLead|Start by registering your first hospital through the onboarding wizard.
+Dashboard_StartOnboarding|Start onboarding
+HospitalsIndex_PageTitle|Hospitals - RaphCare Admin
+HospitalsIndex_Lead|Healthcare organizations linked to your professional account.
+HospitalsIndex_AuthGuidanceLead|Your professional account is set up, but we couldn't load your hospitals yet. Continue onboarding or sign in again if your session expired.
+HospitalsIndex_EmptyTitle|No hospitals linked yet
+HospitalsIndex_EmptyLead|Register a new hospital, or link one you created earlier using its registration number.
+HospitalsIndex_TotalMeta|{0} total
+HospitalsRegister_PageTitle|Register hospital - RaphCare Admin
+HospitalsRegister_StepWelcome|Welcome
+HospitalsRegister_StepHospital|Hospital
+HospitalsRegister_StepFacility|Facility
+HospitalsRegister_StepAdministrator|Administrator
+HospitalsRegister_StepReview|Review
+HospitalsRegister_Step1Title|Welcome to hospital onboarding
+HospitalsRegister_Step1Subtitle|A short setup to register a new healthcare organization on RaphCare.
+HospitalsRegister_Step2Title|Hospital identity
+HospitalsRegister_Step2Subtitle|Legal name, registration number, and regional settings.
+HospitalsRegister_Step3Title|Primary facility
+HospitalsRegister_Step3Subtitle|Optional first site: physical campus or virtual telehealth hub.
+HospitalsRegister_Step4Title|Administrator contact
+HospitalsRegister_Step4Subtitle|Who will manage this hospital on the platform.
+HospitalsRegister_Step5Title|Review and register
+HospitalsRegister_Step5Subtitle|Confirm details before creating the hospital tenant.
+HospitalsRegister_Intro|Register a new healthcare organization on RaphCare. This wizard collects hospital identity, a primary facility, and an administrator contact for follow-up provisioning.
+HospitalsRegister_FeatureTenantTitle|Hospital tenant
+HospitalsRegister_FeatureTenantDesc|Creates the clinic record and regional settings for your organization.
+HospitalsRegister_FeatureFacilityTitle|Primary facility
+HospitalsRegister_FeatureFacilityDesc|Add a physical campus or virtual telehealth site as the first location.
+HospitalsRegister_FeatureAdminTitle|Administrator
+HospitalsRegister_FeatureAdminDesc|Capture who will manage the hospital on the platform.
+HospitalsRegister_HospitalNameLabel|Hospital name *
+HospitalsRegister_HospitalNamePlaceholder|e.g. RaphCare General Hospital
+HospitalsRegister_RegNumberLabel|Registration number *
+HospitalsRegister_RegNumberPlaceholder|e.g. HPCSA-12345
+HospitalsRegister_CountryLabel|Country *
+HospitalsRegister_TimeZoneLabel|Time zone *
+HospitalsRegister_FacilityNameLabel|Facility name
+HospitalsRegister_FacilityNamePlaceholder|e.g. Main campus
+HospitalsRegister_StreetAddressLabel|Street address
+HospitalsRegister_CityLabel|City
+HospitalsRegister_VirtualFacilityCheckbox|Virtual / telehealth-only site
+HospitalsRegister_AdminNameLabel|Administrator full name
+HospitalsRegister_AdminNamePlaceholder|e.g. Dr. Jane Smith
+HospitalsRegister_AdminEmailLabel|Administrator email
+HospitalsRegister_AdminEmailPlaceholder|admin@hospital.org
+HospitalsRegister_AdminHint|Admin accounts will be linked via email sign-in. Contact details are stored for follow-up provisioning.
+HospitalsRegister_ReviewHospital|Hospital
+HospitalsRegister_Country_SouthAfrica|South Africa
+HospitalsRegister_Country_Kenya|Kenya
+HospitalsRegister_Country_Nigeria|Nigeria
+HospitalsRegister_Country_Ghana|Ghana
+HospitalsRegister_Country_UnitedKingdom|United Kingdom
+HospitalsRegister_Country_UnitedStates|United States
+HospitalsRegister_Country_Other|Other
+HospitalsRegister_TimeZone_SAST|South Africa Standard Time
+HospitalsRegister_TimeZone_UTC|UTC
+HospitalsRegister_TimeZone_GMT|GMT Standard Time
+HospitalsRegister_TimeZone_WEurope|W. Europe Standard Time
+HospitalsRegister_TimeZone_Eastern|Eastern Standard Time
+HospitalsRegister_TimeZone_CentralEurope|Central European Standard Time
+HospitalDetail_PageTitleFallback|Hospital
+HospitalDetail_Lead|Hospital profile, facilities, and staff.
+HospitalDetail_TimeZonePlaceholder|Africa/Johannesburg
+HospitalDetail_CouldNotUpdateHospital|Could not update hospital.
+HospitalDetail_CouldNotAddFacility|Could not add facility.
+HospitalDetail_CouldNotUpdateFacility|Could not update facility.
+HospitalDetail_CouldNotDeleteFacility|Could not delete facility.
+HospitalDetail_CouldNotInviteStaff|Could not invite staff.
+HospitalDetail_CouldNotGrantPatientAccess|Could not grant patient access.
+HospitalDetail_CouldNotUpdateStaffRole|Could not update staff role.
+HospitalDetail_CouldNotAddProvider|Could not add provider.
+HospitalDetail_CouldNotRemoveStaff|Could not remove staff.
+HospitalDetail_InactiveBedSuffix| (inactive)
+Inpatient_PageTitle|Inpatient - RaphCare Admin
+Inpatient_Lead|Wards, rooms, beds, and admissions for {0}.
+Inpatient_OccupiedPill|{0} / {1} occupied
+Inpatient_LoadingBoard|Loading inpatient board…
+Inpatient_SetupEyebrow|Setup
+Inpatient_AddCapacity|Add capacity
+Inpatient_FacilityWardLabel|Facility (ward)
+Inpatient_SelectFacility|Select facility…
+Inpatient_WardNameLabel|Ward name
+Inpatient_WardNamePlaceholder|e.g. Medical Ward A
+Inpatient_CodeLabel|Code
+Inpatient_AddWard|Add ward
+Inpatient_WardRoomLabel|Ward (room)
+Inpatient_SelectWard|Select ward…
+Inpatient_RoomNameLabel|Room name
+Inpatient_RoomNamePlaceholder|e.g. 101
+Inpatient_RoomTypeLabel|Room type
+Inpatient_AddRoom|Add room
+Inpatient_RoomBedLabel|Room (bed)
+Inpatient_SelectRoom|Select room…
+Inpatient_BedLabelPlaceholder|e.g. A
+Inpatient_AddBed|Add bed
+Inpatient_CareEyebrow|Care
+Inpatient_AdmitPatientTitle|Admit patient
+Inpatient_FindPatientLabel|Find patient
+Inpatient_NameOrPhonePlaceholder|Name or phone…
+Inpatient_SelectPatient|Select patient…
+Inpatient_AvailableBedLabel|Available bed
+Inpatient_SelectBed|Select bed…
+Inpatient_BoardEyebrow|Board
+Inpatient_ActiveAdmissionsTitle|Active admissions
+Inpatient_NoPatientsAdmitted|No patients currently admitted.
+Inpatient_LocationColumn|Location
+Inpatient_AdmittedColumn|Admitted
+Inpatient_DischargeTitle|Discharge
+Inpatient_DischargeNotesLabel|Notes (optional)
+Inpatient_DischargeNotesPlaceholder|Discharge summary…
+Inpatient_TransferBedTitle|Transfer bed
+Inpatient_TargetBedLabel|Target bed
+Inpatient_SelectAvailableBed|Select available bed…
+Inpatient_TransferNotesPlaceholder|Transfer reason…
+Inpatient_MapEyebrow|Map
+Inpatient_BedsByWardTitle|Beds by ward
+Inpatient_NoWardsYet|No wards yet. Add a physical facility, then create a ward, rooms, and beds.
+Inpatient_NoRoomsInWard|No rooms in this ward.
+Inpatient_RoomTypeParen| ({0})
+Inpatient_ActiveCheckbox|Active
+Inpatient_HistoryEyebrow|History
+Inpatient_AdmissionHistoryTitle|Admission history
+Inpatient_StatusFilterLabel|Status filter
+Inpatient_StatusAdmitted|Admitted
+Inpatient_StatusDischarged|Discharged
+Inpatient_NoAdmissionsMatch|No admissions match this filter.
+Inpatient_DischargedColumn|Discharged
+Inpatient_CouldNotLoadInpatientBoard|Could not load inpatient board.
+Inpatient_CouldNotLoadAdmissionHistory|Could not load admission history.
+Inpatient_CouldNotLoadMoreAdmissions|Could not load more admissions.
+Inpatient_SelectFacilityAndWard|Select a facility and enter a ward name.
+Inpatient_CouldNotCreateWard|Could not create ward.
+Inpatient_WardCreated|Ward created.
+Inpatient_SelectWardAndRoom|Select a ward and enter a room name.
+Inpatient_CouldNotCreateRoom|Could not create room.
+Inpatient_RoomCreated|Room created.
+Inpatient_SelectRoomAndBed|Select a room and enter a bed label.
+Inpatient_CouldNotCreateBed|Could not create bed.
+Inpatient_BedCreated|Bed created.
+Inpatient_SelectPatientAndBed|Select a patient and an available bed.
+Inpatient_CouldNotAdmitPatient|Could not admit patient.
+Inpatient_PatientAdmitted|Patient admitted.
+Inpatient_CouldNotDischargePatient|Could not discharge patient.
+Inpatient_PatientDischarged|Patient discharged.
+Inpatient_SelectTargetBed|Select a target bed.
+Inpatient_CouldNotTransferPatient|Could not transfer patient.
+Inpatient_PatientTransferred|Patient transferred.
+Inpatient_WardNameRequired|Ward name is required.
+Inpatient_CouldNotUpdateWard|Could not update ward.
+Inpatient_WardUpdated|Ward updated.
+Inpatient_WardDeactivated|Ward deactivated.
+Inpatient_WardReactivated|Ward reactivated.
+Inpatient_CouldNotDeleteWard|Could not delete ward.
+Inpatient_WardRemoved|Ward removed.
+Inpatient_RoomNameRequired|Room name is required.
+Inpatient_CouldNotUpdateRoom|Could not update room.
+Inpatient_RoomUpdated|Room updated.
+Inpatient_RoomDeactivated|Room deactivated.
+Inpatient_RoomReactivated|Room reactivated.
+Inpatient_CouldNotDeleteRoom|Could not delete room.
+Inpatient_RoomRemoved|Room removed.
+Inpatient_BedLabelRequired|Bed label is required.
+Inpatient_CouldNotUpdateBed|Could not update bed.
+Inpatient_BedUpdated|Bed updated.
+Inpatient_CouldNotUpdateBedStatus|Could not update bed status.
+Inpatient_BedMaintenance|Bed set to maintenance.
+Inpatient_BedAvailable|Bed marked available.
+Inpatient_CouldNotDeleteBed|Could not delete bed.
+Inpatient_BedRemoved|Bed removed.
+Inpatient_LocationFormat|{0} · {1} · {2} · Bed {3}
+Inpatient_BedDisplayFormat|{0} · {1} · Bed {2}
+Appointments_PageTitle|Appointments - RaphCare Admin
+PatientDetail_PageTitleFallback|Patient
+PatientDetail_CouldNotLoadPatient|Could not load patient.
+ProviderDetail_PageTitleFallback|Provider
+Visit_PageTitleFallback|Visit
+TeleJoin_PageTitle|Telehealth - RaphCare Admin
+PatientDetail_Gender|Gender
+PatientDetail_Phone|Phone
+PatientDetail_Rule|Rule
+PatientDetail_Device|Device
+PatientDetail_ClinicalEyebrow|Clinical
+PatientDetail_AppointmentsLead|Bookings at this hospital.
+PatientDetail_Spo2Value|{0}%
+PatientDetail_LocationWithAccuracy|{0} (±{1} m)
+ProviderDetail_AvailabilityEyebrow|Availability
+Visit_DetailLead|{0} · {1} · times in {2}
+Visit_UnitLabel|Unit
+Visit_AppointmentsNav|← Appointments

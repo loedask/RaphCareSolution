@@ -1,0 +1,14 @@
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await CultureService.InitializeAsync();
+        CultureService.CultureChanged += OnCultureChanged;
+    }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+}

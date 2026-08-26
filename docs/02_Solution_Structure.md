@@ -74,11 +74,14 @@
 ### RaphCare.Web
 - Blazor WASM structure (App, components, pages, etc.); references RaphCare.Client
 - Local development: `dotnet run --project RaphCare.Web`
+- Staff portal today is desktop-first. Future: same admin on a phone via responsive UI, then a thin install, not a full PWA. See **docs/15_Web_Admin_On_Phone.md**.
 
 ### RaphCare.Web.Host
 - Thin ASP.NET Core host (`UseBlazorFrameworkFiles`, static files, `MapFallbackToFile("index.html")`)
 - Project reference to **RaphCare.Web**; publish this project (not WASM alone) to **Linux** App Service
 - Same approach as Bobeta `Bobeta.Web.Host`
+- Maps `.webmanifest` for a possible later thin install; no manifest is served yet.
+- Forwards `ASPNETCORE_ENVIRONMENT` to Blazor WASM (`Blazor-Environment` header) and can serve `ApiBaseUrl` from App Service settings so the browser does not keep `localhost`.
 
 ### RaphCare.Mobile.Kernel
 - **net10.0** class library (no MAUI): `AuthResult`, `FeatureFlags`, `FeatureFlagOptions` — same CLR namespaces as before (`RaphCare.Mobile.Core.Common.*`) so the MAUI app references this assembly for shared, testable primitives. Unit tests target Kernel only.

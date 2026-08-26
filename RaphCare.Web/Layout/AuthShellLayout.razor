@@ -1,4 +1,6 @@
 @inherits LayoutComponentBase
+@inject IUiCultureService CultureService
+@implements IDisposable
 
 <div class="auth-shell">
     <aside class="auth-brand-panel">
@@ -7,45 +9,44 @@
         <div class="auth-brand-top">
             <div class="auth-brand-logo">+</div>
             <div>
-                <div class="auth-brand-name">RaphCare</div>
-                <div class="auth-brand-tag">Connected healthcare platform</div>
+                <div class="auth-brand-name">@AppResources.T("Common_AppName")</div>
+                <div class="auth-brand-tag">@AppResources.T("AuthShell_BrandTagline")</div>
             </div>
         </div>
 
         <div class="auth-brand-middle">
-            <h1 class="auth-brand-headline">Bring every patient, clinic and care team into one trusted view.</h1>
-            <p class="auth-brand-lead">
-                Register hospitals, onboard staff, and give patients secure access to records, appointments, and telehealth.
-            </p>
+            <h1 class="auth-brand-headline">@AppResources.T("AuthShell_Headline")</h1>
+            <p class="auth-brand-lead">@AppResources.T("AuthShell_Lead")</p>
 
             <div class="auth-feature-list">
                 <div class="auth-feature">
                     <span class="auth-feature-icon">🏥</span>
                     <div>
-                        <div class="auth-feature-title">Hospital onboarding</div>
-                        <div class="auth-feature-desc">Register your clinic, facilities, and practice portal in minutes.</div>
+                        <div class="auth-feature-title">@AppResources.T("AuthShell_FeatureHospitalTitle")</div>
+                        <div class="auth-feature-desc">@AppResources.T("AuthShell_FeatureHospitalDesc")</div>
                     </div>
                 </div>
                 <div class="auth-feature">
                     <span class="auth-feature-icon">📋</span>
                     <div>
-                        <div class="auth-feature-title">Clinical workspace</div>
-                        <div class="auth-feature-desc">Patients, visits, and reporting scoped per clinic tenant.</div>
+                        <div class="auth-feature-title">@AppResources.T("AuthShell_FeatureWorkspaceTitle")</div>
+                        <div class="auth-feature-desc">@AppResources.T("AuthShell_FeatureWorkspaceDesc")</div>
                     </div>
                 </div>
                 <div class="auth-feature">
                     <span class="auth-feature-icon">🔒</span>
                     <div>
-                        <div class="auth-feature-title">Verified access</div>
-                        <div class="auth-feature-desc">Email verification and 2FA codes sent from your RaphCare mailbox.</div>
+                        <div class="auth-feature-title">@AppResources.T("AuthShell_FeatureVerifiedTitle")</div>
+                        <div class="auth-feature-desc">@AppResources.T("AuthShell_FeatureVerifiedDesc")</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="auth-brand-footer">
-            <span>Secure email sign-in</span>
-            <span>© @DateTime.UtcNow.Year RaphCare</span>
+            <span>@AppResources.T("AuthShell_FooterSecureSignIn")</span>
+            <span>@AppResources.Format("AuthShell_FooterCopyright", DateTime.UtcNow.Year)</span>
+            <LanguagePicker />
         </div>
     </aside>
 
@@ -53,9 +54,10 @@
         <div class="auth-mobile-brand">
             <div class="auth-brand-logo sm">+</div>
             <div>
-                <div class="auth-brand-name">RaphCare</div>
-                <div class="auth-brand-tag">Healthcare platform</div>
+                <div class="auth-brand-name">@AppResources.T("Common_AppName")</div>
+                <div class="auth-brand-tag">@AppResources.T("AuthShell_MobileTagline")</div>
             </div>
+            <LanguagePicker />
         </div>
 
         <div class="auth-card-shell">
@@ -63,3 +65,12 @@
         </div>
     </main>
 </div>
+
+@code {
+    protected override void OnInitialized() =>
+        CultureService.CultureChanged += OnCultureChanged;
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+}

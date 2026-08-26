@@ -39,6 +39,7 @@ jobs:
           fi
           api_base="${api_base%/}"
           printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Web/wwwroot/appsettings.json
+          printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Web/wwwroot/appsettings.Staging.json
           cat RaphCare.Web/wwwroot/appsettings.json
 
       - name: Publish Web Host (linux-x64)
@@ -81,3 +82,21 @@ jobs:
           app-name: 'raphcare'
           slot-name: 'Production'
           package: .
+
+      - name: Point hosted Web at API
+        shell: bash
+        run: |
+          api_base="${{ vars.RAPHCARE_API_BASE_URL }}"
+          if [ -z "$api_base" ]; then
+            api_base="https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net"
+          fi
+          api_base="${api_base%/}"
+          resource_group="${{ vars.RAPHCARE_WEB_RESOURCE_GROUP }}"
+          if [ -z "$resource_group" ]; then
+            resource_group="raphcare_group"
+          fi
+          az webapp config appsettings set \
+            --resource-group "$resource_group" \
+            --name raphcare \
+            --settings "ASPNETCORE_ENVIRONMENT=Staging" "ApiBaseUrl=${api_base}" \
+            --output none

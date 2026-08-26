@@ -1,9 +1,12 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models;
+using RaphCare.Web.Resources.Strings;
 using RaphCare.Web.Services;
+using RaphCare.Web.Services.Localization;
 
 namespace RaphCare.Web.Layout;
 
@@ -13,6 +16,7 @@ public partial class AdminLayout
     [Inject] private IWebAuthService WebAuth { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IUiCultureService CultureService { get; set; } = default!;
 
     private IReadOnlyList<(string Label, string Href, bool IsLast)> _breadcrumbs = [];
     private bool _clinicSwitcherOpen;
@@ -25,6 +29,8 @@ public partial class AdminLayout
 
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
+
         await WebAuth.EnsureHydratedAsync().ConfigureAwait(true);
 
         var token = await WebAuth.GetTokenAsync().ConfigureAwait(true);
@@ -42,6 +48,12 @@ public partial class AdminLayout
 
         Navigation.LocationChanged += OnLocationChanged;
         UpdateBreadcrumbs(Navigation.Uri);
+    }
+
+    private void OnCultureChanged()
+    {
+        UpdateBreadcrumbs(Navigation.Uri);
+        _ = InvokeAsync(StateHasChanged);
     }
 
     private void OnClinicContextChanged() => _ = InvokeAsync(StateHasChanged);
@@ -176,35 +188,36 @@ public partial class AdminLayout
         if (string.IsNullOrEmpty(path))
             path = "/";
 
+        var app = AppResources.T("Common_AppName", CultureInfo.CurrentUICulture);
         _breadcrumbs = path switch
         {
-            "/admin" => [("RaphCare", "/admin", false), ("Dashboard", "/admin", true)],
-            "/admin/hospitals" => [("RaphCare", "/admin", false), ("Hospitals", "/admin/hospitals", true)],
+            "/admin" => [(app, "/admin", false), (AppResources.T("Common_Dashboard", CultureInfo.CurrentUICulture), "/admin", true)],
+            "/admin/hospitals" => [(app, "/admin", false), (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", true)],
             "/admin/hospitals/register" =>
             [
-                ("RaphCare", "/admin", false),
-                ("Hospitals", "/admin/hospitals", false),
-                ("Register hospital", "/admin/hospitals/register", true)
+                (app, "/admin", false),
+                (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", false),
+                (AppResources.T("AdminLayout_BreadcrumbRegisterHospital", CultureInfo.CurrentUICulture), "/admin/hospitals/register", true)
             ],
             _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path.EndsWith("/appointments", StringComparison.Ordinal) =>
             [
-                ("RaphCare", "/admin", false),
-                ("Hospitals", "/admin/hospitals", false),
-                ("Appointments", path, true)
+                (app, "/admin", false),
+                (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", false),
+                (AppResources.T("Common_Appointments", CultureInfo.CurrentUICulture), path, true)
             ],
             _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path.Contains("/providers/", StringComparison.Ordinal) =>
             [
-                ("RaphCare", "/admin", false),
-                ("Hospitals", "/admin/hospitals", false),
-                ("Provider", path, true)
+                (app, "/admin", false),
+                (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", false),
+                (AppResources.T("AdminLayout_BreadcrumbProvider", CultureInfo.CurrentUICulture), path, true)
             ],
             _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path != "/admin/hospitals/register" =>
             [
-                ("RaphCare", "/admin", false),
-                ("Hospitals", "/admin/hospitals", false),
-                ("Hospital details", path, true)
+                (app, "/admin", false),
+                (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", false),
+                (AppResources.T("AdminLayout_BreadcrumbHospitalDetails", CultureInfo.CurrentUICulture), path, true)
             ],
-            _ => [("RaphCare", "/admin", false), ("Clinic portal", "/admin", true)]
+            _ => [(app, "/admin", false), (AppResources.T("AdminLayout_BreadcrumbClinicPortal", CultureInfo.CurrentUICulture), "/admin", true)]
         };
     }
 
@@ -216,6 +229,7 @@ public partial class AdminLayout
 
     public void Dispose()
     {
+        CultureService.CultureChanged -= OnCultureChanged;
         Navigation.LocationChanged -= OnLocationChanged;
         ClinicContext.Changed -= OnClinicContextChanged;
         _patientSearchCts?.Cancel();

@@ -1,14 +1,16 @@
 @page "/admin/hospitals/{ClinicId:guid}/appointments/{AppointmentId:guid}/tele"
 @layout AdminLayout
 @implements IAsyncDisposable
+@implements IDisposable
 @inject IJSRuntime Js
+@inject IUiCultureService CultureService
 
-<PageTitle>Telehealth — RaphCare Admin</PageTitle>
+<PageTitle>@AppResources.T("TeleJoin_PageTitle")</PageTitle>
 
 <section class="admin-page">
     <header class="admin-page-header">
         <div>
-            <h1>Telehealth session</h1>
+            <h1>@AppResources.T("Common_TelehealthSession")</h1>
             <p class="admin-page-lead">
                 @if (_join is not null)
                 {
@@ -16,7 +18,7 @@
                 }
                 else
                 {
-                    <text>Connecting…</text>
+                    <text>@AppResources.T("Common_Connecting")</text>
                 }
             </p>
         </div>
@@ -37,7 +39,7 @@
 
     @if (_loading)
     {
-        <p class="text-muted">Preparing telehealth session…</p>
+        <p class="text-muted">@AppResources.T("Common_PreparingTelehealth")</p>
     }
     else if (_join is not null)
     {
@@ -45,42 +47,41 @@
             <div class="admin-page-card-body">
                 <dl class="admin-detail-grid">
                     <div>
-                        <dt>Channel</dt>
+                        <dt>@AppResources.T("Common_Channel")</dt>
                         <dd><code>@_join.ChannelName</code></dd>
                     </div>
                     <div>
-                        <dt>Session</dt>
+                        <dt>@AppResources.T("Common_Session")</dt>
                         <dd><code>@_join.TeleSessionId</code></dd>
                     </div>
                     <div>
-                        <dt>Visit</dt>
-                        <dd><a href="/admin/hospitals/@ClinicId/visits/@_join.VisitId">Open visit chart</a></dd>
+                        <dt>@AppResources.T("Common_Visit")</dt>
+                        <dd><a href="/admin/hospitals/@ClinicId/visits/@_join.VisitId">@AppResources.T("Common_OpenVisitChart")</a></dd>
                     </div>
                 </dl>
 
                 @if (!_join.RtcConfigured || string.IsNullOrWhiteSpace(_join.AppId) || string.IsNullOrWhiteSpace(_join.RtcToken))
                 {
                     <div class="alert alert-info" style="margin-top: 1rem;">
-                        Agora is not configured on the API. Session was created, but live video cannot start until
-                        <code>Agora:AppId</code> and <code>Agora:AppCertificate</code> are set. See docs/10_Agora_Twilio_Setup.md.
+                        @AppResources.T("Common_AgoraNotConfigured")
                     </div>
                 }
                 else
                 {
                     <div class="tele-stage" style="margin-top: 1.25rem;">
-                        <div class="tele-player" id="tele-remote-player" aria-label="Remote video"></div>
-                        <div class="tele-player tele-player-local" id="tele-local-player" aria-label="Local video"></div>
+                        <div class="tele-player" id="tele-remote-player" aria-label="@AppResources.T("Common_RemoteVideoAria")"></div>
+                        <div class="tele-player tele-player-local" id="tele-local-player" aria-label="@AppResources.T("Common_LocalVideoAria")"></div>
                     </div>
                     <div class="admin-page-actions" style="margin-top: 1rem;">
                         @if (!_inCall)
                         {
                             <button type="button" class="btn btn-primary" disabled="@_joining" @onclick="JoinCallAsync">
-                                @(_joining ? "Joining…" : "Join video")
+                                @(_joining ? AppResources.T("Common_Joining") : AppResources.T("Common_JoinVideo"))
                             </button>
                         }
                         else
                         {
-                            <button type="button" class="btn btn-ghost" @onclick="LeaveCallAsync">Leave call</button>
+                            <button type="button" class="btn btn-ghost" @onclick="LeaveCallAsync">@AppResources.T("Common_LeaveCall")</button>
                         }
                     </div>
                 }
@@ -89,7 +90,7 @@
     }
 
     <div class="admin-page-actions">
-        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">← Appointments</a>
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_BackToAppointments")</a>
     </div>
 </section>
 
@@ -109,6 +110,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
+
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
         _loading = true;
         _error = null;
@@ -117,13 +120,13 @@
 
         if (!response.IsSuccess || response.Data is null)
         {
-            _error = response.ErrorMessage ?? "Could not start telehealth session.";
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotStartTelehealth");
             return;
         }
 
         _join = response.Data;
         if (!_join.RtcConfigured)
-            _info = "Session ready. Configure Agora on the API to enable live video.";
+            _info = AppResources.T("Common_SessionReadyConfigureAgora");
     }
 
     private async Task JoinCallAsync()
@@ -165,6 +168,10 @@
 
         _inCall = false;
     }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 
     public async ValueTask DisposeAsync()
     {

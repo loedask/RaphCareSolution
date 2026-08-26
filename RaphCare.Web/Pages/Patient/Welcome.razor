@@ -1,13 +1,13 @@
 @page "/patient/welcome"
 
-<PageTitle>Welcome — Patient</PageTitle>
+<PageTitle>@AppResources.T("PatientWelcome_PageTitle")</PageTitle>
 
 <section class="auth-page">
-    <h1>You're signed in</h1>
-    <p class="text-muted">Your patient account is active. Download the RaphCare mobile app for appointments, records, telehealth, and device monitoring.</p>
+    <h1>@AppResources.T("PatientWelcome_Title")</h1>
+    <p class="text-muted">@AppResources.T("PatientWelcome_Lead")</p>
     <div class="auth-actions">
-        <a class="btn btn-primary" href="/">Back to home</a>
-        <button type="button" class="btn btn-secondary" @onclick="SignOutAsync">Sign out</button>
+        <a class="btn btn-primary" href="/">@AppResources.T("Common_BackToHome")</a>
+        <button type="button" class="btn btn-secondary" @onclick="SignOutAsync">@AppResources.T("Common_SignOut")</button>
     </div>
 </section>
 

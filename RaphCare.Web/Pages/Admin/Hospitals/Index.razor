@@ -1,30 +1,32 @@
 @page "/admin/hospitals"
 @layout AdminLayout
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>Hospitals — RaphCare Admin</PageTitle>
+<PageTitle>@AppResources.T("HospitalsIndex_PageTitle")</PageTitle>
 
 <section class="admin-page">
     <header class="admin-page-header">
         <div>
-            <h1>My hospitals</h1>
-            <p class="admin-page-lead">Healthcare organizations linked to your professional account.</p>
+            <h1>@AppResources.T("Common_MyHospitals")</h1>
+            <p class="admin-page-lead">@AppResources.T("HospitalsIndex_Lead")</p>
         </div>
-        <a class="btn btn-primary" href="/admin/hospitals/register">+ Register hospital</a>
+        <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospitalButton")</a>
     </header>
 
     @if (_loading)
     {
-        <p class="text-muted">Loading…</p>
+        <p class="text-muted">@AppResources.T("Common_Loading")</p>
     }
     else if (_authRequired)
     {
         <div class="empty-state admin-guidance-state">
             <div class="empty-state-icon" aria-hidden="true">⌂</div>
-            <h3>Finish registering your hospital</h3>
-            <p>Your professional account is set up, but we couldn't load your hospitals yet. Continue onboarding or sign in again if your session expired.</p>
+            <h3>@AppResources.T("Common_FinishRegisteringHospital")</h3>
+            <p>@AppResources.T("HospitalsIndex_AuthGuidanceLead")</p>
             <div class="admin-guidance-actions">
-                <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
-                <a class="btn btn-secondary" href="@_signInReturnUrl">Sign in again</a>
+                <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospital")</a>
+                <a class="btn btn-secondary" href="@_signInReturnUrl">@AppResources.T("Common_SignInAgain")</a>
             </div>
         </div>
     }
@@ -36,14 +38,14 @@
     {
         <div class="empty-state admin-guidance-state">
             <div class="empty-state-icon" aria-hidden="true">⌂</div>
-            <h3>No hospitals linked yet</h3>
-            <p>Register a new hospital, or link one you created earlier using its registration number.</p>
+            <h3>@AppResources.T("HospitalsIndex_EmptyTitle")</h3>
+            <p>@AppResources.T("HospitalsIndex_EmptyLead")</p>
             <div class="claim-form">
-                <label>Registration number</label>
+                <label>@AppResources.T("Common_RegistrationNumber")</label>
                 <div class="claim-form-row">
-                    <input class="form-control" @bind="_claimRegistrationNumber" placeholder="e.g. 12345" />
+                    <input class="form-control" @bind="_claimRegistrationNumber" placeholder="@AppResources.T("Common_RegistrationNumberPlaceholder")" />
                     <button type="button" class="btn btn-secondary" disabled="@_claiming" @onclick="ClaimAsync">
-                        @(_claiming ? "Linking…" : "Link hospital")
+                        @(_claiming ? AppResources.T("Common_Linking") : AppResources.T("Common_LinkHospital"))
                     </button>
                 </div>
                 @if (!string.IsNullOrEmpty(_claimError))
@@ -52,7 +54,7 @@
                 }
             </div>
             <div class="admin-guidance-actions">
-                <a class="btn btn-primary" href="/admin/hospitals/register">Register hospital</a>
+                <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospital")</a>
             </div>
         </div>
     }
@@ -60,19 +62,19 @@
     {
         <div class="card">
             <div class="card-header">
-                <h3>Your hospitals</h3>
-                <span class="card-header-meta">@_clinics.Count total</span>
+                <h3>@AppResources.T("Common_YourHospitals")</h3>
+                <span class="card-header-meta">@AppResources.Format("HospitalsIndex_TotalMeta", _clinics.Count)</span>
             </div>
             <div class="table-wrap">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Registration #</th>
-                            <th>Country</th>
-                            <th>Facilities</th>
-                            <th>Registered</th>
-                            <th>Status</th>
+                            <th>@AppResources.T("Common_Name")</th>
+                            <th>@AppResources.T("Common_RegistrationNumberShort")</th>
+                            <th>@AppResources.T("Common_Country")</th>
+                            <th>@AppResources.T("Common_Facilities")</th>
+                            <th>@AppResources.T("Common_Registered")</th>
+                            <th>@AppResources.T("Common_Status")</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -87,10 +89,10 @@
                                 <td>@clinic.CreatedAt.ToString("dd MMM yyyy")</td>
                                 <td>
                                     <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
-                                        @(clinic.IsActive ? "Active" : "Inactive")
+                                        @(clinic.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
                                     </span>
                                 </td>
-                                <td><a class="btn btn-ghost btn-sm" href="/admin/hospitals/@clinic.Id">Open →</a></td>
+                                <td><a class="btn btn-ghost btn-sm" href="/admin/hospitals/@clinic.Id">@AppResources.T("Common_Open")</a></td>
                             </tr>
                         }
                     </tbody>
@@ -120,8 +122,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        CultureService.CultureChanged += OnCultureChanged;
         await LoadAsync();
     }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
 
     private async Task LoadAsync()
     {
@@ -137,7 +142,7 @@
             return;
         }
 
-        _error = response.ErrorMessage ?? "Could not load hospitals.";
+        _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadHospitals");
         _authRequired = response.StatusCode is 401 or 403;
     }
 
@@ -150,7 +155,7 @@
 
         if (!response.IsSuccess || response.Data is null)
         {
-            _claimError = response.ErrorMessage ?? "Could not link hospital.";
+            _claimError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLinkHospital");
             return;
         }
 
@@ -158,4 +163,6 @@
         await LoadAsync();
         Navigation.NavigateTo($"/admin/hospitals/{response.Data.Value}");
     }
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 }

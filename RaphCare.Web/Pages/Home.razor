@@ -1,21 +1,23 @@
 ﻿@page "/"
 @page "/home"
 @layout AuthShellLayout
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>RaphCare — Sign in</PageTitle>
+<PageTitle>@AppResources.T("Home_PageTitle")</PageTitle>
 
 <div class="auth-card">
-    <h2 class="auth-card-title">Welcome</h2>
-    <p class="auth-card-subtitle">Choose how you'll use RaphCare, then sign in or create an account.</p>
+    <h2 class="auth-card-title">@AppResources.T("Home_Title")</h2>
+    <p class="auth-card-subtitle">@AppResources.T("Home_Subtitle")</p>
 
-    <div class="role-toggle" role="tablist" aria-label="Account type">
+    <div class="role-toggle" role="tablist" aria-label="@AppResources.T("Home_AccountTypeAria")">
         <button type="button"
                 class="role-toggle-btn @(_role == UserRole.Patient ? "active" : "")"
                 role="tab"
                 aria-selected="@(_role == UserRole.Patient)"
                 @onclick="() => SelectRole(UserRole.Patient)">
             <span class="role-toggle-icon">♥</span>
-            <span>Patient</span>
+            <span>@AppResources.T("Home_RolePatient")</span>
         </button>
         <button type="button"
                 class="role-toggle-btn @(_role == UserRole.Professional ? "active" : "")"
@@ -23,51 +25,51 @@
                 aria-selected="@(_role == UserRole.Professional)"
                 @onclick="() => SelectRole(UserRole.Professional)">
             <span class="role-toggle-icon">⚕</span>
-            <span>Healthcare professional</span>
+            <span>@AppResources.T("Home_RoleProfessional")</span>
         </button>
     </div>
 
     <div class="role-summary">
         @if (_role == UserRole.Patient)
         {
-            <h3>Patient access</h3>
-            <p>Book care, view records, and connect with your clinic. Full mobile experience available in the RaphCare app.</p>
+            <h3>@AppResources.T("Home_PatientAccessTitle")</h3>
+            <p>@AppResources.T("Home_PatientAccessLead")</p>
             <ul class="role-bullets">
-                <li>Email + password with verification code</li>
-                <li>Link to your hospital during registration</li>
-                <li>Secure patient portal on web and mobile</li>
+                <li>@AppResources.T("Home_PatientBullet1")</li>
+                <li>@AppResources.T("Home_PatientBullet2")</li>
+                <li>@AppResources.T("Home_PatientBullet3")</li>
             </ul>
         }
         else
         {
-            <h3>Clinic portal</h3>
-            <p>Register your practice, onboard your hospital, and manage your clinic workspace from the admin portal.</p>
+            <h3>@AppResources.T("Home_ClinicPortalTitle")</h3>
+            <p>@AppResources.T("Home_ClinicPortalLead")</p>
             <ul class="role-bullets">
-                <li>Create your professional account</li>
-                <li>Register hospital &amp; primary facility</li>
-                <li>Email 2FA on every sign-in</li>
+                <li>@AppResources.T("Home_ClinicBullet1")</li>
+                <li>@AppResources.T("Home_ClinicBullet2")</li>
+                <li>@AppResources.T("Home_ClinicBullet3")</li>
             </ul>
         }
     </div>
 
     <div class="auth-card-actions">
         <a class="btn btn-primary btn-block" href="@RegisterHref">
-            Create account
+            @AppResources.T("Common_CreateAccount")
             <span class="btn-arrow">→</span>
         </a>
-        <a class="btn btn-secondary btn-block" href="@SignInHref">Sign in</a>
+        <a class="btn btn-secondary btn-block" href="@SignInHref">@AppResources.T("Common_SignIn")</a>
     </div>
 
     <p class="auth-card-foot">
         @if (_role == UserRole.Patient)
         {
-            <span>Healthcare staff?</span>
-            <button type="button" class="link-btn" @onclick="() => SelectRole(UserRole.Professional)">Switch to professional</button>
+            <span>@AppResources.T("Home_HealthcareStaffPrompt")</span>
+            <button type="button" class="link-btn" @onclick="() => SelectRole(UserRole.Professional)">@AppResources.T("Home_SwitchToProfessional")</button>
         }
         else
         {
-            <span>Looking for patient access?</span>
-            <button type="button" class="link-btn" @onclick="() => SelectRole(UserRole.Patient)">Switch to patient</button>
+            <span>@AppResources.T("Home_LookingForPatientPrompt")</span>
+            <button type="button" class="link-btn" @onclick="() => SelectRole(UserRole.Patient)">@AppResources.T("Home_SwitchToPatient")</button>
         }
     </p>
 </div>
@@ -79,14 +81,19 @@
 
     protected override void OnInitialized()
     {
+        CultureService.CultureChanged += OnCultureChanged;
         if (Navigation.Uri.Contains("role=professional", StringComparison.OrdinalIgnoreCase))
             _role = UserRole.Professional;
     }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
 
     private string RegisterHref => _role == UserRole.Patient ? "/patient/register" : "/professional/register";
     private string SignInHref => _role == UserRole.Patient ? "/patient/signin" : "/professional/signin";
 
     private void SelectRole(UserRole role) => _role = role;
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 
     private enum UserRole { Patient, Professional }
 }

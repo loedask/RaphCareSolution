@@ -35,8 +35,6 @@ if (Test-Path $EnvironmentJsonPath) {
     if ($envInfo.resourceGroup) { $ResourceGroup = $envInfo.resourceGroup }
 }
 
-$webAppSettingsPath = Join-Path $repoRoot "RaphCare.Web\wwwroot\appsettings.json"
-@{ ApiBaseUrl = $ApiBaseUrl } | ConvertTo-Json | Set-Content $webAppSettingsPath -Encoding UTF8
 Write-Host "ApiBaseUrl -> $ApiBaseUrl"
 
 $publishDir = Join-Path $repoRoot "artifacts\publish-web-host"
@@ -52,6 +50,15 @@ dotnet publish (Join-Path $repoRoot "RaphCare.Web.Host\RaphCare.Web.Host.csproj"
     -o $publishDir
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
 
+$apiBaseJson = @{ ApiBaseUrl = $ApiBaseUrl } | ConvertTo-Json
+foreach ($name in @("appsettings.json", "appsettings.Staging.json")) {
+    $publishedSettings = Join-Path $publishDir "wwwroot\$name"
+    if (-not (Test-Path (Split-Path $publishedSettings))) {
+        throw "Published wwwroot not found under $publishDir"
+    }
+    Set-Content -Path $publishedSettings -Value $apiBaseJson -Encoding UTF8
+}
+
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Compress-Archive -Path (Join-Path $publishDir "*") -DestinationPath $zipPath -Force
 
@@ -62,5 +69,11 @@ az webapp deploy `
     --src-path $zipPath `
     --type zip `
     -o none
+
+& (Join-Path $PSScriptRoot "Set-RaphCareAzureWebAppSettings.ps1") `
+    -WebAppName $WebAppName `
+    -ResourceGroup $ResourceGroup `
+    -ApiBaseUrl $ApiBaseUrl `
+    -EnvironmentName "Staging"
 
 Write-Host "Web host published to App Service $WebAppName"
