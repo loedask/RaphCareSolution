@@ -1585,6 +1585,9 @@
   <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
     <value>{0} motango mobimba</value>
   </data>
+  <data name="HospitalsIndex_EnterRegistrationNumber" xml:space="preserve">
+    <value>Tia nimero ya enregistrement.</value>
+  </data>
   <data name="HospitalsRegister_PageTitle" xml:space="preserve">
     <value>Bokomisa lopitalo - RaphCare Admin</value>
   </data>

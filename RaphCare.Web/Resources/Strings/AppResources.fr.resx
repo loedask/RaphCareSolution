@@ -1585,6 +1585,9 @@
   <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
     <value>{0} total</value>
   </data>
+  <data name="HospitalsIndex_EnterRegistrationNumber" xml:space="preserve">
+    <value>Entrez un numéro d&apos;enregistrement.</value>
+  </data>
   <data name="HospitalsRegister_PageTitle" xml:space="preserve">
     <value>Registre de l&apos;hôpital - RaphCare Admin</value>
   </data>

@@ -47,8 +47,16 @@
                     <div class="claim-form">
                         <label for="hospital-claim-number">@AppResources.T("Common_RegistrationNumber")</label>
                         <div class="claim-form-row">
-                            <input id="hospital-claim-number" class="form-control" @bind="_claimRegistrationNumber" placeholder="@AppResources.T("Common_RegistrationNumberPlaceholder")" />
-                            <button type="button" class="btn btn-secondary" disabled="@_claiming" @onclick="ClaimAsync">
+                            <input id="hospital-claim-number"
+                                   class="form-control"
+                                   @bind="_claimRegistrationNumber"
+                                   @bind:event="oninput"
+                                   @bind:after="OnClaimNumberChanged"
+                                   placeholder="@AppResources.T("Common_RegistrationNumberPlaceholder")" />
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    disabled="@(_claiming || string.IsNullOrWhiteSpace(_claimRegistrationNumber))"
+                                    @onclick="ClaimAsync">
                                 @(_claiming ? AppResources.T("Common_Linking") : AppResources.T("Common_LinkHospital"))
                             </button>
                         </div>
@@ -155,6 +163,12 @@
 
     private async Task ClaimAsync()
     {
+        if (string.IsNullOrWhiteSpace(_claimRegistrationNumber))
+        {
+            _claimError = AppResources.T("HospitalsIndex_EnterRegistrationNumber");
+            return;
+        }
+
         _claiming = true;
         _claimError = null;
         var response = await AdminClinicService.ClaimByRegistrationNumberAsync(_claimRegistrationNumber.Trim());
@@ -170,6 +184,8 @@
         await LoadAsync();
         Navigation.NavigateTo($"/admin/hospitals/{response.Data.Value}");
     }
+
+    private void OnClaimNumberChanged() => _claimError = null;
 
     public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
 

@@ -507,6 +507,7 @@ HospitalsIndex_AuthGuidanceLead|Your professional account is set up, but we coul
 HospitalsIndex_EmptyTitle|No hospitals linked yet
 HospitalsIndex_EmptyLead|Register a new hospital, or link one you created earlier using its registration number.
 HospitalsIndex_TotalMeta|{0} total
+HospitalsIndex_EnterRegistrationNumber|Enter a registration number.
 HospitalsRegister_PageTitle|Register hospital - RaphCare Admin
 HospitalsRegister_StepWelcome|Welcome
 HospitalsRegister_StepHospital|Hospital

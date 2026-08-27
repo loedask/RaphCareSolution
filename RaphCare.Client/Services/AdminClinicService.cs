@@ -294,6 +294,9 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(registrationNumber))
+                return Response<Guid?>.Failure("Enter a registration number.", 400);
+
             var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
             using var response = await client
                 .PostAsJsonAsync("api/admin/clinics/claim", new { registrationNumber }, cancellationToken)

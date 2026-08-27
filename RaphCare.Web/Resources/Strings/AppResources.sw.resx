@@ -1585,6 +1585,9 @@
   <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
     <value>{0} jumla</value>
   </data>
+  <data name="HospitalsIndex_EnterRegistrationNumber" xml:space="preserve">
+    <value>Weka namba ya usajili.</value>
+  </data>
   <data name="HospitalsRegister_PageTitle" xml:space="preserve">
     <value>Sajili hospitali - RaphCare Msimamizi</value>
   </data>
