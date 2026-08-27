@@ -1,51 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -58,7 +12,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Common_AppName" xml:space="preserve">
+  <data name="﻿Common_AppName" xml:space="preserve">
     <value>RaphCare</value>
   </data>
   <data name="Common_SignOut" xml:space="preserve">
@@ -271,8 +225,20 @@
   <data name="Common_PleaseEnterEmail" xml:space="preserve">
     <value>Please enter your email.</value>
   </data>
+  <data name="Common_PleaseEnterValidEmail" xml:space="preserve">
+    <value>Enter a valid email address.</value>
+  </data>
   <data name="Common_PleaseEnterPassword" xml:space="preserve">
     <value>Please enter a password.</value>
+  </data>
+  <data name="Common_PasswordMinLength" xml:space="preserve">
+    <value>Password must be at least 8 characters.</value>
+  </data>
+  <data name="Common_PasswordHint" xml:space="preserve">
+    <value>At least 8 characters</value>
+  </data>
+  <data name="Common_EditDetails" xml:space="preserve">
+    <value>Change email or password</value>
   </data>
   <data name="Common_HealthcareProfessional" xml:space="preserve">
     <value>Healthcare professional</value>
@@ -1328,7 +1294,7 @@
     <value>Welcome</value>
   </data>
   <data name="Home_Subtitle" xml:space="preserve">
-    <value>Choose how you&apos;ll use RaphCare, then sign in or create an account.</value>
+    <value>Choose how you&#x27;ll use RaphCare, then sign in or create an account.</value>
   </data>
   <data name="Home_AccountTypeAria" xml:space="preserve">
     <value>Account type</value>
@@ -1394,7 +1360,7 @@
     <value>Welcome back</value>
   </data>
   <data name="PatientSignIn_Subtitle" xml:space="preserve">
-    <value>Sign in to your patient account. We&apos;ll email you a verification code.</value>
+    <value>Sign in to your patient account. We&#x27;ll email you a verification code.</value>
   </data>
   <data name="PatientSignIn_FootNoAccount" xml:space="preserve">
     <value>No account?</value>
@@ -1421,7 +1387,7 @@
     <value>Welcome - Patient</value>
   </data>
   <data name="PatientWelcome_Title" xml:space="preserve">
-    <value>You&apos;re signed in</value>
+    <value>You&#x27;re signed in</value>
   </data>
   <data name="PatientWelcome_Lead" xml:space="preserve">
     <value>Your patient account is active. Download the RaphCare mobile app for appointments, records, telehealth, and device monitoring.</value>
@@ -1430,10 +1396,10 @@
     <value>Sign in - Healthcare professional</value>
   </data>
   <data name="ProfessionalSignIn_Subtitle" xml:space="preserve">
-    <value>Sign in to your clinic portal. We&apos;ll email you a verification code.</value>
+    <value>Sign in to your clinic portal. We&#x27;ll email you a verification code.</value>
   </data>
   <data name="ProfessionalSignIn_PendingOnboarding" xml:space="preserve">
-    <value>You have a saved hospital registration. After sign-in we&apos;ll take you back to finish it.</value>
+    <value>You have a saved hospital registration. After sign-in we&#x27;ll take you back to finish it.</value>
   </data>
   <data name="ProfessionalSignIn_FootNew" xml:space="preserve">
     <value>New here?</value>
@@ -1553,7 +1519,7 @@
     <value>Healthcare organizations linked to your professional account.</value>
   </data>
   <data name="HospitalsIndex_AuthGuidanceLead" xml:space="preserve">
-    <value>Your professional account is set up, but we couldn&apos;t load your hospitals yet. Continue onboarding or sign in again if your session expired.</value>
+    <value>Your professional account is set up, but we couldn&#x27;t load your hospitals yet. Continue onboarding or sign in again if your session expired.</value>
   </data>
   <data name="HospitalsIndex_EmptyTitle" xml:space="preserve">
     <value>No hospitals linked yet</value>

@@ -69,7 +69,11 @@ Common_CodeMustBeSixDigits|Verification code must be exactly 6 digits.
 Common_PleaseEnterFirstName|Please enter your first name.
 Common_PleaseEnterLastName|Please enter your last name.
 Common_PleaseEnterEmail|Please enter your email.
+Common_PleaseEnterValidEmail|Enter a valid email address.
 Common_PleaseEnterPassword|Please enter a password.
+Common_PasswordMinLength|Password must be at least 8 characters.
+Common_PasswordHint|At least 8 characters
+Common_EditDetails|Change email or password
 Common_HealthcareProfessional|Healthcare professional
 Common_ClinicPortal|Clinic portal
 Common_ClinicAdministrator|Clinic administrator

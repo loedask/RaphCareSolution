@@ -1582,6 +1582,18 @@ a:hover { text-decoration: underline; }
 
 .auth-card .back-link:hover { color: var(--rc-primary); text-decoration: none; }
 
+.auth-card-verify .back-link {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--rc-primary);
+}
+
+.form-hint {
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+    color: var(--rc-muted);
+}
+
 /* Role toggle */
 .role-toggle {
     display: grid;

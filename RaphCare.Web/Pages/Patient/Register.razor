@@ -6,7 +6,9 @@
 <PageTitle>@AppResources.T("PatientRegister_PageTitle")</PageTitle>
 
 <div class="auth-card auth-card-form @(_awaitingCode ? "auth-card-verify" : null)">
-    <button type="button" class="back-link" @onclick="GoBack">@AppResources.T("Common_Back")</button>
+    <button type="button" class="back-link" @onclick="GoBack">
+        @(_awaitingCode ? AppResources.T("Common_EditDetails") : AppResources.T("Common_Back"))
+    </button>
     <h2 class="auth-card-title">@AppResources.T("PatientRegister_Title")</h2>
     <p class="auth-card-subtitle">
         @(_awaitingCode
@@ -41,7 +43,8 @@
                 </div>
                 <div class="form-field">
                     <label>@AppResources.T("Common_Password")</label>
-                    <InputText class="form-control" @bind-Value="_model.Password" type="password" />
+                    <InputText class="form-control" @bind-Value="_model.Password" type="password" autocomplete="new-password" />
+                    <p class="form-hint">@AppResources.T("Common_PasswordHint")</p>
                 </div>
                 <div class="form-field">
                     <label>@AppResources.T("Common_ClinicOptional")</label>
@@ -111,14 +114,20 @@
     {
         if (_awaitingCode)
         {
-            _awaitingCode = false;
-            _model.VerificationCode = string.Empty;
-            _error = null;
-            _status = null;
+            ReturnToDetails(keepError: false);
             return;
         }
 
         Navigation.NavigateTo("/");
+    }
+
+    private void ReturnToDetails(bool keepError)
+    {
+        _awaitingCode = false;
+        _model.VerificationCode = string.Empty;
+        _status = null;
+        if (!keepError)
+            _error = null;
     }
 
     private async Task SendCodeAsync()
@@ -201,6 +210,8 @@
         if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data?.Token))
         {
             _error = response.ErrorMessage ?? AppResources.T("Common_RegistrationFailed");
+            if (RegisterAccountDetails.LooksLikeDetailsError(_error))
+                ReturnToDetails(keepError: true);
             return;
         }
 
@@ -220,31 +231,12 @@
 
     private bool ValidateDetails()
     {
-        if (string.IsNullOrWhiteSpace(_model.FirstName))
-        {
-            _error = AppResources.T("Common_PleaseEnterFirstName");
-            return false;
-        }
+        var key = RegisterAccountDetails.Validate(_model.FirstName, _model.LastName, _model.Email, _model.Password);
+        if (key is null)
+            return true;
 
-        if (string.IsNullOrWhiteSpace(_model.LastName))
-        {
-            _error = AppResources.T("Common_PleaseEnterLastName");
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(_model.Email))
-        {
-            _error = AppResources.T("Common_PleaseEnterEmail");
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(_model.Password))
-        {
-            _error = AppResources.T("Common_PleaseEnterPassword");
-            return false;
-        }
-
-        return true;
+        _error = AppResources.T(key);
+        return false;
     }
 
     public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
