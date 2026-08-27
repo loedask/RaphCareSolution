@@ -1,3 +1,4 @@
+using System.Text;
 using RaphCare.Application.Common.Email;
 using RaphCare.Application.Common.Interfaces;
 
@@ -18,15 +19,31 @@ internal static class EmailVerificationHelper
             .ConfigureAwait(false);
     }
 
+    internal static string NormalizeCode(string? code)
+    {
+        if (string.IsNullOrEmpty(code))
+            return string.Empty;
+
+        var digits = new StringBuilder(code.Length);
+        foreach (var c in code)
+        {
+            if (char.IsAsciiDigit(c))
+                digits.Append(c);
+        }
+
+        return digits.ToString();
+    }
+
     internal static async Task<bool> ValidateCodeAsync(
         string email,
         string? code,
         IEmailOtpService emailOtpService,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(code))
+        var normalized = NormalizeCode(code);
+        if (normalized.Length != 6)
             return false;
 
-        return await emailOtpService.ValidateOtpAsync(email, code.Trim(), cancellationToken).ConfigureAwait(false);
+        return await emailOtpService.ValidateOtpAsync(email, normalized, cancellationToken).ConfigureAwait(false);
     }
 }

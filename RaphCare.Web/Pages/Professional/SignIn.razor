@@ -38,7 +38,7 @@
             {
                 <div class="form-field">
                     <label>@AppResources.T("Common_VerificationCode")</label>
-                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="6" />
+                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="12" autocomplete="one-time-code" />
                 </div>
             }
         </div>
@@ -99,7 +99,7 @@
         _error = null;
         _status = null;
 
-        var code = _awaitingCode ? _model.VerificationCode.Trim() : null;
+        var code = _awaitingCode ? VerificationCodeText.NormalizeOrNull(_model.VerificationCode) : null;
         var response = await EmailAuth.SignInProfessionalAsync(_model.Email.Trim(), _model.Password, code);
         _busy = false;
 

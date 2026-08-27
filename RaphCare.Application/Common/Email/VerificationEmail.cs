@@ -13,6 +13,8 @@ public static class VerificationEmail
 
             Enter it on the website or in the app to continue. It expires in 10 minutes.
 
+            You can copy the code from this email and paste it.
+
             If you did not request this, you can ignore this email.
             """;
 

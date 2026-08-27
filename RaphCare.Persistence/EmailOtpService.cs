@@ -51,7 +51,7 @@ public sealed class EmailOtpService(IdentityDbContext dbContext, IDateTimeProvid
     {
         var normalized = NormalizeEmail(email);
         var now = clock.UtcNow;
-        var hash = HashCode(code);
+        var hash = HashCode(NormalizeDigits(code));
 
         var otp = await dbContext.OtpCodes
             .Where(x => x.Email == normalized && x.CodeHash == hash)
@@ -69,6 +69,21 @@ public sealed class EmailOtpService(IdentityDbContext dbContext, IDateTimeProvid
     }
 
     private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
+
+    private static string NormalizeDigits(string code)
+    {
+        if (string.IsNullOrEmpty(code))
+            return string.Empty;
+
+        var digits = new StringBuilder(code.Length);
+        foreach (var c in code)
+        {
+            if (char.IsAsciiDigit(c))
+                digits.Append(c);
+        }
+
+        return digits.ToString();
+    }
 
     private static string GenerateSixDigitCode()
     {

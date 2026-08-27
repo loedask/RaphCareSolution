@@ -48,7 +48,7 @@
             {
                 <div class="form-field verification-field">
                     <label>@AppResources.T("Common_VerificationCode")</label>
-                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="6" />
+                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="12" autocomplete="one-time-code" />
                     <div class="verification-resend">
                         <span>@AppResources.T("Common_NeedNewCode")</span>
                         <button type="button" class="link-btn" disabled="@_sendingCode" @onclick="SendCodeAsync">
@@ -162,13 +162,14 @@
 
     private async Task RegisterAsync()
     {
-        if (string.IsNullOrWhiteSpace(_model.VerificationCode))
+        var code = VerificationCodeText.Normalize(_model.VerificationCode);
+        if (code.Length == 0)
         {
             _error = AppResources.T("Common_EnterSixDigitCodeHint");
             return;
         }
 
-        if (_model.VerificationCode.Trim().Length != 6)
+        if (code.Length != 6)
         {
             _error = AppResources.T("Common_CodeMustBeSixDigits");
             return;
@@ -181,7 +182,7 @@
             _model.LastName.Trim(),
             _model.Email.Trim(),
             _model.Password,
-            _model.VerificationCode.Trim());
+            code);
 
         _busy = false;
         if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data?.Token))

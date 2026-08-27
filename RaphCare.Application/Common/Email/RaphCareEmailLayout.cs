@@ -103,6 +103,10 @@ public static class RaphCareEmailLayout
             """;
     }
 
+    /// <summary>
+    /// Renders a verification code. Email clients block clipboard scripts, so the compact line
+    /// is select-all and has no letter-spacing (Outlook often inserts spaces when copying spaced digits).
+    /// </summary>
     public static string CodeBox(string code)
     {
         var encoded = Encode(code);
@@ -112,6 +116,9 @@ public static class RaphCareEmailLayout
               <tr>
                 <td align="center" bgcolor="{CalloutBackground}" style="background-color:{CalloutBackground};padding:22px 16px;border-radius:12px;">
                   <p style="margin:0;font-size:32px;font-weight:700;letter-spacing:0.28em;color:{AccentDark};font-family:Consolas,'Courier New',monospace;">{encoded}</p>
+                  <p style="margin:14px 0 0;font-size:15px;line-height:1.5;color:{Muted};">Copy this code:</p>
+                  <p style="margin:6px 0 0;font-size:20px;font-weight:700;letter-spacing:0.04em;color:{AccentDark};font-family:Consolas,'Courier New',monospace;-webkit-user-select:all;-moz-user-select:all;user-select:all;">{encoded}</p>
+                  <p style="margin:8px 0 0;font-size:13px;line-height:1.5;color:{Muted};">Select it, then copy.</p>
                 </td>
               </tr>
             </table>

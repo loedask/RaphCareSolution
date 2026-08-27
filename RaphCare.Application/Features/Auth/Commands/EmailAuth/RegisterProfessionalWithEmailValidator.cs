@@ -10,6 +10,9 @@ public sealed class RegisterProfessionalWithEmailValidator : AbstractValidator<R
         RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(256);
         RuleFor(x => x.Password).NotEmpty().MinimumLength(8).MaximumLength(128);
-        RuleFor(x => x.VerificationCode).NotEmpty().Length(6);
+        RuleFor(x => x.VerificationCode)
+            .NotEmpty()
+            .Must(c => EmailVerificationHelper.NormalizeCode(c).Length == 6)
+            .WithMessage("Verification code must be 6 digits.");
     }
 }
