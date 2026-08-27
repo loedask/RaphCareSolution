@@ -47,6 +47,10 @@
                     <p class="form-hint">@AppResources.T("Common_PasswordHint")</p>
                 </div>
                 <div class="form-field">
+                    <label>@AppResources.T("Common_ConfirmPassword")</label>
+                    <InputText class="form-control" @bind-Value="_model.ConfirmPassword" type="password" autocomplete="new-password" />
+                </div>
+                <div class="form-field">
                     <label>@AppResources.T("Common_ClinicOptional")</label>
                     <InputSelect class="form-control" @bind-Value="_selectedClinicId">
                         <option value="">@AppResources.T("Common_NoClinicYet")</option>
@@ -231,7 +235,7 @@
 
     private bool ValidateDetails()
     {
-        var key = RegisterAccountDetails.Validate(_model.FirstName, _model.LastName, _model.Email, _model.Password);
+        var key = RegisterAccountDetails.Validate(_model.FirstName, _model.LastName, _model.Email, _model.Password, _model.ConfirmPassword);
         if (key is null)
             return true;
 
@@ -247,6 +251,7 @@
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
         public string VerificationCode { get; set; } = string.Empty;
     }
 }

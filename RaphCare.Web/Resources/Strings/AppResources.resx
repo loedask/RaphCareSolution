@@ -237,6 +237,15 @@
   <data name="Common_PasswordHint" xml:space="preserve">
     <value>At least 8 characters</value>
   </data>
+  <data name="Common_ConfirmPassword" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="Common_PleaseConfirmPassword" xml:space="preserve">
+    <value>Re-enter your password.</value>
+  </data>
+  <data name="Common_PasswordsDoNotMatch" xml:space="preserve">
+    <value>Passwords do not match.</value>
+  </data>
   <data name="Common_EditDetails" xml:space="preserve">
     <value>Change email or password</value>
   </data>

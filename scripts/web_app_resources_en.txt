@@ -73,6 +73,9 @@ Common_PleaseEnterValidEmail|Enter a valid email address.
 Common_PleaseEnterPassword|Please enter a password.
 Common_PasswordMinLength|Password must be at least 8 characters.
 Common_PasswordHint|At least 8 characters
+Common_ConfirmPassword|Confirm password
+Common_PleaseConfirmPassword|Re-enter your password.
+Common_PasswordsDoNotMatch|Passwords do not match.
 Common_EditDetails|Change email or password
 Common_HealthcareProfessional|Healthcare professional
 Common_ClinicPortal|Clinic portal

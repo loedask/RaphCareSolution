@@ -8,7 +8,7 @@ public static class RegisterAccountDetails
     public const int MinPasswordLength = 8;
     public const int MaxEmailLength = 256;
 
-    public static string? Validate(string firstName, string lastName, string email, string password)
+    public static string? Validate(string firstName, string lastName, string email, string password, string confirmPassword)
     {
         if (string.IsNullOrWhiteSpace(firstName))
             return "Common_PleaseEnterFirstName";
@@ -25,6 +25,10 @@ public static class RegisterAccountDetails
             return "Common_PleaseEnterPassword";
         if (password.Length < MinPasswordLength)
             return "Common_PasswordMinLength";
+        if (string.IsNullOrWhiteSpace(confirmPassword))
+            return "Common_PleaseConfirmPassword";
+        if (!string.Equals(password, confirmPassword, StringComparison.Ordinal))
+            return "Common_PasswordsDoNotMatch";
 
         return null;
     }
