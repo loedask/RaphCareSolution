@@ -41,7 +41,14 @@ App Service names in this setup:
 | **`raphcare-api`** | `RaphCare.API` | [`.github/workflows/develop_raphcare-api.yml`](../.github/workflows/develop_raphcare-api.yml) |
 | **`raphcare`** | `RaphCare.Web.Host` (serves WASM) | [`.github/workflows/develop_raphcare.yml`](../.github/workflows/develop_raphcare.yml) |
 
-Both deploy from **`develop`**. Path filters avoid rebuilding Mobile on every push.
+Both deploy from **`develop`**. Path filters skip Mobile. Use **Run workflow** on either job if you need a deploy without a matching path change.
+
+OIDC identities in `raphcare_group`:
+
+- `id-github-raphcare-api` (API)
+- `id-github-raphcare-web` (Web)
+
+Each has a federated credential for `repo:loedask/RaphCareSolution:ref:refs/heads/develop` and **Contributor** on the resource group.
 
 ### GitHub secrets / variables
 
@@ -51,12 +58,12 @@ In the GitHub repo → **Settings → Secrets and variables → Actions**:
 |------|---------|
 | `AZURE_TENANT_ID` | Shared Entra tenant id |
 | `AZURE_SUBSCRIPTION_ID` | Shared subscription id |
-| `AZURE_CLIENT_ID_RAPHCAREAPI` | User-assigned identity client id for **raphcare-api** |
-| `AZURE_CLIENT_ID_RAPHCARE` | User-assigned identity client id for **raphcare** |
+| `AZURE_CLIENT_ID_RAPHCAREAPI` | Client id of `id-github-raphcare-api` |
+| `AZURE_CLIENT_ID_RAPHCARE` | Client id of `id-github-raphcare-web` |
 | `RAPHCARE_API_BASE_URL` (variable, optional) | Web `ApiBaseUrl`; default `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net` |
 | `RAPHCARE_WEB_RESOURCE_GROUP` (variable, optional) | Resource group for the **raphcare** web app; default `raphcare_group` |
 
-Wire each App Service identity for GitHub OIDC (Deployment Center user-assigned identity, or federated credential on the managed identity). If Azure already created secret names like `AZUREAPPSERVICE_CLIENTID_...`, either rename them to match the table or edit the workflow `secrets.*` keys to match Azure's names.
+If you recreate the identities, update the two `AZURE_CLIENT_ID_*` secrets. Do not commit client secrets; GitHub Actions uses OIDC, not a password.
 
 After first API deploy, set App Service **Configuration** on **raphcare-api** (SQL connection string, Entra, JWT, CORS, SMTP). Use these origins for direct app-to-API calls (no API Management):
 

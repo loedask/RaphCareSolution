@@ -1,5 +1,5 @@
 # Docs: https://github.com/Azure/webapps-deploy
-# Deploys RaphCare.Web.Host (serves Blazor WASM) -> Azure App Service "raphcare" (Linux)
+# Deploys RaphCare.Web.Host (serves Blazor WASM) to Azure App Service raphcare on push to develop.
 
 name: Build and deploy Web - raphcare
 
@@ -15,6 +15,10 @@ on:
       - 'Directory.Build.props'
       - '.github/workflows/develop_raphcare.yml'
   workflow_dispatch:
+
+concurrency:
+  group: deploy-raphcare-web
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -50,11 +54,15 @@ jobs:
           --self-contained false
           -o ./publish-web
 
+      - name: Zip publish output
+        run: (cd ./publish-web && zip -r ../raphcare-web.zip .)
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: raphcare-web
-          path: ./publish-web
+          path: raphcare-web.zip
+          if-no-files-found: error
 
   deploy:
     runs-on: ubuntu-latest
@@ -68,6 +76,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: raphcare-web
+          path: ./artifact
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -79,9 +88,9 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'raphcare'
-          slot-name: 'Production'
-          package: .
+          app-name: raphcare
+          resource-group-name: raphcare_group
+          package: ./artifact/raphcare-web.zip
 
       - name: Point hosted Web at API
         shell: bash

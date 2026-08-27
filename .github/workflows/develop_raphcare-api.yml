@@ -1,5 +1,5 @@
 # Docs: https://github.com/Azure/webapps-deploy
-# Deploys RaphCare.API -> Azure App Service "raphcare-api"
+# Deploys RaphCare.API to Azure App Service raphcare-api on push to develop.
 
 name: Build and deploy API - raphcare-api
 
@@ -18,6 +18,10 @@ on:
       - '.github/workflows/develop_raphcare-api.yml'
   workflow_dispatch:
 
+concurrency:
+  group: deploy-raphcare-api
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,13 +37,20 @@ jobs:
           dotnet-version: '10.x'
 
       - name: Publish API
-        run: dotnet publish RaphCare.API/RaphCare.API.csproj -c Release -o "${{ env.DOTNET_ROOT }}/raphcare-api"
+        run: >
+          dotnet publish RaphCare.API/RaphCare.API.csproj
+          -c Release
+          -o ./publish-api
+
+      - name: Zip publish output
+        run: (cd ./publish-api && zip -r ../raphcare-api.zip .)
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: raphcare-api
-          path: ${{ env.DOTNET_ROOT }}/raphcare-api
+          path: raphcare-api.zip
+          if-no-files-found: error
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,6 +64,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: raphcare-api
+          path: ./artifact
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -64,6 +76,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'raphcare-api'
-          slot-name: 'Production'
-          package: .
+          app-name: raphcare-api
+          resource-group-name: raphcare_group
+          package: ./artifact/raphcare-api.zip
