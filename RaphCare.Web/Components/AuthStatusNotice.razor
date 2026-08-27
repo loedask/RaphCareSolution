@@ -1,6 +1,6 @@
 <div class="auth-notice" role="status" aria-live="polite">
     <span class="auth-notice-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="5" width="18" height="14" rx="2" />
             <path d="m4 7 8 6 8-6" />
         </svg>
@@ -9,7 +9,7 @@
         <p class="auth-notice-title">@AppResources.T("Common_CodeSentTitle")</p>
         @if (!string.IsNullOrWhiteSpace(Email))
         {
-            <p class="auth-notice-email">@AppResources.Format("Common_CodeSentToEmail", Email.Trim())</p>
+            <span class="auth-notice-chip">@Email.Trim()</span>
         }
         <p class="auth-notice-hint">@AppResources.T("Common_CodeSentSpamHint")</p>
     </div>

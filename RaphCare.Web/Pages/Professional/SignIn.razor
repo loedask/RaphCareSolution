@@ -5,7 +5,7 @@
 
 <PageTitle>@AppResources.T("ProfessionalSignIn_PageTitle")</PageTitle>
 
-<div class="auth-card auth-card-form">
+<div class="auth-card auth-card-form @(_awaitingCode ? "auth-card-verify" : null)">
     <a class="back-link" href="/?role=professional">@AppResources.T("Common_Back")</a>
     <h2 class="auth-card-title">@AppResources.T("PatientSignIn_Title")</h2>
     <p class="auth-card-subtitle">@AppResources.T("ProfessionalSignIn_Subtitle")</p>
@@ -36,9 +36,9 @@
             </div>
             @if (_awaitingCode)
             {
-                <div class="form-field">
+                <div class="form-field verification-field">
                     <label>@AppResources.T("Common_VerificationCode")</label>
-                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="12" autocomplete="one-time-code" />
+                    <InputText class="form-control verification-code-input" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="12" autocomplete="one-time-code" />
                 </div>
             }
         </div>

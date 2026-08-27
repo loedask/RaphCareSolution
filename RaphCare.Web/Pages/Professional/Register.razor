@@ -5,7 +5,7 @@
 
 <PageTitle>@AppResources.T("ProfessionalRegister_PageTitle")</PageTitle>
 
-<div class="auth-card auth-card-form">
+<div class="auth-card auth-card-form @(_awaitingCode ? "auth-card-verify" : null)">
     <button type="button" class="back-link" @onclick="GoBack">@AppResources.T("Common_Back")</button>
     <h2 class="auth-card-title">@AppResources.T("ProfessionalRegister_Title")</h2>
     <p class="auth-card-subtitle">
@@ -48,7 +48,7 @@
             {
                 <div class="form-field verification-field">
                     <label>@AppResources.T("Common_VerificationCode")</label>
-                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="12" autocomplete="one-time-code" />
+                    <InputText class="form-control verification-code-input" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="12" autocomplete="one-time-code" />
                     <div class="verification-resend">
                         <span>@AppResources.T("Common_NeedNewCode")</span>
                         <button type="button" class="link-btn" disabled="@_sendingCode" @onclick="SendCodeAsync">
