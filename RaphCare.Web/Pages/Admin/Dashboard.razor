@@ -6,9 +6,10 @@
 
 <PageTitle>@AppResources.T("Dashboard_PageTitle")</PageTitle>
 
-<section class="admin-page">
-    <header class="admin-page-header">
+<section class="admin-page admin-brand-page">
+    <header class="admin-page-header brand-hero">
         <div>
+            <p class="admin-page-eyebrow">@AppResources.T("Common_ClinicPortal")</p>
             <h1>@(_dashboard?.ClinicName ?? AppResources.T("Common_PlatformOverview"))</h1>
             <p class="admin-page-lead">
                 @if (_dashboard is not null)

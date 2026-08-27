@@ -5,9 +5,10 @@
 
 <PageTitle>@AppResources.T("HospitalsIndex_PageTitle")</PageTitle>
 
-<section class="admin-page">
-    <header class="admin-page-header">
+<section class="admin-page admin-brand-page">
+    <header class="admin-page-header brand-hero">
         <div>
+            <p class="admin-page-eyebrow">@AppResources.T("Common_Hospitals")</p>
             <h1>@AppResources.T("Common_MyHospitals")</h1>
             <p class="admin-page-lead">@AppResources.T("HospitalsIndex_Lead")</p>
         </div>
@@ -16,12 +17,12 @@
 
     @if (_loading)
     {
-        <p class="text-muted">@AppResources.T("Common_Loading")</p>
+        <p class="admin-loading-copy">@AppResources.T("Common_Loading")</p>
     }
     else if (_authRequired)
     {
         <div class="empty-state admin-guidance-state">
-            <div class="empty-state-icon" aria-hidden="true">⌂</div>
+            <div class="empty-state-icon" aria-hidden="true">@HospitalGlyph</div>
             <h3>@AppResources.T("Common_FinishRegisteringHospital")</h3>
             <p>@AppResources.T("HospitalsIndex_AuthGuidanceLead")</p>
             <div class="admin-guidance-actions">
@@ -36,25 +37,31 @@
     }
     else if (_clinics.Count == 0)
     {
-        <div class="empty-state admin-guidance-state">
-            <div class="empty-state-icon" aria-hidden="true">⌂</div>
+        <div class="empty-state admin-guidance-state hospitals-empty">
+            <div class="empty-state-icon" aria-hidden="true">@HospitalGlyph</div>
             <h3>@AppResources.T("HospitalsIndex_EmptyTitle")</h3>
             <p>@AppResources.T("HospitalsIndex_EmptyLead")</p>
-            <div class="claim-form">
-                <label>@AppResources.T("Common_RegistrationNumber")</label>
-                <div class="claim-form-row">
-                    <input class="form-control" @bind="_claimRegistrationNumber" placeholder="@AppResources.T("Common_RegistrationNumberPlaceholder")" />
-                    <button type="button" class="btn btn-secondary" disabled="@_claiming" @onclick="ClaimAsync">
-                        @(_claiming ? AppResources.T("Common_Linking") : AppResources.T("Common_LinkHospital"))
-                    </button>
+            <div class="hospitals-empty-paths">
+                <div class="hospitals-empty-path">
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_LinkHospital")</p>
+                    <div class="claim-form">
+                        <label for="hospital-claim-number">@AppResources.T("Common_RegistrationNumber")</label>
+                        <div class="claim-form-row">
+                            <input id="hospital-claim-number" class="form-control" @bind="_claimRegistrationNumber" placeholder="@AppResources.T("Common_RegistrationNumberPlaceholder")" />
+                            <button type="button" class="btn btn-secondary" disabled="@_claiming" @onclick="ClaimAsync">
+                                @(_claiming ? AppResources.T("Common_Linking") : AppResources.T("Common_LinkHospital"))
+                            </button>
+                        </div>
+                        @if (!string.IsNullOrEmpty(_claimError))
+                        {
+                            <p class="claim-error">@_claimError</p>
+                        }
+                    </div>
                 </div>
-                @if (!string.IsNullOrEmpty(_claimError))
-                {
-                    <p class="claim-error">@_claimError</p>
-                }
-            </div>
-            <div class="admin-guidance-actions">
-                <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospital")</a>
+                <div class="hospitals-empty-path hospitals-empty-path-primary">
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_RegisterHospital")</p>
+                    <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospitalButton")</a>
+                </div>
             </div>
         </div>
     }
@@ -165,4 +172,10 @@
     }
 
     public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private static RenderFragment HospitalGlyph => @<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+        <path d="M3 21h18M6 21V9l6-5 6 5v12" />
+        <path d="M9 21v-6h6v6" />
+        <path d="M12 9v4M10 11h4" />
+    </svg>;
 }
