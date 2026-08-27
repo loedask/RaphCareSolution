@@ -1688,29 +1688,6 @@ a:hover { text-decoration: underline; }
     min-width: 8.5rem;
 }
 
-.auth-brand-footer .language-picker {
-    width: 100%;
-    justify-content: space-between;
-    margin-top: 0.35rem;
-}
-
-.auth-brand-footer .language-picker-select {
-    background: rgba(15, 23, 42, 0.55);
-    color: #f8fafc;
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.auth-mobile-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.auth-mobile-brand .language-picker {
-    margin-left: auto;
-}
-
 .admin-sidebar-footer .language-picker {
     margin: 0.65rem 0;
 }

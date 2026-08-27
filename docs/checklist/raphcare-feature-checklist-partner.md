@@ -20,7 +20,7 @@ Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-ch
 
 Each section shows its % in the heading. Numbers stay in sync with the engineering checklist when status changes.
 
-Last reviewed: 2026-08-23
+Last reviewed: 2026-08-27
 
 ---
 
@@ -39,7 +39,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Visits and vitals | Done | Start a visit; record vitals; complete |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
-| Web languages (English, French, Lingala, Swahili) | Done | Change language on sign-in and in the admin portal |
+| Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
 **Bottom line (100%):** outpatient hospital admin is ready on the web.

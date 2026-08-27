@@ -27,7 +27,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-08-23
+Last reviewed: 2026-08-27
 
 ---
 
@@ -263,7 +263,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 - [x] Dual auth: Entra JWT (staff) + patient OTP / email JWT
 - [x] MPI / patient merge pipeline (see audit docs)
 - [x] Inpatient documented in companion docs (Step 2 docs rows)
-- [x] Web UI localization (en / fr / ln / sw): `AppResources` + language picker on auth shell and admin layout
+- [x] Web UI localization (en / fr / ln / sw): `AppResources` + language picker on admin layout
 - [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API
 
 ### Cross-cutting status
