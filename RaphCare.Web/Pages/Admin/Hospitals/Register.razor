@@ -110,21 +110,46 @@ else
                         <div class="onboarding-welcome">
                             <p class="onboarding-intro">@AppResources.T("HospitalsRegister_Intro")</p>
                             <div class="feature-card-grid">
-                                <div class="feature-card">
-                                    <div class="feature-card-icon hospital">⌂</div>
+                                <article class="feature-card">
+                                    <div class="feature-card-top">
+                                        <div class="feature-card-icon hospital" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 21h18M6 21V9l6-5 6 5v12" />
+                                                <path d="M9 21v-6h6v6" />
+                                                <path d="M12 9v4M10 11h4" />
+                                            </svg>
+                                        </div>
+                                        <span class="feature-card-index">01</span>
+                                    </div>
                                     <h3>@AppResources.T("HospitalsRegister_FeatureTenantTitle")</h3>
                                     <p>@AppResources.T("HospitalsRegister_FeatureTenantDesc")</p>
-                                </div>
-                                <div class="feature-card">
-                                    <div class="feature-card-icon facility">◎</div>
+                                </article>
+                                <article class="feature-card">
+                                    <div class="feature-card-top">
+                                        <div class="feature-card-icon facility" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11Z" />
+                                                <circle cx="12" cy="10" r="2.4" />
+                                            </svg>
+                                        </div>
+                                        <span class="feature-card-index">02</span>
+                                    </div>
                                     <h3>@AppResources.T("HospitalsRegister_FeatureFacilityTitle")</h3>
                                     <p>@AppResources.T("HospitalsRegister_FeatureFacilityDesc")</p>
-                                </div>
-                                <div class="feature-card">
-                                    <div class="feature-card-icon admin">👤</div>
+                                </article>
+                                <article class="feature-card">
+                                    <div class="feature-card-top">
+                                        <div class="feature-card-icon admin" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="8" r="3.2" />
+                                                <path d="M5.5 19.2c.8-3.2 3.2-5 6.5-5s5.7 1.8 6.5 5" />
+                                            </svg>
+                                        </div>
+                                        <span class="feature-card-index">03</span>
+                                    </div>
                                     <h3>@AppResources.T("HospitalsRegister_FeatureAdminTitle")</h3>
                                     <p>@AppResources.T("HospitalsRegister_FeatureAdminDesc")</p>
-                                </div>
+                                </article>
                             </div>
                         </div>
                         break;
