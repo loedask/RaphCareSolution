@@ -274,6 +274,27 @@
   <data name="Common_PleaseEnterPassword" xml:space="preserve">
     <value>Tafadhali weka nenosiri.</value>
   </data>
+  <data name="Common_PleaseEnterValidEmail" xml:space="preserve">
+    <value>Weka anwani sahihi ya barua pepe.</value>
+  </data>
+  <data name="Common_PasswordMinLength" xml:space="preserve">
+    <value>Nenosiri lazima liwe na angalau herufi 8.</value>
+  </data>
+  <data name="Common_PasswordHint" xml:space="preserve">
+    <value>Angalau herufi 8</value>
+  </data>
+  <data name="Common_ConfirmPassword" xml:space="preserve">
+    <value>Thibitisha nenosiri</value>
+  </data>
+  <data name="Common_PleaseConfirmPassword" xml:space="preserve">
+    <value>Weka nenosiri lako tena.</value>
+  </data>
+  <data name="Common_PasswordsDoNotMatch" xml:space="preserve">
+    <value>Manenosiri hayalingani.</value>
+  </data>
+  <data name="Common_EditDetails" xml:space="preserve">
+    <value>Badilisha barua pepe au nenosiri</value>
+  </data>
   <data name="Common_HealthcareProfessional" xml:space="preserve">
     <value>Mtaalamu wa matibabu</value>
   </data>

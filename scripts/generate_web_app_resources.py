@@ -65,11 +65,12 @@ def log(msg: str) -> None:
 def load_catalog() -> list[tuple[str, str]]:
     items: list[tuple[str, str]] = []
     seen: set[str] = set()
-    for line in CATALOG_PATH.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
+    for line in CATALOG_PATH.read_text(encoding="utf-8-sig").splitlines():
+        line = line.strip().lstrip("\ufeff")
         if not line or line.startswith("#") or "|" not in line:
             continue
         key, value = line.split("|", 1)
+        key = key.lstrip("\ufeff")
         if key in seen:
             continue
         seen.add(key)

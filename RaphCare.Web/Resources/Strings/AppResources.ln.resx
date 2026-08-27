@@ -274,6 +274,27 @@
   <data name="Common_PleaseEnterPassword" xml:space="preserve">
     <value>Svp kotia mot de passe.</value>
   </data>
+  <data name="Common_PleaseEnterValidEmail" xml:space="preserve">
+    <value>Tia adresse email oyo eza malamu.</value>
+  </data>
+  <data name="Common_PasswordMinLength" xml:space="preserve">
+    <value>Mot de passe esengeli kozala na lettre 8 to koleka.</value>
+  </data>
+  <data name="Common_PasswordHint" xml:space="preserve">
+    <value>Lettre 8 to koleka</value>
+  </data>
+  <data name="Common_ConfirmPassword" xml:space="preserve">
+    <value>Kondima mot de passe</value>
+  </data>
+  <data name="Common_PleaseConfirmPassword" xml:space="preserve">
+    <value>Tia lisusu mot de passe na yo.</value>
+  </data>
+  <data name="Common_PasswordsDoNotMatch" xml:space="preserve">
+    <value>Ba mot de passe ekokani te.</value>
+  </data>
+  <data name="Common_EditDetails" xml:space="preserve">
+    <value>Bobongola email to mot de passe</value>
+  </data>
   <data name="Common_HealthcareProfessional" xml:space="preserve">
     <value>Mosali ya bokolongono</value>
   </data>

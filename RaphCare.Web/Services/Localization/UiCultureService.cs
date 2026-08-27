@@ -33,6 +33,7 @@ public sealed class UiCultureService : IUiCultureService
         WebLanguagePreference.ApplyCulture(CurrentCode);
         await SyncDocumentLangAsync().ConfigureAwait(true);
         _initialized = true;
+        CultureChanged?.Invoke();
     }
 
     public async Task SetCultureAsync(string code)

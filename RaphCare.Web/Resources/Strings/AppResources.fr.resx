@@ -274,6 +274,27 @@
   <data name="Common_PleaseEnterPassword" xml:space="preserve">
     <value>Veuillez saisir un mot de passe.</value>
   </data>
+  <data name="Common_PleaseEnterValidEmail" xml:space="preserve">
+    <value>Entrez une adresse e-mail valide.</value>
+  </data>
+  <data name="Common_PasswordMinLength" xml:space="preserve">
+    <value>Le mot de passe doit comporter au moins 8 caractères.</value>
+  </data>
+  <data name="Common_PasswordHint" xml:space="preserve">
+    <value>Au moins 8 caractères</value>
+  </data>
+  <data name="Common_ConfirmPassword" xml:space="preserve">
+    <value>Confirmer le mot de passe</value>
+  </data>
+  <data name="Common_PleaseConfirmPassword" xml:space="preserve">
+    <value>Saisissez à nouveau votre mot de passe.</value>
+  </data>
+  <data name="Common_PasswordsDoNotMatch" xml:space="preserve">
+    <value>Les mots de passe ne correspondent pas.</value>
+  </data>
+  <data name="Common_EditDetails" xml:space="preserve">
+    <value>Changer l'e-mail ou le mot de passe</value>
+  </data>
   <data name="Common_HealthcareProfessional" xml:space="preserve">
     <value>Professionnel de santé</value>
   </data>

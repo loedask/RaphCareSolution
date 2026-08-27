@@ -86,9 +86,9 @@ else
                 </div>
             </header>
 
-            @if (!string.IsNullOrEmpty(_resumeMessage))
+            @if (!string.IsNullOrEmpty(ResumeBanner))
             {
-                <div class="alert alert-info admin-page-alert">@_resumeMessage</div>
+                <div class="alert alert-info admin-page-alert">@ResumeBanner</div>
             }
 
             @if (!string.IsNullOrEmpty(_submitError))
@@ -307,7 +307,7 @@ else
     private bool _completed;
     private bool _authRetryRequired;
     private string? _submitError;
-    private string? _resumeMessage;
+    private int? _resumeStep;
     private RegisterClinicResult? _result;
     private readonly OnboardingDraft _draft = new();
 
@@ -346,6 +346,12 @@ else
 
     private int _progressPercent => (int)Math.Round(_step / (double)_stepCount * 100);
 
+    private string? ResumeBanner => _resumeStep is not int step
+        ? null
+        : step >= _stepCount
+            ? AppResources.T("Common_ResumeReadyReview")
+            : AppResources.Format("Common_ResumeFromStep", step);
+
     private (string Title, string Subtitle) StepMeta => _step switch
     {
         1 => (AppResources.T("HospitalsRegister_Step1Title"), AppResources.T("HospitalsRegister_Step1Subtitle")),
@@ -374,9 +380,7 @@ else
             return;
 
         ApplySavedDraft(saved);
-        _resumeMessage = saved.Step >= _stepCount
-            ? AppResources.T("Common_ResumeReadyReview")
-            : AppResources.Format("Common_ResumeFromStep", saved.Step);
+        _resumeStep = saved.Step;
     }
 
     private void ApplySavedDraft(HospitalOnboardingDraft saved)
@@ -477,7 +481,7 @@ else
         {
             _result = response.Data;
             _completed = true;
-            _resumeMessage = null;
+            _resumeStep = null;
             await OnboardingStorage.ClearAsync().ConfigureAwait(false);
             await Js.InvokeVoidAsync("raphCareClinic.setPendingClinicId", _result.ClinicId.ToString()).ConfigureAwait(false);
             await ClinicContext.SetCurrentClinicAsync(_result.ClinicId, _result.Name).ConfigureAwait(false);
@@ -494,7 +498,7 @@ else
         _completed = false;
         _result = null;
         _step = 1;
-        _resumeMessage = null;
+        _resumeStep = null;
         _submitError = null;
         _authRetryRequired = false;
         _draft.Reset();

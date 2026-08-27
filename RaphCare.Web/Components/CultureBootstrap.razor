@@ -1,11 +1,21 @@
 @inject IUiCultureService CultureService
 @implements IDisposable
 
+@if (_ready)
+{
+    @ChildContent
+}
+
 @code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool _ready;
+
     protected override async Task OnInitializedAsync()
     {
         await CultureService.InitializeAsync();
         CultureService.CultureChanged += OnCultureChanged;
+        _ready = true;
     }
 
     private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
