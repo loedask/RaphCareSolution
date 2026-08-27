@@ -31,8 +31,8 @@ dotnet publish (Join-Path $repoRoot "RaphCare.API\RaphCare.API.csproj") `
     -o $publishDir
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
 
-if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
-Compress-Archive -Path (Join-Path $publishDir "*") -DestinationPath $zipPath -Force
+. (Join-Path $PSScriptRoot "Compress-RaphCareUnixZip.ps1")
+Compress-RaphCareUnixZip -SourceDir $publishDir -ZipPath $zipPath
 
 Write-Host "Deploying to $($envInfo.apiAppName) ..."
 az webapp deploy `
@@ -40,6 +40,9 @@ az webapp deploy `
     --name $envInfo.apiAppName `
     --src-path $zipPath `
     --type zip `
+    --clean true `
+    --restart true `
     -o none
+if ($LASTEXITCODE -ne 0) { throw "az webapp deploy failed for $($envInfo.apiAppName)" }
 
 Write-Host "Deployed. API base: $($envInfo.apiBaseUrl)"

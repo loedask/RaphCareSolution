@@ -59,8 +59,8 @@ foreach ($name in @("appsettings.json", "appsettings.Staging.json")) {
     Set-Content -Path $publishedSettings -Value $apiBaseJson -Encoding UTF8
 }
 
-if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
-Compress-Archive -Path (Join-Path $publishDir "*") -DestinationPath $zipPath -Force
+. (Join-Path $PSScriptRoot "Compress-RaphCareUnixZip.ps1")
+Compress-RaphCareUnixZip -SourceDir $publishDir -ZipPath $zipPath
 
 Write-Host "Deploying to $WebAppName ..."
 az webapp deploy `
@@ -68,7 +68,10 @@ az webapp deploy `
     --name $WebAppName `
     --src-path $zipPath `
     --type zip `
+    --clean true `
+    --restart true `
     -o none
+if ($LASTEXITCODE -ne 0) { throw "az webapp deploy failed for $WebAppName" }
 
 & (Join-Path $PSScriptRoot "Set-RaphCareAzureWebAppSettings.ps1") `
     -WebAppName $WebAppName `
