@@ -1250,6 +1250,8 @@ a:hover { text-decoration: underline; }
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    text-align: center;
     gap: 0.85rem;
     background: linear-gradient(160deg, #0d9488 0%, #134e4a 100%);
     border-color: transparent;
@@ -1264,7 +1266,7 @@ a:hover { text-decoration: underline; }
     background: #fff;
     color: #0f766e;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
-    align-self: flex-start;
+    align-self: center;
 }
 
 .admin-brand-page .claim-form-row .btn-secondary {
