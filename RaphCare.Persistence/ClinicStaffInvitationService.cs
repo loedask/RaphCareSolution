@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using RaphCare.Application.Common.Configuration;
+using RaphCare.Application.Common.Email;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Organization;
 
@@ -36,22 +37,10 @@ public sealed class ClinicStaffInvitationService(
 
         var baseUrl = portalOptions.Value.WebPortalBaseUrl.TrimEnd('/');
         var signInUrl = $"{baseUrl}/professional/signin";
-        var subject = $"You're invited to {clinic.Name} on RaphCare";
-        var body =
-            $"""
-            Hello {user.DisplayName},
-
-            You have been invited to join {clinic.Name} on the RaphCare clinic portal.
-
-            Sign in with your professional account to access the hospital:
-            {signInUrl}
-
-            If you have not registered yet, create a healthcare professional account first, then sign in.
-
-            — RaphCare
-            """;
-
-        await emailService.SendEmailAsync(user.Email, subject, body, cancellationToken).ConfigureAwait(false);
+        var content = StaffInvitationEmail.ForExistingUser(clinic.Name, user.DisplayName, signInUrl);
+        await emailService
+            .SendEmailAsync(user.Email, content.Subject, content.PlainBody, content.HtmlBody, cancellationToken)
+            .ConfigureAwait(false);
         await clinicStaffMembershipService
             .RecordInvitationSentAsync(userId, clinicId, cancellationToken)
             .ConfigureAwait(false);

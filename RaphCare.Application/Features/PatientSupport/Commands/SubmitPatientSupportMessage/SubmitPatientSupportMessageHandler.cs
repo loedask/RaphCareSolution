@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Options;
 using RaphCare.Application.Common.Configuration;
+using RaphCare.Application.Common.Email;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Patients;
@@ -45,13 +46,18 @@ public sealed class SubmitPatientSupportMessageHandler(
         var supportEmail = _supportOptions.SupportEmail?.Trim();
         if (!string.IsNullOrWhiteSpace(supportEmail))
         {
-            var emailSubject = $"{_supportOptions.InboundEmailSubjectPrefix} {subject}";
-            var body =
-                $"Patient: {patient.FirstName} {patient.LastName} ({patientId:D})\n" +
-                $"Email: {entity.PatientEmail ?? "(none)"}\n" +
-                $"Ticket: {entity.Id:D}\n\n" +
-                message;
-            await _emailService.SendEmailAsync(supportEmail, emailSubject, body, cancellationToken).ConfigureAwait(false);
+            var patientName = $"{patient.FirstName} {patient.LastName}".Trim();
+            var content = SupportTicketEmail.Create(
+                _supportOptions.InboundEmailSubjectPrefix,
+                subject,
+                patientName,
+                patientId,
+                entity.PatientEmail ?? string.Empty,
+                entity.Id,
+                message);
+            await _emailService
+                .SendEmailAsync(supportEmail, content.Subject, content.PlainBody, content.HtmlBody, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         return entity.Id;

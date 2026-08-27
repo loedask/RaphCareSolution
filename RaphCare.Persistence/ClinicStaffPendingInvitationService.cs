@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using RaphCare.Application.Common.Configuration;
+using RaphCare.Application.Common.Email;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Organization;
 
@@ -149,22 +150,10 @@ public sealed class ClinicStaffPendingInvitationService(
 
         var baseUrl = portalOptions.Value.WebPortalBaseUrl.TrimEnd('/');
         var registerUrl = $"{baseUrl}/professional/register?email={Uri.EscapeDataString(invitation.Email)}";
-        var subject = $"Join {clinic.Name} on RaphCare";
-        var body =
-            $"""
-            Hello,
-
-            You have been invited to join {clinic.Name} on the RaphCare clinic portal.
-
-            Create your healthcare professional account using this email address:
-            {registerUrl}
-
-            After you register and sign in, you will automatically be linked to the hospital.
-
-            — RaphCare
-            """;
-
-        await emailService.SendEmailAsync(invitation.Email, subject, body, cancellationToken).ConfigureAwait(false);
+        var content = StaffInvitationEmail.ForNewUser(clinic.Name, registerUrl);
+        await emailService
+            .SendEmailAsync(invitation.Email, content.Subject, content.PlainBody, content.HtmlBody, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private static PendingStaffInvitationEntry Map(ClinicStaffInvitation invitation) => new()

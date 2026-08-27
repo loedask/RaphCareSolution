@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using RaphCare.Application.Common.Configuration;
+using RaphCare.Application.Common.Email;
 using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Infrastructure.Services;
@@ -54,16 +55,16 @@ public sealed partial class SmtpEmailService(
         LogSmtpEmailSent(recipient, subject);
     }
 
-    private static MimeEntity CreateBody(string plainBody, string? htmlBody)
+    private static Multipart CreateBody(string plainBody, string? htmlBody)
     {
         var plain = new TextPart("plain") { Text = plainBody };
-        if (string.IsNullOrWhiteSpace(htmlBody))
-            return plain;
-
+        var html = string.IsNullOrWhiteSpace(htmlBody)
+            ? RaphCareEmailLayout.FromPlainBody(plainBody)
+            : htmlBody;
         var alternative = new Multipart("alternative")
         {
             plain,
-            new TextPart("html") { Text = htmlBody }
+            new TextPart("html") { Text = html }
         };
         return alternative;
     }

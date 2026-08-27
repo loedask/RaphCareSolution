@@ -1,3 +1,4 @@
+using RaphCare.Application.Common.Email;
 using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Application.Features.Auth.Commands.EmailAuth;
@@ -11,9 +12,9 @@ internal static class EmailVerificationHelper
         CancellationToken cancellationToken)
     {
         var code = await emailOtpService.GenerateOtpAsync(email, cancellationToken).ConfigureAwait(false);
-        var (plainBody, htmlBody) = VerificationEmail.Create(code);
+        var content = VerificationEmail.Create(code);
         await emailService
-            .SendEmailAsync(email.Trim(), VerificationEmail.Subject, plainBody, htmlBody, cancellationToken)
+            .SendEmailAsync(email.Trim(), content.Subject, content.PlainBody, content.HtmlBody, cancellationToken)
             .ConfigureAwait(false);
     }
 
