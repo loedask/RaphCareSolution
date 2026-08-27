@@ -7,7 +7,21 @@ namespace RaphCare.Infrastructure.Services;
 /// <summary>Logs outbound email when SMTP is not configured; surfaces verification codes in Development logs.</summary>
 public sealed partial class DevelopmentEmailService(ILogger<DevelopmentEmailService> logger, IHostEnvironment hostEnvironment) : IEmailService
 {
-    public Task SendEmailAsync(string recipient, string subject, string body, CancellationToken cancellationToken = default)
+    public Task SendEmailAsync(string recipient, string subject, string body, CancellationToken cancellationToken = default) =>
+        LogAsync(recipient, subject, body);
+
+    public Task SendEmailAsync(
+        string recipient,
+        string subject,
+        string plainBody,
+        string htmlBody,
+        CancellationToken cancellationToken = default)
+    {
+        _ = htmlBody;
+        return LogAsync(recipient, subject, plainBody);
+    }
+
+    private Task LogAsync(string recipient, string subject, string body)
     {
         LogEmailPlaceholder(recipient, subject);
 
@@ -24,6 +38,6 @@ public sealed partial class DevelopmentEmailService(ILogger<DevelopmentEmailServ
 
     [LoggerMessage(
         Level = LogLevel.Warning,
-        Message = "[Development] Email not sent via SMTP. For testing — To={To} | Subject={Subject} | {Body}")]
+        Message = "[Development] Email not sent via SMTP. For testing. To={To} | Subject={Subject} | {Body}")]
     private partial void LogDevelopmentEmailNotSent(string to, string subject, string body);
 }

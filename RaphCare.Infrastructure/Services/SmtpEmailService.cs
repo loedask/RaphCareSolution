@@ -13,7 +13,23 @@ public sealed partial class SmtpEmailService(
     IOptionsMonitor<SmtpOptions> options,
     ILogger<SmtpEmailService> logger) : IEmailService
 {
-    public async Task SendEmailAsync(string recipient, string subject, string body, CancellationToken cancellationToken = default)
+    public Task SendEmailAsync(string recipient, string subject, string body, CancellationToken cancellationToken = default) =>
+        SendCoreAsync(recipient, subject, body, htmlBody: null, cancellationToken);
+
+    public Task SendEmailAsync(
+        string recipient,
+        string subject,
+        string plainBody,
+        string htmlBody,
+        CancellationToken cancellationToken = default) =>
+        SendCoreAsync(recipient, subject, plainBody, htmlBody, cancellationToken);
+
+    private async Task SendCoreAsync(
+        string recipient,
+        string subject,
+        string plainBody,
+        string? htmlBody,
+        CancellationToken cancellationToken)
     {
         var o = options.CurrentValue;
         if (!o.IsEnabled)
@@ -26,7 +42,7 @@ public sealed partial class SmtpEmailService(
         message.From.Add(new MailboxAddress(o.FromDisplayName, o.FromAddress));
         message.To.Add(MailboxAddress.Parse(recipient));
         message.Subject = subject;
-        message.Body = new TextPart("plain") { Text = body };
+        message.Body = CreateBody(plainBody, htmlBody);
 
         using var client = new SmtpClient();
         await client.ConnectAsync(o.Host, o.Port, o.UseSsl ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls, cancellationToken)
@@ -36,6 +52,20 @@ public sealed partial class SmtpEmailService(
         await client.DisconnectAsync(true, cancellationToken).ConfigureAwait(false);
 
         LogSmtpEmailSent(recipient, subject);
+    }
+
+    private static MimeEntity CreateBody(string plainBody, string? htmlBody)
+    {
+        var plain = new TextPart("plain") { Text = plainBody };
+        if (string.IsNullOrWhiteSpace(htmlBody))
+            return plain;
+
+        var alternative = new Multipart("alternative")
+        {
+            plain,
+            new TextPart("html") { Text = htmlBody }
+        };
+        return alternative;
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "SMTP email skipped: Smtp section is not fully configured.")]

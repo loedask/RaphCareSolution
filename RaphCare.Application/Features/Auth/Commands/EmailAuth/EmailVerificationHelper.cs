@@ -1,4 +1,3 @@
-using MediatR;
 using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Application.Features.Auth.Commands.EmailAuth;
@@ -12,9 +11,10 @@ internal static class EmailVerificationHelper
         CancellationToken cancellationToken)
     {
         var code = await emailOtpService.GenerateOtpAsync(email, cancellationToken).ConfigureAwait(false);
-        var subject = "Your RaphCare verification code";
-        var body = $"Your RaphCare verification code is: {code}\n\nThis code expires in 10 minutes.";
-        await emailService.SendEmailAsync(email.Trim(), subject, body, cancellationToken).ConfigureAwait(false);
+        var (plainBody, htmlBody) = VerificationEmail.Create(code);
+        await emailService
+            .SendEmailAsync(email.Trim(), VerificationEmail.Subject, plainBody, htmlBody, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     internal static async Task<bool> ValidateCodeAsync(
