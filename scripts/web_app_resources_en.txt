@@ -16,6 +16,9 @@ Common_VerifyAndSignIn|Verify and sign in →
 Common_VerifyAndCreateAccount|Verify and create account
 Common_Sending|Sending…
 Common_SendCode|Send code
+Common_ResendCode|Resend code
+Common_Resending|Resending…
+Common_NeedNewCode|Need a new code?
 Common_CreatingAccount|Creating account…
 Common_SendingCode|Sending code…
 Common_Saving|Saving…
@@ -58,7 +61,10 @@ Common_VerificationCodeSentEmail|We sent a verification code to your email.
 Common_EnterEmailBeforeCode|Enter your email before requesting a verification code.
 Common_CodeSentCheckInbox|Verification code sent. Check your inbox.
 Common_CodeSentCheckInboxSpam|Verification code sent. Check your inbox (and spam folder).
-Common_EnterSixDigitCodeHint|Enter the 6-digit verification code from your email. Tap Send code if you have not received one yet.
+Common_CodeSentTitle|Code sent
+Common_CodeSentToEmail|Sent to {0}
+Common_CodeSentSpamHint|Check your inbox and spam folder if you do not see it.
+Common_EnterSixDigitCodeHint|Enter the 6-digit code from your email. Click Resend code if it has not arrived.
 Common_CodeMustBeSixDigits|Verification code must be exactly 6 digits.
 Common_PleaseEnterFirstName|Please enter your first name.
 Common_PleaseEnterLastName|Please enter your last name.

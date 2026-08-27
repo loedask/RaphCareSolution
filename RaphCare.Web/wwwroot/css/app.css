@@ -1108,6 +1108,61 @@ a:hover { text-decoration: underline; }
 .alert-info { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
 .alert-success { background: #d1fae5; color: var(--rc-success); border: 1px solid #a7f3d0; }
 
+.auth-card .alert { margin-top: 1rem; }
+
+.auth-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    margin: 1.15rem 0 1.35rem;
+    padding: 0.9rem 1rem;
+    border-radius: 0.9rem;
+    background: linear-gradient(180deg, rgba(13, 148, 136, 0.11), rgba(13, 148, 136, 0.05));
+    border: 1px solid rgba(13, 148, 136, 0.2);
+}
+
+.auth-notice-icon {
+    flex-shrink: 0;
+    width: 2.15rem;
+    height: 2.15rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--rc-primary);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.28);
+}
+
+.auth-notice-icon svg {
+    width: 1.05rem;
+    height: 1.05rem;
+}
+
+.auth-notice-body { min-width: 0; }
+
+.auth-notice-title {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--rc-primary-dark);
+}
+
+.auth-notice-email {
+    margin: 0.2rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--rc-text);
+    word-break: break-word;
+}
+
+.auth-notice-hint {
+    margin: 0.2rem 0 0;
+    font-size: 0.8rem;
+    color: var(--rc-muted);
+    line-height: 1.45;
+}
+
 .admin-alert-text { margin: 0; }
 .admin-alert-hint { margin: 0.65rem 0 0.85rem; font-size: 0.85rem; line-height: 1.5; }
 .admin-shell .btn-sm { padding: 0.4rem 0.85rem; font-size: 0.8rem; }
@@ -1147,6 +1202,20 @@ a:hover { text-decoration: underline; }
 
 .verification-row { display: flex; gap: 0.5rem; }
 .verification-row .form-control { flex: 1; }
+
+.verification-resend {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.15rem;
+    font-size: 0.8rem;
+    color: var(--rc-muted);
+}
+
+.verification-resend .link-btn {
+    font-size: inherit;
+}
 
 /* Admin buttons — royal blue primary */
 .admin-shell .btn-primary {
@@ -1581,6 +1650,12 @@ a:hover { text-decoration: underline; }
 
 .auth-card-foot a:hover,
 .link-btn:hover { text-decoration: underline; }
+
+.link-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    text-decoration: none;
+}
 
 .auth-page { max-width: 28rem; margin: 0 auto; padding: 2rem 1.5rem; }
 .auth-form-page { max-width: 32rem; }

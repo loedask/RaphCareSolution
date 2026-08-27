@@ -112,6 +112,15 @@
   <data name="Common_SendCode" xml:space="preserve">
     <value>Tinda code</value>
   </data>
+  <data name="Common_ResendCode" xml:space="preserve">
+    <value>Tinda code lisusu</value>
+  </data>
+  <data name="Common_Resending" xml:space="preserve">
+    <value>Kozongisa…</value>
+  </data>
+  <data name="Common_NeedNewCode" xml:space="preserve">
+    <value>Osengeli na code ya sika?</value>
+  </data>
   <data name="Common_CreatingAccount" xml:space="preserve">
     <value>Kosala compte...</value>
   </data>
@@ -238,8 +247,17 @@
   <data name="Common_CodeSentCheckInboxSpam" xml:space="preserve">
     <value>Code ya vérification etindami. Tala boîte de réception na yo (mpe dossier ya ba spam).</value>
   </data>
+  <data name="Common_CodeSentTitle" xml:space="preserve">
+    <value>Code etindami</value>
+  </data>
+  <data name="Common_CodeSentToEmail" xml:space="preserve">
+    <value>Etindami na {0}</value>
+  </data>
+  <data name="Common_CodeSentSpamHint" xml:space="preserve">
+    <value>Tala boîte de réception na yo mpe dossier ya ba spam soki omoni yango te.</value>
+  </data>
   <data name="Common_EnterSixDigitCodeHint" xml:space="preserve">
-    <value>Tyá code ya vérification ya 6 chiffres na email na yo. Finá na Tinda code soki ozwi naino moko te.</value>
+    <value>Tyá code ya 6 chiffres na email na yo. Finá na Tinda code lisusu soki ekomi te.</value>
   </data>
   <data name="Common_CodeMustBeSixDigits" xml:space="preserve">
     <value>Code ya vérification esengeli ezala exactement 6 chiffres.</value>

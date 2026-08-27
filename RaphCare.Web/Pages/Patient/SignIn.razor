@@ -16,7 +16,7 @@
     }
     @if (!string.IsNullOrEmpty(_status))
     {
-        <div class="alert alert-info">@_status</div>
+        <AuthStatusNotice Email="@_model.Email" />
     }
 
     <EditForm Model="_model" OnValidSubmit="SubmitAsync">

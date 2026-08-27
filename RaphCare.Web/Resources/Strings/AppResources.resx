@@ -112,6 +112,15 @@
   <data name="Common_SendCode" xml:space="preserve">
     <value>Send code</value>
   </data>
+  <data name="Common_ResendCode" xml:space="preserve">
+    <value>Resend code</value>
+  </data>
+  <data name="Common_Resending" xml:space="preserve">
+    <value>Resending…</value>
+  </data>
+  <data name="Common_NeedNewCode" xml:space="preserve">
+    <value>Need a new code?</value>
+  </data>
   <data name="Common_CreatingAccount" xml:space="preserve">
     <value>Creating account…</value>
   </data>
@@ -238,8 +247,17 @@
   <data name="Common_CodeSentCheckInboxSpam" xml:space="preserve">
     <value>Verification code sent. Check your inbox (and spam folder).</value>
   </data>
+  <data name="Common_CodeSentTitle" xml:space="preserve">
+    <value>Code sent</value>
+  </data>
+  <data name="Common_CodeSentToEmail" xml:space="preserve">
+    <value>Sent to {0}</value>
+  </data>
+  <data name="Common_CodeSentSpamHint" xml:space="preserve">
+    <value>Check your inbox and spam folder if you do not see it.</value>
+  </data>
   <data name="Common_EnterSixDigitCodeHint" xml:space="preserve">
-    <value>Enter the 6-digit verification code from your email. Tap Send code if you have not received one yet.</value>
+    <value>Enter the 6-digit code from your email. Click Resend code if it has not arrived.</value>
   </data>
   <data name="Common_CodeMustBeSixDigits" xml:space="preserve">
     <value>Verification code must be exactly 6 digits.</value>

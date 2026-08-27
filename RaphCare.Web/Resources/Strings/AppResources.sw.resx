@@ -112,6 +112,15 @@
   <data name="Common_SendCode" xml:space="preserve">
     <value>Tuma msimbo</value>
   </data>
+  <data name="Common_ResendCode" xml:space="preserve">
+    <value>Tuma nambari tena</value>
+  </data>
+  <data name="Common_Resending" xml:space="preserve">
+    <value>Inatuma tena…</value>
+  </data>
+  <data name="Common_NeedNewCode" xml:space="preserve">
+    <value>Unahitaji nambari mpya?</value>
+  </data>
   <data name="Common_CreatingAccount" xml:space="preserve">
     <value>Inaunda akaunti...</value>
   </data>
@@ -238,8 +247,17 @@
   <data name="Common_CodeSentCheckInboxSpam" xml:space="preserve">
     <value>Nambari ya kuthibitisha imetumwa. Angalia kisanduku pokezi chako (na folda ya barua taka).</value>
   </data>
+  <data name="Common_CodeSentTitle" xml:space="preserve">
+    <value>Nambari imetumwa</value>
+  </data>
+  <data name="Common_CodeSentToEmail" xml:space="preserve">
+    <value>Imetumwa kwa {0}</value>
+  </data>
+  <data name="Common_CodeSentSpamHint" xml:space="preserve">
+    <value>Angalia kisanduku pokezi chako na folda ya barua taka ikiwa huioni.</value>
+  </data>
   <data name="Common_EnterSixDigitCodeHint" xml:space="preserve">
-    <value>Weka nambari ya kuthibitisha yenye tarakimu 6 kutoka kwa barua pepe yako. Gusa Tuma msimbo ikiwa bado hujapokea.</value>
+    <value>Weka nambari yenye tarakimu 6 kutoka kwa barua pepe yako. Bofya Tuma nambari tena ikiwa haijafika.</value>
   </data>
   <data name="Common_CodeMustBeSixDigits" xml:space="preserve">
     <value>Nambari ya uthibitishaji lazima iwe tarakimu 6 haswa.</value>

@@ -20,7 +20,7 @@
     }
     @if (!string.IsNullOrEmpty(_status))
     {
-        <div class="alert alert-info">@_status</div>
+        <AuthStatusNotice Email="@_model.Email" />
     }
 
     <EditForm Model="_model" OnValidSubmit="SubmitAsync">
@@ -48,17 +48,18 @@
             {
                 <div class="form-field verification-field">
                     <label>@AppResources.T("Common_VerificationCode")</label>
-                    <div class="verification-row">
-                        <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="6" />
-                        <button type="button" class="btn btn-secondary" disabled="@_sendingCode" @onclick="SendCodeAsync">
-                            @(_sendingCode ? AppResources.T("Common_Sending") : AppResources.T("Common_SendCode"))
+                    <InputText class="form-control" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="6" />
+                    <div class="verification-resend">
+                        <span>@AppResources.T("Common_NeedNewCode")</span>
+                        <button type="button" class="link-btn" disabled="@_sendingCode" @onclick="SendCodeAsync">
+                            @(_sendingCode ? AppResources.T("Common_Resending") : AppResources.T("Common_ResendCode"))
                         </button>
                     </div>
                 </div>
             }
         </div>
         <div class="form-actions" style="margin-top: 1rem;">
-            <button class="btn btn-primary" type="submit" disabled="@_busy">
+            <button class="btn btn-primary btn-block" type="submit" disabled="@_busy">
                 @(_busy
                     ? (_awaitingCode ? AppResources.T("Common_CreatingAccount") : AppResources.T("Common_SendingCode"))
                     : (_awaitingCode ? AppResources.T("Common_VerifyAndCreateAccount") : AppResources.T("Common_Continue")))

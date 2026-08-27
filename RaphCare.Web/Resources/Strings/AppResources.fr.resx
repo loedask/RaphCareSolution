@@ -112,6 +112,15 @@
   <data name="Common_SendCode" xml:space="preserve">
     <value>Envoyer le code</value>
   </data>
+  <data name="Common_ResendCode" xml:space="preserve">
+    <value>Renvoyer le code</value>
+  </data>
+  <data name="Common_Resending" xml:space="preserve">
+    <value>Renvoi…</value>
+  </data>
+  <data name="Common_NeedNewCode" xml:space="preserve">
+    <value>Besoin d&apos;un nouveau code ?</value>
+  </data>
   <data name="Common_CreatingAccount" xml:space="preserve">
     <value>Création d&apos;un compte…</value>
   </data>
@@ -238,8 +247,17 @@
   <data name="Common_CodeSentCheckInboxSpam" xml:space="preserve">
     <value>Code de vérification envoyé. Vérifiez votre boîte de réception (et votre dossier spam).</value>
   </data>
+  <data name="Common_CodeSentTitle" xml:space="preserve">
+    <value>Code envoyé</value>
+  </data>
+  <data name="Common_CodeSentToEmail" xml:space="preserve">
+    <value>Envoyé à {0}</value>
+  </data>
+  <data name="Common_CodeSentSpamHint" xml:space="preserve">
+    <value>Vérifiez votre boîte de réception et votre dossier spam si vous ne le voyez pas.</value>
+  </data>
   <data name="Common_EnterSixDigitCodeHint" xml:space="preserve">
-    <value>Entrez le code de vérification à 6 chiffres de votre e-mail. Appuyez sur Envoyer le code si vous n’en avez pas encore reçu.</value>
+    <value>Entrez le code à 6 chiffres de votre e-mail. Cliquez sur Renvoyer le code s&apos;il n&apos;est pas arrivé.</value>
   </data>
   <data name="Common_CodeMustBeSixDigits" xml:space="preserve">
     <value>Le code de vérification doit comporter exactement 6 chiffres.</value>
