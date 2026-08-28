@@ -17,11 +17,11 @@ public class GetFhirAppointmentsHandler(
 
     public async Task<FhirBundleDto> Handle(GetFhirAppointmentsQuery request, CancellationToken cancellationToken)
     {
-        var statusLower = request.Status;
-        if (!string.IsNullOrWhiteSpace(statusLower))
-            statusLower = statusLower.Trim().ToLower();
+        var status = request.Status;
+        if (!string.IsNullOrWhiteSpace(status))
+            status = status.Trim();
         else
-            statusLower = null;
+            status = null;
 
         var pagedAppointments = await _repository.SearchAsync(
             queryShaper: q =>
@@ -29,8 +29,8 @@ public class GetFhirAppointmentsHandler(
                 if (request.PatientId is Guid patientId)
                     q = q.Where(a => a.PatientId == patientId);
 
-                if (statusLower is not null)
-                    q = q.Where(a => a.Status != null && a.Status.ToLower() == statusLower);
+                if (status is not null)
+                    q = q.Where(a => a.Status != null && string.Equals(a.Status, status, StringComparison.OrdinalIgnoreCase));
 
                 return q;
             },

@@ -1,14 +1,14 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Devices;
 using RaphCare.Mobile.Core.Features.Devices.Models;
 using RaphCare.Mobile.Core.Features.Devices.Services;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Kernel.Core.Shared.Devices;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
+using RaphCare.Mobile.Kernel.Core.Common.Devices;
 
 namespace RaphCare.Mobile.Core.Features.Devices.ViewModels;
 
@@ -35,7 +35,19 @@ public sealed class DevicesViewModel : BaseViewModel
         _ble = ble ?? throw new ArgumentNullException(nameof(ble));
         _patientDevices = patientDevices ?? throw new ArgumentNullException(nameof(patientDevices));
         _vitalsOutbox = vitalsOutbox ?? throw new ArgumentNullException(nameof(vitalsOutbox));
-        Title = AppResources.T("DevicesPageTitle");
+        Title = T("DevicesPageTitle");
+
+    ScanButtonText = T("DevicesScan");
+    StopScanButtonText = T("DevicesStopScan");
+    ConnectHint = T("DevicesConnectHint");
+    DisconnectButtonText = T("DevicesDisconnect");
+    ShowAllLabel = T("DevicesShowAllBle");
+    E580E585FilterLabel = T("DevicesE580E585Filter");
+    LastReadingLabel = T("DevicesLastReading");
+    BleUnsupportedMessage = T("DevicesBleUnsupported");
+    DevicesConnectLabel = T("DevicesConnectButton");
+
+    SyncReadingsButtonText = T("DevicesSyncReadings");
 
         ScanCommand = new Command(async () => await ScanAsync().ConfigureAwait(false), () => !IsBusy && _ble.IsBleSupported);
         StopScanCommand = new Command(async () => await StopScanAsync().ConfigureAwait(false), () => _ble.IsScanning);
@@ -55,17 +67,17 @@ public sealed class DevicesViewModel : BaseViewModel
         _ble.ErrorOccurred += OnBleError;
     }
 
-    public string ScanButtonText => AppResources.T("DevicesScan");
-    public string StopScanButtonText => AppResources.T("DevicesStopScan");
-    public string ConnectHint => AppResources.T("DevicesConnectHint");
-    public string DisconnectButtonText => AppResources.T("DevicesDisconnect");
-    public string ShowAllLabel => AppResources.T("DevicesShowAllBle");
-    public string E580E585FilterLabel => AppResources.T("DevicesE580E585Filter");
-    public string LastReadingLabel => AppResources.T("DevicesLastReading");
-    public string BleUnsupportedMessage => AppResources.T("DevicesBleUnsupported");
-    public string DevicesConnectLabel => AppResources.T("DevicesConnectButton");
+    public string ScanButtonText { get; }
+    public string StopScanButtonText { get; }
+    public string ConnectHint { get; }
+    public string DisconnectButtonText { get; }
+    public string ShowAllLabel { get; }
+    public string E580E585FilterLabel { get; }
+    public string LastReadingLabel { get; }
+    public string BleUnsupportedMessage { get; }
+    public string DevicesConnectLabel { get; }
 
-    public string SyncReadingsButtonText => AppResources.T("DevicesSyncReadings");
+    public string SyncReadingsButtonText { get; }
 
     public string ShowAllToggleText => ShowAllDevices ? ShowAllLabel : E580E585FilterLabel;
 
@@ -128,16 +140,16 @@ public sealed class DevicesViewModel : BaseViewModel
 
     public string? VitalsHeartLine =>
         LastVitals?.HeartRateBpm is int b
-            ? string.Format(AppResources.T("DevicesHeartRateFormat"), b)
+            ? Format(T("DevicesHeartRateFormat"), b)
             : null;
 
     public string? VitalsSpo2Line =>
         LastVitals?.SpO2Percent is decimal sp
-            ? string.Format(AppResources.T("DevicesSpO2Format"), sp)
+            ? Format(T("DevicesSpO2Format"), sp)
             : null;
 
     public string? VitalsRawLine =>
-        string.IsNullOrEmpty(LastVitals?.RawHex) ? null : string.Format(AppResources.T("DevicesRawHexFormat"), LastVitals!.RawHex);
+        string.IsNullOrEmpty(LastVitals?.RawHex) ? null : Format(T("DevicesRawHexFormat"), LastVitals!.RawHex);
 
     public Guid? ConnectedDeviceId => _ble.ConnectedDeviceId;
 
@@ -192,7 +204,7 @@ public sealed class DevicesViewModel : BaseViewModel
         {
             var flushed = await _vitalsOutbox.TryFlushAsync(_patientDevices, CancellationToken.None).ConfigureAwait(false);
             if (flushed > 0)
-                SyncResultText = string.Format(AppResources.T("DevicesOutboxFlushedFormat"), flushed);
+                SyncResultText = Format(T("DevicesOutboxFlushedFormat"), flushed);
         }
         catch
         {
@@ -250,9 +262,9 @@ public sealed class DevicesViewModel : BaseViewModel
             {
                 Id = d.Id,
                 Title = string.IsNullOrWhiteSpace(d.Name)
-                    ? AppResources.T("DevicesUnnamedPeripheral")
+                    ? T("DevicesUnnamedPeripheral")
                     : d.Name!,
-                RssiText = d.Rssi?.ToString() ?? "—",
+                RssiText = d.Rssi?.ToString(CultureInfo.InvariantCulture) ?? "—",
             });
         }
     }
@@ -266,27 +278,27 @@ public sealed class DevicesViewModel : BaseViewModel
         }
 
         ErrorMessage = null;
-        StatusHint = AppResources.T("DevicesPermissionChecking");
+        StatusHint = T("DevicesPermissionChecking");
         IsBusy = true;
         try
         {
             var perm = await _ble.RequestBluetoothPermissionsAsync().ConfigureAwait(false);
             if (perm != PermissionStatus.Granted)
             {
-                ErrorMessage = AppResources.T("DevicesPermissionDenied");
+                ErrorMessage = T("DevicesPermissionDenied");
                 return;
             }
 
             if (!await _ble.EnsureBluetoothAdapterOnAsync().ConfigureAwait(false))
             {
-                ErrorMessage = AppResources.T("DevicesBluetoothOff");
+                ErrorMessage = T("DevicesBluetoothOff");
                 return;
             }
 
             IsScanningUi = true;
-            StatusHint = AppResources.T("DevicesScanning");
+            StatusHint = T("DevicesScanning");
             await _ble.StartScanAsync(ShowAllDevices).ConfigureAwait(false);
-            StatusHint = AppResources.T("DevicesScanComplete");
+            StatusHint = T("DevicesScanComplete");
         }
         catch (Exception ex)
         {
@@ -308,7 +320,7 @@ public sealed class DevicesViewModel : BaseViewModel
     {
         await _ble.StopScanAsync().ConfigureAwait(false);
         IsScanningUi = false;
-        StatusHint = AppResources.T("DevicesScanStopped");
+        StatusHint = T("DevicesScanStopped");
         if (StopScanCommand is Command st)
             st.ChangeCanExecute();
     }
@@ -321,15 +333,17 @@ public sealed class DevicesViewModel : BaseViewModel
         {
             await _ble.ConnectAsync(deviceId).ConfigureAwait(false);
             OnPropertyChanged(nameof(ConnectedDeviceId));
-            StatusHint = AppResources.T("DevicesConnected");
+            StatusHint = T("DevicesConnected");
             SyncResultText = null;
 
-            // Best-effort default SKU from advertised name
+            // Best-effort default SKU from advertised name (ET580/ET585 on-device labels included)
             var connected = _ble.DiscoveredDevices.FirstOrDefault(d => d.Id == deviceId);
             var name = connected?.Name ?? "";
-            if (name.Contains("E580", StringComparison.OrdinalIgnoreCase))
+            if (name.Contains("ET580", StringComparison.OrdinalIgnoreCase)
+                || name.Contains("E580", StringComparison.OrdinalIgnoreCase))
                 ModelSku = PatientProvisionedDeviceSkus.E580;
-            else if (name.Contains("E585", StringComparison.OrdinalIgnoreCase))
+            else if (name.Contains("ET585", StringComparison.OrdinalIgnoreCase)
+                     || name.Contains("E585", StringComparison.OrdinalIgnoreCase))
                 ModelSku = PatientProvisionedDeviceSkus.E585;
 
             if (DisconnectCommand is Command d)
@@ -356,7 +370,7 @@ public sealed class DevicesViewModel : BaseViewModel
             _lastHeartAt = null;
             _lastSpo2At = null;
             SyncResultText = null;
-            StatusHint = AppResources.T("DevicesDisconnected");
+            StatusHint = T("DevicesDisconnected");
             if (DisconnectCommand is Command d)
                 d.ChangeCanExecute();
         }
@@ -456,7 +470,7 @@ public sealed class DevicesViewModel : BaseViewModel
                     await _vitalsOutbox
                         .EnqueueAsync(deviceId, hrList, spo2List, CancellationToken.None)
                         .ConfigureAwait(false);
-                    StatusHint = AppResources.T("DevicesSyncQueuedOfflineHint");
+                    StatusHint = T("DevicesSyncQueuedOfflineHint");
                 }
 
                 return;
@@ -471,7 +485,7 @@ public sealed class DevicesViewModel : BaseViewModel
             {
                 var flushed = await _vitalsOutbox.TryFlushAsync(_patientDevices, CancellationToken.None).ConfigureAwait(false);
                 if (flushed > 0)
-                    SyncResultText += " " + string.Format(AppResources.T("DevicesOutboxFlushedFormat"), flushed);
+                    SyncResultText += " " + Format(T("DevicesOutboxFlushedFormat"), flushed);
             }
             catch
             {

@@ -6,7 +6,7 @@ using RaphCare.Client.Contracts.Interfaces;
 
 namespace RaphCare.Client.Services;
 
-/// <summary>Calls OTP endpoints with JSON so the verify JWT is returned. Complements the NSwag client (verify method discards 200 body).</summary>
+/// <summary>Calls OTP endpoints with JSON so the verify JWT is returned in the response body.</summary>
 public sealed class OtpAuthService(IHttpClientFactory httpClientFactory) : IOtpAuthService
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };

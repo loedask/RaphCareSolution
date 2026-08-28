@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Common.Controls"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Settings.ViewModels"
+             x:Class="RaphCare.Mobile.Core.Features.Settings.Views.PersonalInformationPage"
+             x:DataType="vm:PersonalInformationViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Padding="4" Spacing="12">
+                    <shared:InputField LabelText="{Binding FullNameLabel}" Text="{Binding FullName}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding DobLabel}" Style="{StaticResource BodyMedium}" />
+                        <DatePicker Date="{Binding DateOfBirth}" FontFamily="DMSans" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding GenderLabel}" Style="{StaticResource BodyMedium}" />
+                        <Picker ItemsSource="{Binding GenderOptions}" SelectedIndex="{Binding GenderIndex}" FontFamily="DMSans" />
+                    </VerticalStackLayout>
+                    <shared:InputField LabelText="{Binding AddressLabel}" Text="{Binding Address}" />
+                    <shared:InputField LabelText="{Binding PhoneLabel}" Text="{Binding Phone}" Keyboard="Telephone" />
+                </VerticalStackLayout>
+            </Border>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource PrimaryColor}" />
+            <shared:GradientButton Text="{Binding SaveLabel}" Command="{Binding SaveCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

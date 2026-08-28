@@ -10,7 +10,8 @@ This doc is the **single runbook** to get **RaphCare.API** and **RaphCare.Mobile
 | Phone OTP behavior | [06_Key_Workflows.md](./06_Key_Workflows.md) |
 | Mobile project layout, flags, voice clinic | [09_Mobile_App_Guide.md](./09_Mobile_App_Guide.md) |
 | Agora / Twilio (telehealth, SMS) | [10_Agora_Twilio_Setup.md](./10_Agora_Twilio_Setup.md) |
-| Release / completeness bar | [Mobile_Release_Ready_Checklist.md](./Mobile_Release_Ready_Checklist.md) |
+| Release / completeness bar | [Mobile_Release_Ready_Checklist.md](./checklist/Mobile_Release_Ready_Checklist.md) |
+| Azure test host + Play Internal | [Mobile_Android_Test_Hosting.md](./Mobile_Android_Test_Hosting.md) |
 
 ---
 
@@ -152,14 +153,46 @@ Using **`http://10.0.2.2:5281/`** with the API **`http`** profile is often the s
 | **Telehealth / Agora** (Android in-app video) | **`AgoraRtc`** on API — [10_Agora_Twilio_Setup.md](./10_Agora_Twilio_Setup.md) |
 | **Real SMS** | **`Twilio`** on API when not using Development log OTP |
 | **AI assistant (real model)** | **`PatientAssistant`** Azure OpenAI keys on API — see API **`appsettings.json`** / checklist |
-| **Push notifications** | **`FirebasePush:ServiceAccountJsonPath`** on API — [Mobile_Release_Ready_Checklist.md](./Mobile_Release_Ready_Checklist.md) |
-| **Appointments demo defaults** | **`Appointments:DefaultClinicId`** / **`DefaultProviderId`** in mobile **`appsettings`** (optional) |
+| **Push notifications** | **`FirebasePush:ServiceAccountJsonPath`** on API — [Mobile_Release_Ready_Checklist.md](./checklist/Mobile_Release_Ready_Checklist.md) |
+| **Appointments demo defaults** | **`Appointments:DefaultClinicId`** / **`DefaultProviderId`** in mobile **`appsettings.Development.json`** — seeded demo IDs: `11111111-1111-1111-1111-111111111101` (clinic) and `11111111-1111-1111-1111-111111111102` (provider) |
 
 None of these are required to **open the app**, sign in (Entra or phone OTP), and browse **Settings** and other enabled areas.
 
 ---
 
-## 6. Quick start sequence
+## 6. Android telehealth E2E (Request Call → Agora)
+
+Use this path to verify **on-demand video** end-to-end on an **Android** emulator or device.
+
+### 6.1 API
+
+1. Ensure **`AgoraRtc:AppId`** and **`AppCertificate`** are set in **`RaphCare.API/appsettings.json`** (or User Secrets). Optional smoke: **`tools/verify-agora-rtc-config.ps1`** (mints a token; does not print secrets).
+2. Run the API in **Development** so EF migrations apply (includes demo clinic/provider seeding and telehealth tables).
+3. Confirm Swagger shows **`POST /api/patient/telehealth/sessions/request`**.
+
+### 6.2 Mobile
+
+1. **DEBUG** build so **`appsettings.Development.json`** applies:
+   - **`Api:BaseAddress`**: `http://localhost:5281/` (remapped to **`http://10.0.2.2:5281/`** on Android).
+   - **`Appointments:DefaultClinicId`** / **`DefaultProviderId`**: demo GUIDs (see table in §5).
+   - **`FeatureFlags:CareTelehealthEnabled`**: `true`.
+2. Sign in as a **Patient** user.
+3. **Care** tab → **Request a call** → choose **Video** → **Start**.
+4. App calls **`POST api/patient/telehealth/sessions/request`**, then navigates to **Telehealth join**.
+5. On **Android**, in-call UI uses the **Agora** native session; use **chat** overlay (polls **`/chat`**).
+
+### 6.3 If request fails
+
+| Symptom | Check |
+|--------|--------|
+| **No provider available** | Restart API so **`ClinicalSeeder`** creates a demo provider (first run or empty `Providers` table). |
+| **403 / no patient** | Signed-in user must have a **patient** profile linked. |
+| **Cannot reach API** | Emulator: **`10.0.2.2:5281`**, HTTP profile, API listening on `5281`. |
+| **Video does not start** | Agora App ID on API; camera/mic permissions on device; join token from **`GET .../join-info`**. |
+
+---
+
+## 7. Quick start sequence
 
 1. **Start SQL** (LocalDB or your server) so connection strings work.
 2. **Configure API** User Secrets: **Entra**, optionally **Jwt:Secret**.
@@ -170,7 +203,7 @@ None of these are required to **open the app**, sign in (Entra or phone OTP), an
 
 ---
 
-## 7. Troubleshooting (common)
+## 8. Troubleshooting (common)
 
 | Symptom | Check |
 |--------|--------|
@@ -182,6 +215,6 @@ None of these are required to **open the app**, sign in (Entra or phone OTP), an
 
 ---
 
-## 8. Security reminder
+## 9. Security reminder
 
 Do **not** commit production secrets. Use **User Secrets**, **Azure Key Vault**, or your CI secret store. Replace sample **Jwt:Secret** and Entra placeholders before any environment with real patient data.

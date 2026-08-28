@@ -63,6 +63,7 @@ Phase 1 maps **`Clinic`** to FHIR `Organization`.
 |---|---|---|
 | `Clinic.Id` | `Organization.id` |  |
 | `Clinic.Name` | `Organization.name` | Included only when non-empty |
+| `Clinic.ReferenceCode` | `Organization.identifier` (system = `urn:raphcare:clinic-reference-code`) | Included only when non-empty |
 | `Clinic.RegistrationNumber` | `Organization.identifier` (system = `urn:raphcare:clinic-registration-number`) | Included only when non-empty |
 | `Clinic.IsActive` | `Organization.active` | Exported as `bool?` |
 

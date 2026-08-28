@@ -1,0 +1,104 @@
+@page "/patient/signin"
+@layout AuthShellLayout
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@AppResources.T("PatientSignIn_PageTitle")</PageTitle>
+
+<div class="auth-card auth-card-form @(_awaitingCode ? "auth-card-verify" : null)">
+    <a class="back-link" href="/">@AppResources.T("Common_Back")</a>
+    <h2 class="auth-card-title">@AppResources.T("PatientSignIn_Title")</h2>
+    <p class="auth-card-subtitle">@AppResources.T("PatientSignIn_Subtitle")</p>
+
+    <AdminAlert Message="@_error" />
+    @if (!string.IsNullOrEmpty(_status))
+    {
+        <AuthStatusNotice Email="@_model.Email" />
+    }
+
+    <EditForm Model="_model" OnValidSubmit="SubmitAsync">
+        <div class="form-grid single-column">
+            <div class="form-field">
+                <label>@AppResources.T("Common_Email")</label>
+                <InputText class="form-control" @bind-Value="_model.Email" type="email" disabled="@_awaitingCode" />
+            </div>
+            <div class="form-field">
+                <label>@AppResources.T("Common_Password")</label>
+                <InputText class="form-control" @bind-Value="_model.Password" type="password" disabled="@_awaitingCode" />
+            </div>
+            @if (_awaitingCode)
+            {
+                <div class="form-field verification-field">
+                    <label>@AppResources.T("Common_VerificationCode")</label>
+                    <InputText class="form-control verification-code-input" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="12" autocomplete="one-time-code" />
+                </div>
+            }
+        </div>
+        <div class="form-actions" style="margin-top: 1rem;">
+            <button class="btn btn-primary btn-block" type="submit" disabled="@_busy">
+                @(_busy ? AppResources.T("Common_PleaseWait") : _awaitingCode ? AppResources.T("Common_VerifyAndSignIn") : AppResources.T("Common_ContinueArrow"))
+            </button>
+        </div>
+    </EditForm>
+
+    <p class="auth-card-foot">@AppResources.T("PatientSignIn_FootNoAccount") <a href="/patient/register">@AppResources.T("PatientSignIn_RegisterLink")</a></p>
+</div>
+
+@code {
+    [Inject] private IEmailAuthService EmailAuth { get; set; } = default!;
+    [Inject] private IWebAuthService WebAuth { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private readonly SignInModel _model = new();
+    private bool _busy;
+    private bool _awaitingCode;
+    private string? _error;
+    private string? _status;
+
+    protected override void OnInitialized() =>
+        CultureService.CultureChanged += OnCultureChanged;
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    private async Task SubmitAsync()
+    {
+        _busy = true;
+        _error = null;
+        _status = null;
+
+        var code = _awaitingCode ? VerificationCodeText.NormalizeOrNull(_model.VerificationCode) : null;
+        var response = await EmailAuth.SignInAsync(_model.Email.Trim(), _model.Password, code);
+        _busy = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_SignInFailed");
+            return;
+        }
+
+        if (response.Data.RequiresVerification)
+        {
+            _awaitingCode = true;
+            _status = AppResources.T("Common_VerificationCodeSentEmail");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(response.Data.Token))
+        {
+            _error = AppResources.T("Common_SignInFailed");
+            return;
+        }
+
+        await WebAuth.StoreSessionAsync(response.Data.Token, WebAccountKind.Patient);
+        Navigation.NavigateTo("/patient/welcome", replace: true);
+    }
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private sealed class SignInModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string VerificationCode { get; set; } = string.Empty;
+    }
+}

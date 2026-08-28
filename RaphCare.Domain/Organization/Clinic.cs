@@ -15,14 +15,22 @@ public class Clinic : AggregateRoot, ISoftDelete
 {
     public string Name { get; set; } = string.Empty;
     public string RegistrationNumber { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Unique RaphCare reference staff can share (for example <c>RC-K7M3P2</c>).
+    /// Separate from <see cref="RegistrationNumber"/>, which is the hospital's own official number and is not unique on the platform.
+    /// </summary>
+    public string ReferenceCode { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public string TimeZone { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
+    public Guid? RegisteredByApplicationUserId { get; set; }
 
     public ICollection<Facility> Facilities { get; set; } = new List<Facility>();
     public ICollection<Department> Departments { get; set; } = new List<Department>();
     public ICollection<Provider> Providers { get; set; } = new List<Provider>();
     public ICollection<ServiceOffering> ServiceOfferings { get; set; } = new List<ServiceOffering>();
+    public ICollection<ClinicStaffMembership> StaffMemberships { get; set; } = new List<ClinicStaffMembership>();
 }

@@ -9,7 +9,7 @@ using AVFoundation;
 #endif
 using RaphCare.Mobile.Core.Features.CareTelehealth.Views;
 using RaphCare.Mobile.Core.Infrastructure.DependencyInjection;
-using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
+using RaphCare.Mobile.Core.Common.Services.FeatureFlags;
 #if ANDROID
 using RaphCare.Mobile.Platforms.Android.Telehealth;
 #elif IOS
@@ -33,6 +33,9 @@ public static class MauiProgram
 
 #if DEBUG
         builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+#else
+        // Release / Play test builds: hosted API URL (override via publish script before packaging).
+        builder.Configuration.AddJsonFile("appsettings.TestHosting.json", optional: true, reloadOnChange: true);
 #endif
 
         builder.Configuration.AddUserSecrets(typeof(App).Assembly, optional: true);

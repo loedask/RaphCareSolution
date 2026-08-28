@@ -1,0 +1,497 @@
+@page "/admin/hospitals/{ClinicId:guid}/appointments"
+@layout AdminLayout
+@using RaphCare.Domain.Common
+@inject NavigationManager Navigation
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@AppResources.T("Appointments_PageTitle")</PageTitle>
+
+<section class="admin-page">
+    <AdminPageHeader Title="@AppResources.T("Common_Appointments")"
+                     Lead="@AppResources.Format("Common_ScheduledVisitsLead", _clinicName, _timeZoneLabel)">
+        <span class="admin-progress-pill">@FormatAppointmentCount(_totalCount)</span>
+    </AdminPageHeader>
+
+    <AdminAlert Message="@_error" />
+    <AdminAlert Tone="success" Message="@_success" />
+
+    @if (_isAdministrator)
+    {
+        <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")" Title="@AppResources.T("Common_BookAppointmentTitle")">
+            <div class="admin-page-card-body">
+                <div class="form-grid">
+                    <label>
+                        @AppResources.T("Common_Patient")
+                        <SearchableSelect TValue="string"
+                                          @bind-Value="_bookPatientId"
+                                          Placeholder="@AppResources.T("Common_SelectPatient")"
+                                          Options="PatientSelectOptions" />
+                    </label>
+                    <label>
+                        @AppResources.T("Common_Provider")
+                        <SearchableSelect TValue="string"
+                                          @bind-Value="_bookProviderId"
+                                          Placeholder="@AppResources.T("Common_SelectProvider")"
+                                          Options="ProviderSelectOptions" />
+                    </label>
+                    <label>
+                        @AppResources.T("Common_Type")
+                        <SearchableSelect TValue="string"
+                                          @bind-Value="_bookType"
+                                          Options="AppointmentTypeOptions" />
+                    </label>
+                    <label>
+                        @AppResources.Format("Common_StartLabel", _timeZoneLabel)
+                        <input class="form-control" type="datetime-local" @bind="_scheduledStart" @bind:format="yyyy-MM-ddTHH:mm" />
+                    </label>
+                    <label>
+                        @AppResources.Format("Common_EndLabel", _timeZoneLabel)
+                        <input class="form-control" type="datetime-local" @bind="_scheduledEnd" @bind:format="yyyy-MM-ddTHH:mm" />
+                    </label>
+                    <label>
+                        @AppResources.T("Common_Reason")
+                        <input class="form-control" @bind="_bookReason" placeholder="@AppResources.T("Common_Optional")" />
+                    </label>
+                </div>
+                <div class="admin-page-actions">
+                    <button type="button" class="btn btn-primary" disabled="@_booking" @onclick="BookAppointmentAsync">
+                        @(_booking ? AppResources.T("Common_Booking") : AppResources.T("Common_BookAppointment"))
+                    </button>
+                </div>
+            </div>
+        </AdminPageCard>
+
+        @if (_rescheduleId is Guid rescheduleId)
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")" Title="@AppResources.T("Common_RescheduleAppointment")">
+                <div class="admin-page-card-body">
+                    <div class="form-grid">
+                        <label>
+                            @AppResources.T("Common_Provider")
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_rescheduleProviderId"
+                                              Options="ProviderSelectOptions" />
+                        </label>
+                        <label>
+                            @AppResources.Format("Common_StartLabel", _timeZoneLabel)
+                            <input class="form-control" type="datetime-local" @bind="_rescheduleStart" @bind:format="yyyy-MM-ddTHH:mm" />
+                        </label>
+                        <label>
+                            @AppResources.Format("Common_EndLabel", _timeZoneLabel)
+                            <input class="form-control" type="datetime-local" @bind="_rescheduleEnd" @bind:format="yyyy-MM-ddTHH:mm" />
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Reason")
+                            <input class="form-control" @bind="_rescheduleReason" placeholder="@AppResources.T("Common_Optional")" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions">
+                        <button type="button" class="btn btn-primary" disabled="@_rescheduling" @onclick="ConfirmRescheduleAsync">
+                            @(_rescheduling ? AppResources.T("Common_Saving") : AppResources.T("Common_SaveChanges"))
+                        </button>
+                        <button type="button" class="btn btn-secondary" @onclick="CancelRescheduleForm">@AppResources.T("Common_Cancel")</button>
+                    </div>
+                </div>
+            </AdminPageCard>
+        }
+    }
+
+    <AdminPageCard>
+        <div class="admin-page-card-body">
+            <div class="admin-table-toolbar">
+                <div class="claim-form-row">
+                    <SearchableSelect TValue="string"
+                                      @bind-Value="_rangeFilter"
+                                      Options="RangeFilterOptions" />
+                    <button type="button" class="btn btn-secondary" @onclick="LoadAppointmentsAsync">@AppResources.T("Common_Apply")</button>
+                </div>
+            </div>
+
+            @if (_loading)
+            {
+                <p class="text-muted">@AppResources.T("Common_LoadingAppointments")</p>
+            }
+            else if (_appointments.Count == 0)
+            {
+                <p class="text-muted">@AppResources.T("Common_NoAppointmentsMatchFilter")</p>
+            }
+            else
+            {
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>@AppResources.T("Common_DateTime")</th>
+                                <th>@AppResources.T("Common_Patient")</th>
+                                <th>@AppResources.T("Common_Provider")</th>
+                                <th>@AppResources.T("Common_Type")</th>
+                                <th>@AppResources.T("Common_Status")</th>
+                                <th>@AppResources.T("Common_Reason")</th>
+                                @if (_isAdministrator)
+                                {
+                                    <th></th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appt in _appointments)
+                            {
+                                <tr>
+                                    <td>@FormatLocal(appt.ScheduledStart)</td>
+                                    <td>
+                                        <a href="/admin/hospitals/@ClinicId/patients/@appt.PatientId">@appt.PatientName</a>
+                                    </td>
+                                    <td>@appt.ProviderName</td>
+                                    <td>@DisplayAppointmentType(appt.Type)</td>
+                                    <td>@appt.Status</td>
+                                    <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? AppResources.T("Common_EmptyCell") : appt.Reason)</td>
+                                    @if (_isAdministrator && appt.Status != "Cancelled")
+                                    {
+                                        <td class="admin-table-actions">
+                                            @if (string.Equals(appt.Type, "Telemedicine", StringComparison.OrdinalIgnoreCase) && appt.Status != "Completed")
+                                            {
+                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments/@appt.Id/tele">@AppResources.T("Common_JoinTelehealth")</a>
+                                            }
+                                            @if (appt.ActiveVisitId is Guid visitId)
+                                            {
+                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/visits/@visitId">@AppResources.T("Common_OpenVisit")</a>
+                                            }
+                                            else if (appt.Status != "Completed")
+                                            {
+                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@(_startingVisitId == appt.Id)" @onclick="() => StartVisitAsync(appt.Id)">
+                                                    @(_startingVisitId == appt.Id ? "…" : AppResources.T("Common_StartVisit"))
+                                                </button>
+                                            }
+                                            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => StartReschedule(appt)">@AppResources.T("Common_Reschedule")</button>
+                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@(_cancellingId == appt.Id)" @onclick="() => CancelAppointmentAsync(appt.Id)">
+                                                @(_cancellingId == appt.Id ? "…" : AppResources.T("Common_Cancel"))
+                                            </button>
+                                        </td>
+                                    }
+                                    else if (_isAdministrator)
+                                    {
+                                        <td></td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="admin-pagination">
+                    <span class="admin-pagination-meta">
+                        @AppResources.Format("Common_PageOf", _pageNumber, _pageCount, FormatAppointmentCount(_totalCount))
+                    </span>
+                    <div class="admin-pagination-actions">
+                        <button type="button" class="btn btn-secondary btn-sm" disabled="@(_pageNumber <= 1 || _loading)" @onclick="PreviousPageAsync">@AppResources.T("Common_Previous")</button>
+                        <button type="button" class="btn btn-secondary btn-sm" disabled="@(_pageNumber >= _pageCount || _loading)" @onclick="NextPageAsync">@AppResources.T("Common_Next")</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </AdminPageCard>
+
+    <div class="admin-page-actions">
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId?tab=appointments">@AppResources.T("Common_BackToHospital")</a>
+    </div>
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _booking;
+    private bool _rescheduling;
+    private bool _isAdministrator;
+    private string? _error;
+    private string? _success;
+    private string _clinicName = string.Empty;
+    private string _clinicTimeZone = "UTC";
+    private string _timeZoneLabel = string.Empty;
+    private string _rangeFilter = "upcoming";
+    private string _bookPatientId = string.Empty;
+    private string _bookProviderId = string.Empty;
+    private string _bookType = "InPerson";
+    private string _bookReason = string.Empty;
+    private DateTime _scheduledStart;
+    private DateTime _scheduledEnd;
+    private Guid? _rescheduleId;
+    private Guid? _cancellingId;
+    private Guid? _startingVisitId;
+    private string _rescheduleProviderId = string.Empty;
+    private string _rescheduleReason = string.Empty;
+    private DateTime _rescheduleStart;
+    private DateTime _rescheduleEnd;
+    private int _pageNumber = 1;
+    private const int PageSize = 20;
+    private int _pageCount = 1;
+    private int _totalCount;
+    private IReadOnlyList<ClinicAppointmentListItem> _appointments = Array.Empty<ClinicAppointmentListItem>();
+    private IReadOnlyList<ClinicPatientListItem> _patients = Array.Empty<ClinicPatientListItem>();
+    private IReadOnlyList<ClinicProviderListItem> _providers = Array.Empty<ClinicProviderListItem>();
+
+    private IReadOnlyList<SelectOption<string>> PatientSelectOptions =>
+        _patients.Select(patient => new SelectOption<string>(patient.PatientId.ToString(), $"{patient.FirstName} {patient.LastName}")).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> ProviderSelectOptions =>
+        _providers.Select(provider => new SelectOption<string>(provider.ProviderId.ToString(), provider.DisplayName)).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> AppointmentTypeOptions =>
+    [
+        new("InPerson", AppResources.T("Common_InPerson")),
+        new("Telemedicine", AppResources.T("Common_Telemedicine"))
+    ];
+
+    private IReadOnlyList<SelectOption<string>> RangeFilterOptions =>
+    [
+        new("upcoming", AppResources.T("Common_Upcoming30Days")),
+        new("today", AppResources.T("Common_RangeToday")),
+        new("all", AppResources.T("Common_All"))
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        CultureService.CultureChanged += OnCultureChanged;
+
+        _clinicName = AppResources.T("Common_ThisHospital");
+        _timeZoneLabel = AppResources.T("Common_HospitalTime");
+
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
+        if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
+        {
+            _clinicName = clinicResponse.Data.Name;
+            _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            _clinicTimeZone = clinicResponse.Data.TimeZone;
+            _timeZoneLabel = string.IsNullOrWhiteSpace(_clinicTimeZone)
+                ? AppResources.T("Common_HospitalTime")
+                : _clinicTimeZone;
+            SetDefaultBookingTimes();
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+
+        if (_isAdministrator)
+            await LoadBookFormDataAsync();
+
+        await LoadAppointmentsAsync();
+    }
+
+    private static string FormatAppointmentCount(int count) =>
+        count == 1
+            ? AppResources.Format("Common_AppointmentCountLabel", count)
+            : AppResources.Format("Common_AppointmentCountLabelPlural", count);
+
+    private static string DisplayAppointmentType(string type) =>
+        string.Equals(type, "Telemedicine", StringComparison.OrdinalIgnoreCase)
+            ? AppResources.T("Common_Telemedicine")
+            : string.Equals(type, "InPerson", StringComparison.OrdinalIgnoreCase)
+                ? AppResources.T("Common_InPerson")
+                : type;
+
+    private void SetDefaultBookingTimes()
+    {
+        var localNow = ClinicTimeZoneHelper.ToClinicLocal(DateTime.UtcNow, _clinicTimeZone);
+        _scheduledStart = localNow.Date.AddHours(9);
+        _scheduledEnd = localNow.Date.AddHours(9).AddMinutes(30);
+    }
+
+    private string FormatLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private DateTime ToUtc(DateTime clinicLocal) =>
+        ClinicTimeZoneHelper.ToUtcFromClinicLocal(clinicLocal, _clinicTimeZone);
+
+    private async Task LoadBookFormDataAsync()
+    {
+        var patientsTask = AdminClinicService.GetPatientsAsync(ClinicId, 1, 100);
+        var providersTask = AdminClinicService.GetProvidersAsync(ClinicId);
+        await Task.WhenAll(patientsTask, providersTask).ConfigureAwait(false);
+
+        if (patientsTask.Result.IsSuccess && patientsTask.Result.Data is not null)
+            _patients = patientsTask.Result.Data.Items;
+
+        if (providersTask.Result.IsSuccess && providersTask.Result.Data is not null)
+            _providers = providersTask.Result.Data.Where(p => p.IsActive).ToList();
+    }
+
+    private async Task BookAppointmentAsync()
+    {
+        if (!Guid.TryParse(_bookPatientId, out var patientId) || !Guid.TryParse(_bookProviderId, out var providerId))
+        {
+            _error = AppResources.T("Common_SelectPatientAndProvider");
+            return;
+        }
+
+        if (_scheduledEnd <= _scheduledStart)
+        {
+            _error = AppResources.T("Common_EndTimeAfterStart");
+            return;
+        }
+
+        _booking = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.BookAppointmentAsync(ClinicId, new BookClinicAppointmentRequest
+        {
+            PatientId = patientId,
+            ProviderId = providerId,
+            ScheduledStart = ToUtc(_scheduledStart),
+            ScheduledEnd = ToUtc(_scheduledEnd),
+            Type = _bookType,
+            Reason = string.IsNullOrWhiteSpace(_bookReason) ? null : _bookReason.Trim()
+        });
+        _booking = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotBookAppointment");
+            return;
+        }
+
+        _success = AppResources.T("Common_AppointmentBooked");
+        _bookReason = string.Empty;
+        _pageNumber = 1;
+        _rangeFilter = "upcoming";
+        await LoadAppointmentsAsync();
+    }
+
+    private void StartReschedule(ClinicAppointmentListItem appt)
+    {
+        _rescheduleId = appt.Id;
+        _rescheduleProviderId = appt.ProviderId.ToString();
+        _rescheduleReason = appt.Reason ?? string.Empty;
+        _rescheduleStart = ClinicTimeZoneHelper.ToClinicLocal(appt.ScheduledStart, _clinicTimeZone);
+        _rescheduleEnd = ClinicTimeZoneHelper.ToClinicLocal(appt.ScheduledEnd, _clinicTimeZone);
+        _error = null;
+        _success = null;
+    }
+
+    private void CancelRescheduleForm() => _rescheduleId = null;
+
+    private async Task ConfirmRescheduleAsync()
+    {
+        if (_rescheduleId is not Guid appointmentId || !Guid.TryParse(_rescheduleProviderId, out var providerId))
+            return;
+
+        if (_rescheduleEnd <= _rescheduleStart)
+        {
+            _error = AppResources.T("Common_EndTimeAfterStart");
+            return;
+        }
+
+        _rescheduling = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.RescheduleAppointmentAsync(ClinicId, appointmentId, new RescheduleClinicAppointmentRequest
+        {
+            ProviderId = providerId,
+            ScheduledStart = ToUtc(_rescheduleStart),
+            ScheduledEnd = ToUtc(_rescheduleEnd),
+            Reason = _rescheduleReason
+        });
+        _rescheduling = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotRescheduleAppointment");
+            return;
+        }
+
+        _success = AppResources.T("Common_AppointmentRescheduled");
+        _rescheduleId = null;
+        await LoadAppointmentsAsync();
+    }
+
+    private async Task StartVisitAsync(Guid appointmentId)
+    {
+        _startingVisitId = appointmentId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.StartVisitAsync(ClinicId, appointmentId);
+        _startingVisitId = null;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotStartVisit");
+            return;
+        }
+
+        Navigation.NavigateTo($"/admin/hospitals/{ClinicId}/visits/{response.Data.Id}");
+    }
+
+    private async Task CancelAppointmentAsync(Guid appointmentId)
+    {
+        _cancellingId = appointmentId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CancelAppointmentAsync(ClinicId, appointmentId);
+        _cancellingId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotCancelAppointment");
+            return;
+        }
+
+        _success = AppResources.T("Common_AppointmentCancelled");
+        if (_rescheduleId == appointmentId)
+            _rescheduleId = null;
+        await LoadAppointmentsAsync();
+    }
+
+    private async Task LoadAppointmentsAsync()
+    {
+        _loading = true;
+        _error = null;
+
+        DateTime? from = null;
+        DateTime? to = null;
+        var nowUtc = DateTime.UtcNow;
+
+        switch (_rangeFilter)
+        {
+            case "today":
+                (from, to) = ClinicTimeZoneHelper.GetClinicDayUtcRange(nowUtc, _clinicTimeZone);
+                break;
+            case "upcoming":
+                from = nowUtc.Date;
+                to = nowUtc.Date.AddDays(30);
+                break;
+        }
+
+        var response = await AdminClinicService.GetAppointmentsAsync(ClinicId, _pageNumber, PageSize, from, to);
+        _loading = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadAppointments");
+            return;
+        }
+
+        _appointments = response.Data.Items;
+        _totalCount = response.Data.TotalCount;
+        _pageCount = Math.Max(1, (int)Math.Ceiling(_totalCount / (double)PageSize));
+    }
+
+    private async Task PreviousPageAsync()
+    {
+        if (_pageNumber <= 1) return;
+        _pageNumber--;
+        await LoadAppointmentsAsync();
+    }
+
+    private async Task NextPageAsync()
+    {
+        if (_pageNumber >= _pageCount) return;
+        _pageNumber++;
+        await LoadAppointmentsAsync();
+    }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+}

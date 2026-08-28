@@ -3,9 +3,8 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Insurance;
 using RaphCare.Mobile.Core.Features.Insurance.Models;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Insurance.ViewModels;
 
@@ -20,12 +19,12 @@ public sealed class AddInsuranceProfileViewModel : BaseViewModel
     public AddInsuranceProfileViewModel(IPatientInsuranceService insurance)
     {
         _insurance = insurance ?? throw new ArgumentNullException(nameof(insurance));
-        Title = AppResources.T("InsuranceAddTitle");
-        MembershipLabel = AppResources.T("InsuranceMembershipLabel");
-        PlanLabel = AppResources.T("InsurancePlanLabel");
-        StartDateLabel = AppResources.T("InsuranceStartDateLabel");
-        SubmitLabel = AppResources.T("InsuranceSubmit");
-        CancelLabel = AppResources.T("InsuranceCancel");
+        Title = T("InsuranceAddTitle");
+        MembershipLabel = T("InsuranceMembershipLabel");
+        PlanLabel = T("InsurancePlanLabel");
+        StartDateLabel = T("InsuranceStartDateLabel");
+        SubmitLabel = T("InsuranceSubmit");
+        CancelLabel = T("InsuranceCancel");
 
         Plans = new ObservableCollection<InsurancePlanPickerItem>();
 
@@ -77,7 +76,7 @@ public sealed class AddInsuranceProfileViewModel : BaseViewModel
             var response = await _insurance.GetActivePlansAsync(CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("InsurancePlansLoadFailed");
+                ErrorMessage = response.ErrorMessage ?? T("InsurancePlansLoadFailed");
                 return;
             }
 
@@ -103,13 +102,13 @@ public sealed class AddInsuranceProfileViewModel : BaseViewModel
     {
         if (SelectedPlan is null)
         {
-            ErrorMessage = AppResources.T("InsuranceSelectPlan");
+            ErrorMessage = T("InsuranceSelectPlan");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(MembershipNumber))
         {
-            ErrorMessage = AppResources.T("InsuranceMembershipRequired");
+            ErrorMessage = T("InsuranceMembershipRequired");
             return;
         }
 
@@ -128,7 +127,7 @@ public sealed class AddInsuranceProfileViewModel : BaseViewModel
             var response = await _insurance.CreateProfileAsync(req, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("InsuranceCreateFailed");
+                ErrorMessage = response.ErrorMessage ?? T("InsuranceCreateFailed");
                 return;
             }
 

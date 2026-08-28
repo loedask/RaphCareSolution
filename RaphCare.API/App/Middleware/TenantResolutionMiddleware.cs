@@ -4,13 +4,12 @@ namespace RaphCare.API.App.Middleware;
 /// Extracts and validates X-Clinic-Id header and stores ClinicId in HttpContext.Items.
 /// Rejects the request if the header is missing or not a valid Guid.
 /// </summary>
-public class TenantResolutionMiddleware(RequestDelegate next, ILogger<TenantResolutionMiddleware> logger)
+public partial class TenantResolutionMiddleware(RequestDelegate next, ILogger<TenantResolutionMiddleware> logger)
 {
     public const string ClinicIdItemKey = "ClinicId";
     private const string ClinicIdHeaderName = "X-Clinic-Id";
 
     private readonly RequestDelegate _next = next;
-    private readonly ILogger<TenantResolutionMiddleware> _logger = logger;
 
     /// <summary>Validates X-Clinic-Id header, stores ClinicId in HttpContext.Items, or returns 400 if missing/invalid. Skips non-API and Swagger paths.</summary>
     /// <param name="context">The HTTP context.</param>
@@ -28,7 +27,7 @@ public class TenantResolutionMiddleware(RequestDelegate next, ILogger<TenantReso
         if (!context.Request.Headers.TryGetValue(ClinicIdHeaderName, out var headerValue)
             || string.IsNullOrWhiteSpace(headerValue))
         {
-            _logger.LogWarning("Request rejected: missing or empty {Header} header", ClinicIdHeaderName);
+            LogMissingClinicHeader(ClinicIdHeaderName);
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsJsonAsync(new { error = $"{ClinicIdHeaderName} header is required." }).ConfigureAwait(false);
             return;
@@ -36,7 +35,7 @@ public class TenantResolutionMiddleware(RequestDelegate next, ILogger<TenantReso
 
         if (!Guid.TryParse(headerValue.ToString().Trim(), out var clinicId))
         {
-            _logger.LogWarning("Request rejected: invalid Guid in {Header}", ClinicIdHeaderName);
+            LogInvalidClinicHeader(ClinicIdHeaderName);
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsJsonAsync(new { error = $"{ClinicIdHeaderName} must be a valid Guid." }).ConfigureAwait(false);
             return;
@@ -46,7 +45,14 @@ public class TenantResolutionMiddleware(RequestDelegate next, ILogger<TenantReso
         await _next(context).ConfigureAwait(false);
     }
 
-    /// <summary>Patient self-registration and sign-in do not require a tenant header.</summary>
+    /// <summary>Paths that operate above tenant scope or before a clinic exists.</summary>
     private static bool IsTenantExemptPath(string path) =>
-        path.StartsWith("/api/auth/email", StringComparison.OrdinalIgnoreCase);
+        path.StartsWith("/api/auth/email", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/api/admin/", StringComparison.OrdinalIgnoreCase);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Request rejected: missing or empty {Header} header")]
+    private partial void LogMissingClinicHeader(string header);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Request rejected: invalid Guid in {Header}")]
+    private partial void LogInvalidClinicHeader(string header);
 }

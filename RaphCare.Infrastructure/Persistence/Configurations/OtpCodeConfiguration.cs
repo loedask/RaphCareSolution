@@ -13,8 +13,10 @@ public class OtpCodeConfiguration : IEntityTypeConfiguration<OtpCode>
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.PhoneNumber)
-            .IsRequired()
             .HasMaxLength(30);
+
+        builder.Property(e => e.Email)
+            .HasMaxLength(256);
 
         builder.Property(e => e.CodeHash)
             .IsRequired()
@@ -27,6 +29,7 @@ public class OtpCodeConfiguration : IEntityTypeConfiguration<OtpCode>
             .IsRequired();
 
         builder.HasIndex(e => e.PhoneNumber);
+        builder.HasIndex(e => e.Email);
         builder.HasIndex(e => e.ExpiresAt);
         builder.HasIndex(e => e.IsUsed);
     }

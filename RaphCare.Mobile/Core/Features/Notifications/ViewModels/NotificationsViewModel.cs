@@ -3,8 +3,8 @@ using System.Collections.Specialized;
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Notifications;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.ViewModels;
+using RaphCare.Mobile.Core.Features.Notifications.Services;
 
 namespace RaphCare.Mobile.Core.Features.Notifications.ViewModels;
 
@@ -12,12 +12,22 @@ namespace RaphCare.Mobile.Core.Features.Notifications.ViewModels;
 public sealed class NotificationsViewModel : BaseViewModel
 {
     private readonly IPatientNotificationsService _notifications;
+    private readonly IPatientPushRegistrationService _pushRegistration;
     private string? _errorMessage;
 
-    public NotificationsViewModel(IPatientNotificationsService notifications)
+    public NotificationsViewModel(
+        IPatientNotificationsService notifications,
+        IPatientPushRegistrationService pushRegistration)
     {
         _notifications = notifications ?? throw new ArgumentNullException(nameof(notifications));
-        Title = AppResources.T("NotificationsTitle");
+        _pushRegistration = pushRegistration ?? throw new ArgumentNullException(nameof(pushRegistration));
+        Title = T("NotificationsTitle");
+
+    RefreshButtonText = T("NotificationsRefresh");
+    MarkAllReadButtonText = T("NotificationsMarkAllRead");
+    EmptyStateText = T("NotificationsEmpty");
+    PushHintText = T("NotificationsPushHint");
+    NewBadgeText = T("NotificationsNewBadge");
         Items = new ObservableCollection<PatientNotificationViewModel>();
         Items.CollectionChanged += OnItemsCollectionChanged;
 
@@ -28,11 +38,11 @@ public sealed class NotificationsViewModel : BaseViewModel
 
     public ObservableCollection<PatientNotificationViewModel> Items { get; }
 
-    public string RefreshButtonText => AppResources.T("NotificationsRefresh");
-    public string MarkAllReadButtonText => AppResources.T("NotificationsMarkAllRead");
-    public string EmptyStateText => AppResources.T("NotificationsEmpty");
-    public string PushHintText => AppResources.T("NotificationsPushHint");
-    public string NewBadgeText => AppResources.T("NotificationsNewBadge");
+    public string RefreshButtonText { get; }
+    public string MarkAllReadButtonText { get; }
+    public string EmptyStateText { get; }
+    public string PushHintText { get; }
+    public string NewBadgeText { get; }
 
     public string? ErrorMessage
     {
@@ -53,10 +63,12 @@ public sealed class NotificationsViewModel : BaseViewModel
         IsBusy = true;
         try
         {
+            await _pushRegistration.RegisterCurrentDeviceAsync(CancellationToken.None).ConfigureAwait(false);
+
             var response = await _notifications.GetMyNotificationsAsync(CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("NotificationsLoadFailed");
+                ErrorMessage = response.ErrorMessage ?? T("NotificationsLoadFailed");
                 Items.Clear();
                 return;
             }
@@ -79,7 +91,7 @@ public sealed class NotificationsViewModel : BaseViewModel
         var response = await _notifications.MarkAllReadAsync(CancellationToken.None).ConfigureAwait(false);
         if (!response.IsSuccess)
         {
-            ErrorMessage = response.ErrorMessage ?? AppResources.T("NotificationsLoadFailed");
+            ErrorMessage = response.ErrorMessage ?? T("NotificationsLoadFailed");
             return;
         }
 
@@ -92,7 +104,7 @@ public sealed class NotificationsViewModel : BaseViewModel
         var response = await _notifications.MarkReadAsync(id, CancellationToken.None).ConfigureAwait(false);
         if (!response.IsSuccess)
         {
-            ErrorMessage = response.ErrorMessage ?? AppResources.T("NotificationsLoadFailed");
+            ErrorMessage = response.ErrorMessage ?? T("NotificationsLoadFailed");
             return;
         }
 

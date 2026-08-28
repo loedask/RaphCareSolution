@@ -3,9 +3,8 @@ using System.Globalization;
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Billing;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Billing.ViewModels;
 
@@ -20,19 +19,19 @@ public sealed class BillingViewModel : BaseViewModel
     public BillingViewModel(IPatientBillingService billing)
     {
         _billing = billing ?? throw new ArgumentNullException(nameof(billing));
-        Title = AppResources.T("BillingTitle");
-        RefreshButtonText = AppResources.T("BillingRefresh");
-        AddPaymentButtonText = AppResources.T("BillingAddPayment");
-        UpgradeSectionTitle = AppResources.T("BillingSectionUpgrade");
-        UpgradePickerTitle = AppResources.T("BillingPickerUpgradePlan");
-        UpgradeButtonText = AppResources.T("BillingUpgradeButton");
-        PaymentMethodsSectionTitle = AppResources.T("BillingSectionPaymentMethods");
-        HistorySectionTitle = AppResources.T("BillingSectionHistory");
-        CurrentPlanLabel = AppResources.T("BillingCurrentPlanLabel");
-        SetDefaultButtonText = AppResources.T("BillingSetDefault");
-        RemoveButtonText = AppResources.T("BillingRemove");
-        EmptyPaymentsText = AppResources.T("BillingEmptyPayments");
-        EmptyInvoicesText = AppResources.T("BillingEmptyInvoices");
+        Title = T("BillingTitle");
+        RefreshButtonText = T("BillingRefresh");
+        AddPaymentButtonText = T("BillingAddPayment");
+        UpgradeSectionTitle = T("BillingSectionUpgrade");
+        UpgradePickerTitle = T("BillingPickerUpgradePlan");
+        UpgradeButtonText = T("BillingUpgradeButton");
+        PaymentMethodsSectionTitle = T("BillingSectionPaymentMethods");
+        HistorySectionTitle = T("BillingSectionHistory");
+        CurrentPlanLabel = T("BillingCurrentPlanLabel");
+        SetDefaultButtonText = T("BillingSetDefault");
+        RemoveButtonText = T("BillingRemove");
+        EmptyPaymentsText = T("BillingEmptyPayments");
+        EmptyInvoicesText = T("BillingEmptyInvoices");
 
         RefreshCommand = new Command(async () => await LoadAsync());
         AddPaymentCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.AddBillingPaymentMethod));
@@ -139,23 +138,22 @@ public sealed class BillingViewModel : BaseViewModel
 
             if (!plans.IsSuccess || plans.Data is null)
             {
-                ErrorMessage = plans.ErrorMessage ?? AppResources.T("BillingLoadFailed");
+                ErrorMessage = plans.ErrorMessage ?? T("BillingLoadFailed");
                 ClearBillingLists();
                 return;
             }
 
             if (!care.IsSuccess || care.Data is null)
             {
-                ErrorMessage = care.ErrorMessage ?? AppResources.T("BillingLoadFailed");
+                ErrorMessage = care.ErrorMessage ?? T("BillingLoadFailed");
                 ClearBillingLists();
                 return;
             }
 
             _carePlan = care.Data;
-            var culture = CultureInfo.CurrentCulture;
-            CurrentPlanSummary = string.Format(culture, AppResources.T("BillingCurrentPlanFormat"), _carePlan.PlanDisplayName, _carePlan.Status);
+            CurrentPlanSummary = Format(T("BillingCurrentPlanFormat"), _carePlan.PlanDisplayName, _carePlan.Status);
             if (_carePlan.RenewsOn is { } r)
-                CurrentPlanSummary += " · " + string.Format(culture, AppResources.T("BillingRenewsFormat"), r.ToLocalTime().ToString("d", culture));
+                CurrentPlanSummary += " · " + Format(T("BillingRenewsFormat"), r.ToLocalTime().ToString("d", CultureInfo.CurrentCulture));
 
             PlanOptions.Clear();
             foreach (var p in plans.Data.Where(x => x.Tier != _carePlan.Tier))
@@ -193,7 +191,7 @@ public sealed class BillingViewModel : BaseViewModel
             var res = await _billing.UpgradePlanAsync(SelectedUpgradePlan.PlanCode, CancellationToken.None).ConfigureAwait(false);
             if (!res.IsSuccess)
             {
-                ErrorMessage = res.ErrorMessage ?? AppResources.T("BillingUpgradeFailed");
+                ErrorMessage = res.ErrorMessage ?? T("BillingUpgradeFailed");
                 return;
             }
 
@@ -214,7 +212,7 @@ public sealed class BillingViewModel : BaseViewModel
         {
             var res = await _billing.SetDefaultPaymentMethodAsync(id, CancellationToken.None).ConfigureAwait(false);
             if (!res.IsSuccess)
-                ErrorMessage = res.ErrorMessage ?? AppResources.T("BillingLoadFailed");
+                ErrorMessage = res.ErrorMessage ?? T("BillingLoadFailed");
             else
                 await LoadAsync().ConfigureAwait(false);
         }
@@ -232,7 +230,7 @@ public sealed class BillingViewModel : BaseViewModel
         {
             var res = await _billing.RemovePaymentMethodAsync(id, CancellationToken.None).ConfigureAwait(false);
             if (!res.IsSuccess)
-                ErrorMessage = res.ErrorMessage ?? AppResources.T("BillingLoadFailed");
+                ErrorMessage = res.ErrorMessage ?? T("BillingLoadFailed");
             else
                 await LoadAsync().ConfigureAwait(false);
         }

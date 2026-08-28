@@ -1,0 +1,30 @@
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<div class="language-picker" role="group" aria-label="@AppResources.T("Language_Aria")">
+    <label class="language-picker-label" for="@_selectId">@AppResources.T("Language_Label")</label>
+    <SearchableSelect TValue="string"
+                      Id="@_selectId"
+                      Value="@CultureService.CurrentCode"
+                      ValueChanged="OnChangedAsync"
+                      Options="LanguageOptions" />
+</div>
+
+@code {
+    private readonly string _selectId = $"lang-{Guid.NewGuid():N}";
+
+    private IReadOnlyList<SelectOption<string>> LanguageOptions =>
+        WebLanguagePreference.SupportedLanguages
+            .Select(lang => new SelectOption<string>(lang.Code, lang.Native))
+            .ToArray();
+
+    protected override void OnInitialized() =>
+        CultureService.CultureChanged += OnCultureChanged;
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    private async Task OnChangedAsync(string? code) =>
+        await CultureService.SetCultureAsync(code ?? "en");
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+}

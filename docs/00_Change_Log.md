@@ -2,6 +2,43 @@
 
 ## Date
 
+2026-08-23
+
+## High-level summary of changes
+
+Documented the future goal that staff use the existing web admin on a phone. Direction: responsive admin UI first, then a thin home-screen install. A full PWA (offline writes, staff store app) is not the plan. No product code change.
+
+## Modules modified
+
+- **docs:** `15_Web_Admin_On_Phone.md`; pointers in system overview, solution structure, and both feature checklists.
+
+---
+
+## Date
+
+2026-07-21
+
+## High-level summary of changes
+
+Inpatient lifecycle completed in admin (capacity edit/delete, maintenance, transfer, admission history). Staff mental-health assessments persisted; reporting dashboard snapshot seeded. Mobile push device registration wired for demos; admin topbar search enabled. Y6 emergency events on admin patient chart and hospital Devices board. Agora server token path verified (Crc32.NET fix + smoke script). Companion docs updated.
+
+## Modules modified
+
+- **RaphCare.API / Application / Client / Web:** Admin inpatient update/delete/status/transfer/history endpoints and UI; Y6 emergency events on admin patient chart and hospital Devices board (`GET api/clinical/emergency-events`).
+- **RaphCare.Persistence:** MentalHealthAssessments migration; ClinicalSeeder inpatient capacity + demo patient/assessment; ReportingSeeder dashboard snapshot.
+- **RaphCare.Infrastructure:** Explicit **Crc32.NET** reference for Agora token minting.
+- **RaphCare.Mobile:** Push registration service; iOS Agora session scaffolding.
+- **tools:** `verify-agora-rtc-config.ps1` Agora token smoke.
+
+## Database changes
+
+- **Clinical:** MentalHealthAssessments table; demo seed for Facility / Ward / Room / Beds when empty.
+- **AI:** Demo DashboardSnapshots row for demo clinic.
+
+---
+
+## Date
+
 2026-03-15
 
 ## High-level summary of changes

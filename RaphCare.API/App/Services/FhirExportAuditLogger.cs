@@ -6,7 +6,7 @@ namespace RaphCare.API.App.Services;
 /// <summary>
 /// Structured log-based audit for FHIR (Fast Healthcare Interoperability Resources) export requests.
 /// </summary>
-public class FhirExportAuditLogger(ILogger<FhirExportAuditLogger> logger) : IFhirExportAuditLogger
+public sealed partial class FhirExportAuditLogger(ILogger<FhirExportAuditLogger> logger) : IFhirExportAuditLogger
 {
     public void LogExportAttempt(
         string resourceType,
@@ -17,8 +17,7 @@ public class FhirExportAuditLogger(ILogger<FhirExportAuditLogger> logger) : IFhi
         bool success,
         string? errorMessage)
     {
-        logger.LogInformation(
-            "FhirExport: ResourceType={ResourceType}, ResourceId={ResourceId}, RequestedByUserId={RequestedByUserId}, ClinicId={ClinicId}, RequestedAt={RequestedAt:O}, Success={Success}, Error={ErrorMessage}",
+        LogFhirExport(
             resourceType,
             resourceId,
             requestedByUserId,
@@ -27,5 +26,16 @@ public class FhirExportAuditLogger(ILogger<FhirExportAuditLogger> logger) : IFhi
             success,
             errorMessage);
     }
-}
 
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = "FhirExport: ResourceType={ResourceType}, ResourceId={ResourceId}, RequestedByUserId={RequestedByUserId}, ClinicId={ClinicId}, RequestedAt={RequestedAt:O}, Success={Success}, Error={ErrorMessage}")]
+    private partial void LogFhirExport(
+        string resourceType,
+        Guid resourceId,
+        Guid? requestedByUserId,
+        Guid? clinicId,
+        DateTime requestedAt,
+        bool success,
+        string? errorMessage);
+}

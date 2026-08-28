@@ -6,7 +6,7 @@ using RaphCare.Client.Models.Devices;
 namespace RaphCare.Mobile.Core.Features.Devices.Services;
 
 /// <summary>Stores pending vitals batches as JSON under the app data directory (max <see cref="MaxBatches"/>).</summary>
-public sealed class FileVitalsSyncOutbox : IVitalsSyncOutbox
+public sealed class FileVitalsSyncOutbox : IVitalsSyncOutbox, IDisposable
 {
     internal const int MaxBatches = 50;
 
@@ -149,4 +149,6 @@ public sealed class FileVitalsSyncOutbox : IVitalsSyncOutbox
         public List<Spo2ReadingInput> SpO2Readings { get; set; } = [];
         public DateTimeOffset EnqueuedAt { get; set; }
     }
+
+    public void Dispose() => _gate.Dispose();
 }

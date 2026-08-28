@@ -1,0 +1,23 @@
+root = true
+
+# EF Core migrations are generated with underscore type names and inline index arrays.
+[**/Migrations/**.cs]
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1861.severity = none
+
+# Intentional domain and platform names.
+[RaphCare.Domain/Identity/Permission.cs]
+dotnet_diagnostic.CA1711.severity = none
+
+[RaphCare.Domain/Identity/RolePermission.cs]
+dotnet_diagnostic.CA1711.severity = none
+
+[RaphCare.Application/**/*Handler.cs]
+dotnet_diagnostic.CA1711.severity = none
+
+[RaphCare.Mobile/Platforms/**/AppDelegate.cs]
+dotnet_diagnostic.CA1711.severity = none
+
+# Generic API result factory on Response<T> is a deliberate client contract.
+[RaphCare.Client/Contracts/Response.cs]
+dotnet_diagnostic.CA1000.severity = none

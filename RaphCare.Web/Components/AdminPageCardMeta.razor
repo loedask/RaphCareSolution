@@ -1,0 +1,10 @@
+@implements IDisposable
+
+@code {
+    [CascadingParameter] public AdminPageCard? Card { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnParametersSet() => Card?.SetHeadMeta(ChildContent);
+
+    public void Dispose() => Card?.SetHeadMeta(null);
+}

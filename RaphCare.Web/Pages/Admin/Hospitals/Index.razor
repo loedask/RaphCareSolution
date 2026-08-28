@@ -1,0 +1,198 @@
+@page "/admin/hospitals"
+@layout AdminLayout
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@AppResources.T("HospitalsIndex_PageTitle")</PageTitle>
+
+<section class="admin-page admin-brand-page">
+    <AdminPageHeader CssClass="brand-hero"
+                     Eyebrow="@AppResources.T("Common_Hospitals")"
+                     Title="@AppResources.T("Common_MyHospitals")"
+                     Lead="@AppResources.T("HospitalsIndex_Lead")">
+        <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospitalButton")</a>
+    </AdminPageHeader>
+
+    @if (_loading)
+    {
+        <p class="admin-loading-copy">@AppResources.T("Common_Loading")</p>
+    }
+    else if (_authRequired)
+    {
+        <AdminEmptyState CssClass="admin-guidance-state"
+                         Title="@AppResources.T("Common_FinishRegisteringHospital")"
+                         Lead="@AppResources.T("HospitalsIndex_AuthGuidanceLead")">
+            <AdminEmptyStateIcon ChildContent="HospitalGlyph" />
+            <div class="admin-guidance-actions">
+                <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospital")</a>
+                <a class="btn btn-secondary" href="@_signInReturnUrl">@AppResources.T("Common_SignInAgain")</a>
+            </div>
+        </AdminEmptyState>
+    }
+    else if (!string.IsNullOrEmpty(_error))
+    {
+        <AdminAlert Message="@_error" />
+    }
+    else if (_clinics.Count == 0)
+    {
+        <AdminEmptyState CssClass="admin-guidance-state hospitals-empty"
+                         Title="@AppResources.T("HospitalsIndex_EmptyTitle")"
+                         Lead="@AppResources.T("HospitalsIndex_EmptyLead")">
+            <AdminEmptyStateIcon ChildContent="HospitalGlyph" />
+            <div class="hospitals-empty-paths">
+                <div class="hospitals-empty-path">
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_LinkHospital")</p>
+                    <div class="claim-form">
+                        <label for="hospital-claim-number">@AppResources.T("Common_HospitalClaimLabel")</label>
+                        <div class="claim-form-row">
+                            <input id="hospital-claim-number"
+                                   class="form-control"
+                                   @bind="_claimRegistrationNumber"
+                                   @bind:event="oninput"
+                                   @bind:after="OnClaimNumberChanged"
+                                   placeholder="@AppResources.T("Common_HospitalClaimPlaceholder")" />
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    disabled="@(_claiming || string.IsNullOrWhiteSpace(_claimRegistrationNumber))"
+                                    @onclick="ClaimAsync">
+                                @(_claiming ? AppResources.T("Common_Linking") : AppResources.T("Common_LinkHospital"))
+                            </button>
+                        </div>
+                        @if (!string.IsNullOrEmpty(_claimError))
+                        {
+                            <p class="claim-error">@_claimError</p>
+                        }
+                    </div>
+                </div>
+                <div class="hospitals-empty-path hospitals-empty-path-primary">
+                    <p class="admin-page-eyebrow">@AppResources.T("Common_RegisterHospital")</p>
+                    <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospitalButton")</a>
+                </div>
+            </div>
+        </AdminEmptyState>
+    }
+    else
+    {
+        <AdminPageCard Title="@AppResources.T("Common_YourHospitals")">
+            <AdminPageCardMeta>
+                <span class="admin-progress-pill">@AppResources.Format("HospitalsIndex_TotalMeta", _clinics.Count)</span>
+            </AdminPageCardMeta>
+            <div class="admin-page-card-body">
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>@AppResources.T("Common_Name")</th>
+                                <th>@AppResources.T("Common_HospitalReference")</th>
+                                <th>@AppResources.T("Common_RegistrationNumberShort")</th>
+                                <th>@AppResources.T("Common_Country")</th>
+                                <th>@AppResources.T("Common_Facilities")</th>
+                                <th>@AppResources.T("Common_Registered")</th>
+                                <th>@AppResources.T("Common_Status")</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var clinic in _clinics)
+                            {
+                                <tr>
+                                    <td><a class="card-header-link" href="/admin/hospitals/@clinic.Id"><strong>@clinic.Name</strong></a></td>
+                                    <td><code>@clinic.ReferenceCode</code></td>
+                                    <td>@clinic.RegistrationNumber</td>
+                                    <td>@clinic.Country</td>
+                                    <td>@clinic.FacilityCount</td>
+                                    <td>@clinic.CreatedAt.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
+                                            @(clinic.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
+                                        </span>
+                                    </td>
+                                    <td><a class="btn btn-ghost btn-sm" href="/admin/hospitals/@clinic.Id">@AppResources.T("Common_Open")</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </AdminPageCard>
+    }
+</section>
+
+@code {
+    private const string HospitalsPath = "/admin/hospitals";
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _claiming;
+    private bool _authRequired;
+    private string? _error;
+    private string? _claimError;
+    private string _claimRegistrationNumber = string.Empty;
+    private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
+
+    private string _signInReturnUrl =>
+        $"/professional/signin?returnUrl={Uri.EscapeDataString(HospitalsPath)}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        CultureService.CultureChanged += OnCultureChanged;
+        await LoadAsync();
+    }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetClinicsAsync();
+        _loading = false;
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _clinics = response.Data;
+            if (_clinics.Count == 1)
+                await ClinicContext.SetCurrentClinicAsync(_clinics[0].Id, _clinics[0].Name);
+            return;
+        }
+
+        _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadHospitals");
+        _authRequired = response.StatusCode is 401 or 403;
+    }
+
+    private async Task ClaimAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_claimRegistrationNumber))
+        {
+            _claimError = AppResources.T("HospitalsIndex_EnterRegistrationNumber");
+            return;
+        }
+
+        _claiming = true;
+        _claimError = null;
+        var response = await AdminClinicService.ClaimByRegistrationNumberAsync(_claimRegistrationNumber.Trim());
+        _claiming = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _claimError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLinkHospital");
+            return;
+        }
+
+        await ClinicContext.SetCurrentClinicAsync(response.Data.Value);
+        await LoadAsync();
+        Navigation.NavigateTo($"/admin/hospitals/{response.Data.Value}");
+    }
+
+    private void OnClaimNumberChanged() => _claimError = null;
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private static RenderFragment HospitalGlyph => @<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+        <path d="M3 21h18M6 21V9l6-5 6 5v12" />
+        <path d="M9 21v-6h6v6" />
+        <path d="M12 9v4M10 11h4" />
+    </svg>;
+}

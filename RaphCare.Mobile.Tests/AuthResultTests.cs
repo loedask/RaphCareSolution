@@ -1,4 +1,4 @@
-using RaphCare.Mobile.Core.Shared.Models;
+using RaphCare.Mobile.Core.Common.Models;
 using Xunit;
 
 namespace RaphCare.Mobile.Tests;

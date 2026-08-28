@@ -8,6 +8,12 @@ namespace RaphCare.Persistence.Seed;
 /// </summary>
 public static class DeviceSeeder
 {
+    private static readonly Action<ILogger, Exception?> LogNotImplemented =
+        LoggerMessage.Define(
+            LogLevel.Debug,
+            new EventId(1, nameof(LogNotImplemented)),
+            "Device seeder: not yet implemented.");
+
     /// <summary>
     /// Seeds device-related data when none exist. Currently a no-op with logging placeholder.
     /// </summary>
@@ -19,7 +25,7 @@ public static class DeviceSeeder
         ILogger logger,
         CancellationToken cancellationToken = default)
     {
-        logger.LogDebug("Device seeder: not yet implemented.");
+        LogNotImplemented(logger, null);
         return Task.CompletedTask;
     }
 }

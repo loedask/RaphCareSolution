@@ -7,16 +7,13 @@ alwaysApply: true
 
 Use this as the **north star** for where code belongs. Deeper rules: **`.cursor/rules/raphcare-api.mdc`**, **`.cursor/rules/raphcare-application.mdc`**, **`.cursor/rules/raphcare-client.mdc`**, **`.cursor/rules/raphcare-comments.mdc`** (comments / XML docs), **`.cursor/rules/raphcare-identity.mdc`**, **`.cursor/rules/raphcare-infrastructure.mdc`**, **`.cursor/rules/raphcare-persistence.mdc`**, **`.cursor/rules/raphcare-mobile.mdc`**, **`.cursor/rules/raphcare-mobile-concept-template.mdc`**, **`docs/Mobile_Concept_Port.md`** (React concept — design parity for MAUI), **docs/02_Solution_Structure.md**, **docs/07_Coding_Conventions.md**, **docs/09_Mobile_App_Guide.md**.
 
-## Full-stack feature workflow (order + human-owned NSwag)
+## Full-stack feature workflow
 
-For **new or changed HTTP contracts**, follow this sequence. **Do not** skip ahead or regenerate the API client from AI.
+For **new or changed HTTP contracts**, follow this sequence:
 
-1. **Backend first** — **API**, **Application**, **Persistence**, **Identity**, **Infrastructure** as needed (controllers, MediatR, validators, EF, etc.). Server-side OpenAPI/Swagger host setup (**`SwaggerExtensions`**, attributes on actions) is normal work here.
-2. **Human: NSwag / OpenAPI client** — The **repository owner** regenerates or updates **`RaphCare.Client/Services/Base/NSwag/ClientService.cs`** and **`RaphCare.Client/Services/Base/NSwag/clientsettings.nswag`** (and any related NSwag settings they maintain). **AI must not** create, overwrite, or hand-edit those generated client types or NSwag config files.
-3. **RaphCare.Client** — After the human has refreshed the generated surface, implement or extend **`Contracts/`**, **`Services/`**, **`Models/`**, **`Mappings/`**, **`ServiceRegistration`** using the **current** **`IClient`** / generated DTOs.
-4. **RaphCare.Mobile** and **Web** — Consume **Client** only; no duplicate HTTP contracts in Mobile.
-
-If generated **`IClient`** members are missing for a new endpoint, **stop** and ask the human to run NSwag—do not fabricate **`ClientService.cs`**.
+1. **Backend first** — **API**, **Application**, **Persistence**, **Identity**, **Infrastructure** as needed (controllers, MediatR, validators, EF, etc.). Server-side OpenAPI/Swagger (**`SwaggerExtensions`**, **`ProducesResponseType`**, action names) remains useful for docs and external consumers.
+2. **RaphCare.Client** — Implement or extend **`Contracts/Interfaces`**, **`Services/`** (typically **`BaseHttpService`** + named **`HttpClient`**), **`Models/`**, and **`ServiceRegistration`**. Wire DTOs live in **Client** (private nested types or **`Models/Api/`**)—do not reference **Application** DTOs from **Client**.
+3. **RaphCare.Mobile** and **Web** — Consume **Client** only; no duplicate HTTP contracts in Mobile.
 
 ## Dependency direction (who may reference whom)
 
@@ -33,8 +30,8 @@ Client  ←  referenced by Web / Mobile (HTTP + DTOs only; not a vertical “lay
 - **Infrastructure** implements **Application** interfaces (e.g. AI, OTP, speech, interceptors). References **Application** (and **Domain** when needed). **`IApplicationUserStore`** is **not** here—it is in **Persistence**.
 - **Identity** — Entra JWT validation, provisioning, role mapping. References **Application + Domain**. Does **not** reference **Persistence** (store implementation lives in Persistence).
 - **API** — Controllers, middleware, Swagger, startup. References **Application, Infrastructure, Persistence, Identity**. **No business rules** in controllers—**`IMediator`** only.
-- **Client** — Shared HTTP client, generated API surface, **`IAccessTokenProvider`** hook for Bearer. Used by **Web** and **Mobile**; do **not** duplicate API contracts inside Mobile beyond UI state.
-- **Web** — Blazor WASM UI; uses **Client** (and typically auth like the rest of the stack).
+- **Client** — Shared HTTP client layer (**`I*Service`** facades, **`BaseHttpService`**, **`IAccessTokenProvider`** hook for Bearer). Used by **Web** and **Mobile**; do **not** duplicate API contracts inside Mobile beyond UI state.
+- **Web** — Blazor WASM UI (`RaphCare.Web`); Linux App Service hosting uses thin **`RaphCare.Web.Host`** (SPA fallback). Uses **Client**.
 - **Mobile** — MAUI app; **Kernel** (flags, `AuthResult`) + **Client** for API; see **raphcare-mobile** rule and **docs/09_Mobile_App_Guide.md**.
 
 ## One-line responsibilities
@@ -47,8 +44,8 @@ Client  ←  referenced by Web / Mobile (HTTP + DTOs only; not a vertical “lay
 | **Infrastructure** | Concrete external services, EF **interceptors** living here, infra cross-cutting | Feature use-case handlers (those stay in Application) |
 | **Identity** | Entra/JWT options, token validation, provisioning pipeline | EF mappings for clinical data |
 | **API** | REST surface, middleware, DI composition entry for the host | MediatR handler bodies; domain rules |
-| **Client** | Generated + hand-written API access, **`AddRaphCareClient`** | Domain entities; app use cases |
-| **Web** | Blazor UI, WASM host concerns | Duplicating Application handlers |
+| **Client** | Hand-written **`I*Service`** + **`HttpClient`**, **`AddRaphCareClient`** | Domain entities; app use cases |
+| **Web** | Blazor UI (`RaphCare.Web`); Linux host (`RaphCare.Web.Host`) | Duplicating Application handlers |
 | **Mobile** | Shell, pages, VMs, platform auth bridge to **`IAccessTokenProvider`** | Hand-rolled duplicate of **Client** API types |
 | **Mobile.Kernel** | Small **net10.0** types shared with tests (flags, auth result) | MAUI or HTTP |
 

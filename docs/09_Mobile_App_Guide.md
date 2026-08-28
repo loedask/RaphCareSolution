@@ -2,12 +2,14 @@
 
 **Run the patient app + API (demo checklist, ports, Entra, flags):** [Mobile_Demo_Launch_Guide.md](./Mobile_Demo_Launch_Guide.md).
 
+**Hosted Azure test API + Google Play Internal (Android):** [Mobile_Android_Test_Hosting.md](./Mobile_Android_Test_Hosting.md).
+
 ## Where code goes
 
 | Area | Use for |
 |------|---------|
 | **`Core/Features/<Name>/`** | Screens, feature view models, feature-only services/models. |
-| **`Core/Shared/`** | Reused across features: navigation, auth services, MAUI **Controls**, **ViewModels** (e.g. `BaseViewModel`), shared views. |
+| **`Core/Common/`** | Reused across features: navigation, auth services, MAUI **Controls**, **ViewModels** (e.g. `BaseViewModel`), shared views. |
 | **`Core/Infrastructure/`** | Composition and DI registration (`MobileServiceCollectionExtensions`), service resolution (`MobileServiceHub`) for Shell/XAML constraints. |
 | **`Blazor/`** | Razor UI hosted inside **BlazorWebView** (see `BlazorHostPage`). |
 | **`RaphCare.Mobile.Kernel`** | Small **net10.0** library: `AuthResult`, feature flags types—no MAUI references. Keeps logic unit-testable without pulling MAUI workloads into test projects. |

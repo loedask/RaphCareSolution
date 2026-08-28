@@ -2,7 +2,7 @@ using RaphCare.Client.Contracts;
 
 namespace RaphCare.Client.Contracts.Interfaces;
 
-/// <summary>Phone OTP endpoints (<c>api/auth/otp</c>). Uses HTTP JSON directly so verify responses return the JWT (generated NSwag client omits the body).</summary>
+/// <summary>Phone OTP endpoints (<c>api/auth/otp</c>). Uses HTTP JSON directly so verify responses return the JWT.</summary>
 public interface IOtpAuthService
 {
     Task<Response<bool>> SendOtpAsync(string phoneNumber, CancellationToken cancellationToken = default);

@@ -1,0 +1,111 @@
+# Docs: https://github.com/Azure/webapps-deploy
+# Deploys RaphCare.Web.Host (serves Blazor WASM) to Azure App Service raphcare on push to develop.
+
+name: Build and deploy Web - raphcare
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'RaphCare.Web/**'
+      - 'RaphCare.Web.Host/**'
+      - 'RaphCare.Client/**'
+      - 'RaphCare.Domain/**'
+      - 'Directory.Build.props'
+      - '.github/workflows/develop_raphcare.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-raphcare-web
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Point Web at hosted API
+        shell: bash
+        run: |
+          api_base="${{ vars.RAPHCARE_API_BASE_URL }}"
+          if [ -z "$api_base" ]; then
+            api_base="https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net"
+          fi
+          api_base="${api_base%/}"
+          printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Web/wwwroot/appsettings.json
+          printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Web/wwwroot/appsettings.Staging.json
+          cat RaphCare.Web/wwwroot/appsettings.json
+
+      - name: Publish Web Host (linux-x64)
+        run: >
+          dotnet publish RaphCare.Web.Host/RaphCare.Web.Host.csproj
+          -c Release
+          -r linux-x64
+          --self-contained false
+          -o ./publish-web
+
+      - name: Zip publish output
+        run: (cd ./publish-web && zip -r ../raphcare-web.zip .)
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: raphcare-web
+          path: raphcare-web.zip
+          if-no-files-found: error
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: raphcare-web
+          path: ./artifact
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID_RAPHCARE }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: raphcare
+          resource-group-name: raphcare_group
+          package: ./artifact/raphcare-web.zip
+
+      - name: Point hosted Web at API
+        shell: bash
+        run: |
+          api_base="${{ vars.RAPHCARE_API_BASE_URL }}"
+          if [ -z "$api_base" ]; then
+            api_base="https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net"
+          fi
+          api_base="${api_base%/}"
+          resource_group="${{ vars.RAPHCARE_WEB_RESOURCE_GROUP }}"
+          if [ -z "$resource_group" ]; then
+            resource_group="raphcare_group"
+          fi
+          az webapp config appsettings set \
+            --resource-group "$resource_group" \
+            --name raphcare \
+            --settings "ASPNETCORE_ENVIRONMENT=Staging" "ApiBaseUrl=${api_base}" \
+            --output none

@@ -27,5 +27,15 @@ public interface IPatientClinicAccessService
     /// Returns active clinic ids a patient can access.
     /// </summary>
     Task<Guid[]> GetAccessibleClinicIdsAsync(Guid patientId, CancellationToken ct);
+
+    /// <summary>
+    /// Grants or reactivates explicit manual clinic access for a patient.
+    /// </summary>
+    Task GrantManualAccessAsync(Guid patientId, Guid clinicId, string? notes, CancellationToken ct);
+
+    /// <summary>
+    /// Deactivates explicit clinic access for a patient at a hospital.
+    /// </summary>
+    Task RevokeClinicAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct);
 }
 

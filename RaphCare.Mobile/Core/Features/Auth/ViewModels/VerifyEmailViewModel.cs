@@ -1,29 +1,30 @@
 using System.Windows.Input;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.Services.Auth;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using Microsoft.Maui.Controls;
+using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
 /// <summary>
-/// Email verification prompt. User verifies via Entra; Sign In on success goes to <c>AccountCreatedPage</c>, then home.
+/// Legacy email verification screen. Registration and sign-in now collect codes inline; this page supports resend and redirect to sign-in.
 /// </summary>
-public class VerifyEmailViewModel : BaseViewModel
+public class VerifyEmailViewModel : BaseViewModel, IQueryAttributable
 {
-    private readonly IAuthService _authService;
+    private readonly IEmailAuthService _emailAuthService;
 
+    private string _email = string.Empty;
     private string? _errorMessage;
     private string? _statusMessage;
 
-    public VerifyEmailViewModel(IAuthService authService)
+    public VerifyEmailViewModel(IEmailAuthService emailAuthService)
     {
-        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
-        Title = AppResources.T("VerifyEmailPageTitle");
-        Headline = AppResources.T("VerifyEmailTitle");
-        Subtitle = AppResources.T("VerifyEmailSubtitle");
-        SignInButtonText = AppResources.T("VerifyEmailSignIn");
-        ResendButtonText = AppResources.T("VerifyEmailResend");
+        _emailAuthService = emailAuthService ?? throw new ArgumentNullException(nameof(emailAuthService));
+        Title = T("VerifyEmailPageTitle");
+        Headline = T("VerifyEmailTitle");
+        Subtitle = T("VerifyEmailSubtitle");
+        SignInButtonText = T("VerifyEmailSignIn");
+        ResendButtonText = T("VerifyEmailResend");
 
         SignInCommand = new Command(async () => await SignInAsync(), () => !IsBusy);
         ResendCommand = new Command(async () => await ResendAsync(), () => !IsBusy);
@@ -33,6 +34,12 @@ public class VerifyEmailViewModel : BaseViewModel
     public string Subtitle { get; }
     public string SignInButtonText { get; }
     public string ResendButtonText { get; }
+
+    public string Email
+    {
+        get => _email;
+        set => SetProperty(ref _email, value ?? string.Empty);
+    }
 
     public string? ErrorMessage
     {
@@ -49,6 +56,12 @@ public class VerifyEmailViewModel : BaseViewModel
     public ICommand SignInCommand { get; }
     public ICommand ResendCommand { get; }
 
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("email", out var email) && email is string emailText)
+            Email = emailText;
+    }
+
     private async Task SignInAsync()
     {
         if (IsBusy) return;
@@ -58,16 +71,7 @@ public class VerifyEmailViewModel : BaseViewModel
         IsBusy = true;
         try
         {
-            var result = await _authService.SignInAsync(CancellationToken.None).ConfigureAwait(false);
-
-            if (result.Success)
-            {
-                await SafeShellNavigator.GoToAsync($"//{AppNavigator.AccountCreated}").ConfigureAwait(false);
-            }
-            else
-            {
-                ErrorMessage = result.ErrorMessage ?? AppResources.T("AuthSignInFailed");
-            }
+            await SafeShellNavigator.GoToAsync(AppNavigator.SignIn).ConfigureAwait(false);
         }
         finally
         {
@@ -79,11 +83,29 @@ public class VerifyEmailViewModel : BaseViewModel
     {
         if (IsBusy) return;
         ErrorMessage = null;
+        StatusMessage = null;
+
+        if (string.IsNullOrWhiteSpace(Email))
+        {
+            ErrorMessage = T("RegisterEmailErrorEmail");
+            return;
+        }
+
         IsBusy = true;
         try
         {
-            StatusMessage = AppResources.T("VerifyEmailResendHint");
-            await Task.CompletedTask.ConfigureAwait(false);
+            var response = await _emailAuthService
+                .SendEmailVerificationAsync(Email.Trim(), CancellationToken.None)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccess)
+                StatusMessage = T("RegisterEmailCodeSent");
+            else
+                ErrorMessage = response.ErrorMessage ?? T("RegisterEmailSendCodeFailed");
+        }
+        catch (Exception)
+        {
+            ErrorMessage = T("RegisterEmailSendCodeFailed");
         }
         finally
         {

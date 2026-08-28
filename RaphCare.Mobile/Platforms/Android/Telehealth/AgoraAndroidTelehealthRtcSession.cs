@@ -11,13 +11,29 @@ namespace RaphCare.Mobile.Platforms.Android.Telehealth;
 /// Joins an Agora channel using Maven <c>io.agora.rtc:full-sdk</c> (no Agora UI kit).
 /// Uses <see cref="Java.Lang.Reflect"/> because <c>AndroidJavaObject</c> is not exposed on net10 reference assemblies.
 /// </summary>
-public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
+public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession, IDisposable
 {
     private readonly object _sync = new();
     private Java.Lang.Object? _engine;
     private TextureView? _local;
     private TextureView? _remote;
     private AgoraInvocationHandler? _handler;
+    private bool _isActive;
+    private bool _microphoneMuted;
+    private bool _cameraEnabled = true;
+
+    public event EventHandler? ChannelJoined;
+    public event EventHandler<int>? RemoteUserJoined;
+    public event EventHandler<int>? RemoteUserLeft;
+
+    public bool IsActive
+    {
+        get
+        {
+            lock (_sync)
+                return _isActive;
+        }
+    }
 
     public void BindVideoSurfaces(object? localSurface, object? remoteSurface)
     {
@@ -48,6 +64,33 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
         {
             lock (_sync)
                 InternalStopLocked();
+        });
+
+    public Task SetMicrophoneMutedAsync(bool muted, CancellationToken cancellationToken = default) =>
+        MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            lock (_sync)
+            {
+                _microphoneMuted = muted;
+                if (_engine is null)
+                    return;
+
+                InvokeBool(_engine, "muteLocalAudioStream", muted);
+            }
+        });
+
+    public Task SetCameraEnabledAsync(bool enabled, CancellationToken cancellationToken = default) =>
+        MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            lock (_sync)
+            {
+                _cameraEnabled = enabled;
+                if (_engine is null)
+                    return;
+
+                InvokeBool(_engine, "enableLocalVideo", enabled);
+                InvokeBool(_engine, "muteLocalVideoStream", !enabled);
+            }
         });
 
     private TelehealthRtcStartResult StartCore(TelehealthRtcJoinParameters parameters)
@@ -83,7 +126,7 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
                 {
                     var canvasClass = Class.ForName("io.agora.rtc2.video.VideoCanvas");
                     var viewClass = Class.ForName("android.view.View");
-                    var ctor = canvasClass.GetConstructor(viewClass, Integer.Type, Integer.Type);
+                    var ctor = canvasClass.GetConstructor([viewClass!, Integer.Type!, Integer.Type!]);
                     var canvas = ctor.NewInstance(_local, Integer.ValueOf(1), Integer.ValueOf(0));
                     var setup = _engine.Class.GetMethod("setupLocalVideo", canvasClass);
                     setup.Invoke(_engine, canvas);
@@ -115,6 +158,11 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
                     InternalStopLocked();
                     return new TelehealthRtcStartResult(false, $"joinChannel failed (code {code}).");
                 }
+
+                _isActive = true;
+                InvokeBool(_engine, "muteLocalAudioStream", _microphoneMuted);
+                InvokeBool(_engine, "enableLocalVideo", _cameraEnabled);
+                InvokeBool(_engine, "muteLocalVideoStream", !_cameraEnabled);
 
                 return new TelehealthRtcStartResult(true, null);
             }
@@ -158,15 +206,21 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
         m.Invoke(target, []);
     }
 
+    private static void InvokeBool(Java.Lang.Object target, string name, bool value)
+    {
+        var m = target.Class.GetMethod(name, [Java.Lang.Boolean.Type!]);
+        m.Invoke(target, [Java.Lang.Boolean.ValueOf(value)]);
+    }
+
     private static void InvokeOptionsBool(Java.Lang.Object options, string setter, bool value)
     {
-        var m = options.Class.GetMethod(setter, [Java.Lang.Boolean.Type]);
+        var m = options.Class.GetMethod(setter, [Java.Lang.Boolean.Type!]);
         m.Invoke(options, [Java.Lang.Boolean.ValueOf(value)]);
     }
 
     private static void InvokeOptionsInt(Java.Lang.Object options, string setter, int value)
     {
-        var m = options.Class.GetMethod(setter, [Integer.Type]);
+        var m = options.Class.GetMethod(setter, [Integer.Type!]);
         m.Invoke(options, [Integer.ValueOf(value)]);
     }
 
@@ -189,6 +243,7 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
         }
         finally
         {
+            _isActive = false;
             _engine = null;
             _handler?.Dispose();
             _handler = null;
@@ -206,6 +261,18 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
         }
     }
 
+    public void Dispose()
+    {
+        try
+        {
+            StopAsync().GetAwaiter().GetResult();
+        }
+        catch (System.Exception ex)
+        {
+            Log.Warn("RaphCareRtc", ex.ToString());
+        }
+    }
+
     private static void TryInvokeNoArg(Java.Lang.Object target, string name)
     {
         try
@@ -219,35 +286,51 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
         }
     }
 
+    internal void OnJoinChannelSuccess()
+    {
+        MainThread.BeginInvokeOnMainThread(() => ChannelJoined?.Invoke(this, EventArgs.Empty));
+    }
+
     internal void OnRemoteUserJoined(int remoteUid)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            TextureView? remote;
-            Java.Lang.Object? engine;
-            lock (_sync)
-            {
-                remote = _remote;
-                engine = _engine;
-            }
-
-            if (remote is null || engine is null)
-                return;
-
-            try
-            {
-                var canvasClass = Class.ForName("io.agora.rtc2.video.VideoCanvas");
-                var viewClass = Class.ForName("android.view.View");
-                var ctor = canvasClass.GetConstructor(viewClass, Integer.Type, Integer.Type);
-                var canvas = ctor.NewInstance(remote, Integer.ValueOf(1), Integer.ValueOf(remoteUid));
-                var setup = engine.Class.GetMethod("setupRemoteVideo", canvasClass);
-                setup.Invoke(engine, canvas);
-            }
-            catch (System.Exception ex)
-            {
-                Log.Warn("RaphCareRtc", ex.ToString());
-            }
+            RemoteUserJoined?.Invoke(this, remoteUid);
+            BindRemoteVideo(remoteUid);
         });
+    }
+
+    internal void OnRemoteUserLeft(int remoteUid)
+    {
+        MainThread.BeginInvokeOnMainThread(() => RemoteUserLeft?.Invoke(this, remoteUid));
+    }
+
+    private void BindRemoteVideo(int remoteUid)
+    {
+        TextureView? remote;
+        Java.Lang.Object? engine;
+        lock (_sync)
+        {
+            remote = _remote;
+            engine = _engine;
+        }
+
+        if (remote is null || engine is null)
+            return;
+
+        try
+        {
+            var canvasClass = Class.ForName("io.agora.rtc2.video.VideoCanvas");
+            var viewClass = Class.ForName("android.view.View");
+            var ctor = canvasClass.GetConstructor([viewClass!, Integer.Type!, Integer.Type!]);
+            var canvas = ctor.NewInstance(remote, Integer.ValueOf(1), Integer.ValueOf(remoteUid));
+            var setup = engine.Class.GetMethod("setupRemoteVideo", canvasClass);
+            setup.Invoke(engine, canvas);
+        }
+        catch (System.Exception ex)
+        {
+            Log.Warn("RaphCareRtc", ex.ToString());
+        }
     }
 
     private sealed class AgoraInvocationHandler : Java.Lang.Object, IInvocationHandler
@@ -259,10 +342,19 @@ public sealed class AgoraAndroidTelehealthRtcSession : ITelehealthRtcSession
         public Java.Lang.Object? Invoke(Java.Lang.Object? proxy, Method? method, Java.Lang.Object[]? args)
         {
             var name = method?.Name;
-            if (name == "onUserJoined" && args is { Length: >= 1 })
+            if (name == "onJoinChannelSuccess" && args is { Length: >= 2 })
+            {
+                _owner.OnJoinChannelSuccess();
+            }
+            else if (name == "onUserJoined" && args is { Length: >= 1 })
             {
                 var uid = args[0] is Integer ji ? ji.IntValue() : 0;
                 _owner.OnRemoteUserJoined(uid);
+            }
+            else if (name == "onUserOffline" && args is { Length: >= 1 })
+            {
+                var uid = args[0] is Integer ei ? ei.IntValue() : 0;
+                _owner.OnRemoteUserLeft(uid);
             }
             else if (name == "onError" && args is { Length: >= 1 })
             {

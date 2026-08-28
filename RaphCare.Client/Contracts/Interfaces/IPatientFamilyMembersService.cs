@@ -3,7 +3,7 @@ using RaphCare.Client.Models.Family;
 
 namespace RaphCare.Client.Contracts.Interfaces;
 
-/// <summary>Patient family members (<c>api/patient/family-members</c>). Implemented by <see cref="RaphCare.Client.Services.PatientFamilyMembersService"/> wrapping generated <c>IClient</c>.</summary>
+/// <summary>Patient family members (<c>api/patient/family-members</c>).</summary>
 public interface IPatientFamilyMembersService
 {
     Task<Response<IReadOnlyList<PatientFamilyMemberViewModel>>> GetMyFamilyMembersAsync(CancellationToken cancellationToken = default);

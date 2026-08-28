@@ -1,7 +1,99 @@
 ﻿@page "/"
+@page "/home"
+@layout AuthShellLayout
+@inject IUiCultureService CultureService
+@implements IDisposable
 
-<PageTitle>Home</PageTitle>
+<PageTitle>@AppResources.T("Home_PageTitle")</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="auth-card">
+    <h2 class="auth-card-title">@AppResources.T("Home_Title")</h2>
+    <p class="auth-card-subtitle">@AppResources.T("Home_Subtitle")</p>
 
-Welcome to your new app.
+    <div class="role-toggle" role="tablist" aria-label="@AppResources.T("Home_AccountTypeAria")">
+        <button type="button"
+                class="role-toggle-btn @(_role == UserRole.Patient ? "active" : "")"
+                role="tab"
+                aria-selected="@(_role == UserRole.Patient)"
+                @onclick="() => SelectRole(UserRole.Patient)">
+            <span class="role-toggle-icon">♥</span>
+            <span>@AppResources.T("Home_RolePatient")</span>
+        </button>
+        <button type="button"
+                class="role-toggle-btn @(_role == UserRole.Professional ? "active" : "")"
+                role="tab"
+                aria-selected="@(_role == UserRole.Professional)"
+                @onclick="() => SelectRole(UserRole.Professional)">
+            <span class="role-toggle-icon">⚕</span>
+            <span>@AppResources.T("Home_RoleProfessional")</span>
+        </button>
+    </div>
+
+    <div class="role-summary">
+        @if (_role == UserRole.Patient)
+        {
+            <h3>@AppResources.T("Home_PatientAccessTitle")</h3>
+            <p>@AppResources.T("Home_PatientAccessLead")</p>
+            <ul class="role-bullets">
+                <li>@AppResources.T("Home_PatientBullet1")</li>
+                <li>@AppResources.T("Home_PatientBullet2")</li>
+                <li>@AppResources.T("Home_PatientBullet3")</li>
+            </ul>
+        }
+        else
+        {
+            <h3>@AppResources.T("Home_ClinicPortalTitle")</h3>
+            <p>@AppResources.T("Home_ClinicPortalLead")</p>
+            <ul class="role-bullets">
+                <li>@AppResources.T("Home_ClinicBullet1")</li>
+                <li>@AppResources.T("Home_ClinicBullet2")</li>
+                <li>@AppResources.T("Home_ClinicBullet3")</li>
+            </ul>
+        }
+    </div>
+
+    <div class="auth-card-actions">
+        <a class="btn btn-primary btn-block" href="@RegisterHref">
+            @AppResources.T("Common_CreateAccount")
+            <span class="btn-arrow">→</span>
+        </a>
+        <a class="btn btn-secondary btn-block" href="@SignInHref">@AppResources.T("Common_SignIn")</a>
+    </div>
+
+    <p class="auth-card-foot">
+        @if (_role == UserRole.Patient)
+        {
+            <span>@AppResources.T("Home_HealthcareStaffPrompt")</span>
+            <button type="button" class="link-btn" @onclick="() => SelectRole(UserRole.Professional)">@AppResources.T("Home_SwitchToProfessional")</button>
+        }
+        else
+        {
+            <span>@AppResources.T("Home_LookingForPatientPrompt")</span>
+            <button type="button" class="link-btn" @onclick="() => SelectRole(UserRole.Patient)">@AppResources.T("Home_SwitchToPatient")</button>
+        }
+    </p>
+</div>
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private UserRole _role = UserRole.Patient;
+
+    protected override void OnInitialized()
+    {
+        CultureService.CultureChanged += OnCultureChanged;
+        if (Navigation.Uri.Contains("role=professional", StringComparison.OrdinalIgnoreCase))
+            _role = UserRole.Professional;
+    }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    private string RegisterHref => _role == UserRole.Patient ? "/patient/register" : "/professional/register";
+    private string SignInHref => _role == UserRole.Patient ? "/patient/signin" : "/professional/signin";
+
+    private void SelectRole(UserRole role) => _role = role;
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private enum UserRole { Patient, Professional }
+}

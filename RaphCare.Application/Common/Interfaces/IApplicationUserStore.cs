@@ -24,4 +24,7 @@ public interface IApplicationUserStore
     /// <param name="user">The user to update.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default);
+
+    /// <summary>Finds a user by primary key.</summary>
+    Task<ApplicationUser?> FindByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }

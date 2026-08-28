@@ -13,10 +13,10 @@
 
 ## Organization
 
-- **Purpose:** Clinics, facilities, departments, providers, schedules.
-- **Entities:** Clinic, Department, Facility, Provider, Administrator, Therapist, ServiceOffering, ProviderSchedule, AvailabilityBlock, SupportStaff.
-- **Persistence:** Clinic (and related) in ClinicalDbContext (Clinics DbSet).
-- **Relationships:** Clinic is the tenant scope; patients, appointments, and visits are tied to clinic.
+- **Purpose:** Clinics, facilities, departments, providers, schedules, and inpatient capacity.
+- **Entities:** Clinic, Department, Facility, Provider, Administrator, Therapist, ServiceOffering, ProviderSchedule, AvailabilityBlock, SupportStaff, **Ward**, **Room**, **Bed**.
+- **Persistence:** Clinic (and related) in ClinicalDbContext (Clinics DbSet). Wards, Rooms, Beds, and InpatientAdmissions also live on ClinicalDbContext.
+- **Relationships:** Clinic is the tenant scope; patients, appointments, and visits are tied to clinic. Wards belong to a Facility within a Clinic; Rooms belong to Wards; Beds belong to Rooms (status: Available / Occupied / Maintenance).
 
 ---
 
@@ -33,12 +33,12 @@
 
 ## Clinical (Appointments & Visits)
 
-- **Purpose:** Appointments, clinical visits, care plans, prescriptions, notes, lab results.
-- **Entities:** Appointment, Visit, CarePlan, Prescription, PrescriptionItem, ClinicalNote, LabResult, Diagnosis, Procedure, SOAPNote, VitalSignRecord, Referral, etc.
-- **Application:** Create/Update/Get Appointment; Create/Update/Get Visit; GetVisits (paginated, optional clinicId).
-- **Controllers:** AppointmentsController (CRUD); ClinicalController (visits: GET by id, GET list, POST, PUT).
-- **Persistence:** ClinicalDbContext (Appointments, Visits, CarePlans, VoiceRecordings, etc.).
-- **Relationships:** Appointment and Visit reference Patient and Clinic; Visit can have prescriptions, notes, lab results; VoiceRecording references Patient.
+- **Purpose:** Appointments, clinical visits, care plans, prescriptions, notes, lab results, and inpatient admissions.
+- **Entities:** Appointment, Visit, CarePlan, Prescription, PrescriptionItem, ClinicalNote, LabResult, Diagnosis, Procedure, SOAPNote, VitalSignRecord, Referral, **InpatientAdmission**, etc.
+- **Application:** Create/Update/Get Appointment; Create/Update/Get Visit; GetVisits (paginated, optional clinicId). Admin clinic commands for ward/room/bed CRUD, admit, transfer, discharge, and admission history.
+- **Controllers:** AppointmentsController (CRUD); ClinicalController (visits: GET by id, GET list, POST, PUT); AdminClinicsController inpatient routes under `api/admin/clinics/{id}/…`.
+- **Persistence:** ClinicalDbContext (Appointments, Visits, CarePlans, VoiceRecordings, Wards, Rooms, Beds, InpatientAdmissions, etc.).
+- **Relationships:** Appointment and Visit reference Patient and Clinic; Visit can have prescriptions, notes, lab results; VoiceRecording references Patient. InpatientAdmission links Patient + Bed until discharge.
 
 ---
 

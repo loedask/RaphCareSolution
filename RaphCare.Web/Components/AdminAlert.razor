@@ -1,0 +1,33 @@
+@if (ShouldShow)
+{
+    <div class="alert alert-@ToneClass @CssClass" @attributes="AdditionalAttributes">
+        @if (ChildContent is not null)
+        {
+            @ChildContent
+        }
+        else
+        {
+            @Message
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public string Tone { get; set; } = "error";
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool ShouldShow =>
+        Visible && (ChildContent is not null || !string.IsNullOrEmpty(Message));
+
+    private string ToneClass => Tone switch
+    {
+        "success" => "success",
+        "info" => "info",
+        _ => "error"
+    };
+}

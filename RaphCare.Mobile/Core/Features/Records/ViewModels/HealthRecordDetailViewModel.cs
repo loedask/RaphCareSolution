@@ -4,9 +4,8 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.HealthRecords;
 using RaphCare.Mobile.Core.Features.Records.Models;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Records.ViewModels;
 
@@ -23,12 +22,12 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
     public HealthRecordDetailViewModel(IHealthRecordService healthRecords)
     {
         _healthRecords = healthRecords ?? throw new ArgumentNullException(nameof(healthRecords));
-        Title = AppResources.T("RecordsDetailTitle");
-        StatusLabel = AppResources.T("RecordsStatus");
-        TypeLabel = AppResources.T("RecordsVisitType");
-        SummaryLabel = AppResources.T("RecordsSummary");
-        WhenLabel = AppResources.T("RecordsWhen");
-        VitalsSectionTitle = AppResources.T("RecordsVitalsSection");
+        Title = T("RecordsDetailTitle");
+        StatusLabel = T("RecordsStatus");
+        TypeLabel = T("RecordsVisitType");
+        SummaryLabel = T("RecordsSummary");
+        WhenLabel = T("RecordsWhen");
+        VitalsSectionTitle = T("RecordsVitalsSection");
         BackCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
         VitalSigns = new ObservableCollection<VitalSignDisplayItem>();
     }
@@ -75,15 +74,16 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("visitId", out var v) && v != null && Guid.TryParse(v.ToString(), out var id))
-            _visitId = id;
+        if (!TryGetQueryGuid(query, "visitId", out var id))
+            return;
+        _visitId = id;
     }
 
     public async Task LoadAsync()
     {
         if (_visitId == Guid.Empty)
         {
-            ErrorMessage = AppResources.T("RecordsDetailFailed");
+            ErrorMessage = T("RecordsDetailFailed");
             return;
         }
 
@@ -95,7 +95,7 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
             var response = await _healthRecords.GetMyHealthRecordAsync(_visitId, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("RecordsDetailFailed");
+                ErrorMessage = response.ErrorMessage ?? T("RecordsDetailFailed");
                 return;
             }
 

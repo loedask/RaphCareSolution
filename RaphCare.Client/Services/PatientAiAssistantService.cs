@@ -5,34 +5,28 @@ using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-/// <summary>Wraps generated <see cref="IClient"/> patient AI assistant chat.</summary>
-public sealed class PatientAiAssistantService(IClient client) : IPatientAiAssistantService
+public sealed class PatientAiAssistantService(HttpClient httpClient) : BaseHttpService(httpClient), IPatientAiAssistantService
 {
-    private readonly IClient _client = client;
-
     public async Task<Response<PatientAssistantReplyViewModel>> SendMessageAsync(
         SendMyPatientAssistantMessageRequest request,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var body = new SendMyPatientAssistantMessageCommand
-            {
-                Message = request.Message,
-            };
-            var dto = await _client.SendMyPatientAssistantMessageAsync(body, cancellationToken).ConfigureAwait(false);
-            return Response<PatientAssistantReplyViewModel>.Success(Map(dto));
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<PatientAssistantReplyViewModel>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await PostAsync<AssistantReplyDto>("api/patient/ai-assistant/chat", request, cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PatientAssistantReplyViewModel>.Failure(result.ErrorMessage ?? "Chat failed.", result.StatusCode);
+        return Response<PatientAssistantReplyViewModel>.Success(Map(result.Data));
     }
 
-    private static PatientAssistantReplyViewModel Map(PatientAssistantReplyDto d) =>
+    private static PatientAssistantReplyViewModel Map(AssistantReplyDto d) =>
         new()
         {
             Reply = d.Reply ?? string.Empty,
             MedicalDisclaimer = d.MedicalDisclaimer ?? string.Empty,
         };
+
+    private sealed class AssistantReplyDto
+    {
+        public string? Reply { get; set; }
+        public string? MedicalDisclaimer { get; set; }
+    }
 }

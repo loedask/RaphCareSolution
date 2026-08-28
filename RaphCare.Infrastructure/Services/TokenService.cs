@@ -21,8 +21,33 @@ public class TokenService(IOptions<JwtOptions> options) : ITokenService
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new("patientId", patientId.ToString()),
             new("phone", user.Email ?? string.Empty),
-            new(ClaimTypes.Role, "Patient")
+            new(ClaimTypes.Role, RaphCareRoles.Patient)
         };
+
+        var key = CreateSigningKey(_options.Secret);
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _options.Issuer,
+            audience: _options.Audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(12),
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GenerateStaffToken(ApplicationUser user, IReadOnlyList<string> roles)
+    {
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(ClaimTypes.Email, user.Email ?? string.Empty),
+            new("name", user.DisplayName ?? string.Empty)
+        };
+
+        foreach (var role in roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct(StringComparer.OrdinalIgnoreCase))
+            claims.Add(new Claim(ClaimTypes.Role, role));
 
         var key = CreateSigningKey(_options.Secret);
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

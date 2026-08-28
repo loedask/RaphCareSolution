@@ -1,40 +1,30 @@
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.Api;
+using RaphCare.Client.Models.Appointments;
 using RaphCare.Client.Models.Family;
 using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-/// <summary>Wraps generated <see cref="IClient"/> family-member operations and maps to feature view models.</summary>
-public sealed class PatientFamilyMembersService(IClient client) : IPatientFamilyMembersService
+public sealed class PatientFamilyMembersService(HttpClient httpClient) : BaseHttpService(httpClient), IPatientFamilyMembersService
 {
     public async Task<Response<IReadOnlyList<PatientFamilyMemberViewModel>>> GetMyFamilyMembersAsync(CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var dtos = await client.GetMyPatientFamilyMembersAsync(cancellationToken).ConfigureAwait(false);
-            var list = (dtos ?? Array.Empty<PatientFamilyMemberDto>())
-                .Select(Map)
-                .ToList();
-            return Response<IReadOnlyList<PatientFamilyMemberViewModel>>.Success(list);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<IReadOnlyList<PatientFamilyMemberViewModel>>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await GetAsync<IReadOnlyList<FamilyMemberDto>>("api/patient/family-members", cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess)
+            return Response<IReadOnlyList<PatientFamilyMemberViewModel>>.Failure(result.ErrorMessage ?? "Could not load family members.", result.StatusCode);
+
+        var list = (result.Data ?? Array.Empty<FamilyMemberDto>()).Select(Map).ToList();
+        return Response<IReadOnlyList<PatientFamilyMemberViewModel>>.Success(list);
     }
 
     public async Task<Response<PatientFamilyMemberViewModel>> GetMyFamilyMemberAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var d = await client.GetMyPatientFamilyMemberByIdAsync(id, cancellationToken).ConfigureAwait(false);
-            return Response<PatientFamilyMemberViewModel>.Success(Map(d));
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<PatientFamilyMemberViewModel>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await GetAsync<FamilyMemberDto>($"api/patient/family-members/{id}", cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PatientFamilyMemberViewModel>.Failure(result.ErrorMessage ?? "Could not load family member.", result.StatusCode);
+        return Response<PatientFamilyMemberViewModel>.Success(Map(result.Data));
     }
 
     public async Task<Response<Guid>> AddFamilyMemberAsync(
@@ -46,25 +36,20 @@ public sealed class PatientFamilyMembersService(IClient client) : IPatientFamily
         string? email,
         CancellationToken cancellationToken = default)
     {
-        try
+        var body = new
         {
-            var cmd = new AddMyPatientFamilyMemberCommand
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Relationship = relationship,
-                DateOfBirth = dateOfBirth,
-                PhoneNumber = phoneNumber,
-                Email = email,
-                LinkedPatientId = null
-            };
-            var res = await client.AddMyPatientFamilyMemberAsync(cmd, cancellationToken).ConfigureAwait(false);
-            return Response<Guid>.Success(res.Id);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<Guid>.Failure(ex.Message, ex.StatusCode);
-        }
+            firstName,
+            lastName,
+            relationship,
+            dateOfBirth,
+            phoneNumber,
+            email,
+            linkedPatientId = (Guid?)null
+        };
+        var result = await PostAsync<CreatedGuidApiResponse>("api/patient/family-members", body, cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess || result.Data is null)
+            return Response<Guid>.Failure(result.ErrorMessage ?? "Add failed.", result.StatusCode);
+        return Response<Guid>.Success(result.Data.Id);
     }
 
     public async Task<Response<bool>> UpdateFamilyMemberAsync(
@@ -78,42 +63,27 @@ public sealed class PatientFamilyMembersService(IClient client) : IPatientFamily
         Guid? linkedPatientId,
         CancellationToken cancellationToken = default)
     {
-        try
+        var body = new
         {
-            var cmd = new UpdateMyPatientFamilyMemberCommand
-            {
-                Id = id,
-                FirstName = firstName,
-                LastName = lastName,
-                Relationship = relationship,
-                DateOfBirth = dateOfBirth,
-                PhoneNumber = phoneNumber,
-                Email = email,
-                LinkedPatientId = linkedPatientId
-            };
-            await client.UpdateMyPatientFamilyMemberAsync(id, cmd, cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Success(true);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
-        }
+            id,
+            firstName,
+            lastName,
+            relationship,
+            dateOfBirth,
+            phoneNumber,
+            email,
+            linkedPatientId
+        };
+        var result = await PutNoContentAsync($"api/patient/family-members/{id}", body, cancellationToken).ConfigureAwait(false);
+        return result.IsSuccess
+            ? Response<bool>.Success(true)
+            : Response<bool>.Failure(result.ErrorMessage ?? "Update failed.", result.StatusCode);
     }
 
-    public async Task<Response<bool>> RemoveFamilyMemberAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await client.RemoveMyPatientFamilyMemberAsync(id, cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Success(true);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
-        }
-    }
+    public Task<Response<bool>> RemoveFamilyMemberAsync(Guid id, CancellationToken cancellationToken = default) =>
+        DeleteAsync($"api/patient/family-members/{id}", cancellationToken);
 
-    private static PatientFamilyMemberViewModel Map(PatientFamilyMemberDto d) => new()
+    private static PatientFamilyMemberViewModel Map(FamilyMemberDto d) => new()
     {
         Id = d.Id,
         FirstName = d.FirstName ?? string.Empty,
@@ -124,4 +94,16 @@ public sealed class PatientFamilyMembersService(IClient client) : IPatientFamily
         Email = d.Email,
         LinkedPatientId = d.LinkedPatientId
     };
+
+    private sealed class FamilyMemberDto
+    {
+        public Guid Id { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Relationship { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Email { get; set; }
+        public Guid? LinkedPatientId { get; set; }
+    }
 }

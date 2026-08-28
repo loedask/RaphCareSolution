@@ -10,6 +10,12 @@ namespace RaphCare.Application.Common.Behaviors;
 public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
+    private static readonly Action<ILogger, string, long, Exception?> LogLongRunning =
+        LoggerMessage.Define<string, long>(
+            LogLevel.Warning,
+            new EventId(1, nameof(LogLongRunning)),
+            "Long running request {RequestName} ({ElapsedMilliseconds} ms)");
+
     private readonly ILogger<PerformanceBehavior<TRequest, TResponse>> _logger;
     private readonly Stopwatch _timer = new();
 
@@ -25,18 +31,14 @@ public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         CancellationToken cancellationToken)
     {
         _timer.Start();
-        var response = await next();
+        var response = await next(cancellationToken);
         _timer.Stop();
 
         if (_timer.ElapsedMilliseconds > 500)
         {
-            _logger.LogWarning(
-                "Long running request {RequestName} ({ElapsedMilliseconds} ms)",
-                typeof(TRequest).Name,
-                _timer.ElapsedMilliseconds);
+            LogLongRunning(_logger, typeof(TRequest).Name, _timer.ElapsedMilliseconds, null);
         }
 
         return response;
     }
 }
-

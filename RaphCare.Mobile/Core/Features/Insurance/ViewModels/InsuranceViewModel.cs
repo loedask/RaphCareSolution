@@ -4,9 +4,8 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Insurance;
 using RaphCare.Mobile.Core.Features.Insurance.Models;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Insurance.ViewModels;
 
@@ -18,10 +17,10 @@ public sealed class InsuranceViewModel : BaseViewModel
     public InsuranceViewModel(IPatientInsuranceService insurance)
     {
         _insurance = insurance ?? throw new ArgumentNullException(nameof(insurance));
-        Title = AppResources.T("InsuranceListTitle");
-        RefreshButtonText = AppResources.T("InsuranceRefresh");
-        AddButtonText = AppResources.T("InsuranceAdd");
-        EmptyStateText = AppResources.T("InsuranceEmpty");
+        Title = T("InsuranceListTitle");
+        RefreshButtonText = T("InsuranceRefresh");
+        AddButtonText = T("InsuranceAdd");
+        EmptyStateText = T("InsuranceEmpty");
 
         RefreshCommand = new Command(async () => await LoadAsync());
         AddCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.AddInsuranceProfile));
@@ -59,7 +58,7 @@ public sealed class InsuranceViewModel : BaseViewModel
             var response = await _insurance.GetMyProfilesAsync(1, 50, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("InsuranceLoadFailed");
+                ErrorMessage = response.ErrorMessage ?? T("InsuranceLoadFailed");
                 Items.Clear();
                 NotifyEmptyChanged();
                 return;
@@ -82,7 +81,7 @@ public sealed class InsuranceViewModel : BaseViewModel
     private static InsuranceProfileListDisplayItem MapItem(PatientInsuranceProfileViewModel p, CultureInfo culture)
     {
         var plan = string.IsNullOrWhiteSpace(p.PlanName) ? p.PlanCode : p.PlanName;
-        var active = p.IsActive ? AppResources.T("InsuranceStatusActive") : AppResources.T("InsuranceStatusInactive");
+        var active = p.IsActive ? T("InsuranceStatusActive") : T("InsuranceStatusInactive");
         var start = p.StartDate.ToLocalTime().ToString("d", culture);
         return new InsuranceProfileListDisplayItem
         {

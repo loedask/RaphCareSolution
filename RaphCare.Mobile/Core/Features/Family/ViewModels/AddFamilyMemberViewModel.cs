@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Family.ViewModels;
 
@@ -22,19 +21,19 @@ public sealed class AddFamilyMemberViewModel : BaseViewModel
     public AddFamilyMemberViewModel(IPatientFamilyMembersService family)
     {
         _family = family ?? throw new ArgumentNullException(nameof(family));
-        Title = AppResources.T("FamilyAddTitle");
+        Title = T("FamilyAddTitle");
         RelationshipOptions = ["Child", "Spouse", "Parent", "Sibling", "Other"];
         _selectedRelationship = RelationshipOptions[0];
 
-        FirstNameLabel = AppResources.T("FamilyFieldFirstName");
-        LastNameLabel = AppResources.T("FamilyFieldLastName");
-        RelationshipLabel = AppResources.T("FamilyFieldRelationship");
-        DobLabel = AppResources.T("FamilyFieldDob");
-        DobHint = AppResources.T("FamilyDobHint");
-        PhoneLabel = AppResources.T("FamilyFieldPhone");
-        EmailLabel = AppResources.T("FamilyFieldEmail");
-        SubmitLabel = AppResources.T("FamilySave");
-        CancelLabel = AppResources.T("FamilyCancel");
+        FirstNameLabel = T("FamilyFieldFirstName");
+        LastNameLabel = T("FamilyFieldLastName");
+        RelationshipLabel = T("FamilyFieldRelationship");
+        DobLabel = T("FamilyFieldDob");
+        DobHint = T("FamilyDobHint");
+        PhoneLabel = T("FamilyFieldPhone");
+        EmailLabel = T("FamilyFieldEmail");
+        SubmitLabel = T("FamilySave");
+        CancelLabel = T("FamilyCancel");
 
         SubmitCommand = new Command(async () => await SubmitAsync(), () => CanSubmit);
         CancelCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
@@ -151,7 +150,7 @@ public sealed class AddFamilyMemberViewModel : BaseViewModel
                 CancellationToken.None).ConfigureAwait(false);
             if (!res.IsSuccess)
             {
-                ErrorMessage = res.ErrorMessage ?? AppResources.T("FamilySaveFailed");
+                ErrorMessage = res.ErrorMessage ?? T("FamilySaveFailed");
                 return;
             }
 

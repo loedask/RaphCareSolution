@@ -4,26 +4,34 @@ using Plugin.BLE;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
+using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Devices.Models;
 using BleDeviceEventArgs = Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs;
 
 namespace RaphCare.Mobile.Core.Features.Devices.Services;
 
 /// <summary>
-/// BLE scan or connect for E580/E585-class bracelets via Plugin.BLE.
-/// Subscribes to all notify characteristics; parses standard Heart Rate (0x2A37) and PLX SpO₂ (0x2A60 / 0x2A5F) when present, otherwise surfaces raw hex for OEM analysis.
+/// BLE scan via Plugin.BLE. On Android, prefers HBand/Veepoo <see cref="IHBandWearableBridge"/> for connect + live HR/SpO₂ when SDK AARs are present;
+/// otherwise GATT notify + standard HR/PLX parsers.
 /// </summary>
-public sealed class WearableBleCoordinator : IWearableBleCoordinator
+public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposable
 {
     private readonly IAdapter _adapter = CrossBluetoothLE.Current.Adapter;
     private readonly ConcurrentDictionary<Guid, IDevice> _devices = new();
+    private readonly ConcurrentDictionary<Guid, string> _macById = new();
     private readonly List<(ICharacteristic Ch, EventHandler<CharacteristicUpdatedEventArgs> H)> _notifyHandlers = new();
     private readonly SemaphoreSlim _connectGate = new(1, 1);
+    private readonly IHBandWearableBridge _hband;
 
     private Guid? _connectedId;
+    private bool _usingHbandSession;
 
-    public WearableBleCoordinator()
+    public WearableBleCoordinator(IHBandWearableBridge hband)
     {
+        _hband = hband;
+        _hband.VitalsUpdated += OnHbandVitalsUpdated;
+        _hband.ErrorOccurred += OnHbandError;
+
         _adapter.DeviceDisconnected += (_, e) =>
         {
             if (_connectedId != e.Device.Id)
@@ -41,7 +49,13 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
 
     public IReadOnlyList<WearableDeviceDisplayItem> DiscoveredDevices =>
         _devices.Values
-            .Select(d => new WearableDeviceDisplayItem { Id = d.Id, Name = d.Name, Rssi = d.Rssi })
+            .Select(d => new WearableDeviceDisplayItem
+            {
+                Id = d.Id,
+                Name = d.Name,
+                Rssi = d.Rssi,
+                MacAddress = _macById.GetValueOrDefault(d.Id)
+            })
             .OrderByDescending(x => x.Rssi ?? int.MinValue)
             .ToList();
 
@@ -79,6 +93,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
 
         await StopScanAsync().ConfigureAwait(false);
         _devices.Clear();
+        _macById.Clear();
         RaiseDiscoveredChanged();
 
         _adapter.ScanTimeout = 30_000;
@@ -139,9 +154,60 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
             }
 
             await CleanupNotificationsAsync().ConfigureAwait(false);
+            if (_usingHbandSession)
+            {
+                await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+                _usingHbandSession = false;
+            }
+
+            var mac = _macById.GetValueOrDefault(deviceId) ?? TryReadMacAddress(device);
+            if (!string.IsNullOrWhiteSpace(mac))
+                _macById[deviceId] = mac;
+
+            if (_hband.IsAvailable && !string.IsNullOrWhiteSpace(mac))
+            {
+                try
+                {
+                    await _hband.ConnectAndHandshakeAsync(
+                            mac,
+                            device.Name,
+                            HBandSdkInfo.DefaultDevicePasswordPlaceholder,
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                    _connectedId = device.Id;
+                    _usingHbandSession = true;
+
+                    // Live vitals via vendor protocol (HR first, then SpO₂).
+                    await _hband.StartLiveHeartRateAsync(cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        await _hband.StartLiveSpo2Async(cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception spo2Ex)
+                    {
+                        ErrorOccurred?.Invoke(this, $"SpO₂ start: {spo2Ex.Message}");
+                    }
+
+                    return;
+                }
+                catch (Exception hbandEx)
+                {
+                    ErrorOccurred?.Invoke(this, $"HBand connect failed, trying standard BLE: {hbandEx.Message}");
+                    _usingHbandSession = false;
+                    try
+                    {
+                        await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+            }
 
             await _adapter.ConnectToDeviceAsync(device, ConnectParameters.None, cancellationToken).ConfigureAwait(false);
             _connectedId = device.Id;
+            _usingHbandSession = false;
 
             var services = await device.GetServicesAsync(cancellationToken).ConfigureAwait(false);
             foreach (var service in services)
@@ -175,6 +241,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
         {
             ErrorOccurred?.Invoke(this, ex.Message);
             _connectedId = null;
+            _usingHbandSession = false;
         }
         finally
         {
@@ -188,8 +255,24 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
         try
         {
             await CleanupNotificationsAsync().ConfigureAwait(false);
+            if (_usingHbandSession)
+            {
+                await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+                _usingHbandSession = false;
+            }
+
             if (_connectedId is { } id && _devices.TryGetValue(id, out var device))
-                await _adapter.DisconnectDeviceAsync(device).ConfigureAwait(false);
+            {
+                try
+                {
+                    await _adapter.DisconnectDeviceAsync(device).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // may already be disconnected when HBand owned the link
+                }
+            }
+
             _connectedId = null;
         }
         finally
@@ -201,7 +284,33 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
     private void OnDeviceDiscovered(object? sender, BleDeviceEventArgs e)
     {
         _devices[e.Device.Id] = e.Device;
+        var mac = TryReadMacAddress(e.Device);
+        if (!string.IsNullOrWhiteSpace(mac))
+            _macById[e.Device.Id] = mac;
         MainThread.BeginInvokeOnMainThread(() => DiscoveredDevicesChanged?.Invoke(this, EventArgs.Empty));
+    }
+
+    private void OnHbandVitalsUpdated(object? sender, WearableVitalsSnapshot e) =>
+        MainThread.BeginInvokeOnMainThread(() => VitalsUpdated?.Invoke(this, e));
+
+    private void OnHbandError(object? sender, string? message) =>
+        MainThread.BeginInvokeOnMainThread(() => ErrorOccurred?.Invoke(this, message));
+
+    private static string? TryReadMacAddress(IDevice device)
+    {
+#if ANDROID
+        try
+        {
+            if (device.NativeDevice is global::Android.Bluetooth.BluetoothDevice bd
+                && !string.IsNullOrWhiteSpace(bd.Address))
+                return bd.Address;
+        }
+        catch
+        {
+            // ignore
+        }
+#endif
+        return null;
     }
 
     private void RaiseDiscoveredChanged() =>
@@ -271,5 +380,12 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator
         }
 
         _notifyHandlers.Clear();
+    }
+
+    public void Dispose()
+    {
+        _hband.VitalsUpdated -= OnHbandVitalsUpdated;
+        _hband.ErrorOccurred -= OnHbandError;
+        _connectGate.Dispose();
     }
 }

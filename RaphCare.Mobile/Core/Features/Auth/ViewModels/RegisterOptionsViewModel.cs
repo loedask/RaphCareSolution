@@ -1,26 +1,25 @@
 using System.Windows.Input;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
-/// <summary>Create account: Email (Entra), Phone (OTP + API JWT), or Voice (phone OTP then multipart upload).</summary>
+/// <summary>Create account: Email (password + verification), Phone (OTP + API JWT), or Voice (phone OTP then multipart upload).</summary>
 public class RegisterOptionsViewModel : BaseViewModel
 {
     public RegisterOptionsViewModel()
     {
-        Title = AppResources.T("RegisterCreateAccountTitle");
-        PageTitle = AppResources.T("RegisterCreateAccountTitle");
-        Subtitle = AppResources.T("RegisterChooseHowSubtitle");
-        EmailTitle = AppResources.T("RegisterOptionEmailTitle");
-        EmailSubtitle = AppResources.T("RegisterOptionEmailSubtitle");
-        PhoneTitle = AppResources.T("RegisterOptionPhoneTitle");
-        PhoneSubtitle = AppResources.T("RegisterOptionPhoneSubtitle");
-        VoiceTitle = AppResources.T("RegisterOptionVoiceTitle");
-        VoiceSubtitle = AppResources.T("RegisterOptionVoiceSubtitle");
-        AlreadyHaveAccount = AppResources.T("RegisterAlreadyHaveAccount");
-        SignInText = AppResources.T("AuthSignIn");
+        Title = T("RegisterCreateAccountTitle");
+        PageTitle = T("RegisterCreateAccountTitle");
+        Subtitle = T("RegisterChooseHowSubtitle");
+        EmailTitle = T("RegisterOptionEmailTitle");
+        EmailSubtitle = T("RegisterOptionEmailSubtitle");
+        PhoneTitle = T("RegisterOptionPhoneTitle");
+        PhoneSubtitle = T("RegisterOptionPhoneSubtitle");
+        VoiceTitle = T("RegisterOptionVoiceTitle");
+        VoiceSubtitle = T("RegisterOptionVoiceSubtitle");
+        AlreadyHaveAccount = T("RegisterAlreadyHaveAccount");
+        SignInText = T("AuthSignIn");
 
         CreateWithEmailCommand = new Command(async () => await SafeShellNavigator.GoToAsync("RegisterEmailPage"));
         CreateWithPhoneCommand = new Command(async () => await SafeShellNavigator.GoToAsync("RegisterPhonePage"));
@@ -46,11 +45,11 @@ public class RegisterOptionsViewModel : BaseViewModel
     public ICommand BackCommand { get; }
     public ICommand SignInCommand { get; }
 
-    private async Task GoBackAsync()
+    private static async Task GoBackAsync()
     {
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
             await SafeShellNavigator.GoToAsync("..");
         else
-            await SafeShellNavigator.GoToAsync("LandingPage");
+            await SafeShellNavigator.GoToAsync($"//{AppNavigator.Landing}");
     }
 }

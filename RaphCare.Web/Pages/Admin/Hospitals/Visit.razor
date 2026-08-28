@@ -1,0 +1,656 @@
+@page "/admin/hospitals/{ClinicId:guid}/visits/{VisitId:guid}"
+@layout AdminLayout
+@using RaphCare.Domain.Common
+@inject NavigationManager Navigation
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@(_visit is null ? AppResources.T("Visit_PageTitleFallback") : AppResources.Format("Common_VisitHeader", _visit.PatientName)) @AppResources.T("Common_PageTitleAdminSuffix")</PageTitle>
+
+<section class="admin-page">
+    @if (_loading)
+    {
+        <p class="text-muted">@AppResources.T("Common_LoadingVisit")</p>
+    }
+    else if (_visit is null)
+    {
+        <AdminAlert Message="@(_error ?? AppResources.T("Common_VisitNotFound"))" />
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_BackToAppointments")</a>
+    }
+    else
+    {
+        <AdminPageHeader Title="@AppResources.Format("Common_VisitHeader", _visit.PatientName)"
+                         Lead="@AppResources.Format("Visit_DetailLead", _visit.VisitType, _visit.ProviderName, TimeZoneLabel)">
+            <span class="badge @(_visit.Status == "Completed" ? "badge-muted" : "badge-success")">@_visit.Status</span>
+        </AdminPageHeader>
+
+        <AdminAlert Message="@_error" />
+        <AdminAlert Tone="success" Message="@_success" />
+
+        <AdminPageCard Eyebrow="@AppResources.T("Common_EncounterEyebrow")" Title="@AppResources.T("Common_Details")">
+            <div class="admin-page-card-body">
+                <AdminDefinitionGrid>
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Started")" Value="@FormatLocal(_visit.VisitStart)" />
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Ended")" Value="@(_visit.VisitEnd is { } end ? FormatLocal(end) : AppResources.T("Common_EmptyCell"))" />
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Patient")">
+                        <a href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">@_visit.PatientName</a>
+                    </AdminDefinitionItem>
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Provider")" Value="@_visit.ProviderName" />
+                </AdminDefinitionGrid>
+                @if (!string.IsNullOrWhiteSpace(_visit.Summary))
+                {
+                    <p class="hint" style="margin-top: 1rem;">@_visit.Summary</p>
+                }
+                @if (_isAdministrator && _visit.Status == "InProgress")
+                {
+                    <div class="admin-page-actions" style="margin-top: 1rem;">
+                        <label>
+                            @AppResources.T("Common_Summary")
+                            <input class="form-control" @bind="_completeSummary" placeholder="@AppResources.T("Common_OptionalVisitSummary")" />
+                        </label>
+                        <button type="button" class="btn btn-primary" disabled="@_completing" @onclick="CompleteVisitAsync">
+                            @(_completing ? AppResources.T("Common_Completing") : AppResources.T("Common_CompleteVisit"))
+                        </button>
+                    </div>
+                }
+            </div>
+        </AdminPageCard>
+
+        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")" Title="@AppResources.T("Common_VitalsTitle")">
+            <AdminPageCardMeta>
+                <span class="admin-progress-pill">@FormatVitalCount(_visit.Vitals.Count)</span>
+            </AdminPageCardMeta>
+            <div class="admin-page-card-body">
+                @if (_isAdministrator && _visit.Status == "InProgress")
+                {
+                    <div class="form-grid" style="margin-bottom: 1rem;">
+                        <label>
+                            @AppResources.T("Common_Type")
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_vitalType"
+                                              Options="VitalTypeOptions" />
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Value")
+                            <input class="form-control" type="number" step="0.1" @bind="_vitalValue" />
+                        </label>
+                        <label>
+                            @AppResources.T("Visit_UnitLabel")
+                            <input class="form-control" @bind="_vitalUnit" placeholder="@AppResources.T("Common_UnitPlaceholder")" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                        <button type="button" class="btn btn-primary" disabled="@_recording" @onclick="RecordVitalAsync">
+                            @(_recording ? AppResources.T("Common_Saving") : AppResources.T("Common_RecordVital"))
+                        </button>
+                    </div>
+                }
+
+                @if (_visit.Vitals.Count == 0)
+                {
+                    <p class="text-muted">@AppResources.T("Common_NoVitalsYet")</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>@AppResources.T("Common_Recorded")</th>
+                                    <th>@AppResources.T("Common_Type")</th>
+                                    <th>@AppResources.T("Common_Value")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var vital in _visit.Vitals)
+                                {
+                                    <tr>
+                                        <td>@FormatLocal(vital.RecordedAt)</td>
+                                        <td>@vital.Type</td>
+                                        <td>@vital.Value @(vital.Unit ?? "")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </AdminPageCard>
+
+        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                       Title="@AppResources.T("Common_DiagnosesTitle")"
+                       Lead="@AppResources.T("Visit_ClinicalDocsLead")">
+            <div class="admin-page-card-body">
+                @if (_visit.Diagnoses.Count == 0)
+                {
+                    <p class="text-muted">@AppResources.T("Common_NoDiagnoses")</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>@AppResources.T("Common_Code")</th>
+                                    <th>@AppResources.T("Common_Description")</th>
+                                    <th>@AppResources.T("Common_Severity")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var diagnosis in _visit.Diagnoses)
+                                {
+                                    <tr>
+                                        <td>@diagnosis.Code</td>
+                                        <td>@(string.IsNullOrWhiteSpace(diagnosis.Description) ? AppResources.T("Common_EmptyCell") : diagnosis.Description)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(diagnosis.Severity) ? AppResources.T("Common_EmptyCell") : diagnosis.Severity)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </AdminPageCard>
+
+        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                       Title="@AppResources.T("Common_PrescriptionsTitle")"
+                       Lead="@AppResources.T("Visit_OpenVisitDocumentLead")">
+            <div class="admin-page-card-body">
+                @if (CanDocument)
+                {
+                    <div class="form-grid" style="margin-bottom: 1rem;">
+                        <label>
+                            @AppResources.T("Common_MedicationName")
+                            <input class="form-control" @bind="_rxMedication" />
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Dosage")
+                            <input class="form-control" @bind="_rxDosage" />
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Frequency")
+                            <input class="form-control" @bind="_rxFrequency" />
+                        </label>
+                        <label>
+                            @AppResources.T("Common_DurationDays")
+                            <input class="form-control" type="number" min="0" @bind="_rxDurationDays" />
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Notes")
+                            <input class="form-control" @bind="_rxNotes" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                        <button type="button" class="btn btn-primary" disabled="@_savingPrescription" @onclick="AddPrescriptionAsync">
+                            @(_savingPrescription ? AppResources.T("Common_AddingPrescription") : AppResources.T("Common_AddPrescription"))
+                        </button>
+                    </div>
+                }
+                @if (_visit.Prescriptions.Count == 0)
+                {
+                    <p class="text-muted">@AppResources.T("Common_NoPrescriptions")</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>@AppResources.T("Common_Medications")</th>
+                                    <th>@AppResources.T("Common_Dosage")</th>
+                                    <th>@AppResources.T("Common_Frequency")</th>
+                                    <th>@AppResources.T("Common_DurationDays")</th>
+                                    <th>@AppResources.T("Common_Notes")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var rx in _visit.Prescriptions)
+                                {
+                                    @if (rx.Items.Count == 0)
+                                    {
+                                        <tr>
+                                            <td>@AppResources.T("Common_EmptyCell")</td>
+                                            <td>@AppResources.T("Common_EmptyCell")</td>
+                                            <td>@AppResources.T("Common_EmptyCell")</td>
+                                            <td>@AppResources.T("Common_EmptyCell")</td>
+                                            <td>@(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var item in rx.Items)
+                                        {
+                                            <tr>
+                                                <td>@item.MedicationName</td>
+                                                <td>@(string.IsNullOrWhiteSpace(item.Dosage) ? AppResources.T("Common_EmptyCell") : item.Dosage)</td>
+                                                <td>@(string.IsNullOrWhiteSpace(item.Frequency) ? AppResources.T("Common_EmptyCell") : item.Frequency)</td>
+                                                <td>@item.DurationDays</td>
+                                                <td>@(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)</td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </AdminPageCard>
+
+        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                       Title="@AppResources.T("Common_SoapNotesTitle")"
+                       Lead="@AppResources.T("Visit_NotesLead")">
+            <div class="admin-page-card-body">
+                @if (CanDocument)
+                {
+                    <div class="form-grid single-column" style="margin-bottom: 1rem;">
+                        <label>
+                            @AppResources.T("Common_Subjective")
+                            <textarea class="form-control admin-textarea" @bind="_soapSubjective"></textarea>
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Objective")
+                            <textarea class="form-control admin-textarea" @bind="_soapObjective"></textarea>
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Assessment")
+                            <textarea class="form-control admin-textarea" @bind="_soapAssessment"></textarea>
+                        </label>
+                        <label>
+                            @AppResources.T("Common_SoapPlan")
+                            <textarea class="form-control admin-textarea" @bind="_soapPlan"></textarea>
+                        </label>
+                    </div>
+                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                        <button type="button" class="btn btn-primary" disabled="@_savingSoap" @onclick="SaveSoapAsync">
+                            @(_savingSoap ? AppResources.T("Common_SavingSoap") : AppResources.T("Common_SaveSoap"))
+                        </button>
+                    </div>
+                    <div class="form-grid" style="margin-bottom: 1rem;">
+                        <label>
+                            @AppResources.T("Common_Type")
+                            <input class="form-control" @bind="_noteCategory" placeholder="@AppResources.T("Common_NoteCategoryPlaceholder")" />
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Notes")
+                            <textarea class="form-control admin-textarea" @bind="_noteText"></textarea>
+                        </label>
+                    </div>
+                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                        <button type="button" class="btn btn-primary" disabled="@_savingNote" @onclick="AddNoteAsync">
+                            @(_savingNote ? AppResources.T("Common_AddingNote") : AppResources.T("Common_AddNote"))
+                        </button>
+                    </div>
+                }
+                @if (!CanDocument && _visit.SoapNotes.Count == 0 && _visit.ClinicalNotes.Count == 0)
+                {
+                    <p class="text-muted">@AppResources.T("Common_NoClinicalNotes")</p>
+                }
+                else
+                {
+                    @if (!CanDocument)
+                    {
+                        @foreach (var soap in _visit.SoapNotes)
+                        {
+                            <AdminDefinitionGrid>
+                                <AdminDefinitionItem Label="@AppResources.T("Common_Subjective")" Value="@(string.IsNullOrWhiteSpace(soap.Subjective) ? AppResources.T("Common_EmptyCell") : soap.Subjective)" Full="true" />
+                                <AdminDefinitionItem Label="@AppResources.T("Common_Objective")" Value="@(string.IsNullOrWhiteSpace(soap.Objective) ? AppResources.T("Common_EmptyCell") : soap.Objective)" Full="true" />
+                                <AdminDefinitionItem Label="@AppResources.T("Common_Assessment")" Value="@(string.IsNullOrWhiteSpace(soap.Assessment) ? AppResources.T("Common_EmptyCell") : soap.Assessment)" Full="true" />
+                                <AdminDefinitionItem Label="@AppResources.T("Common_SoapPlan")" Value="@(string.IsNullOrWhiteSpace(soap.Plan) ? AppResources.T("Common_EmptyCell") : soap.Plan)" Full="true" />
+                            </AdminDefinitionGrid>
+                        }
+                    }
+                    @if (_visit.ClinicalNotes.Count > 0)
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Common_Type")</th>
+                                        <th>@AppResources.T("Common_Notes")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var note in _visit.ClinicalNotes)
+                                    {
+                                        <tr>
+                                            <td>@(string.IsNullOrWhiteSpace(note.Category) ? AppResources.T("Common_EmptyCell") : note.Category)</td>
+                                            <td>@note.Notes</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            </div>
+        </AdminPageCard>
+
+        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                       Title="@AppResources.T("Common_LabResultsTitle")"
+                       Lead="@AppResources.T("Visit_OpenVisitDocumentLead")">
+            <div class="admin-page-card-body">
+                @if (CanDocument)
+                {
+                    <div class="form-grid" style="margin-bottom: 1rem;">
+                        <label>
+                            @AppResources.T("Common_Test")
+                            <input class="form-control" @bind="_labTestName" />
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Value")
+                            <input class="form-control" @bind="_labResultValue" />
+                        </label>
+                        <label>
+                            @AppResources.T("Visit_UnitLabel")
+                            <input class="form-control" @bind="_labUnit" />
+                        </label>
+                        <label>
+                            @AppResources.T("Common_ReferenceRange")
+                            <input class="form-control" @bind="_labReferenceRange" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                        <button type="button" class="btn btn-primary" disabled="@_savingLab" @onclick="AddLabResultAsync">
+                            @(_savingLab ? AppResources.T("Common_AddingLab") : AppResources.T("Common_AddLabResult"))
+                        </button>
+                    </div>
+                }
+                @if (_visit.LabResults.Count == 0)
+                {
+                    <p class="text-muted">@AppResources.T("Common_NoLabResults")</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>@AppResources.T("Common_Test")</th>
+                                    <th>@AppResources.T("Common_Value")</th>
+                                    <th>@AppResources.T("Common_ReferenceRange")</th>
+                                    <th>@AppResources.T("Common_Reported")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var lab in _visit.LabResults)
+                                {
+                                    <tr>
+                                        <td>@lab.TestName</td>
+                                        <td>@lab.ResultValue @(lab.Unit ?? "")</td>
+                                        <td>@(string.IsNullOrWhiteSpace(lab.ReferenceRange) ? AppResources.T("Common_EmptyCell") : lab.ReferenceRange)</td>
+                                        <td>@FormatLocal(lab.ReportedAt)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </AdminPageCard>
+
+        <div class="admin-page-actions">
+            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Visit_AppointmentsNav")</a>
+            <a class="btn btn-ghost" href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">@AppResources.T("Common_PatientChartLink")</a>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+    [Parameter] public Guid VisitId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _isAdministrator;
+    private bool _recording;
+    private bool _completing;
+    private bool _savingSoap;
+    private bool _savingNote;
+    private bool _savingPrescription;
+    private bool _savingLab;
+    private string? _error;
+    private string? _success;
+    private string _clinicTimeZone = "UTC";
+    private ClinicVisitDetail? _visit;
+    private string _vitalType = "HR";
+    private decimal _vitalValue;
+    private string _vitalUnit = "bpm";
+    private string _completeSummary = string.Empty;
+    private string _soapSubjective = string.Empty;
+    private string _soapObjective = string.Empty;
+    private string _soapAssessment = string.Empty;
+    private string _soapPlan = string.Empty;
+    private string _noteCategory = string.Empty;
+    private string _noteText = string.Empty;
+    private string _rxMedication = string.Empty;
+    private string _rxDosage = string.Empty;
+    private string _rxFrequency = string.Empty;
+    private int _rxDurationDays;
+    private string _rxNotes = string.Empty;
+    private string _labTestName = string.Empty;
+    private string _labResultValue = string.Empty;
+    private string _labUnit = string.Empty;
+    private string _labReferenceRange = string.Empty;
+
+    private IReadOnlyList<SelectOption<string>> VitalTypeOptions =>
+    [
+        new("HR", AppResources.T("Common_HeartRateOption")),
+        new("BP", AppResources.T("Common_BloodPressureOption")),
+        new("Temp", AppResources.T("Common_TemperatureOption")),
+        new("SpO2", AppResources.T("Common_Spo2Option")),
+        new("Weight", AppResources.T("Common_WeightOption"))
+    ];
+
+    private string TimeZoneLabel =>
+        string.IsNullOrWhiteSpace(_clinicTimeZone) ? AppResources.T("Common_HospitalTime") : _clinicTimeZone;
+
+    private bool CanDocument =>
+        _isAdministrator && _visit is { Status: "InProgress" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        CultureService.CultureChanged += OnCultureChanged;
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
+        if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
+        {
+            _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            _clinicTimeZone = clinicResponse.Data.TimeZone;
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+
+        await LoadVisitAsync();
+    }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private async Task LoadVisitAsync()
+    {
+        _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetVisitAsync(ClinicId, VisitId);
+        _loading = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _visit = response.Data;
+            _completeSummary = response.Data.Summary ?? string.Empty;
+            var soap = response.Data.SoapNotes.Count > 0 ? response.Data.SoapNotes[0] : null;
+            _soapSubjective = soap?.Subjective ?? string.Empty;
+            _soapObjective = soap?.Objective ?? string.Empty;
+            _soapAssessment = soap?.Assessment ?? string.Empty;
+            _soapPlan = soap?.Plan ?? string.Empty;
+        }
+        else
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadVisit");
+    }
+
+    private string FormatLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private static string FormatVitalCount(int count) =>
+        count == 1
+            ? AppResources.Format("Common_VitalCountLabel", count)
+            : AppResources.Format("Common_VitalCountLabelPlural", count);
+
+    private async Task RecordVitalAsync()
+    {
+        _recording = true;
+        _error = null;
+        _success = null;
+
+        if (_vitalType is "HR") _vitalUnit = string.IsNullOrWhiteSpace(_vitalUnit) ? "bpm" : _vitalUnit;
+        if (_vitalType is "Temp") _vitalUnit = string.IsNullOrWhiteSpace(_vitalUnit) ? "°C" : _vitalUnit;
+        if (_vitalType is "SpO2") _vitalUnit = string.IsNullOrWhiteSpace(_vitalUnit) ? "%" : _vitalUnit;
+
+        var response = await AdminClinicService.RecordVisitVitalAsync(ClinicId, VisitId, new RecordVisitVitalRequest
+        {
+            Type = _vitalType,
+            Value = _vitalValue,
+            Unit = _vitalUnit
+        });
+        _recording = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotRecordVital");
+            return;
+        }
+
+        _success = AppResources.T("Common_VitalRecorded");
+        _vitalValue = 0;
+        await LoadVisitAsync();
+    }
+
+    private async Task CompleteVisitAsync()
+    {
+        _completing = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CompleteVisitAsync(
+            ClinicId,
+            VisitId,
+            string.IsNullOrWhiteSpace(_completeSummary) ? null : _completeSummary.Trim());
+        _completing = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotCompleteVisit");
+            return;
+        }
+
+        _visit = response.Data;
+        _success = AppResources.T("Common_VisitCompleted");
+    }
+
+    private async Task SaveSoapAsync()
+    {
+        _savingSoap = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.SaveVisitSoapNoteAsync(ClinicId, VisitId, new SaveVisitSoapNoteRequest
+        {
+            Subjective = _soapSubjective,
+            Objective = _soapObjective,
+            Assessment = _soapAssessment,
+            Plan = _soapPlan
+        });
+        _savingSoap = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotSaveSoap");
+            return;
+        }
+
+        _success = AppResources.T("Common_SoapSaved");
+        await LoadVisitAsync();
+    }
+
+    private async Task AddNoteAsync()
+    {
+        _savingNote = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.AddVisitNoteAsync(ClinicId, VisitId, new AddVisitNoteRequest
+        {
+            Notes = _noteText,
+            Category = _noteCategory
+        });
+        _savingNote = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotAddNote");
+            return;
+        }
+
+        _success = AppResources.T("Common_NoteAdded");
+        _noteText = string.Empty;
+        _noteCategory = string.Empty;
+        await LoadVisitAsync();
+    }
+
+    private async Task AddPrescriptionAsync()
+    {
+        _savingPrescription = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.AddVisitPrescriptionAsync(ClinicId, VisitId, new AddVisitPrescriptionRequest
+        {
+            MedicationName = _rxMedication,
+            Dosage = _rxDosage,
+            Frequency = _rxFrequency,
+            DurationDays = _rxDurationDays,
+            Notes = _rxNotes
+        });
+        _savingPrescription = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotAddPrescription");
+            return;
+        }
+
+        _success = AppResources.T("Common_PrescriptionAdded");
+        _rxMedication = string.Empty;
+        _rxDosage = string.Empty;
+        _rxFrequency = string.Empty;
+        _rxDurationDays = 0;
+        _rxNotes = string.Empty;
+        await LoadVisitAsync();
+    }
+
+    private async Task AddLabResultAsync()
+    {
+        _savingLab = true;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.AddVisitLabResultAsync(ClinicId, VisitId, new AddVisitLabResultRequest
+        {
+            TestName = _labTestName,
+            ResultValue = _labResultValue,
+            Unit = _labUnit,
+            ReferenceRange = _labReferenceRange
+        });
+        _savingLab = false;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotAddLab");
+            return;
+        }
+
+        _success = AppResources.T("Common_LabResultAdded");
+        _labTestName = string.Empty;
+        _labResultValue = string.Empty;
+        _labUnit = string.Empty;
+        _labReferenceRange = string.Empty;
+        await LoadVisitAsync();
+    }
+}

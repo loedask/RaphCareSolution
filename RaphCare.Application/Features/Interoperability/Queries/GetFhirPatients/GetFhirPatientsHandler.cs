@@ -17,9 +17,9 @@ public class GetFhirPatientsHandler(
 
     public async Task<FhirBundleDto> Handle(GetFhirPatientsQuery request, CancellationToken cancellationToken)
     {
-        string? nhidLower = null;
+        string? nhid = null;
         if (!string.IsNullOrWhiteSpace(request.NationalHealthId))
-            nhidLower = request.NationalHealthId.Trim().ToLower();
+            nhid = request.NationalHealthId.Trim();
 
         var pagedPatients = await _repository.SearchAsync(
             queryShaper: q =>
@@ -27,8 +27,8 @@ public class GetFhirPatientsHandler(
                 if (request.Id is Guid id)
                     q = q.Where(p => p.Id == id);
 
-                if (nhidLower is not null)
-                    q = q.Where(p => p.NationalHealthId != null && p.NationalHealthId.ToLower() == nhidLower);
+                if (nhid is not null)
+                    q = q.Where(p => p.NationalHealthId != null && string.Equals(p.NationalHealthId, nhid, StringComparison.OrdinalIgnoreCase));
 
                 return q;
             },

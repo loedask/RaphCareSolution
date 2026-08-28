@@ -153,9 +153,27 @@ If Agora is **not** configured on the server, join info may still return **AppId
 - **Registration:** `MobileServiceCollectionExtensions` registers **`AgoraAndroidTelehealthRtcSession`** on Android.
 - **Permissions:** Camera (and related) must be granted at runtime; **AndroidManifest** includes camera permission; **iOS/MacCatalyst Info.plist** includes camera usage strings for builds that include those targets.
 
-**Note:** Native Agora video is **implemented for Android** in this solution; **iOS / Mac Catalyst / Windows** may still show placeholders or no-op RTC until equivalent native wiring is added.
+**Note:** Native Agora video is **implemented for Android**. **iOS** registers **`AgoraIosTelehealthRtcSession`** (camera/mic + framework detection); embed AgoraRtcKit via **`tools/download-agora-ios-framework.ps1`** and complete ObjC join on a Mac. Other platforms use **`NoOpTelehealthRtcSession`**.
+
+### 2.6a Push device registration (Mobile)
+
+- After sign-in (Home refresh) and when opening Notifications, Mobile calls **`PUT api/patient/notifications/push-device`** via **`IPatientPushRegistrationService`**.
+- Default token provider is a **stable local demo token** (`LocalDevelopmentPushDeviceTokenProvider`) so registration works without FCM/APNs SDKs.
+- Server delivery still needs **`FirebasePush:ServiceAccountJsonPath`** on the API for real FCM; otherwise **`NoOpPatientPushNotificationSender`** logs only.
 
 ### 2.7 Testing Agora end-to-end
+
+**Server token smoke (automated):**
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-agora-rtc-config.ps1
+```
+
+Confirms **`AgoraRtc`** is set and **`AgoraRtcTokenService`** can mint a token (does **not** print secrets). Requires the **`Crc32.NET`** package on **Infrastructure** (AgoraDynamicKey dependency that the NuGet package does not declare).
+
+**Verified (2026-07-21):** API config + token mint path **PASS**. Dual-participant Android video still needs a device/emulator with camera (manual).
+
+**Device E2E (manual):**
 
 1. Configure **AgoraRtc** on the API and deploy or run locally with secrets.
 2. Ensure a **telehealth session** exists for the patient and **join info** returns a non-empty **RtcToken** and **`RtcConfigured: true`**.
@@ -183,8 +201,9 @@ If Agora is **not** configured on the server, join info may still return **AppId
 **Agora**
 
 - [ ] RTC project created; **App ID** and **App Certificate** copied.
-- [ ] **`AgoraRtc`** section set on the API; certificate **never** in mobile repo.
-- [ ] API returns join info with **`RtcConfigured`** and token for a test session.
+- [x] **`AgoraRtc`** section set on the API; certificate **never** in mobile repo.
+- [x] API token mint smoke (`tools/verify-agora-rtc-config.ps1`) — verified 2026-07-21.
+- [ ] API returns join info with **`RtcConfigured`** and token for a test session (device/API running).
 - [ ] Android app tested on device/emulator with camera.
 
 ---

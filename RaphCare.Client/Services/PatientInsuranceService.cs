@@ -1,114 +1,81 @@
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.Api;
+using RaphCare.Client.Models.Appointments;
 using RaphCare.Client.Models.Insurance;
 using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-/// <summary>Wraps generated <see cref="IClient"/> patient insurance operations and maps to feature view models.</summary>
-public sealed class PatientInsuranceService(IClient client) : IPatientInsuranceService
+public sealed class PatientInsuranceService(HttpClient httpClient) : BaseHttpService(httpClient), IPatientInsuranceService
 {
     public async Task<Response<IReadOnlyList<InsurancePlanOptionViewModel>>> GetActivePlansAsync(CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var dtos = await client.GetActiveInsurancePlansForPatientAsync(cancellationToken).ConfigureAwait(false);
-            var list = (dtos ?? Array.Empty<InsurancePlanOptionDto>())
-                .Select(d => new InsurancePlanOptionViewModel
-                {
-                    Id = d.Id,
-                    Name = d.Name ?? string.Empty,
-                    Code = d.Code ?? string.Empty
-                })
-                .ToList();
-            return Response<IReadOnlyList<InsurancePlanOptionViewModel>>.Success(list);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<IReadOnlyList<InsurancePlanOptionViewModel>>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await GetAsync<IReadOnlyList<InsurancePlanOptionDto>>("api/patient/insurance/plans", cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess)
+            return Response<IReadOnlyList<InsurancePlanOptionViewModel>>.Failure(result.ErrorMessage ?? "Could not load plans.", result.StatusCode);
+
+        var list = (result.Data ?? Array.Empty<InsurancePlanOptionDto>())
+            .Select(d => new InsurancePlanOptionViewModel
+            {
+                Id = d.Id,
+                Name = d.Name ?? string.Empty,
+                Code = d.Code ?? string.Empty
+            })
+            .ToList();
+        return Response<IReadOnlyList<InsurancePlanOptionViewModel>>.Success(list);
     }
 
-    public async Task<Response<PagedPatientInsuranceProfilesViewModel>> GetMyProfilesAsync(int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+    public async Task<Response<PagedPatientInsuranceProfilesViewModel>> GetMyProfilesAsync(
+        int pageNumber = 1,
+        int pageSize = 20,
+        CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var paged = await client.GetMyInsuranceProfilesAsync(pageNumber, pageSize, cancellationToken).ConfigureAwait(false);
-            return Response<PagedPatientInsuranceProfilesViewModel>.Success(MapPaged(paged));
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<PagedPatientInsuranceProfilesViewModel>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await GetAsync<PagedApiResult<InsuranceProfileDto>>(
+                $"api/patient/insurance/profiles?pageNumber={pageNumber}&pageSize={pageSize}",
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PagedPatientInsuranceProfilesViewModel>.Failure(result.ErrorMessage ?? "Could not load profiles.", result.StatusCode);
+
+        return Response<PagedPatientInsuranceProfilesViewModel>.Success(MapPaged(result.Data));
     }
 
     public async Task<Response<PatientInsuranceProfileViewModel?>> GetMyProfileAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var dto = await client.GetMyInsuranceProfileByIdAsync(id, cancellationToken).ConfigureAwait(false);
-            return Response<PatientInsuranceProfileViewModel?>.Success(MapProfile(dto));
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<PatientInsuranceProfileViewModel?>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await GetAsync<InsuranceProfileDto>($"api/patient/insurance/profiles/{id}", cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess)
+            return Response<PatientInsuranceProfileViewModel?>.Failure(result.ErrorMessage ?? "Could not load profile.", result.StatusCode);
+        return Response<PatientInsuranceProfileViewModel?>.Success(result.Data is null ? null : MapProfile(result.Data));
     }
 
     public async Task<Response<Guid>> CreateProfileAsync(CreatePatientInsuranceProfileRequest request, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var cmd = new CreatePatientInsuranceProfileCommand
-            {
-                InsurancePlanId = request.InsurancePlanId,
-                MembershipNumber = request.MembershipNumber,
-                StartDate = request.StartDate
-            };
-            var res = await client.CreatePatientInsuranceProfileAsync(cmd, cancellationToken).ConfigureAwait(false);
-            return Response<Guid>.Success(res.Id);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<Guid>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await PostAsync<CreatedGuidApiResponse>("api/patient/insurance/profiles", request, cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess || result.Data is null)
+            return Response<Guid>.Failure(result.ErrorMessage ?? "Create failed.", result.StatusCode);
+        return Response<Guid>.Success(result.Data.Id);
     }
 
     public async Task<Response<bool>> UpdateProfileAsync(UpdatePatientInsuranceProfileRequest request, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var cmd = new UpdateMyInsuranceProfileCommand
-            {
-                Id = request.Id,
-                EndDate = request.EndDate,
-                IsActive = request.IsActive
-            };
-            await client.UpdateMyInsuranceProfileAsync(request.Id, cmd, cancellationToken).ConfigureAwait(false);
-            return Response<bool>.Success(true);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await PutNoContentAsync($"api/patient/insurance/profiles/{request.Id}", request, cancellationToken).ConfigureAwait(false);
+        return result.IsSuccess
+            ? Response<bool>.Success(true)
+            : Response<bool>.Failure(result.ErrorMessage ?? "Update failed.", result.StatusCode);
     }
 
-    private static PagedPatientInsuranceProfilesViewModel MapPaged(PatientInsuranceProfileDtoPagedResult paged)
-    {
-        var items = (paged.Items ?? Array.Empty<PatientInsuranceProfileDto>())
-            .Select(MapProfile)
-            .ToList();
-
-        return new PagedPatientInsuranceProfilesViewModel
+    private static PagedPatientInsuranceProfilesViewModel MapPaged(PagedApiResult<InsuranceProfileDto> paged) =>
+        new()
         {
-            Items = items,
+            Items = (paged.Items ?? Array.Empty<InsuranceProfileDto>()).Select(MapProfile).ToList(),
             TotalCount = paged.TotalCount,
             PageNumber = paged.PageNumber,
             PageSize = paged.PageSize
         };
-    }
 
-    private static PatientInsuranceProfileViewModel MapProfile(PatientInsuranceProfileDto d) =>
+    private static PatientInsuranceProfileViewModel MapProfile(InsuranceProfileDto d) =>
         new()
         {
             Id = d.Id,
@@ -120,4 +87,23 @@ public sealed class PatientInsuranceService(IClient client) : IPatientInsuranceS
             EndDate = d.EndDate,
             IsActive = d.IsActive
         };
+
+    private sealed class InsurancePlanOptionDto
+    {
+        public Guid Id { get; set; }
+        public string? Name { get; set; }
+        public string? Code { get; set; }
+    }
+
+    private sealed class InsuranceProfileDto
+    {
+        public Guid Id { get; set; }
+        public Guid InsurancePlanId { get; set; }
+        public string? PlanName { get; set; }
+        public string? PlanCode { get; set; }
+        public string? MembershipNumber { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public bool IsActive { get; set; }
+    }
 }

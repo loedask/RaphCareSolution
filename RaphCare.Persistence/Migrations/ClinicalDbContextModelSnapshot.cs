@@ -247,16 +247,16 @@ namespace RaphCare.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Category")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -519,23 +519,23 @@ namespace RaphCare.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Assessment")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Objective")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<string>("Plan")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<string>("Subjective")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -904,10 +904,18 @@ namespace RaphCare.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("ReferenceCode")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("RegisteredByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("TimeZone")
                         .IsRequired()
@@ -921,10 +929,100 @@ namespace RaphCare.Persistence.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("RegistrationNumber")
+                    b.HasIndex("ReferenceCode")
                         .IsUnique();
 
+                    b.HasIndex("RegistrationNumber");
+
                     b.ToTable("Clinics", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Organization.ClinicStaffMembership", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastInvitationSentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("ApplicationUserId", "ClinicId")
+                        .IsUnique();
+
+                    b.ToTable("ClinicStaffMemberships", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Organization.ClinicStaffInvitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("AcceptedApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid>("InvitedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("InvitedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastInvitationSentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("IsCancelled");
+
+                    b.HasIndex("ClinicId", "Email");
+
+                    b.ToTable("ClinicStaffInvitations", (string)null);
                 });
 
             modelBuilder.Entity("RaphCare.Domain.Organization.Department", b =>
@@ -1918,6 +2016,22 @@ namespace RaphCare.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("PrimaryCareProviderName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("SelfReportedAllergies")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("SelfReportedChronicConditions")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("SelfReportedMedications")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -2586,6 +2700,28 @@ namespace RaphCare.Persistence.Migrations
                     b.Navigation("ProviderSchedule");
                 });
 
+            modelBuilder.Entity("RaphCare.Domain.Organization.ClinicStaffMembership", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Organization.Clinic", "Clinic")
+                        .WithMany("StaffMemberships")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Organization.ClinicStaffInvitation", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Organization.Clinic", "Clinic")
+                        .WithMany()
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+                });
+
             modelBuilder.Entity("RaphCare.Domain.Organization.Department", b =>
                 {
                     b.HasOne("RaphCare.Domain.Organization.Clinic", "Clinic")
@@ -3011,6 +3147,8 @@ namespace RaphCare.Persistence.Migrations
                     b.Navigation("Providers");
 
                     b.Navigation("ServiceOfferings");
+
+                    b.Navigation("StaffMemberships");
                 });
 
             modelBuilder.Entity("RaphCare.Domain.Organization.Provider", b =>

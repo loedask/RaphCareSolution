@@ -1,0 +1,58 @@
+<CascadingValue Value="this" IsFixed="true">
+    <div class="admin-page-card @CssClass">
+        @if (ShowHeader)
+        {
+            <header class="admin-page-card-head">
+                <div>
+                    @if (!string.IsNullOrEmpty(Eyebrow))
+                    {
+                        <p class="admin-page-eyebrow">@Eyebrow</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Title))
+                    {
+                        @if (LargeTitle)
+                        {
+                            <h1>@Title</h1>
+                        }
+                        else
+                        {
+                            <h2>@Title</h2>
+                        }
+                    }
+                    @if (!string.IsNullOrEmpty(Lead))
+                    {
+                        <p class="admin-page-lead">@Lead</p>
+                    }
+                </div>
+                @_headMeta
+            </header>
+        }
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter] public string? Eyebrow { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Lead { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public bool LargeTitle { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private RenderFragment? _headMeta;
+
+    private bool ShowHeader =>
+        !string.IsNullOrEmpty(Eyebrow)
+        || !string.IsNullOrEmpty(Title)
+        || !string.IsNullOrEmpty(Lead)
+        || _headMeta is not null;
+
+    internal void SetHeadMeta(RenderFragment? meta)
+    {
+        if (_headMeta == meta)
+            return;
+
+        _headMeta = meta;
+        _ = InvokeAsync(StateHasChanged);
+    }
+}

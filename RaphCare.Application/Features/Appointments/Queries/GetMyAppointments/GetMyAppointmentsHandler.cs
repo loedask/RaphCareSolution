@@ -25,7 +25,8 @@ public class GetMyAppointmentsHandler : IRequestHandler<GetMyAppointmentsQuery, 
             ?? throw new ForbiddenAccessException("A patient profile is required to view appointments.");
 
         var paged = await _repository.SearchAsync(
-            q => q.Where(a => a.PatientId == patientId).OrderByDescending(a => a.ScheduledStart),
+            q => q.Where(a => a.PatientId == patientId && !a.IsCancelled)
+                .OrderByDescending(a => a.ScheduledStart),
             request.PageNumber,
             request.PageSize,
             applyDefaultIdOrdering: false,

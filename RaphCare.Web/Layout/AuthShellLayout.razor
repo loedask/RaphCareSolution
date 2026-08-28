@@ -1,0 +1,74 @@
+@inherits LayoutComponentBase
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<div class="auth-shell">
+    <aside class="auth-brand-panel">
+        <div class="auth-brand-glow"></div>
+
+        <div class="auth-brand-top">
+            <div class="auth-brand-logo">+</div>
+            <div>
+                <div class="auth-brand-name">@AppResources.T("Common_AppName")</div>
+                <div class="auth-brand-tag">@AppResources.T("AuthShell_BrandTagline")</div>
+            </div>
+        </div>
+
+        <div class="auth-brand-middle">
+            <h1 class="auth-brand-headline">@AppResources.T("AuthShell_Headline")</h1>
+            <p class="auth-brand-lead">@AppResources.T("AuthShell_Lead")</p>
+
+            <div class="auth-feature-list">
+                <div class="auth-feature">
+                    <span class="auth-feature-icon">🏥</span>
+                    <div>
+                        <div class="auth-feature-title">@AppResources.T("AuthShell_FeatureHospitalTitle")</div>
+                        <div class="auth-feature-desc">@AppResources.T("AuthShell_FeatureHospitalDesc")</div>
+                    </div>
+                </div>
+                <div class="auth-feature">
+                    <span class="auth-feature-icon">📋</span>
+                    <div>
+                        <div class="auth-feature-title">@AppResources.T("AuthShell_FeatureWorkspaceTitle")</div>
+                        <div class="auth-feature-desc">@AppResources.T("AuthShell_FeatureWorkspaceDesc")</div>
+                    </div>
+                </div>
+                <div class="auth-feature">
+                    <span class="auth-feature-icon">🔒</span>
+                    <div>
+                        <div class="auth-feature-title">@AppResources.T("AuthShell_FeatureVerifiedTitle")</div>
+                        <div class="auth-feature-desc">@AppResources.T("AuthShell_FeatureVerifiedDesc")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-brand-footer">
+            <span>@AppResources.T("AuthShell_FooterSecureSignIn")</span>
+            <span>@AppResources.Format("AuthShell_FooterCopyright", DateTime.UtcNow.Year)</span>
+        </div>
+    </aside>
+
+    <main class="auth-content-panel">
+        <div class="auth-mobile-brand">
+            <div class="auth-brand-logo sm">+</div>
+            <div>
+                <div class="auth-brand-name">@AppResources.T("Common_AppName")</div>
+                <div class="auth-brand-tag">@AppResources.T("AuthShell_MobileTagline")</div>
+            </div>
+        </div>
+
+        <div class="auth-card-shell">
+            @Body
+        </div>
+    </main>
+</div>
+
+@code {
+    protected override void OnInitialized() =>
+        CultureService.CultureChanged += OnCultureChanged;
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+}

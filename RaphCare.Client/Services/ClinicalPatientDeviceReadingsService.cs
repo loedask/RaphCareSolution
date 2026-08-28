@@ -1,15 +1,14 @@
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.Api;
 using RaphCare.Client.Models.Clinical;
 using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-/// <summary>Wraps generated <see cref="IClient"/> clinical device-reading operations (staff token).</summary>
-public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClinicalPatientDeviceReadingsService
+public sealed class ClinicalPatientDeviceReadingsService(HttpClient httpClient)
+    : BaseHttpService(httpClient), IClinicalPatientDeviceReadingsService
 {
-    private readonly IClient _client = client;
-
     public async Task<Response<PagedPatientDeviceReadingsViewModel>> GetReadingsAsync(
         Guid patientId,
         int pageNumber = 1,
@@ -19,35 +18,23 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
         DateTime? recordedToUtc = null,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var dto = await _client.GetPatientDeviceReadingsAsync(
-                    patientId,
-                    pageNumber,
-                    pageSize,
-                    readingType,
-                    recordedFromUtc,
-                    recordedToUtc,
-                    cancellationToken)
-                .ConfigureAwait(false);
+        var query = BuildQuery(pageNumber, pageSize, readingType, recordedFromUtc, recordedToUtc);
+        var result = await GetAsync<PagedApiResult<DeviceReadingDto>>(
+                $"api/Clinical/patients/{patientId}/device-readings{query}",
+                cancellationToken)
+            .ConfigureAwait(false);
 
-            var items = (dto.Items ?? Array.Empty<PatientDeviceReadingListItemDto>())
-                .Select(MapReading)
-                .ToList();
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PagedPatientDeviceReadingsViewModel>.Failure(result.ErrorMessage ?? "Could not load readings.", result.StatusCode);
 
-            return Response<PagedPatientDeviceReadingsViewModel>.Success(
-                new PagedPatientDeviceReadingsViewModel
-                {
-                    Items = items,
-                    TotalCount = dto.TotalCount,
-                    PageNumber = dto.PageNumber,
-                    PageSize = dto.PageSize
-                });
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
+        var dto = result.Data;
+        return Response<PagedPatientDeviceReadingsViewModel>.Success(new PagedPatientDeviceReadingsViewModel
         {
-            return Response<PagedPatientDeviceReadingsViewModel>.Failure(ex.Message, ex.StatusCode);
-        }
+            Items = (dto.Items ?? Array.Empty<DeviceReadingDto>()).Select(MapReading).ToList(),
+            TotalCount = dto.TotalCount,
+            PageNumber = dto.PageNumber,
+            PageSize = dto.PageSize
+        });
     }
 
     public async Task<Response<IReadOnlyList<DeviceReadingDailyRollupViewModel>>> GetDailyRollupAsync(
@@ -56,22 +43,18 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
         DateTime toUtc,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var rows = await _client
-                .GetPatientDeviceReadingDailyRollupAsync(patientId, fromUtc, toUtc, cancellationToken)
-                .ConfigureAwait(false);
+        var from = Uri.EscapeDataString(fromUtc.ToString("O"));
+        var to = Uri.EscapeDataString(toUtc.ToString("O"));
+        var result = await GetAsync<IReadOnlyList<DailyRollupDto>>(
+                $"api/Clinical/patients/{patientId}/device-readings/daily-rollup?fromUtc={from}&toUtc={to}",
+                cancellationToken)
+            .ConfigureAwait(false);
 
-            var list = (rows ?? Array.Empty<DeviceReadingDailyRollupDto>())
-                .Select(MapRollup)
-                .ToList();
+        if (!result.IsSuccess)
+            return Response<IReadOnlyList<DeviceReadingDailyRollupViewModel>>.Failure(result.ErrorMessage ?? "Could not load rollup.", result.StatusCode);
 
-            return Response<IReadOnlyList<DeviceReadingDailyRollupViewModel>>.Success(list);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<IReadOnlyList<DeviceReadingDailyRollupViewModel>>.Failure(ex.Message, ex.StatusCode);
-        }
+        var list = (result.Data ?? Array.Empty<DailyRollupDto>()).Select(MapRollup).ToList();
+        return Response<IReadOnlyList<DeviceReadingDailyRollupViewModel>>.Success(list);
     }
 
     public async Task<Response<PagedPatientDeviceEmergencyEventsViewModel>> GetEmergencyEventsAsync(
@@ -82,37 +65,82 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
         DateTime? occurredToUtc = null,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var dto = await _client.GetPatientDeviceEmergencyEventsAsync(
-                    patientId,
-                    pageNumber,
-                    pageSize,
-                    occurredFromUtc,
-                    occurredToUtc,
-                    cancellationToken)
-                .ConfigureAwait(false);
+        var query = BuildEmergencyQuery(pageNumber, pageSize, occurredFromUtc, occurredToUtc);
+        var result = await GetAsync<PagedApiResult<EmergencyEventDto>>(
+                $"api/Clinical/patients/{patientId}/emergency-events{query}",
+                cancellationToken)
+            .ConfigureAwait(false);
 
-            var items = (dto.Items ?? Array.Empty<PatientDeviceEmergencyEventListItemDto>())
-                .Select(MapEmergency)
-                .ToList();
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PagedPatientDeviceEmergencyEventsViewModel>.Failure(result.ErrorMessage ?? "Could not load events.", result.StatusCode);
 
-            return Response<PagedPatientDeviceEmergencyEventsViewModel>.Success(
-                new PagedPatientDeviceEmergencyEventsViewModel
-                {
-                    Items = items,
-                    TotalCount = dto.TotalCount,
-                    PageNumber = dto.PageNumber,
-                    PageSize = dto.PageSize
-                });
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
+        var dto = result.Data;
+        return Response<PagedPatientDeviceEmergencyEventsViewModel>.Success(new PagedPatientDeviceEmergencyEventsViewModel
         {
-            return Response<PagedPatientDeviceEmergencyEventsViewModel>.Failure(ex.Message, ex.StatusCode);
-        }
+            Items = (dto.Items ?? Array.Empty<EmergencyEventDto>()).Select(MapEmergency).ToList(),
+            TotalCount = dto.TotalCount,
+            PageNumber = dto.PageNumber,
+            PageSize = dto.PageSize
+        });
     }
 
-    private static PatientDeviceReadingListItemViewModel MapReading(PatientDeviceReadingListItemDto d) =>
+    public async Task<Response<PagedClinicDeviceEmergencyEventsViewModel>> GetClinicEmergencyEventsAsync(
+        int pageNumber = 1,
+        int pageSize = 20,
+        DateTime? occurredFromUtc = null,
+        DateTime? occurredToUtc = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = BuildEmergencyQuery(pageNumber, pageSize, occurredFromUtc, occurredToUtc);
+        var result = await GetAsync<PagedApiResult<ClinicEmergencyEventDto>>(
+                $"api/Clinical/emergency-events{query}",
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PagedClinicDeviceEmergencyEventsViewModel>.Failure(result.ErrorMessage ?? "Could not load events.", result.StatusCode);
+
+        var dto = result.Data;
+        return Response<PagedClinicDeviceEmergencyEventsViewModel>.Success(new PagedClinicDeviceEmergencyEventsViewModel
+        {
+            Items = (dto.Items ?? Array.Empty<ClinicEmergencyEventDto>()).Select(MapClinicEmergency).ToList(),
+            TotalCount = dto.TotalCount,
+            PageNumber = dto.PageNumber,
+            PageSize = dto.PageSize
+        });
+    }
+
+    private static string BuildQuery(int pageNumber, int pageSize, string? readingType, DateTime? from, DateTime? to)
+    {
+        var parts = new List<string>
+        {
+            $"pageNumber={pageNumber}",
+            $"pageSize={pageSize}"
+        };
+        if (!string.IsNullOrEmpty(readingType))
+            parts.Add($"readingType={Uri.EscapeDataString(readingType)}");
+        if (from.HasValue)
+            parts.Add($"recordedFromUtc={Uri.EscapeDataString(from.Value.ToString("O"))}");
+        if (to.HasValue)
+            parts.Add($"recordedToUtc={Uri.EscapeDataString(to.Value.ToString("O"))}");
+        return "?" + string.Join("&", parts);
+    }
+
+    private static string BuildEmergencyQuery(int pageNumber, int pageSize, DateTime? from, DateTime? to)
+    {
+        var parts = new List<string>
+        {
+            $"pageNumber={pageNumber}",
+            $"pageSize={pageSize}"
+        };
+        if (from.HasValue)
+            parts.Add($"occurredFromUtc={Uri.EscapeDataString(from.Value.ToString("O"))}");
+        if (to.HasValue)
+            parts.Add($"occurredToUtc={Uri.EscapeDataString(to.Value.ToString("O"))}");
+        return "?" + string.Join("&", parts);
+    }
+
+    private static PatientDeviceReadingListItemViewModel MapReading(DeviceReadingDto d) =>
         new()
         {
             Id = d.Id,
@@ -130,10 +158,9 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
             PulseRateBpm = d.PulseRateBpm
         };
 
-    private static DeviceReadingDailyRollupViewModel MapRollup(DeviceReadingDailyRollupDto d)
+    private static DeviceReadingDailyRollupViewModel MapRollup(DailyRollupDto d)
     {
         var day = DateOnly.FromDateTime(d.Date);
-
         return new DeviceReadingDailyRollupViewModel
         {
             Date = day,
@@ -152,7 +179,7 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
         };
     }
 
-    private static PatientDeviceEmergencyEventViewModel MapEmergency(PatientDeviceEmergencyEventListItemDto d) =>
+    private static PatientDeviceEmergencyEventViewModel MapEmergency(EmergencyEventDto d) =>
         new()
         {
             Id = d.Id,
@@ -170,4 +197,93 @@ public sealed class ClinicalPatientDeviceReadingsService(IClient client) : IClin
             CaregiversNotifiedAtUtc = d.CaregiversNotifiedAtUtc,
             CaregiverNotificationSummary = d.CaregiverNotificationSummary
         };
+
+    private static ClinicDeviceEmergencyEventViewModel MapClinicEmergency(ClinicEmergencyEventDto d) =>
+        new()
+        {
+            Id = d.Id,
+            PatientId = d.PatientId,
+            PatientName = string.IsNullOrWhiteSpace(d.PatientName) ? "Patient" : d.PatientName.Trim(),
+            DeviceId = d.DeviceId,
+            SerialNumber = d.SerialNumber ?? string.Empty,
+            Model = d.Model ?? string.Empty,
+            EventType = d.EventType ?? string.Empty,
+            OccurredAtUtc = d.OccurredAtUtc,
+            ReceivedAtUtc = d.ReceivedAtUtc,
+            Latitude = d.Latitude,
+            Longitude = d.Longitude,
+            HorizontalAccuracyMeters = d.HorizontalAccuracyMeters,
+            ExternalCorrelationId = d.ExternalCorrelationId,
+            CaregiversNotified = d.CaregiversNotified,
+            CaregiversNotifiedAtUtc = d.CaregiversNotifiedAtUtc,
+            CaregiverNotificationSummary = d.CaregiverNotificationSummary
+        };
+
+    private sealed class DeviceReadingDto
+    {
+        public Guid Id { get; set; }
+        public Guid DeviceId { get; set; }
+        public string? SerialNumber { get; set; }
+        public string? Model { get; set; }
+        public string? Kind { get; set; }
+        public string? ReadingType { get; set; }
+        public double PrimaryValue { get; set; }
+        public string? Unit { get; set; }
+        public DateTime RecordedAt { get; set; }
+        public DateTime ReceivedAt { get; set; }
+        public int? HeartRateBpm { get; set; }
+        public double? SpO2Percent { get; set; }
+        public int? PulseRateBpm { get; set; }
+    }
+
+    private sealed class DailyRollupDto
+    {
+        public DateTime Date { get; set; }
+        public int HeartRateSampleCount { get; set; }
+        public double? AvgHeartRateBpm { get; set; }
+        public int? MinHeartRateBpm { get; set; }
+        public int? MaxHeartRateBpm { get; set; }
+        public int SpO2SampleCount { get; set; }
+        public double? AvgSpO2Percent { get; set; }
+        public double? MinSpO2Percent { get; set; }
+        public double? MaxSpO2Percent { get; set; }
+    }
+
+    private sealed class EmergencyEventDto
+    {
+        public Guid Id { get; set; }
+        public Guid DeviceId { get; set; }
+        public string? SerialNumber { get; set; }
+        public string? Model { get; set; }
+        public string? EventType { get; set; }
+        public DateTime OccurredAtUtc { get; set; }
+        public DateTime ReceivedAtUtc { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public double? HorizontalAccuracyMeters { get; set; }
+        public string? ExternalCorrelationId { get; set; }
+        public bool CaregiversNotified { get; set; }
+        public DateTime? CaregiversNotifiedAtUtc { get; set; }
+        public string? CaregiverNotificationSummary { get; set; }
+    }
+
+    private sealed class ClinicEmergencyEventDto
+    {
+        public Guid Id { get; set; }
+        public Guid PatientId { get; set; }
+        public string? PatientName { get; set; }
+        public Guid DeviceId { get; set; }
+        public string? SerialNumber { get; set; }
+        public string? Model { get; set; }
+        public string? EventType { get; set; }
+        public DateTime OccurredAtUtc { get; set; }
+        public DateTime ReceivedAtUtc { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public double? HorizontalAccuracyMeters { get; set; }
+        public string? ExternalCorrelationId { get; set; }
+        public bool CaregiversNotified { get; set; }
+        public DateTime? CaregiversNotifiedAtUtc { get; set; }
+        public string? CaregiverNotificationSummary { get; set; }
+    }
 }

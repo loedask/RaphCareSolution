@@ -6,14 +6,10 @@ using System.Text.Json;
 namespace RaphCare.Client.Services.Base;
 
 /// <summary>
-/// Base service that wraps the generated API client and provides generic HTTP helpers
-/// with standardized Response&lt;T&gt; and ApiException handling.
+/// Base service with generic HTTP helpers returning standardized <see cref="Response{T}"/>.
 /// </summary>
-public abstract class BaseHttpService(IClient client, HttpClient httpClient)
+public abstract class BaseHttpService(HttpClient httpClient)
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-
-    protected IClient Client { get; } = client;
     protected HttpClient HttpClient { get; } = httpClient;
 
     protected async Task<Response<T>> GetAsync<T>(string requestUri, CancellationToken cancellationToken = default)
@@ -23,12 +19,12 @@ public abstract class BaseHttpService(IClient client, HttpClient httpClient)
             using var response = await HttpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
                 return await ToErrorResponseAsync<T>(response, cancellationToken).ConfigureAwait(false);
-            var data = await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            var data = await response.Content.ReadFromJsonAsync<T>(ApiJson.Options, cancellationToken).ConfigureAwait(false);
             return Response<T>.Success(data!);
         }
-        catch (ApiException ex)
+        catch (HttpRequestException)
         {
-            return Response<T>.Failure(ex.Message, ex.StatusCode);
+            return Response<T>.Failure("We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -36,17 +32,17 @@ public abstract class BaseHttpService(IClient client, HttpClient httpClient)
     {
         try
         {
-            using var response = await HttpClient.PostAsJsonAsync(requestUri, body, JsonOptions, cancellationToken).ConfigureAwait(false);
+            using var response = await HttpClient.PostAsJsonAsync(requestUri, body, ApiJson.Options, cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
                 return await ToErrorResponseAsync<T>(response, cancellationToken).ConfigureAwait(false);
             var data = response.StatusCode == HttpStatusCode.NoContent
                 ? default
-                : await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken).ConfigureAwait(false);
+                : await response.Content.ReadFromJsonAsync<T>(ApiJson.Options, cancellationToken).ConfigureAwait(false);
             return Response<T>.Success(data!);
         }
-        catch (ApiException ex)
+        catch (HttpRequestException)
         {
-            return Response<T>.Failure(ex.Message, ex.StatusCode);
+            return Response<T>.Failure("We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -54,17 +50,17 @@ public abstract class BaseHttpService(IClient client, HttpClient httpClient)
     {
         try
         {
-            using var response = await HttpClient.PutAsJsonAsync(requestUri, body, JsonOptions, cancellationToken).ConfigureAwait(false);
+            using var response = await HttpClient.PutAsJsonAsync(requestUri, body, ApiJson.Options, cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
                 return await ToErrorResponseAsync<T>(response, cancellationToken).ConfigureAwait(false);
             var data = response.StatusCode == HttpStatusCode.NoContent
                 ? default
-                : await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken).ConfigureAwait(false);
+                : await response.Content.ReadFromJsonAsync<T>(ApiJson.Options, cancellationToken).ConfigureAwait(false);
             return Response<T>.Success(data!);
         }
-        catch (ApiException ex)
+        catch (HttpRequestException)
         {
-            return Response<T>.Failure(ex.Message, ex.StatusCode);
+            return Response<T>.Failure("We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -77,9 +73,39 @@ public abstract class BaseHttpService(IClient client, HttpClient httpClient)
                 return await ToErrorResponseAsync<bool>(response, cancellationToken).ConfigureAwait(false);
             return Response<bool>.Success(true);
         }
-        catch (ApiException ex)
+        catch (HttpRequestException)
         {
-            return Response<bool>.Failure(ex.Message, ex.StatusCode);
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    protected async Task<Response<bool>> PutNoContentAsync(string requestUri, object? body, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response = await HttpClient.PutAsJsonAsync(requestUri, body, ApiJson.Options, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return await ToErrorResponseAsync<bool>(response, cancellationToken).ConfigureAwait(false);
+            return Response<bool>.Success(true);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    protected async Task<Response<bool>> PostNoContentAsync(string requestUri, object? body, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response = await HttpClient.PostAsJsonAsync(requestUri, body, ApiJson.Options, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return await ToErrorResponseAsync<bool>(response, cancellationToken).ConfigureAwait(false);
+            return Response<bool>.Success(true);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
         }
     }
 

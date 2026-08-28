@@ -1,0 +1,136 @@
+@page "/professional/signin"
+@layout AuthShellLayout
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@AppResources.T("ProfessionalSignIn_PageTitle")</PageTitle>
+
+<div class="auth-card auth-card-form @(_awaitingCode ? "auth-card-verify" : null)">
+    <a class="back-link" href="/?role=professional">@AppResources.T("Common_Back")</a>
+    <h2 class="auth-card-title">@AppResources.T("PatientSignIn_Title")</h2>
+    <p class="auth-card-subtitle">@AppResources.T("ProfessionalSignIn_Subtitle")</p>
+
+    <AdminAlert Tone="info" Message="@AppResources.T("ProfessionalSignIn_PendingOnboarding")" Visible="@_hasPendingOnboarding" />
+
+    <AdminAlert Message="@_error" />
+    @if (!string.IsNullOrEmpty(_status))
+    {
+        <AuthStatusNotice Email="@_model.Email" />
+    }
+
+    <EditForm Model="_model" OnValidSubmit="SubmitAsync">
+        <div class="form-grid single-column">
+            <div class="form-field">
+                <label>@AppResources.T("Common_Email")</label>
+                <InputText class="form-control" @bind-Value="_model.Email" type="email" disabled="@_awaitingCode" />
+            </div>
+            <div class="form-field">
+                <label>@AppResources.T("Common_Password")</label>
+                <InputText class="form-control" @bind-Value="_model.Password" type="password" disabled="@_awaitingCode" />
+            </div>
+            @if (_awaitingCode)
+            {
+                <div class="form-field verification-field">
+                    <label>@AppResources.T("Common_VerificationCode")</label>
+                    <InputText class="form-control verification-code-input" @bind-Value="_model.VerificationCode" placeholder="@AppResources.T("Common_VerificationCodePlaceholder")" maxlength="12" autocomplete="one-time-code" />
+                </div>
+            }
+        </div>
+        <div class="form-actions" style="margin-top: 1rem;">
+            <button class="btn btn-primary btn-block" type="submit" disabled="@_busy">
+                @(_busy ? AppResources.T("Common_PleaseWait") : _awaitingCode ? AppResources.T("Common_VerifyAndSignIn") : AppResources.T("Common_ContinueArrow"))
+            </button>
+        </div>
+    </EditForm>
+
+    <p class="auth-card-foot">@AppResources.T("ProfessionalSignIn_FootNew") <a href="/professional/register">@AppResources.T("ProfessionalSignIn_CreateAccountLink")</a></p>
+</div>
+
+@code {
+    [Inject] private IEmailAuthService EmailAuth { get; set; } = default!;
+    [Inject] private IWebAuthService WebAuth { get; set; } = default!;
+    [Inject] private IHospitalOnboardingStorage OnboardingStorage { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private readonly SignInModel _model = new();
+    private bool _busy;
+    private bool _awaitingCode;
+    private bool _hasPendingOnboarding;
+    private string? _error;
+    private string? _status;
+    private string _returnUrl = "/admin";
+
+    protected override async Task OnInitializedAsync()
+    {
+        CultureService.CultureChanged += OnCultureChanged;
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (!string.IsNullOrEmpty(uri.Query))
+        {
+            foreach (var part in uri.Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var pair = part.Split('=', 2);
+                if (pair.Length == 2
+                    && string.Equals(pair[0], "returnUrl", StringComparison.OrdinalIgnoreCase)
+                    && IsSafeReturnUrl(Uri.UnescapeDataString(pair[1])))
+                {
+                    _returnUrl = Uri.UnescapeDataString(pair[1]);
+                    break;
+                }
+            }
+        }
+
+        var saved = await OnboardingStorage.LoadAsync().ConfigureAwait(false);
+        _hasPendingOnboarding = saved?.HasHospitalDetails == true
+            && _returnUrl.StartsWith("/admin/hospitals/register", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    private async Task SubmitAsync()
+    {
+        _busy = true;
+        _error = null;
+        _status = null;
+
+        var code = _awaitingCode ? VerificationCodeText.NormalizeOrNull(_model.VerificationCode) : null;
+        var response = await EmailAuth.SignInProfessionalAsync(_model.Email.Trim(), _model.Password, code);
+        _busy = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_SignInFailed");
+            return;
+        }
+
+        if (response.Data.RequiresVerification)
+        {
+            _awaitingCode = true;
+            _status = AppResources.T("Common_VerificationCodeSentEmail");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(response.Data.Token))
+        {
+            _error = AppResources.T("Common_SignInFailed");
+            return;
+        }
+
+        await WebAuth.StoreSessionAsync(response.Data.Token, WebAccountKind.Professional);
+        Navigation.NavigateTo(_returnUrl, replace: true);
+    }
+
+    private static bool IsSafeReturnUrl(string url) =>
+        !string.IsNullOrWhiteSpace(url)
+        && url.StartsWith("/", StringComparison.Ordinal)
+        && !url.StartsWith("//", StringComparison.Ordinal);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private sealed class SignInModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string VerificationCode { get; set; } = string.Empty;
+    }
+}

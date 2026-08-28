@@ -7,6 +7,7 @@ using RaphCare.Infrastructure.Persistence;
 using RaphCare.Infrastructure.Persistence.Interceptors;
 using RaphCare.Infrastructure.Services;
 using RaphCare.Infrastructure.StandaloneEmergency;
+using RaphCare.Infrastructure.Storage;
 using RaphCare.Infrastructure.Telehealth;
 using RaphCare.Infrastructure.Notifications;
 
@@ -31,7 +32,13 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
-        services.AddScoped<IEmailService, EmailService>();
+        services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
+        services.Configure<RaphCarePortalOptions>(configuration.GetSection(RaphCarePortalOptions.SectionName));
+        var smtp = configuration.GetSection(SmtpOptions.SectionName).Get<SmtpOptions>();
+        if (smtp?.IsEnabled == true)
+            services.AddScoped<IEmailService, SmtpEmailService>();
+        else
+            services.AddScoped<IEmailService, DevelopmentEmailService>();
 
         services.Configure<StandaloneEmergencyOptions>(configuration.GetSection(StandaloneEmergencyOptions.SectionName));
         services.AddSingleton<IStandaloneEmergencyWebhookSignatureValidator, StandaloneEmergencyWebhookSignatureValidator>();
@@ -60,6 +67,12 @@ public static class DependencyInjection
 
         services.Configure<PatientMentalHealthContentOptions>(configuration.GetSection(PatientMentalHealthContentOptions.SectionName));
         services.AddSingleton<IPatientMentalHealthContentProvider, OptionsPatientMentalHealthContentProvider>();
+
+        services.Configure<PatientSupportOptions>(configuration.GetSection(PatientSupportOptions.SectionName));
+        services.AddSingleton<IPatientSupportContentProvider, OptionsPatientSupportContentProvider>();
+
+        services.Configure<PatientProfilePhotoOptions>(configuration.GetSection(PatientProfilePhotoOptions.SectionName));
+        services.AddScoped<IPatientProfilePhotoStorage, LocalPatientProfilePhotoStorage>();
 
         services.Configure<PatientAssistantAiOptions>(configuration.GetSection(PatientAssistantAiOptions.SectionName));
 

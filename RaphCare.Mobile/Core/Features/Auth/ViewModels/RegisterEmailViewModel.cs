@@ -2,14 +2,15 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Auth.Models;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.Services.Auth;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.Services.Auth;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
-/// <summary>Email/password patient registration with optional clinic selection.</summary>
+/// <summary>
+/// Email/password patient registration: details first, then email verification code, with optional clinic selection.
+/// </summary>
 public class RegisterEmailViewModel : BaseViewModel
 {
     private readonly IAuthService _authService;
@@ -19,33 +20,43 @@ public class RegisterEmailViewModel : BaseViewModel
     private string _lastName = string.Empty;
     private string _email = string.Empty;
     private string _password = string.Empty;
+    private string _verificationCode = string.Empty;
     private ClinicPickerItem? _selectedClinic;
     private string? _errorMessage;
+    private string? _statusMessage;
+    private bool _sendingCode;
+    private bool _awaitingVerification;
 
     public RegisterEmailViewModel(IAuthService authService, IEmailAuthService emailAuthService)
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _emailAuthService = emailAuthService ?? throw new ArgumentNullException(nameof(emailAuthService));
-        Title = AppResources.T("RegisterEmailTitle");
-        PageTitle = AppResources.T("RegisterEmailTitle");
-        Subtitle = AppResources.T("RegisterEmailSubtitle");
-        FirstNameLabel = AppResources.T("RegisterEmailFirstName");
-        LastNameLabel = AppResources.T("RegisterEmailLastName");
-        EmailLabel = AppResources.T("RegisterEmailEmail");
-        PasswordLabel = AppResources.T("RegisterEmailPassword");
-        ClinicLabel = AppResources.T("RegisterEmailClinic");
-        ClinicHint = AppResources.T("RegisterEmailClinicHint");
-        PlaceholderFirst = AppResources.T("RegisterEmailPlaceholderFirst");
-        PlaceholderLast = AppResources.T("RegisterEmailPlaceholderLast");
-        PlaceholderEmail = AppResources.T("RegisterEmailPlaceholderEmail");
-        PlaceholderPassword = AppResources.T("RegisterEmailPlaceholderPassword");
-        ContinueText = AppResources.T("RegisterEmailContinue");
-        AlreadyHaveText = AppResources.T("RegisterEmailAlreadyHave");
-        SignInLinkText = AppResources.T("RegisterEmailSignIn");
+        Title = T("RegisterEmailTitle");
+        PageTitle = T("RegisterEmailTitle");
+        DetailsSubtitle = T("RegisterEmailSubtitle");
+        VerifySubtitle = T("RegisterEmailVerifySubtitle");
+        FirstNameLabel = T("RegisterEmailFirstName");
+        LastNameLabel = T("RegisterEmailLastName");
+        EmailLabel = T("RegisterEmailEmail");
+        PasswordLabel = T("RegisterEmailPassword");
+        VerificationCodeLabel = T("RegisterEmailVerificationCode");
+        ClinicLabel = T("RegisterEmailClinic");
+        ClinicHint = T("RegisterEmailClinicHint");
+        PlaceholderFirst = T("RegisterEmailPlaceholderFirst");
+        PlaceholderLast = T("RegisterEmailPlaceholderLast");
+        PlaceholderEmail = T("RegisterEmailPlaceholderEmail");
+        PlaceholderPassword = T("RegisterEmailPlaceholderPassword");
+        PlaceholderVerificationCode = T("RegisterEmailVerificationPlaceholder");
+        ContinueLabel = T("RegisterEmailContinue");
+        VerifyButtonLabel = T("RegisterEmailVerifyButton");
+        SendCodeText = T("RegisterEmailSendCode");
+        AlreadyHaveText = T("RegisterEmailAlreadyHave");
+        SignInLinkText = T("RegisterEmailSignIn");
 
         Clinics = new ObservableCollection<ClinicPickerItem>();
 
-        RegisterCommand = new Command(async () => await RegisterAsync(), () => !IsBusy);
+        ContinueCommand = new Command(async () => await ContinueAsync(), () => !IsBusy);
+        SendCodeCommand = new Command(async () => await SendCodeAsync(), () => !IsBusy && !SendingCode);
         BackCommand = new Command(async () => await GoBackAsync());
         SignInCommand = new Command(async () => await SafeShellNavigator.GoToAsync("SignInPage"));
     }
@@ -53,20 +64,29 @@ public class RegisterEmailViewModel : BaseViewModel
     public ObservableCollection<ClinicPickerItem> Clinics { get; }
 
     public string PageTitle { get; }
-    public string Subtitle { get; }
+    public string DetailsSubtitle { get; }
+    public string VerifySubtitle { get; }
     public string FirstNameLabel { get; }
     public string LastNameLabel { get; }
     public string EmailLabel { get; }
     public string PasswordLabel { get; }
+    public string VerificationCodeLabel { get; }
     public string ClinicLabel { get; }
     public string ClinicHint { get; }
     public string PlaceholderFirst { get; }
     public string PlaceholderLast { get; }
     public string PlaceholderEmail { get; }
     public string PlaceholderPassword { get; }
-    public string ContinueText { get; }
+    public string PlaceholderVerificationCode { get; }
+    public string ContinueLabel { get; }
+    public string VerifyButtonLabel { get; }
+    public string SendCodeText { get; }
     public string AlreadyHaveText { get; }
     public string SignInLinkText { get; }
+
+    public string Subtitle => AwaitingVerification ? VerifySubtitle : DetailsSubtitle;
+
+    public string ContinueText => AwaitingVerification ? VerifyButtonLabel : ContinueLabel;
 
     public string FirstName
     {
@@ -92,6 +112,12 @@ public class RegisterEmailViewModel : BaseViewModel
         set => SetProperty(ref _password, value ?? string.Empty);
     }
 
+    public string VerificationCode
+    {
+        get => _verificationCode;
+        set => SetProperty(ref _verificationCode, value ?? string.Empty);
+    }
+
     public ClinicPickerItem? SelectedClinic
     {
         get => _selectedClinic;
@@ -104,7 +130,43 @@ public class RegisterEmailViewModel : BaseViewModel
         set => SetProperty(ref _errorMessage, value);
     }
 
-    public ICommand RegisterCommand { get; }
+    public string? StatusMessage
+    {
+        get => _statusMessage;
+        set => SetProperty(ref _statusMessage, value);
+    }
+
+    public bool AwaitingVerification
+    {
+        get => _awaitingVerification;
+        private set
+        {
+            if (_awaitingVerification == value) return;
+            _awaitingVerification = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(Subtitle));
+            OnPropertyChanged(nameof(ContinueText));
+        }
+    }
+
+    public bool SendingCode
+    {
+        get => _sendingCode;
+        set
+        {
+            if (_sendingCode == value) return;
+            _sendingCode = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(SendCodeButtonText));
+            (SendCodeCommand as Command)?.ChangeCanExecute();
+        }
+    }
+
+    public string SendCodeButtonText =>
+        SendingCode ? T("RegisterEmailSendingCode") : SendCodeText;
+
+    public ICommand ContinueCommand { get; }
+    public ICommand SendCodeCommand { get; }
     public ICommand BackCommand { get; }
     public ICommand SignInCommand { get; }
 
@@ -119,7 +181,7 @@ public class RegisterEmailViewModel : BaseViewModel
             Clinics.Add(new ClinicPickerItem
             {
                 Id = null,
-                DisplayName = AppResources.T("RegisterEmailClinicNone")
+                DisplayName = T("RegisterEmailClinicNone")
             });
 
             if (response.IsSuccess && response.Data is not null)
@@ -143,7 +205,7 @@ public class RegisterEmailViewModel : BaseViewModel
                 Clinics.Add(new ClinicPickerItem
                 {
                     Id = null,
-                    DisplayName = AppResources.T("RegisterEmailClinicNone")
+                    DisplayName = T("RegisterEmailClinicNone")
                 });
                 SelectedClinic = Clinics[0];
             }
@@ -154,32 +216,96 @@ public class RegisterEmailViewModel : BaseViewModel
         }
     }
 
-    private async Task RegisterAsync()
+    private async Task ContinueAsync()
     {
         if (IsBusy) return;
 
         ErrorMessage = null;
-        if (string.IsNullOrWhiteSpace(FirstName))
+        StatusMessage = null;
+
+        if (!AwaitingVerification)
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorFirstName");
+            await AdvanceToVerificationAsync().ConfigureAwait(false);
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(LastName))
-        {
-            ErrorMessage = AppResources.T("RegisterEmailErrorLastName");
-            return;
-        }
+        await RegisterAsync().ConfigureAwait(false);
+    }
 
+    private async Task AdvanceToVerificationAsync()
+    {
+        if (!ValidateDetails())
+            return;
+
+        IsBusy = true;
+        try
+        {
+            var sent = await TrySendCodeAsync().ConfigureAwait(false);
+            if (!sent)
+                return;
+
+            VerificationCode = string.Empty;
+            AwaitingVerification = true;
+            StatusMessage = T("RegisterEmailCodeSent");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task SendCodeAsync()
+    {
+        if (IsBusy || SendingCode) return;
+
+        ErrorMessage = null;
+        StatusMessage = null;
         if (string.IsNullOrWhiteSpace(Email))
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorEmail");
+            ErrorMessage = T("RegisterEmailErrorEmail");
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(Password))
+        SendingCode = true;
+        try
         {
-            ErrorMessage = AppResources.T("RegisterEmailErrorPassword");
+            await TrySendCodeAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            SendingCode = false;
+        }
+    }
+
+    private async Task<bool> TrySendCodeAsync()
+    {
+        try
+        {
+            var response = await _emailAuthService
+                .SendEmailVerificationAsync(Email.Trim(), CancellationToken.None)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccess)
+            {
+                StatusMessage = T("RegisterEmailCodeSent");
+                return true;
+            }
+
+            ErrorMessage = response.ErrorMessage ?? T("RegisterEmailSendCodeFailed");
+            return false;
+        }
+        catch (Exception)
+        {
+            ErrorMessage = T("RegisterEmailSendCodeFailed");
+            return false;
+        }
+    }
+
+    private async Task RegisterAsync()
+    {
+        if (string.IsNullOrWhiteSpace(VerificationCode))
+        {
+            ErrorMessage = T("RegisterEmailErrorVerificationCode");
             return;
         }
 
@@ -188,21 +314,28 @@ public class RegisterEmailViewModel : BaseViewModel
         {
             var clinicId = SelectedClinic?.Id;
             var result = await _authService
-                .RegisterWithEmailAsync(FirstName, LastName, Email.Trim(), Password, clinicId, CancellationToken.None)
+                .RegisterWithEmailAsync(
+                    FirstName,
+                    LastName,
+                    Email.Trim(),
+                    Password,
+                    clinicId,
+                    VerificationCode.Trim(),
+                    CancellationToken.None)
                 .ConfigureAwait(false);
 
             if (result.Success)
             {
-                await SafeShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
+                await SafeShellNavigator.GoToAsync($"//{AppNavigator.AccountCreated}").ConfigureAwait(false);
             }
             else
             {
-                ErrorMessage = result.ErrorMessage ?? AppResources.T("RegisterEmailFailed");
+                ErrorMessage = result.ErrorMessage ?? T("RegisterEmailFailed");
             }
         }
         catch (Exception)
         {
-            ErrorMessage = AppResources.T("RegisterEmailFailed");
+            ErrorMessage = T("RegisterEmailFailed");
         }
         finally
         {
@@ -210,8 +343,46 @@ public class RegisterEmailViewModel : BaseViewModel
         }
     }
 
+    private bool ValidateDetails()
+    {
+        if (string.IsNullOrWhiteSpace(FirstName))
+        {
+            ErrorMessage = T("RegisterEmailErrorFirstName");
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(LastName))
+        {
+            ErrorMessage = T("RegisterEmailErrorLastName");
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(Email))
+        {
+            ErrorMessage = T("RegisterEmailErrorEmail");
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(Password))
+        {
+            ErrorMessage = T("RegisterEmailErrorPassword");
+            return false;
+        }
+
+        return true;
+    }
+
     private async Task GoBackAsync()
     {
+        if (AwaitingVerification)
+        {
+            AwaitingVerification = false;
+            VerificationCode = string.Empty;
+            ErrorMessage = null;
+            StatusMessage = null;
+            return;
+        }
+
         if (Shell.Current.Navigation.NavigationStack.Count > 1)
             await SafeShellNavigator.GoToAsync("..");
         else

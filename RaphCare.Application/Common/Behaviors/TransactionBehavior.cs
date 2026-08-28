@@ -23,7 +23,7 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        var response = await next();
+        var response = await next(cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return response;
     }

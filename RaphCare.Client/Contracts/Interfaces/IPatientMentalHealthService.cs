@@ -3,7 +3,7 @@ using RaphCare.Client.Models.MentalHealth;
 
 namespace RaphCare.Client.Contracts.Interfaces;
 
-/// <summary>Patient mental health hub (<c>api/patient/mental-health</c>). Implemented by <see cref="RaphCare.Client.Services.PatientMentalHealthService"/> wrapping generated <c>IClient</c>.</summary>
+/// <summary>Patient mental health hub (<c>api/patient/mental-health</c>).</summary>
 public interface IPatientMentalHealthService
 {
     Task<Response<PatientMentalHealthContentViewModel>> GetContentAsync(CancellationToken cancellationToken = default);

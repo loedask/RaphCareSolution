@@ -1,49 +1,47 @@
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.Api;
+using RaphCare.Client.Models.Appointments;
 using RaphCare.Client.Models.MentalHealth;
 using RaphCare.Client.Services.Base;
 
 namespace RaphCare.Client.Services;
 
-/// <summary>Wraps generated <see cref="IClient"/> patient mental health operations and maps to feature view models.</summary>
-public sealed class PatientMentalHealthService(IClient client) : IPatientMentalHealthService
+public sealed class PatientMentalHealthService(HttpClient httpClient) : BaseHttpService(httpClient), IPatientMentalHealthService
 {
     public async Task<Response<PatientMentalHealthContentViewModel>> GetContentAsync(CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var dto = await client.GetMyPatientMentalHealthContentAsync(cancellationToken).ConfigureAwait(false);
-            return Response<PatientMentalHealthContentViewModel>.Success(Map(dto));
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<PatientMentalHealthContentViewModel>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await GetAsync<MentalHealthContentDto>("api/patient/mental-health/content", cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PatientMentalHealthContentViewModel>.Failure(result.ErrorMessage ?? "Could not load content.", result.StatusCode);
+        return Response<PatientMentalHealthContentViewModel>.Success(Map(result.Data));
     }
 
     public async Task<Response<Guid>> LogMoodCheckInAsync(int moodScore, string? notes, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var body = new LogMyPatientMoodCheckInCommand
-            {
-                MoodScore = moodScore,
-                Notes = notes
-            };
-            var created = await client.LogMyPatientMoodCheckInAsync(body, cancellationToken).ConfigureAwait(false);
-            return Response<Guid>.Success(created.Id);
-        }
-        catch (global::RaphCare.Client.Services.Base.ApiException ex)
-        {
-            return Response<Guid>.Failure(ex.Message, ex.StatusCode);
-        }
+        var result = await PostAsync<CreatedGuidApiResponse>(
+                "api/patient/mental-health/mood-checkin",
+                new { moodScore, notes },
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!result.IsSuccess || result.Data is null)
+            return Response<Guid>.Failure(result.ErrorMessage ?? "Check-in failed.", result.StatusCode);
+        return Response<Guid>.Success(result.Data.Id);
     }
 
-    private static PatientMentalHealthContentViewModel Map(PatientMentalHealthContentDto d) =>
+    private static PatientMentalHealthContentViewModel Map(MentalHealthContentDto d) =>
         new()
         {
             InsightTitle = d.InsightTitle ?? string.Empty,
             InsightBody = d.InsightBody ?? string.Empty,
             MedicalDisclaimer = d.MedicalDisclaimer ?? string.Empty
         };
+
+    private sealed class MentalHealthContentDto
+    {
+        public string? InsightTitle { get; set; }
+        public string? InsightBody { get; set; }
+        public string? MedicalDisclaimer { get; set; }
+    }
 }

@@ -1,0 +1,10 @@
+@implements IDisposable
+
+@code {
+    [CascadingParameter] public AdminEmptyState? EmptyState { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnParametersSet() => EmptyState?.SetIcon(ChildContent);
+
+    public void Dispose() => EmptyState?.SetIcon(null);
+}

@@ -1,10 +1,10 @@
+using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.Services.Auth;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.Services.Auth;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
@@ -23,11 +23,11 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
     {
         _otpAuth = otpAuth ?? throw new ArgumentNullException(nameof(otpAuth));
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
-        Title = AppResources.T("VerifyPhoneTitle");
-        Subtitle = AppResources.T("VerifyPhoneSubtitle");
-        CodeLabel = AppResources.T("VerifyPhoneCodeLabel");
-        VerifyText = AppResources.T("VerifyPhoneVerify");
-        ResendText = AppResources.T("VerifyPhoneResend");
+        Title = T("VerifyPhoneTitle");
+        Subtitle = T("VerifyPhoneSubtitle");
+        CodeLabel = T("VerifyPhoneCodeLabel");
+        VerifyText = T("VerifyPhoneVerify");
+        ResendText = T("VerifyPhoneResend");
 
         VerifyCommand = new Command(async () => await VerifyAsync(), () => !IsBusy);
         ResendCommand = new Command(async () => await ResendAsync(), () => !IsBusy);
@@ -64,9 +64,9 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("Phone", out var p) && p != null)
-            PhoneE164 = p.ToString() ?? string.Empty;
+            PhoneE164 = Convert.ToString(p, CultureInfo.InvariantCulture) ?? string.Empty;
         if (query.TryGetValue("ContinueWith", out var c) && c != null)
-            _continueWith = c.ToString() ?? string.Empty;
+            _continueWith = Convert.ToString(c, CultureInfo.InvariantCulture) ?? string.Empty;
     }
 
     private async Task VerifyAsync()
@@ -76,13 +76,13 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
         ErrorMessage = null;
         if (string.IsNullOrWhiteSpace(PhoneE164))
         {
-            ErrorMessage = AppResources.T("RegisterPhoneInvalid");
+            ErrorMessage = T("RegisterPhoneInvalid");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(Code) || Code.Trim().Length < 4)
         {
-            ErrorMessage = AppResources.T("VerifyPhoneCodeInvalid");
+            ErrorMessage = T("VerifyPhoneCodeInvalid");
             return;
         }
 
@@ -92,13 +92,13 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
             var result = await _otpAuth.VerifyOtpAsync(PhoneE164, Code.Trim(), CancellationToken.None).ConfigureAwait(false);
             if (!result.IsSuccess || result.Data is null)
             {
-                ErrorMessage = result.ErrorMessage ?? AppResources.T("VerifyPhoneFailed");
+                ErrorMessage = result.ErrorMessage ?? T("VerifyPhoneFailed");
                 return;
             }
 
             if (!result.Data.Success || string.IsNullOrWhiteSpace(result.Data.Token))
             {
-                ErrorMessage = AppResources.T("VerifyPhoneFailed");
+                ErrorMessage = T("VerifyPhoneFailed");
                 return;
             }
 
@@ -132,7 +132,7 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
         {
             var result = await _otpAuth.SendOtpAsync(PhoneE164, CancellationToken.None).ConfigureAwait(false);
             if (!result.IsSuccess)
-                ErrorMessage = result.ErrorMessage ?? AppResources.T("RegisterPhoneSendFailed");
+                ErrorMessage = result.ErrorMessage ?? T("RegisterPhoneSendFailed");
         }
         finally
         {
@@ -140,7 +140,7 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
-    private async Task GoBackAsync()
+    private static async Task GoBackAsync()
     {
         await SafeShellNavigator.GoToAsync("..").ConfigureAwait(false);
     }

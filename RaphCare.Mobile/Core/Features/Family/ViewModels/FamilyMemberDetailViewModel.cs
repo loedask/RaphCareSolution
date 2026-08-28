@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Family.ViewModels;
 
@@ -25,17 +24,17 @@ public sealed class FamilyMemberDetailViewModel : BaseViewModel
     public FamilyMemberDetailViewModel(IPatientFamilyMembersService family)
     {
         _family = family ?? throw new ArgumentNullException(nameof(family));
-        Title = AppResources.T("FamilyDetailTitle");
+        Title = T("FamilyDetailTitle");
         RelationshipOptions = ["Child", "Spouse", "Parent", "Sibling", "Other"];
 
-        FirstNameLabel = AppResources.T("FamilyFieldFirstName");
-        LastNameLabel = AppResources.T("FamilyFieldLastName");
-        RelationshipLabel = AppResources.T("FamilyFieldRelationship");
-        DobLabel = AppResources.T("FamilyFieldDob");
-        PhoneLabel = AppResources.T("FamilyFieldPhone");
-        EmailLabel = AppResources.T("FamilyFieldEmail");
-        SaveLabel = AppResources.T("FamilySave");
-        RemoveLabel = AppResources.T("FamilyRemove");
+        FirstNameLabel = T("FamilyFieldFirstName");
+        LastNameLabel = T("FamilyFieldLastName");
+        RelationshipLabel = T("FamilyFieldRelationship");
+        DobLabel = T("FamilyFieldDob");
+        PhoneLabel = T("FamilyFieldPhone");
+        EmailLabel = T("FamilyFieldEmail");
+        SaveLabel = T("FamilySave");
+        RemoveLabel = T("FamilyRemove");
 
         SaveCommand = new Command(async () => await SaveAsync(), () => CanSave);
         RemoveCommand = new Command(async () => await RemoveAsync());
@@ -131,7 +130,7 @@ public sealed class FamilyMemberDetailViewModel : BaseViewModel
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("memberId", out var v) && v != null && Guid.TryParse(v.ToString(), out var id))
+        if (TryGetQueryGuid(query, "memberId", out var id))
             _memberId = id;
     }
 
@@ -145,7 +144,7 @@ public sealed class FamilyMemberDetailViewModel : BaseViewModel
     {
         if (_memberId == Guid.Empty)
         {
-            ErrorMessage = AppResources.T("FamilyDetailFailed");
+            ErrorMessage = T("FamilyDetailFailed");
             return;
         }
 
@@ -157,7 +156,7 @@ public sealed class FamilyMemberDetailViewModel : BaseViewModel
             var response = await _family.GetMyFamilyMemberAsync(_memberId, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("FamilyDetailFailed");
+                ErrorMessage = response.ErrorMessage ?? T("FamilyDetailFailed");
                 return;
             }
 
@@ -206,7 +205,7 @@ public sealed class FamilyMemberDetailViewModel : BaseViewModel
                 _linkedPatientId,
                 CancellationToken.None).ConfigureAwait(false);
             if (!res.IsSuccess)
-                ErrorMessage = res.ErrorMessage ?? AppResources.T("FamilySaveFailed");
+                ErrorMessage = res.ErrorMessage ?? T("FamilySaveFailed");
             else
                 await SafeShellNavigator.GoToAsync("..");
         }
@@ -225,7 +224,7 @@ public sealed class FamilyMemberDetailViewModel : BaseViewModel
         {
             var res = await _family.RemoveFamilyMemberAsync(_memberId, CancellationToken.None).ConfigureAwait(false);
             if (!res.IsSuccess)
-                ErrorMessage = res.ErrorMessage ?? AppResources.T("FamilyRemoveFailed");
+                ErrorMessage = res.ErrorMessage ?? T("FamilyRemoveFailed");
             else
                 await SafeShellNavigator.GoToAsync("..");
         }

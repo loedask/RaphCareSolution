@@ -1,8 +1,10 @@
 using System.Buffers.Binary;
 using MediatR;
+using RaphCare.Application.Common;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.PatientTelehealth.DTOs;
+using RaphCare.Domain.Organization;
 using RaphCare.Domain.Telemedicine;
 
 namespace RaphCare.Application.Features.PatientTelehealth.Queries.GetTelehealthJoinInfo;
@@ -12,15 +14,21 @@ public class GetTelehealthJoinInfoHandler : IRequestHandler<GetTelehealthJoinInf
     private const int DefaultTtlSeconds = 3600;
 
     private readonly IRepository<TeleSession> _repository;
+    private readonly IRepository<Provider> _providers;
+    private readonly IApplicationUserStore _users;
     private readonly ICurrentUserService _currentUser;
     private readonly ITelehealthRtcTokenGenerator _rtcTokenGenerator;
 
     public GetTelehealthJoinInfoHandler(
         IRepository<TeleSession> repository,
+        IRepository<Provider> providers,
+        IApplicationUserStore users,
         ICurrentUserService currentUser,
         ITelehealthRtcTokenGenerator rtcTokenGenerator)
     {
         _repository = repository;
+        _providers = providers;
+        _users = users;
         _currentUser = currentUser;
         _rtcTokenGenerator = rtcTokenGenerator;
     }
@@ -36,6 +44,7 @@ public class GetTelehealthJoinInfoHandler : IRequestHandler<GetTelehealthJoinInf
 
         var channel = ResolveChannelName(session);
         var uid = request.Uid ?? StableUidFromGuid(patientId);
+        var providerDisplayName = await ResolveProviderDisplayNameAsync(session.ProviderId, cancellationToken).ConfigureAwait(false);
 
         var dto = new TelehealthJoinInfoDto
         {
@@ -46,7 +55,8 @@ public class GetTelehealthJoinInfoHandler : IRequestHandler<GetTelehealthJoinInf
             Status = session.Status,
             ScheduledStart = session.ScheduledStart,
             RtcConfigured = _rtcTokenGenerator.IsConfigured,
-            TokenExpiresAtUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + DefaultTtlSeconds
+            TokenExpiresAtUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + DefaultTtlSeconds,
+            ProviderDisplayName = providerDisplayName,
         };
 
         if (_rtcTokenGenerator.IsConfigured)
@@ -55,6 +65,20 @@ public class GetTelehealthJoinInfoHandler : IRequestHandler<GetTelehealthJoinInf
         }
 
         return dto;
+    }
+
+    private async Task<string?> ResolveProviderDisplayNameAsync(Guid providerId, CancellationToken cancellationToken)
+    {
+        if (providerId == Guid.Empty)
+            return null;
+
+        var provider = await _providers.GetByIdAsync(providerId, cancellationToken).ConfigureAwait(false);
+        if (provider is null || provider.ApplicationUserId == Guid.Empty)
+            return null;
+
+        var user = await _users.FindByIdAsync(provider.ApplicationUserId, cancellationToken).ConfigureAwait(false);
+        var name = user?.DisplayName?.Trim();
+        return string.IsNullOrWhiteSpace(name) ? null : name;
     }
 
     private static string ResolveChannelName(TeleSession session)

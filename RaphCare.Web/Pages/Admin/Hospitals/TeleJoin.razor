@@ -1,0 +1,163 @@
+@page "/admin/hospitals/{ClinicId:guid}/appointments/{AppointmentId:guid}/tele"
+@layout AdminLayout
+@implements IAsyncDisposable
+@implements IDisposable
+@inject IJSRuntime Js
+@inject IUiCultureService CultureService
+
+<PageTitle>@AppResources.T("TeleJoin_PageTitle")</PageTitle>
+
+<section class="admin-page">
+    <AdminPageHeader Title="@AppResources.T("Common_TelehealthSession")"
+                     Lead="@TeleJoinLead">
+        @if (_join is not null)
+        {
+            <span class="badge badge-success">@_join.Status</span>
+        }
+    </AdminPageHeader>
+
+    <AdminAlert Message="@_error" />
+    <AdminAlert Tone="info" Message="@_info" />
+
+    @if (_loading)
+    {
+        <p class="text-muted">@AppResources.T("Common_PreparingTelehealth")</p>
+    }
+    else if (_join is not null)
+    {
+        <AdminPageCard>
+            <div class="admin-page-card-body">
+                <AdminDefinitionGrid>
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Channel")">
+                        <code>@_join.ChannelName</code>
+                    </AdminDefinitionItem>
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Session")">
+                        <code>@_join.TeleSessionId</code>
+                    </AdminDefinitionItem>
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Visit")">
+                        <a href="/admin/hospitals/@ClinicId/visits/@_join.VisitId">@AppResources.T("Common_OpenVisitChart")</a>
+                    </AdminDefinitionItem>
+                </AdminDefinitionGrid>
+
+                @if (!_join.RtcConfigured || string.IsNullOrWhiteSpace(_join.AppId) || string.IsNullOrWhiteSpace(_join.RtcToken))
+                {
+                    <AdminAlert Tone="info" Message="@AppResources.T("Common_AgoraNotConfigured")" style="margin-top: 1rem;" />
+                }
+                else
+                {
+                    <div class="tele-stage" style="margin-top: 1.25rem;">
+                        <div class="tele-player" id="tele-remote-player" aria-label="@AppResources.T("Common_RemoteVideoAria")"></div>
+                        <div class="tele-player tele-player-local" id="tele-local-player" aria-label="@AppResources.T("Common_LocalVideoAria")"></div>
+                    </div>
+                    <div class="admin-page-actions" style="margin-top: 1rem;">
+                        @if (!_inCall)
+                        {
+                            <button type="button" class="btn btn-primary" disabled="@_joining" @onclick="JoinCallAsync">
+                                @(_joining ? AppResources.T("Common_Joining") : AppResources.T("Common_JoinVideo"))
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-ghost" @onclick="LeaveCallAsync">@AppResources.T("Common_LeaveCall")</button>
+                        }
+                    </div>
+                }
+            </div>
+        </AdminPageCard>
+    }
+
+    <div class="admin-page-actions">
+        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_BackToAppointments")</a>
+    </div>
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+    [Parameter] public Guid AppointmentId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _joining;
+    private bool _inCall;
+    private string? _error;
+    private string? _info;
+    private ClinicTeleJoinInfo? _join;
+
+    private string TeleJoinLead =>
+        _join is not null
+            ? $"{_join.PatientName} · {_join.ProviderDisplayName}"
+            : AppResources.T("Common_Connecting");
+
+    protected override async Task OnInitializedAsync()
+    {
+        CultureService.CultureChanged += OnCultureChanged;
+
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        _loading = true;
+        _error = null;
+        var response = await AdminClinicService.StartTeleSessionAsync(ClinicId, AppointmentId);
+        _loading = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotStartTelehealth");
+            return;
+        }
+
+        _join = response.Data;
+        if (!_join.RtcConfigured)
+            _info = AppResources.T("Common_SessionReadyConfigureAgora");
+    }
+
+    private async Task JoinCallAsync()
+    {
+        if (_join is null || string.IsNullOrWhiteSpace(_join.AppId) || string.IsNullOrWhiteSpace(_join.RtcToken))
+            return;
+
+        _joining = true;
+        _error = null;
+        try
+        {
+            await Js.InvokeVoidAsync(
+                "raphCareTelehealth.join",
+                _join.AppId,
+                _join.ChannelName,
+                _join.RtcToken,
+                _join.Uid);
+            _inCall = true;
+        }
+        catch (JSException ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _joining = false;
+        }
+    }
+
+    private async Task LeaveCallAsync()
+    {
+        try
+        {
+            await Js.InvokeVoidAsync("raphCareTelehealth.leave");
+        }
+        catch
+        {
+        }
+
+        _inCall = false;
+    }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_inCall)
+            await LeaveCallAsync();
+    }
+}

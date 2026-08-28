@@ -11,7 +11,11 @@ public static class E585E580DeviceFilter
     {
         if (string.IsNullOrWhiteSpace(deviceName))
             return false;
-        return deviceName.Contains("E580", StringComparison.OrdinalIgnoreCase)
+        // OEM Device Info may show ET580 / ET585; advertisement names often include either form.
+        // "ET580".Contains("E580") is false, so match both spellings explicitly.
+        return deviceName.Contains("ET580", StringComparison.OrdinalIgnoreCase)
+               || deviceName.Contains("ET585", StringComparison.OrdinalIgnoreCase)
+               || deviceName.Contains("E580", StringComparison.OrdinalIgnoreCase)
                || deviceName.Contains("E585", StringComparison.OrdinalIgnoreCase)
                || deviceName.Contains("YSC", StringComparison.OrdinalIgnoreCase)
                || deviceName.Contains("Bracelet", StringComparison.OrdinalIgnoreCase)

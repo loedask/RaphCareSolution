@@ -1,0 +1,25 @@
+<header class="admin-page-header @CssClass">
+    <div>
+        @if (!string.IsNullOrEmpty(Eyebrow))
+        {
+            <p class="admin-page-eyebrow">@Eyebrow</p>
+        }
+        @if (!string.IsNullOrEmpty(Title))
+        {
+            <h1>@Title</h1>
+        }
+        @if (!string.IsNullOrEmpty(Lead))
+        {
+            <p class="admin-page-lead">@Lead</p>
+        }
+    </div>
+    @ChildContent
+</header>
+
+@code {
+    [Parameter] public string? Eyebrow { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Lead { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

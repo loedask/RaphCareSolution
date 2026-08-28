@@ -11,4 +11,5 @@ public class TelehealthJoinInfoViewModel
     public bool RtcConfigured { get; set; }
     public string Status { get; set; } = string.Empty;
     public DateTime ScheduledStart { get; set; }
+    public string? ProviderDisplayName { get; set; }
 }

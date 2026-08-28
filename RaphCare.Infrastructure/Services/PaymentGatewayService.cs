@@ -4,24 +4,25 @@ using RaphCare.Application.Common.Interfaces;
 namespace RaphCare.Infrastructure.Services;
 
 /// <summary>Payment processing integration. Placeholder for mobile money and card payments.</summary>
-public class PaymentGatewayService : IPaymentGatewayService
+public sealed partial class PaymentGatewayService(ILogger<PaymentGatewayService> logger) : IPaymentGatewayService
 {
-    private readonly ILogger<PaymentGatewayService> _logger;
-
-    public PaymentGatewayService(ILogger<PaymentGatewayService> logger)
-    {
-        _logger = logger;
-    }
-
     public Task<string> ChargeAsync(Guid patientId, decimal amount, string currency, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Payment placeholder: PatientId={PatientId}, Amount={Amount} {Currency}", patientId, amount, currency);
+        LogPaymentPlaceholder(patientId, amount, currency);
         return Task.FromResult($"txn_{Guid.NewGuid():N}");
     }
 
     public Task RefundAsync(string transactionId, decimal amount, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Refund placeholder: TxnId={TransactionId}, Amount={Amount}", transactionId, amount);
+        LogRefundPlaceholder(transactionId, amount);
         return Task.CompletedTask;
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = "Payment placeholder: PatientId={PatientId}, Amount={Amount} {Currency}")]
+    private partial void LogPaymentPlaceholder(Guid patientId, decimal amount, string currency);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Refund placeholder: TxnId={TransactionId}, Amount={Amount}")]
+    private partial void LogRefundPlaceholder(string transactionId, decimal amount);
 }

@@ -1,13 +1,15 @@
 # HBand SDK (E580 / E585–class bands) — integration guide
 
-The OEM ecosystem behind many **E580 / E585** bracelets is often documented through the public **[HBandSDK](https://github.com/HBandSDK)** GitHub organization. For **commercial packages** (which patients receive) and how **Y6 Pro** differs from BLE fleet, see **`docs/13_Patient_Device_Packages_and_Fleet.md`**. RaphCare can use **two** approaches:
+The OEM ecosystem behind many **E580 / E585** bracelets is often documented through the public **[HBandSDK](https://github.com/HBandSDK)** GitHub organization. For **commercial packages** (which patients receive) and how **Y6 Pro** differs from BLE fleet, see **`docs/13_Patient_Device_Packages_and_Fleet.md`**. Capability goals: **`docs/14_Wearable_Capability_Catalog.md`**.
+
+RaphCare uses **two** approaches:
 
 | Approach | Use when |
 |----------|----------|
-| **A. Generic BLE (current default)** | [`Plugin.BLE`](https://github.com/dotnet-bluetooth-le/dotnet-bluetooth-le) — scan, GATT connect, subscribe to notifies. Works without vendor JARs; may **not** decode proprietary payloads or may miss steps like **device password** (`confirmDevicePwd`) required by the band. See **`docs/11_Devices_BLE_E580_E585.md`**. |
-| **B. Vendor HBand Android SDK** | Official **Java/Kotlin** SDK: [`VPOperateManager`](https://github.com/HBandSDK/Android_Ble_SDK/blob/master/README_EN.md) — scan, connect, **wait for `bleNotifyResponse`**, then **`confirmDevicePwd`** → **`syncPersonInfo`**, then health data APIs. Required for full compatibility on many HBand firmwares. |
+| **A. Generic BLE** | [`Plugin.BLE`](https://github.com/dotnet-bluetooth-le/dotnet-bluetooth-le) — scan, GATT connect, subscribe to notifies. Fallback when HBand AARs are missing or handshake fails. See **`docs/11_Devices_BLE_E580_E585.md`**. |
+| **B. Vendor HBand Android SDK (Phase 1 in app)** | Official **Java** SDK via **`VPOperateManager`**, called from C# with **JNI reflection** (`HBandAndroidWearableBridge`, same pattern as Agora). Flow: **connect → notify → `confirmDevicePwd` → `syncPersonInfo` → `startDetectHeart` / `startDetectSPO2H`**. |
 
-**iOS:** Use **[HBandSDK/iOS_Ble_SDK](https://github.com/HBandSDK/iOS_Ble_SDK)** (Objective-C / Swift sources under `iOS_sdk_source/`). MAUI integration would use a **native binding** or **iOS binding library** — not wired in RaphCare yet.
+**iOS:** Use **[HBandSDK/iOS_Ble_SDK](https://github.com/HBandSDK/iOS_Ble_SDK)** — not wired yet (`UnavailableHBandWearableBridge` on non-Android).
 
 ---
 
@@ -18,54 +20,54 @@ The OEM ecosystem behind many **E580 / E585** bracelets is often documented thro
 | Organization | [HBandSDK on GitHub](https://github.com/HBandSDK) |
 | Android SDK | [Android_Ble_SDK](https://github.com/HBandSDK/Android_Ble_SDK) — README: [English](https://github.com/HBandSDK/Android_Ble_SDK/blob/master/README_EN.md) |
 | iOS SDK | [iOS_Ble_SDK](https://github.com/HBandSDK/iOS_Ble_SDK) |
-| WeChat mini-program | [WeChat_Mini_Program_Ble_SDK](https://github.com/HBandSDK/WeChat_Mini_Program_Ble_SDK) (out of scope for native MAUI) |
+| API wiki | [VeepooSDK Android API Document](https://github.com/HBandSDK/Android_Ble_SDK/wiki/VeepooSDK-Android-API-Document) |
 
 ---
 
 ## What the Android SDK expects (summary)
 
-From **[README_EN.md](https://github.com/HBandSDK/Android_Ble_SDK/blob/master/README_EN.md)**:
-
-1. **Dependencies:** `vpbluetooth` (AAR or JAR per release), **Gson**, and **`vpprotocol`** (see `android_sdk_source/jar_core/` — e.g. `vpprotocol-2.x.x.aar`).
-2. **Flow:** All operations go through **`VPOperateManager.getMangerInstance()`** (use **`ApplicationContext`** to avoid leaks).
-3. **Order:** **`connectDevice()`** → after **`bleNotifyResponse`** succeeds → **`confirmDevicePwd()`** (often default **`"0000"`**) → **`syncPersonInfo()`** → then heart rate / steps / etc.
-4. **Concurrency:** The SDK docs warn **not** to run multiple long operations at once — serialize calls.
-5. **Manifest:** Declares **`com.inuker.bluetooth.library.BluetoothService`** and (for DFU) additional services/activities — follow the Demo under `android_sdk_source/Demo/` when you enable native SDK.
-
-Binary artifacts are under:
-
-- [`android_sdk_source/jar_base/`](https://github.com/HBandSDK/Android_Ble_SDK/tree/master/android_sdk_source/jar_base) — e.g. `vpbluetooth-1.18.aar`, `gson-2.2.4.jar`
-- [`android_sdk_source/jar_core/`](https://github.com/HBandSDK/Android_Ble_SDK/tree/master/android_sdk_source/jar_core) — e.g. `vpprotocol-2.3.48.15.aar` (large; required for protocol features)
+1. **Dependencies:** `vpbluetooth`, `vpprotocol`, JieLi / abpartool companion AARs (see download script), Nordic scanner Maven artifact, AndroidX LocalBroadcastManager. **Gson** comes from the MAUI / GoogleGson graph — **do not** embed `gson-*.jar` (D8 duplicate-type failure).
+2. **Flow:** `VPOperateManager.getInstance().init(context)` → `connectDevice(mac, name, …)` → after notify success → `confirmDevicePwd("0000", …)` → `syncPersonInfo` → health APIs.
+3. **Concurrency:** Serialize long operations.
+4. **Manifest:** `com.inuker.bluetooth.library.BluetoothService` (declared in `Platforms/Android/AndroidManifest.xml`). Use `tools:replace="android:label"` when AAR manifests conflict.
 
 ---
 
-## RaphCare repo: optional Android binaries (not committed)
+## RaphCare repo: enable the vendor path
 
-1. Run **`tools/download-hband-android-libs.ps1`** from the solution root (requires network). This copies the **minimum** set used by `RaphCare.Mobile.csproj` when files exist:
-   - `gson-2.2.4.jar`
-   - `vpbluetooth-1.18.aar`
-   - `vpprotocol-2.3.48.15.aar`
-2. Files land in **`RaphCare.Mobile/Platforms/Android/libs/`**. That folder’s **`*.aar` / `*.jar`** are **gitignored** so binaries are not stored in git; only **`README.md`** is tracked.
-3. Rebuild **Android**. MSBuild references those libraries **only if** the files exist (see `RaphCare.Mobile.csproj`).
+1. From the solution root (network required):
 
-**Embedding AARs alone does not call the SDK from C#.** You still need one of:
+```powershell
+.\tools\download-hband-android-libs.ps1
+```
 
-- **.NET Android binding library** generated from the AARs (recommended for maintainability), then reference it from the MAUI app; or  
-- **JNI / `Java.Lang.Reflect`** bridge (possible but fragile — similar tradeoffs to the Agora JNI approach).
+2. Files land in **`RaphCare.Mobile/Platforms/Android/libs/`** (gitignored `*.aar` / `*.jar`).
+3. Rebuild **Android**. `RaphCare.Mobile.csproj` embeds AARs with **`Bind="false"`** when `vpbluetooth-1.20.aar` and `vpprotocol-2.3.71.15.aar` exist.
+4. At runtime, `WearableBleCoordinator` prefers **`IHBandWearableBridge`** when `IsAvailable` and a BLE MAC was captured from scan; otherwise Plugin.BLE GATT.
 
-Until a binding exists, **`WearableBleCoordinator`** (Plugin.BLE) remains the **implemented** path in C#.
+### C# surface
+
+| Type | Role |
+|------|------|
+| `IHBandWearableBridge` | Shared contract (connect/handshake, live HR, live SpO₂, disconnect) |
+| `HBandAndroidWearableBridge` | Android JNI implementation |
+| `UnavailableHBandWearableBridge` | Non-Android / no-op |
+| `WearableBleCoordinator` | Scan (Plugin.BLE) + HBand connect when available |
+
+A full **.NET Android binding project** remains optional later for typed APIs; Phase 1 uses JNI intentionally (large `vpprotocol` AAR).
 
 ---
 
-## Suggested next engineering steps (HBand path)
+## Suggested next engineering steps
 
-1. Add a **`RaphCare.Android.HBand.Binding`** (or similar) **Android binding project** targeting `vpbluetooth` + `vpprotocol` + Gson, exposing `VPOperateManager` to C#.
-2. Implement **`IHBandWearableSession`** (or extend **`IWearableBleCoordinator`**) on Android only: mirror the SDK sequence (connect → notify → password → sync person → read data).
-3. Merge **AndroidManifest** fragments required by the SDK (Bluetooth service, DFU activities only if you ship OTA).
-4. For **iOS**, clone/bind **`iOS_Ble_SDK`** separately and expose a shared abstraction from **`RaphCare.Mobile`**.
+1. Device test on ET580 / ET585: scan → connect → confirm live HR / SpO₂ in Devices UI → Sync readings.
+2. Expand bridge methods for activity / sleep / stress (catalog Phase 3).
+3. Background / auto sync (`docs/14` Phase 2).
+4. iOS HBand SDK binding + shared abstraction.
+5. Optional: generate a thin Android binding library if JNI maintenance becomes costly.
 
 ---
 
 ## License
 
-HBand SDK repositories on GitHub are published under **Apache 2.0** (see each repo’s `LICENSE`). Keep license notices if you redistribute or embed binaries in your app package.
+HBand SDK repositories on GitHub are published under **Apache 2.0**. Keep license notices if you redistribute or embed binaries in your app package.

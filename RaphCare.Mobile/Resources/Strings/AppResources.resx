@@ -96,7 +96,7 @@ Accessible. Intelligent. Human.</value>
     <value>Welcome back</value>
   </data>
   <data name="AuthSignInToContinue" xml:space="preserve">
-    <value>Sign in to your account to continue.</value>
+    <value>Sign in with your email and password. We'll send a verification code to your inbox.</value>
   </data>
   <data name="AuthEmailLabel" xml:space="preserve">
     <value>Email</value>
@@ -138,7 +138,7 @@ Accessible. Intelligent. Human.</value>
     <value>Email</value>
   </data>
   <data name="RegisterOptionEmailSubtitle" xml:space="preserve">
-    <value>Register with email</value>
+    <value>Email and password with verification</value>
   </data>
   <data name="RegisterOptionPhoneTitle" xml:space="preserve">
     <value>Phone</value>
@@ -321,7 +321,13 @@ Accessible. Intelligent. Human.</value>
     <value>Create with email</value>
   </data>
   <data name="RegisterEmailSubtitle" xml:space="preserve">
-    <value>Fill in your details to get started.</value>
+    <value>Fill in your details to create your account.</value>
+  </data>
+  <data name="RegisterEmailVerifySubtitle" xml:space="preserve">
+    <value>Enter the verification code we sent to your email.</value>
+  </data>
+  <data name="RegisterEmailVerifyButton" xml:space="preserve">
+    <value>Verify and create account</value>
   </data>
   <data name="RegisterEmailFirstName" xml:space="preserve">
     <value>First name</value>
@@ -380,11 +386,44 @@ Accessible. Intelligent. Human.</value>
   <data name="RegisterEmailFailed" xml:space="preserve">
     <value>Registration failed.</value>
   </data>
+  <data name="RegisterEmailVerificationCode" xml:space="preserve">
+    <value>Verification code</value>
+  </data>
+  <data name="RegisterEmailVerificationPlaceholder" xml:space="preserve">
+    <value>6-digit code</value>
+  </data>
+  <data name="RegisterEmailSendCode" xml:space="preserve">
+    <value>Send code</value>
+  </data>
+  <data name="RegisterEmailSendingCode" xml:space="preserve">
+    <value>Sending…</value>
+  </data>
+  <data name="RegisterEmailCodeSent" xml:space="preserve">
+    <value>Verification code sent. Check your inbox.</value>
+  </data>
+  <data name="RegisterEmailErrorVerificationCode" xml:space="preserve">
+    <value>Please enter the verification code from your email.</value>
+  </data>
+  <data name="RegisterEmailSendCodeFailed" xml:space="preserve">
+    <value>Could not send verification email.</value>
+  </data>
+  <data name="AuthVerificationCodeLabel" xml:space="preserve">
+    <value>Verification code</value>
+  </data>
+  <data name="AuthVerificationCodePlaceholder" xml:space="preserve">
+    <value>6-digit code</value>
+  </data>
+  <data name="AuthSignInVerifyButton" xml:space="preserve">
+    <value>Verify and sign in</value>
+  </data>
+  <data name="AuthSignInCodeSent" xml:space="preserve">
+    <value>We sent a verification code to your email.</value>
+  </data>
   <data name="VerifyEmailTitle" xml:space="preserve">
     <value>Verify your email</value>
   </data>
   <data name="VerifyEmailSubtitle" xml:space="preserve">
-    <value>We sent a verification link to your email. Open it to verify your account, then sign in below.</value>
+    <value>Enter the verification code we sent to your email, then sign in.</value>
   </data>
   <data name="VerifyEmailSignIn" xml:space="preserve">
     <value>Sign in</value>
@@ -393,7 +432,7 @@ Accessible. Intelligent. Human.</value>
     <value>Resend verification</value>
   </data>
   <data name="VerifyEmailResendHint" xml:space="preserve">
-    <value>If you did not receive an email, check spam or use the link in your original invitation. Resend is not available for all tenants—use Microsoft’s sign-in help if needed.</value>
+    <value>If you did not receive an email, check spam or tap Resend to get a new code.</value>
   </data>
   <data name="VerifyEmailPageTitle" xml:space="preserve">
     <value>Verify email</value>
@@ -971,6 +1010,75 @@ Accessible. Intelligent. Human.</value>
   <data name="CareTelehealthVideoStartFailed" xml:space="preserve">
     <value>Could not start the video session.</value>
   </data>
+  <data name="ConsultationJoin" xml:space="preserve">
+    <value>Join consultation</value>
+  </data>
+  <data name="ConsultationJoinPrompt" xml:space="preserve">
+    <value>Your provider will join shortly. Tap below when you are ready to start video.</value>
+  </data>
+  <data name="ConsultationProviderDefault" xml:space="preserve">
+    <value>Your care provider</value>
+  </data>
+  <data name="ConsultationProviderSubtitle" xml:space="preserve">
+    <value>Licensed healthcare provider</value>
+  </data>
+  <data name="ConsultationConnected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="ConsultationConnecting" xml:space="preserve">
+    <value>Connecting…</value>
+  </data>
+  <data name="ConsultationWaitingProvider" xml:space="preserve">
+    <value>Waiting for provider</value>
+  </data>
+  <data name="ConsultationMute" xml:space="preserve">
+    <value>Mute</value>
+  </data>
+  <data name="ConsultationUnmute" xml:space="preserve">
+    <value>Unmute</value>
+  </data>
+  <data name="ConsultationVideoOn" xml:space="preserve">
+    <value>Video on</value>
+  </data>
+  <data name="ConsultationVideoOff" xml:space="preserve">
+    <value>Video off</value>
+  </data>
+  <data name="ConsultationChat" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="ConsultationChatComingSoon" xml:space="preserve">
+    <value>In-call chat is coming soon.</value>
+  </data>
+  <data name="ConsultationChatSend" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="ConsultationChatClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ConsultationChatEmpty" xml:space="preserve">
+    <value>No messages yet. Say hello to your provider.</value>
+  </data>
+  <data name="ConsultationChatSendFailed" xml:space="preserve">
+    <value>Could not send your message.</value>
+  </data>
+  <data name="RequestCallFailed" xml:space="preserve">
+    <value>Could not start a telehealth session. Make sure you are linked to a clinic or set default clinic in app settings.</value>
+  </data>
+  <data name="ConsultationHangUp" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="ChangePasswordSuccess" xml:space="preserve">
+    <value>Your password was updated.</value>
+  </data>
+  <data name="ChangePasswordFailed" xml:space="preserve">
+    <value>Could not update your password. Check your current password and try again.</value>
+  </data>
+  <data name="ChangePasswordTooShort" xml:space="preserve">
+    <value>New password must be at least 8 characters.</value>
+  </data>
+  <data name="ChangePasswordEntraReset" xml:space="preserve">
+    <value>Open Microsoft password reset</value>
+  </data>
   <data name="DevicesPageTitle" xml:space="preserve">
     <value>Devices &amp; wearables</value>
   </data>
@@ -1123,6 +1231,12 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="ProfilePhotoComingSoon" xml:space="preserve">
     <value>Profile photo upload is not available in this build.</value>
+  </data>
+  <data name="ProfilePhotoPickerTitle" xml:space="preserve">
+    <value>Choose a profile photo</value>
+  </data>
+  <data name="ProfilePhotoUploadFailed" xml:space="preserve">
+    <value>Could not upload your photo. Try again.</value>
   </data>
   <data name="ProfileSectionAccount" xml:space="preserve">
     <value>Account</value>
@@ -1405,5 +1519,191 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="HelpLauncherFailed" xml:space="preserve">
     <value>Could not open the link on this device.</value>
+  </data>
+  <data name="HelpFaqEmpty" xml:space="preserve">
+    <value>No FAQ items are configured yet.</value>
+  </data>
+  <data name="SupportMessageSubjectLabel" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="SupportMessageBodyLabel" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="SupportMessageSend" xml:space="preserve">
+    <value>Send message</value>
+  </data>
+  <data name="SupportMessageSentTitle" xml:space="preserve">
+    <value>Message sent</value>
+  </data>
+  <data name="SupportMessageSentBody" xml:space="preserve">
+    <value>Thanks — our team will reply to your account email when possible.</value>
+  </data>
+  <data name="SupportMessageFailed" xml:space="preserve">
+    <value>Could not send your message. Try again.</value>
+  </data>
+  <data name="PersonalInformationTitle" xml:space="preserve">
+    <value>Personal information</value>
+  </data>
+  <data name="PersonalInformationFullName" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="PersonalInformationAddress" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="PersonalInformationSaved" xml:space="preserve">
+    <value>Your personal information was saved.</value>
+  </data>
+  <data name="PersonalInformationSaveFailed" xml:space="preserve">
+    <value>Could not save your information. Try again.</value>
+  </data>
+  <data name="ChangePasswordTitle" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="ChangePasswordCurrent" xml:space="preserve">
+    <value>Current password</value>
+  </data>
+  <data name="ChangePasswordNew" xml:space="preserve">
+    <value>New password</value>
+  </data>
+  <data name="ChangePasswordConfirm" xml:space="preserve">
+    <value>Confirm new password</value>
+  </data>
+  <data name="ChangePasswordUpdate" xml:space="preserve">
+    <value>Update password</value>
+  </data>
+  <data name="ChangePasswordEntraHint" xml:space="preserve">
+    <value>Microsoft account? Use the button below to reset your password in the browser. Email sign-in users can update below when the API supports it.</value>
+  </data>
+  <data name="ChangePasswordMissingFields" xml:space="preserve">
+    <value>Fill in all password fields.</value>
+  </data>
+  <data name="ChangePasswordMismatch" xml:space="preserve">
+    <value>New passwords do not match.</value>
+  </data>
+  <data name="ChangePasswordEmailGuidance" xml:space="preserve">
+    <value>Enter your current password and choose a new one.</value>
+  </data>
+  <data name="ChangePasswordNoResetUrl" xml:space="preserve">
+    <value>Password reset URL is not configured.</value>
+  </data>
+  <data name="LanguageSettingsTitle" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LanguageSettingsUpdatedFormat" xml:space="preserve">
+    <value>App language set to {0}.</value>
+  </data>
+  <data name="MedicalInformationTitle" xml:space="preserve">
+    <value>Medical information</value>
+  </data>
+  <data name="MedicalInformationBloodType" xml:space="preserve">
+    <value>Blood type</value>
+  </data>
+  <data name="MedicalInformationAllergies" xml:space="preserve">
+    <value>Allergies</value>
+  </data>
+  <data name="MedicalInformationChronic" xml:space="preserve">
+    <value>Chronic conditions</value>
+  </data>
+  <data name="MedicalInformationMedications" xml:space="preserve">
+    <value>Current medications</value>
+  </data>
+  <data name="MedicalInformationPrimaryDoctor" xml:space="preserve">
+    <value>Primary doctor</value>
+  </data>
+  <data name="MedicalInformationSaved" xml:space="preserve">
+    <value>Medical information saved.</value>
+  </data>
+  <data name="MedicalInformationSaveFailed" xml:space="preserve">
+    <value>Could not save medical information. Try again.</value>
+  </data>
+  <data name="EmergencyContactsTitle" xml:space="preserve">
+    <value>Emergency contacts</value>
+  </data>
+  <data name="EmergencyContactsAdd" xml:space="preserve">
+    <value>Add emergency contact</value>
+  </data>
+  <data name="EmergencyContactsSave" xml:space="preserve">
+    <value>Save contact</value>
+  </data>
+  <data name="EmergencyContactsUpdate" xml:space="preserve">
+    <value>Update contact</value>
+  </data>
+  <data name="EmergencyContactsNew" xml:space="preserve">
+    <value>New contact</value>
+  </data>
+  <data name="EmergencyContactsEdit" xml:space="preserve">
+    <value>Edit contact</value>
+  </data>
+  <data name="EmergencyContactsName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="EmergencyContactsRelationship" xml:space="preserve">
+    <value>Relationship</value>
+  </data>
+  <data name="EmergencyContactsPhone" xml:space="preserve">
+    <value>Phone number</value>
+  </data>
+  <data name="EmergencyContactsEmpty" xml:space="preserve">
+    <value>No emergency contacts yet.</value>
+  </data>
+  <data name="EmergencyContactsRemoved" xml:space="preserve">
+    <value>Contact removed.</value>
+  </data>
+  <data name="EmergencyContactsMissingFields" xml:space="preserve">
+    <value>Enter name, relationship, and phone.</value>
+  </data>
+  <data name="EmergencyContactsLoadFailed" xml:space="preserve">
+    <value>Could not load emergency contacts from the server.</value>
+  </data>
+  <data name="EmergencyContactsSaveFailed" xml:space="preserve">
+    <value>Could not save emergency contact. Try again.</value>
+  </data>
+  <data name="ProfileEmergencyContactsCountFormat" xml:space="preserve">
+    <value>{0} contacts saved</value>
+  </data>
+  <data name="RequestCallTitle" xml:space="preserve">
+    <value>Request a call</value>
+  </data>
+  <data name="RequestCallModeVideo" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="RequestCallModeAudio" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="RequestCallModeLowBand" xml:space="preserve">
+    <value>Low bandwidth</value>
+  </data>
+  <data name="RequestCallStart" xml:space="preserve">
+    <value>Request call now</value>
+  </data>
+  <data name="RequestCallIdleTitle" xml:space="preserve">
+    <value>Talk to a provider</value>
+  </data>
+  <data name="RequestCallIdleSub" xml:space="preserve">
+    <value>Choose how you want to connect, then tap below.</value>
+  </data>
+  <data name="RequestCallChecking" xml:space="preserve">
+    <value>Checking availability</value>
+  </data>
+  <data name="RequestCallCheckingSub" xml:space="preserve">
+    <value>Finding available providers…</value>
+  </data>
+  <data name="RequestCallConnecting" xml:space="preserve">
+    <value>Connecting</value>
+  </data>
+  <data name="RequestCallConnectingSub" xml:space="preserve">
+    <value>Please hold…</value>
+  </data>
+  <data name="RequestCallQueue" xml:space="preserve">
+    <value>You're in the queue</value>
+  </data>
+  <data name="RequestCallQueueSub" xml:space="preserve">
+    <value>Estimated wait: a few minutes</value>
+  </data>
+  <data name="RequestCallConnected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="RequestCallConnectedSub" xml:space="preserve">
+    <value>Opening your telehealth sessions…</value>
   </data>
 </root>

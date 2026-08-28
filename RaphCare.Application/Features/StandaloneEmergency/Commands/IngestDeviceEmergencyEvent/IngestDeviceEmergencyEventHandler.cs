@@ -40,7 +40,7 @@ public sealed class IngestDeviceEmergencyEventHandler(
             true,
             cancellationToken).ConfigureAwait(false);
 
-        var device = devicePage.Items.FirstOrDefault()
+        var device = (devicePage.Items.Count > 0 ? devicePage.Items[0] : null)
             ?? throw new NotFoundException(nameof(Device), serial);
 
         if (!string.IsNullOrWhiteSpace(request.ExternalEventId))
@@ -68,7 +68,7 @@ public sealed class IngestDeviceEmergencyEventHandler(
             applyDefaultIdOrdering: false,
             cancellationToken).ConfigureAwait(false);
 
-        var assignment = assignmentPage.Items.FirstOrDefault();
+        var assignment = assignmentPage.Items.Count > 0 ? assignmentPage.Items[0] : null;
         if (assignment is null)
         {
             throw new ValidationException(new[]
@@ -129,7 +129,7 @@ public sealed class IngestDeviceEmergencyEventHandler(
             applyDefaultIdOrdering: false,
             cancellationToken).ConfigureAwait(false);
 
-        var patient = patientPage.Items.FirstOrDefault();
+        var patient = patientPage.Items.Count > 0 ? patientPage.Items[0] : null;
         if (patient is null)
         {
             entity.CaregiversNotified = false;

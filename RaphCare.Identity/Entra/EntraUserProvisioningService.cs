@@ -8,7 +8,7 @@ namespace RaphCare.Identity.Entra;
 /// <summary>
 /// Ensures an ApplicationUser exists for the Entra principal and syncs EntraObjectId, Email, DisplayName. Role in authentication pipeline: call after JWT validation to provision or sync the domain user for the current request.
 /// </summary>
-public class EntraUserProvisioningService(
+public partial class EntraUserProvisioningService(
     IApplicationUserStore userStore,
     ILogger<EntraUserProvisioningService> logger
     ) : IUserProvisioningService
@@ -45,7 +45,7 @@ public class EntraUserProvisioningService(
         };
 
         await _userStore.CreateAsync(user, cancellationToken).ConfigureAwait(false);
-        _logger.LogInformation("Provisioned new user from Entra: {EntraObjectId}, {Email}", user.EntraObjectId, user.Email);
+        LogProvisionedNewUser(user.EntraObjectId, user.Email);
         return user;
     }
 
@@ -79,4 +79,7 @@ public class EntraUserProvisioningService(
                ?? principal.FindFirstValue("name")
                ?? string.Empty;
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Provisioned new user from Entra: {EntraObjectId}, {Email}")]
+    private partial void LogProvisionedNewUser(string entraObjectId, string email);
 }

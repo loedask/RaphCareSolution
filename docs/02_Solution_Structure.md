@@ -11,7 +11,8 @@
 | RaphCare.Persistence | DbContexts, EF configurations, repositories, migrations, seeders |
 | RaphCare.Identity | Entra ID JWT validation, user provisioning, role mapping |
 | RaphCare.Client | Shared API client (generated client, base HTTP service, feature services, AutoMapper) |
-| RaphCare.Web | Blazor WebAssembly front-end |
+| RaphCare.Web | Blazor WebAssembly admin UI (run locally with `dotnet run`) |
+| RaphCare.Web.Host | Thin ASP.NET host that serves `RaphCare.Web` for Linux App Service (SPA fallback) |
 | RaphCare.Mobile | .NET MAUI mobile app |
 
 ## Folder Breakdown by Project
@@ -19,7 +20,7 @@
 ### RaphCare.API
 - **Controllers/** — REST controllers (Patients, Appointments, Clinical, Devices, Insurance, Billing, Telemedicine, MentalHealth, AI, Reporting, Auth, VoiceOnboarding); all use `api/[controller]` and MediatR; AuthController at `api/auth/otp` (POST send, POST verify); VoiceOnboardingController at `api/onboarding` (POST voice, multipart); PatientsController uses `Name` on actions for Swagger operationId (GetPatientById, GetPatientsPaginated, CreatePatient, UpdatePatient)
 - **App/Middleware/** — ExceptionHandlingMiddleware, TenantResolutionMiddleware, AuditMiddleware
-- **App/Extensions/** — DatabaseMigrationExtensions (ApplyMigrationsAsync for Development), SwaggerExtensions (AddRaphCareSwagger, UseRaphCareSwagger; root redirect to /swagger in Development)
+- **App/Extensions/** — DatabaseMigrationExtensions (ApplyMigrationsAsync for Development and Staging), SwaggerExtensions (AddRaphCareSwagger, UseRaphCareSwagger; root redirect to /swagger in Development)
 - **App/Contracts/** — CreatePatientResponse (OpenAPI response type for POST patients)
 
 ### RaphCare.Application
@@ -72,16 +73,25 @@
 
 ### RaphCare.Web
 - Blazor WASM structure (App, components, pages, etc.); references RaphCare.Client
+- Local development: `dotnet run --project RaphCare.Web`
+- Staff portal today is desktop-first. Future: same admin on a phone via responsive UI, then a thin install, not a full PWA. See **docs/15_Web_Admin_On_Phone.md**.
+
+### RaphCare.Web.Host
+- Thin ASP.NET Core host (`UseBlazorFrameworkFiles`, static files, `MapFallbackToFile("index.html")`)
+- Project reference to **RaphCare.Web**; publish this project (not WASM alone) to **Linux** App Service
+- Same approach as Bobeta `Bobeta.Web.Host`
+- Maps `.webmanifest` for a possible later thin install; no manifest is served yet.
+- Forwards `ASPNETCORE_ENVIRONMENT` to Blazor WASM (`Blazor-Environment` header) and can serve `ApiBaseUrl` from App Service settings so the browser does not keep `localhost`.
 
 ### RaphCare.Mobile.Kernel
-- **net10.0** class library (no MAUI): `AuthResult`, `FeatureFlags`, `FeatureFlagOptions` — same CLR namespaces as before (`RaphCare.Mobile.Core.Shared.*`) so the MAUI app references this assembly for shared, testable primitives. Unit tests target Kernel only.
+- **net10.0** class library (no MAUI): `AuthResult`, `FeatureFlags`, `FeatureFlagOptions` — same CLR namespaces as before (`RaphCare.Mobile.Core.Common.*`) so the MAUI app references this assembly for shared, testable primitives. Unit tests target Kernel only.
 
 ### RaphCare.Mobile.Tests
 - **xUnit** project targeting **net10.0**; references **RaphCare.Mobile.Kernel** (not the MAUI app) so `dotnet test` does not run MAUI Resizetizer.
 
 ### RaphCare.Mobile
-- **Core/Features/** — Feature-specific Views and ViewModels (Auth, Home, Hybrid/BlazorHostPage, Records, Appointments, Insurance, Settings). Namespaces: `RaphCare.Mobile.Core.Features.*.Views` / `.ViewModels`. Auth services: EntraAuthService, IAuthService, EntraAuthOptions, SecureStorageAccessTokenProvider under **Core/Shared/Services/Auth**.
-- **Core/Shared/** — AppNavigator, Services/Auth, Views/UnderConstructionPage, **ViewModels** (`BaseViewModel`), **Controls** (MAUI XAML; `RaphCare.Mobile.Core.Shared.Controls`).
+- **Core/Features/** — Feature-specific Views and ViewModels (Auth, Home, Hybrid/BlazorHostPage, Records, Appointments, Insurance, Settings). Namespaces: `RaphCare.Mobile.Core.Features.*.Views` / `.ViewModels`. Auth services: EntraAuthService, IAuthService, EntraAuthOptions, SecureStorageAccessTokenProvider under **Core/Common/Services/Auth**.
+- **Core/Common/** — AppNavigator, Services/Auth, Views/UnderConstructionPage, **ViewModels** (`BaseViewModel`), **Controls** (MAUI XAML; `RaphCare.Mobile.Core.Common.Controls`).
 - **Core/Infrastructure/** — `MobileServiceCollectionExtensions.AddRaphCareMobile`, `MobileServiceHub` (DI resolution for Shell pages).
 - **Blazor/** — Razor UI for BlazorWebView (`Routes.razor`, `Layout/`, `Pages/`; `RaphCare.Mobile.Blazor`).
 - **Resources/Strings/** — `AppResources.resx` + `AppResources.cs` for localization (`RaphCare.Mobile.Resources.Strings.AppResources`).
@@ -90,7 +100,7 @@
 - **MauiProgram** — Configuration: `appsettings.json`, optional `appsettings.Development.json` (DEBUG), User Secrets; `AddRaphCareMobile`; `FeatureFlags.Initialize` after build; `AddRaphCareClient(..., useBearerToken: true)`; `AddMauiBlazorWebView`.
 - References **RaphCare.Mobile.Kernel**, **RaphCare.Client**; bearer-token auth via `IAccessTokenProvider`.
 
-See **docs/09_Mobile_App_Guide.md** for configuration, secrets, flags, and testing. For **Agora** (telehealth RTC) and **Twilio** (SMS) setup on the API, see **docs/10_Agora_Twilio_Setup.md**. For **BLE wearables** (E580/E585-class) on the mobile app, see **docs/11_Devices_BLE_E580_E585.md**. For the optional **HBand** vendor SDK (GitHub **HBandSDK**), see **docs/12_HBand_SDK_Integration.md**. For **patient-provided device packages** (Y6 Pro, E585, E580), see **docs/13_Patient_Device_Packages_and_Fleet.md**.
+See **docs/09_Mobile_App_Guide.md** for configuration, secrets, flags, and testing. For **hosted Azure test + Play Internal (Android)**, see **docs/Mobile_Android_Test_Hosting.md**. For **Agora** (telehealth RTC) and **Twilio** (SMS) setup on the API, see **docs/10_Agora_Twilio_Setup.md**. For **BLE wearables** (E580/E585-class) on the mobile app, see **docs/11_Devices_BLE_E580_E585.md**. For the optional **HBand** vendor SDK (GitHub **HBandSDK**), see **docs/12_HBand_SDK_Integration.md**. For **patient-provided device packages** (Y6 Pro, E585, E580), see **docs/13_Patient_Device_Packages_and_Fleet.md**. For the **SKU-agnostic wearable feature catalog** (HR, SpO₂, activity, sleep, and related goals), see **docs/14_Wearable_Capability_Catalog.md**.
 
 ## Responsibilities Summary
 

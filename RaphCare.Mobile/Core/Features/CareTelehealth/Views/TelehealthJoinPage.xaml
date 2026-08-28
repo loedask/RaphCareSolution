@@ -3,85 +3,212 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:care="clr-namespace:RaphCare.Mobile.Core.Features.CareTelehealth.Views"
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels"
+             xmlns:telehealth="clr-namespace:RaphCare.Client.Models.Telehealth;assembly=RaphCare.Client"
              x:Class="RaphCare.Mobile.Core.Features.CareTelehealth.Views.TelehealthJoinPage"
              x:DataType="vm:TelehealthJoinViewModel"
-             Title="{Binding Title}"
-             BackgroundColor="{StaticResource BackgroundColor}">
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource NavyColor}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource PrimaryColor}" />
+    <Grid>
+        <!-- Pre-call setup -->
+        <ScrollView IsVisible="{Binding ShowSetupLayout}" BackgroundColor="{StaticResource BackgroundColor}">
+            <VerticalStackLayout Padding="24" Spacing="16">
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource PrimaryColor}" />
 
-            <Label Text="{Binding RtcStatusText}"
-                   Style="{StaticResource BodySmall}"
-                   TextColor="{StaticResource MutedForegroundColor}"
-                   IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                <Label Text="{Binding JoinPromptText}"
+                       Style="{StaticResource BodyMedium}"
+                       LineBreakMode="WordWrap"
+                       IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
 
-            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-                <Label Text="{Binding ChannelLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
-                <Label Text="{Binding ChannelText}" Style="{StaticResource BodyMedium}" />
+                <Label Text="{Binding RtcStatusText}"
+                       Style="{StaticResource BodySmall}"
+                       TextColor="{StaticResource MutedForegroundColor}"
+                       IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+                <Button Text="{Binding StartVideoLabel}"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding StartVideoCommand}"
+                        IsVisible="{Binding ShowStartVideo}" />
+
+                <Button Text="{Binding BackLabel}"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding BackCommand}" />
+
+                <Label Text="{Binding ErrorMessage}"
+                       Style="{StaticResource BodyMedium}"
+                       TextColor="{StaticResource ErrorColor}"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
             </VerticalStackLayout>
+        </ScrollView>
 
-            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-                <Label Text="{Binding UidLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
-                <Label Text="{Binding UidText}" Style="{StaticResource BodyMedium}" />
-            </VerticalStackLayout>
+        <!-- In-call consultation (concept Consultation.tsx) -->
+        <Grid IsVisible="{Binding ShowConsultationLayout}" RowDefinitions="*,Auto">
+            <Grid Grid.Row="0">
+                <care:TelehealthVideoView x:Name="RemotePreview"
+                                          HorizontalOptions="Fill"
+                                          VerticalOptions="Fill"
+                                          IsVisible="{Binding ShowVideoSection}" />
 
-            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-                <Label Text="{Binding AppIdLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
-                <Label Text="{Binding AppIdText}" Style="{StaticResource BodyMedium}" />
-            </VerticalStackLayout>
+                <BoxView Color="{StaticResource NavyColor}"
+                         IsVisible="{Binding ShowVideoSection, Converter={StaticResource InvertedBoolConverter}}" />
 
-            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-                <Label Text="{Binding TokenLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
-                <Label Text="{Binding TokenPreview}" Style="{StaticResource BodyMedium}" LineBreakMode="WordWrap" />
-            </VerticalStackLayout>
+                <BoxView HorizontalOptions="Fill" VerticalOptions="Fill">
+                    <BoxView.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="#66121C30" Offset="0.0" />
+                            <GradientStop Color="#CC121C30" Offset="0.45" />
+                            <GradientStop Color="#E6121C30" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
 
-            <Label Text="{Binding VideoHintText}"
-                   Style="{StaticResource BodySmall}"
-                   TextColor="{StaticResource MutedForegroundColor}"
-                   LineBreakMode="WordWrap"
-                   IsVisible="{Binding ShowVideoSection}" />
+                <VerticalStackLayout VerticalOptions="Center"
+                                     HorizontalOptions="Center"
+                                     Spacing="12"
+                                     Padding="24">
+                    <Border WidthRequest="96"
+                            HeightRequest="96"
+                            StrokeThickness="0"
+                            BackgroundColor="{StaticResource NavyLightColor}"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="48" />
+                        </Border.StrokeShape>
+                        <Label Text="👨‍⚕️"
+                               FontSize="40"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
+                    <Label Text="{Binding ProviderDisplayName}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource PrimaryForegroundColor}"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding ProviderSubtitle}"
+                           FontSize="14"
+                           TextColor="{StaticResource TealGlowColor}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
 
-            <VerticalStackLayout Spacing="8" IsVisible="{Binding ShowVideoSection}">
-                <Label Text="{Binding LocalVideoLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
-                <Border Style="{StaticResource CardBorder}" Padding="0" HeightRequest="200">
-                    <care:TelehealthVideoView x:Name="LocalPreview" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                <Border WidthRequest="112"
+                        HeightRequest="148"
+                        Margin="0,0,20,100"
+                        StrokeThickness="2"
+                        Stroke="{StaticResource TealGlowColor}"
+                        HorizontalOptions="End"
+                        VerticalOptions="End"
+                        IsVisible="{Binding ShowVideoSection}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <care:TelehealthVideoView x:Name="LocalPreview"
+                                              HorizontalOptions="Fill"
+                                              VerticalOptions="Fill" />
                 </Border>
-                <Label Text="{Binding RemoteVideoLabel}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
-                <Border Style="{StaticResource CardBorder}" Padding="0" HeightRequest="200">
-                    <care:TelehealthVideoView x:Name="RemotePreview" HorizontalOptions="Fill" VerticalOptions="Fill" />
+
+                <Grid Padding="20,52,20,0" ColumnDefinitions="*,Auto">
+                    <Border Padding="10,6"
+                            BackgroundColor="#66000000"
+                            StrokeThickness="0"
+                            HorizontalOptions="Start">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding ConnectionBadgeText}"
+                               FontSize="12"
+                               TextColor="{StaticResource TealGlowColor}" />
+                    </Border>
+                    <Label Grid.Column="1"
+                           Text="{Binding CallDurationText}"
+                           FontSize="14"
+                           TextColor="{StaticResource PrimaryForegroundColor}"
+                           VerticalOptions="Center" />
+                </Grid>
+            </Grid>
+
+            <!-- In-call chat (HTTP-backed TeleSessionChat, not Agora Signaling) -->
+            <Grid Grid.RowSpan="2"
+                  IsVisible="{Binding IsChatOpen}"
+                  BackgroundColor="#CC000000"
+                  Padding="16,48,16,24">
+                <Border BackgroundColor="{StaticResource CardColor}"
+                        StrokeThickness="0"
+                        Padding="12"
+                        VerticalOptions="End"
+                        MaximumHeightRequest="420">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding ChatLabel}"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource ForegroundColor}" />
+                            <Button Grid.Column="1"
+                                    Text="{Binding ChatCloseLabel}"
+                                    Command="{Binding CloseChatCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource PrimaryColor}" />
+                        </Grid>
+                        <CollectionView Grid.Row="1"
+                                        ItemsSource="{Binding ChatMessages}"
+                                        EmptyView="{Binding ChatEmptyText}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="telehealth:TelehealthChatMessageViewModel">
+                                    <VerticalStackLayout Padding="0,4" Spacing="2">
+                                        <Label Text="{Binding Message}"
+                                               FontSize="14"
+                                               TextColor="{StaticResource ForegroundColor}"
+                                               LineBreakMode="WordWrap" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <Entry Grid.Row="2"
+                               Text="{Binding ChatInput}"
+                               Placeholder="{Binding ChatLabel}"
+                               ReturnCommand="{Binding SendChatCommand}" />
+                        <Button Grid.Row="3"
+                                Text="{Binding ChatSendLabel}"
+                                Command="{Binding SendChatCommand}"
+                                Style="{StaticResource PrimaryButton}" />
+                    </Grid>
                 </Border>
-            </VerticalStackLayout>
+            </Grid>
 
-            <Button Text="{Binding StartVideoLabel}"
-                    Style="{StaticResource PrimaryButton}"
-                    Command="{Binding StartVideoCommand}"
-                    IsVisible="{Binding ShowStartVideo}" />
-
-            <Button Text="{Binding EndVideoLabel}"
-                    Style="{StaticResource SecondaryButton}"
-                    Command="{Binding EndVideoCommand}"
-                    IsVisible="{Binding ShowEndVideo}" />
-
-            <Button Text="{Binding CopyTokenLabel}"
-                    Style="{StaticResource SecondaryButton}"
-                    Command="{Binding CopyTokenCommand}"
-                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
-
-            <Button Text="{Binding SmsLabel}"
-                    Style="{StaticResource PrimaryButton}"
-                    Command="{Binding SmsCommand}"
-                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
-
-            <Button Text="{Binding BackLabel}"
-                    Style="{StaticResource SecondaryButton}"
-                    Command="{Binding BackCommand}" />
-
-            <Label Text="{Binding ErrorMessage}"
-                   Style="{StaticResource BodyMedium}"
-                   TextColor="{StaticResource ErrorColor}"
-                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
-        </VerticalStackLayout>
-    </ScrollView>
+            <Grid Grid.Row="1"
+                  ColumnDefinitions="*,*,*,*"
+                  Padding="20,0,20,36"
+                  ColumnSpacing="12">
+                <Button Grid.Column="0"
+                        Text="{Binding MuteButtonText}"
+                        Command="{Binding ToggleMuteCommand}"
+                        BackgroundColor="{StaticResource NavyLightColor}"
+                        TextColor="{StaticResource PrimaryForegroundColor}"
+                        CornerRadius="28"
+                        HeightRequest="56" />
+                <Button Grid.Column="1"
+                        Text="{Binding VideoButtonText}"
+                        Command="{Binding ToggleVideoCommand}"
+                        BackgroundColor="{StaticResource NavyLightColor}"
+                        TextColor="{StaticResource PrimaryForegroundColor}"
+                        CornerRadius="28"
+                        HeightRequest="56" />
+                <Button Grid.Column="2"
+                        Text="{Binding ChatLabel}"
+                        Command="{Binding OpenChatCommand}"
+                        BackgroundColor="{StaticResource NavyLightColor}"
+                        TextColor="{StaticResource PrimaryForegroundColor}"
+                        CornerRadius="28"
+                        HeightRequest="56" />
+                <Button Grid.Column="3"
+                        Text="{Binding HangUpLabel}"
+                        Command="{Binding HangUpCommand}"
+                        BackgroundColor="{StaticResource DestructiveColor}"
+                        TextColor="{StaticResource PrimaryForegroundColor}"
+                        CornerRadius="28"
+                        HeightRequest="56" />
+            </Grid>
+        </Grid>
+    </Grid>
 </ContentPage>

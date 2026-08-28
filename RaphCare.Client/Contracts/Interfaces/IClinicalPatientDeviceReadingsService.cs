@@ -28,4 +28,12 @@ public interface IClinicalPatientDeviceReadingsService
         DateTime? occurredFromUtc = null,
         DateTime? occurredToUtc = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Recent SOS/fall events for the current clinic (<c>X-Clinic-Id</c>).</summary>
+    Task<Response<PagedClinicDeviceEmergencyEventsViewModel>> GetClinicEmergencyEventsAsync(
+        int pageNumber = 1,
+        int pageSize = 20,
+        DateTime? occurredFromUtc = null,
+        DateTime? occurredToUtc = null,
+        CancellationToken cancellationToken = default);
 }

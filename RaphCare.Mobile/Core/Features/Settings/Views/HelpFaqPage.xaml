@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Settings.ViewModels"
+             xmlns:models="clr-namespace:RaphCare.Client.Models.Support;assembly=RaphCare.Client"
+             x:Class="RaphCare.Mobile.Core.Features.Settings.Views.HelpFaqPage"
+             x:DataType="vm:HelpFaqViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <Grid Padding="24" RowDefinitions="*,Auto">
+        <CollectionView x:Name="FaqList"
+                        Grid.Row="0"
+                        ItemsSource="{Binding Items}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnFaqSelected">
+            <CollectionView.EmptyView>
+                <Label Text="{Binding EmptyText}"
+                       Style="{StaticResource BodyMedium}"
+                       TextColor="{StaticResource MutedForegroundColor}"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,40" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:PatientSupportFaqItemViewModel">
+                    <Border Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+                        <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding Question}"
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="›" FontSize="18" Opacity="0.5" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <ActivityIndicator Grid.Row="1"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource PrimaryColor}" />
+    </Grid>
+</ContentPage>

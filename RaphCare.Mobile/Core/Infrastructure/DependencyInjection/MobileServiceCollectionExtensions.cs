@@ -24,23 +24,28 @@ using RaphCare.Mobile.Core.Features.AiAssistant.ViewModels;
 using RaphCare.Mobile.Core.Features.AiAssistant.Views;
 #if ANDROID
 using RaphCare.Mobile.Platforms.Android.Telehealth;
+using RaphCare.Mobile.Platforms.Android.HBand;
+#elif IOS
+using RaphCare.Mobile.Platforms.iOS.Telehealth;
 #endif
+using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Home.ViewModels;
 using RaphCare.Mobile.Core.Features.Home.Views;
 using RaphCare.Mobile.Core.Features.Hybrid.Views;
 using RaphCare.Mobile.Core.Features.Insurance.ViewModels;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
+using RaphCare.Mobile.Core.Features.Notifications.Services;
 using RaphCare.Mobile.Core.Features.Records.ViewModels;
 using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Features.Settings.ViewModels;
 using RaphCare.Mobile.Core.Features.Settings.Views;
 using RaphCare.Client.Contracts;
-using RaphCare.Mobile.Core.Shared.Configuration;
-using RaphCare.Mobile.Core.Shared.Services.Api;
-using RaphCare.Mobile.Core.Shared.Services.Auth;
-using RaphCare.Mobile.Core.Shared.Services.FeatureFlags;
-using RaphCare.Mobile.Core.Shared.Views;
+using RaphCare.Mobile.Core.Common.Configuration;
+using RaphCare.Mobile.Core.Common.Services.Api;
+using RaphCare.Mobile.Core.Common.Services.Auth;
+using RaphCare.Mobile.Core.Common.Services.FeatureFlags;
+using RaphCare.Mobile.Core.Common.Views;
 
 namespace RaphCare.Mobile.Core.Infrastructure.DependencyInjection;
 
@@ -63,9 +68,17 @@ public static class MobileServiceCollectionExtensions
 
 #if ANDROID
         services.AddSingleton<ITelehealthRtcSession, AgoraAndroidTelehealthRtcSession>();
+        services.AddSingleton<IHBandWearableBridge, HBandAndroidWearableBridge>();
+#elif IOS
+        services.AddSingleton<ITelehealthRtcSession, AgoraIosTelehealthRtcSession>();
+        services.AddSingleton<IHBandWearableBridge, UnavailableHBandWearableBridge>();
 #else
         services.AddSingleton<ITelehealthRtcSession, NoOpTelehealthRtcSession>();
+        services.AddSingleton<IHBandWearableBridge, UnavailableHBandWearableBridge>();
 #endif
+
+        services.AddSingleton<IPushDeviceTokenProvider, LocalDevelopmentPushDeviceTokenProvider>();
+        services.AddSingleton<IPatientPushRegistrationService, PatientPushRegistrationService>();
 
         services.AddSingleton<IWearableBleCoordinator, WearableBleCoordinator>();
 
@@ -93,6 +106,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AddInsuranceProfileViewModel>();
         services.AddTransient<InsuranceProfileDetailViewModel>();
         services.AddTransient<CareTelehealthViewModel>();
+        services.AddTransient<RequestCallViewModel>();
         services.AddTransient<TelehealthJoinViewModel>(sp => new TelehealthJoinViewModel(
             sp.GetRequiredService<IPatientTelehealthService>(),
             sp.GetRequiredService<ITelehealthRtcSession>()));
@@ -117,6 +131,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<InsuranceProfileDetailPage>();
         services.AddTransient<AddInsuranceProfilePage>();
         services.AddTransient<CareTelehealthPage>();
+        services.AddTransient<RequestCallPage>();
         services.AddTransient<TelehealthJoinPage>();
         services.AddTransient<DevicesViewModel>();
         services.AddTransient<DevicesPage>();
@@ -138,12 +153,26 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AiAssistantPage>();
         services.AddTransient<ProfileHubViewModel>();
         services.AddTransient<EditProfileViewModel>();
+        services.AddTransient<PersonalInformationViewModel>();
+        services.AddTransient<ChangePasswordViewModel>();
+        services.AddTransient<LanguageSettingsViewModel>();
+        services.AddTransient<MedicalInformationViewModel>();
+        services.AddTransient<EmergencyContactsViewModel>();
         services.AddTransient<PrivacySettingsViewModel>();
         services.AddTransient<HelpSupportViewModel>();
+        services.AddTransient<HelpFaqViewModel>();
+        services.AddTransient<SupportMessageViewModel>();
         services.AddTransient<SettingsPage>();
         services.AddTransient<EditProfilePage>();
+        services.AddTransient<PersonalInformationPage>();
+        services.AddTransient<ChangePasswordPage>();
+        services.AddTransient<LanguageSettingsPage>();
+        services.AddTransient<MedicalInformationPage>();
+        services.AddTransient<EmergencyContactsPage>();
         services.AddTransient<PrivacyPage>();
         services.AddTransient<HelpSupportPage>();
+        services.AddTransient<HelpFaqPage>();
+        services.AddTransient<SupportMessagePage>();
         services.AddTransient<UnderConstructionPage>();
         services.AddTransient<BlazorHostPage>();
         services.AddTransient<AppShell>();

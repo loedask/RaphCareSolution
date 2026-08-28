@@ -1,8 +1,7 @@
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Appointments.ViewModels;
 
@@ -19,11 +18,11 @@ public sealed class AppointmentDetailViewModel : BaseViewModel
     public AppointmentDetailViewModel(IAppointmentService appointments)
     {
         _appointments = appointments ?? throw new ArgumentNullException(nameof(appointments));
-        Title = AppResources.T("AppointmentsDetailTitle");
-        StatusLabel = AppResources.T("AppointmentsStatus");
-        TypeLabel = AppResources.T("AppointmentsType");
-        ReasonLabel = AppResources.T("AppointmentsReason");
-        WhenLabel = AppResources.T("AppointmentsWhen");
+        Title = T("AppointmentsDetailTitle");
+        StatusLabel = T("AppointmentsStatus");
+        TypeLabel = T("AppointmentsType");
+        ReasonLabel = T("AppointmentsReason");
+        WhenLabel = T("AppointmentsWhen");
         BackCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
     }
 
@@ -66,15 +65,16 @@ public sealed class AppointmentDetailViewModel : BaseViewModel
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("appointmentId", out var v) && v != null && Guid.TryParse(v.ToString(), out var id))
-            _appointmentId = id;
+        if (!TryGetQueryGuid(query, "appointmentId", out var id))
+            return;
+        _appointmentId = id;
     }
 
     public async Task LoadAsync()
     {
         if (_appointmentId == Guid.Empty)
         {
-            ErrorMessage = AppResources.T("AppointmentsDetailFailed");
+            ErrorMessage = T("AppointmentsDetailFailed");
             return;
         }
 
@@ -85,7 +85,7 @@ public sealed class AppointmentDetailViewModel : BaseViewModel
             var response = await _appointments.GetMyAppointmentAsync(_appointmentId, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("AppointmentsDetailFailed");
+                ErrorMessage = response.ErrorMessage ?? T("AppointmentsDetailFailed");
                 return;
             }
 

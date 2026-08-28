@@ -2,10 +2,9 @@ using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using RaphCare.Mobile.Core.Features.Settings.Services;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.Services.Auth;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.Services.Auth;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
@@ -21,30 +20,28 @@ public sealed class PrivacySettingsViewModel : BaseViewModel
     {
         _profile = profile ?? throw new ArgumentNullException(nameof(profile));
         _auth = auth ?? throw new ArgumentNullException(nameof(auth));
-        Title = AppResources.T("PrivacyTitle");
-        ChangePasswordCommand = new Command(async () =>
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-                await Shell.Current.DisplayAlertAsync(Title, AppResources.T("ProfileFeatureComingSoon"), AppResources.T("CommonOk"))));
+        Title = T("PrivacyTitle");
+        ChangePasswordCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.ChangePassword));
         DownloadDataCommand = new Command(async () =>
             await MainThread.InvokeOnMainThreadAsync(async () =>
                 await Shell.Current.DisplayAlertAsync(
-                    AppResources.T("PrivacyDownloadTitle"),
-                    AppResources.T("PrivacyDownloadMessage"),
-                    AppResources.T("CommonOk"))));
+                    T("PrivacyDownloadTitle"),
+                    T("PrivacyDownloadMessage"),
+                    T("CommonOk"))));
         DeleteAccountCommand = new Command(async () => await ConfirmDeleteAccountAsync());
 
-        SecuritySectionTitle = AppResources.T("PrivacySecuritySection");
-        ChangePasswordTitle = AppResources.T("ProfileChangePassword");
-        ChangePasswordSubtitle = AppResources.T("PrivacyChangePasswordSubtitle");
-        TwoFactorTitle = AppResources.T("PrivacyTwoFactorTitle");
-        TwoFactorSubtitle = AppResources.T("PrivacyTwoFactorSubtitle");
-        DataSectionTitle = AppResources.T("PrivacyDataSection");
-        DataSharingTitle = AppResources.T("PrivacyDataSharingTitle");
-        DataSharingSubtitle = AppResources.T("PrivacyDataSharingSubtitle");
-        DownloadTitle = AppResources.T("PrivacyDownloadRowTitle");
-        DownloadSubtitle = AppResources.T("PrivacyDownloadRowSubtitle");
-        DeleteTitle = AppResources.T("PrivacyDeleteRowTitle");
-        DeleteSubtitle = AppResources.T("PrivacyDeleteRowSubtitle");
+        SecuritySectionTitle = T("PrivacySecuritySection");
+        ChangePasswordTitle = T("ProfileChangePassword");
+        ChangePasswordSubtitle = T("PrivacyChangePasswordSubtitle");
+        TwoFactorTitle = T("PrivacyTwoFactorTitle");
+        TwoFactorSubtitle = T("PrivacyTwoFactorSubtitle");
+        DataSectionTitle = T("PrivacyDataSection");
+        DataSharingTitle = T("PrivacyDataSharingTitle");
+        DataSharingSubtitle = T("PrivacyDataSharingSubtitle");
+        DownloadTitle = T("PrivacyDownloadRowTitle");
+        DownloadSubtitle = T("PrivacyDownloadRowSubtitle");
+        DeleteTitle = T("PrivacyDeleteRowTitle");
+        DeleteSubtitle = T("PrivacyDeleteRowSubtitle");
     }
 
     public string SecuritySectionTitle { get; }
@@ -102,18 +99,18 @@ public sealed class PrivacySettingsViewModel : BaseViewModel
     {
         var ok = await MainThread.InvokeOnMainThreadAsync(async () =>
             await Shell.Current.DisplayAlertAsync(
-                AppResources.T("PrivacyDeleteTitle"),
-                AppResources.T("PrivacyDeleteMessage"),
-                AppResources.T("PrivacyDeleteConfirm"),
-                AppResources.T("CommonCancel")));
+                T("PrivacyDeleteTitle"),
+                T("PrivacyDeleteMessage"),
+                T("PrivacyDeleteConfirm"),
+                T("CommonCancel")));
         if (!ok)
             return;
 
         await MainThread.InvokeOnMainThreadAsync(async () =>
             await Shell.Current.DisplayAlertAsync(
-                AppResources.T("PrivacyDeleteRequestedTitle"),
-                AppResources.T("PrivacyDeleteRequestedBody"),
-                AppResources.T("CommonOk")));
+                T("PrivacyDeleteRequestedTitle"),
+                T("PrivacyDeleteRequestedBody"),
+                T("CommonOk")));
         await _auth.SignOutAsync(CancellationToken.None);
         await SafeShellNavigator.GoToAsync("//" + AppNavigator.Landing);
     }

@@ -4,9 +4,8 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.HealthRecords;
 using RaphCare.Mobile.Core.Features.Records.Models;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Records.ViewModels;
 
@@ -18,9 +17,9 @@ public sealed class RecordsViewModel : BaseViewModel
     public RecordsViewModel(IHealthRecordService healthRecords)
     {
         _healthRecords = healthRecords ?? throw new ArgumentNullException(nameof(healthRecords));
-        Title = AppResources.T("RecordsListTitle");
-        RefreshButtonText = AppResources.T("RecordsRefresh");
-        EmptyStateText = AppResources.T("RecordsEmpty");
+        Title = T("RecordsListTitle");
+        RefreshButtonText = T("RecordsRefresh");
+        EmptyStateText = T("RecordsEmpty");
 
         RefreshCommand = new Command(async () => await LoadAsync());
         OpenDetailCommand = new Command<Guid>(async id => await SafeShellNavigator.GoToAsync($"{AppNavigator.HealthRecordDetail}?visitId={id}"));
@@ -55,7 +54,7 @@ public sealed class RecordsViewModel : BaseViewModel
             var response = await _healthRecords.GetMyHealthRecordsAsync(1, 50, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? AppResources.T("RecordsLoadFailed");
+                ErrorMessage = response.ErrorMessage ?? T("RecordsLoadFailed");
                 Items.Clear();
                 NotifyEmptyChanged();
                 return;

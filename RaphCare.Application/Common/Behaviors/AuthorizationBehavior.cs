@@ -24,14 +24,16 @@ public class AuthorizationBehavior<TRequest, TResponse> : IPipelineBehavior<TReq
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (request is not IAllowAnonymousRequest && !_currentUserService.IsAuthenticated)
+        if (request is not IAllowAnonymousRequest
+            && request is not IPlatformAdminRequest
+            && !_currentUserService.IsAuthenticated)
         {
             throw new ForbiddenAccessException();
         }
 
         // Hook for per-request authorization rules (e.g., attributes, roles) in future.
 
-        return await next();
+        return await next(cancellationToken);
     }
 }
 

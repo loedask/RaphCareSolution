@@ -46,6 +46,7 @@ namespace RaphCare.Persistence.Migrations.AIDb
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Score")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -119,8 +120,8 @@ namespace RaphCare.Persistence.Migrations.AIDb
 
                     b.Property<string>("SnapshotJson")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");

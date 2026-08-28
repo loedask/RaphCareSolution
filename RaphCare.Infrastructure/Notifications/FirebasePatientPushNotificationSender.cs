@@ -12,7 +12,7 @@ namespace RaphCare.Infrastructure.Notifications;
 /// Sends patient push notifications via Firebase Cloud Messaging when <see cref="FirebasePushOptions.ServiceAccountJsonPath"/> is configured.
 /// Expects device tokens produced by the mobile app’s FCM registration flow.
 /// </summary>
-public sealed class FirebasePatientPushNotificationSender(
+public sealed partial class FirebasePatientPushNotificationSender(
     IPatientPushDeviceTokenReader tokenReader,
     IOptionsMonitor<FirebasePushOptions> options,
     ILogger<FirebasePatientPushNotificationSender> logger) : IPatientPushNotificationSender
@@ -35,7 +35,7 @@ public sealed class FirebasePatientPushNotificationSender(
         var o = _options.CurrentValue;
         if (!o.IsEnabled)
         {
-            _logger.LogWarning("Firebase push skipped: {Reason}.", "Service account path not configured or missing");
+            LogFirebasePushSkipped("Service account path not configured or missing");
             return;
         }
 
@@ -46,7 +46,7 @@ public sealed class FirebasePatientPushNotificationSender(
         var targets = await _tokenReader.GetTokensForPatientAsync(patientId, cancellationToken).ConfigureAwait(false);
         if (targets.Count == 0)
         {
-            _logger.LogInformation("Push skipped: no device tokens for patient {PatientId}.", patientId);
+            LogPushSkippedNoTokens(patientId);
             return;
         }
 
@@ -73,19 +73,11 @@ public sealed class FirebasePatientPushNotificationSender(
                 };
 
                 await FirebaseMessaging.DefaultInstance.SendAsync(message, cancellationToken).ConfigureAwait(false);
-                _logger.LogInformation(
-                    "FCM sent to patient {PatientId} platform {Platform}.",
-                    patientId,
-                    t.Platform);
+                LogFcmSent(patientId, t.Platform);
             }
             catch (FirebaseMessagingException ex)
             {
-                _logger.LogWarning(
-                    ex,
-                    "FCM send failed for patient {PatientId} platform {Platform}: {Message}",
-                    patientId,
-                    t.Platform,
-                    ex.Message);
+                LogFcmSendFailed(ex, patientId, t.Platform, ex.Message);
             }
         }
     }
@@ -100,8 +92,7 @@ public sealed class FirebasePatientPushNotificationSender(
                 {
                     if (!string.Equals(_initializedCredentialPath, credentialPath, StringComparison.OrdinalIgnoreCase))
                     {
-                        _logger.LogWarning(
-                            "Firebase was already initialized with a different credential path; continuing with the first app instance.");
+                        LogFirebaseCredentialPathMismatch();
                     }
 
                     return true;
@@ -111,7 +102,9 @@ public sealed class FirebasePatientPushNotificationSender(
                 {
                     FirebaseApp.Create(new AppOptions
                     {
-                        Credential = GoogleCredential.FromFile(credentialPath),
+                        Credential = Google.Apis.Auth.OAuth2.CredentialFactory
+                            .FromFile<ServiceAccountCredential>(credentialPath)
+                            .ToGoogleCredential(),
                     });
                 }
 
@@ -122,7 +115,7 @@ public sealed class FirebasePatientPushNotificationSender(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "FirebaseApp initialization failed for path {Path}.", credentialPath);
+            LogFirebaseInitFailed(ex, credentialPath);
             return false;
         }
     }
@@ -133,4 +126,24 @@ public sealed class FirebasePatientPushNotificationSender(
             return value;
         return value[..maxLen];
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Firebase push skipped: {Reason}.")]
+    private partial void LogFirebasePushSkipped(string reason);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Push skipped: no device tokens for patient {PatientId}.")]
+    private partial void LogPushSkippedNoTokens(Guid patientId);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "FCM sent to patient {PatientId} platform {Platform}.")]
+    private partial void LogFcmSent(Guid patientId, string platform);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "FCM send failed for patient {PatientId} platform {Platform}: {Message}")]
+    private partial void LogFcmSendFailed(Exception exception, Guid patientId, string platform, string message);
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "Firebase was already initialized with a different credential path; continuing with the first app instance.")]
+    private partial void LogFirebaseCredentialPathMismatch();
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "FirebaseApp initialization failed for path {Path}.")]
+    private partial void LogFirebaseInitFailed(Exception exception, string path);
 }

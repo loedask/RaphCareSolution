@@ -28,8 +28,16 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<PatientClinicAccess> PatientClinicAccesses => Set<PatientClinicAccess>();
     public DbSet<PatientFamilyMember> PatientFamilyMembers => Set<PatientFamilyMember>();
     public DbSet<MoodLog> MoodLogs => Set<MoodLog>();
+    public DbSet<MentalHealthAssessment> MentalHealthAssessments => Set<MentalHealthAssessment>();
     public DbSet<PatientInAppNotification> PatientInAppNotifications => Set<PatientInAppNotification>();
     public DbSet<PatientPushDevice> PatientPushDevices => Set<PatientPushDevice>();
+    public DbSet<PatientSupportMessage> PatientSupportMessages => Set<PatientSupportMessage>();
+    public DbSet<ClinicStaffMembership> ClinicStaffMemberships => Set<ClinicStaffMembership>();
+    public DbSet<ClinicStaffInvitation> ClinicStaffInvitations => Set<ClinicStaffInvitation>();
+    public DbSet<Ward> Wards => Set<Ward>();
+    public DbSet<Room> Rooms => Set<Room>();
+    public DbSet<Bed> Beds => Set<Bed>();
+    public DbSet<InpatientAdmission> InpatientAdmissions => Set<InpatientAdmission>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -45,10 +53,19 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new PatientClinicAccessConfiguration());
         modelBuilder.ApplyConfiguration(new PatientFamilyMemberConfiguration());
         modelBuilder.ApplyConfiguration(new MoodLogConfiguration());
+        modelBuilder.ApplyConfiguration(new MentalHealthAssessmentConfiguration());
         modelBuilder.ApplyConfiguration(new PatientInAppNotificationConfiguration());
         modelBuilder.ApplyConfiguration(new PatientPushDeviceConfiguration());
+        modelBuilder.ApplyConfiguration(new ClinicStaffMembershipConfiguration());
+        modelBuilder.ApplyConfiguration(new ClinicStaffInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new VitalSignRecordConfiguration());
+        modelBuilder.ApplyConfiguration(new SOAPNoteConfiguration());
+        modelBuilder.ApplyConfiguration(new ClinicalNoteConfiguration());
         modelBuilder.ApplyConfiguration(new ServiceOfferingConfiguration());
+        modelBuilder.ApplyConfiguration(new WardConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomConfiguration());
+        modelBuilder.ApplyConfiguration(new BedConfiguration());
+        modelBuilder.ApplyConfiguration(new InpatientAdmissionConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

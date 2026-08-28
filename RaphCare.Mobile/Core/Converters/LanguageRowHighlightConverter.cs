@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace RaphCare.Mobile.Core.Converters;
 
-/// <summary>Background for the language picker row when <see cref="LanguageOption.IsCurrent"/> is true.</summary>
+/// <summary>Background for the language picker row when the bound value is true (current language).</summary>
 public sealed class LanguageRowHighlightConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>

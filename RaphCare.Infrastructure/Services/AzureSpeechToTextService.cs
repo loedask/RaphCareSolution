@@ -8,7 +8,7 @@ using RaphCare.Application.Common.Interfaces;
 namespace RaphCare.Infrastructure.Services;
 
 /// <summary>Azure Cognitive Services speech-to-text (optional provider).</summary>
-public sealed class AzureSpeechToTextService(
+public sealed partial class AzureSpeechToTextService(
     IOptionsMonitor<SpeechToTextOptions> options,
     ILogger<AzureSpeechToTextService> logger) : ISpeechToTextService
 {
@@ -49,7 +49,7 @@ public sealed class AzureSpeechToTextService(
                 throw new InvalidOperationException($"Azure Speech failed with reason {result.Reason}.");
 
             var fullText = result.Text?.Trim() ?? string.Empty;
-            logger.LogInformation("Azure Speech transcription completed ({Length} chars).", fullText.Length);
+            LogAzureTranscriptionCompleted(fullText.Length);
 
             return new TranscriptionResult
             {
@@ -60,7 +60,7 @@ public sealed class AzureSpeechToTextService(
         finally
         {
             try { File.Delete(tempPath); }
-            catch (Exception ex) { logger.LogDebug(ex, "Failed to delete temp wav {Path}.", tempPath); }
+            catch (Exception ex) { LogTempWavDeleteFailed(ex, tempPath); }
         }
     }
 
@@ -71,4 +71,10 @@ public sealed class AzureSpeechToTextService(
 
         return language.Contains('-', StringComparison.Ordinal) ? language : $"{language}-US";
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Azure Speech transcription completed ({Length} chars).")]
+    private partial void LogAzureTranscriptionCompleted(int length);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Failed to delete temp wav {Path}.")]
+    private partial void LogTempWavDeleteFailed(Exception exception, string path);
 }

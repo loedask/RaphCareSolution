@@ -1,4 +1,5 @@
-using RaphCare.Mobile.Core.Shared.Navigation;
+using System.Globalization;
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile;
@@ -19,11 +20,11 @@ public partial class AppShell : Shell
 
         var titles = new[]
         {
-            AppResources.T("TabHome"),
-            AppResources.T("TabAppointments"),
-            AppResources.T("TabRecords"),
-            AppResources.T("TabInsurance"),
-            AppResources.T("TabProfile"),
+            AppResources.T("TabHome", CultureInfo.CurrentUICulture),
+            AppResources.T("TabAppointments", CultureInfo.CurrentUICulture),
+            AppResources.T("TabRecords", CultureInfo.CurrentUICulture),
+            AppResources.T("TabInsurance", CultureInfo.CurrentUICulture),
+            AppResources.T("TabProfile", CultureInfo.CurrentUICulture),
         };
 
         for (var i = 0; i < tabBar.Items.Count && i < titles.Length; i++)

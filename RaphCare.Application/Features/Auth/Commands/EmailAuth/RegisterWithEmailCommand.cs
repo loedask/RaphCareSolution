@@ -12,4 +12,7 @@ public sealed class RegisterWithEmailCommand : IRequest<EmailAuthResult>, IAllow
 
     /// <summary>Optional clinic to link during registration. Omit to create a patient without clinic access.</summary>
     public Guid? ClinicId { get; init; }
+
+    /// <summary>Six-digit code from the verification email.</summary>
+    public string VerificationCode { get; init; } = string.Empty;
 }

@@ -7,7 +7,7 @@ using Whisper.net.Ggml;
 namespace RaphCare.Infrastructure.Services;
 
 /// <summary>Loads and caches the Whisper ggml model (singleton — model load is expensive).</summary>
-public sealed class WhisperModelHolder(
+public sealed partial class WhisperModelHolder(
     IOptionsMonitor<SpeechToTextOptions> options,
     ILogger<WhisperModelHolder> logger) : IAsyncDisposable
 {
@@ -37,7 +37,7 @@ public sealed class WhisperModelHolder(
                         modelPath);
                 }
 
-                logger.LogInformation("Downloading Whisper ggml model ({ModelType}) to {Path}…", whisperOptions.ModelType, modelPath);
+                LogDownloadingWhisperModel(whisperOptions.ModelType, modelPath);
                 Directory.CreateDirectory(Path.GetDirectoryName(modelPath)!);
 
                 var ggmlType = ParseGgmlType(whisperOptions.ModelType);
@@ -45,7 +45,7 @@ public sealed class WhisperModelHolder(
                     .ConfigureAwait(false);
                 await using var fileWriter = File.OpenWrite(modelPath);
                 await modelStream.CopyToAsync(fileWriter, cancellationToken).ConfigureAwait(false);
-                logger.LogInformation("Whisper model ready at {Path}.", modelPath);
+                LogWhisperModelReady(modelPath);
             }
 
             _factory = WhisperFactory.FromPath(modelPath);
@@ -81,4 +81,10 @@ public sealed class WhisperModelHolder(
         Enum.TryParse<GgmlType>(modelType, ignoreCase: true, out var parsed)
             ? parsed
             : GgmlType.Base;
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Downloading Whisper ggml model ({ModelType}) to {Path}…")]
+    private partial void LogDownloadingWhisperModel(string modelType, string path);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Whisper model ready at {Path}.")]
+    private partial void LogWhisperModelReady(string path);
 }

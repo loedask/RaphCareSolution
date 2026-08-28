@@ -1,7 +1,6 @@
 using System.Windows.Input;
-using RaphCare.Mobile.Core.Shared.Navigation;
-using RaphCare.Mobile.Core.Shared.ViewModels;
-using RaphCare.Mobile.Resources.Strings;
+using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
@@ -10,15 +9,21 @@ public class AccountCreatedViewModel : BaseViewModel
 {
     public AccountCreatedViewModel()
     {
-        Title = AppResources.T("AccountCreatedPageTitle");
+        Title = T("AccountCreatedPageTitle");
+
+    Headline = T("AccountCreatedTitle");
+
+    Body = T("AccountCreatedSubtitle");
+
+    ContinueLabel = T("AccountCreatedContinue");
         ContinueCommand = new Command(async () => await SafeShellNavigator.GoToAsync("//HomePage"));
     }
 
-    public string Headline => AppResources.T("AccountCreatedTitle");
+    public string Headline { get; }
 
-    public string Body => AppResources.T("AccountCreatedSubtitle");
+    public string Body { get; }
 
-    public string ContinueLabel => AppResources.T("AccountCreatedContinue");
+    public string ContinueLabel { get; }
 
     public ICommand ContinueCommand { get; }
 }
