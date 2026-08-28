@@ -45,14 +45,14 @@
                 <div class="hospitals-empty-path">
                     <p class="admin-page-eyebrow">@AppResources.T("Common_LinkHospital")</p>
                     <div class="claim-form">
-                        <label for="hospital-claim-number">@AppResources.T("Common_RegistrationNumber")</label>
+                        <label for="hospital-claim-number">@AppResources.T("Common_HospitalClaimLabel")</label>
                         <div class="claim-form-row">
                             <input id="hospital-claim-number"
                                    class="form-control"
                                    @bind="_claimRegistrationNumber"
                                    @bind:event="oninput"
                                    @bind:after="OnClaimNumberChanged"
-                                   placeholder="@AppResources.T("Common_RegistrationNumberPlaceholder")" />
+                                   placeholder="@AppResources.T("Common_HospitalClaimPlaceholder")" />
                             <button type="button"
                                     class="btn btn-secondary"
                                     disabled="@(_claiming || string.IsNullOrWhiteSpace(_claimRegistrationNumber))"
@@ -85,6 +85,7 @@
                     <thead>
                         <tr>
                             <th>@AppResources.T("Common_Name")</th>
+                            <th>@AppResources.T("Common_HospitalReference")</th>
                             <th>@AppResources.T("Common_RegistrationNumberShort")</th>
                             <th>@AppResources.T("Common_Country")</th>
                             <th>@AppResources.T("Common_Facilities")</th>
@@ -98,6 +99,7 @@
                         {
                             <tr>
                                 <td><a class="card-header-link" href="/admin/hospitals/@clinic.Id"><strong>@clinic.Name</strong></a></td>
+                                <td><code>@clinic.ReferenceCode</code></td>
                                 <td>@clinic.RegistrationNumber</td>
                                 <td>@clinic.Country</td>
                                 <td>@clinic.FacilityCount</td>

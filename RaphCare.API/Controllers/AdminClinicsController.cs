@@ -186,7 +186,7 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
         return linked ? NoContent() : Forbid();
     }
 
-    /// <summary>Link the current user to an existing hospital by registration number (first claim only).</summary>
+    /// <summary>Link the current user to an existing hospital by RaphCare reference or registration number (first claim only).</summary>
     [HttpPost("claim", Name = "ClaimClinicByRegistrationNumber")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -212,7 +212,9 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             var result = await mediator.Send(command, cancellationToken);
             return CreatedAtAction(nameof(GetList), new { id = result.ClinicId }, result);
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("registration number", StringComparison.OrdinalIgnoreCase))
+        catch (InvalidOperationException ex) when (
+            ex.Message.Contains("hospital reference", StringComparison.OrdinalIgnoreCase)
+            || ex.Message.Contains("registration number", StringComparison.OrdinalIgnoreCase))
         {
             return Conflict(new { error = ex.Message });
         }

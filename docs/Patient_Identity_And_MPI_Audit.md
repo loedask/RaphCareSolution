@@ -205,7 +205,7 @@ So **ApplicationUserId is set only when a user verifies OTP**, either for an exi
 | (SourceSystem, ExternalId) on PatientExternalIds | No | Index only |
 | Patient + DOB / name+DOB | No | No such index or constraint |
 
-Other entities (e.g. Clinic RegistrationNumber, Device SerialNumber, Insurance Code) use `.IsUnique()` where needed; Patient and PatientExternalId do not.
+Other entities (e.g. Clinic ReferenceCode, Device SerialNumber, Insurance Code) use `.IsUnique()` where needed; Patient and PatientExternalId do not. Clinic RegistrationNumber is indexed but not unique.
 
 **Conclusion:** No unique constraints on NationalHealthId or (SourceSystem, ExternalId). Duplicate national IDs and duplicate external ids per source system are allowed at the database level.
 

@@ -6,6 +6,7 @@ public class ClinicListItemDto
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string RegistrationNumber { get; set; } = string.Empty;
+    public string ReferenceCode { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public string TimeZone { get; set; } = string.Empty;
     public bool IsActive { get; set; }

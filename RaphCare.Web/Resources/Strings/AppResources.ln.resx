@@ -478,6 +478,18 @@
   <data name="Common_HospitalId" xml:space="preserve">
     <value>ID ya lopitalo</value>
   </data>
+  <data name="Common_HospitalReference" xml:space="preserve">
+    <value>Référence ya lopitalo</value>
+  </data>
+  <data name="Common_HospitalReferenceHint" xml:space="preserve">
+    <value>Pesa référence oyo na basali oyo basalaka lien na lopitalo.</value>
+  </data>
+  <data name="Common_HospitalClaimLabel" xml:space="preserve">
+    <value>Référence to numéro ya kokomisa</value>
+  </data>
+  <data name="Common_HospitalClaimPlaceholder" xml:space="preserve">
+    <value>ndakisa RC-K7M3P2 to HPCSA-12345</value>
+  </data>
   <data name="Common_PrimaryFacility" xml:space="preserve">
     <value>Esika ya libosoliboso</value>
   </data>
@@ -1534,6 +1546,9 @@
   <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
     <value>Mopesi</value>
   </data>
+  <data name="AdminLayout_AllHospitals" xml:space="preserve">
+    <value>Ba lopitalo nyonso</value>
+  </data>
   <data name="Dashboard_PageTitle" xml:space="preserve">
     <value>RaphCare Mokambi ya mosala</value>
   </data>
@@ -1583,13 +1598,13 @@
     <value>Ba lopitalo moko te ekangami nanu</value>
   </data>
   <data name="HospitalsIndex_EmptyLead" xml:space="preserve">
-    <value>Komisa lopitalo ya sika, to kokangisa oyo osalaki liboso na kosalelaka nimero na yango ya bokomisi nkombo.</value>
+    <value>Komisa lopitalo ya sika, to sala lien na oyo osalaki liboso na référence to nimero ya bokomisi nkombo.</value>
   </data>
   <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
     <value>{0} motango mobimba</value>
   </data>
   <data name="HospitalsIndex_EnterRegistrationNumber" xml:space="preserve">
-    <value>Tia nimero ya enregistrement.</value>
+    <value>Tia référence to nimero ya enregistrement.</value>
   </data>
   <data name="HospitalsRegister_PageTitle" xml:space="preserve">
     <value>Bokomisa lopitalo - RaphCare Admin</value>

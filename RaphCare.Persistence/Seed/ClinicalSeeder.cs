@@ -63,6 +63,7 @@ public static class ClinicalSeeder
             {
                 Name = "RaphCare Demo Clinic",
                 RegistrationNumber = "REG-DEMO-001",
+                ReferenceCode = "RC-DEMCLN",
                 Country = "South Africa",
                 TimeZone = "South Africa Standard Time",
                 IsActive = true

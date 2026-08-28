@@ -432,6 +432,18 @@
   <data name="Common_HospitalId" xml:space="preserve">
     <value>Hospital ID</value>
   </data>
+  <data name="Common_HospitalReference" xml:space="preserve">
+    <value>Hospital reference</value>
+  </data>
+  <data name="Common_HospitalReferenceHint" xml:space="preserve">
+    <value>Share this with staff who need to link the hospital.</value>
+  </data>
+  <data name="Common_HospitalClaimLabel" xml:space="preserve">
+    <value>Hospital reference or registration number</value>
+  </data>
+  <data name="Common_HospitalClaimPlaceholder" xml:space="preserve">
+    <value>e.g. RC-K7M3P2 or HPCSA-12345</value>
+  </data>
   <data name="Common_PrimaryFacility" xml:space="preserve">
     <value>Primary facility</value>
   </data>
@@ -1488,6 +1500,9 @@
   <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
     <value>Provider</value>
   </data>
+  <data name="AdminLayout_AllHospitals" xml:space="preserve">
+    <value>All hospitals</value>
+  </data>
   <data name="Dashboard_PageTitle" xml:space="preserve">
     <value>RaphCare Admin</value>
   </data>
@@ -1537,13 +1552,13 @@
     <value>No hospitals linked yet</value>
   </data>
   <data name="HospitalsIndex_EmptyLead" xml:space="preserve">
-    <value>Register a new hospital, or link one you created earlier using its registration number.</value>
+    <value>Register a new hospital, or link one you created earlier using its hospital reference or registration number.</value>
   </data>
   <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
     <value>{0} total</value>
   </data>
   <data name="HospitalsIndex_EnterRegistrationNumber" xml:space="preserve">
-    <value>Enter a registration number.</value>
+    <value>Enter a hospital reference or registration number.</value>
   </data>
   <data name="HospitalsRegister_PageTitle" xml:space="preserve">
     <value>Register hospital - RaphCare Admin</value>

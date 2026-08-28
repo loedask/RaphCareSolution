@@ -58,6 +58,7 @@ public sealed class GetAdminClinicsHandler(
                 Id = c.Id,
                 Name = c.Name,
                 RegistrationNumber = c.RegistrationNumber,
+                ReferenceCode = c.ReferenceCode,
                 Country = c.Country,
                 TimeZone = c.TimeZone,
                 IsActive = c.IsActive,

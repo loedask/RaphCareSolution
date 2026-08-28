@@ -20,7 +20,7 @@ Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-ch
 
 Each section shows its % in the heading. Numbers stay in sync with the engineering checklist when status changes.
 
-Last reviewed: 2026-08-27
+Last reviewed: 2026-08-28
 
 ---
 
@@ -30,8 +30,8 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 
 | Area | Status | What you can do |
 |------|--------|-----------------|
-| Hospital list, register, claim | Done | Find or register a hospital |
-| Hospital profile and facilities | Done | Edit details; add physical or virtual locations |
+| Hospital list, register, claim | Done | Find or register a hospital. Each hospital gets a short RaphCare reference staff can share. |
+| Hospital profile and facilities | Done | Edit details; add physical or virtual locations. Opening a hospital hides the left menu so the hospital tools have more room. |
 | Staff invites and roles | Done | Invite people; set admin vs staff |
 | Patients at a hospital | Done | Grant or remove access; open patient detail |
 | Providers and schedules | Done | Add providers; manage schedules |

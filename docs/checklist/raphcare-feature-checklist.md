@@ -27,7 +27,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-08-27
+Last reviewed: 2026-08-28
 
 ---
 
@@ -38,7 +38,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 ### API + Client
 
 - [x] Clinic list / detail / update
-- [x] Register clinic + claim by registration number + ensure membership
+- [x] Register clinic + platform reference code + claim by reference or registration number + ensure membership
 - [x] Patients: list, detail, grant / revoke access
 - [x] Staff: invite, role, resend, cancel pending, remove
 - [x] Facilities CRUD (physical + virtual)
@@ -52,7 +52,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 ### Admin panel (Web)
 
 - [x] Hospitals index / register / claim
-- [x] Hospital detail (overview, facilities, patients, providers, staff)
+- [x] Hospital detail (overview, facilities, patients, providers, staff). Opening a hospital hides the platform sidebar; All hospitals, language, and sign out sit in the top bar.
 - [x] Patient detail page
 - [x] Provider detail + schedules
 - [x] Appointments page

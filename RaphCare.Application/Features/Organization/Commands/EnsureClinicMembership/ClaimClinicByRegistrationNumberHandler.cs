@@ -14,17 +14,11 @@ public sealed class ClaimClinicByRegistrationNumberHandler(
         if (currentUserService.CurrentUserId is not { } userId)
             return null;
 
-        var registrationNumber = request.RegistrationNumber.Trim();
-        if (string.IsNullOrWhiteSpace(registrationNumber))
+        var raw = request.RegistrationNumber.Trim();
+        if (string.IsNullOrWhiteSpace(raw))
             return null;
 
-        var page = await clinicRepository.SearchAsync(
-            queryShaper: q => q.Where(c => c.RegistrationNumber == registrationNumber),
-            pageNumber: 1,
-            pageSize: 1,
-            cancellationToken: cancellationToken).ConfigureAwait(false);
-
-        var clinic = page.Items.Count > 0 ? page.Items[0] : null;
+        var clinic = await FindClinicAsync(raw, cancellationToken).ConfigureAwait(false);
         if (clinic is null)
             return null;
 
@@ -40,5 +34,30 @@ public sealed class ClaimClinicByRegistrationNumberHandler(
 
         await clinicStaffMembershipService.EnsureMembershipAsync(userId, clinic.Id, cancellationToken).ConfigureAwait(false);
         return clinic.Id;
+    }
+
+    private async Task<Clinic?> FindClinicAsync(string raw, CancellationToken cancellationToken)
+    {
+        if (ClinicReferenceCode.TryNormalize(raw, out var referenceCode))
+        {
+            var byCode = await clinicRepository.SearchAsync(
+                queryShaper: q => q.Where(c => c.ReferenceCode == referenceCode),
+                pageNumber: 1,
+                pageSize: 1,
+                applyDefaultIdOrdering: false,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            if (byCode.Items.Count == 1)
+                return byCode.Items[0];
+        }
+
+        var byRegistration = await clinicRepository.SearchAsync(
+            queryShaper: q => q.Where(c => c.RegistrationNumber == raw),
+            pageNumber: 1,
+            pageSize: 2,
+            applyDefaultIdOrdering: false,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        return byRegistration.Items.Count == 1 ? byRegistration.Items[0] : null;
     }
 }

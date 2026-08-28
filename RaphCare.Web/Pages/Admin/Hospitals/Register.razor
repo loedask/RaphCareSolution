@@ -15,9 +15,16 @@
 
             <div class="review-grid">
                 <div class="review-item">
-                    <span class="review-label">@AppResources.T("Common_HospitalId")</span>
-                    <span class="review-value"><code>@_result.ClinicId</code></span>
+                    <span class="review-label">@AppResources.T("Common_HospitalReference")</span>
+                    <span class="review-value"><code>@_result.ReferenceCode</code></span>
                 </div>
+                @if (!string.IsNullOrWhiteSpace(_draft.RegistrationNumber))
+                {
+                    <div class="review-item">
+                        <span class="review-label">@AppResources.T("Common_RegistrationNumberShort")</span>
+                        <span class="review-value">@_draft.RegistrationNumber</span>
+                    </div>
+                }
                 @if (_result.PrimaryFacilityName is not null)
                 {
                     <div class="review-item">
@@ -33,6 +40,8 @@
                     </div>
                 }
             </div>
+
+            <p class="hint">@AppResources.T("Common_HospitalReferenceHint")</p>
 
             <div class="admin-page-actions">
                 <a class="btn btn-primary" href="/admin/hospitals/@_result.ClinicId">@AppResources.T("Common_OpenHospital")</a>

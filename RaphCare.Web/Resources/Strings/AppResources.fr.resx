@@ -478,6 +478,18 @@
   <data name="Common_HospitalId" xml:space="preserve">
     <value>Numéro d&apos;identification de l&apos;hôpital</value>
   </data>
+  <data name="Common_HospitalReference" xml:space="preserve">
+    <value>Référence de l&apos;hôpital</value>
+  </data>
+  <data name="Common_HospitalReferenceHint" xml:space="preserve">
+    <value>Communiquez cette référence au personnel qui doit relier l&apos;hôpital.</value>
+  </data>
+  <data name="Common_HospitalClaimLabel" xml:space="preserve">
+    <value>Référence ou numéro d&apos;enregistrement</value>
+  </data>
+  <data name="Common_HospitalClaimPlaceholder" xml:space="preserve">
+    <value>par ex. RC-K7M3P2 ou HPCSA-12345</value>
+  </data>
   <data name="Common_PrimaryFacility" xml:space="preserve">
     <value>Installation principale</value>
   </data>
@@ -1534,6 +1546,9 @@
   <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
     <value>Fournisseur</value>
   </data>
+  <data name="AdminLayout_AllHospitals" xml:space="preserve">
+    <value>Tous les hôpitaux</value>
+  </data>
   <data name="Dashboard_PageTitle" xml:space="preserve">
     <value>Administrateur RaphCare</value>
   </data>
@@ -1583,13 +1598,13 @@
     <value>Aucun hôpital lié pour l&apos;instant</value>
   </data>
   <data name="HospitalsIndex_EmptyLead" xml:space="preserve">
-    <value>Enregistrez un nouvel hôpital ou associez-en un que vous avez créé précédemment en utilisant son numéro d&apos;enregistrement.</value>
+    <value>Enregistrez un nouvel hôpital, ou reliez-en un que vous avez déjà créé avec sa référence ou son numéro d&apos;enregistrement.</value>
   </data>
   <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
     <value>{0} total</value>
   </data>
   <data name="HospitalsIndex_EnterRegistrationNumber" xml:space="preserve">
-    <value>Entrez un numéro d&apos;enregistrement.</value>
+    <value>Entrez une référence ou un numéro d&apos;enregistrement.</value>
   </data>
   <data name="HospitalsRegister_PageTitle" xml:space="preserve">
     <value>Registre de l&apos;hôpital - RaphCare Admin</value>

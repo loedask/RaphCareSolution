@@ -39,6 +39,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                     Id = c.Id,
                     Name = c.Name,
                     RegistrationNumber = c.RegistrationNumber,
+                    ReferenceCode = c.ReferenceCode,
                     Country = c.Country,
                     TimeZone = c.TimeZone,
                     IsActive = c.IsActive,
@@ -295,7 +296,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         try
         {
             if (string.IsNullOrWhiteSpace(registrationNumber))
-                return Response<Guid?>.Failure("Enter a registration number.", 400);
+                return Response<Guid?>.Failure("Enter a hospital reference or registration number.", 400);
 
             var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
             using var response = await client
@@ -303,7 +304,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 .ConfigureAwait(false);
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return Response<Guid?>.Failure("No hospital found with that registration number, or it is already linked to another team.", 404);
+                return Response<Guid?>.Failure("No hospital found with that reference or registration number, or it is already linked to another team.", 404);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -347,6 +348,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 {
                     ClinicId = dto.ClinicId,
                     Name = dto.Name,
+                    ReferenceCode = dto.ReferenceCode,
                     PrimaryFacilityId = dto.PrimaryFacilityId,
                     PrimaryFacilityName = dto.PrimaryFacilityName
                 });
@@ -1769,6 +1771,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         Id = dto.Id,
         Name = dto.Name,
         RegistrationNumber = dto.RegistrationNumber,
+        ReferenceCode = dto.ReferenceCode,
         Country = dto.Country,
         TimeZone = dto.TimeZone,
         IsActive = dto.IsActive,
@@ -1955,6 +1958,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string RegistrationNumber { get; set; } = string.Empty;
+        public string ReferenceCode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
         public string TimeZone { get; set; } = string.Empty;
         public bool IsActive { get; set; }
@@ -1967,6 +1971,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string RegistrationNumber { get; set; } = string.Empty;
+        public string ReferenceCode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
         public string TimeZone { get; set; } = string.Empty;
         public bool IsActive { get; set; }
@@ -1995,6 +2000,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
     {
         public Guid ClinicId { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string ReferenceCode { get; set; } = string.Empty;
         public Guid? PrimaryFacilityId { get; set; }
         public string? PrimaryFacilityName { get; set; }
     }

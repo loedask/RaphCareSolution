@@ -490,6 +490,7 @@ AdminLayout_BreadcrumbClinicPortal|Clinic portal
 AdminLayout_BreadcrumbRegisterHospital|Register hospital
 AdminLayout_BreadcrumbHospitalDetails|Hospital details
 AdminLayout_BreadcrumbProvider|Provider
+AdminLayout_AllHospitals|All hospitals
 Dashboard_PageTitle|RaphCare Admin
 Dashboard_HospitalDashboardLead|Hospital dashboard for your active context.
 Dashboard_SelectHospitalLead|Select a hospital from the top bar to see scoped metrics.

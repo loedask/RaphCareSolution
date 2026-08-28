@@ -111,16 +111,16 @@
 
                     <div class="review-grid" style="margin-top: 1.5rem;">
                         <div class="review-item">
+                            <span class="review-label">@AppResources.T("Common_HospitalReference")</span>
+                            <span class="review-value"><code>@_detail.ReferenceCode</code></span>
+                        </div>
+                        <div class="review-item">
                             <span class="review-label">@AppResources.T("Common_RegistrationNumberShort")</span>
                             <span class="review-value">@_detail.RegistrationNumber</span>
                         </div>
                         <div class="review-item">
                             <span class="review-label">@AppResources.T("Common_Registered")</span>
                             <span class="review-value">@_detail.CreatedAt.ToString("dd MMM yyyy")</span>
-                        </div>
-                        <div class="review-item">
-                            <span class="review-label">@AppResources.T("Common_HospitalId")</span>
-                            <span class="review-value"><code>@_detail.Id</code></span>
                         </div>
                     </div>
                 </div>

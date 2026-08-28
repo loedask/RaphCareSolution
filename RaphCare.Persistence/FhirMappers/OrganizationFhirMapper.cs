@@ -18,6 +18,15 @@ public class OrganizationFhirMapper : IOrganizationFhirMapper
             Active = organization.IsActive
         };
 
+        if (!string.IsNullOrWhiteSpace(organization.ReferenceCode))
+        {
+            dto.Identifier.Add(new FhirIdentifierDto
+            {
+                System = "urn:raphcare:clinic-reference-code",
+                Value = organization.ReferenceCode
+            });
+        }
+
         if (!string.IsNullOrWhiteSpace(organization.RegistrationNumber))
         {
             dto.Identifier.Add(new FhirIdentifierDto

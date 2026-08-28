@@ -25,6 +25,7 @@ internal static class AdminClinicDetailMapper
             Id = clinic.Id,
             Name = clinic.Name,
             RegistrationNumber = clinic.RegistrationNumber,
+            ReferenceCode = clinic.ReferenceCode,
             Country = clinic.Country,
             TimeZone = clinic.TimeZone,
             IsActive = clinic.IsActive,

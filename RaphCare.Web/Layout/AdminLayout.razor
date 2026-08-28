@@ -1,8 +1,10 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 
-<div class="admin-shell">
-    <aside class="admin-sidebar">
+<div class="admin-shell @(IsHospitalWorkspace ? "admin-shell-hospital" : null)">
+    @if (!IsHospitalWorkspace)
+    {
+        <aside class="admin-sidebar">
         <div class="admin-brand">
             <div class="admin-brand-icon">+</div>
             <div>
@@ -47,25 +49,52 @@
             <LanguagePicker />
             <button type="button" class="btn btn-ghost admin-signout" @onclick="SignOutAsync">@AppResources.T("Common_SignOut")</button>
         </div>
-    </aside>
+        </aside>
+    }
 
     <div class="admin-main">
         <header class="admin-topbar">
             <div class="admin-topbar-left">
-                <nav class="admin-breadcrumb" aria-label="@AppResources.T("AdminLayout_BreadcrumbAria")">
-                    @foreach (var (label, href, isLast) in _breadcrumbs)
-                    {
-                        if (isLast)
+                @if (IsHospitalWorkspace)
+                {
+                    <a class="admin-topbar-brand" href="/admin" title="@AppResources.T("Common_Dashboard")">
+                        <div class="admin-brand-icon admin-topbar-brand-icon">+</div>
+                        <span class="admin-topbar-brand-title">@AppResources.T("Common_AppName")</span>
+                    </a>
+                    <nav class="admin-workspace-nav" aria-label="@AppResources.T("AdminLayout_BreadcrumbAria")">
+                        <a class="admin-all-hospitals" href="/admin/hospitals">
+                            <span aria-hidden="true">←</span>
+                            @AppResources.T("AdminLayout_AllHospitals")
+                        </a>
+                        @if (ClinicContext.CurrentClinicId is Guid workspaceClinicId
+                             && !string.IsNullOrWhiteSpace(ClinicContext.CurrentClinicName))
                         {
-                            <span class="admin-breadcrumb-current">@label</span>
+                            <span class="admin-breadcrumb-sep" aria-hidden="true">/</span>
+                            <a class="admin-topbar-hospital"
+                               href="@($"/admin/hospitals/{workspaceClinicId}")"
+                               title="@AppResources.T("AdminLayout_ActiveHospitalTitle")">
+                                @ClinicContext.CurrentClinicName
+                            </a>
                         }
-                        else
+                    </nav>
+                }
+                else
+                {
+                    <nav class="admin-breadcrumb" aria-label="@AppResources.T("AdminLayout_BreadcrumbAria")">
+                        @foreach (var (label, href, isLast) in _breadcrumbs)
                         {
-                            <a href="@href">@label</a>
-                            <span class="admin-breadcrumb-sep">/</span>
+                            if (isLast)
+                            {
+                                <span class="admin-breadcrumb-current">@label</span>
+                            }
+                            else
+                            {
+                                <a href="@href">@label</a>
+                                <span class="admin-breadcrumb-sep">/</span>
+                            }
                         }
-                    }
-                </nav>
+                    </nav>
+                }
             </div>
             <div class="admin-topbar-right">
                 <div class="admin-search-wrap">
@@ -92,7 +121,7 @@
                                             role="option"
                                             @onclick="() => NavigateToHospitalAsync(clinic.Id, clinic.Name)">
                                         <span class="admin-search-item-name">@clinic.Name</span>
-                                        <span class="admin-search-item-meta">@clinic.RegistrationNumber</span>
+                                        <span class="admin-search-item-meta">@clinic.ReferenceCode</span>
                                     </button>
                                 }
                             }
@@ -144,16 +173,21 @@
                                             aria-selected="@(ClinicContext.CurrentClinicId == clinic.Id)"
                                             @onclick="() => SwitchClinicAsync(clinic.Id, clinic.Name)">
                                         <span class="admin-clinic-switcher-item-name">@clinic.Name</span>
-                                        <span class="admin-clinic-switcher-item-meta">@clinic.RegistrationNumber</span>
+                                        <span class="admin-clinic-switcher-item-meta">@clinic.ReferenceCode</span>
                                     </button>
                                 }
                             </div>
                         }
                     </div>
                 }
-                else if (!string.IsNullOrWhiteSpace(ClinicContext.CurrentClinicName))
+                else if (!IsHospitalWorkspace && !string.IsNullOrWhiteSpace(ClinicContext.CurrentClinicName))
                 {
                     <span class="admin-pill admin-pill-clinic" title="@AppResources.T("AdminLayout_ActiveHospitalTitle")">@ClinicContext.CurrentClinicName</span>
+                }
+                @if (IsHospitalWorkspace)
+                {
+                    <LanguagePicker />
+                    <button type="button" class="btn btn-ghost admin-topbar-signout" @onclick="SignOutAsync">@AppResources.T("Common_SignOut")</button>
                 }
                 <span class="admin-pill">@AppResources.T("Common_Professional")</span>
             </div>

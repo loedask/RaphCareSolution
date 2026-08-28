@@ -478,6 +478,18 @@
   <data name="Common_HospitalId" xml:space="preserve">
     <value>Kitambulisho cha Hospitali</value>
   </data>
+  <data name="Common_HospitalReference" xml:space="preserve">
+    <value>Rejeleo la hospitali</value>
+  </data>
+  <data name="Common_HospitalReferenceHint" xml:space="preserve">
+    <value>Toa rejeleo hili kwa wafanyakazi wanaohitaji kuunganisha hospitali.</value>
+  </data>
+  <data name="Common_HospitalClaimLabel" xml:space="preserve">
+    <value>Rejeleo au namba ya usajili</value>
+  </data>
+  <data name="Common_HospitalClaimPlaceholder" xml:space="preserve">
+    <value>k.m. RC-K7M3P2 au HPCSA-12345</value>
+  </data>
   <data name="Common_PrimaryFacility" xml:space="preserve">
     <value>Kituo cha msingi</value>
   </data>
@@ -1534,6 +1546,9 @@
   <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
     <value>Mtoa huduma</value>
   </data>
+  <data name="AdminLayout_AllHospitals" xml:space="preserve">
+    <value>Hospitali zote</value>
+  </data>
   <data name="Dashboard_PageTitle" xml:space="preserve">
     <value>RaphCare Msimamizi</value>
   </data>
@@ -1583,13 +1598,13 @@
     <value>Bado hakuna hospitali zilizounganishwa</value>
   </data>
   <data name="HospitalsIndex_EmptyLead" xml:space="preserve">
-    <value>Sajili hospitali mpya, au unganisha hospitali uliyounda awali kwa kutumia nambari yake ya usajili.</value>
+    <value>Sajili hospitali mpya, au unganisha ile uliyounda awali kwa rejeleo au namba yake ya usajili.</value>
   </data>
   <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
     <value>{0} jumla</value>
   </data>
   <data name="HospitalsIndex_EnterRegistrationNumber" xml:space="preserve">
-    <value>Weka namba ya usajili.</value>
+    <value>Weka rejeleo la hospitali au namba ya usajili.</value>
   </data>
   <data name="HospitalsRegister_PageTitle" xml:space="preserve">
     <value>Sajili hospitali - RaphCare Msimamizi</value>

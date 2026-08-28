@@ -21,6 +21,7 @@ public sealed class RegisterClinicHandler(
         {
             Name = request.Name.Trim(),
             RegistrationNumber = request.RegistrationNumber.Trim(),
+            ReferenceCode = await AllocateReferenceCodeAsync(cancellationToken).ConfigureAwait(false),
             Country = request.Country.Trim(),
             TimeZone = request.TimeZone.Trim(),
             IsActive = true
@@ -51,7 +52,7 @@ public sealed class RegisterClinicHandler(
         catch (DbUpdateException ex) when (uniqueConstraintDetector.IsUniqueConstraintViolation(ex))
         {
             throw new InvalidOperationException(
-                "A clinic with this registration number already exists.",
+                "Could not allocate a unique hospital reference. Try again.",
                 ex);
         }
 
@@ -65,8 +66,29 @@ public sealed class RegisterClinicHandler(
         {
             ClinicId = clinic.Id,
             Name = clinic.Name,
+            ReferenceCode = clinic.ReferenceCode,
             PrimaryFacilityId = facility?.Id,
             PrimaryFacilityName = facility?.Name
         };
+    }
+
+    private async Task<string> AllocateReferenceCodeAsync(CancellationToken cancellationToken)
+    {
+        const int maxAttempts = 8;
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            var code = ClinicReferenceCode.Generate();
+            var existing = await clinicRepository.SearchAsync(
+                queryShaper: q => q.Where(c => c.ReferenceCode == code),
+                pageNumber: 1,
+                pageSize: 1,
+                applyDefaultIdOrdering: false,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            if (existing.TotalCount == 0)
+                return code;
+        }
+
+        throw new InvalidOperationException("Could not allocate a unique hospital reference. Try again.");
     }
 }

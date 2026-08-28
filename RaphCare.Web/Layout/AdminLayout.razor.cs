@@ -27,6 +27,9 @@ public partial class AdminLayout
     private IReadOnlyList<ClinicListItem> _hospitalResults = Array.Empty<ClinicListItem>();
     private IReadOnlyList<ClinicPatientListItem> _patientResults = Array.Empty<ClinicPatientListItem>();
 
+    private bool IsHospitalWorkspace =>
+        IsHospitalWorkspacePath(GetAbsolutePath(Navigation.Uri));
+
     protected override async Task OnInitializedAsync()
     {
         CultureService.CultureChanged += OnCultureChanged;
@@ -122,6 +125,8 @@ public partial class AdminLayout
         _hospitalResults = ClinicContext.MyClinics
             .Where(c =>
                 c.Name.Contains(q, StringComparison.OrdinalIgnoreCase)
+                || (!string.IsNullOrWhiteSpace(c.ReferenceCode)
+                    && c.ReferenceCode.Contains(q, StringComparison.OrdinalIgnoreCase))
                 || (!string.IsNullOrWhiteSpace(c.RegistrationNumber)
                     && c.RegistrationNumber.Contains(q, StringComparison.OrdinalIgnoreCase)))
             .Take(8)
@@ -166,28 +171,39 @@ public partial class AdminLayout
         _clinicSwitcherOpen = false;
         await ClinicContext.SetCurrentClinicAsync(clinicId, name).ConfigureAwait(true);
 
-        var path = new Uri(Navigation.Uri).AbsolutePath.TrimEnd('/');
-        if (path.StartsWith("/admin/hospitals/", StringComparison.Ordinal)
-            && path != "/admin/hospitals/register"
-            && Guid.TryParse(path["/admin/hospitals/".Length..], out _))
-        {
+        if (IsHospitalWorkspacePath(GetAbsolutePath(Navigation.Uri)))
             Navigation.NavigateTo($"/admin/hospitals/{clinicId}");
-        }
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         _searchOpen = false;
+        _clinicSwitcherOpen = false;
         UpdateBreadcrumbs(e.Location);
         InvokeAsync(StateHasChanged);
     }
 
-    private void UpdateBreadcrumbs(string uri)
+    private static string GetAbsolutePath(string uri)
     {
         var path = new Uri(uri).AbsolutePath.TrimEnd('/');
-        if (string.IsNullOrEmpty(path))
-            path = "/";
+        return string.IsNullOrEmpty(path) ? "/" : path;
+    }
 
+    private static bool IsHospitalWorkspacePath(string path)
+    {
+        const string prefix = "/admin/hospitals/";
+        if (!path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        var rest = path[prefix.Length..];
+        var slash = rest.IndexOf('/');
+        var idPart = slash < 0 ? rest : rest[..slash];
+        return Guid.TryParse(idPart, out _);
+    }
+
+    private void UpdateBreadcrumbs(string uri)
+    {
+        var path = GetAbsolutePath(uri);
         var app = AppResources.T("Common_AppName", CultureInfo.CurrentUICulture);
         _breadcrumbs = path switch
         {

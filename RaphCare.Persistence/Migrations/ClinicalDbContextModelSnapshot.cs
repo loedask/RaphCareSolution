@@ -904,6 +904,11 @@ namespace RaphCare.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("ReferenceCode")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -924,8 +929,10 @@ namespace RaphCare.Persistence.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.HasIndex("RegistrationNumber")
+                    b.HasIndex("ReferenceCode")
                         .IsUnique();
+
+                    b.HasIndex("RegistrationNumber");
 
                     b.ToTable("Clinics", (string)null);
                 });
