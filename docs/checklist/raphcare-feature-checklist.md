@@ -45,7 +45,8 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Dashboard metrics
 - [x] Providers: list, detail, create, set active, schedules create / delete
 - [x] Appointments: list, book, cancel, reschedule
-- [x] Visits: start, get, complete, record vitals
+- [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, labs (admin, InProgress)
+- [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs
 - [x] Clinic devices list
 - [x] Tele-session start (Agora join info for admin)
 
@@ -53,11 +54,11 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 - [x] Hospitals index / register / claim
 - [x] Hospital detail (overview, facilities, patients, providers, staff). Opening a hospital hides the platform sidebar; All hospitals, language, and sign out sit in the top bar.
-- [x] Shared admin cards (`AdminPageCard`, `AdminStatCard`, `AdminReviewItem`) used across hospital admin pages
-- [x] Patient detail page
+- [x] Shared admin UI (`AdminPageCard`, `AdminPageHeader`, `AdminStatCard`, `AdminReviewItem`, `AdminAlert`, `AdminEmptyState`, `AdminDefinitionItem`) used across hospital admin pages
+- [x] Patient detail page (staff chart: medical info, coverage, invoices, mood, visit notes)
 - [x] Provider detail + schedules
 - [x] Appointments page
-- [x] Visit page + vitals
+- [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / labs on InProgress)
 - [x] Tele join page
 - [x] Admin dashboard
 - [x] Web UI language switcher (en / fr / ln / sw)
@@ -69,7 +70,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Web. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view) and visit documentation while a visit is in progress. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -296,7 +297,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + staff patient chart (view) + visit documentation on InProgress; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

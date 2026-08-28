@@ -16,4 +16,9 @@ public interface IAdminClinicPatientQueryService
         Guid clinicId,
         Guid patientId,
         CancellationToken cancellationToken = default);
+
+    Task<AdminClinicVisitClinicalDocumentationDto> GetVisitClinicalDocumentationAsync(
+        Guid visitId,
+        DateTime visitStart,
+        CancellationToken cancellationToken = default);
 }

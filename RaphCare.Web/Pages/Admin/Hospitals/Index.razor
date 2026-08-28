@@ -6,14 +6,12 @@
 <PageTitle>@AppResources.T("HospitalsIndex_PageTitle")</PageTitle>
 
 <section class="admin-page admin-brand-page">
-    <header class="admin-page-header brand-hero">
-        <div>
-            <p class="admin-page-eyebrow">@AppResources.T("Common_Hospitals")</p>
-            <h1>@AppResources.T("Common_MyHospitals")</h1>
-            <p class="admin-page-lead">@AppResources.T("HospitalsIndex_Lead")</p>
-        </div>
+    <AdminPageHeader CssClass="brand-hero"
+                     Eyebrow="@AppResources.T("Common_Hospitals")"
+                     Title="@AppResources.T("Common_MyHospitals")"
+                     Lead="@AppResources.T("HospitalsIndex_Lead")">
         <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospitalButton")</a>
-    </header>
+    </AdminPageHeader>
 
     @if (_loading)
     {
@@ -21,26 +19,26 @@
     }
     else if (_authRequired)
     {
-        <div class="empty-state admin-guidance-state">
-            <div class="empty-state-icon" aria-hidden="true">@HospitalGlyph</div>
-            <h3>@AppResources.T("Common_FinishRegisteringHospital")</h3>
-            <p>@AppResources.T("HospitalsIndex_AuthGuidanceLead")</p>
+        <AdminEmptyState CssClass="admin-guidance-state"
+                         Title="@AppResources.T("Common_FinishRegisteringHospital")"
+                         Lead="@AppResources.T("HospitalsIndex_AuthGuidanceLead")">
+            <AdminEmptyStateIcon ChildContent="HospitalGlyph" />
             <div class="admin-guidance-actions">
                 <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospital")</a>
                 <a class="btn btn-secondary" href="@_signInReturnUrl">@AppResources.T("Common_SignInAgain")</a>
             </div>
-        </div>
+        </AdminEmptyState>
     }
     else if (!string.IsNullOrEmpty(_error))
     {
-        <div class="alert alert-error">@_error</div>
+        <AdminAlert Message="@_error" />
     }
     else if (_clinics.Count == 0)
     {
-        <div class="empty-state admin-guidance-state hospitals-empty">
-            <div class="empty-state-icon" aria-hidden="true">@HospitalGlyph</div>
-            <h3>@AppResources.T("HospitalsIndex_EmptyTitle")</h3>
-            <p>@AppResources.T("HospitalsIndex_EmptyLead")</p>
+        <AdminEmptyState CssClass="admin-guidance-state hospitals-empty"
+                         Title="@AppResources.T("HospitalsIndex_EmptyTitle")"
+                         Lead="@AppResources.T("HospitalsIndex_EmptyLead")">
+            <AdminEmptyStateIcon ChildContent="HospitalGlyph" />
             <div class="hospitals-empty-paths">
                 <div class="hospitals-empty-path">
                     <p class="admin-page-eyebrow">@AppResources.T("Common_LinkHospital")</p>
@@ -71,7 +69,7 @@
                     <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospitalButton")</a>
                 </div>
             </div>
-        </div>
+        </AdminEmptyState>
     }
     else
     {

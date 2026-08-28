@@ -9,10 +9,22 @@ public sealed class AdminClinicPatientDetailDto
     public string Gender { get; set; } = string.Empty;
     public string? Email { get; set; }
     public string? PhoneNumber { get; set; }
+    public string? NationalHealthId { get; set; }
     public string AccessType { get; set; } = string.Empty;
     public DateTime GrantedAt { get; set; }
     public string GrantedByRule { get; set; } = string.Empty;
     public string? Notes { get; set; }
+    public AdminClinicPatientMedicalSummaryDto MedicalSummary { get; set; } = new();
+    public IReadOnlyList<AdminClinicPatientEmergencyContactDto> EmergencyContacts { get; set; } = Array.Empty<AdminClinicPatientEmergencyContactDto>();
+    public IReadOnlyList<AdminClinicPatientInsuranceDto> InsuranceProfiles { get; set; } = Array.Empty<AdminClinicPatientInsuranceDto>();
+    public IReadOnlyList<AdminClinicPatientInvoiceDto> Invoices { get; set; } = Array.Empty<AdminClinicPatientInvoiceDto>();
+    public IReadOnlyList<AdminClinicPatientMoodLogDto> MoodLogs { get; set; } = Array.Empty<AdminClinicPatientMoodLogDto>();
+    public IReadOnlyList<AdminClinicPatientCarePlanDto> CarePlans { get; set; } = Array.Empty<AdminClinicPatientCarePlanDto>();
+    public IReadOnlyList<AdminClinicVisitDiagnosisDto> Diagnoses { get; set; } = Array.Empty<AdminClinicVisitDiagnosisDto>();
+    public IReadOnlyList<AdminClinicVisitPrescriptionDto> Prescriptions { get; set; } = Array.Empty<AdminClinicVisitPrescriptionDto>();
+    public IReadOnlyList<AdminClinicVisitNoteDto> ClinicalNotes { get; set; } = Array.Empty<AdminClinicVisitNoteDto>();
+    public IReadOnlyList<AdminClinicVisitSoapNoteDto> SoapNotes { get; set; } = Array.Empty<AdminClinicVisitSoapNoteDto>();
+    public IReadOnlyList<AdminClinicVisitLabResultDto> LabResults { get; set; } = Array.Empty<AdminClinicVisitLabResultDto>();
     public IReadOnlyList<AdminClinicPatientVisitDto> RecentVisits { get; set; } = Array.Empty<AdminClinicPatientVisitDto>();
     public IReadOnlyList<AdminClinicPatientAppointmentDto> Appointments { get; set; } = Array.Empty<AdminClinicPatientAppointmentDto>();
     public IReadOnlyList<AdminClinicPatientVitalDto> RecentVitals { get; set; } = Array.Empty<AdminClinicPatientVitalDto>();

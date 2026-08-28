@@ -14,7 +14,7 @@
     }
     else if (_detail is null)
     {
-        <div class="alert alert-error">@(_error ?? AppResources.T("Common_HospitalNotFound"))</div>
+        <AdminAlert Message="@(_error ?? AppResources.T("Common_HospitalNotFound"))" />
         <a class="btn btn-secondary" href="/admin/hospitals">@AppResources.T("Common_BackToHospitals")</a>
     }
     else
@@ -23,15 +23,11 @@
             <a class="btn btn-secondary" href="/admin/hospitals">@AppResources.T("Common_BackToHospitals")</a>
         </div>
 
-        <header class="admin-page-header">
-            <div>
-                <h1>@_detail.Name</h1>
-                <p class="admin-page-lead">@AppResources.T("HospitalDetail_Lead")</p>
-            </div>
+        <AdminPageHeader Title="@_detail.Name" Lead="@AppResources.T("HospitalDetail_Lead")">
             <span class="badge @(_detail.IsActive ? "badge-success" : "badge-muted")">
                 @(_detail.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
             </span>
-        </header>
+        </AdminPageHeader>
 
         <nav class="admin-detail-tabs" aria-label="@AppResources.T("Common_HospitalSectionsAria")">
             <button type="button" class="admin-detail-tab @(_tab == "overview" ? "active" : "")" @onclick='() => SetTab("overview")'>
@@ -68,10 +64,7 @@
             </button>
         </nav>
 
-        @if (!string.IsNullOrEmpty(_actionError))
-        {
-            <div class="alert alert-error">@_actionError</div>
-        }
+        <AdminAlert Message="@_actionError" />
 
         @if (_tab == "overview")
         {
@@ -503,7 +496,7 @@
                     }
                     else if (!string.IsNullOrEmpty(_emergencyError))
                     {
-                        <div class="alert alert-error">@_emergencyError</div>
+                        <AdminAlert Message="@_emergencyError" />
                     }
                     else if (_emergencyEvents.Count == 0)
                     {

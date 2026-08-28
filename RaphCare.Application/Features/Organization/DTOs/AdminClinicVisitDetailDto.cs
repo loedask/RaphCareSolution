@@ -15,6 +15,11 @@ public sealed class AdminClinicVisitDetailDto
     public string Status { get; set; } = string.Empty;
     public string? Summary { get; set; }
     public IReadOnlyList<AdminClinicVisitVitalDto> Vitals { get; set; } = Array.Empty<AdminClinicVisitVitalDto>();
+    public IReadOnlyList<AdminClinicVisitDiagnosisDto> Diagnoses { get; set; } = Array.Empty<AdminClinicVisitDiagnosisDto>();
+    public IReadOnlyList<AdminClinicVisitPrescriptionDto> Prescriptions { get; set; } = Array.Empty<AdminClinicVisitPrescriptionDto>();
+    public IReadOnlyList<AdminClinicVisitNoteDto> ClinicalNotes { get; set; } = Array.Empty<AdminClinicVisitNoteDto>();
+    public IReadOnlyList<AdminClinicVisitSoapNoteDto> SoapNotes { get; set; } = Array.Empty<AdminClinicVisitSoapNoteDto>();
+    public IReadOnlyList<AdminClinicVisitLabResultDto> LabResults { get; set; } = Array.Empty<AdminClinicVisitLabResultDto>();
 }
 
 public sealed class AdminClinicVisitVitalDto

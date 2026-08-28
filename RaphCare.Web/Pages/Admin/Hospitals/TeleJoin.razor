@@ -8,34 +8,16 @@
 <PageTitle>@AppResources.T("TeleJoin_PageTitle")</PageTitle>
 
 <section class="admin-page">
-    <header class="admin-page-header">
-        <div>
-            <h1>@AppResources.T("Common_TelehealthSession")</h1>
-            <p class="admin-page-lead">
-                @if (_join is not null)
-                {
-                    <text>@_join.PatientName · @_join.ProviderDisplayName</text>
-                }
-                else
-                {
-                    <text>@AppResources.T("Common_Connecting")</text>
-                }
-            </p>
-        </div>
+    <AdminPageHeader Title="@AppResources.T("Common_TelehealthSession")"
+                     Lead="@TeleJoinLead">
         @if (_join is not null)
         {
             <span class="badge badge-success">@_join.Status</span>
         }
-    </header>
+    </AdminPageHeader>
 
-    @if (!string.IsNullOrEmpty(_error))
-    {
-        <div class="alert alert-error">@_error</div>
-    }
-    @if (!string.IsNullOrEmpty(_info))
-    {
-        <div class="alert alert-info">@_info</div>
-    }
+    <AdminAlert Message="@_error" />
+    <AdminAlert Tone="info" Message="@_info" />
 
     @if (_loading)
     {
@@ -45,26 +27,21 @@
     {
         <AdminPageCard>
             <div class="admin-page-card-body">
-                <dl class="admin-detail-grid">
-                    <div>
-                        <dt>@AppResources.T("Common_Channel")</dt>
-                        <dd><code>@_join.ChannelName</code></dd>
-                    </div>
-                    <div>
-                        <dt>@AppResources.T("Common_Session")</dt>
-                        <dd><code>@_join.TeleSessionId</code></dd>
-                    </div>
-                    <div>
-                        <dt>@AppResources.T("Common_Visit")</dt>
-                        <dd><a href="/admin/hospitals/@ClinicId/visits/@_join.VisitId">@AppResources.T("Common_OpenVisitChart")</a></dd>
-                    </div>
-                </dl>
+                <AdminDefinitionGrid>
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Channel")">
+                        <code>@_join.ChannelName</code>
+                    </AdminDefinitionItem>
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Session")">
+                        <code>@_join.TeleSessionId</code>
+                    </AdminDefinitionItem>
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Visit")">
+                        <a href="/admin/hospitals/@ClinicId/visits/@_join.VisitId">@AppResources.T("Common_OpenVisitChart")</a>
+                    </AdminDefinitionItem>
+                </AdminDefinitionGrid>
 
                 @if (!_join.RtcConfigured || string.IsNullOrWhiteSpace(_join.AppId) || string.IsNullOrWhiteSpace(_join.RtcToken))
                 {
-                    <div class="alert alert-info" style="margin-top: 1rem;">
-                        @AppResources.T("Common_AgoraNotConfigured")
-                    </div>
+                    <AdminAlert Tone="info" Message="@AppResources.T("Common_AgoraNotConfigured")" style="margin-top: 1rem;" />
                 }
                 else
                 {
@@ -107,6 +84,11 @@
     private string? _error;
     private string? _info;
     private ClinicTeleJoinInfo? _join;
+
+    private string TeleJoinLead =>
+        _join is not null
+            ? $"{_join.PatientName} · {_join.ProviderDisplayName}"
+            : AppResources.T("Common_Connecting");
 
     protected override async Task OnInitializedAsync()
     {

@@ -1115,6 +1115,138 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicVisitSoapNote>> SaveVisitSoapNoteAsync(
+        Guid clinicId,
+        Guid visitId,
+        SaveVisitSoapNoteRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/soap", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can save visit notes.";
+                return Response<ClinicVisitSoapNote>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitSoapNoteDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitSoapNote>.Failure("Could not save the SOAP note.");
+
+            return Response<ClinicVisitSoapNote>.Success(MapSoapNote(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitSoapNote>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitNote>> AddVisitNoteAsync(
+        Guid clinicId,
+        Guid visitId,
+        AddVisitNoteRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/notes", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can add visit notes.";
+                return Response<ClinicVisitNote>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitNoteDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitNote>.Failure("Could not add the note.");
+
+            return Response<ClinicVisitNote>.Success(MapClinicalNote(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitNote>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitPrescription>> AddVisitPrescriptionAsync(
+        Guid clinicId,
+        Guid visitId,
+        AddVisitPrescriptionRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/prescriptions", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can add prescriptions.";
+                return Response<ClinicVisitPrescription>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitPrescriptionDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitPrescription>.Failure("Could not add the prescription.");
+
+            return Response<ClinicVisitPrescription>.Success(MapPrescription(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitPrescription>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitLabResult>> AddVisitLabResultAsync(
+        Guid clinicId,
+        Guid visitId,
+        AddVisitLabResultRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/lab-results", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can add lab results.";
+                return Response<ClinicVisitLabResult>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitLabResultDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitLabResult>.Failure("Could not add the lab result.");
+
+            return Response<ClinicVisitLabResult>.Success(MapLabResult(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitLabResult>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<IReadOnlyList<ClinicDeviceListItem>>> GetDevicesAsync(
         Guid clinicId,
         CancellationToken cancellationToken = default)
@@ -1800,11 +1932,23 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         Gender = dto.Gender,
         Email = dto.Email,
         PhoneNumber = dto.PhoneNumber,
+        NationalHealthId = dto.NationalHealthId,
         AccessType = dto.AccessType,
         GrantedAt = dto.GrantedAt,
         GrantedByRule = dto.GrantedByRule,
         Notes = dto.Notes,
-            RecentVisits = dto.RecentVisits?
+        MedicalSummary = MapMedicalSummary(dto.MedicalSummary),
+        EmergencyContacts = dto.EmergencyContacts?.Select(MapEmergencyContact).ToList() ?? [],
+        InsuranceProfiles = dto.InsuranceProfiles?.Select(MapInsurance).ToList() ?? [],
+        Invoices = dto.Invoices?.Select(MapInvoice).ToList() ?? [],
+        MoodLogs = dto.MoodLogs?.Select(MapMoodLog).ToList() ?? [],
+        CarePlans = dto.CarePlans?.Select(MapCarePlan).ToList() ?? [],
+        Diagnoses = dto.Diagnoses?.Select(MapDiagnosis).ToList() ?? [],
+        Prescriptions = dto.Prescriptions?.Select(MapPrescription).ToList() ?? [],
+        ClinicalNotes = dto.ClinicalNotes?.Select(MapClinicalNote).ToList() ?? [],
+        SoapNotes = dto.SoapNotes?.Select(MapSoapNote).ToList() ?? [],
+        LabResults = dto.LabResults?.Select(MapLabResult).ToList() ?? [],
+        RecentVisits = dto.RecentVisits?
             .Select(v => new ClinicPatientVisitSummary
             {
                 Id = v.Id,
@@ -1815,7 +1959,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 Summary = v.Summary
             })
             .ToList() ?? [],
-            Appointments = dto.Appointments?
+        Appointments = dto.Appointments?
             .Select(a => new ClinicPatientAppointmentSummary
             {
                 Id = a.Id,
@@ -1827,7 +1971,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 ProviderName = a.ProviderName
             })
             .ToList() ?? [],
-            RecentVitals = dto.RecentVitals?
+        RecentVitals = dto.RecentVitals?
             .Select(v => new ClinicPatientVitalSummary
             {
                 Type = v.Type,
@@ -1837,7 +1981,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 VisitType = v.VisitType
             })
             .ToList() ?? [],
-            RecentDeviceReadings = dto.RecentDeviceReadings?
+        RecentDeviceReadings = dto.RecentDeviceReadings?
             .Select(r => new ClinicPatientDeviceReadingSummary
             {
                 Kind = r.Kind,
@@ -1849,7 +1993,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 SpO2Percent = r.SpO2Percent
             })
             .ToList() ?? [],
-            DeviceDailyRollups = dto.DeviceDailyRollups?
+        DeviceDailyRollups = dto.DeviceDailyRollups?
             .Select(r => new ClinicPatientDeviceRollupSummary
             {
                 Date = r.Date,
@@ -1863,6 +2007,130 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                 MaxSpO2Percent = r.MaxSpO2Percent
             })
             .ToList() ?? []
+    };
+
+    private static ClinicPatientMedicalSummary MapMedicalSummary(PatientMedicalSummaryDto? dto) => dto is null
+        ? new ClinicPatientMedicalSummary()
+        : new ClinicPatientMedicalSummary
+        {
+            BloodType = dto.BloodType,
+            Allergies = dto.Allergies,
+            ChronicConditions = dto.ChronicConditions,
+            Medications = dto.Medications,
+            PrimaryDoctor = dto.PrimaryDoctor,
+            RecordedAllergies = dto.RecordedAllergies?.Select(a => new ClinicPatientAllergy
+            {
+                Substance = a.Substance,
+                Reaction = a.Reaction,
+                Severity = a.Severity,
+                RecordedAt = a.RecordedAt
+            }).ToList() ?? [],
+            RecordedMedications = dto.RecordedMedications?.Select(m => new ClinicPatientMedication
+            {
+                MedicationName = m.MedicationName,
+                Dosage = m.Dosage,
+                Frequency = m.Frequency,
+                StartDate = m.StartDate,
+                EndDate = m.EndDate
+            }).ToList() ?? []
+        };
+
+    private static ClinicPatientEmergencyContact MapEmergencyContact(PatientEmergencyContactDto dto) => new()
+    {
+        Name = dto.Name,
+        Relationship = dto.Relationship,
+        PhoneNumber = dto.PhoneNumber,
+        Email = dto.Email
+    };
+
+    private static ClinicPatientInsuranceProfile MapInsurance(PatientInsuranceDto dto) => new()
+    {
+        PlanName = dto.PlanName,
+        MembershipNumber = dto.MembershipNumber,
+        StartDate = dto.StartDate,
+        EndDate = dto.EndDate,
+        IsActive = dto.IsActive
+    };
+
+    private static ClinicPatientInvoice MapInvoice(PatientInvoiceDto dto) => new()
+    {
+        Id = dto.Id,
+        Amount = dto.Amount,
+        Currency = dto.Currency,
+        Status = dto.Status,
+        DueDate = dto.DueDate,
+        PaidAt = dto.PaidAt,
+        VisitId = dto.VisitId
+    };
+
+    private static ClinicPatientMoodLog MapMoodLog(PatientMoodLogDto dto) => new()
+    {
+        LoggedAt = dto.LoggedAt,
+        MoodScore = dto.MoodScore,
+        Notes = dto.Notes,
+        IsFlagged = dto.IsFlagged
+    };
+
+    private static ClinicPatientCarePlan MapCarePlan(PatientCarePlanDto dto) => new()
+    {
+        Title = dto.Title,
+        Description = dto.Description,
+        StartDate = dto.StartDate,
+        EndDate = dto.EndDate,
+        Status = dto.Status
+    };
+
+    private static ClinicVisitDiagnosis MapDiagnosis(VisitDiagnosisDto dto) => new()
+    {
+        VisitId = dto.VisitId,
+        VisitStart = dto.VisitStart,
+        Code = dto.Code,
+        Description = dto.Description,
+        Severity = dto.Severity
+    };
+
+    private static ClinicVisitPrescription MapPrescription(VisitPrescriptionDto dto) => new()
+    {
+        VisitId = dto.VisitId,
+        VisitStart = dto.VisitStart,
+        IssuedAt = dto.IssuedAt,
+        Notes = dto.Notes,
+        Items = dto.Items?.Select(i => new ClinicVisitPrescriptionItem
+        {
+            MedicationName = i.MedicationName,
+            Dosage = i.Dosage,
+            Frequency = i.Frequency,
+            DurationDays = i.DurationDays
+        }).ToList() ?? []
+    };
+
+    private static ClinicVisitNote MapClinicalNote(VisitNoteDto dto) => new()
+    {
+        VisitId = dto.VisitId,
+        VisitStart = dto.VisitStart,
+        Notes = dto.Notes,
+        Category = dto.Category
+    };
+
+    private static ClinicVisitSoapNote MapSoapNote(VisitSoapNoteDto dto) => new()
+    {
+        VisitId = dto.VisitId,
+        VisitStart = dto.VisitStart,
+        Subjective = dto.Subjective,
+        Objective = dto.Objective,
+        Assessment = dto.Assessment,
+        Plan = dto.Plan
+    };
+
+    private static ClinicVisitLabResult MapLabResult(VisitLabResultDto dto) => new()
+    {
+        VisitId = dto.VisitId,
+        VisitStart = dto.VisitStart,
+        TestName = dto.TestName,
+        ResultValue = dto.ResultValue,
+        Unit = dto.Unit,
+        ReferenceRange = dto.ReferenceRange,
+        ReportedAt = dto.ReportedAt
     };
 
     private static ClinicDashboard MapDashboard(DashboardDto dto) => new()
@@ -1945,7 +2213,12 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             Value = v.Value,
             Unit = v.Unit,
             RecordedAt = v.RecordedAt
-        }).ToList() ?? []
+        }).ToList() ?? [],
+        Diagnoses = dto.Diagnoses?.Select(MapDiagnosis).ToList() ?? [],
+        Prescriptions = dto.Prescriptions?.Select(MapPrescription).ToList() ?? [],
+        ClinicalNotes = dto.ClinicalNotes?.Select(MapClinicalNote).ToList() ?? [],
+        SoapNotes = dto.SoapNotes?.Select(MapSoapNote).ToList() ?? [],
+        LabResults = dto.LabResults?.Select(MapLabResult).ToList() ?? []
     };
 
     private sealed class PagedClinicsDto
@@ -2052,10 +2325,22 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string Gender { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
+        public string? NationalHealthId { get; set; }
         public string AccessType { get; set; } = string.Empty;
         public DateTime GrantedAt { get; set; }
         public string GrantedByRule { get; set; } = string.Empty;
         public string? Notes { get; set; }
+        public PatientMedicalSummaryDto? MedicalSummary { get; set; }
+        public List<PatientEmergencyContactDto>? EmergencyContacts { get; set; }
+        public List<PatientInsuranceDto>? InsuranceProfiles { get; set; }
+        public List<PatientInvoiceDto>? Invoices { get; set; }
+        public List<PatientMoodLogDto>? MoodLogs { get; set; }
+        public List<PatientCarePlanDto>? CarePlans { get; set; }
+        public List<VisitDiagnosisDto>? Diagnoses { get; set; }
+        public List<VisitPrescriptionDto>? Prescriptions { get; set; }
+        public List<VisitNoteDto>? ClinicalNotes { get; set; }
+        public List<VisitSoapNoteDto>? SoapNotes { get; set; }
+        public List<VisitLabResultDto>? LabResults { get; set; }
         public List<PatientVisitDto>? RecentVisits { get; set; }
         public List<PatientAppointmentDto>? Appointments { get; set; }
         public List<PatientVitalDto>? RecentVitals { get; set; }
@@ -2199,6 +2484,11 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string Status { get; set; } = string.Empty;
         public string? Summary { get; set; }
         public List<VisitVitalDto>? Vitals { get; set; }
+        public List<VisitDiagnosisDto>? Diagnoses { get; set; }
+        public List<VisitPrescriptionDto>? Prescriptions { get; set; }
+        public List<VisitNoteDto>? ClinicalNotes { get; set; }
+        public List<VisitSoapNoteDto>? SoapNotes { get; set; }
+        public List<VisitLabResultDto>? LabResults { get; set; }
     }
 
     private sealed class VisitVitalDto
@@ -2208,6 +2498,134 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public decimal Value { get; set; }
         public string? Unit { get; set; }
         public DateTime RecordedAt { get; set; }
+    }
+
+    private sealed class PatientMedicalSummaryDto
+    {
+        public string? BloodType { get; set; }
+        public string? Allergies { get; set; }
+        public string? ChronicConditions { get; set; }
+        public string? Medications { get; set; }
+        public string? PrimaryDoctor { get; set; }
+        public List<PatientAllergyDto>? RecordedAllergies { get; set; }
+        public List<PatientMedicationDto>? RecordedMedications { get; set; }
+    }
+
+    private sealed class PatientAllergyDto
+    {
+        public string Substance { get; set; } = string.Empty;
+        public string? Reaction { get; set; }
+        public string? Severity { get; set; }
+        public DateTime RecordedAt { get; set; }
+    }
+
+    private sealed class PatientMedicationDto
+    {
+        public string MedicationName { get; set; } = string.Empty;
+        public string? Dosage { get; set; }
+        public string? Frequency { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
+
+    private sealed class PatientEmergencyContactDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public string? Relationship { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Email { get; set; }
+    }
+
+    private sealed class PatientInsuranceDto
+    {
+        public string PlanName { get; set; } = string.Empty;
+        public string MembershipNumber { get; set; } = string.Empty;
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    private sealed class PatientInvoiceDto
+    {
+        public Guid Id { get; set; }
+        public decimal Amount { get; set; }
+        public string Currency { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public DateTime DueDate { get; set; }
+        public DateTime? PaidAt { get; set; }
+        public Guid? VisitId { get; set; }
+    }
+
+    private sealed class PatientMoodLogDto
+    {
+        public DateTime LoggedAt { get; set; }
+        public int MoodScore { get; set; }
+        public string? Notes { get; set; }
+        public bool IsFlagged { get; set; }
+    }
+
+    private sealed class PatientCarePlanDto
+    {
+        public string Title { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string Status { get; set; } = string.Empty;
+    }
+
+    private sealed class VisitDiagnosisDto
+    {
+        public Guid VisitId { get; set; }
+        public DateTime VisitStart { get; set; }
+        public string Code { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string? Severity { get; set; }
+    }
+
+    private sealed class VisitPrescriptionDto
+    {
+        public Guid VisitId { get; set; }
+        public DateTime VisitStart { get; set; }
+        public DateTime IssuedAt { get; set; }
+        public string? Notes { get; set; }
+        public List<VisitPrescriptionItemDto>? Items { get; set; }
+    }
+
+    private sealed class VisitPrescriptionItemDto
+    {
+        public string MedicationName { get; set; } = string.Empty;
+        public string? Dosage { get; set; }
+        public string? Frequency { get; set; }
+        public int DurationDays { get; set; }
+    }
+
+    private sealed class VisitNoteDto
+    {
+        public Guid VisitId { get; set; }
+        public DateTime VisitStart { get; set; }
+        public string Notes { get; set; } = string.Empty;
+        public string? Category { get; set; }
+    }
+
+    private sealed class VisitSoapNoteDto
+    {
+        public Guid VisitId { get; set; }
+        public DateTime VisitStart { get; set; }
+        public string? Subjective { get; set; }
+        public string? Objective { get; set; }
+        public string? Assessment { get; set; }
+        public string? Plan { get; set; }
+    }
+
+    private sealed class VisitLabResultDto
+    {
+        public Guid VisitId { get; set; }
+        public DateTime VisitStart { get; set; }
+        public string TestName { get; set; } = string.Empty;
+        public string ResultValue { get; set; } = string.Empty;
+        public string? Unit { get; set; }
+        public string? ReferenceRange { get; set; }
+        public DateTime ReportedAt { get; set; }
     }
 
     private sealed class DeviceListItemDto

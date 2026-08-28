@@ -10,10 +10,7 @@
     <h2 class="auth-card-title">@AppResources.T("PatientSignIn_Title")</h2>
     <p class="auth-card-subtitle">@AppResources.T("PatientSignIn_Subtitle")</p>
 
-    @if (!string.IsNullOrEmpty(_error))
-    {
-        <div class="alert alert-error">@_error</div>
-    }
+    <AdminAlert Message="@_error" />
     @if (!string.IsNullOrEmpty(_status))
     {
         <AuthStatusNotice Email="@_model.Email" />

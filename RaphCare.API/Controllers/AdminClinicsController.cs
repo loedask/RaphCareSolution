@@ -40,8 +40,12 @@ using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinic;
 using RaphCare.Application.Features.Organization.Commands.UpdateClinicStaffRole;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicVisit;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitLabResult;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitNote;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitPrescription;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitVital;
 using RaphCare.Application.Features.Organization.Commands.StartAdminClinicVisit;
+using RaphCare.Application.Features.Organization.Commands.UpsertAdminClinicVisitSoapNote;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicDevices;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicVisitById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicById;
@@ -683,6 +687,111 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
                 Value = body.Value,
                 Unit = body.Unit,
                 RecordedAt = body.RecordedAt
+            },
+            cancellationToken);
+        return result is null
+            ? NotFound()
+            : CreatedAtAction(nameof(GetVisitById), new { id, visitId }, result);
+    }
+
+    /// <summary>Save or update the SOAP note for a visit.</summary>
+    [HttpPut("{id:guid}/visits/{visitId:guid}/soap", Name = "UpsertAdminClinicVisitSoapNote")]
+    [ProducesResponseType(typeof(AdminClinicVisitSoapNoteDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpsertVisitSoapNote(
+        Guid id,
+        Guid visitId,
+        [FromBody] UpsertAdminClinicVisitSoapNoteRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new UpsertAdminClinicVisitSoapNoteCommand
+            {
+                ClinicId = id,
+                VisitId = visitId,
+                Subjective = body.Subjective,
+                Objective = body.Objective,
+                Assessment = body.Assessment,
+                Plan = body.Plan
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Add a free-text clinical note to a visit.</summary>
+    [HttpPost("{id:guid}/visits/{visitId:guid}/notes", Name = "CreateAdminClinicVisitNote")]
+    [ProducesResponseType(typeof(AdminClinicVisitNoteDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateVisitNote(
+        Guid id,
+        Guid visitId,
+        [FromBody] CreateAdminClinicVisitNoteRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicVisitNoteCommand
+            {
+                ClinicId = id,
+                VisitId = visitId,
+                Notes = body.Notes,
+                Category = body.Category
+            },
+            cancellationToken);
+        return result is null
+            ? NotFound()
+            : CreatedAtAction(nameof(GetVisitById), new { id, visitId }, result);
+    }
+
+    /// <summary>Add a prescription with one medication line.</summary>
+    [HttpPost("{id:guid}/visits/{visitId:guid}/prescriptions", Name = "CreateAdminClinicVisitPrescription")]
+    [ProducesResponseType(typeof(AdminClinicVisitPrescriptionDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateVisitPrescription(
+        Guid id,
+        Guid visitId,
+        [FromBody] CreateAdminClinicVisitPrescriptionRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicVisitPrescriptionCommand
+            {
+                ClinicId = id,
+                VisitId = visitId,
+                MedicationName = body.MedicationName,
+                Dosage = body.Dosage,
+                Frequency = body.Frequency,
+                DurationDays = body.DurationDays,
+                Notes = body.Notes
+            },
+            cancellationToken);
+        return result is null
+            ? NotFound()
+            : CreatedAtAction(nameof(GetVisitById), new { id, visitId }, result);
+    }
+
+    /// <summary>Record a lab result on a visit.</summary>
+    [HttpPost("{id:guid}/visits/{visitId:guid}/lab-results", Name = "CreateAdminClinicVisitLabResult")]
+    [ProducesResponseType(typeof(AdminClinicVisitLabResultDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateVisitLabResult(
+        Guid id,
+        Guid visitId,
+        [FromBody] CreateAdminClinicVisitLabResultRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicVisitLabResultCommand
+            {
+                ClinicId = id,
+                VisitId = visitId,
+                TestName = body.TestName,
+                ResultValue = body.ResultValue,
+                Unit = body.Unit,
+                ReferenceRange = body.ReferenceRange
             },
             cancellationToken);
         return result is null

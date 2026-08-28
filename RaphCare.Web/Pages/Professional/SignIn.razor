@@ -10,15 +10,9 @@
     <h2 class="auth-card-title">@AppResources.T("PatientSignIn_Title")</h2>
     <p class="auth-card-subtitle">@AppResources.T("ProfessionalSignIn_Subtitle")</p>
 
-    @if (_hasPendingOnboarding)
-    {
-        <div class="alert alert-info">@AppResources.T("ProfessionalSignIn_PendingOnboarding")</div>
-    }
+    <AdminAlert Tone="info" Message="@AppResources.T("ProfessionalSignIn_PendingOnboarding")" Visible="@_hasPendingOnboarding" />
 
-    @if (!string.IsNullOrEmpty(_error))
-    {
-        <div class="alert alert-error">@_error</div>
-    }
+    <AdminAlert Message="@_error" />
     @if (!string.IsNullOrEmpty(_status))
     {
         <AuthStatusNotice Email="@_model.Email" />

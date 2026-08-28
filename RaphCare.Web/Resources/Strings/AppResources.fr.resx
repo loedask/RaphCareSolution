@@ -2155,4 +2155,298 @@
   <data name="Visit_AppointmentsNav" xml:space="preserve">
     <value>← Rendez-vous</value>
   </data>
+  <data name="Common_NationalHealthId" xml:space="preserve">
+    <value>Identifiant national de santé</value>
+  </data>
+  <data name="Common_MedicalInfoTitle" xml:space="preserve">
+    <value>Infos médicales</value>
+  </data>
+  <data name="PatientDetail_MedicalLead" xml:space="preserve">
+    <value>Ce que le patient a saisi dans l'application, plus les allergies ou médicaments enregistrés. Le personnel peut consulter ces infos ici, sans les modifier sur cette page.</value>
+  </data>
+  <data name="Common_NoMedicalInfo" xml:space="preserve">
+    <value>Aucun résumé médical pour le moment.</value>
+  </data>
+  <data name="Common_BloodType" xml:space="preserve">
+    <value>Groupe sanguin</value>
+  </data>
+  <data name="Common_Allergies" xml:space="preserve">
+    <value>Allergies</value>
+  </data>
+  <data name="Common_ChronicConditions" xml:space="preserve">
+    <value>Maladies chroniques</value>
+  </data>
+  <data name="Common_Medications" xml:space="preserve">
+    <value>Médicaments</value>
+  </data>
+  <data name="Common_PrimaryDoctor" xml:space="preserve">
+    <value>Médecin traitant</value>
+  </data>
+  <data name="Common_RecordedAllergies" xml:space="preserve">
+    <value>Allergies enregistrées</value>
+  </data>
+  <data name="Common_RecordedMedications" xml:space="preserve">
+    <value>Médicaments enregistrés</value>
+  </data>
+  <data name="Common_Substance" xml:space="preserve">
+    <value>Substance</value>
+  </data>
+  <data name="Common_Reaction" xml:space="preserve">
+    <value>Réaction</value>
+  </data>
+  <data name="Common_Severity" xml:space="preserve">
+    <value>Gravité</value>
+  </data>
+  <data name="Common_Dosage" xml:space="preserve">
+    <value>Posologie</value>
+  </data>
+  <data name="Common_Frequency" xml:space="preserve">
+    <value>Fréquence</value>
+  </data>
+  <data name="Common_StartedOn" xml:space="preserve">
+    <value>Début</value>
+  </data>
+  <data name="Common_EmergencyContactsTitle" xml:space="preserve">
+    <value>Contacts d'urgence</value>
+  </data>
+  <data name="Common_EmergencyContactsLead" xml:space="preserve">
+    <value>Personnes à appeler en cas d'urgence.</value>
+  </data>
+  <data name="Common_NoEmergencyContacts" xml:space="preserve">
+    <value>Aucun contact d'urgence pour le moment.</value>
+  </data>
+  <data name="Common_Relationship" xml:space="preserve">
+    <value>Lien</value>
+  </data>
+  <data name="PatientDetail_CoverageEyebrow" xml:space="preserve">
+    <value>Couverture</value>
+  </data>
+  <data name="Common_InsuranceTitle" xml:space="preserve">
+    <value>Assurance</value>
+  </data>
+  <data name="Common_InsuranceLead" xml:space="preserve">
+    <value>Régimes liés à ce patient.</value>
+  </data>
+  <data name="Common_NoInsurance" xml:space="preserve">
+    <value>Aucune assurance enregistrée.</value>
+  </data>
+  <data name="Common_Plan" xml:space="preserve">
+    <value>Régime</value>
+  </data>
+  <data name="Common_MembershipNumber" xml:space="preserve">
+    <value>Numéro d'adhérent</value>
+  </data>
+  <data name="PatientDetail_BillingEyebrow" xml:space="preserve">
+    <value>Facturation</value>
+  </data>
+  <data name="Common_InvoicesTitle" xml:space="preserve">
+    <value>Factures</value>
+  </data>
+  <data name="Common_InvoicesLead" xml:space="preserve">
+    <value>Factures de l'hôpital pour ce patient. Consultation seulement.</value>
+  </data>
+  <data name="Common_NoInvoices" xml:space="preserve">
+    <value>Aucune facture pour le moment.</value>
+  </data>
+  <data name="Common_Amount" xml:space="preserve">
+    <value>Montant</value>
+  </data>
+  <data name="Common_Due" xml:space="preserve">
+    <value>Échéance</value>
+  </data>
+  <data name="Common_Paid" xml:space="preserve">
+    <value>Payée</value>
+  </data>
+  <data name="PatientDetail_WellbeingEyebrow" xml:space="preserve">
+    <value>Bien-être</value>
+  </data>
+  <data name="Common_MoodTitle" xml:space="preserve">
+    <value>Humeur</value>
+  </data>
+  <data name="Common_MoodLead" xml:space="preserve">
+    <value>Humeurs notées par le patient dans l'application.</value>
+  </data>
+  <data name="Common_NoMoodLogs" xml:space="preserve">
+    <value>Aucun suivi d'humeur pour le moment.</value>
+  </data>
+  <data name="Common_Mood" xml:space="preserve">
+    <value>Humeur</value>
+  </data>
+  <data name="PatientDetail_MoodGreat" xml:space="preserve">
+    <value>Très bien</value>
+  </data>
+  <data name="PatientDetail_MoodGood" xml:space="preserve">
+    <value>Bien</value>
+  </data>
+  <data name="PatientDetail_MoodOkay" xml:space="preserve">
+    <value>Correct</value>
+  </data>
+  <data name="PatientDetail_MoodLow" xml:space="preserve">
+    <value>Bas</value>
+  </data>
+  <data name="Common_Flagged" xml:space="preserve">
+    <value>Signalé</value>
+  </data>
+  <data name="Common_CarePlansTitle" xml:space="preserve">
+    <value>Plans de soins</value>
+  </data>
+  <data name="Common_CarePlansLead" xml:space="preserve">
+    <value>Plans de soins de cet hôpital.</value>
+  </data>
+  <data name="Common_NoCarePlans" xml:space="preserve">
+    <value>Aucun plan de soins pour le moment.</value>
+  </data>
+  <data name="Common_Title" xml:space="preserve">
+    <value>Titre</value>
+  </data>
+  <data name="Common_DiagnosesTitle" xml:space="preserve">
+    <value>Diagnostics</value>
+  </data>
+  <data name="PatientDetail_ClinicalDocsLead" xml:space="preserve">
+    <value>Issus des visites dans cet hôpital. Ouvrez une visite pour la note complète.</value>
+  </data>
+  <data name="Visit_ClinicalDocsLead" xml:space="preserve">
+    <value>Enregistré pour cette visite. Les diagnostics restent en lecture seule sur cette page.</value>
+  </data>
+  <data name="Common_NoDiagnoses" xml:space="preserve">
+    <value>Aucun diagnostic enregistré.</value>
+  </data>
+  <data name="Common_Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Common_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Common_PrescriptionsTitle" xml:space="preserve">
+    <value>Ordonnances</value>
+  </data>
+  <data name="Common_NoPrescriptions" xml:space="preserve">
+    <value>Aucune ordonnance enregistrée.</value>
+  </data>
+  <data name="Common_SoapNotesTitle" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Common_NoClinicalNotes" xml:space="preserve">
+    <value>Aucune note de visite pour le moment.</value>
+  </data>
+  <data name="Common_Subjective" xml:space="preserve">
+    <value>Subjectif</value>
+  </data>
+  <data name="Common_Objective" xml:space="preserve">
+    <value>Objectif</value>
+  </data>
+  <data name="Common_Assessment" xml:space="preserve">
+    <value>Analyse</value>
+  </data>
+  <data name="Common_SoapPlan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="Common_LabResultsTitle" xml:space="preserve">
+    <value>Résultats de labo</value>
+  </data>
+  <data name="Common_NoLabResults" xml:space="preserve">
+    <value>Aucun résultat de labo enregistré.</value>
+  </data>
+  <data name="Common_Test" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="Common_ReferenceRange" xml:space="preserve">
+    <value>Intervalle de référence</value>
+  </data>
+  <data name="Common_Reported" xml:space="preserve">
+    <value>Rapporté</value>
+  </data>
+  <data name="Common_ContactCountLabel" xml:space="preserve">
+    <value>{0} contact</value>
+  </data>
+  <data name="Common_ContactCountLabelPlural" xml:space="preserve">
+    <value>{0} contacts</value>
+  </data>
+  <data name="Common_InsuranceCountLabel" xml:space="preserve">
+    <value>{0} régime</value>
+  </data>
+  <data name="Common_InsuranceCountLabelPlural" xml:space="preserve">
+    <value>{0} régimes</value>
+  </data>
+  <data name="Common_InvoiceCountLabel" xml:space="preserve">
+    <value>{0} facture</value>
+  </data>
+  <data name="Common_InvoiceCountLabelPlural" xml:space="preserve">
+    <value>{0} factures</value>
+  </data>
+  <data name="Common_MoodCountLabel" xml:space="preserve">
+    <value>{0} suivi</value>
+  </data>
+  <data name="Common_MoodCountLabelPlural" xml:space="preserve">
+    <value>{0} suivis</value>
+  </data>
+  <data name="Common_CarePlanCountLabel" xml:space="preserve">
+    <value>{0} plan</value>
+  </data>
+  <data name="Common_CarePlanCountLabelPlural" xml:space="preserve">
+    <value>{0} plans</value>
+  </data>
+  <data name="Visit_NotesLead" xml:space="preserve">
+    <value>Enregistrez une note SOAP ou ajoutez une note libre pendant que la visite est en cours.</value>
+  </data>
+  <data name="Visit_OpenVisitDocumentLead" xml:space="preserve">
+    <value>Les administrateurs de l'hôpital peuvent ajouter ceci pendant que la visite est en cours.</value>
+  </data>
+  <data name="Common_MedicationName" xml:space="preserve">
+    <value>Nom du médicament</value>
+  </data>
+  <data name="Common_DurationDays" xml:space="preserve">
+    <value>Durée (jours)</value>
+  </data>
+  <data name="Common_SaveSoap" xml:space="preserve">
+    <value>Enregistrer la note SOAP</value>
+  </data>
+  <data name="Common_SavingSoap" xml:space="preserve">
+    <value>Enregistrement de la note SOAP</value>
+  </data>
+  <data name="Common_AddNote" xml:space="preserve">
+    <value>Ajouter une note</value>
+  </data>
+  <data name="Common_AddingNote" xml:space="preserve">
+    <value>Ajout de la note</value>
+  </data>
+  <data name="Common_AddPrescription" xml:space="preserve">
+    <value>Ajouter une prescription</value>
+  </data>
+  <data name="Common_AddingPrescription" xml:space="preserve">
+    <value>Ajout de la prescription</value>
+  </data>
+  <data name="Common_AddLabResult" xml:space="preserve">
+    <value>Ajouter un résultat de labo</value>
+  </data>
+  <data name="Common_AddingLab" xml:space="preserve">
+    <value>Ajout du résultat de labo</value>
+  </data>
+  <data name="Common_NoteCategoryPlaceholder" xml:space="preserve">
+    <value>Type de note (facultatif)</value>
+  </data>
+  <data name="Common_CouldNotSaveSoap" xml:space="preserve">
+    <value>Impossible d'enregistrer la note SOAP.</value>
+  </data>
+  <data name="Common_CouldNotAddNote" xml:space="preserve">
+    <value>Impossible d'ajouter la note.</value>
+  </data>
+  <data name="Common_CouldNotAddPrescription" xml:space="preserve">
+    <value>Impossible d'ajouter la prescription.</value>
+  </data>
+  <data name="Common_CouldNotAddLab" xml:space="preserve">
+    <value>Impossible d'ajouter le résultat de labo.</value>
+  </data>
+  <data name="Common_SoapSaved" xml:space="preserve">
+    <value>Note SOAP enregistrée.</value>
+  </data>
+  <data name="Common_NoteAdded" xml:space="preserve">
+    <value>Note ajoutée.</value>
+  </data>
+  <data name="Common_PrescriptionAdded" xml:space="preserve">
+    <value>Prescription ajoutée.</value>
+  </data>
+  <data name="Common_LabResultAdded" xml:space="preserve">
+    <value>Résultat de labo ajouté.</value>
+  </data>
 </root>

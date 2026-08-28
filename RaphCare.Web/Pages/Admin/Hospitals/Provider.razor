@@ -12,38 +12,26 @@
     }
     else if (_provider is null)
     {
-        <div class="alert alert-error">@(_error ?? AppResources.T("Common_ProviderNotFound"))</div>
+        <AdminAlert Message="@(_error ?? AppResources.T("Common_ProviderNotFound"))" />
         <a class="btn btn-secondary" href="@BackUrl">@AppResources.T("Common_BackToHospital")</a>
     }
     else
     {
-        <header class="admin-page-header">
-            <div>
-                <h1>@_provider.DisplayName</h1>
-                <p class="admin-page-lead">@AppResources.Format("Common_WeeklyScheduleLead", ClinicDisplayName)</p>
-            </div>
+        <AdminPageHeader Title="@_provider.DisplayName"
+                         Lead="@AppResources.Format("Common_WeeklyScheduleLead", ClinicDisplayName)">
             <span class="badge @(_provider.IsActive ? "badge-success" : "badge-muted")">
                 @(_provider.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
             </span>
-        </header>
+        </AdminPageHeader>
 
-        @if (!string.IsNullOrEmpty(_error))
-        {
-            <div class="alert alert-error">@_error</div>
-        }
+        <AdminAlert Message="@_error" />
 
         <AdminPageCard Eyebrow="@AppResources.T("Common_Profile")" Title="@AppResources.T("Common_ProviderDetailsTitle")">
             <div class="admin-page-card-body">
-                <dl class="admin-detail-grid">
-                    <div>
-                        <dt>@AppResources.T("Common_Email")</dt>
-                        <dd>@_provider.Email</dd>
-                    </div>
-                    <div>
-                        <dt>@AppResources.T("Common_License")</dt>
-                        <dd>@(string.IsNullOrWhiteSpace(_provider.LicenseNumber) ? AppResources.T("Common_EmptyCell") : _provider.LicenseNumber)</dd>
-                    </div>
-                </dl>
+                <AdminDefinitionGrid>
+                    <AdminDefinitionItem Label="@AppResources.T("Common_Email")" Value="@_provider.Email" />
+                    <AdminDefinitionItem Label="@AppResources.T("Common_License")" Value="@(string.IsNullOrWhiteSpace(_provider.LicenseNumber) ? AppResources.T("Common_EmptyCell") : _provider.LicenseNumber)" />
+                </AdminDefinitionGrid>
                 @if (_isAdministrator)
                 {
                     <div class="admin-page-actions" style="margin-top: 1rem;">

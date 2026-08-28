@@ -16,10 +16,7 @@
             : AppResources.T("PatientRegister_SubtitleDetails"))
     </p>
 
-    @if (!string.IsNullOrEmpty(_error))
-    {
-        <div class="alert alert-error">@_error</div>
-    }
+    <AdminAlert Message="@_error" />
     @if (!string.IsNullOrEmpty(_status))
     {
         <AuthStatusNotice Email="@_model.Email" />

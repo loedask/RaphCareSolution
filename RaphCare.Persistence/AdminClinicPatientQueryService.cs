@@ -4,12 +4,15 @@ using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Domain.Clinical;
 using RaphCare.Domain.Devices;
+using RaphCare.Domain.Patients;
 
 namespace RaphCare.Persistence;
 
 public sealed class AdminClinicPatientQueryService(
     ClinicalDbContext clinicalDbContext,
     DeviceDbContext deviceDbContext,
+    BillingDbContext billingDbContext,
+    InsuranceDbContext insuranceDbContext,
     IProfessionalUserLookupService professionalUserLookupService,
     IDeviceReadingRollupService deviceReadingRollupService,
     IDateTimeProvider clock)
@@ -217,6 +220,24 @@ public sealed class AdminClinicPatientQueryService(
             MaxSpO2Percent = r.MaxSpO2Percent
         }).ToList();
 
+        var medicalSummary = await LoadMedicalSummaryAsync(patientId, cancellationToken).ConfigureAwait(false);
+        var emergencyContacts = await LoadEmergencyContactsAsync(patientId, cancellationToken).ConfigureAwait(false);
+        var insuranceProfiles = await LoadInsuranceAsync(patientId, cancellationToken).ConfigureAwait(false);
+        var invoices = await LoadInvoicesAsync(clinicId, patientId, cancellationToken).ConfigureAwait(false);
+        var moodLogs = await LoadMoodLogsAsync(patientId, cancellationToken).ConfigureAwait(false);
+        var carePlans = await LoadCarePlansAsync(clinicId, patientId, cancellationToken).ConfigureAwait(false);
+
+        var chartVisitRows = await clinicalDbContext.Visits
+            .AsNoTracking()
+            .Where(v => v.ClinicId == clinicId && v.PatientId == patientId)
+            .OrderByDescending(v => v.VisitStart)
+            .Take(25)
+            .Select(v => new { v.Id, v.VisitStart })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+        var visitStarts = chartVisitRows.ToDictionary(v => v.Id, v => v.VisitStart);
+        var clinicalDocs = await LoadClinicalDocumentationAsync(visitStarts, cancellationToken).ConfigureAwait(false);
+
         return new AdminClinicPatientDetailDto
         {
             PatientId = row.patient.Id,
@@ -226,15 +247,349 @@ public sealed class AdminClinicPatientQueryService(
             Gender = row.patient.Gender,
             Email = row.patient.Email,
             PhoneNumber = row.patient.PhoneNumber,
+            NationalHealthId = row.patient.NationalHealthId,
             AccessType = row.access.AccessType.ToString(),
             GrantedAt = row.access.GrantedAt,
             GrantedByRule = row.access.GrantedByRule,
             Notes = row.access.Notes,
+            MedicalSummary = medicalSummary,
+            EmergencyContacts = emergencyContacts,
+            InsuranceProfiles = insuranceProfiles,
+            Invoices = invoices,
+            MoodLogs = moodLogs,
+            CarePlans = carePlans,
+            Diagnoses = clinicalDocs.Diagnoses,
+            Prescriptions = clinicalDocs.Prescriptions,
+            ClinicalNotes = clinicalDocs.ClinicalNotes,
+            SoapNotes = clinicalDocs.SoapNotes,
+            LabResults = clinicalDocs.LabResults,
             RecentVisits = recentVisits,
             Appointments = appointmentDtos,
             RecentVitals = recentVitals,
             RecentDeviceReadings = recentDeviceReadings,
             DeviceDailyRollups = rollupDtos
+        };
+    }
+
+    public async Task<AdminClinicVisitClinicalDocumentationDto> GetVisitClinicalDocumentationAsync(
+        Guid visitId,
+        DateTime visitStart,
+        CancellationToken cancellationToken = default)
+    {
+        var visitStarts = new Dictionary<Guid, DateTime> { [visitId] = visitStart };
+        return await LoadClinicalDocumentationAsync(visitStarts, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<AdminClinicPatientMedicalSummaryDto> LoadMedicalSummaryAsync(
+        Guid patientId,
+        CancellationToken cancellationToken)
+    {
+        var profile = await clinicalDbContext.Set<PatientProfile>()
+            .AsNoTracking()
+            .Where(p => p.PatientId == patientId)
+            .Select(p => new
+            {
+                p.BloodType,
+                p.SelfReportedAllergies,
+                p.SelfReportedChronicConditions,
+                p.SelfReportedMedications,
+                p.PrimaryCareProviderName
+            })
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var allergies = await clinicalDbContext.Set<Allergy>()
+            .AsNoTracking()
+            .Where(a => a.PatientId == patientId)
+            .OrderByDescending(a => a.RecordedAt)
+            .Take(20)
+            .Select(a => new AdminClinicPatientAllergyDto
+            {
+                Substance = a.Substance,
+                Reaction = a.Reaction,
+                Severity = a.Severity,
+                RecordedAt = a.RecordedAt
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var medications = await clinicalDbContext.Set<Medication>()
+            .AsNoTracking()
+            .Where(m => m.PatientId == patientId)
+            .OrderByDescending(m => m.StartDate)
+            .Take(20)
+            .Select(m => new AdminClinicPatientMedicationDto
+            {
+                MedicationName = m.MedicationName,
+                Dosage = m.Dosage,
+                Frequency = m.Frequency,
+                StartDate = m.StartDate,
+                EndDate = m.EndDate
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return new AdminClinicPatientMedicalSummaryDto
+        {
+            BloodType = profile?.BloodType,
+            Allergies = profile?.SelfReportedAllergies,
+            ChronicConditions = profile?.SelfReportedChronicConditions,
+            Medications = profile?.SelfReportedMedications,
+            PrimaryDoctor = profile?.PrimaryCareProviderName,
+            RecordedAllergies = allergies,
+            RecordedMedications = medications
+        };
+    }
+
+    private async Task<IReadOnlyList<AdminClinicPatientEmergencyContactDto>> LoadEmergencyContactsAsync(
+        Guid patientId,
+        CancellationToken cancellationToken)
+    {
+        return await clinicalDbContext.Set<EmergencyContact>()
+            .AsNoTracking()
+            .Where(c => c.PatientId == patientId)
+            .OrderBy(c => c.Name)
+            .Select(c => new AdminClinicPatientEmergencyContactDto
+            {
+                Name = c.Name,
+                Relationship = c.Relationship,
+                PhoneNumber = c.PhoneNumber,
+                Email = c.Email
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private async Task<IReadOnlyList<AdminClinicPatientInsuranceDto>> LoadInsuranceAsync(
+        Guid patientId,
+        CancellationToken cancellationToken)
+    {
+        var profiles = await insuranceDbContext.InsuranceProfiles
+            .AsNoTracking()
+            .Where(p => p.PatientId == patientId)
+            .OrderByDescending(p => p.IsActive)
+            .ThenByDescending(p => p.StartDate)
+            .Select(p => new
+            {
+                p.InsurancePlanId,
+                p.MembershipNumber,
+                p.StartDate,
+                p.EndDate,
+                p.IsActive
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (profiles.Count == 0)
+            return Array.Empty<AdminClinicPatientInsuranceDto>();
+
+        var planIds = profiles.Select(p => p.InsurancePlanId).Distinct().ToList();
+        var plans = await insuranceDbContext.InsurancePlans
+            .AsNoTracking()
+            .Where(p => planIds.Contains(p.Id))
+            .Select(p => new { p.Id, p.Name })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+        var planNames = plans.ToDictionary(p => p.Id, p => p.Name);
+
+        return profiles.Select(p =>
+        {
+            planNames.TryGetValue(p.InsurancePlanId, out var name);
+            return new AdminClinicPatientInsuranceDto
+            {
+                PlanName = string.IsNullOrWhiteSpace(name) ? "Insurance plan" : name,
+                MembershipNumber = p.MembershipNumber,
+                StartDate = p.StartDate,
+                EndDate = p.EndDate,
+                IsActive = p.IsActive
+            };
+        }).ToList();
+    }
+
+    private async Task<IReadOnlyList<AdminClinicPatientInvoiceDto>> LoadInvoicesAsync(
+        Guid clinicId,
+        Guid patientId,
+        CancellationToken cancellationToken)
+    {
+        return await billingDbContext.Invoices
+            .AsNoTracking()
+            .Where(i => i.ClinicId == clinicId && i.PatientId == patientId)
+            .OrderByDescending(i => i.DueDate)
+            .Take(20)
+            .Select(i => new AdminClinicPatientInvoiceDto
+            {
+                Id = i.Id,
+                Amount = i.Amount,
+                Currency = i.Currency,
+                Status = i.Status,
+                DueDate = i.DueDate,
+                PaidAt = i.PaidAt,
+                VisitId = i.VisitId
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private async Task<IReadOnlyList<AdminClinicPatientMoodLogDto>> LoadMoodLogsAsync(
+        Guid patientId,
+        CancellationToken cancellationToken)
+    {
+        return await clinicalDbContext.MoodLogs
+            .AsNoTracking()
+            .Where(m => m.PatientId == patientId)
+            .OrderByDescending(m => m.LoggedAt)
+            .Take(20)
+            .Select(m => new AdminClinicPatientMoodLogDto
+            {
+                LoggedAt = m.LoggedAt,
+                MoodScore = m.MoodScore,
+                Notes = m.Notes,
+                IsFlagged = m.IsFlagged
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private async Task<IReadOnlyList<AdminClinicPatientCarePlanDto>> LoadCarePlansAsync(
+        Guid clinicId,
+        Guid patientId,
+        CancellationToken cancellationToken)
+    {
+        return await clinicalDbContext.CarePlans
+            .AsNoTracking()
+            .Where(p => p.ClinicId == clinicId && p.PatientId == patientId)
+            .OrderByDescending(p => p.StartDate)
+            .Take(10)
+            .Select(p => new AdminClinicPatientCarePlanDto
+            {
+                Title = p.Title,
+                Description = p.Description,
+                StartDate = p.StartDate,
+                EndDate = p.EndDate,
+                Status = p.Status
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private async Task<AdminClinicVisitClinicalDocumentationDto> LoadClinicalDocumentationAsync(
+        IReadOnlyDictionary<Guid, DateTime> visitStarts,
+        CancellationToken cancellationToken)
+    {
+        if (visitStarts.Count == 0)
+            return new AdminClinicVisitClinicalDocumentationDto();
+
+        var visitIds = visitStarts.Keys.ToList();
+
+        var diagnoses = await clinicalDbContext.Set<Diagnosis>()
+            .AsNoTracking()
+            .Where(d => visitIds.Contains(d.VisitId))
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var notes = await clinicalDbContext.Set<ClinicalNote>()
+            .AsNoTracking()
+            .Where(n => visitIds.Contains(n.VisitId))
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var soapNotes = await clinicalDbContext.Set<SOAPNote>()
+            .AsNoTracking()
+            .Where(s => visitIds.Contains(s.VisitId))
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var prescriptions = await clinicalDbContext.Set<Prescription>()
+            .AsNoTracking()
+            .Where(p => visitIds.Contains(p.VisitId))
+            .Include(p => p.PrescriptionItems)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var labRows = await clinicalDbContext.Set<LabResult>()
+            .AsNoTracking()
+            .Where(r => visitIds.Contains(r.LabRequest.VisitId))
+            .Select(r => new
+            {
+                r.LabRequest.VisitId,
+                r.LabRequest.TestName,
+                r.ResultValue,
+                r.Unit,
+                r.ReferenceRange,
+                r.ReportedAt
+            })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        DateTime Start(Guid visitId) => visitStarts.TryGetValue(visitId, out var start) ? start : default;
+
+        return new AdminClinicVisitClinicalDocumentationDto
+        {
+            Diagnoses = diagnoses
+                .OrderByDescending(d => Start(d.VisitId))
+                .Select(d => new AdminClinicVisitDiagnosisDto
+                {
+                    VisitId = d.VisitId,
+                    VisitStart = Start(d.VisitId),
+                    Code = d.Code,
+                    Description = d.Description,
+                    Severity = d.Severity
+                })
+                .ToList(),
+            Prescriptions = prescriptions
+                .OrderByDescending(p => p.IssuedAt)
+                .Select(p => new AdminClinicVisitPrescriptionDto
+                {
+                    VisitId = p.VisitId,
+                    VisitStart = Start(p.VisitId),
+                    IssuedAt = p.IssuedAt,
+                    Notes = p.Notes,
+                    Items = p.PrescriptionItems
+                        .Select(i => new AdminClinicVisitPrescriptionItemDto
+                        {
+                            MedicationName = i.MedicationName,
+                            Dosage = i.Dosage,
+                            Frequency = i.Frequency,
+                            DurationDays = i.DurationDays
+                        })
+                        .ToList()
+                })
+                .ToList(),
+            ClinicalNotes = notes
+                .OrderByDescending(n => n.CreatedAt)
+                .Select(n => new AdminClinicVisitNoteDto
+                {
+                    VisitId = n.VisitId,
+                    VisitStart = Start(n.VisitId),
+                    Notes = n.Notes,
+                    Category = n.Category
+                })
+                .ToList(),
+            SoapNotes = soapNotes
+                .OrderByDescending(s => Start(s.VisitId))
+                .Select(s => new AdminClinicVisitSoapNoteDto
+                {
+                    VisitId = s.VisitId,
+                    VisitStart = Start(s.VisitId),
+                    Subjective = s.Subjective,
+                    Objective = s.Objective,
+                    Assessment = s.Assessment,
+                    Plan = s.Plan
+                })
+                .ToList(),
+            LabResults = labRows
+                .OrderByDescending(r => r.ReportedAt)
+                .Select(r => new AdminClinicVisitLabResultDto
+                {
+                    VisitId = r.VisitId,
+                    VisitStart = Start(r.VisitId),
+                    TestName = r.TestName,
+                    ResultValue = r.ResultValue,
+                    Unit = r.Unit,
+                    ReferenceRange = r.ReferenceRange,
+                    ReportedAt = r.ReportedAt
+                })
+                .ToList()
         };
     }
 

@@ -49,10 +49,22 @@ public sealed class ClinicPatientDetail
     public string Gender { get; set; } = string.Empty;
     public string? Email { get; set; }
     public string? PhoneNumber { get; set; }
+    public string? NationalHealthId { get; set; }
     public string AccessType { get; set; } = string.Empty;
     public DateTime GrantedAt { get; set; }
     public string GrantedByRule { get; set; } = string.Empty;
     public string? Notes { get; set; }
+    public ClinicPatientMedicalSummary MedicalSummary { get; set; } = new();
+    public IReadOnlyList<ClinicPatientEmergencyContact> EmergencyContacts { get; set; } = Array.Empty<ClinicPatientEmergencyContact>();
+    public IReadOnlyList<ClinicPatientInsuranceProfile> InsuranceProfiles { get; set; } = Array.Empty<ClinicPatientInsuranceProfile>();
+    public IReadOnlyList<ClinicPatientInvoice> Invoices { get; set; } = Array.Empty<ClinicPatientInvoice>();
+    public IReadOnlyList<ClinicPatientMoodLog> MoodLogs { get; set; } = Array.Empty<ClinicPatientMoodLog>();
+    public IReadOnlyList<ClinicPatientCarePlan> CarePlans { get; set; } = Array.Empty<ClinicPatientCarePlan>();
+    public IReadOnlyList<ClinicVisitDiagnosis> Diagnoses { get; set; } = Array.Empty<ClinicVisitDiagnosis>();
+    public IReadOnlyList<ClinicVisitPrescription> Prescriptions { get; set; } = Array.Empty<ClinicVisitPrescription>();
+    public IReadOnlyList<ClinicVisitNote> ClinicalNotes { get; set; } = Array.Empty<ClinicVisitNote>();
+    public IReadOnlyList<ClinicVisitSoapNote> SoapNotes { get; set; } = Array.Empty<ClinicVisitSoapNote>();
+    public IReadOnlyList<ClinicVisitLabResult> LabResults { get; set; } = Array.Empty<ClinicVisitLabResult>();
     public IReadOnlyList<ClinicPatientVisitSummary> RecentVisits { get; set; } = Array.Empty<ClinicPatientVisitSummary>();
     public IReadOnlyList<ClinicPatientAppointmentSummary> Appointments { get; set; } = Array.Empty<ClinicPatientAppointmentSummary>();
     public IReadOnlyList<ClinicPatientVitalSummary> RecentVitals { get; set; } = Array.Empty<ClinicPatientVitalSummary>();
