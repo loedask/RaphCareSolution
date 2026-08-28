@@ -1612,22 +1612,22 @@
     <value>Capture who will manage the hospital on the platform.</value>
   </data>
   <data name="HospitalsRegister_HospitalNameLabel" xml:space="preserve">
-    <value>Hospital name *</value>
+    <value>Hospital name</value>
   </data>
   <data name="HospitalsRegister_HospitalNamePlaceholder" xml:space="preserve">
     <value>e.g. RaphCare General Hospital</value>
   </data>
   <data name="HospitalsRegister_RegNumberLabel" xml:space="preserve">
-    <value>Registration number *</value>
+    <value>Registration number</value>
   </data>
   <data name="HospitalsRegister_RegNumberPlaceholder" xml:space="preserve">
     <value>e.g. HPCSA-12345</value>
   </data>
   <data name="HospitalsRegister_CountryLabel" xml:space="preserve">
-    <value>Country *</value>
+    <value>Country</value>
   </data>
   <data name="HospitalsRegister_TimeZoneLabel" xml:space="preserve">
-    <value>Time zone *</value>
+    <value>Time zone</value>
   </data>
   <data name="HospitalsRegister_FacilityNameLabel" xml:space="preserve">
     <value>Facility name</value>

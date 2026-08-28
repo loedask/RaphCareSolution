@@ -1658,22 +1658,22 @@
     <value>Bokanga nani akokamba lopitalo na estrade.</value>
   </data>
   <data name="HospitalsRegister_HospitalNameLabel" xml:space="preserve">
-    <value>Nkombo ya lopitalo * .</value>
+    <value>Nkombo ya lopitalo</value>
   </data>
   <data name="HospitalsRegister_HospitalNamePlaceholder" xml:space="preserve">
     <value>e.g. RaphCare Lopitalo ya monene</value>
   </data>
   <data name="HospitalsRegister_RegNumberLabel" xml:space="preserve">
-    <value>Motango ya bokomisi nkombo * .</value>
+    <value>Motango ya bokomisi nkombo</value>
   </data>
   <data name="HospitalsRegister_RegNumberPlaceholder" xml:space="preserve">
     <value>e.g. HPCSA-12345 na nzela ya 12345</value>
   </data>
   <data name="HospitalsRegister_CountryLabel" xml:space="preserve">
-    <value>Mboka *</value>
+    <value>Mboka</value>
   </data>
   <data name="HospitalsRegister_TimeZoneLabel" xml:space="preserve">
-    <value>Fuseau horaire * .</value>
+    <value>Fuseau horaire</value>
   </data>
   <data name="HospitalsRegister_FacilityNameLabel" xml:space="preserve">
     <value>Nkombo ya esika ya mosala</value>

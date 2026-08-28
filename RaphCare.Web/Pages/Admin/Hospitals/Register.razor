@@ -157,15 +157,15 @@ else
                     case 2:
                         <div class="form-grid">
                             <div class="form-field span-2">
-                                <label for="name">@AppResources.T("HospitalsRegister_HospitalNameLabel")</label>
+                                <label class="required" for="name">@AppResources.T("HospitalsRegister_HospitalNameLabel")</label>
                                 <InputText id="name" class="form-control" @bind-Value="_draft.Name" placeholder="@AppResources.T("HospitalsRegister_HospitalNamePlaceholder")" />
                             </div>
                             <div class="form-field">
-                                <label for="reg">@AppResources.T("HospitalsRegister_RegNumberLabel")</label>
+                                <label class="required" for="reg">@AppResources.T("HospitalsRegister_RegNumberLabel")</label>
                                 <InputText id="reg" class="form-control" @bind-Value="_draft.RegistrationNumber" placeholder="@AppResources.T("HospitalsRegister_RegNumberPlaceholder")" />
                             </div>
                             <div class="form-field">
-                                <label for="country">@AppResources.T("HospitalsRegister_CountryLabel")</label>
+                                <label class="required" for="country">@AppResources.T("HospitalsRegister_CountryLabel")</label>
                                 <InputSelect id="country" class="form-control" @bind-Value="_draft.Country">
                                     @foreach (var c in CountryOptions)
                                     {
@@ -174,7 +174,7 @@ else
                                 </InputSelect>
                             </div>
                             <div class="form-field span-2">
-                                <label for="tz">@AppResources.T("HospitalsRegister_TimeZoneLabel")</label>
+                                <label class="required" for="tz">@AppResources.T("HospitalsRegister_TimeZoneLabel")</label>
                                 <InputSelect id="tz" class="form-control" @bind-Value="_draft.TimeZone">
                                     @foreach (var tz in TimeZoneOptions)
                                     {

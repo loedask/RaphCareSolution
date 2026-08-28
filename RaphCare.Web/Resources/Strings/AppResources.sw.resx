@@ -1658,22 +1658,22 @@
     <value>Nasa nani atasimamia hospitali kwenye jukwaa.</value>
   </data>
   <data name="HospitalsRegister_HospitalNameLabel" xml:space="preserve">
-    <value>Jina la hospitali*</value>
+    <value>Jina la hospitali</value>
   </data>
   <data name="HospitalsRegister_HospitalNamePlaceholder" xml:space="preserve">
     <value>k.m. RaphCare Hospitali Kuu</value>
   </data>
   <data name="HospitalsRegister_RegNumberLabel" xml:space="preserve">
-    <value>Nambari ya usajili *</value>
+    <value>Nambari ya usajili</value>
   </data>
   <data name="HospitalsRegister_RegNumberPlaceholder" xml:space="preserve">
     <value>k.m. HPCSA-12345</value>
   </data>
   <data name="HospitalsRegister_CountryLabel" xml:space="preserve">
-    <value>Nchi *</value>
+    <value>Nchi</value>
   </data>
   <data name="HospitalsRegister_TimeZoneLabel" xml:space="preserve">
-    <value>Saa za eneo *</value>
+    <value>Saa za eneo</value>
   </data>
   <data name="HospitalsRegister_FacilityNameLabel" xml:space="preserve">
     <value>Jina la kituo</value>

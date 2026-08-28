@@ -531,12 +531,12 @@ HospitalsRegister_FeatureFacilityTitle|Primary facility
 HospitalsRegister_FeatureFacilityDesc|Add a physical campus or virtual telehealth site as the first location.
 HospitalsRegister_FeatureAdminTitle|Administrator
 HospitalsRegister_FeatureAdminDesc|Capture who will manage the hospital on the platform.
-HospitalsRegister_HospitalNameLabel|Hospital name *
+HospitalsRegister_HospitalNameLabel|Hospital name
 HospitalsRegister_HospitalNamePlaceholder|e.g. RaphCare General Hospital
-HospitalsRegister_RegNumberLabel|Registration number *
+HospitalsRegister_RegNumberLabel|Registration number
 HospitalsRegister_RegNumberPlaceholder|e.g. HPCSA-12345
-HospitalsRegister_CountryLabel|Country *
-HospitalsRegister_TimeZoneLabel|Time zone *
+HospitalsRegister_CountryLabel|Country
+HospitalsRegister_TimeZoneLabel|Time zone
 HospitalsRegister_FacilityNameLabel|Facility name
 HospitalsRegister_FacilityNamePlaceholder|e.g. Main campus
 HospitalsRegister_StreetAddressLabel|Street address

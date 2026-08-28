@@ -1658,22 +1658,22 @@
     <value>Capturez qui gérera l&apos;hôpital sur la plateforme.</value>
   </data>
   <data name="HospitalsRegister_HospitalNameLabel" xml:space="preserve">
-    <value>Nom de l&apos;hôpital *</value>
+    <value>Nom de l&apos;hôpital</value>
   </data>
   <data name="HospitalsRegister_HospitalNamePlaceholder" xml:space="preserve">
     <value>par ex. RaphCare Hôpital général</value>
   </data>
   <data name="HospitalsRegister_RegNumberLabel" xml:space="preserve">
-    <value>Numéro d&apos;enregistrement *</value>
+    <value>Numéro d&apos;enregistrement</value>
   </data>
   <data name="HospitalsRegister_RegNumberPlaceholder" xml:space="preserve">
     <value>par ex. HPCSA-12345</value>
   </data>
   <data name="HospitalsRegister_CountryLabel" xml:space="preserve">
-    <value>Pays *</value>
+    <value>Pays</value>
   </data>
   <data name="HospitalsRegister_TimeZoneLabel" xml:space="preserve">
-    <value>Fuseau horaire *</value>
+    <value>Fuseau horaire</value>
   </data>
   <data name="HospitalsRegister_FacilityNameLabel" xml:space="preserve">
     <value>Nom de l&apos;établissement</value>
