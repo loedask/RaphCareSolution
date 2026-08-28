@@ -7,25 +7,10 @@
 <PageTitle>@AppResources.T("Dashboard_PageTitle")</PageTitle>
 
 <section class="admin-page admin-brand-page">
-    <header class="admin-page-header brand-hero">
-        <div>
-            <p class="admin-page-eyebrow">@AppResources.T("Common_ClinicPortal")</p>
-            <h1>@(_dashboard?.ClinicName ?? AppResources.T("Common_PlatformOverview"))</h1>
-            <p class="admin-page-lead">
-                @if (_dashboard is not null)
-                {
-                    <span>@AppResources.T("Dashboard_HospitalDashboardLead")</span>
-                }
-                else if (ClinicContext.CurrentClinicId is null && _clinics.Count > 1)
-                {
-                    <span>@AppResources.T("Dashboard_SelectHospitalLead")</span>
-                }
-                else
-                {
-                    <span>@AppResources.T("Dashboard_ManageOnboardingLead")</span>
-                }
-            </p>
-        </div>
+    <AdminPageHeader CssClass="brand-hero"
+                     Eyebrow="@AppResources.T("Common_ClinicPortal")"
+                     Title="@(_dashboard?.ClinicName ?? AppResources.T("Common_PlatformOverview"))"
+                     Lead="@DashboardLead">
         @if (ClinicContext.CurrentClinicId is Guid clinicId)
         {
             <a class="btn btn-secondary" href="/admin/hospitals/@clinicId">@AppResources.T("Common_HospitalDetails")</a>
@@ -34,7 +19,7 @@
         {
             <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospitalButton")</a>
         }
-    </header>
+    </AdminPageHeader>
 
     @if (_loading)
     {
@@ -42,19 +27,19 @@
     }
     else if (_authRequired)
     {
-        <div class="empty-state admin-guidance-state">
-            <div class="empty-state-icon" aria-hidden="true">⌂</div>
-            <h3>@AppResources.T("Common_FinishRegisteringHospital")</h3>
-            <p>@AppResources.T("Dashboard_AuthGuidanceLead")</p>
+        <AdminEmptyState CssClass="admin-guidance-state"
+                         Icon="⌂"
+                         Title="@AppResources.T("Common_FinishRegisteringHospital")"
+                         Lead="@AppResources.T("Dashboard_AuthGuidanceLead")">
             <div class="admin-guidance-actions">
                 <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Common_RegisterHospital")</a>
                 <a class="btn btn-secondary" href="@_signInReturnUrl">@AppResources.T("Common_SignInAgain")</a>
             </div>
-        </div>
+        </AdminEmptyState>
     }
     else if (!string.IsNullOrEmpty(_error))
     {
-        <div class="alert alert-error">@_error</div>
+        <AdminAlert Message="@_error" />
     }
     else if (_dashboard is not null)
     {
@@ -119,12 +104,11 @@
 
         @if (_clinics.Count == 0)
         {
-            <div class="empty-state">
-                <div class="empty-state-icon" aria-hidden="true">⌂</div>
-                <h3>@AppResources.T("Dashboard_EmptyNoHospitalsTitle")</h3>
-                <p>@AppResources.T("Dashboard_EmptyNoHospitalsLead")</p>
+            <AdminEmptyState Icon="⌂"
+                             Title="@AppResources.T("Dashboard_EmptyNoHospitalsTitle")"
+                             Lead="@AppResources.T("Dashboard_EmptyNoHospitalsLead")">
                 <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Dashboard_StartOnboarding")</a>
-            </div>
+            </AdminEmptyState>
         }
         else
         {
@@ -181,6 +165,13 @@
 
     private string _signInReturnUrl =>
         $"/professional/signin?returnUrl={Uri.EscapeDataString(AdminPath)}";
+
+    private string DashboardLead =>
+        _dashboard is not null
+            ? AppResources.T("Dashboard_HospitalDashboardLead")
+            : ClinicContext.CurrentClinicId is null && _clinics.Count > 1
+                ? AppResources.T("Dashboard_SelectHospitalLead")
+                : AppResources.T("Dashboard_ManageOnboardingLead");
 
     protected override async Task OnInitializedAsync()
     {

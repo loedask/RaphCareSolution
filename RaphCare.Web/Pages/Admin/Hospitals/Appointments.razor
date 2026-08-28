@@ -8,22 +8,13 @@
 <PageTitle>@AppResources.T("Appointments_PageTitle")</PageTitle>
 
 <section class="admin-page">
-    <header class="admin-page-header">
-        <div>
-            <h1>@AppResources.T("Common_Appointments")</h1>
-            <p class="admin-page-lead">@AppResources.Format("Common_ScheduledVisitsLead", _clinicName, _timeZoneLabel)</p>
-        </div>
+    <AdminPageHeader Title="@AppResources.T("Common_Appointments")"
+                     Lead="@AppResources.Format("Common_ScheduledVisitsLead", _clinicName, _timeZoneLabel)">
         <span class="admin-progress-pill">@FormatAppointmentCount(_totalCount)</span>
-    </header>
+    </AdminPageHeader>
 
-    @if (!string.IsNullOrEmpty(_error))
-    {
-        <div class="alert alert-error">@_error</div>
-    }
-    @if (!string.IsNullOrEmpty(_success))
-    {
-        <div class="alert alert-success">@_success</div>
-    }
+    <AdminAlert Message="@_error" />
+    <AdminAlert Tone="success" Message="@_success" />
 
     @if (_isAdministrator)
     {

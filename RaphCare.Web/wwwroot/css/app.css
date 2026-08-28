@@ -853,6 +853,25 @@ a:hover { text-decoration: underline; }
     padding: 1.5rem 1.75rem;
 }
 
+.admin-page-subhead {
+    margin: 1.25rem 0 0.65rem;
+    font-size: 0.9rem;
+    font-weight: 650;
+}
+
+.admin-inline-list {
+    margin: 0;
+    padding-left: 1.1rem;
+}
+
+.admin-note-block {
+    margin-bottom: 1.25rem;
+}
+
+.admin-note-block:last-child {
+    margin-bottom: 0;
+}
+
 .admin-page-card-foot {
     padding: 1rem 1.75rem 1.5rem;
     border-top: 1px solid var(--rc-border);

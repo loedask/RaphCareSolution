@@ -1,0 +1,40 @@
+<CascadingValue Value="this" IsFixed="true">
+    <div class="empty-state @CssClass">
+        @if (_icon is not null)
+        {
+            <div class="empty-state-icon" aria-hidden="true">@_icon</div>
+        }
+        else if (!string.IsNullOrEmpty(Icon))
+        {
+            <div class="empty-state-icon" aria-hidden="true">@Icon</div>
+        }
+        @if (!string.IsNullOrEmpty(Title))
+        {
+            <h3>@Title</h3>
+        }
+        @if (!string.IsNullOrEmpty(Lead))
+        {
+            <p>@Lead</p>
+        }
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Lead { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private RenderFragment? _icon;
+
+    internal void SetIcon(RenderFragment? icon)
+    {
+        if (_icon == icon)
+            return;
+
+        _icon = icon;
+        _ = InvokeAsync(StateHasChanged);
+    }
+}

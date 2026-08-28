@@ -151,6 +151,11 @@ public sealed class ClinicVisitDetail
     public string Status { get; set; } = string.Empty;
     public string? Summary { get; set; }
     public IReadOnlyList<ClinicVisitVital> Vitals { get; set; } = Array.Empty<ClinicVisitVital>();
+    public IReadOnlyList<ClinicVisitDiagnosis> Diagnoses { get; set; } = Array.Empty<ClinicVisitDiagnosis>();
+    public IReadOnlyList<ClinicVisitPrescription> Prescriptions { get; set; } = Array.Empty<ClinicVisitPrescription>();
+    public IReadOnlyList<ClinicVisitNote> ClinicalNotes { get; set; } = Array.Empty<ClinicVisitNote>();
+    public IReadOnlyList<ClinicVisitSoapNote> SoapNotes { get; set; } = Array.Empty<ClinicVisitSoapNote>();
+    public IReadOnlyList<ClinicVisitLabResult> LabResults { get; set; } = Array.Empty<ClinicVisitLabResult>();
 }
 
 public sealed class ClinicVisitVital
@@ -160,6 +165,134 @@ public sealed class ClinicVisitVital
     public decimal Value { get; set; }
     public string? Unit { get; set; }
     public DateTime RecordedAt { get; set; }
+}
+
+public sealed class ClinicPatientMedicalSummary
+{
+    public string? BloodType { get; set; }
+    public string? Allergies { get; set; }
+    public string? ChronicConditions { get; set; }
+    public string? Medications { get; set; }
+    public string? PrimaryDoctor { get; set; }
+    public IReadOnlyList<ClinicPatientAllergy> RecordedAllergies { get; set; } = Array.Empty<ClinicPatientAllergy>();
+    public IReadOnlyList<ClinicPatientMedication> RecordedMedications { get; set; } = Array.Empty<ClinicPatientMedication>();
+}
+
+public sealed class ClinicPatientAllergy
+{
+    public string Substance { get; set; } = string.Empty;
+    public string? Reaction { get; set; }
+    public string? Severity { get; set; }
+    public DateTime RecordedAt { get; set; }
+}
+
+public sealed class ClinicPatientMedication
+{
+    public string MedicationName { get; set; } = string.Empty;
+    public string? Dosage { get; set; }
+    public string? Frequency { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+}
+
+public sealed class ClinicPatientEmergencyContact
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Relationship { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string? Email { get; set; }
+}
+
+public sealed class ClinicPatientInsuranceProfile
+{
+    public string PlanName { get; set; } = string.Empty;
+    public string MembershipNumber { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public bool IsActive { get; set; }
+}
+
+public sealed class ClinicPatientInvoice
+{
+    public Guid Id { get; set; }
+    public decimal Amount { get; set; }
+    public string Currency { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public DateTime DueDate { get; set; }
+    public DateTime? PaidAt { get; set; }
+    public Guid? VisitId { get; set; }
+}
+
+public sealed class ClinicPatientMoodLog
+{
+    public DateTime LoggedAt { get; set; }
+    public int MoodScore { get; set; }
+    public string? Notes { get; set; }
+    public bool IsFlagged { get; set; }
+}
+
+public sealed class ClinicPatientCarePlan
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public string Status { get; set; } = string.Empty;
+}
+
+public sealed class ClinicVisitDiagnosis
+{
+    public Guid VisitId { get; set; }
+    public DateTime VisitStart { get; set; }
+    public string Code { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? Severity { get; set; }
+}
+
+public sealed class ClinicVisitPrescription
+{
+    public Guid VisitId { get; set; }
+    public DateTime VisitStart { get; set; }
+    public DateTime IssuedAt { get; set; }
+    public string? Notes { get; set; }
+    public IReadOnlyList<ClinicVisitPrescriptionItem> Items { get; set; } = Array.Empty<ClinicVisitPrescriptionItem>();
+}
+
+public sealed class ClinicVisitPrescriptionItem
+{
+    public string MedicationName { get; set; } = string.Empty;
+    public string? Dosage { get; set; }
+    public string? Frequency { get; set; }
+    public int DurationDays { get; set; }
+}
+
+public sealed class ClinicVisitNote
+{
+    public Guid VisitId { get; set; }
+    public DateTime VisitStart { get; set; }
+    public string Notes { get; set; } = string.Empty;
+    public string? Category { get; set; }
+}
+
+public sealed class ClinicVisitSoapNote
+{
+    public Guid VisitId { get; set; }
+    public DateTime VisitStart { get; set; }
+    public string? Subjective { get; set; }
+    public string? Objective { get; set; }
+    public string? Assessment { get; set; }
+    public string? Plan { get; set; }
+}
+
+public sealed class ClinicVisitLabResult
+{
+    public Guid VisitId { get; set; }
+    public DateTime VisitStart { get; set; }
+    public string TestName { get; set; } = string.Empty;
+    public string ResultValue { get; set; } = string.Empty;
+    public string? Unit { get; set; }
+    public string? ReferenceRange { get; set; }
+    public DateTime ReportedAt { get; set; }
 }
 
 public sealed class RecordVisitVitalRequest

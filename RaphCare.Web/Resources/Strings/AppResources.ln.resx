@@ -2155,4 +2155,235 @@
   <data name="Visit_AppointmentsNav" xml:space="preserve">
     <value>← Ba rendez-vous</value>
   </data>
+  <data name="Common_NationalHealthId" xml:space="preserve">
+    <value>Numéro ya santé ya mboka</value>
+  </data>
+  <data name="Common_MedicalInfoTitle" xml:space="preserve">
+    <value>Sango ya santé</value>
+  </data>
+  <data name="PatientDetail_MedicalLead" xml:space="preserve">
+    <value>Sango mokili na application, mpe allergies to biloko ya nkisi. Ba staff bakoki kotala awa, kasi bábongola te na lokasa oyo.</value>
+  </data>
+  <data name="Common_NoMedicalInfo" xml:space="preserve">
+    <value>Sango ya santé ezali te.</value>
+  </data>
+  <data name="Common_BloodType" xml:space="preserve">
+    <value>Groupe ya makila</value>
+  </data>
+  <data name="Common_Allergies" xml:space="preserve">
+    <value>Allergies</value>
+  </data>
+  <data name="Common_ChronicConditions" xml:space="preserve">
+    <value>Maladi ya ntango molai</value>
+  </data>
+  <data name="Common_Medications" xml:space="preserve">
+    <value>Biloko ya nkisi</value>
+  </data>
+  <data name="Common_PrimaryDoctor" xml:space="preserve">
+    <value>Nganga ya liboso</value>
+  </data>
+  <data name="Common_RecordedAllergies" xml:space="preserve">
+    <value>Allergies ekomami</value>
+  </data>
+  <data name="Common_RecordedMedications" xml:space="preserve">
+    <value>Biloko ya nkisi ekomami</value>
+  </data>
+  <data name="Common_Substance" xml:space="preserve">
+    <value>Eloko</value>
+  </data>
+  <data name="Common_Reaction" xml:space="preserve">
+    <value>Réaction</value>
+  </data>
+  <data name="Common_Severity" xml:space="preserve">
+    <value>Makasi</value>
+  </data>
+  <data name="Common_Dosage" xml:space="preserve">
+    <value>Dose</value>
+  </data>
+  <data name="Common_Frequency" xml:space="preserve">
+    <value>Mbala</value>
+  </data>
+  <data name="Common_StartedOn" xml:space="preserve">
+    <value>Ebandaki</value>
+  </data>
+  <data name="Common_EmergencyContactsTitle" xml:space="preserve">
+    <value>Ba contacts ya urgence</value>
+  </data>
+  <data name="Common_EmergencyContactsLead" xml:space="preserve">
+    <value>Bato ya kobenga soki likambo ya noki.</value>
+  </data>
+  <data name="Common_NoEmergencyContacts" xml:space="preserve">
+    <value>Ba contacts ya urgence ezali te.</value>
+  </data>
+  <data name="Common_Relationship" xml:space="preserve">
+    <value>Boyokani</value>
+  </data>
+  <data name="PatientDetail_CoverageEyebrow" xml:space="preserve">
+    <value>Assurance</value>
+  </data>
+  <data name="Common_InsuranceTitle" xml:space="preserve">
+    <value>Assurance</value>
+  </data>
+  <data name="Common_InsuranceLead" xml:space="preserve">
+    <value>Ba plans ya mokili oyo.</value>
+  </data>
+  <data name="Common_NoInsurance" xml:space="preserve">
+    <value>Assurance ezali te.</value>
+  </data>
+  <data name="Common_Plan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="Common_MembershipNumber" xml:space="preserve">
+    <value>Numéro ya membre</value>
+  </data>
+  <data name="PatientDetail_BillingEyebrow" xml:space="preserve">
+    <value>Facture</value>
+  </data>
+  <data name="Common_InvoicesTitle" xml:space="preserve">
+    <value>Ba factures</value>
+  </data>
+  <data name="Common_InvoicesLead" xml:space="preserve">
+    <value>Ba factures ya lopitalo. Kotala kaka.</value>
+  </data>
+  <data name="Common_NoInvoices" xml:space="preserve">
+    <value>Facture ezali te.</value>
+  </data>
+  <data name="Common_Amount" xml:space="preserve">
+    <value>Mbongo</value>
+  </data>
+  <data name="Common_Due" xml:space="preserve">
+    <value>Mokolo ya kofuta</value>
+  </data>
+  <data name="Common_Paid" xml:space="preserve">
+    <value>Efutami</value>
+  </data>
+  <data name="PatientDetail_WellbeingEyebrow" xml:space="preserve">
+    <value>Bokolongono</value>
+  </data>
+  <data name="Common_MoodTitle" xml:space="preserve">
+    <value>Eliki</value>
+  </data>
+  <data name="Common_MoodLead" xml:space="preserve">
+    <value>Eliki mokili na application.</value>
+  </data>
+  <data name="Common_NoMoodLogs" xml:space="preserve">
+    <value>Eliki ekomami te.</value>
+  </data>
+  <data name="Common_Mood" xml:space="preserve">
+    <value>Eliki</value>
+  </data>
+  <data name="PatientDetail_MoodGreat" xml:space="preserve">
+    <value>Malamu mpenza</value>
+  </data>
+  <data name="PatientDetail_MoodGood" xml:space="preserve">
+    <value>Malamu</value>
+  </data>
+  <data name="PatientDetail_MoodOkay" xml:space="preserve">
+    <value>Ezali malamu</value>
+  </data>
+  <data name="PatientDetail_MoodLow" xml:space="preserve">
+    <value>Mabe</value>
+  </data>
+  <data name="Common_Flagged" xml:space="preserve">
+    <value>Emonani</value>
+  </data>
+  <data name="Common_CarePlansTitle" xml:space="preserve">
+    <value>Ba plans ya soin</value>
+  </data>
+  <data name="Common_CarePlansLead" xml:space="preserve">
+    <value>Ba plans ya soin na lopitalo oyo.</value>
+  </data>
+  <data name="Common_NoCarePlans" xml:space="preserve">
+    <value>Plan ya soin ezali te.</value>
+  </data>
+  <data name="Common_Title" xml:space="preserve">
+    <value>Titre</value>
+  </data>
+  <data name="Common_DiagnosesTitle" xml:space="preserve">
+    <value>Ba diagnostics</value>
+  </data>
+  <data name="PatientDetail_ClinicalDocsLead" xml:space="preserve">
+    <value>Ya ba visites na lopitalo oyo. Fungola visite mpo na note mobimba.</value>
+  </data>
+  <data name="Visit_ClinicalDocsLead" xml:space="preserve">
+    <value>Ekomami na visite oyo. Ba staff bakoki kotala awa; bakoki ko bakisa te naino na lokasa oyo.</value>
+  </data>
+  <data name="Common_NoDiagnoses" xml:space="preserve">
+    <value>Diagnostic ekomami te.</value>
+  </data>
+  <data name="Common_Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Common_Description" xml:space="preserve">
+    <value>Ndimbola</value>
+  </data>
+  <data name="Common_PrescriptionsTitle" xml:space="preserve">
+    <value>Ba ordonnances</value>
+  </data>
+  <data name="Common_NoPrescriptions" xml:space="preserve">
+    <value>Ordonnance ekomami te.</value>
+  </data>
+  <data name="Common_SoapNotesTitle" xml:space="preserve">
+    <value>Ba notes</value>
+  </data>
+  <data name="Common_NoClinicalNotes" xml:space="preserve">
+    <value>Note ya visite ezali te.</value>
+  </data>
+  <data name="Common_Subjective" xml:space="preserve">
+    <value>Sango ya mokili</value>
+  </data>
+  <data name="Common_Objective" xml:space="preserve">
+    <value>Sango ya nganga</value>
+  </data>
+  <data name="Common_Assessment" xml:space="preserve">
+    <value>Tala</value>
+  </data>
+  <data name="Common_SoapPlan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="Common_LabResultsTitle" xml:space="preserve">
+    <value>Ba résultats ya labo</value>
+  </data>
+  <data name="Common_NoLabResults" xml:space="preserve">
+    <value>Résultat ya labo ekomami te.</value>
+  </data>
+  <data name="Common_Test" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="Common_ReferenceRange" xml:space="preserve">
+    <value>Intervalle</value>
+  </data>
+  <data name="Common_Reported" xml:space="preserve">
+    <value>Epesami</value>
+  </data>
+  <data name="Common_ContactCountLabel" xml:space="preserve">
+    <value>{0} contact</value>
+  </data>
+  <data name="Common_ContactCountLabelPlural" xml:space="preserve">
+    <value>{0} ba contacts</value>
+  </data>
+  <data name="Common_InsuranceCountLabel" xml:space="preserve">
+    <value>{0} plan</value>
+  </data>
+  <data name="Common_InsuranceCountLabelPlural" xml:space="preserve">
+    <value>{0} ba plans</value>
+  </data>
+  <data name="Common_InvoiceCountLabel" xml:space="preserve">
+    <value>{0} facture</value>
+  </data>
+  <data name="Common_InvoiceCountLabelPlural" xml:space="preserve">
+    <value>{0} ba factures</value>
+  </data>
+  <data name="Common_MoodCountLabel" xml:space="preserve">
+    <value>{0} eliki</value>
+  </data>
+  <data name="Common_MoodCountLabelPlural" xml:space="preserve">
+    <value>{0} ba eliki</value>
+  </data>
+  <data name="Common_CarePlanCountLabel" xml:space="preserve">
+    <value>{0} plan</value>
+  </data>
+  <data name="Common_CarePlanCountLabelPlural" xml:space="preserve">
+    <value>{0} ba plans</value>
+  </data>
 </root>

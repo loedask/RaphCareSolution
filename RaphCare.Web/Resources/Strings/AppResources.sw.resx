@@ -2155,4 +2155,235 @@
   <data name="Visit_AppointmentsNav" xml:space="preserve">
     <value>← Miadi</value>
   </data>
+  <data name="Common_NationalHealthId" xml:space="preserve">
+    <value>Kitambulisho cha afya</value>
+  </data>
+  <data name="Common_MedicalInfoTitle" xml:space="preserve">
+    <value>Taarifa za afya</value>
+  </data>
+  <data name="PatientDetail_MedicalLead" xml:space="preserve">
+    <value>Yaliyoingizwa na mgonjwa kwenye programu, pamoja na mizio au dawa zilizorekodiwa. Wafanyakazi wanaweza kuona hapa; hawahariri kwenye ukurasa huu.</value>
+  </data>
+  <data name="Common_NoMedicalInfo" xml:space="preserve">
+    <value>Hakuna muhtasari wa afya bado.</value>
+  </data>
+  <data name="Common_BloodType" xml:space="preserve">
+    <value>Kundi la damu</value>
+  </data>
+  <data name="Common_Allergies" xml:space="preserve">
+    <value>Mizio</value>
+  </data>
+  <data name="Common_ChronicConditions" xml:space="preserve">
+    <value>Magonjwa sugu</value>
+  </data>
+  <data name="Common_Medications" xml:space="preserve">
+    <value>Dawa</value>
+  </data>
+  <data name="Common_PrimaryDoctor" xml:space="preserve">
+    <value>Daktari mkuu</value>
+  </data>
+  <data name="Common_RecordedAllergies" xml:space="preserve">
+    <value>Mizio iliyorekodiwa</value>
+  </data>
+  <data name="Common_RecordedMedications" xml:space="preserve">
+    <value>Dawa zilizorekodiwa</value>
+  </data>
+  <data name="Common_Substance" xml:space="preserve">
+    <value>Kitu</value>
+  </data>
+  <data name="Common_Reaction" xml:space="preserve">
+    <value>Mwitikio</value>
+  </data>
+  <data name="Common_Severity" xml:space="preserve">
+    <value>Ukali</value>
+  </data>
+  <data name="Common_Dosage" xml:space="preserve">
+    <value>Kipimo</value>
+  </data>
+  <data name="Common_Frequency" xml:space="preserve">
+    <value>Marudio</value>
+  </data>
+  <data name="Common_StartedOn" xml:space="preserve">
+    <value>Ilianza</value>
+  </data>
+  <data name="Common_EmergencyContactsTitle" xml:space="preserve">
+    <value>Anwani za dharura</value>
+  </data>
+  <data name="Common_EmergencyContactsLead" xml:space="preserve">
+    <value>Watu wa kupigiwa simu wakati wa dharura.</value>
+  </data>
+  <data name="Common_NoEmergencyContacts" xml:space="preserve">
+    <value>Hakuna anwani za dharura bado.</value>
+  </data>
+  <data name="Common_Relationship" xml:space="preserve">
+    <value>Uhusiano</value>
+  </data>
+  <data name="PatientDetail_CoverageEyebrow" xml:space="preserve">
+    <value>Bima</value>
+  </data>
+  <data name="Common_InsuranceTitle" xml:space="preserve">
+    <value>Bima</value>
+  </data>
+  <data name="Common_InsuranceLead" xml:space="preserve">
+    <value>Mipango iliyounganishwa na mgonjwa huyu.</value>
+  </data>
+  <data name="Common_NoInsurance" xml:space="preserve">
+    <value>Hakuna bima kwenye faili.</value>
+  </data>
+  <data name="Common_Plan" xml:space="preserve">
+    <value>Mpango</value>
+  </data>
+  <data name="Common_MembershipNumber" xml:space="preserve">
+    <value>Namba ya uanachama</value>
+  </data>
+  <data name="PatientDetail_BillingEyebrow" xml:space="preserve">
+    <value>Malipo</value>
+  </data>
+  <data name="Common_InvoicesTitle" xml:space="preserve">
+    <value>Ankara</value>
+  </data>
+  <data name="Common_InvoicesLead" xml:space="preserve">
+    <value>Ankara za hospitali kwa mgonjwa huyu. Kuona tu.</value>
+  </data>
+  <data name="Common_NoInvoices" xml:space="preserve">
+    <value>Hakuna ankara bado.</value>
+  </data>
+  <data name="Common_Amount" xml:space="preserve">
+    <value>Kiasi</value>
+  </data>
+  <data name="Common_Due" xml:space="preserve">
+    <value>Tarehe ya malipo</value>
+  </data>
+  <data name="Common_Paid" xml:space="preserve">
+    <value>Imelipwa</value>
+  </data>
+  <data name="PatientDetail_WellbeingEyebrow" xml:space="preserve">
+    <value>Ustawi</value>
+  </data>
+  <data name="Common_MoodTitle" xml:space="preserve">
+    <value>Hali ya moyo</value>
+  </data>
+  <data name="Common_MoodLead" xml:space="preserve">
+    <value>Alama za hali ya moyo mgonjwa alizoandika kwenye programu.</value>
+  </data>
+  <data name="Common_NoMoodLogs" xml:space="preserve">
+    <value>Hakuna rekodi za hali ya moyo bado.</value>
+  </data>
+  <data name="Common_Mood" xml:space="preserve">
+    <value>Hali</value>
+  </data>
+  <data name="PatientDetail_MoodGreat" xml:space="preserve">
+    <value>Vizuri sana</value>
+  </data>
+  <data name="PatientDetail_MoodGood" xml:space="preserve">
+    <value>Vizuri</value>
+  </data>
+  <data name="PatientDetail_MoodOkay" xml:space="preserve">
+    <value>Wastani</value>
+  </data>
+  <data name="PatientDetail_MoodLow" xml:space="preserve">
+    <value>Chini</value>
+  </data>
+  <data name="Common_Flagged" xml:space="preserve">
+    <value>Imeonyeshwa</value>
+  </data>
+  <data name="Common_CarePlansTitle" xml:space="preserve">
+    <value>Mipango ya huduma</value>
+  </data>
+  <data name="Common_CarePlansLead" xml:space="preserve">
+    <value>Mipango ya huduma ya hospitali hii.</value>
+  </data>
+  <data name="Common_NoCarePlans" xml:space="preserve">
+    <value>Hakuna mipango ya huduma bado.</value>
+  </data>
+  <data name="Common_Title" xml:space="preserve">
+    <value>Kichwa</value>
+  </data>
+  <data name="Common_DiagnosesTitle" xml:space="preserve">
+    <value>Utambuzi</value>
+  </data>
+  <data name="PatientDetail_ClinicalDocsLead" xml:space="preserve">
+    <value>Kutoka ziara katika hospitali hii. Fungua ziara kwa maelezo kamili.</value>
+  </data>
+  <data name="Visit_ClinicalDocsLead" xml:space="preserve">
+    <value>Iliyorekodiwa kwa ziara hii. Wafanyakazi wanaweza kuona hapa; hawaiongezi kwenye ukurasa huu bado.</value>
+  </data>
+  <data name="Common_NoDiagnoses" xml:space="preserve">
+    <value>Hakuna utambuzi uliorekodiwa.</value>
+  </data>
+  <data name="Common_Code" xml:space="preserve">
+    <value>Msimbo</value>
+  </data>
+  <data name="Common_Description" xml:space="preserve">
+    <value>Maelezo</value>
+  </data>
+  <data name="Common_PrescriptionsTitle" xml:space="preserve">
+    <value>Maagizo ya dawa</value>
+  </data>
+  <data name="Common_NoPrescriptions" xml:space="preserve">
+    <value>Hakuna maagizo ya dawa yaliyorekodiwa.</value>
+  </data>
+  <data name="Common_SoapNotesTitle" xml:space="preserve">
+    <value>Maelezo</value>
+  </data>
+  <data name="Common_NoClinicalNotes" xml:space="preserve">
+    <value>Hakuna maelezo ya ziara bado.</value>
+  </data>
+  <data name="Common_Subjective" xml:space="preserve">
+    <value>Kile mgonjwa anasema</value>
+  </data>
+  <data name="Common_Objective" xml:space="preserve">
+    <value>Kile kilichopimwa</value>
+  </data>
+  <data name="Common_Assessment" xml:space="preserve">
+    <value>Tathmini</value>
+  </data>
+  <data name="Common_SoapPlan" xml:space="preserve">
+    <value>Mpango</value>
+  </data>
+  <data name="Common_LabResultsTitle" xml:space="preserve">
+    <value>Matokeo ya maabara</value>
+  </data>
+  <data name="Common_NoLabResults" xml:space="preserve">
+    <value>Hakuna matokeo ya maabara yaliyorekodiwa.</value>
+  </data>
+  <data name="Common_Test" xml:space="preserve">
+    <value>Kipimo</value>
+  </data>
+  <data name="Common_ReferenceRange" xml:space="preserve">
+    <value>Kiwango cha kumbukumbu</value>
+  </data>
+  <data name="Common_Reported" xml:space="preserve">
+    <value>Iliyoripotiwa</value>
+  </data>
+  <data name="Common_ContactCountLabel" xml:space="preserve">
+    <value>anwani {0}</value>
+  </data>
+  <data name="Common_ContactCountLabelPlural" xml:space="preserve">
+    <value>anwani {0}</value>
+  </data>
+  <data name="Common_InsuranceCountLabel" xml:space="preserve">
+    <value>mpango {0}</value>
+  </data>
+  <data name="Common_InsuranceCountLabelPlural" xml:space="preserve">
+    <value>mipango {0}</value>
+  </data>
+  <data name="Common_InvoiceCountLabel" xml:space="preserve">
+    <value>ankara {0}</value>
+  </data>
+  <data name="Common_InvoiceCountLabelPlural" xml:space="preserve">
+    <value>ankara {0}</value>
+  </data>
+  <data name="Common_MoodCountLabel" xml:space="preserve">
+    <value>rekodi {0}</value>
+  </data>
+  <data name="Common_MoodCountLabelPlural" xml:space="preserve">
+    <value>rekodi {0}</value>
+  </data>
+  <data name="Common_CarePlanCountLabel" xml:space="preserve">
+    <value>mpango {0}</value>
+  </data>
+  <data name="Common_CarePlanCountLabelPlural" xml:space="preserve">
+    <value>mipango {0}</value>
+  </data>
 </root>

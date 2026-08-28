@@ -32,18 +32,19 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 |------|--------|-----------------|
 | Hospital list, register, claim | Done | Find or register a hospital. Each hospital gets a short RaphCare reference staff can share. |
 | Opening a hospital | Done | The left menu hides so the hospital tools have more room. Use All hospitals in the top bar to go back. Language and sign out are there too. |
-| Hospital profile and facilities | Done | Edit details; add physical or virtual locations. The same card layout is used on other hospital screens. |
+| Hospital profile and facilities | Done | Edit details; add physical or virtual locations. Headers, alerts, empty states, and cards look the same across hospital screens. |
 | Staff invites and roles | Done | Invite people; set admin vs staff |
-| Patients at a hospital | Done | Grant or remove access; open patient detail |
+| Patients at a hospital | Done | Grant or remove access; open the patient chart |
+| Patient chart (view) | Done | See medical info, emergency contacts, insurance, invoices, mood, care plans, notes, prescriptions, labs. Staff view this; they do not edit it here. |
 | Providers and schedules | Done | Add providers; manage schedules |
 | Appointments | Done | Book, cancel, reschedule |
-| Visits and vitals | Done | Start a visit; record vitals; complete |
+| Visits and vitals | Done | Start a visit; record vitals; complete; see notes and labs for that visit |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the web. Opening a hospital hides the left menu so staff can focus on that hospital.
+**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read. Opening a hospital hides the left menu so staff can focus on that hospital.
 
 **Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan. Detail: [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
@@ -151,9 +152,10 @@ What patients see on Android / iPhone.
 
 1. **Admin web:** open a hospital. The left menu should hide. Use All hospitals in the top bar to return to the list.
 2. **Admin web:** on that hospital, open Inpatient. Add a ward/room/bed if needed, admit someone, discharge them.
-3. **Admin web:** book an appointment and start a visit (outpatient path).
-4. **Patient app on Android:** sign in, open Home, try Appointments and Devices (Bluetooth band if you have one).
-5. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
+3. **Admin web:** open a patient chart. You should see medical info, insurance, invoices, and visit notes (empty until data exists).
+4. **Admin web:** book an appointment and start a visit (outpatient path).
+5. **Patient app on Android:** sign in, open Home, try Appointments and Devices (Bluetooth band if you have one).
+6. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
 
 ---
 

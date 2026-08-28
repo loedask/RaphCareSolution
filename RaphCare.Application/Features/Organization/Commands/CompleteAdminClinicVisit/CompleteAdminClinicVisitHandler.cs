@@ -18,6 +18,7 @@ public sealed class CompleteAdminClinicVisitHandler(
     IRepository<Patient> patientRepository,
     IRepository<Provider> providerRepository,
     IProfessionalUserLookupService professionalUserLookupService,
+    IAdminClinicPatientQueryService adminClinicPatientQueryService,
     IDateTimeProvider clock,
     IUnitOfWork unitOfWork)
     : IRequestHandler<CompleteAdminClinicVisitCommand, AdminClinicVisitDetailDto?>
@@ -79,6 +80,10 @@ public sealed class CompleteAdminClinicVisitHandler(
                 providerName = string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName;
         }
 
+        var clinical = await adminClinicPatientQueryService
+            .GetVisitClinicalDocumentationAsync(visit.Id, visit.VisitStart, cancellationToken)
+            .ConfigureAwait(false);
+
         return new AdminClinicVisitDetailDto
         {
             Id = visit.Id,
@@ -100,7 +105,12 @@ public sealed class CompleteAdminClinicVisitHandler(
                 Value = v.Value,
                 Unit = v.Unit,
                 RecordedAt = v.RecordedAt
-            }).ToList()
+            }).ToList(),
+            Diagnoses = clinical.Diagnoses,
+            Prescriptions = clinical.Prescriptions,
+            ClinicalNotes = clinical.ClinicalNotes,
+            SoapNotes = clinical.SoapNotes,
+            LabResults = clinical.LabResults
         };
     }
 }

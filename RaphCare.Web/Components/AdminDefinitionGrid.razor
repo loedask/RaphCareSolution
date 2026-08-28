@@ -1,0 +1,10 @@
+<dl class="admin-detail-grid @CssClass" @attributes="AdditionalAttributes">
+    @ChildContent
+</dl>
+
+@code {
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+}

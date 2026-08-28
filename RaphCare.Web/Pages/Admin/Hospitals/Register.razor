@@ -80,22 +80,16 @@ else
                 </div>
             </AdminPageCardMeta>
 
-            @if (!string.IsNullOrEmpty(ResumeBanner))
-            {
-                <div class="alert alert-info admin-page-alert">@ResumeBanner</div>
-            }
+            <AdminAlert Tone="info" CssClass="admin-page-alert" Message="@ResumeBanner" />
 
-            @if (!string.IsNullOrEmpty(_submitError))
-            {
-                <div class="alert alert-error admin-page-alert">
-                    <p class="admin-alert-text">@_submitError</p>
-                    @if (_authRetryRequired)
-                    {
-                        <p class="admin-alert-hint">@AppResources.T("Common_AuthRetryHint")</p>
-                        <a class="btn btn-secondary btn-sm" href="@_signInReturnUrl">@AppResources.T("Common_SignInAndContinue")</a>
-                    }
-                </div>
-            }
+            <AdminAlert Tone="error" CssClass="admin-page-alert" Visible="@(!string.IsNullOrEmpty(_submitError))">
+                <p class="admin-alert-text">@_submitError</p>
+                @if (_authRetryRequired)
+                {
+                    <p class="admin-alert-hint">@AppResources.T("Common_AuthRetryHint")</p>
+                    <a class="btn btn-secondary btn-sm" href="@_signInReturnUrl">@AppResources.T("Common_SignInAndContinue")</a>
+                }
+            </AdminAlert>
 
             <div class="admin-page-card-body">
                 @switch (_step)
