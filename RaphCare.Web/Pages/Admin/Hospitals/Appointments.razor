@@ -27,13 +27,7 @@
 
     @if (_isAdministrator)
     {
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Common_SchedulingEyebrow")</p>
-                    <h2>@AppResources.T("Common_BookAppointmentTitle")</h2>
-                </div>
-            </header>
+        <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")" Title="@AppResources.T("Common_BookAppointmentTitle")">
             <div class="admin-page-card-body">
                 <div class="form-grid">
                     <label>
@@ -75,17 +69,11 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </AdminPageCard>
 
         @if (_rescheduleId is Guid rescheduleId)
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Common_SchedulingEyebrow")</p>
-                        <h2>@AppResources.T("Common_RescheduleAppointment")</h2>
-                    </div>
-                </header>
+            <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")" Title="@AppResources.T("Common_RescheduleAppointment")">
                 <div class="admin-page-card-body">
                     <div class="form-grid">
                         <label>
@@ -114,11 +102,11 @@
                         <button type="button" class="btn btn-secondary" @onclick="CancelRescheduleForm">@AppResources.T("Common_Cancel")</button>
                     </div>
                 </div>
-            </div>
+            </AdminPageCard>
         }
     }
 
-    <div class="admin-page-card">
+    <AdminPageCard>
         <div class="admin-page-card-body">
             <div class="admin-table-toolbar">
                 <div class="claim-form-row">
@@ -211,7 +199,7 @@
                 </div>
             }
         </div>
-    </div>
+    </AdminPageCard>
 
     <div class="admin-page-actions">
         <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId?tab=appointments">@AppResources.T("Common_BackToHospital")</a>

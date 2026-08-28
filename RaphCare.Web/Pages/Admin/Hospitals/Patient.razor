@@ -33,13 +33,7 @@
             <div class="alert alert-error">@_actionError</div>
         }
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Common_DemographicsEyebrow")</p>
-                    <h2>@AppResources.T("Common_Profile")</h2>
-                </div>
-            </header>
+        <AdminPageCard Eyebrow="@AppResources.T("Common_DemographicsEyebrow")" Title="@AppResources.T("Common_Profile")">
             <div class="admin-page-card-body">
                 <dl class="admin-detail-grid">
                     <div>
@@ -60,15 +54,9 @@
                     </div>
                 </dl>
             </div>
-        </div>
+        </AdminPageCard>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Common_HospitalLinkEyebrow")</p>
-                    <h2>@AppResources.T("Common_AccessSection")</h2>
-                </div>
-            </header>
+        <AdminPageCard Eyebrow="@AppResources.T("Common_HospitalLinkEyebrow")" Title="@AppResources.T("Common_AccessSection")">
             <div class="admin-page-card-body">
                 <dl class="admin-detail-grid">
                     <div>
@@ -96,16 +84,11 @@
                     </div>
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Common_WearablesEyebrow")</p>
-                    <h2>@AppResources.T("Common_DeviceReadingsTitle")</h2>
-                    <p class="admin-page-lead">@AppResources.T("Common_DeviceReadingsLead")</p>
-                </div>
-            </header>
+        <AdminPageCard Eyebrow="@AppResources.T("Common_WearablesEyebrow")"
+                       Title="@AppResources.T("Common_DeviceReadingsTitle")"
+                       Lead="@AppResources.T("Common_DeviceReadingsLead")">
             <div class="admin-page-card-body">
                 @if (_patient.DeviceDailyRollups.Count == 0 && _patient.RecentDeviceReadings.Count == 0)
                 {
@@ -169,17 +152,14 @@
                     }
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Common_EmergencyEyebrow")</p>
-                    <h2>@AppResources.T("Common_EmergencyEventsTitle")</h2>
-                    <p class="admin-page-lead">@AppResources.T("Common_EmergencyEventsLeadPatient")</p>
-                </div>
+        <AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
+                       Title="@AppResources.T("Common_EmergencyEventsTitle")"
+                       Lead="@AppResources.T("Common_EmergencyEventsLeadPatient")">
+            <AdminPageCardMeta>
                 <span class="admin-progress-pill">@FormatEventCount(_emergencyTotal)</span>
-            </header>
+            </AdminPageCardMeta>
             <div class="admin-page-card-body">
                 @if (_loadingEmergencies)
                 {
@@ -239,17 +219,14 @@
                     }
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("PatientDetail_ClinicalEyebrow")</p>
-                    <h2>@AppResources.T("Common_VisitVitalsTitle")</h2>
-                    <p class="admin-page-lead">@AppResources.T("Common_VisitVitalsLead")</p>
-                </div>
+        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                       Title="@AppResources.T("Common_VisitVitalsTitle")"
+                       Lead="@AppResources.T("Common_VisitVitalsLead")">
+            <AdminPageCardMeta>
                 <span class="admin-progress-pill">@FormatVitalCount(_patient.RecentVitals.Count)</span>
-            </header>
+            </AdminPageCardMeta>
             <div class="admin-page-card-body">
                 @if (_patient.RecentVitals.Count == 0)
                 {
@@ -282,17 +259,14 @@
                     </div>
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Common_SchedulingEyebrow")</p>
-                    <h2>@AppResources.T("Common_Appointments")</h2>
-                    <p class="admin-page-lead">@AppResources.T("PatientDetail_AppointmentsLead")</p>
-                </div>
+        <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")"
+                       Title="@AppResources.T("Common_Appointments")"
+                       Lead="@AppResources.T("PatientDetail_AppointmentsLead")">
+            <AdminPageCardMeta>
                 <span class="admin-progress-pill">@FormatAppointmentCount(_patient.Appointments.Count)</span>
-            </header>
+            </AdminPageCardMeta>
             <div class="admin-page-card-body">
                 @if (_patient.Appointments.Count == 0)
                 {
@@ -341,17 +315,14 @@
                     </div>
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("PatientDetail_ClinicalEyebrow")</p>
-                    <h2>@AppResources.T("Common_RecentVisitsTitle")</h2>
-                    <p class="admin-page-lead">@AppResources.T("Common_RecentVisitsLead")</p>
-                </div>
+        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                       Title="@AppResources.T("Common_RecentVisitsTitle")"
+                       Lead="@AppResources.T("Common_RecentVisitsLead")">
+            <AdminPageCardMeta>
                 <span class="admin-progress-pill">@FormatVisitCount(_patient.RecentVisits.Count)</span>
-            </header>
+            </AdminPageCardMeta>
             <div class="admin-page-card-body">
                 @if (_patient.RecentVisits.Count == 0)
                 {
@@ -386,7 +357,7 @@
                     </div>
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
         <div class="admin-page-actions">
             <a class="btn btn-secondary" href="@BackUrl">@AppResources.T("Common_BackToHospital")</a>

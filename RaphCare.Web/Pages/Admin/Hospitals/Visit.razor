@@ -36,13 +36,7 @@
             <div class="alert alert-success">@_success</div>
         }
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Common_EncounterEyebrow")</p>
-                    <h2>@AppResources.T("Common_Details")</h2>
-                </div>
-            </header>
+        <AdminPageCard Eyebrow="@AppResources.T("Common_EncounterEyebrow")" Title="@AppResources.T("Common_Details")">
             <div class="admin-page-card-body">
                 <dl class="admin-detail-grid">
                     <div>
@@ -79,16 +73,12 @@
                     </div>
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("PatientDetail_ClinicalEyebrow")</p>
-                    <h2>@AppResources.T("Common_VitalsTitle")</h2>
-                </div>
+        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")" Title="@AppResources.T("Common_VitalsTitle")">
+            <AdminPageCardMeta>
                 <span class="admin-progress-pill">@FormatVitalCount(_visit.Vitals.Count)</span>
-            </header>
+            </AdminPageCardMeta>
             <div class="admin-page-card-body">
                 @if (_isAdministrator && _visit.Status == "InProgress")
                 {
@@ -144,7 +134,7 @@
                     </div>
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
         <div class="admin-page-actions">
             <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Visit_AppointmentsNav")</a>

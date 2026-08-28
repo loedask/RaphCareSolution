@@ -75,47 +75,48 @@
     }
     else
     {
-        <div class="card">
-            <div class="card-header">
-                <h3>@AppResources.T("Common_YourHospitals")</h3>
-                <span class="card-header-meta">@AppResources.Format("HospitalsIndex_TotalMeta", _clinics.Count)</span>
-            </div>
-            <div class="table-wrap">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>@AppResources.T("Common_Name")</th>
-                            <th>@AppResources.T("Common_HospitalReference")</th>
-                            <th>@AppResources.T("Common_RegistrationNumberShort")</th>
-                            <th>@AppResources.T("Common_Country")</th>
-                            <th>@AppResources.T("Common_Facilities")</th>
-                            <th>@AppResources.T("Common_Registered")</th>
-                            <th>@AppResources.T("Common_Status")</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var clinic in _clinics)
-                        {
+        <AdminPageCard Title="@AppResources.T("Common_YourHospitals")">
+            <AdminPageCardMeta>
+                <span class="admin-progress-pill">@AppResources.Format("HospitalsIndex_TotalMeta", _clinics.Count)</span>
+            </AdminPageCardMeta>
+            <div class="admin-page-card-body">
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <td><a class="card-header-link" href="/admin/hospitals/@clinic.Id"><strong>@clinic.Name</strong></a></td>
-                                <td><code>@clinic.ReferenceCode</code></td>
-                                <td>@clinic.RegistrationNumber</td>
-                                <td>@clinic.Country</td>
-                                <td>@clinic.FacilityCount</td>
-                                <td>@clinic.CreatedAt.ToString("dd MMM yyyy")</td>
-                                <td>
-                                    <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
-                                        @(clinic.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
-                                    </span>
-                                </td>
-                                <td><a class="btn btn-ghost btn-sm" href="/admin/hospitals/@clinic.Id">@AppResources.T("Common_Open")</a></td>
+                                <th>@AppResources.T("Common_Name")</th>
+                                <th>@AppResources.T("Common_HospitalReference")</th>
+                                <th>@AppResources.T("Common_RegistrationNumberShort")</th>
+                                <th>@AppResources.T("Common_Country")</th>
+                                <th>@AppResources.T("Common_Facilities")</th>
+                                <th>@AppResources.T("Common_Registered")</th>
+                                <th>@AppResources.T("Common_Status")</th>
+                                <th></th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var clinic in _clinics)
+                            {
+                                <tr>
+                                    <td><a class="card-header-link" href="/admin/hospitals/@clinic.Id"><strong>@clinic.Name</strong></a></td>
+                                    <td><code>@clinic.ReferenceCode</code></td>
+                                    <td>@clinic.RegistrationNumber</td>
+                                    <td>@clinic.Country</td>
+                                    <td>@clinic.FacilityCount</td>
+                                    <td>@clinic.CreatedAt.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
+                                            @(clinic.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
+                                        </span>
+                                    </td>
+                                    <td><a class="btn btn-ghost btn-sm" href="/admin/hospitals/@clinic.Id">@AppResources.T("Common_Open")</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </AdminPageCard>
     }
 </section>
 

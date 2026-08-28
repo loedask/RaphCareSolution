@@ -13,33 +13,23 @@
             <h1>@AppResources.Format("Common_HospitalRegisteredTitle", _result.Name)</h1>
             <p class="text-muted">@AppResources.T("Common_HospitalRegisteredLead")</p>
 
-            <div class="review-grid">
-                <div class="review-item">
-                    <span class="review-label">@AppResources.T("Common_HospitalReference")</span>
-                    <span class="review-value"><code>@_result.ReferenceCode</code></span>
-                </div>
+            <AdminReviewGrid>
+                <AdminReviewItem Label="@AppResources.T("Common_HospitalReference")">
+                    <code>@_result.ReferenceCode</code>
+                </AdminReviewItem>
                 @if (!string.IsNullOrWhiteSpace(_draft.RegistrationNumber))
                 {
-                    <div class="review-item">
-                        <span class="review-label">@AppResources.T("Common_RegistrationNumberShort")</span>
-                        <span class="review-value">@_draft.RegistrationNumber</span>
-                    </div>
+                    <AdminReviewItem Label="@AppResources.T("Common_RegistrationNumberShort")" Value="@_draft.RegistrationNumber" />
                 }
                 @if (_result.PrimaryFacilityName is not null)
                 {
-                    <div class="review-item">
-                        <span class="review-label">@AppResources.T("Common_PrimaryFacility")</span>
-                        <span class="review-value">@_result.PrimaryFacilityName</span>
-                    </div>
+                    <AdminReviewItem Label="@AppResources.T("Common_PrimaryFacility")" Value="@_result.PrimaryFacilityName" />
                 }
                 @if (!string.IsNullOrWhiteSpace(_draft.AdminEmail))
                 {
-                    <div class="review-item">
-                        <span class="review-label">@AppResources.T("Common_AdminContactPending")</span>
-                        <span class="review-value">@_draft.AdminFullName — @_draft.AdminEmail</span>
-                    </div>
+                    <AdminReviewItem Label="@AppResources.T("Common_AdminContactPending")" Value="@($"{_draft.AdminFullName} ({_draft.AdminEmail})")" />
                 }
-            </div>
+            </AdminReviewGrid>
 
             <p class="hint">@AppResources.T("Common_HospitalReferenceHint")</p>
 
@@ -80,20 +70,15 @@ else
             }
         </div>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.Format("Common_HospitalOnboardingEyebrow", _step, _stepCount)</p>
-                    <h1>@StepMeta.Title</h1>
-                    @if (!string.IsNullOrEmpty(StepMeta.Subtitle))
-                    {
-                        <p class="admin-page-lead">@StepMeta.Subtitle</p>
-                    }
-                </div>
+        <AdminPageCard Eyebrow="@AppResources.Format("Common_HospitalOnboardingEyebrow", _step, _stepCount)"
+                       Title="@StepMeta.Title"
+                       Lead="@StepMeta.Subtitle"
+                       LargeTitle="true">
+            <AdminPageCardMeta>
                 <div class="admin-page-head-meta">
                     <span class="admin-progress-pill">@AppResources.Format("Common_PercentComplete", _progressPercent)</span>
                 </div>
-            </header>
+            </AdminPageCardMeta>
 
             @if (!string.IsNullOrEmpty(ResumeBanner))
             {
@@ -228,38 +213,20 @@ else
                         break;
 
                     case 5:
-                        <div class="review-grid">
-                            <div class="review-item">
-                                <span class="review-label">@AppResources.T("HospitalsRegister_ReviewHospital")</span>
-                                <span class="review-value">@_draft.Name</span>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">@AppResources.T("Common_RegistrationNumberShort")</span>
-                                <span class="review-value">@_draft.RegistrationNumber</span>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">@AppResources.T("Common_Country")</span>
-                                <span class="review-value">@LocalizeCountry(_draft.Country)</span>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">@AppResources.T("Common_TimeZone")</span>
-                                <span class="review-value">@LocalizeTimeZone(_draft.TimeZone)</span>
-                            </div>
+                        <AdminReviewGrid>
+                            <AdminReviewItem Label="@AppResources.T("HospitalsRegister_ReviewHospital")" Value="@_draft.Name" />
+                            <AdminReviewItem Label="@AppResources.T("Common_RegistrationNumberShort")" Value="@_draft.RegistrationNumber" />
+                            <AdminReviewItem Label="@AppResources.T("Common_Country")" Value="@LocalizeCountry(_draft.Country)" />
+                            <AdminReviewItem Label="@AppResources.T("Common_TimeZone")" Value="@LocalizeTimeZone(_draft.TimeZone)" />
                             @if (!string.IsNullOrWhiteSpace(_draft.FacilityName))
                             {
-                                <div class="review-item">
-                                    <span class="review-label">@AppResources.T("Common_PrimaryFacility")</span>
-                                    <span class="review-value">@_draft.FacilityName @(_draft.IsVirtualFacility ? AppResources.T("Common_VirtualSuffix") : "")</span>
-                                </div>
+                                <AdminReviewItem Label="@AppResources.T("Common_PrimaryFacility")" Value="@($"{_draft.FacilityName}{(_draft.IsVirtualFacility ? AppResources.T("Common_VirtualSuffix") : "")}")" />
                             }
                             @if (!string.IsNullOrWhiteSpace(_draft.AdminEmail))
                             {
-                                <div class="review-item">
-                                    <span class="review-label">@AppResources.T("Common_Administrator")</span>
-                                    <span class="review-value">@_draft.AdminFullName — @_draft.AdminEmail</span>
-                                </div>
+                                <AdminReviewItem Label="@AppResources.T("Common_Administrator")" Value="@($"{_draft.AdminFullName} ({_draft.AdminEmail})")" />
                             }
-                        </div>
+                        </AdminReviewGrid>
                         break;
                 }
             </div>
@@ -293,7 +260,7 @@ else
                     </div>
                 </div>
             </footer>
-        </div>
+        </AdminPageCard>
     </section>
 }
 

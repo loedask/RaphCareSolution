@@ -32,13 +32,7 @@
             <div class="alert alert-error">@_error</div>
         }
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Common_Profile")</p>
-                    <h2>@AppResources.T("Common_ProviderDetailsTitle")</h2>
-                </div>
-            </header>
+        <AdminPageCard Eyebrow="@AppResources.T("Common_Profile")" Title="@AppResources.T("Common_ProviderDetailsTitle")">
             <div class="admin-page-card-body">
                 <dl class="admin-detail-grid">
                     <div>
@@ -68,16 +62,12 @@
                     </div>
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("ProviderDetail_AvailabilityEyebrow")</p>
-                    <h2>@AppResources.T("Common_WeeklyScheduleTitle")</h2>
-                </div>
+        <AdminPageCard Eyebrow="@AppResources.T("ProviderDetail_AvailabilityEyebrow")" Title="@AppResources.T("Common_WeeklyScheduleTitle")">
+            <AdminPageCardMeta>
                 <span class="admin-progress-pill">@FormatScheduleSlotCount(_provider.Schedules.Count)</span>
-            </header>
+            </AdminPageCardMeta>
             <div class="admin-page-card-body">
                 @if (_isAdministrator)
                 {
@@ -151,7 +141,7 @@
                     </div>
                 }
             </div>
-        </div>
+        </AdminPageCard>
 
         <div class="admin-page-actions">
             <a class="btn btn-secondary" href="@BackUrl">@AppResources.T("Common_BackToHospital")</a>

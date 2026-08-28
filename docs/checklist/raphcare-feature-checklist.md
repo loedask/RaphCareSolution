@@ -53,6 +53,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 - [x] Hospitals index / register / claim
 - [x] Hospital detail (overview, facilities, patients, providers, staff). Opening a hospital hides the platform sidebar; All hospitals, language, and sign out sit in the top bar.
+- [x] Shared admin cards (`AdminPageCard`, `AdminStatCard`, `AdminReviewItem`) used across hospital admin pages
 - [x] Patient detail page
 - [x] Provider detail + schedules
 - [x] Appointments page

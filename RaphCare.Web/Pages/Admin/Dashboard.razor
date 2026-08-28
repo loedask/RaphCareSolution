@@ -58,56 +58,19 @@
     }
     else if (_dashboard is not null)
     {
-        <div class="stat-grid">
-            <div class="stat-card stat-card-blue">
-                <div class="stat-card-top">
-                    <span class="stat-label">@AppResources.T("Common_PatientsStat")</span>
-                    <span class="stat-icon" aria-hidden="true">👤</span>
-                </div>
-                <div class="stat-value">@_dashboard.PatientCount</div>
-            </div>
-            <div class="stat-card stat-card-green">
-                <div class="stat-card-top">
-                    <span class="stat-label">@AppResources.T("Common_Staff")</span>
-                    <span class="stat-icon" aria-hidden="true">◎</span>
-                </div>
-                <div class="stat-value">@_dashboard.StaffCount</div>
-            </div>
-            <div class="stat-card stat-card-violet">
-                <div class="stat-card-top">
-                    <span class="stat-label">@AppResources.T("Common_ProvidersStat")</span>
-                    <span class="stat-icon" aria-hidden="true">⚕</span>
-                </div>
-                <div class="stat-value">@_dashboard.ProviderCount</div>
-            </div>
-            <div class="stat-card stat-card-blue">
-                <div class="stat-card-top">
-                    <span class="stat-label">@AppResources.T("Common_Facilities")</span>
-                    <span class="stat-icon" aria-hidden="true">⌂</span>
-                </div>
-                <div class="stat-value">@_dashboard.FacilityCount</div>
-            </div>
-            <div class="stat-card stat-card-green">
-                <div class="stat-card-top">
-                    <span class="stat-label">@AppResources.T("Common_Today")</span>
-                    <span class="stat-icon" aria-hidden="true">📅</span>
-                </div>
-                <div class="stat-value">@_dashboard.AppointmentsTodayCount</div>
-            </div>
-            <div class="stat-card stat-card-violet">
-                <div class="stat-card-top">
-                    <span class="stat-label">@AppResources.T("Common_Next7Days")</span>
-                    <span class="stat-icon" aria-hidden="true">→</span>
-                </div>
-                <div class="stat-value">@_dashboard.UpcomingAppointmentsCount</div>
-            </div>
-        </div>
+        <AdminStatGrid>
+            <AdminStatCard Label="@AppResources.T("Common_PatientsStat")" Value="@_dashboard.PatientCount" Accent="accent" />
+            <AdminStatCard Label="@AppResources.T("Common_Staff")" Value="@_dashboard.StaffCount" Accent="success" />
+            <AdminStatCard Label="@AppResources.T("Common_ProvidersStat")" Value="@_dashboard.ProviderCount" Accent="violet" />
+            <AdminStatCard Label="@AppResources.T("Common_Facilities")" Value="@_dashboard.FacilityCount" Accent="accent" />
+            <AdminStatCard Label="@AppResources.T("Common_Today")" Value="@_dashboard.AppointmentsTodayCount" Accent="success" />
+            <AdminStatCard Label="@AppResources.T("Common_Next7Days")" Value="@_dashboard.UpcomingAppointmentsCount" Accent="violet" />
+        </AdminStatGrid>
 
-        <div class="card">
-            <div class="card-header">
-                <h3>@AppResources.T("Dashboard_UpcomingAppointmentsTitle")</h3>
+        <AdminPageCard Title="@AppResources.T("Dashboard_UpcomingAppointmentsTitle")">
+            <AdminPageCardMeta>
                 <a class="card-header-link" href="/admin/hospitals/@_dashboard.ClinicId/appointments">@AppResources.T("Common_ViewAll")</a>
-            </div>
+            </AdminPageCardMeta>
             @if (_dashboard.UpcomingAppointments.Count == 0)
             {
                 <div class="admin-page-card-body">
@@ -116,59 +79,43 @@
             }
             else
             {
-                <div class="table-wrap">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>@AppResources.T("Common_When")</th>
-                                <th>@AppResources.T("Common_Patient")</th>
-                                <th>@AppResources.T("Common_Provider")</th>
-                                <th>@AppResources.T("Common_Type")</th>
-                                <th>@AppResources.T("Common_Status")</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var appt in _dashboard.UpcomingAppointments)
-                            {
+                <div class="admin-page-card-body">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
                                 <tr>
-                                    <td>@ClinicTimeZoneHelper.FormatClinicLocal(appt.ScheduledStart, _clinicTimeZone)</td>
-                                    <td>@appt.PatientName</td>
-                                    <td>@appt.ProviderName</td>
-                                    <td>@appt.Type</td>
-                                    <td>@appt.Status</td>
+                                    <th>@AppResources.T("Common_When")</th>
+                                    <th>@AppResources.T("Common_Patient")</th>
+                                    <th>@AppResources.T("Common_Provider")</th>
+                                    <th>@AppResources.T("Common_Type")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var appt in _dashboard.UpcomingAppointments)
+                                {
+                                    <tr>
+                                        <td>@ClinicTimeZoneHelper.FormatClinicLocal(appt.ScheduledStart, _clinicTimeZone)</td>
+                                        <td>@appt.PatientName</td>
+                                        <td>@appt.ProviderName</td>
+                                        <td>@appt.Type</td>
+                                        <td>@appt.Status</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             }
-        </div>
+        </AdminPageCard>
     }
     else
     {
-        <div class="stat-grid">
-            <div class="stat-card stat-card-blue">
-                <div class="stat-card-top">
-                    <span class="stat-label">@AppResources.T("Common_MyHospitals")</span>
-                    <span class="stat-icon" aria-hidden="true">⌂</span>
-                </div>
-                <div class="stat-value">@_clinics.Count</div>
-            </div>
-            <div class="stat-card stat-card-green">
-                <div class="stat-card-top">
-                    <span class="stat-label">@AppResources.T("Dashboard_StatActiveHospitals")</span>
-                    <span class="stat-icon" aria-hidden="true">✓</span>
-                </div>
-                <div class="stat-value">@_clinics.Count(c => c.IsActive)</div>
-            </div>
-            <div class="stat-card stat-card-violet">
-                <div class="stat-card-top">
-                    <span class="stat-label">@AppResources.T("Dashboard_StatTotalFacilities")</span>
-                    <span class="stat-icon" aria-hidden="true">◎</span>
-                </div>
-                <div class="stat-value">@_clinics.Sum(c => c.FacilityCount)</div>
-            </div>
-        </div>
+        <AdminStatGrid>
+            <AdminStatCard Label="@AppResources.T("Common_MyHospitals")" Value="@_clinics.Count" Accent="accent" />
+            <AdminStatCard Label="@AppResources.T("Dashboard_StatActiveHospitals")" Value="@_clinics.Count(c => c.IsActive)" Accent="success" />
+            <AdminStatCard Label="@AppResources.T("Dashboard_StatTotalFacilities")" Value="@_clinics.Sum(c => c.FacilityCount)" Accent="violet" />
+        </AdminStatGrid>
 
         @if (_clinics.Count == 0)
         {
@@ -181,39 +128,40 @@
         }
         else
         {
-            <div class="card">
-                <div class="card-header">
-                    <h3>@AppResources.T("Common_YourHospitals")</h3>
+            <AdminPageCard Title="@AppResources.T("Common_YourHospitals")">
+                <AdminPageCardMeta>
                     <a class="card-header-link" href="/admin/hospitals">@AppResources.T("Common_ViewAll")</a>
-                </div>
-                <div class="table-wrap">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>@AppResources.T("Common_Name")</th>
-                                <th>@AppResources.T("Common_Country")</th>
-                                <th>@AppResources.T("Common_Facilities")</th>
-                                <th>@AppResources.T("Common_Status")</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var clinic in _clinics.Take(5))
-                            {
+                </AdminPageCardMeta>
+                <div class="admin-page-card-body">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
                                 <tr>
-                                    <td><a class="card-header-link" href="/admin/hospitals/@clinic.Id"><strong>@clinic.Name</strong></a></td>
-                                    <td>@clinic.Country</td>
-                                    <td>@clinic.FacilityCount</td>
-                                    <td>
-                                        <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
-                                            @(clinic.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
-                                        </span>
-                                    </td>
+                                    <th>@AppResources.T("Common_Name")</th>
+                                    <th>@AppResources.T("Common_Country")</th>
+                                    <th>@AppResources.T("Common_Facilities")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var clinic in _clinics.Take(5))
+                                {
+                                    <tr>
+                                        <td><a class="card-header-link" href="/admin/hospitals/@clinic.Id"><strong>@clinic.Name</strong></a></td>
+                                        <td>@clinic.Country</td>
+                                        <td>@clinic.FacilityCount</td>
+                                        <td>
+                                            <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
+                                                @(clinic.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            </AdminPageCard>
         }
     }
 </section>

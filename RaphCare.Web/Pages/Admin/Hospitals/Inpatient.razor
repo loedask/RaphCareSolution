@@ -33,24 +33,12 @@
     }
     else if (_board is not null)
     {
-        <div class="stat-grid" style="margin-bottom: 1.25rem;">
-            <div class="stat-card stat-card-blue">
-                <div class="stat-card-top"><span class="stat-label">@AppResources.T("Common_Beds")</span></div>
-                <div class="stat-value">@_board.TotalBeds</div>
-            </div>
-            <div class="stat-card stat-card-green">
-                <div class="stat-card-top"><span class="stat-label">@AppResources.T("Common_Available")</span></div>
-                <div class="stat-value">@_board.AvailableBeds</div>
-            </div>
-            <div class="stat-card stat-card-violet">
-                <div class="stat-card-top"><span class="stat-label">@AppResources.T("Common_Occupied")</span></div>
-                <div class="stat-value">@_board.OccupiedBeds</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-top"><span class="stat-label">@AppResources.T("Common_Maintenance")</span></div>
-                <div class="stat-value">@_board.MaintenanceBeds</div>
-            </div>
-        </div>
+        <AdminStatGrid>
+            <AdminStatCard Label="@AppResources.T("Common_Beds")" Value="@_board.TotalBeds" Accent="accent" />
+            <AdminStatCard Label="@AppResources.T("Common_Available")" Value="@_board.AvailableBeds" Accent="success" />
+            <AdminStatCard Label="@AppResources.T("Common_Occupied")" Value="@_board.OccupiedBeds" Accent="violet" />
+            <AdminStatCard Label="@AppResources.T("Common_Maintenance")" Value="@_board.MaintenanceBeds" />
+        </AdminStatGrid>
 
         <div class="inpatient-layout">
             <nav class="inpatient-tabs" aria-label="@AppResources.T("Inpatient_SectionsAria")">
@@ -82,13 +70,7 @@
             <div class="inpatient-tab-panel">
         @if (_isAdministrator && _tab == "capacity")
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Inpatient_SetupEyebrow")</p>
-                        <h2>@AppResources.T("Inpatient_AddCapacity")</h2>
-                    </div>
-                </header>
+            <AdminPageCard Eyebrow="@AppResources.T("Inpatient_SetupEyebrow")" Title="@AppResources.T("Inpatient_AddCapacity")">
                 <div class="admin-page-card-body">
                     <div class="form-grid">
                         <label>
@@ -149,18 +131,12 @@
                         <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateBedAsync">@AppResources.T("Inpatient_AddBed")</button>
                     </div>
                 </div>
-            </div>
+            </AdminPageCard>
         }
 
         @if (_isAdministrator && _tab == "admit")
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Inpatient_CareEyebrow")</p>
-                        <h2>@AppResources.T("Inpatient_AdmitPatientTitle")</h2>
-                    </div>
-                </header>
+            <AdminPageCard Eyebrow="@AppResources.T("Inpatient_CareEyebrow")" Title="@AppResources.T("Inpatient_AdmitPatientTitle")">
                 <div class="admin-page-card-body">
                     <div class="form-grid">
                         <label>
@@ -195,18 +171,12 @@
                         <button type="button" class="btn btn-primary" disabled="@_saving" @onclick="AdmitAsync">@AppResources.T("Common_Admit")</button>
                     </div>
                 </div>
-            </div>
+            </AdminPageCard>
         }
 
         @if (_tab == "admissions")
         {
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Inpatient_BoardEyebrow")</p>
-                    <h2>@AppResources.T("Inpatient_ActiveAdmissionsTitle")</h2>
-                </div>
-            </header>
+        <AdminPageCard Eyebrow="@AppResources.T("Inpatient_BoardEyebrow")" Title="@AppResources.T("Inpatient_ActiveAdmissionsTitle")">
             <div class="admin-page-card-body">
                 @if (_board.ActiveAdmissionsList.Count == 0)
                 {
@@ -295,18 +265,12 @@
                     </div>
                 }
             </div>
-        </div>
+        </AdminPageCard>
         }
 
         @if (_tab == "beds")
         {
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Inpatient_MapEyebrow")</p>
-                    <h2>@AppResources.T("Inpatient_BedsByWardTitle")</h2>
-                </div>
-            </header>
+        <AdminPageCard Eyebrow="@AppResources.T("Inpatient_MapEyebrow")" Title="@AppResources.T("Inpatient_BedsByWardTitle")">
             <div class="admin-page-card-body">
                 @if (_board.Wards.Count == 0)
                 {
@@ -477,18 +441,12 @@
                     }
                 }
             </div>
-        </div>
+        </AdminPageCard>
         }
 
         @if (_tab == "history")
         {
-        <div class="admin-page-card">
-            <header class="admin-page-card-head">
-                <div>
-                    <p class="admin-page-eyebrow">@AppResources.T("Inpatient_HistoryEyebrow")</p>
-                    <h2>@AppResources.T("Inpatient_AdmissionHistoryTitle")</h2>
-                </div>
-            </header>
+        <AdminPageCard Eyebrow="@AppResources.T("Inpatient_HistoryEyebrow")" Title="@AppResources.T("Inpatient_AdmissionHistoryTitle")">
             <div class="admin-page-card-body">
                 <div class="form-grid" style="margin-bottom: 1rem;">
                     <label>
@@ -550,7 +508,7 @@
                     }
                 }
             </div>
-        </div>
+        </AdminPageCard>
         }
             </div>
         </div>

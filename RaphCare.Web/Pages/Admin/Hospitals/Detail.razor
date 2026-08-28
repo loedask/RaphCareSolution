@@ -75,14 +75,10 @@
 
         @if (_tab == "overview")
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Common_HospitalProfileEyebrow")</p>
-                        <h1>@AppResources.T("Common_OrganizationDetails")</h1>
-                        <p class="admin-page-lead">@AppResources.T("Common_UpdateHospitalLead")</p>
-                    </div>
-                </header>
+            <AdminPageCard Eyebrow="@AppResources.T("Common_HospitalProfileEyebrow")"
+                           Title="@AppResources.T("Common_OrganizationDetails")"
+                           Lead="@AppResources.T("Common_UpdateHospitalLead")"
+                           LargeTitle="true">
                 <div class="admin-page-card-body">
                     <div class="admin-inline-form">
                         <div class="form-grid">
@@ -113,34 +109,25 @@
                         </div>
                     </div>
 
-                    <div class="review-grid" style="margin-top: 1.5rem;">
-                        <div class="review-item">
-                            <span class="review-label">@AppResources.T("Common_HospitalReference")</span>
-                            <span class="review-value"><code>@_detail.ReferenceCode</code></span>
-                        </div>
-                        <div class="review-item">
-                            <span class="review-label">@AppResources.T("Common_RegistrationNumberShort")</span>
-                            <span class="review-value">@_detail.RegistrationNumber</span>
-                        </div>
-                        <div class="review-item">
-                            <span class="review-label">@AppResources.T("Common_Registered")</span>
-                            <span class="review-value">@_detail.CreatedAt.ToString("dd MMM yyyy")</span>
-                        </div>
-                    </div>
+                    <AdminReviewGrid style="margin-top: 1.5rem;">
+                        <AdminReviewItem Label="@AppResources.T("Common_HospitalReference")">
+                            <code>@_detail.ReferenceCode</code>
+                        </AdminReviewItem>
+                        <AdminReviewItem Label="@AppResources.T("Common_RegistrationNumberShort")" Value="@_detail.RegistrationNumber" />
+                        <AdminReviewItem Label="@AppResources.T("Common_Registered")" Value="@_detail.CreatedAt.ToString("dd MMM yyyy")" />
+                    </AdminReviewGrid>
                 </div>
-            </div>
+            </AdminPageCard>
         }
         else if (_tab == "facilities")
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Common_LocationsEyebrow")</p>
-                        <h1>@AppResources.T("Common_Facilities")</h1>
-                        <p class="admin-page-lead">@AppResources.T("Common_PhysicalCampusesLead")</p>
-                    </div>
+            <AdminPageCard Eyebrow="@AppResources.T("Common_LocationsEyebrow")"
+                           Title="@AppResources.T("Common_Facilities")"
+                           Lead="@AppResources.T("Common_PhysicalCampusesLead")"
+                           LargeTitle="true">
+                <AdminPageCardMeta>
                     <span class="admin-progress-pill">@FacilityCountLabel(_detail.Facilities.Count)</span>
-                </header>
+                </AdminPageCardMeta>
                 <div class="admin-page-card-body">
                     <div class="admin-inline-form">
                         <h3>@(_editingFacilityId is null ? AppResources.T("Common_AddFacility") : AppResources.T("Common_EditFacility"))</h3>
@@ -226,19 +213,17 @@
                         </div>
                     }
                 </div>
-            </div>
+            </AdminPageCard>
         }
         else if (_tab == "patients")
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Common_CareRecipientsEyebrow")</p>
-                        <h1>@AppResources.T("Common_PatientsStat")</h1>
-                        <p class="admin-page-lead">@AppResources.T("Common_PatientsLead")</p>
-                    </div>
+            <AdminPageCard Eyebrow="@AppResources.T("Common_CareRecipientsEyebrow")"
+                           Title="@AppResources.T("Common_PatientsStat")"
+                           Lead="@AppResources.T("Common_PatientsLead")"
+                           LargeTitle="true">
+                <AdminPageCardMeta>
                     <span class="admin-progress-pill">@PatientCountLabel(_patientTotalCount)</span>
-                </header>
+                </AdminPageCardMeta>
                 <div class="admin-page-card-body">
                     @if (_isAdministrator)
                     {
@@ -318,19 +303,17 @@
                         </div>
                     }
                 </div>
-            </div>
+            </AdminPageCard>
         }
         else if (_tab == "providers")
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Common_ClinicalTeamEyebrow")</p>
-                        <h1>@AppResources.T("Common_ProvidersStat")</h1>
-                        <p class="admin-page-lead">@AppResources.T("Common_ProvidersLead")</p>
-                    </div>
+            <AdminPageCard Eyebrow="@AppResources.T("Common_ClinicalTeamEyebrow")"
+                           Title="@AppResources.T("Common_ProvidersStat")"
+                           Lead="@AppResources.T("Common_ProvidersLead")"
+                           LargeTitle="true">
+                <AdminPageCardMeta>
                     <span class="admin-progress-pill">@ProviderCountLabel(_providers.Count)</span>
-                </header>
+                </AdminPageCardMeta>
                 <div class="admin-page-card-body">
                     @if (_isAdministrator)
                     {
@@ -395,19 +378,17 @@
                         </div>
                     }
                 </div>
-            </div>
+            </AdminPageCard>
         }
         else if (_tab == "appointments")
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Common_SchedulingEyebrow")</p>
-                        <h1>@AppResources.T("Common_Appointments")</h1>
-                        <p class="admin-page-lead">@AppResources.T("Common_AppointmentsLead")</p>
-                    </div>
+            <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")"
+                           Title="@AppResources.T("Common_Appointments")"
+                           Lead="@AppResources.T("Common_AppointmentsLead")"
+                           LargeTitle="true">
+                <AdminPageCardMeta>
                     <a class="btn btn-secondary btn-sm" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_FullList")</a>
-                </header>
+                </AdminPageCardMeta>
                 <div class="admin-page-card-body">
                     @if (_loadingAppointments)
                     {
@@ -444,19 +425,17 @@
                         </div>
                     }
                 </div>
-            </div>
+            </AdminPageCard>
         }
         else if (_tab == "devices")
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Common_FleetEyebrow")</p>
-                        <h1>@AppResources.T("Common_Devices")</h1>
-                        <p class="admin-page-lead">@AppResources.T("Common_DevicesLead")</p>
-                    </div>
+            <AdminPageCard Eyebrow="@AppResources.T("Common_FleetEyebrow")"
+                           Title="@AppResources.T("Common_Devices")"
+                           Lead="@AppResources.T("Common_DevicesLead")"
+                           LargeTitle="true">
+                <AdminPageCardMeta>
                     <span class="admin-progress-pill">@DeviceCountLabel(_devices.Count)</span>
-                </header>
+                </AdminPageCardMeta>
                 <div class="admin-page-card-body">
                     @if (_loadingDevices)
                     {
@@ -508,17 +487,15 @@
                         </div>
                     }
                 </div>
-            </div>
+            </AdminPageCard>
 
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Common_EmergencyEyebrow")</p>
-                        <h1>@AppResources.T("Common_EmergencyEventsTitle")</h1>
-                        <p class="admin-page-lead">@AppResources.T("Common_EmergencyEventsLeadClinic")</p>
-                    </div>
+            <AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
+                           Title="@AppResources.T("Common_EmergencyEventsTitle")"
+                           Lead="@AppResources.T("Common_EmergencyEventsLeadClinic")"
+                           LargeTitle="true">
+                <AdminPageCardMeta>
                     <span class="admin-progress-pill">@EventCountLabel(_emergencyTotal)</span>
-                </header>
+                </AdminPageCardMeta>
                 <div class="admin-page-card-body">
                     @if (_loadingEmergencies)
                     {
@@ -582,19 +559,17 @@
                         }
                     }
                 </div>
-            </div>
+            </AdminPageCard>
         }
         else if (_tab == "staff")
         {
-            <div class="admin-page-card">
-                <header class="admin-page-card-head">
-                    <div>
-                        <p class="admin-page-eyebrow">@AppResources.T("Common_TeamEyebrow")</p>
-                        <h1>@AppResources.T("Common_Staff")</h1>
-                        <p class="admin-page-lead">@AppResources.T("Common_StaffLead")</p>
-                    </div>
+            <AdminPageCard Eyebrow="@AppResources.T("Common_TeamEyebrow")"
+                           Title="@AppResources.T("Common_Staff")"
+                           Lead="@AppResources.T("Common_StaffLead")"
+                           LargeTitle="true">
+                <AdminPageCardMeta>
                     <span class="admin-progress-pill">@MemberCountLabel(_staff.Count)</span>
-                </header>
+                </AdminPageCardMeta>
                 <div class="admin-page-card-body">
                     @if (_isAdministrator)
                     {
@@ -713,7 +688,7 @@
                         </div>
                     }
                 </div>
-            </div>
+            </AdminPageCard>
         }
 
         <div class="admin-page-actions">

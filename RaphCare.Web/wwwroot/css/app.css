@@ -791,6 +791,13 @@ a:hover { text-decoration: underline; }
     letter-spacing: -0.03em;
 }
 
+.admin-page-card-head h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
 .admin-page-lead {
     margin: 0.4rem 0 0;
     color: var(--rc-muted);
@@ -1117,7 +1124,7 @@ a:hover { text-decoration: underline; }
     border: 1px solid var(--rc-border);
     border-radius: 1rem;
     padding: 1.15rem 1.25rem;
-    box-shadow: var(--rc-shadow);
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
 }
 
 .stat-card-top {
