@@ -16,6 +16,7 @@ public sealed class ClinicStaffInvitationConfiguration : IEntityTypeConfiguratio
         builder.Property(e => e.InvitedByApplicationUserId).IsRequired();
         builder.Property(e => e.InvitedAt).IsRequired();
         builder.Property(e => e.IsCancelled).IsRequired();
+        builder.Property(e => e.JobRole).IsRequired().HasMaxLength(32);
 
         builder.HasIndex(e => new { e.ClinicId, e.Email });
         builder.HasIndex(e => e.ClinicId);

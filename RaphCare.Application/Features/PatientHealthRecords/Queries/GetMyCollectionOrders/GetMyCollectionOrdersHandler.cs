@@ -61,6 +61,9 @@ public sealed class GetMyCollectionOrdersHandler(
             applyDefaultIdOrdering: false,
             cancellationToken).ConfigureAwait(false);
 
+        Guid ClinicId(Guid visitId) =>
+            visitById.TryGetValue(visitId, out var visit) ? visit.ClinicId : Guid.Empty;
+
         string ClinicName(Guid visitId)
         {
             if (!visitById.TryGetValue(visitId, out var visit))
@@ -74,6 +77,7 @@ public sealed class GetMyCollectionOrdersHandler(
             {
                 Id = p.Id,
                 VisitId = p.VisitId,
+                ClinicId = ClinicId(p.VisitId),
                 ClinicName = ClinicName(p.VisitId),
                 PickupCode = p.PickupCode,
                 IssuedAt = p.IssuedAt,
@@ -94,6 +98,7 @@ public sealed class GetMyCollectionOrdersHandler(
                 {
                     Id = l.Id,
                     VisitId = l.VisitId,
+                    ClinicId = ClinicId(l.VisitId),
                     ClinicName = ClinicName(l.VisitId),
                     PickupCode = l.PickupCode,
                     TestName = l.TestName,

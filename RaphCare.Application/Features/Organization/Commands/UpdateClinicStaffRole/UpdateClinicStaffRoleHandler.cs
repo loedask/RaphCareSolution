@@ -27,7 +27,7 @@ public sealed class UpdateClinicStaffRoleHandler(
 
         if (!await clinicStaffMembershipService
                 .HasMembershipAsync(request.UserId, request.ClinicId, cancellationToken)
-                .ConfigureAwait(false))
+            .ConfigureAwait(false))
             return false;
 
         var roles = await roleAssignmentService
@@ -35,17 +35,31 @@ public sealed class UpdateClinicStaffRoleHandler(
             .ConfigureAwait(false);
         var isCurrentlyAdministrator = RaphCareRoles.HasAdministratorRole(roles);
 
+        if (request.JobRole is not null)
+        {
+            await roleAssignmentService
+                .SetStaffJobRoleAsync(request.UserId, request.JobRole, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         if (request.IsAdministrator)
         {
-            if (isCurrentlyAdministrator)
-                return true;
+            if (!isCurrentlyAdministrator)
+            {
+                if (!RaphCareRoles.HasProviderJobRole(
+                        await roleAssignmentService.GetRoleNamesAsync(request.UserId, cancellationToken)
+                            .ConfigureAwait(false)))
+                {
+                    await roleAssignmentService
+                        .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Clinician, cancellationToken)
+                        .ConfigureAwait(false);
+                }
 
-            await roleAssignmentService
-                .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Clinician, cancellationToken)
-                .ConfigureAwait(false);
-            await roleAssignmentService
-                .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Administrator, cancellationToken)
-                .ConfigureAwait(false);
+                await roleAssignmentService
+                    .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Administrator, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
             return true;
         }
 
@@ -64,9 +78,16 @@ public sealed class UpdateClinicStaffRoleHandler(
         await roleAssignmentService
             .RemoveRoleAsync(request.UserId, RaphCareRoles.Administrator, cancellationToken)
             .ConfigureAwait(false);
-        await roleAssignmentService
-            .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Clinician, cancellationToken)
-            .ConfigureAwait(false);
+
+        if (!RaphCareRoles.HasProviderJobRole(
+                await roleAssignmentService.GetRoleNamesAsync(request.UserId, cancellationToken)
+                    .ConfigureAwait(false)))
+        {
+            await roleAssignmentService
+                .AssignRoleIfMissingAsync(request.UserId, RaphCareRoles.Clinician, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         return true;
     }
 }

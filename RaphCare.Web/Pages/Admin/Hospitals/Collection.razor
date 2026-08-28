@@ -34,6 +34,12 @@
                     <button type="button" class="btn btn-primary" disabled="@_busy" @onclick="LoadOrdersAsync">
                         @AppResources.T("Collection_Search")
                     </button>
+                    <button type="button" class="btn btn-secondary" disabled="@_scanning" @onclick="StartScanAsync">
+                        @AppResources.T("Collection_ScanQr")
+                    </button>
+                    <button type="button" class="btn btn-ghost" @onclick="PrintPosterAsync">
+                        @AppResources.T("Collection_PrintPoster")
+                    </button>
                 </div>
             </div>
         </AdminPageCard>
@@ -86,9 +92,12 @@
                                         </td>
                                         <td>@FormatLocal(rx.IssuedAt)</td>
                                         <td>
-                                            <button type="button" class="btn btn-primary" disabled="@(_savingId == rx.Id)" @onclick="() => DispenseAsync(rx.Id)">
-                                                @(_savingId == rx.Id ? AppResources.T("Collection_MarkingCollected") : AppResources.T("Collection_MarkCollected"))
-                                            </button>
+                                            @if (_canDispense)
+                                            {
+                                                <button type="button" class="btn btn-primary" disabled="@(_savingId == rx.Id)" @onclick="() => DispenseAsync(rx.Id)">
+                                                    @(_savingId == rx.Id ? AppResources.T("Collection_MarkingCollected") : AppResources.T("Collection_MarkCollected"))
+                                                </button>
+                                            }
                                             <button type="button" class="btn btn-secondary" @onclick="() => PrintPrescription(rx)">
                                                 @AppResources.T("Collection_PrintSlip")
                                             </button>
@@ -139,9 +148,12 @@
                                         <td>@lab.TestName</td>
                                         <td>@FormatLocal(lab.RequestedAt)</td>
                                         <td>
-                                            <button type="button" class="btn btn-secondary" @onclick="() => SelectLab(lab.Id)">
-                                                @AppResources.T("Collection_EnterResult")
-                                            </button>
+                                            @if (_canCompleteLabs)
+                                            {
+                                                <button type="button" class="btn btn-secondary" @onclick="() => SelectLab(lab.Id)">
+                                                    @AppResources.T("Collection_EnterResult")
+                                                </button>
+                                            }
                                             <button type="button" class="btn btn-secondary" @onclick="() => PrintLab(lab)">
                                                 @AppResources.T("Collection_PrintSlip")
                                             </button>
@@ -291,18 +303,34 @@
     </div>
 </section>
 
+@if (_scanning)
+{
+    <div class="qr-scan-overlay">
+        <video id="qr-scan-video" autoplay playsinline muted></video>
+        <button type="button" class="btn btn-secondary" @onclick="StopScanAsync">
+            @AppResources.T("Collection_StopScan")
+        </button>
+    </div>
+}
+
 @if (_printSlip is not null)
 {
     <div class="print-slip">
         <p class="print-slip-eyebrow">@_clinicName</p>
-        <h1>@AppResources.T("Collection_SlipTitle")</h1>
-        <p class="print-slip-patient">@_printSlip.PatientName</p>
+        <h1>@_printSlip.Title</h1>
+        @if (!string.IsNullOrWhiteSpace(_printSlip.PatientName))
+        {
+            <p class="print-slip-patient">@_printSlip.PatientName</p>
+        }
         @if (!string.IsNullOrWhiteSpace(_printSlip.NationalHealthId))
         {
             <p>@_printSlip.NationalHealthId</p>
         }
-        <p class="print-slip-hint">@AppResources.T("Collection_ShowCode")</p>
-        <p class="pickup-code print-slip-code">@_printSlip.PickupCode</p>
+        <p class="print-slip-hint">@_printSlip.Hint</p>
+        @if (!string.IsNullOrWhiteSpace(_printSlip.PickupCode))
+        {
+            <p class="pickup-code print-slip-code">@_printSlip.PickupCode</p>
+        }
         <img class="print-slip-qr" src="@_printSlip.QrDataUri" alt="" />
         <p>@_printSlip.Detail</p>
     </div>
@@ -317,6 +345,9 @@
 
     private bool _loading = true;
     private bool _busy;
+    private bool _scanning;
+    private bool _canDispense;
+    private bool _canCompleteLabs;
     private Guid? _savingId;
     private Guid? _selectedLabId;
     private string? _error;
@@ -332,12 +363,16 @@
 
     private sealed class PrintSlip
     {
+        public string Title { get; init; } = string.Empty;
         public string PatientName { get; init; } = string.Empty;
         public string? NationalHealthId { get; init; }
         public string PickupCode { get; init; } = string.Empty;
+        public string Hint { get; init; } = string.Empty;
         public string Detail { get; init; } = string.Empty;
         public string QrDataUri { get; init; } = string.Empty;
     }
+
+    private DotNetObjectReference<Collection>? _jsSelf;
 
     protected override async Task OnInitializedAsync()
     {
@@ -348,6 +383,8 @@
         {
             _clinicName = clinicResponse.Data.Name;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
+            _canDispense = clinicResponse.Data.CurrentUserCanDispense;
+            _canCompleteLabs = clinicResponse.Data.CurrentUserCanCompleteLabs;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
@@ -356,7 +393,19 @@
 
     private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
 
-    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+    public void Dispose()
+    {
+        CultureService.CultureChanged -= OnCultureChanged;
+        try
+        {
+            _ = Js.InvokeVoidAsync("raphCareClinic.stopQrScan");
+        }
+        catch
+        {
+            // Page is closing.
+        }
+        _jsSelf?.Dispose();
+    }
 
     private string FormatPendingCount()
     {
@@ -533,13 +582,88 @@
     {
         _printSlip = new PrintSlip
         {
+            Title = AppResources.T("Collection_SlipTitle"),
             PatientName = patientName,
             NationalHealthId = nationalHealthId,
             PickupCode = pickupCode,
+            Hint = AppResources.T("Collection_ShowCode"),
             Detail = detail,
             QrDataUri = PickupQr.ToPngDataUri(pickupCode)
         };
         await InvokeAsync(StateHasChanged);
         await Js.InvokeVoidAsync("raphCareClinic.printPage");
+    }
+
+    private async Task PrintPosterAsync()
+    {
+        _printSlip = new PrintSlip
+        {
+            Title = AppResources.T("Collection_PosterTitle"),
+            Hint = AppResources.T("Collection_PosterHint"),
+            Detail = AppResources.T("Collection_PosterDetail"),
+            QrDataUri = PickupQr.ToPngDataUri(CollectionQr.ForPoster(ClinicId))
+        };
+        await InvokeAsync(StateHasChanged);
+        await Js.InvokeVoidAsync("raphCareClinic.printPage");
+    }
+
+    private async Task StartScanAsync()
+    {
+        _error = null;
+        _scanning = true;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(100);
+        _jsSelf ??= DotNetObjectReference.Create(this);
+        var started = false;
+        try
+        {
+            started = await Js.InvokeAsync<bool>("raphCareClinic.startQrScan", _jsSelf);
+        }
+        catch
+        {
+            started = false;
+        }
+
+        if (!started)
+        {
+            _scanning = false;
+            _error = AppResources.T("Collection_ScanUnsupported");
+        }
+    }
+
+    private async Task StopScanAsync()
+    {
+        _scanning = false;
+        try
+        {
+            await Js.InvokeVoidAsync("raphCareClinic.stopQrScan");
+        }
+        catch
+        {
+            // Overlay is already closing.
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnQrDetected(string value)
+    {
+        await StopScanAsync();
+        if (CollectionQr.TryParsePickupCode(value, out var code))
+        {
+            _search = code;
+            _success = AppResources.T("Collection_ScanFound");
+            await LoadOrdersAsync();
+            return;
+        }
+
+        if (CollectionQr.TryParsePoster(value, out var clinicId))
+        {
+            _error = clinicId == ClinicId
+                ? AppResources.T("Collection_ScanPosterHere")
+                : AppResources.T("Collection_ScanPosterOther");
+            return;
+        }
+
+        _error = AppResources.T("Collection_ScanUnrecognized");
     }
 }

@@ -13,18 +13,27 @@ namespace RaphCare.Mobile.Core.Features.Records.ViewModels;
 public sealed class RecordsViewModel : BaseViewModel
 {
     private readonly IHealthRecordService _healthRecords;
+    private readonly CollectionCheckInStore _checkIn;
+    private readonly List<CollectionOrderDisplayItem> _allPickup = [];
     private string? _errorMessage;
+    private string _pickupHint;
+    private string _scanButtonText;
 
-    public RecordsViewModel(IHealthRecordService healthRecords)
+    public RecordsViewModel(IHealthRecordService healthRecords, CollectionCheckInStore checkIn)
     {
         _healthRecords = healthRecords ?? throw new ArgumentNullException(nameof(healthRecords));
+        _checkIn = checkIn ?? throw new ArgumentNullException(nameof(checkIn));
         Title = T("RecordsListTitle");
         RefreshButtonText = T("RecordsRefresh");
         EmptyStateText = T("RecordsEmpty");
         PickupSectionTitle = T("RecordsPickupSection");
-        PickupHint = T("RecordsPickupHint");
+        _pickupHint = T("RecordsPickupHint");
+        _scanButtonText = T("RecordsScanPoster");
+        ClearCheckInButtonText = T("RecordsClearCheckIn");
 
         RefreshCommand = new Command(async () => await LoadAsync());
+        ScanPosterCommand = new Command(async () => await ScanPosterAsync());
+        ClearCheckInCommand = new Command(() => _checkIn.SetClinic(null));
         OpenDetailCommand = new Command<Guid>(async id =>
         {
             if (id == Guid.Empty)
@@ -47,14 +56,38 @@ public sealed class RecordsViewModel : BaseViewModel
 
     public bool ShowEmpty => !IsBusy && Items.Count == 0 && PickupItems.Count == 0 && string.IsNullOrEmpty(ErrorMessage);
     public bool ShowPickup => PickupItems.Count > 0;
+    public bool ShowClearCheckIn => _checkIn.ClinicId is not null;
 
     public string RefreshButtonText { get; }
     public string EmptyStateText { get; }
     public string PickupSectionTitle { get; }
-    public string PickupHint { get; }
+    public string ClearCheckInButtonText { get; }
+
+    public string PickupHint
+    {
+        get => _pickupHint;
+        private set => SetProperty(ref _pickupHint, value);
+    }
+
+    public string ScanButtonText
+    {
+        get => _scanButtonText;
+        private set => SetProperty(ref _scanButtonText, value);
+    }
 
     public ICommand RefreshCommand { get; }
+    public ICommand ScanPosterCommand { get; }
+    public ICommand ClearCheckInCommand { get; }
     public ICommand OpenDetailCommand { get; }
+
+    public void Attach()
+    {
+        _checkIn.Changed -= OnCheckInChanged;
+        _checkIn.Changed += OnCheckInChanged;
+        ApplyCheckInFilter();
+    }
+
+    public void Detach() => _checkIn.Changed -= OnCheckInChanged;
 
     public async Task LoadAsync()
     {
@@ -82,15 +115,17 @@ public sealed class RecordsViewModel : BaseViewModel
                     Items.Add(MapItem(r, culture));
             }
 
-            PickupItems.Clear();
+            _allPickup.Clear();
             var pickup = pickupTask.Result;
             if (pickup.IsSuccess && pickup.Data is not null)
             {
                 foreach (var rx in pickup.Data.Prescriptions)
-                    PickupItems.Add(MapPrescription(rx));
+                    _allPickup.Add(MapPrescription(rx));
                 foreach (var lab in pickup.Data.LabOrders)
-                    PickupItems.Add(MapLab(lab));
+                    _allPickup.Add(MapLab(lab));
             }
+
+            ApplyCheckInFilter();
         }
         finally
         {
@@ -99,10 +134,77 @@ public sealed class RecordsViewModel : BaseViewModel
         }
     }
 
+    private void OnCheckInChanged() =>
+        MainThread.BeginInvokeOnMainThread(ApplyCheckInFilter);
+
+    private void ApplyCheckInFilter()
+    {
+        PickupItems.Clear();
+        var clinicId = _checkIn.ClinicId;
+        IEnumerable<CollectionOrderDisplayItem> items = _allPickup;
+        if (clinicId is { } filter)
+        {
+            items = _allPickup.Where(i => i.ClinicId == filter);
+            PickupHint = T("RecordsPickupCheckInHint");
+        }
+        else
+        {
+            PickupHint = T("RecordsPickupHint");
+        }
+
+        foreach (var item in items)
+            PickupItems.Add(item);
+
+        OnPropertyChanged(nameof(ShowClearCheckIn));
+        NotifyListChanged();
+    }
+
+    private async Task ScanPosterAsync()
+    {
+        ErrorMessage = null;
+        var camera = await Permissions.RequestAsync<Permissions.Camera>().ConfigureAwait(false);
+        if (camera != PermissionStatus.Granted)
+        {
+            ErrorMessage = T("RecordsScanCameraDenied");
+            return;
+        }
+
+        FileResult? photo;
+        try
+        {
+            photo = await MediaPicker.Default.CapturePhotoAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            ErrorMessage = T("RecordsScanFailed");
+            return;
+        }
+
+        if (photo is null)
+            return;
+
+        await using var stream = await photo.OpenReadAsync().ConfigureAwait(false);
+        var text = QrImageDecoder.Decode(stream);
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            ErrorMessage = T("RecordsScanFailed");
+            return;
+        }
+
+        if (CollectionQr.TryParsePoster(text, out var clinicId))
+        {
+            _checkIn.SetClinic(clinicId);
+            return;
+        }
+
+        ErrorMessage = T("RecordsScanNotPoster");
+    }
+
     private void NotifyListChanged()
     {
         OnPropertyChanged(nameof(ShowEmpty));
         OnPropertyChanged(nameof(ShowPickup));
+        OnPropertyChanged(nameof(ShowClearCheckIn));
     }
 
     private static CollectionOrderDisplayItem MapPrescription(PatientCollectionPrescriptionViewModel rx)
@@ -113,6 +215,7 @@ public sealed class RecordsViewModel : BaseViewModel
         return new CollectionOrderDisplayItem
         {
             VisitId = rx.VisitId,
+            ClinicId = rx.ClinicId,
             KindLabel = T("RecordsPickupPrescription"),
             ClinicName = rx.ClinicName,
             PickupCode = rx.PickupCode,
@@ -125,6 +228,7 @@ public sealed class RecordsViewModel : BaseViewModel
     private static CollectionOrderDisplayItem MapLab(PatientCollectionLabOrderViewModel lab) => new()
     {
         VisitId = lab.VisitId,
+        ClinicId = lab.ClinicId,
         KindLabel = T("RecordsPickupLab"),
         ClinicName = lab.ClinicName,
         PickupCode = lab.PickupCode,

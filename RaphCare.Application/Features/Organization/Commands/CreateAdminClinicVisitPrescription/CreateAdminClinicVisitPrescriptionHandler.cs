@@ -30,7 +30,7 @@ public sealed class CreateAdminClinicVisitPrescriptionHandler(
                 visitRepository,
                 request.ClinicId,
                 request.VisitId,
-                "Only hospital administrators can add prescriptions.",
+                "Only a doctor or hospital administrator can add prescriptions.",
                 cancellationToken)
             .ConfigureAwait(false);
         if (visit is null)

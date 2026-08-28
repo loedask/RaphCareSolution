@@ -1,5 +1,6 @@
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Domain.Identity;
 using RaphCare.Domain.Organization;
 
 namespace RaphCare.Application.Features.Organization;
@@ -13,7 +14,7 @@ internal static class AdminClinicDetailMapper
         IUserRoleAssignmentService roleAssignmentService,
         CancellationToken cancellationToken)
     {
-        var isAdministrator = await AdminClinicAuthorization.IsClinicAdministratorAsync(
+        var roles = await AdminClinicAuthorization.GetClinicStaffRolesAsync(
             currentUserService,
             clinicStaffMembershipService,
             roleAssignmentService,
@@ -31,7 +32,10 @@ internal static class AdminClinicDetailMapper
             IsActive = clinic.IsActive,
             CreatedAt = clinic.CreatedAt,
             RegisteredByApplicationUserId = clinic.RegisteredByApplicationUserId,
-            CurrentUserIsAdministrator = isAdministrator,
+            CurrentUserIsAdministrator = RaphCareRoles.HasAdministratorRole(roles),
+            CurrentUserCanDocumentVisits = RaphCareRoles.CanDocumentVisits(roles),
+            CurrentUserCanDispense = RaphCareRoles.CanDispensePrescriptions(roles),
+            CurrentUserCanCompleteLabs = RaphCareRoles.CanCompleteLabs(roles),
             Facilities = clinic.Facilities
                 .OrderBy(f => f.Name)
                 .Select(f => new FacilityListItemDto

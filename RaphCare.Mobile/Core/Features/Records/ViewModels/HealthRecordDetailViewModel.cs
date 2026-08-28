@@ -139,6 +139,7 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
                 Prescriptions.Add(new CollectionOrderDisplayItem
                 {
                     VisitId = rx.VisitId,
+                    ClinicId = rx.ClinicId,
                     KindLabel = T("RecordsPickupPrescription"),
                     ClinicName = rx.ClinicName,
                     PickupCode = rx.PickupCode,
@@ -153,6 +154,7 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
                 LabOrders.Add(new CollectionOrderDisplayItem
                 {
                     VisitId = lab.VisitId,
+                    ClinicId = lab.ClinicId,
                     KindLabel = T("RecordsPickupLab"),
                     ClinicName = lab.ClinicName,
                     PickupCode = lab.PickupCode,

@@ -2626,4 +2626,52 @@
   <data name="Collection_ShowCode" xml:space="preserve">
     <value>Lakisa code oyo na comptoir.</value>
   </data>
+  <data name="Collection_ScanQr" xml:space="preserve">
+    <value>Scan QR</value>
+  </data>
+  <data name="Collection_StopScan" xml:space="preserve">
+    <value>Tika camera</value>
+  </data>
+  <data name="Collection_PrintPoster" xml:space="preserve">
+    <value>Imprimer affiche</value>
+  </data>
+  <data name="Collection_ScanUnsupported" xml:space="preserve">
+    <value>Navigateur oyo ekoki ko fungola camera te. Salela Chrome to Edge, to koma code.</value>
+  </data>
+  <data name="Collection_ScanFound" xml:space="preserve">
+    <value>Code ya kozwa escani.</value>
+  </data>
+  <data name="Collection_ScanPosterHere" xml:space="preserve">
+    <value>Oyo ezali affiche ya lopitalo oyo. Mokili ascanela na telephone na ye.</value>
+  </data>
+  <data name="Collection_ScanPosterOther" xml:space="preserve">
+    <value>Affiche oyo ezali ya lopitalo mosusu.</value>
+  </data>
+  <data name="Collection_ScanUnrecognized" xml:space="preserve">
+    <value>Tokoki kotanga code ya kozwa na QR oyo te.</value>
+  </data>
+  <data name="Collection_PosterTitle" xml:space="preserve">
+    <value>Scanela mpo na kozwa</value>
+  </data>
+  <data name="Collection_PosterHint" xml:space="preserve">
+    <value>Fungola application RaphCare mpe scanela affiche oyo mpo na komona ba code na yo.</value>
+  </data>
+  <data name="Collection_PosterDetail" xml:space="preserve">
+    <value>Kozwa na pharmacie mpe laboratoire</value>
+  </data>
+  <data name="StaffJob_Staff" xml:space="preserve">
+    <value>Mosali</value>
+  </data>
+  <data name="StaffJob_Doctor" xml:space="preserve">
+    <value>Monganga</value>
+  </data>
+  <data name="StaffJob_Pharmacist" xml:space="preserve">
+    <value>Pharmacien</value>
+  </data>
+  <data name="StaffJob_LabTechnician" xml:space="preserve">
+    <value>Technicien ya labo</value>
+  </data>
+  <data name="StaffJob_Administrator" xml:space="preserve">
+    <value>Mokambi</value>
+  </data>
 </root>

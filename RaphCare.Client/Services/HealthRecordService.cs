@@ -103,6 +103,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
         {
             Id = p.Id,
             VisitId = p.VisitId,
+            ClinicId = p.ClinicId,
             ClinicName = p.ClinicName ?? string.Empty,
             PickupCode = p.PickupCode ?? string.Empty,
             IssuedAt = p.IssuedAt,
@@ -127,6 +128,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
         {
             Id = l.Id,
             VisitId = l.VisitId,
+            ClinicId = l.ClinicId,
             ClinicName = l.ClinicName ?? string.Empty,
             PickupCode = l.PickupCode ?? string.Empty,
             TestName = l.TestName ?? string.Empty,
@@ -172,6 +174,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
     {
         public Guid Id { get; set; }
         public Guid VisitId { get; set; }
+        public Guid ClinicId { get; set; }
         public string? ClinicName { get; set; }
         public string? PickupCode { get; set; }
         public DateTime IssuedAt { get; set; }
@@ -192,6 +195,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
     {
         public Guid Id { get; set; }
         public Guid VisitId { get; set; }
+        public Guid ClinicId { get; set; }
         public string? ClinicName { get; set; }
         public string? PickupCode { get; set; }
         public string? TestName { get; set; }

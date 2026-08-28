@@ -252,7 +252,7 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await mediator.Send(
-            new InviteClinicStaffCommand { ClinicId = id, Email = body.Email },
+            new InviteClinicStaffCommand { ClinicId = id, Email = body.Email, JobRole = body.JobRole ?? string.Empty },
             cancellationToken);
         return CreatedAtAction(nameof(GetStaff), new { id }, result);
     }
@@ -274,7 +274,8 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             {
                 ClinicId = id,
                 UserId = userId,
-                IsAdministrator = body.IsAdministrator
+                IsAdministrator = body.IsAdministrator,
+                JobRole = body.JobRole
             },
             cancellationToken);
         return updated ? NoContent() : NotFound();

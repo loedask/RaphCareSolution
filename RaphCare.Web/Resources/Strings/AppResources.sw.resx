@@ -2626,4 +2626,52 @@
   <data name="Collection_ShowCode" xml:space="preserve">
     <value>Onyesha msimbo huu kwenye kaunta.</value>
   </data>
+  <data name="Collection_ScanQr" xml:space="preserve">
+    <value>Changanua QR</value>
+  </data>
+  <data name="Collection_StopScan" xml:space="preserve">
+    <value>Simamisha kamera</value>
+  </data>
+  <data name="Collection_PrintPoster" xml:space="preserve">
+    <value>Chapisha bango</value>
+  </data>
+  <data name="Collection_ScanUnsupported" xml:space="preserve">
+    <value>Kivinjari hiki hakiwezi kufungua kamera. Tumia Chrome au Edge, au andika msimbo.</value>
+  </data>
+  <data name="Collection_ScanFound" xml:space="preserve">
+    <value>Msimbo wa kuchukua umechanganuliwa.</value>
+  </data>
+  <data name="Collection_ScanPosterHere" xml:space="preserve">
+    <value>Hilo ni bango la hospitali hii. Mgonjwa achanganue kwenye simu yake.</value>
+  </data>
+  <data name="Collection_ScanPosterOther" xml:space="preserve">
+    <value>Bango hilo ni la hospitali nyingine.</value>
+  </data>
+  <data name="Collection_ScanUnrecognized" xml:space="preserve">
+    <value>Hatukuweza kusoma msimbo wa kuchukua kwenye QR hiyo.</value>
+  </data>
+  <data name="Collection_PosterTitle" xml:space="preserve">
+    <value>Changanua ili kuchukua</value>
+  </data>
+  <data name="Collection_PosterHint" xml:space="preserve">
+    <value>Fungua programu ya RaphCare na changanua bango hili kuonyesha misimbo yako.</value>
+  </data>
+  <data name="Collection_PosterDetail" xml:space="preserve">
+    <value>Kuchukua dawa na vipimo vya maabara</value>
+  </data>
+  <data name="StaffJob_Staff" xml:space="preserve">
+    <value>Mfanyakazi</value>
+  </data>
+  <data name="StaffJob_Doctor" xml:space="preserve">
+    <value>Daktari</value>
+  </data>
+  <data name="StaffJob_Pharmacist" xml:space="preserve">
+    <value>Mfamasia</value>
+  </data>
+  <data name="StaffJob_LabTechnician" xml:space="preserve">
+    <value>Fundi wa maabara</value>
+  </data>
+  <data name="StaffJob_Administrator" xml:space="preserve">
+    <value>Msimamizi</value>
+  </data>
 </root>

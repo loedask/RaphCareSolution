@@ -9,6 +9,7 @@ namespace RaphCare.Application.Features.Organization.Commands.CompleteAdminClini
 public sealed class CompleteAdminClinicLabOrderHandler(
     ICurrentUserService currentUserService,
     IClinicStaffMembershipService clinicStaffMembershipService,
+    IUserRoleAssignmentService roleAssignmentService,
     IRepository<Visit> visitRepository,
     IRepository<LabRequest> labRequestRepository,
     IRepository<LabResult> labResultRepository,
@@ -20,11 +21,11 @@ public sealed class CompleteAdminClinicLabOrderHandler(
         CompleteAdminClinicLabOrderCommand request,
         CancellationToken cancellationToken)
     {
-        await AdminClinicAuthorization.EnsureClinicStaffAsync(
+        await AdminClinicAuthorization.EnsureCanCompleteLabsAsync(
                 currentUserService,
                 clinicStaffMembershipService,
+                roleAssignmentService,
                 request.ClinicId,
-                "Only hospital staff can record lab results.",
                 cancellationToken)
             .ConfigureAwait(false);
 

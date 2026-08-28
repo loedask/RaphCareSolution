@@ -575,6 +575,12 @@
                             <h3>@AppResources.T("Common_InviteStaffTitle")</h3>
                             <div class="claim-form-row">
                                 <input class="form-control" @bind="_inviteEmail" placeholder="@AppResources.T("Common_ColleagueEmailPlaceholder")" />
+                                <select class="form-control" @bind="_inviteJobRole">
+                                    @foreach (var job in JobRoleChoices)
+                                    {
+                                        <option value="@job.Value">@job.Label</option>
+                                    }
+                                </select>
                                 <button type="button" class="btn btn-primary" disabled="@_inviting" @onclick="InviteStaffAsync">
                                     @(_inviting ? AppResources.T("Common_Inviting") : AppResources.T("Common_Invite"))
                                 </button>
@@ -615,7 +621,7 @@
                                         <tr>
                                             <td><strong>@member.DisplayName</strong></td>
                                             <td>@member.Email</td>
-                                            <td>@string.Join(", ", member.Roles)</td>
+                                            <td>@FormatStaffRoles(member.Roles)</td>
                                             <td>
                                                 @if (member.IsPendingInvitation)
                                                 {
@@ -657,6 +663,14 @@
                                                     }
                                                     else if (member.UserId is { } activeUserId)
                                                     {
+                                                        <select class="form-control" style="min-width: 10rem;"
+                                                                value="@CurrentJobRole(member)"
+                                                                @onchange="e => SetStaffJobAsync(activeUserId, e.Value?.ToString())">
+                                                            @foreach (var job in JobRoleChoices)
+                                                            {
+                                                                <option value="@job.Value">@job.Label</option>
+                                                            }
+                                                        </select>
                                                         if (IsStaffAdministrator(member))
                                                         {
                                                             <button type="button" class="btn btn-ghost btn-sm" disabled="@_updatingRoleUserId == activeUserId" @onclick="() => UpdateStaffRoleAsync(activeUserId, false)">
@@ -726,6 +740,7 @@
     private string? _emergencyError;
     private string _tab = "overview";
     private string _inviteEmail = string.Empty;
+    private string _inviteJobRole = RaphCareRoles.Clinician;
     private string _grantPatientEmail = string.Empty;
     private string _providerLicense = string.Empty;
     private string _selectedStaffUserId = string.Empty;
@@ -922,11 +937,51 @@
     private static bool IsStaffAdministrator(ClinicStaffMember member) =>
         RaphCareRoles.HasAdministratorRole(member.Roles);
 
+    private IReadOnlyList<(string Value, string Label)> JobRoleChoices =>
+    [
+        (RaphCareRoles.Clinician, AppResources.T("StaffJob_Staff")),
+        (RaphCareRoles.Doctor, AppResources.T("StaffJob_Doctor")),
+        (RaphCareRoles.Pharmacist, AppResources.T("StaffJob_Pharmacist")),
+        (RaphCareRoles.LabTechnician, AppResources.T("StaffJob_LabTechnician"))
+    ];
+
+    private static string CurrentJobRole(ClinicStaffMember member) =>
+        RaphCareRoles.NormalizeJobRole(member.Roles.FirstOrDefault(r => RaphCareRoles.JobRoles.Contains(r)));
+
+    private string FormatStaffRoles(IReadOnlyList<string> roles)
+    {
+        var parts = new List<string>();
+        if (RaphCareRoles.HasAdministratorRole(roles))
+            parts.Add(AppResources.T("StaffJob_Administrator"));
+        var job = RaphCareRoles.NormalizeJobRole(roles.FirstOrDefault(r => RaphCareRoles.JobRoles.Contains(r)));
+        parts.Add(job switch
+        {
+            RaphCareRoles.Doctor => AppResources.T("StaffJob_Doctor"),
+            RaphCareRoles.Pharmacist => AppResources.T("StaffJob_Pharmacist"),
+            RaphCareRoles.LabTechnician => AppResources.T("StaffJob_LabTechnician"),
+            _ => AppResources.T("StaffJob_Staff")
+        });
+        return string.Join(" · ", parts);
+    }
+
     private async Task UpdateStaffRoleAsync(Guid userId, bool isAdministrator)
+    {
+        var member = _staff.FirstOrDefault(m => m.UserId == userId);
+        await SaveStaffRoleAsync(userId, isAdministrator, member is null ? null : CurrentJobRole(member));
+    }
+
+    private async Task SetStaffJobAsync(Guid userId, string? jobRole)
+    {
+        var member = _staff.FirstOrDefault(m => m.UserId == userId);
+        var isAdmin = member is not null && IsStaffAdministrator(member);
+        await SaveStaffRoleAsync(userId, isAdmin, jobRole);
+    }
+
+    private async Task SaveStaffRoleAsync(Guid userId, bool isAdministrator, string? jobRole)
     {
         _updatingRoleUserId = userId;
         _actionError = null;
-        var response = await AdminClinicService.UpdateStaffRoleAsync(ClinicId, userId, isAdministrator);
+        var response = await AdminClinicService.UpdateStaffRoleAsync(ClinicId, userId, isAdministrator, jobRole);
         _updatingRoleUserId = null;
 
         if (!response.IsSuccess)
@@ -1209,7 +1264,7 @@
     {
         _inviting = true;
         _actionError = null;
-        var response = await AdminClinicService.InviteStaffAsync(ClinicId, _inviteEmail.Trim());
+        var response = await AdminClinicService.InviteStaffAsync(ClinicId, _inviteEmail.Trim(), _inviteJobRole);
         _inviting = false;
 
         if (!response.IsSuccess)

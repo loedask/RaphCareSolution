@@ -41,7 +41,7 @@
                 {
                     <p class="hint" style="margin-top: 1rem;">@_visit.Summary</p>
                 }
-                @if (_isAdministrator && _visit.Status == "InProgress")
+                @if (CanDocument)
                 {
                     <div class="admin-page-actions" style="margin-top: 1rem;">
                         <label>
@@ -61,7 +61,7 @@
                 <span class="admin-progress-pill">@FormatVitalCount(_visit.Vitals.Count)</span>
             </AdminPageCardMeta>
             <div class="admin-page-card-body">
-                @if (_isAdministrator && _visit.Status == "InProgress")
+                @if (CanDocument)
                 {
                     <div class="form-grid" style="margin-bottom: 1rem;">
                         <label>
@@ -468,7 +468,7 @@
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private bool _loading = true;
-    private bool _isAdministrator;
+    private bool _canDocumentVisits;
     private bool _recording;
     private bool _completing;
     private bool _savingSoap;
@@ -507,7 +507,7 @@
         string.IsNullOrWhiteSpace(_clinicTimeZone) ? AppResources.T("Common_HospitalTime") : _clinicTimeZone;
 
     private bool CanDocument =>
-        _isAdministrator && _visit is { Status: "InProgress" };
+        _canDocumentVisits && _visit is { Status: "InProgress" };
 
     protected override async Task OnInitializedAsync()
     {
@@ -516,7 +516,7 @@
         var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
         if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
         {
-            _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            _canDocumentVisits = clinicResponse.Data.CurrentUserCanDocumentVisits;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }

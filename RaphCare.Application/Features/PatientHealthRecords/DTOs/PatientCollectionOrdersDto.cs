@@ -13,6 +13,7 @@ public sealed class PatientCollectionPrescriptionDto
 {
     public Guid Id { get; set; }
     public Guid VisitId { get; set; }
+    public Guid ClinicId { get; set; }
     public string ClinicName { get; set; } = string.Empty;
     public string PickupCode { get; set; } = string.Empty;
     public DateTime IssuedAt { get; set; }
@@ -34,6 +35,7 @@ public sealed class PatientCollectionLabOrderDto
 {
     public Guid Id { get; set; }
     public Guid VisitId { get; set; }
+    public Guid ClinicId { get; set; }
     public string ClinicName { get; set; } = string.Empty;
     public string PickupCode { get; set; } = string.Empty;
     public string TestName { get; set; } = string.Empty;

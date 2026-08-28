@@ -25,14 +25,14 @@ public sealed class StartAdminClinicVisitHandler(
         StartAdminClinicVisitCommand request,
         CancellationToken cancellationToken)
     {
-        if (!await AdminClinicAuthorization.IsClinicAdministratorAsync(
+        if (!await AdminClinicAuthorization.CanDocumentVisitsAsync(
                 currentUserService,
                 clinicStaffMembershipService,
                 roleAssignmentService,
                 request.ClinicId,
                 cancellationToken)
             .ConfigureAwait(false))
-            throw new ForbiddenAccessException("Only hospital administrators can start visits.");
+            throw new ForbiddenAccessException("Only a doctor or hospital administrator can start visits.");
 
         var appointment = await appointmentRepository
             .GetByIdAsync(request.AppointmentId, cancellationToken)

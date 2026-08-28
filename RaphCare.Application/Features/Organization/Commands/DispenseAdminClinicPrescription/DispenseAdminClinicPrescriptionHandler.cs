@@ -10,6 +10,7 @@ namespace RaphCare.Application.Features.Organization.Commands.DispenseAdminClini
 public sealed class DispenseAdminClinicPrescriptionHandler(
     ICurrentUserService currentUserService,
     IClinicStaffMembershipService clinicStaffMembershipService,
+    IUserRoleAssignmentService roleAssignmentService,
     IRepository<Visit> visitRepository,
     IRepository<Prescription> prescriptionRepository,
     IDateTimeProvider clock,
@@ -20,11 +21,11 @@ public sealed class DispenseAdminClinicPrescriptionHandler(
         DispenseAdminClinicPrescriptionCommand request,
         CancellationToken cancellationToken)
     {
-        await AdminClinicAuthorization.EnsureClinicStaffAsync(
+        await AdminClinicAuthorization.EnsureCanDispenseAsync(
                 currentUserService,
                 clinicStaffMembershipService,
+                roleAssignmentService,
                 request.ClinicId,
-                "Only hospital staff can mark a prescription as collected.",
                 cancellationToken)
             .ConfigureAwait(false);
 

@@ -16,7 +16,7 @@ internal static class AdminClinicVisitDocumentationHelper
         string forbiddenMessage,
         CancellationToken cancellationToken)
     {
-        if (!await AdminClinicAuthorization.IsClinicAdministratorAsync(
+        if (!await AdminClinicAuthorization.CanDocumentVisitsAsync(
                 currentUser,
                 membershipService,
                 roleAssignmentService,

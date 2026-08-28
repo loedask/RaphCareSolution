@@ -88,6 +88,7 @@ public class GetMyHealthRecordByIdHandler : IRequestHandler<GetMyHealthRecordByI
             {
                 Id = p.Id,
                 VisitId = p.VisitId,
+                ClinicId = visit.ClinicId,
                 ClinicName = clinicName,
                 PickupCode = p.PickupCode,
                 IssuedAt = p.IssuedAt,
@@ -108,6 +109,7 @@ public class GetMyHealthRecordByIdHandler : IRequestHandler<GetMyHealthRecordByI
                 {
                     Id = l.Id,
                     VisitId = l.VisitId,
+                    ClinicId = visit.ClinicId,
                     ClinicName = clinicName,
                     PickupCode = l.PickupCode,
                     TestName = l.TestName,

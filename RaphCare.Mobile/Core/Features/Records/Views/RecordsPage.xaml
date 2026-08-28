@@ -8,14 +8,24 @@
              Title="{Binding Title}"
              BackgroundColor="{StaticResource BackgroundColor}">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="24" RowSpacing="12">
-        <Button Grid.Row="0"
-                Text="{Binding RefreshButtonText}"
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="24" RowSpacing="12">
+        <HorizontalStackLayout Grid.Row="0" Spacing="8">
+            <Button Text="{Binding RefreshButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding RefreshCommand}" />
+            <Button Text="{Binding ScanButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding ScanPosterCommand}" />
+        </HorizontalStackLayout>
+
+        <Button Grid.Row="1"
+                Text="{Binding ClearCheckInButtonText}"
+                IsVisible="{Binding ShowClearCheckIn}"
                 Style="{StaticResource SecondaryButton}"
-                Command="{Binding RefreshCommand}"
+                Command="{Binding ClearCheckInCommand}"
                 HorizontalOptions="Start" />
 
-        <VerticalStackLayout Grid.Row="1"
+        <VerticalStackLayout Grid.Row="2"
                              Spacing="8"
                              IsVisible="{Binding ShowPickup}">
             <Label Text="{Binding PickupSectionTitle}" Style="{StaticResource SectionTitle}" />
@@ -61,7 +71,7 @@
             </VerticalStackLayout>
         </VerticalStackLayout>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" Color="{StaticResource PrimaryColor}" />
 
             <CollectionView ItemsSource="{Binding Items}"

@@ -30,7 +30,7 @@ public sealed class CreateAdminClinicVisitLabResultHandler(
                 visitRepository,
                 request.ClinicId,
                 request.VisitId,
-                "Only hospital administrators can order lab tests.",
+                "Only a doctor or hospital administrator can order lab tests.",
                 cancellationToken)
             .ConfigureAwait(false);
         if (visit is null)

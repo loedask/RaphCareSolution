@@ -25,7 +25,7 @@ public sealed class UpsertAdminClinicVisitSoapNoteHandler(
                 visitRepository,
                 request.ClinicId,
                 request.VisitId,
-                "Only hospital administrators can save visit notes.",
+                "Only a doctor or hospital administrator can save visit notes.",
                 cancellationToken)
             .ConfigureAwait(false);
         if (visit is null)

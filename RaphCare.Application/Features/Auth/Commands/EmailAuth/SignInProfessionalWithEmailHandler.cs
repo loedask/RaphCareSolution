@@ -36,11 +36,13 @@ public sealed class SignInProfessionalWithEmailHandler(
             return new EmailAuthResult { Success = false, Error = "Invalid or expired verification code." };
         }
 
-        await roleAssignmentService.AssignRoleIfMissingAsync(user.Id, RaphCareRoles.Clinician, cancellationToken).ConfigureAwait(false);
-
         await clinicStaffPendingInvitationService
             .AcceptPendingInvitationsAsync(user.Id, request.Email, cancellationToken)
             .ConfigureAwait(false);
+
+        var assigned = await roleAssignmentService.GetRoleNamesAsync(user.Id, cancellationToken).ConfigureAwait(false);
+        if (!RaphCareRoles.HasProviderJobRole(assigned))
+            await roleAssignmentService.AssignRoleIfMissingAsync(user.Id, RaphCareRoles.Clinician, cancellationToken).ConfigureAwait(false);
 
         var roles = await roleAssignmentService.GetRoleNamesAsync(user.Id, cancellationToken).ConfigureAwait(false);
 

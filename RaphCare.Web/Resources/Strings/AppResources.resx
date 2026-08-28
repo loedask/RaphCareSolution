@@ -2580,4 +2580,52 @@
   <data name="Collection_ShowCode" xml:space="preserve">
     <value>Show this code at the counter.</value>
   </data>
+  <data name="Collection_ScanQr" xml:space="preserve">
+    <value>Scan QR</value>
+  </data>
+  <data name="Collection_StopScan" xml:space="preserve">
+    <value>Stop camera</value>
+  </data>
+  <data name="Collection_PrintPoster" xml:space="preserve">
+    <value>Print wall poster</value>
+  </data>
+  <data name="Collection_ScanUnsupported" xml:space="preserve">
+    <value>This browser cannot open the camera. Use Chrome or Edge, or type the pickup code.</value>
+  </data>
+  <data name="Collection_ScanFound" xml:space="preserve">
+    <value>Pickup code scanned.</value>
+  </data>
+  <data name="Collection_ScanPosterHere" xml:space="preserve">
+    <value>That is the wall poster for this hospital. Ask the patient to scan it on their phone.</value>
+  </data>
+  <data name="Collection_ScanPosterOther" xml:space="preserve">
+    <value>That poster is for a different hospital.</value>
+  </data>
+  <data name="Collection_ScanUnrecognized" xml:space="preserve">
+    <value>Could not read a pickup code from that QR.</value>
+  </data>
+  <data name="Collection_PosterTitle" xml:space="preserve">
+    <value>Scan to collect</value>
+  </data>
+  <data name="Collection_PosterHint" xml:space="preserve">
+    <value>Open the RaphCare app and scan this poster to show your pickup codes.</value>
+  </data>
+  <data name="Collection_PosterDetail" xml:space="preserve">
+    <value>Pharmacy and lab collection</value>
+  </data>
+  <data name="StaffJob_Staff" xml:space="preserve">
+    <value>Staff</value>
+  </data>
+  <data name="StaffJob_Doctor" xml:space="preserve">
+    <value>Doctor</value>
+  </data>
+  <data name="StaffJob_Pharmacist" xml:space="preserve">
+    <value>Pharmacist</value>
+  </data>
+  <data name="StaffJob_LabTechnician" xml:space="preserve">
+    <value>Lab technician</value>
+  </data>
+  <data name="StaffJob_Administrator" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
 </root>

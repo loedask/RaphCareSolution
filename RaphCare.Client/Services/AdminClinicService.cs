@@ -405,13 +405,14 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
     public async Task<Response<ClinicStaffMember>> InviteStaffAsync(
         Guid clinicId,
         string email,
+        string? jobRole = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
             var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
             using var response = await client
-                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/staff", new { email }, cancellationToken)
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/staff", new { email, jobRole }, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
@@ -558,13 +559,14 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         Guid clinicId,
         Guid userId,
         bool isAdministrator,
+        string? jobRole = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
             var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
             using var response = await client
-                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/staff/{userId}/role", new { isAdministrator }, cancellationToken)
+                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/staff/{userId}/role", new { isAdministrator, jobRole }, cancellationToken)
                 .ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
@@ -2129,6 +2131,9 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         CreatedAt = dto.CreatedAt,
         RegisteredByApplicationUserId = dto.RegisteredByApplicationUserId,
         CurrentUserIsAdministrator = dto.CurrentUserIsAdministrator,
+        CurrentUserCanDocumentVisits = dto.CurrentUserCanDocumentVisits,
+        CurrentUserCanDispense = dto.CurrentUserCanDispense,
+        CurrentUserCanCompleteLabs = dto.CurrentUserCanCompleteLabs,
         Facilities = dto.Facilities?
             .Select(f => new FacilityListItem
             {
@@ -2516,6 +2521,9 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public DateTime CreatedAt { get; set; }
         public Guid? RegisteredByApplicationUserId { get; set; }
         public bool CurrentUserIsAdministrator { get; set; }
+        public bool CurrentUserCanDocumentVisits { get; set; }
+        public bool CurrentUserCanDispense { get; set; }
+        public bool CurrentUserCanCompleteLabs { get; set; }
         public List<FacilityListItemDto>? Facilities { get; set; }
     }
 

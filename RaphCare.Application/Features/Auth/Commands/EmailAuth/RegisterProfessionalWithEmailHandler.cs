@@ -34,10 +34,13 @@ public sealed class RegisterProfessionalWithEmailHandler(
         if (!success || user is null)
             return new EmailAuthResult { Success = false, Error = error ?? "Registration failed." };
 
-        await roleAssignmentService.AssignRoleIfMissingAsync(user.Id, RaphCareRoles.Clinician, cancellationToken).ConfigureAwait(false);
         await clinicStaffPendingInvitationService
             .AcceptPendingInvitationsAsync(user.Id, request.Email, cancellationToken)
             .ConfigureAwait(false);
+
+        var rolesAfterInvite = await roleAssignmentService.GetRoleNamesAsync(user.Id, cancellationToken).ConfigureAwait(false);
+        if (!RaphCareRoles.HasProviderJobRole(rolesAfterInvite))
+            await roleAssignmentService.AssignRoleIfMissingAsync(user.Id, RaphCareRoles.Clinician, cancellationToken).ConfigureAwait(false);
 
         await identityOtpProvisioningService.LogLoginAttemptAsync(new LoginAudit
         {

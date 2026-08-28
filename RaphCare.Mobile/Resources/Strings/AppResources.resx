@@ -887,6 +887,24 @@ Accessible. Intelligent. Human.</value>
   <data name="RecordsPickupCancelled" xml:space="preserve">
     <value>Cancelled</value>
   </data>
+  <data name="RecordsScanPoster" xml:space="preserve">
+    <value>Scan poster</value>
+  </data>
+  <data name="RecordsClearCheckIn" xml:space="preserve">
+    <value>Show all hospitals</value>
+  </data>
+  <data name="RecordsPickupCheckInHint" xml:space="preserve">
+    <value>Show these codes at this hospital counter.</value>
+  </data>
+  <data name="RecordsScanCameraDenied" xml:space="preserve">
+    <value>Camera permission is needed to scan a poster.</value>
+  </data>
+  <data name="RecordsScanFailed" xml:space="preserve">
+    <value>Could not read a QR code from that photo. Try again, closer to the poster.</value>
+  </data>
+  <data name="RecordsScanNotPoster" xml:space="preserve">
+    <value>That QR is not a hospital collection poster.</value>
+  </data>
   <data name="InsuranceListTitle" xml:space="preserve">
     <value>Insurance</value>
   </data>

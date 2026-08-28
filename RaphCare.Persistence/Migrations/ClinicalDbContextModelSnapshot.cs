@@ -1041,6 +1041,11 @@ namespace RaphCare.Persistence.Migrations
                     b.Property<bool>("IsCancelled")
                         .HasColumnType("bit");
 
+                    b.Property<string>("JobRole")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
                     b.Property<DateTime?>("LastInvitationSentAt")
                         .HasColumnType("datetime2");
 

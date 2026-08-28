@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using RaphCare.Application.Common.Configuration;
 using RaphCare.Application.Common.Email;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Domain.Identity;
 using RaphCare.Domain.Organization;
 
 namespace RaphCare.Persistence;
@@ -10,6 +11,7 @@ namespace RaphCare.Persistence;
 public sealed class ClinicStaffPendingInvitationService(
     ClinicalDbContext clinicalDbContext,
     IClinicStaffMembershipService clinicStaffMembershipService,
+    IUserRoleAssignmentService roleAssignmentService,
     IEmailService emailService,
     IOptions<RaphCarePortalOptions> portalOptions) : IClinicStaffPendingInvitationService
 {
@@ -17,9 +19,11 @@ public sealed class ClinicStaffPendingInvitationService(
         Guid clinicId,
         string email,
         Guid invitedByApplicationUserId,
+        string jobRole,
         CancellationToken cancellationToken = default)
     {
         var normalizedEmail = NormalizeEmail(email);
+        var canonicalJobRole = RaphCareRoles.NormalizeJobRole(jobRole);
         var existingPending = await clinicalDbContext.ClinicStaffInvitations
             .FirstOrDefaultAsync(
                 i => i.ClinicId == clinicId
@@ -31,6 +35,7 @@ public sealed class ClinicStaffPendingInvitationService(
 
         if (existingPending is not null)
         {
+            existingPending.JobRole = canonicalJobRole;
             await SendRegistrationEmailAsync(existingPending, cancellationToken).ConfigureAwait(false);
             existingPending.LastInvitationSentAt = DateTime.UtcNow;
             await clinicalDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -43,7 +48,8 @@ public sealed class ClinicStaffPendingInvitationService(
             Email = normalizedEmail,
             InvitedByApplicationUserId = invitedByApplicationUserId,
             InvitedAt = DateTime.UtcNow,
-            LastInvitationSentAt = DateTime.UtcNow
+            LastInvitationSentAt = DateTime.UtcNow,
+            JobRole = canonicalJobRole
         };
 
         clinicalDbContext.ClinicStaffInvitations.Add(invitation);
@@ -64,6 +70,7 @@ public sealed class ClinicStaffPendingInvitationService(
             {
                 InvitationId = i.Id,
                 Email = i.Email,
+                JobRole = i.JobRole,
                 InvitedAt = i.InvitedAt,
                 LastInvitationSentAt = i.LastInvitationSentAt
             })
@@ -129,6 +136,9 @@ public sealed class ClinicStaffPendingInvitationService(
             await clinicStaffMembershipService
                 .EnsureMembershipAsync(applicationUserId, invitation.ClinicId, cancellationToken)
                 .ConfigureAwait(false);
+            await roleAssignmentService
+                .SetStaffJobRoleAsync(applicationUserId, invitation.JobRole, cancellationToken)
+                .ConfigureAwait(false);
 
             invitation.AcceptedAt = DateTime.UtcNow;
             invitation.AcceptedApplicationUserId = applicationUserId;
@@ -160,6 +170,7 @@ public sealed class ClinicStaffPendingInvitationService(
     {
         InvitationId = invitation.Id,
         Email = invitation.Email,
+        JobRole = invitation.JobRole,
         InvitedAt = invitation.InvitedAt,
         LastInvitationSentAt = invitation.LastInvitationSentAt
     };

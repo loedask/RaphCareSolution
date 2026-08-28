@@ -27,7 +27,10 @@ public static class IdentitySeeder
     private static readonly (string Name, string Description)[] DefaultRoles =
     [
         (RaphCareRoles.Administrator, "Full system access"),
-        (RaphCareRoles.Clinician, "Clinical access"),
+        (RaphCareRoles.Clinician, "General hospital staff"),
+        (RaphCareRoles.Doctor, "Visit documentation and clinical orders"),
+        (RaphCareRoles.Pharmacist, "Pharmacy collection"),
+        (RaphCareRoles.LabTechnician, "Lab collection"),
         (RaphCareRoles.Patient, "Patient portal access")
     ];
 

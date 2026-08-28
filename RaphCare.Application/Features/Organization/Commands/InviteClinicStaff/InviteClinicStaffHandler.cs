@@ -39,7 +39,7 @@ public sealed class InviteClinicStaffHandler(
         if (user is null)
         {
             var pending = await clinicStaffPendingInvitationService
-                .CreateAsync(request.ClinicId, request.Email, invitedByUserId, cancellationToken)
+                .CreateAsync(request.ClinicId, request.Email, invitedByUserId, request.JobRole, cancellationToken)
                 .ConfigureAwait(false);
 
             return new ClinicStaffMemberDto
@@ -48,6 +48,7 @@ public sealed class InviteClinicStaffHandler(
                 IsPendingInvitation = true,
                 Email = pending.Email,
                 DisplayName = pending.Email,
+                Roles = [RaphCareRoles.NormalizeJobRole(request.JobRole)],
                 JoinedAt = pending.InvitedAt,
                 IsActive = true,
                 HasLoggedIn = false,
@@ -62,7 +63,7 @@ public sealed class InviteClinicStaffHandler(
                 "That account is not a healthcare professional. They must use professional registration.");
 
         await roleAssignmentService
-            .AssignRoleIfMissingAsync(user.Id, RaphCareRoles.Clinician, cancellationToken)
+            .SetStaffJobRoleAsync(user.Id, request.JobRole, cancellationToken)
             .ConfigureAwait(false);
 
         await clinicStaffMembershipService

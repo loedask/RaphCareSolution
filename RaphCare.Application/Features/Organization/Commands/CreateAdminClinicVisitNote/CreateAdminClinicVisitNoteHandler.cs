@@ -25,7 +25,7 @@ public sealed class CreateAdminClinicVisitNoteHandler(
                 visitRepository,
                 request.ClinicId,
                 request.VisitId,
-                "Only hospital administrators can add visit notes.",
+                "Only a doctor or hospital administrator can add visit notes.",
                 cancellationToken)
             .ConfigureAwait(false);
         if (visit is null)

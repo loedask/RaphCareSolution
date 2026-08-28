@@ -35,6 +35,7 @@ using RaphCare.Mobile.Core.Features.Hybrid.Views;
 using RaphCare.Mobile.Core.Features.Insurance.ViewModels;
 using RaphCare.Mobile.Core.Features.Insurance.Views;
 using RaphCare.Mobile.Core.Features.Notifications.Services;
+using RaphCare.Mobile.Core.Features.Records;
 using RaphCare.Mobile.Core.Features.Records.ViewModels;
 using RaphCare.Mobile.Core.Features.Records.Views;
 using RaphCare.Mobile.Core.Features.Settings.Services;
@@ -100,6 +101,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<AppointmentsViewModel>();
         services.AddTransient<AppointmentDetailViewModel>();
         services.AddTransient<BookAppointmentViewModel>();
+        services.AddSingleton<CollectionCheckInStore>();
         services.AddTransient<RecordsViewModel>();
         services.AddTransient<HealthRecordDetailViewModel>();
         services.AddTransient<InsuranceViewModel>();

@@ -27,14 +27,14 @@ public sealed class CompleteAdminClinicVisitHandler(
         CompleteAdminClinicVisitCommand request,
         CancellationToken cancellationToken)
     {
-        if (!await AdminClinicAuthorization.IsClinicAdministratorAsync(
+        if (!await AdminClinicAuthorization.CanDocumentVisitsAsync(
                 currentUserService,
                 clinicStaffMembershipService,
                 roleAssignmentService,
                 request.ClinicId,
                 cancellationToken)
             .ConfigureAwait(false))
-            throw new ForbiddenAccessException("Only hospital administrators can complete visits.");
+            throw new ForbiddenAccessException("Only a doctor or hospital administrator can complete visits.");
 
         var visit = await visitRepository.GetByIdAsync(request.VisitId, cancellationToken).ConfigureAwait(false);
         if (visit is null || visit.ClinicId != request.ClinicId)

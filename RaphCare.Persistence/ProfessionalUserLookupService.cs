@@ -37,7 +37,7 @@ public sealed class ProfessionalUserLookupService(IdentityDbContext identityDbCo
         return await identityDbContext.UserRoles
             .Where(ur => ur.UserId == userId)
             .Join(identityDbContext.Roles, ur => ur.RoleId, r => r.Id, (_, r) => r.Name)
-            .AnyAsync(name => name == RaphCareRoles.Clinician || name == RaphCareRoles.Administrator, cancellationToken)
+            .AnyAsync(name => RaphCareRoles.IsProviderRole(name), cancellationToken)
             .ConfigureAwait(false);
     }
 
