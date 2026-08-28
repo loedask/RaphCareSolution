@@ -1,5 +1,5 @@
 {
-  "stylesheet": ["partner-update.pdf.css"],
+  "stylesheet": ["../partner-update.pdf.css"],
   "document_title": "RaphCare partner update (23 Aug 2026)",
   "pdf_options": {
     "format": "A4",

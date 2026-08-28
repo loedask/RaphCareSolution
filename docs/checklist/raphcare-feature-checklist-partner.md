@@ -6,7 +6,7 @@ PDF: [`raphcare-feature-checklist-partner.pdf`](raphcare-feature-checklist-partn
 
 Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md)
 
-**Overall completion:** **74%**
+**Overall completion:** **75%**
 
 **How to read this**
 
@@ -31,7 +31,8 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Area | Status | What you can do |
 |------|--------|-----------------|
 | Hospital list, register, claim | Done | Find or register a hospital. Each hospital gets a short RaphCare reference staff can share. |
-| Hospital profile and facilities | Done | Edit details; add physical or virtual locations. Opening a hospital hides the left menu so the hospital tools have more room. |
+| Opening a hospital | Done | The left menu hides so the hospital tools have more room. Use All hospitals in the top bar to go back. Language and sign out are there too. |
+| Hospital profile and facilities | Done | Edit details; add physical or virtual locations |
 | Staff invites and roles | Done | Invite people; set admin vs staff |
 | Patients at a hospital | Done | Grant or remove access; open patient detail |
 | Providers and schedules | Done | Add providers; manage schedules |
@@ -42,7 +43,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the web.
+**Bottom line (100%):** outpatient hospital admin is ready on the web. Opening a hospital hides the left menu so staff can focus on that hospital.
 
 **Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan. Detail: [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
@@ -142,16 +143,17 @@ What patients see on Android / iPhone.
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 58% | iPhone video, push, wearables |
 | 4. Other staff / system | 80% | Storage and reporting polish |
-| **Overall** | **74%** | Excludes "not for mobile / clinical / BLE" rows |
+| **Overall** | **75%** | Excludes "not for mobile / clinical / BLE" rows |
 
 ---
 
 ## What to try this week (partner)
 
-1. **Admin web:** open a hospital -> Inpatient. Add a ward/room/bed if needed, admit someone, discharge them.
-2. **Admin web:** book an appointment and start a visit (outpatient path).
-3. **Patient app on Android:** sign in, open Home, try Appointments and Devices (Bluetooth band if you have one).
-4. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
+1. **Admin web:** open a hospital. The left menu should hide. Use All hospitals in the top bar to return to the list.
+2. **Admin web:** on that hospital, open Inpatient. Add a ward/room/bed if needed, admit someone, discharge them.
+3. **Admin web:** book an appointment and start a visit (outpatient path).
+4. **Patient app on Android:** sign in, open Home, try Appointments and Devices (Bluetooth band if you have one).
+5. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
 
 ---
 
