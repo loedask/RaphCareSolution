@@ -86,12 +86,9 @@
                         <div class="form-grid">
                             <label>
                                 @AppResources.T("Common_Day")
-                                <select class="form-control" @bind="_scheduleDay">
-                                    @foreach (var day in _days)
-                                    {
-                                        <option value="@day">@FormatDayOfWeek(day)</option>
-                                    }
-                                </select>
+                                <SearchableSelect TValue="DayOfWeek"
+                                                  @bind-Value="_scheduleDay"
+                                                  Options="DaySelectOptions" />
                             </label>
                             <label>
                                 @AppResources.T("Common_Start")
@@ -174,6 +171,9 @@
         DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
         DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
     ];
+
+    private IReadOnlyList<SelectOption<DayOfWeek>> DaySelectOptions =>
+        _days.Select(day => new SelectOption<DayOfWeek>(day, FormatDayOfWeek(day))).ToArray();
 
     private bool _loading = true;
     private bool _isAdministrator;

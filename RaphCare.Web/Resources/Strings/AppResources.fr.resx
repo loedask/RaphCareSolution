@@ -142,6 +142,9 @@
   <data name="Common_Search" xml:space="preserve">
     <value>Recherche</value>
   </data>
+  <data name="Common_NoMatchingOptions" xml:space="preserve">
+    <value>Aucune option correspondante</value>
+  </data>
   <data name="Common_Apply" xml:space="preserve">
     <value>Appliquer</value>
   </data>

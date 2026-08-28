@@ -142,6 +142,9 @@
   <data name="Common_Search" xml:space="preserve">
     <value>Koluka</value>
   </data>
+  <data name="Common_NoMatchingOptions" xml:space="preserve">
+    <value>Eteni ya likanisi te</value>
+  </data>
   <data name="Common_Apply" xml:space="preserve">
     <value>Kosalela</value>
   </data>

@@ -95,13 +95,9 @@
                     <div class="form-grid" style="margin-bottom: 1rem;">
                         <label>
                             @AppResources.T("Common_Type")
-                            <select class="form-control" @bind="_vitalType">
-                                <option value="HR">@AppResources.T("Common_HeartRateOption")</option>
-                                <option value="BP">@AppResources.T("Common_BloodPressureOption")</option>
-                                <option value="Temp">@AppResources.T("Common_TemperatureOption")</option>
-                                <option value="SpO2">@AppResources.T("Common_Spo2Option")</option>
-                                <option value="Weight">@AppResources.T("Common_WeightOption")</option>
-                            </select>
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_vitalType"
+                                              Options="VitalTypeOptions" />
                         </label>
                         <label>
                             @AppResources.T("Common_Value")
@@ -176,6 +172,15 @@
     private decimal _vitalValue;
     private string _vitalUnit = "bpm";
     private string _completeSummary = string.Empty;
+
+    private IReadOnlyList<SelectOption<string>> VitalTypeOptions =>
+    [
+        new("HR", AppResources.T("Common_HeartRateOption")),
+        new("BP", AppResources.T("Common_BloodPressureOption")),
+        new("Temp", AppResources.T("Common_TemperatureOption")),
+        new("SpO2", AppResources.T("Common_Spo2Option")),
+        new("Weight", AppResources.T("Common_WeightOption"))
+    ];
 
     private string TimeZoneLabel =>
         string.IsNullOrWhiteSpace(_clinicTimeZone) ? AppResources.T("Common_HospitalTime") : _clinicTimeZone;

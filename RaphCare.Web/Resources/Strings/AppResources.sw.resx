@@ -142,6 +142,9 @@
   <data name="Common_Search" xml:space="preserve">
     <value>Tafuta</value>
   </data>
+  <data name="Common_NoMatchingOptions" xml:space="preserve">
+    <value>Hakuna chaguo linalolingana</value>
+  </data>
   <data name="Common_Apply" xml:space="preserve">
     <value>Omba</value>
   </data>

@@ -1657,6 +1657,136 @@ a:hover { text-decoration: underline; }
 
 .form-control:focus { outline: 2px solid rgba(13,148,136,0.35); border-color: var(--rc-primary); }
 
+.searchable-select {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+}
+
+.searchable-select-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--rc-border);
+    border-radius: 0.55rem;
+    font-size: 0.875rem;
+    background: white;
+    font-family: inherit;
+    color: var(--rc-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.searchable-select-trigger:focus {
+    outline: 2px solid rgba(13, 148, 136, 0.35);
+    border-color: var(--rc-admin-accent);
+}
+
+.searchable-select.open .searchable-select-trigger {
+    border-color: var(--rc-admin-accent);
+}
+
+.searchable-select.disabled .searchable-select-trigger {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.searchable-select-value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.searchable-select-value.placeholder {
+    color: var(--rc-muted);
+}
+
+.searchable-select-caret {
+    color: var(--rc-muted);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.searchable-select-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+}
+
+.searchable-select-panel {
+    position: absolute;
+    top: calc(100% + 0.3rem);
+    left: 0;
+    right: 0;
+    z-index: 41;
+    background: #fff;
+    border: 1px solid rgba(13, 148, 136, 0.22);
+    border-radius: 0.75rem;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+}
+
+.searchable-select-search {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--rc-border);
+    padding: 0.7rem 0.85rem;
+    font: inherit;
+    font-size: 0.875rem;
+    background: #f8fafc;
+}
+
+.searchable-select-search:focus {
+    outline: none;
+    background: #fff;
+}
+
+.searchable-select-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.3rem;
+    max-height: 14rem;
+    overflow-y: auto;
+}
+
+.searchable-select-option,
+.searchable-select-empty {
+    padding: 0.55rem 0.7rem;
+    border-radius: 0.45rem;
+    font-size: 0.875rem;
+}
+
+.searchable-select-empty {
+    color: var(--rc-muted);
+}
+
+.searchable-select-option {
+    cursor: pointer;
+}
+
+.searchable-select-option:hover,
+.searchable-select-option.active {
+    background: #f0fdfa;
+}
+
+.searchable-select-option.selected {
+    color: #0f766e;
+    font-weight: 600;
+}
+
+.claim-form-row .searchable-select {
+    flex: 1;
+}
+
+.form-grid > label .searchable-select {
+    margin-top: 0.35rem;
+}
+
 .admin-shell .form-field label {
     font-size: 0.68rem;
     font-weight: 700;
@@ -1674,14 +1804,22 @@ a:hover { text-decoration: underline; }
 .form-field.span-2 { grid-column: span 2; }
 .form-field label { font-size: 0.85rem; font-weight: 600; }
 
+.onboarding-page .form-field label.required {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.28rem;
+    width: fit-content;
+}
+
 .onboarding-page .form-field label.required::after {
     content: "*";
-    margin-left: 0.3em;
     color: #0d9488;
     font-size: 1.05em;
     font-weight: 800;
     letter-spacing: 0;
     text-transform: none;
+    line-height: 1;
 }
 .checkbox-field { justify-content: flex-end; }
 .checkbox-field label { display: flex; align-items: center; gap: 0.5rem; font-weight: normal; text-transform: none; letter-spacing: normal; }
@@ -2108,6 +2246,20 @@ a:hover { text-decoration: underline; }
     margin: 0.65rem 0;
 }
 
-.admin-sidebar-footer .language-picker-select {
+.admin-sidebar-footer .language-picker .searchable-select {
+    min-width: 8.5rem;
+}
+
+.admin-sidebar-footer .language-picker .searchable-select-trigger {
     width: 100%;
+    min-width: 8.5rem;
+    padding: 0.35rem 0.55rem;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    color: #0f172a;
+}
+
+.admin-sidebar-footer .language-picker .searchable-select-panel {
+    top: auto;
+    bottom: calc(100% + 0.3rem);
 }

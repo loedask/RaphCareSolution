@@ -166,21 +166,17 @@ else
                             </div>
                             <div class="form-field">
                                 <label class="required" for="country">@AppResources.T("HospitalsRegister_CountryLabel")</label>
-                                <InputSelect id="country" class="form-control" @bind-Value="_draft.Country">
-                                    @foreach (var c in CountryOptions)
-                                    {
-                                        <option value="@c.Value">@AppResources.T(c.ResourceKey)</option>
-                                    }
-                                </InputSelect>
+                                <SearchableSelect TValue="string"
+                                                  Id="country"
+                                                  @bind-Value="_draft.Country"
+                                                  Options="CountrySelectOptions" />
                             </div>
                             <div class="form-field span-2">
                                 <label class="required" for="tz">@AppResources.T("HospitalsRegister_TimeZoneLabel")</label>
-                                <InputSelect id="tz" class="form-control" @bind-Value="_draft.TimeZone">
-                                    @foreach (var tz in TimeZoneOptions)
-                                    {
-                                        <option value="@tz.Value">@AppResources.T(tz.ResourceKey)</option>
-                                    }
-                                </InputSelect>
+                                <SearchableSelect TValue="string"
+                                                  Id="tz"
+                                                  @bind-Value="_draft.TimeZone"
+                                                  Options="TimeZoneSelectOptions" />
                             </div>
                         </div>
                         break;
@@ -337,6 +333,12 @@ else
         ("Eastern Standard Time", "HospitalsRegister_TimeZone_Eastern"),
         ("Central European Standard Time", "HospitalsRegister_TimeZone_CentralEurope")
     ];
+
+    private IReadOnlyList<SelectOption<string>> CountrySelectOptions =>
+        CountryOptions.Select(c => new SelectOption<string>(c.Value, AppResources.T(c.ResourceKey))).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> TimeZoneSelectOptions =>
+        TimeZoneOptions.Select(tz => new SelectOption<string>(tz.Value, AppResources.T(tz.ResourceKey))).ToArray();
 
     private (int Id, string Label)[] Steps =>
     [

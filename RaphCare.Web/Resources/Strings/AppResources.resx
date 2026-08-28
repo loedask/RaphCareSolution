@@ -96,6 +96,9 @@
   <data name="Common_Search" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="Common_NoMatchingOptions" xml:space="preserve">
+    <value>No matching options</value>
+  </data>
   <data name="Common_Apply" xml:space="preserve">
     <value>Apply</value>
   </data>

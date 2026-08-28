@@ -334,13 +334,10 @@
                             <h3>@AppResources.T("Common_AddProviderTitle")</h3>
                             <p class="text-muted">@AppResources.T("Common_AddProviderLead")</p>
                             <div class="claim-form-row">
-                                <select class="form-control" @bind="_selectedStaffUserId">
-                                    <option value="">@AppResources.T("Common_SelectStaffMemberOption")</option>
-                                    @foreach (var member in _staffCandidates)
-                                    {
-                                        <option value="@member.UserId">@member.DisplayName (@member.Email)</option>
-                                    }
-                                </select>
+                                <SearchableSelect TValue="string"
+                                                  @bind-Value="_selectedStaffUserId"
+                                                  Placeholder="@AppResources.T("Common_SelectStaffMemberOption")"
+                                                  Options="StaffCandidateOptions" />
                                 <input class="form-control" @bind="_providerLicense" placeholder="@AppResources.T("Common_LicenseOptionalPlaceholder")" />
                                 <button type="button" class="btn btn-primary" disabled="@_addingProvider" @onclick="AddProviderAsync">
                                     @(_addingProvider ? AppResources.T("Common_Adding") : AppResources.T("Common_AddProvider"))
@@ -773,6 +770,14 @@
     private int _emergencyTotal;
     private int _emergencyPage = 1;
     private IReadOnlyList<ClinicStaffMember> _staffCandidates = Array.Empty<ClinicStaffMember>();
+
+    private IReadOnlyList<SelectOption<string>> StaffCandidateOptions =>
+        _staffCandidates
+            .Where(member => member.UserId is Guid)
+            .Select(member => new SelectOption<string>(
+                member.UserId!.Value.ToString(),
+                $"{member.DisplayName} ({member.Email})"))
+            .ToArray();
     private int _patientTotalCount;
     private bool _staffLoaded;
     private bool _patientsLoaded;

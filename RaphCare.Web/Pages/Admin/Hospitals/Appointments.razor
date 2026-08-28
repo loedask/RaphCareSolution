@@ -38,30 +38,23 @@
                 <div class="form-grid">
                     <label>
                         @AppResources.T("Common_Patient")
-                        <select class="form-control" @bind="_bookPatientId">
-                            <option value="">@AppResources.T("Common_SelectPatient")</option>
-                            @foreach (var patient in _patients)
-                            {
-                                <option value="@patient.PatientId">@patient.FirstName @patient.LastName</option>
-                            }
-                        </select>
+                        <SearchableSelect TValue="string"
+                                          @bind-Value="_bookPatientId"
+                                          Placeholder="@AppResources.T("Common_SelectPatient")"
+                                          Options="PatientSelectOptions" />
                     </label>
                     <label>
                         @AppResources.T("Common_Provider")
-                        <select class="form-control" @bind="_bookProviderId">
-                            <option value="">@AppResources.T("Common_SelectProvider")</option>
-                            @foreach (var provider in _providers)
-                            {
-                                <option value="@provider.ProviderId">@provider.DisplayName</option>
-                            }
-                        </select>
+                        <SearchableSelect TValue="string"
+                                          @bind-Value="_bookProviderId"
+                                          Placeholder="@AppResources.T("Common_SelectProvider")"
+                                          Options="ProviderSelectOptions" />
                     </label>
                     <label>
                         @AppResources.T("Common_Type")
-                        <select class="form-control" @bind="_bookType">
-                            <option value="InPerson">@AppResources.T("Common_InPerson")</option>
-                            <option value="Telemedicine">@AppResources.T("Common_Telemedicine")</option>
-                        </select>
+                        <SearchableSelect TValue="string"
+                                          @bind-Value="_bookType"
+                                          Options="AppointmentTypeOptions" />
                     </label>
                     <label>
                         @AppResources.Format("Common_StartLabel", _timeZoneLabel)
@@ -97,12 +90,9 @@
                     <div class="form-grid">
                         <label>
                             @AppResources.T("Common_Provider")
-                            <select class="form-control" @bind="_rescheduleProviderId">
-                                @foreach (var provider in _providers)
-                                {
-                                    <option value="@provider.ProviderId">@provider.DisplayName</option>
-                                }
-                            </select>
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_rescheduleProviderId"
+                                              Options="ProviderSelectOptions" />
                         </label>
                         <label>
                             @AppResources.Format("Common_StartLabel", _timeZoneLabel)
@@ -132,11 +122,9 @@
         <div class="admin-page-card-body">
             <div class="admin-table-toolbar">
                 <div class="claim-form-row">
-                    <select class="form-control" @bind="_rangeFilter">
-                        <option value="upcoming">@AppResources.T("Common_Upcoming30Days")</option>
-                        <option value="today">@AppResources.T("Common_RangeToday")</option>
-                        <option value="all">@AppResources.T("Common_All")</option>
-                    </select>
+                    <SearchableSelect TValue="string"
+                                      @bind-Value="_rangeFilter"
+                                      Options="RangeFilterOptions" />
                     <button type="button" class="btn btn-secondary" @onclick="LoadAppointmentsAsync">@AppResources.T("Common_Apply")</button>
                 </div>
             </div>
@@ -266,6 +254,25 @@
     private IReadOnlyList<ClinicAppointmentListItem> _appointments = Array.Empty<ClinicAppointmentListItem>();
     private IReadOnlyList<ClinicPatientListItem> _patients = Array.Empty<ClinicPatientListItem>();
     private IReadOnlyList<ClinicProviderListItem> _providers = Array.Empty<ClinicProviderListItem>();
+
+    private IReadOnlyList<SelectOption<string>> PatientSelectOptions =>
+        _patients.Select(patient => new SelectOption<string>(patient.PatientId.ToString(), $"{patient.FirstName} {patient.LastName}")).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> ProviderSelectOptions =>
+        _providers.Select(provider => new SelectOption<string>(provider.ProviderId.ToString(), provider.DisplayName)).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> AppointmentTypeOptions =>
+    [
+        new("InPerson", AppResources.T("Common_InPerson")),
+        new("Telemedicine", AppResources.T("Common_Telemedicine"))
+    ];
+
+    private IReadOnlyList<SelectOption<string>> RangeFilterOptions =>
+    [
+        new("upcoming", AppResources.T("Common_Upcoming30Days")),
+        new("today", AppResources.T("Common_RangeToday")),
+        new("all", AppResources.T("Common_All"))
+    ];
 
     protected override async Task OnInitializedAsync()
     {

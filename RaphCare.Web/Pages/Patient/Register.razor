@@ -52,13 +52,10 @@
                 </div>
                 <div class="form-field">
                     <label>@AppResources.T("Common_ClinicOptional")</label>
-                    <InputSelect class="form-control" @bind-Value="_selectedClinicId">
-                        <option value="">@AppResources.T("Common_NoClinicYet")</option>
-                        @foreach (var clinic in _clinics)
-                        {
-                            <option value="@clinic.Id">@clinic.Name</option>
-                        }
-                    </InputSelect>
+                    <SearchableSelect TValue="string"
+                                      @bind-Value="_selectedClinicId"
+                                      Placeholder="@AppResources.T("Common_NoClinicYet")"
+                                      Options="ClinicSelectOptions" />
                 </div>
             }
             else
@@ -103,6 +100,9 @@
     private bool _awaitingCode;
     private string? _error;
     private string? _status;
+
+    private IReadOnlyList<SelectOption<string>> ClinicSelectOptions =>
+        _clinics.Select(clinic => new SelectOption<string>(clinic.Id.ToString(), clinic.Name)).ToArray();
 
     protected override async Task OnInitializedAsync()
     {

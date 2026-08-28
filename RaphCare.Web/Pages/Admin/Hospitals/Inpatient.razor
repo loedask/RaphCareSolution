@@ -65,13 +65,10 @@
                     <div class="form-grid">
                         <label>
                             @AppResources.T("Inpatient_FacilityWardLabel")
-                            <select class="form-control" @bind="_wardFacilityId">
-                                <option value="">@AppResources.T("Inpatient_SelectFacility")</option>
-                                @foreach (var f in _physicalFacilities)
-                                {
-                                    <option value="@f.Id">@f.Name</option>
-                                }
-                            </select>
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_wardFacilityId"
+                                              Placeholder="@AppResources.T("Inpatient_SelectFacility")"
+                                              Options="FacilitySelectOptions" />
                         </label>
                         <label>
                             @AppResources.T("Inpatient_WardNameLabel")
@@ -89,13 +86,10 @@
                     <div class="form-grid" style="margin-top: 1.25rem;">
                         <label>
                             @AppResources.T("Inpatient_WardRoomLabel")
-                            <select class="form-control" @bind="_roomWardId">
-                                <option value="">@AppResources.T("Inpatient_SelectWard")</option>
-                                @foreach (var w in _board.Wards.Where(x => x.IsActive))
-                                {
-                                    <option value="@w.Id">@w.Name (@w.FacilityName)</option>
-                                }
-                            </select>
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_roomWardId"
+                                              Placeholder="@AppResources.T("Inpatient_SelectWard")"
+                                              Options="WardSelectOptions" />
                         </label>
                         <label>
                             @AppResources.T("Inpatient_RoomNameLabel")
@@ -113,13 +107,10 @@
                     <div class="form-grid" style="margin-top: 1.25rem;">
                         <label>
                             @AppResources.T("Inpatient_RoomBedLabel")
-                            <select class="form-control" @bind="_bedRoomId">
-                                <option value="">@AppResources.T("Inpatient_SelectRoom")</option>
-                                @foreach (var room in _allRooms.Where(r => r.IsActive))
-                                {
-                                    <option value="@room.Id">@room.WardName — @room.Name</option>
-                                }
-                            </select>
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_bedRoomId"
+                                              Placeholder="@AppResources.T("Inpatient_SelectRoom")"
+                                              Options="RoomSelectOptions" />
                         </label>
                         <label>
                             @AppResources.T("Common_BedLabel")
@@ -152,23 +143,17 @@
                         </label>
                         <label>
                             @AppResources.T("Common_Patient")
-                            <select class="form-control" @bind="_admitPatientId">
-                                <option value="">@AppResources.T("Inpatient_SelectPatient")</option>
-                                @foreach (var p in _patients)
-                                {
-                                    <option value="@p.PatientId">@p.FirstName @p.LastName</option>
-                                }
-                            </select>
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_admitPatientId"
+                                              Placeholder="@AppResources.T("Inpatient_SelectPatient")"
+                                              Options="AdmitPatientOptions" />
                         </label>
                         <label>
                             @AppResources.T("Inpatient_AvailableBedLabel")
-                            <select class="form-control" @bind="_admitBedId">
-                                <option value="">@AppResources.T("Inpatient_SelectBed")</option>
-                                @foreach (var bed in _availableBeds)
-                                {
-                                    <option value="@bed.Id">@bed.Display</option>
-                                }
-                            </select>
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_admitBedId"
+                                              Placeholder="@AppResources.T("Inpatient_SelectBed")"
+                                              Options="AvailableBedOptions" />
                         </label>
                         <label>
                             @AppResources.T("Common_Reason")
@@ -258,13 +243,10 @@
                         <div class="form-grid">
                             <label>
                                 @AppResources.T("Inpatient_TargetBedLabel")
-                                <select class="form-control" @bind="_transferBedId">
-                                    <option value="">@AppResources.T("Inpatient_SelectAvailableBed")</option>
-                                    @foreach (var bed in _availableBeds)
-                                    {
-                                        <option value="@bed.Id">@bed.Display</option>
-                                    }
-                                </select>
+                                <SearchableSelect TValue="string"
+                                                  @bind-Value="_transferBedId"
+                                                  Placeholder="@AppResources.T("Inpatient_SelectAvailableBed")"
+                                                  Options="AvailableBedOptions" />
                             </label>
                             <label>
                                 @AppResources.T("Inpatient_DischargeNotesLabel")
@@ -472,11 +454,10 @@
                 <div class="form-grid" style="margin-bottom: 1rem;">
                     <label>
                         @AppResources.T("Inpatient_StatusFilterLabel")
-                        <select class="form-control" @bind="_historyStatus">
-                            <option value="">@AppResources.T("Common_All")</option>
-                            <option value="Admitted">@AppResources.T("Inpatient_StatusAdmitted")</option>
-                            <option value="Discharged">@AppResources.T("Inpatient_StatusDischarged")</option>
-                        </select>
+                        <SearchableSelect TValue="string"
+                                          @bind-Value="_historyStatus"
+                                          Placeholder="@AppResources.T("Common_All")"
+                                          Options="HistoryStatusOptions" />
                     </label>
                     <div class="admin-page-actions" style="align-self: end;">
                         <button type="button" class="btn btn-secondary" disabled="@_loadingHistory" @onclick="LoadHistoryAsync">
@@ -605,6 +586,32 @@
                 .Where(b => b.IsActive && b.Status == "Available")
                 .Select(b => new BedOption(b.Id, AppResources.Format("Inpatient_BedDisplayFormat", w.Name, r.Name, b.Label)))))
         ?? Enumerable.Empty<BedOption>();
+
+    private IReadOnlyList<SelectOption<string>> FacilitySelectOptions =>
+        _physicalFacilities.Select(facility => new SelectOption<string>(facility.Id.ToString(), facility.Name)).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> WardSelectOptions =>
+        (_board?.Wards.Where(ward => ward.IsActive) ?? Enumerable.Empty<ClinicWard>())
+            .Select(ward => new SelectOption<string>(ward.Id.ToString(), $"{ward.Name} ({ward.FacilityName})"))
+            .ToArray();
+
+    private IReadOnlyList<SelectOption<string>> RoomSelectOptions =>
+        _allRooms.Where(room => room.IsActive)
+            .Select(room => new SelectOption<string>(room.Id.ToString(), $"{room.WardName} / {room.Name}"))
+            .ToArray();
+
+    private IReadOnlyList<SelectOption<string>> AdmitPatientOptions =>
+        _patients.Select(patient => new SelectOption<string>(patient.PatientId.ToString(), $"{patient.FirstName} {patient.LastName}")).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> AvailableBedOptions =>
+        _availableBeds.Select(bed => new SelectOption<string>(bed.Id.ToString(), bed.Display)).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> HistoryStatusOptions =>
+    [
+        new(string.Empty, AppResources.T("Common_All")),
+        new("Admitted", AppResources.T("Inpatient_StatusAdmitted")),
+        new("Discharged", AppResources.T("Inpatient_StatusDischarged"))
+    ];
 
     protected override void OnInitialized() =>
         CultureService.CultureChanged += OnCultureChanged;
