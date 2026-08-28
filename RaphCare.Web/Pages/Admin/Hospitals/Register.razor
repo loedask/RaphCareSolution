@@ -273,7 +273,10 @@ else
                     <div class="admin-page-actions-right">
                         @if (_step < _stepCount)
                         {
-                            <button type="button" class="btn btn-ghost" @onclick="GoNextAsync">@AppResources.T("Common_SkipStep")</button>
+                            @if (CanSkip)
+                            {
+                                <button type="button" class="btn btn-ghost" @onclick="GoNextAsync">@AppResources.T("Common_SkipStep")</button>
+                            }
                             <button type="button" class="btn btn-primary" @onclick="GoNextAsync" disabled="@(!CanContinue)">@AppResources.T("Common_ContinueArrow")</button>
                         }
                         else
@@ -362,14 +365,17 @@ else
         _ => ("", "")
     };
 
-    private bool CanContinue => _step switch
-    {
-        2 => !string.IsNullOrWhiteSpace(_draft.Name)
-             && !string.IsNullOrWhiteSpace(_draft.RegistrationNumber)
-             && !string.IsNullOrWhiteSpace(_draft.Country)
-             && !string.IsNullOrWhiteSpace(_draft.TimeZone),
-        _ => true
-    };
+    private bool HasRequiredHospitalDetails =>
+        !string.IsNullOrWhiteSpace(_draft.Name)
+        && !string.IsNullOrWhiteSpace(_draft.RegistrationNumber)
+        && !string.IsNullOrWhiteSpace(_draft.Country)
+        && !string.IsNullOrWhiteSpace(_draft.TimeZone);
+
+    private bool CanContinue => _step is 2 or 5
+        ? HasRequiredHospitalDetails
+        : true;
+
+    private bool CanSkip => _step is 3 or 4;
 
     protected override async Task OnInitializedAsync()
     {
@@ -440,6 +446,9 @@ else
 
     private async Task GoNextAsync()
     {
+        if (!CanContinue)
+            return;
+
         if (_step < _stepCount)
             _step++;
 
@@ -456,6 +465,12 @@ else
 
     private async Task SubmitAsync()
     {
+        if (!HasRequiredHospitalDetails)
+        {
+            _step = 2;
+            return;
+        }
+
         _submitting = true;
         _submitError = null;
         _authRetryRequired = false;
