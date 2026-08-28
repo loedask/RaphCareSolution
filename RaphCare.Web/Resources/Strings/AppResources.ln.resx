@@ -2306,7 +2306,7 @@
     <value>Ya ba visites na lopitalo oyo. Fungola visite mpo na note mobimba.</value>
   </data>
   <data name="Visit_ClinicalDocsLead" xml:space="preserve">
-    <value>Ekomami na visite oyo. Ba staff bakoki kotala awa; bakoki ko bakisa te naino na lokasa oyo.</value>
+    <value>Ekomami na visite oyo. Ba diagnostics batalelama kaka na lokasa oyo.</value>
   </data>
   <data name="Common_NoDiagnoses" xml:space="preserve">
     <value>Diagnostic ekomami te.</value>
@@ -2385,5 +2385,68 @@
   </data>
   <data name="Common_CarePlanCountLabelPlural" xml:space="preserve">
     <value>{0} ba plans</value>
+  </data>
+  <data name="Visit_NotesLead" xml:space="preserve">
+    <value>Bomba note SOAP to bakisa note ya maloba ntango visite ezali kokende.</value>
+  </data>
+  <data name="Visit_OpenVisitDocumentLead" xml:space="preserve">
+    <value>Ba administrateurs ya lopitalo bakoki kobakisa oyo ntango visite ezali kokende.</value>
+  </data>
+  <data name="Common_MedicationName" xml:space="preserve">
+    <value>Kombo ya nkisi</value>
+  </data>
+  <data name="Common_DurationDays" xml:space="preserve">
+    <value>Ntango (mikolo)</value>
+  </data>
+  <data name="Common_SaveSoap" xml:space="preserve">
+    <value>Bomba note SOAP</value>
+  </data>
+  <data name="Common_SavingSoap" xml:space="preserve">
+    <value>Kobomba note SOAP</value>
+  </data>
+  <data name="Common_AddNote" xml:space="preserve">
+    <value>Bakisa note</value>
+  </data>
+  <data name="Common_AddingNote" xml:space="preserve">
+    <value>Kobakisa note</value>
+  </data>
+  <data name="Common_AddPrescription" xml:space="preserve">
+    <value>Bakisa ordonnance</value>
+  </data>
+  <data name="Common_AddingPrescription" xml:space="preserve">
+    <value>Kobakisa ordonnance</value>
+  </data>
+  <data name="Common_AddLabResult" xml:space="preserve">
+    <value>Bakisa résultat ya labo</value>
+  </data>
+  <data name="Common_AddingLab" xml:space="preserve">
+    <value>Kobakisa résultat ya labo</value>
+  </data>
+  <data name="Common_NoteCategoryPlaceholder" xml:space="preserve">
+    <value>Lolenge ya note (soki olingi)</value>
+  </data>
+  <data name="Common_CouldNotSaveSoap" xml:space="preserve">
+    <value>Kobomba note SOAP ekoki te.</value>
+  </data>
+  <data name="Common_CouldNotAddNote" xml:space="preserve">
+    <value>Kobakisa note ekoki te.</value>
+  </data>
+  <data name="Common_CouldNotAddPrescription" xml:space="preserve">
+    <value>Kobakisa ordonnance ekoki te.</value>
+  </data>
+  <data name="Common_CouldNotAddLab" xml:space="preserve">
+    <value>Kobakisa résultat ya labo ekoki te.</value>
+  </data>
+  <data name="Common_SoapSaved" xml:space="preserve">
+    <value>Note SOAP ebombami.</value>
+  </data>
+  <data name="Common_NoteAdded" xml:space="preserve">
+    <value>Note ebakisami.</value>
+  </data>
+  <data name="Common_PrescriptionAdded" xml:space="preserve">
+    <value>Ordonnance ebakisami.</value>
+  </data>
+  <data name="Common_LabResultAdded" xml:space="preserve">
+    <value>Résultat ya labo ebakisami.</value>
   </data>
 </root>

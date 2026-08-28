@@ -303,6 +303,37 @@ public sealed class RecordVisitVitalRequest
     public DateTime? RecordedAt { get; set; }
 }
 
+public sealed class SaveVisitSoapNoteRequest
+{
+    public string? Subjective { get; set; }
+    public string? Objective { get; set; }
+    public string? Assessment { get; set; }
+    public string? Plan { get; set; }
+}
+
+public sealed class AddVisitNoteRequest
+{
+    public string Notes { get; set; } = string.Empty;
+    public string? Category { get; set; }
+}
+
+public sealed class AddVisitPrescriptionRequest
+{
+    public string MedicationName { get; set; } = string.Empty;
+    public string? Dosage { get; set; }
+    public string? Frequency { get; set; }
+    public int DurationDays { get; set; }
+    public string? Notes { get; set; }
+}
+
+public sealed class AddVisitLabResultRequest
+{
+    public string TestName { get; set; } = string.Empty;
+    public string ResultValue { get; set; } = string.Empty;
+    public string? Unit { get; set; }
+    public string? ReferenceRange { get; set; }
+}
+
 public sealed class ClinicDeviceListItem
 {
     public Guid Id { get; set; }

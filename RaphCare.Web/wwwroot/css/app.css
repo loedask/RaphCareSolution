@@ -1831,6 +1831,11 @@ a:hover { text-decoration: underline; }
 
 .form-control:focus { outline: 2px solid rgba(13,148,136,0.35); border-color: var(--rc-primary); }
 
+.admin-textarea {
+    min-height: 4.5rem;
+    resize: vertical;
+}
+
 .searchable-select {
     position: relative;
     width: 100%;

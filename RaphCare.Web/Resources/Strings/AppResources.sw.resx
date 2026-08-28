@@ -2306,7 +2306,7 @@
     <value>Kutoka ziara katika hospitali hii. Fungua ziara kwa maelezo kamili.</value>
   </data>
   <data name="Visit_ClinicalDocsLead" xml:space="preserve">
-    <value>Iliyorekodiwa kwa ziara hii. Wafanyakazi wanaweza kuona hapa; hawaiongezi kwenye ukurasa huu bado.</value>
+    <value>Iliyorekodiwa kwa ziara hii. Utambuzi unabaki wa kusoma tu kwenye ukurasa huu.</value>
   </data>
   <data name="Common_NoDiagnoses" xml:space="preserve">
     <value>Hakuna utambuzi uliorekodiwa.</value>
@@ -2385,5 +2385,68 @@
   </data>
   <data name="Common_CarePlanCountLabelPlural" xml:space="preserve">
     <value>mipango {0}</value>
+  </data>
+  <data name="Visit_NotesLead" xml:space="preserve">
+    <value>Hifadhi dokezo la SOAP au ongeza dokezo la maandishi wakati ziara inaendelea.</value>
+  </data>
+  <data name="Visit_OpenVisitDocumentLead" xml:space="preserve">
+    <value>Wasimamizi wa hospitali wanaweza kuongeza hii wakati ziara inaendelea.</value>
+  </data>
+  <data name="Common_MedicationName" xml:space="preserve">
+    <value>Jina la dawa</value>
+  </data>
+  <data name="Common_DurationDays" xml:space="preserve">
+    <value>Muda (siku)</value>
+  </data>
+  <data name="Common_SaveSoap" xml:space="preserve">
+    <value>Hifadhi dokezo la SOAP</value>
+  </data>
+  <data name="Common_SavingSoap" xml:space="preserve">
+    <value>Inahifadhi dokezo la SOAP</value>
+  </data>
+  <data name="Common_AddNote" xml:space="preserve">
+    <value>Ongeza dokezo</value>
+  </data>
+  <data name="Common_AddingNote" xml:space="preserve">
+    <value>Inaongeza dokezo</value>
+  </data>
+  <data name="Common_AddPrescription" xml:space="preserve">
+    <value>Ongeza agizo la dawa</value>
+  </data>
+  <data name="Common_AddingPrescription" xml:space="preserve">
+    <value>Inaongeza agizo la dawa</value>
+  </data>
+  <data name="Common_AddLabResult" xml:space="preserve">
+    <value>Ongeza matokeo ya maabara</value>
+  </data>
+  <data name="Common_AddingLab" xml:space="preserve">
+    <value>Inaongeza matokeo ya maabara</value>
+  </data>
+  <data name="Common_NoteCategoryPlaceholder" xml:space="preserve">
+    <value>Aina ya dokezo (si lazima)</value>
+  </data>
+  <data name="Common_CouldNotSaveSoap" xml:space="preserve">
+    <value>Haikuweza kuhifadhi dokezo la SOAP.</value>
+  </data>
+  <data name="Common_CouldNotAddNote" xml:space="preserve">
+    <value>Haikuweza kuongeza dokezo.</value>
+  </data>
+  <data name="Common_CouldNotAddPrescription" xml:space="preserve">
+    <value>Haikuweza kuongeza agizo la dawa.</value>
+  </data>
+  <data name="Common_CouldNotAddLab" xml:space="preserve">
+    <value>Haikuweza kuongeza matokeo ya maabara.</value>
+  </data>
+  <data name="Common_SoapSaved" xml:space="preserve">
+    <value>Dokezo la SOAP limehifadhiwa.</value>
+  </data>
+  <data name="Common_NoteAdded" xml:space="preserve">
+    <value>Dokezo limeongezwa.</value>
+  </data>
+  <data name="Common_PrescriptionAdded" xml:space="preserve">
+    <value>Agizo la dawa limeongezwa.</value>
+  </data>
+  <data name="Common_LabResultAdded" xml:space="preserve">
+    <value>Matokeo ya maabara yameongezwa.</value>
   </data>
 </root>

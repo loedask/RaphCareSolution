@@ -59,6 +59,8 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new ClinicStaffMembershipConfiguration());
         modelBuilder.ApplyConfiguration(new ClinicStaffInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new VitalSignRecordConfiguration());
+        modelBuilder.ApplyConfiguration(new SOAPNoteConfiguration());
+        modelBuilder.ApplyConfiguration(new ClinicalNoteConfiguration());
         modelBuilder.ApplyConfiguration(new ServiceOfferingConfiguration());
         modelBuilder.ApplyConfiguration(new WardConfiguration());
         modelBuilder.ApplyConfiguration(new RoomConfiguration());

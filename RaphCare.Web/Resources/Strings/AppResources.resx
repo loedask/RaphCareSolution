@@ -2260,7 +2260,7 @@
     <value>From visits at this hospital. Open a visit for the full note.</value>
   </data>
   <data name="Visit_ClinicalDocsLead" xml:space="preserve">
-    <value>Recorded for this visit. Staff can view this here; they do not add it on this page yet.</value>
+    <value>Recorded for this visit. Diagnoses stay view-only on this page.</value>
   </data>
   <data name="Common_NoDiagnoses" xml:space="preserve">
     <value>No diagnoses recorded.</value>
@@ -2339,5 +2339,68 @@
   </data>
   <data name="Common_CarePlanCountLabelPlural" xml:space="preserve">
     <value>{0} plans</value>
+  </data>
+  <data name="Visit_NotesLead" xml:space="preserve">
+    <value>Save a SOAP note or add a free-text note while the visit is in progress.</value>
+  </data>
+  <data name="Visit_OpenVisitDocumentLead" xml:space="preserve">
+    <value>Hospital administrators can add this while the visit is in progress.</value>
+  </data>
+  <data name="Common_MedicationName" xml:space="preserve">
+    <value>Medication name</value>
+  </data>
+  <data name="Common_DurationDays" xml:space="preserve">
+    <value>Duration (days)</value>
+  </data>
+  <data name="Common_SaveSoap" xml:space="preserve">
+    <value>Save SOAP note</value>
+  </data>
+  <data name="Common_SavingSoap" xml:space="preserve">
+    <value>Saving SOAP note</value>
+  </data>
+  <data name="Common_AddNote" xml:space="preserve">
+    <value>Add note</value>
+  </data>
+  <data name="Common_AddingNote" xml:space="preserve">
+    <value>Adding note</value>
+  </data>
+  <data name="Common_AddPrescription" xml:space="preserve">
+    <value>Add prescription</value>
+  </data>
+  <data name="Common_AddingPrescription" xml:space="preserve">
+    <value>Adding prescription</value>
+  </data>
+  <data name="Common_AddLabResult" xml:space="preserve">
+    <value>Add lab result</value>
+  </data>
+  <data name="Common_AddingLab" xml:space="preserve">
+    <value>Adding lab result</value>
+  </data>
+  <data name="Common_NoteCategoryPlaceholder" xml:space="preserve">
+    <value>Note type (optional)</value>
+  </data>
+  <data name="Common_CouldNotSaveSoap" xml:space="preserve">
+    <value>Could not save SOAP note.</value>
+  </data>
+  <data name="Common_CouldNotAddNote" xml:space="preserve">
+    <value>Could not add note.</value>
+  </data>
+  <data name="Common_CouldNotAddPrescription" xml:space="preserve">
+    <value>Could not add prescription.</value>
+  </data>
+  <data name="Common_CouldNotAddLab" xml:space="preserve">
+    <value>Could not add lab result.</value>
+  </data>
+  <data name="Common_SoapSaved" xml:space="preserve">
+    <value>SOAP note saved.</value>
+  </data>
+  <data name="Common_NoteAdded" xml:space="preserve">
+    <value>Note added.</value>
+  </data>
+  <data name="Common_PrescriptionAdded" xml:space="preserve">
+    <value>Prescription added.</value>
+  </data>
+  <data name="Common_LabResultAdded" xml:space="preserve">
+    <value>Lab result added.</value>
   </data>
 </root>

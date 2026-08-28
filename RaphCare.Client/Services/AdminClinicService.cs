@@ -1115,6 +1115,138 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicVisitSoapNote>> SaveVisitSoapNoteAsync(
+        Guid clinicId,
+        Guid visitId,
+        SaveVisitSoapNoteRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/soap", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can save visit notes.";
+                return Response<ClinicVisitSoapNote>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitSoapNoteDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitSoapNote>.Failure("Could not save the SOAP note.");
+
+            return Response<ClinicVisitSoapNote>.Success(MapSoapNote(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitSoapNote>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitNote>> AddVisitNoteAsync(
+        Guid clinicId,
+        Guid visitId,
+        AddVisitNoteRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/notes", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can add visit notes.";
+                return Response<ClinicVisitNote>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitNoteDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitNote>.Failure("Could not add the note.");
+
+            return Response<ClinicVisitNote>.Success(MapClinicalNote(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitNote>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitPrescription>> AddVisitPrescriptionAsync(
+        Guid clinicId,
+        Guid visitId,
+        AddVisitPrescriptionRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/prescriptions", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can add prescriptions.";
+                return Response<ClinicVisitPrescription>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitPrescriptionDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitPrescription>.Failure("Could not add the prescription.");
+
+            return Response<ClinicVisitPrescription>.Success(MapPrescription(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitPrescription>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitLabResult>> AddVisitLabResultAsync(
+        Guid clinicId,
+        Guid visitId,
+        AddVisitLabResultRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/lab-results", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can add lab results.";
+                return Response<ClinicVisitLabResult>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitLabResultDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitLabResult>.Failure("Could not add the lab result.");
+
+            return Response<ClinicVisitLabResult>.Success(MapLabResult(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitLabResult>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<IReadOnlyList<ClinicDeviceListItem>>> GetDevicesAsync(
         Guid clinicId,
         CancellationToken cancellationToken = default)

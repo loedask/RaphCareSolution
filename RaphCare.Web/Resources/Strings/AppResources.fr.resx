@@ -2306,7 +2306,7 @@
     <value>Issus des visites dans cet hôpital. Ouvrez une visite pour la note complète.</value>
   </data>
   <data name="Visit_ClinicalDocsLead" xml:space="preserve">
-    <value>Enregistré pour cette visite. Le personnel peut le consulter ici; il ne l'ajoute pas encore sur cette page.</value>
+    <value>Enregistré pour cette visite. Les diagnostics restent en lecture seule sur cette page.</value>
   </data>
   <data name="Common_NoDiagnoses" xml:space="preserve">
     <value>Aucun diagnostic enregistré.</value>
@@ -2385,5 +2385,68 @@
   </data>
   <data name="Common_CarePlanCountLabelPlural" xml:space="preserve">
     <value>{0} plans</value>
+  </data>
+  <data name="Visit_NotesLead" xml:space="preserve">
+    <value>Enregistrez une note SOAP ou ajoutez une note libre pendant que la visite est en cours.</value>
+  </data>
+  <data name="Visit_OpenVisitDocumentLead" xml:space="preserve">
+    <value>Les administrateurs de l'hôpital peuvent ajouter ceci pendant que la visite est en cours.</value>
+  </data>
+  <data name="Common_MedicationName" xml:space="preserve">
+    <value>Nom du médicament</value>
+  </data>
+  <data name="Common_DurationDays" xml:space="preserve">
+    <value>Durée (jours)</value>
+  </data>
+  <data name="Common_SaveSoap" xml:space="preserve">
+    <value>Enregistrer la note SOAP</value>
+  </data>
+  <data name="Common_SavingSoap" xml:space="preserve">
+    <value>Enregistrement de la note SOAP</value>
+  </data>
+  <data name="Common_AddNote" xml:space="preserve">
+    <value>Ajouter une note</value>
+  </data>
+  <data name="Common_AddingNote" xml:space="preserve">
+    <value>Ajout de la note</value>
+  </data>
+  <data name="Common_AddPrescription" xml:space="preserve">
+    <value>Ajouter une prescription</value>
+  </data>
+  <data name="Common_AddingPrescription" xml:space="preserve">
+    <value>Ajout de la prescription</value>
+  </data>
+  <data name="Common_AddLabResult" xml:space="preserve">
+    <value>Ajouter un résultat de labo</value>
+  </data>
+  <data name="Common_AddingLab" xml:space="preserve">
+    <value>Ajout du résultat de labo</value>
+  </data>
+  <data name="Common_NoteCategoryPlaceholder" xml:space="preserve">
+    <value>Type de note (facultatif)</value>
+  </data>
+  <data name="Common_CouldNotSaveSoap" xml:space="preserve">
+    <value>Impossible d'enregistrer la note SOAP.</value>
+  </data>
+  <data name="Common_CouldNotAddNote" xml:space="preserve">
+    <value>Impossible d'ajouter la note.</value>
+  </data>
+  <data name="Common_CouldNotAddPrescription" xml:space="preserve">
+    <value>Impossible d'ajouter la prescription.</value>
+  </data>
+  <data name="Common_CouldNotAddLab" xml:space="preserve">
+    <value>Impossible d'ajouter le résultat de labo.</value>
+  </data>
+  <data name="Common_SoapSaved" xml:space="preserve">
+    <value>Note SOAP enregistrée.</value>
+  </data>
+  <data name="Common_NoteAdded" xml:space="preserve">
+    <value>Note ajoutée.</value>
+  </data>
+  <data name="Common_PrescriptionAdded" xml:space="preserve">
+    <value>Prescription ajoutée.</value>
+  </data>
+  <data name="Common_LabResultAdded" xml:space="preserve">
+    <value>Résultat de labo ajouté.</value>
   </data>
 </root>
