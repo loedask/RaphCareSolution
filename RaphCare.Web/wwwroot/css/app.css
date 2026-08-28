@@ -1831,6 +1831,12 @@ a:hover { text-decoration: underline; }
 
 .form-control:focus { outline: 2px solid rgba(13,148,136,0.35); border-color: var(--rc-primary); }
 
+.pickup-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+}
+
 .admin-textarea {
     min-height: 4.5rem;
     resize: vertical;

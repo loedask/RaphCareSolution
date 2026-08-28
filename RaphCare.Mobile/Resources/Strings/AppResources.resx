@@ -854,6 +854,36 @@ Accessible. Intelligent. Human.</value>
   <data name="RecordsDetailFailed" xml:space="preserve">
     <value>Could not load this record.</value>
   </data>
+  <data name="RecordsPickupSection" xml:space="preserve">
+    <value>To collect</value>
+  </data>
+  <data name="RecordsPickupHint" xml:space="preserve">
+    <value>Show this code at the counter when you collect medicines or lab tests.</value>
+  </data>
+  <data name="RecordsPickupPrescription" xml:space="preserve">
+    <value>Prescription</value>
+  </data>
+  <data name="RecordsPickupLab" xml:space="preserve">
+    <value>Lab test</value>
+  </data>
+  <data name="RecordsPickupWaiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="RecordsPickupCollected" xml:space="preserve">
+    <value>Collected</value>
+  </data>
+  <data name="RecordsPickupCompleted" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="RecordsPickupCodeLabel" xml:space="preserve">
+    <value>Pickup code</value>
+  </data>
+  <data name="RecordsPrescriptionsSection" xml:space="preserve">
+    <value>Prescriptions</value>
+  </data>
+  <data name="RecordsLabsSection" xml:space="preserve">
+    <value>Lab orders</value>
+  </data>
   <data name="InsuranceListTitle" xml:space="preserve">
     <value>Insurance</value>
   </data>

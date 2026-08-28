@@ -39,13 +39,16 @@ using RaphCare.Application.Features.Organization.Commands.UpdateAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinic;
 using RaphCare.Application.Features.Organization.Commands.UpdateClinicStaffRole;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicLabOrder;
 using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicVisit;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitLabResult;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitNote;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitPrescription;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitVital;
+using RaphCare.Application.Features.Organization.Commands.DispenseAdminClinicPrescription;
 using RaphCare.Application.Features.Organization.Commands.StartAdminClinicVisit;
 using RaphCare.Application.Features.Organization.Commands.UpsertAdminClinicVisitSoapNote;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicCollectionOrders;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicDevices;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicVisitById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicById;
@@ -772,12 +775,12 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             : CreatedAtAction(nameof(GetVisitById), new { id, visitId }, result);
     }
 
-    /// <summary>Record a lab result on a visit.</summary>
-    [HttpPost("{id:guid}/visits/{visitId:guid}/lab-results", Name = "CreateAdminClinicVisitLabResult")]
+    /// <summary>Order a lab test for a visit. Staff record the result later at collection.</summary>
+    [HttpPost("{id:guid}/visits/{visitId:guid}/lab-orders", Name = "CreateAdminClinicVisitLabOrder")]
     [ProducesResponseType(typeof(AdminClinicVisitLabResultDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> CreateVisitLabResult(
+    public async Task<IActionResult> CreateVisitLabOrder(
         Guid id,
         Guid visitId,
         [FromBody] CreateAdminClinicVisitLabResultRequest body,
@@ -789,14 +792,71 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
                 ClinicId = id,
                 VisitId = visitId,
                 TestName = body.TestName,
-                ResultValue = body.ResultValue,
-                Unit = body.Unit,
-                ReferenceRange = body.ReferenceRange
+                Priority = body.Priority
             },
             cancellationToken);
         return result is null
             ? NotFound()
             : CreatedAtAction(nameof(GetVisitById), new { id, visitId }, result);
+    }
+
+    /// <summary>Record a result for a pending lab order. Any hospital staff can complete this.</summary>
+    [HttpPost("{id:guid}/lab-orders/{labRequestId:guid}/results", Name = "CompleteAdminClinicLabOrder")]
+    [ProducesResponseType(typeof(AdminClinicVisitLabResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CompleteLabOrder(
+        Guid id,
+        Guid labRequestId,
+        [FromBody] CompleteAdminClinicLabOrderRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CompleteAdminClinicLabOrderCommand
+            {
+                ClinicId = id,
+                LabRequestId = labRequestId,
+                ResultValue = body.ResultValue,
+                Unit = body.Unit,
+                ReferenceRange = body.ReferenceRange
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Mark a prescription as collected. Any hospital staff can complete this.</summary>
+    [HttpPost("{id:guid}/prescriptions/{prescriptionId:guid}/dispense", Name = "DispenseAdminClinicPrescription")]
+    [ProducesResponseType(typeof(AdminClinicVisitPrescriptionDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DispensePrescription(
+        Guid id,
+        Guid prescriptionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new DispenseAdminClinicPrescriptionCommand
+            {
+                ClinicId = id,
+                PrescriptionId = prescriptionId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Pending prescriptions and lab orders waiting at this hospital.</summary>
+    [HttpGet("{id:guid}/collection-orders", Name = "GetAdminClinicCollectionOrders")]
+    [ProducesResponseType(typeof(AdminClinicCollectionBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetCollectionOrders(
+        Guid id,
+        [FromQuery] string? search,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicCollectionOrdersQuery { ClinicId = id, Search = search },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>List monitoring devices registered to this hospital.</summary>

@@ -36,4 +36,15 @@ internal static class AdminClinicAuthorization
         var roles = await roleAssignmentService.GetRoleNamesAsync(userId, cancellationToken).ConfigureAwait(false);
         return RaphCareRoles.HasAdministratorRole(roles);
     }
+
+    public static async Task EnsureClinicStaffAsync(
+        ICurrentUserService currentUser,
+        IClinicStaffMembershipService membershipService,
+        Guid clinicId,
+        string forbiddenMessage,
+        CancellationToken cancellationToken)
+    {
+        if (!await HasClinicAccessAsync(currentUser, membershipService, clinicId, cancellationToken).ConfigureAwait(false))
+            throw new ForbiddenAccessException(forbiddenMessage);
+    }
 }

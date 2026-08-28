@@ -8,7 +8,5 @@ public sealed class CreateAdminClinicVisitLabResultCommand : IRequest<AdminClini
     public Guid ClinicId { get; set; }
     public Guid VisitId { get; set; }
     public string TestName { get; set; } = string.Empty;
-    public string ResultValue { get; set; } = string.Empty;
-    public string? Unit { get; set; }
-    public string? ReferenceRange { get; set; }
+    public string? Priority { get; set; }
 }

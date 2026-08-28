@@ -506,18 +506,10 @@ public sealed class AdminClinicPatientQueryService(
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        var labRows = await clinicalDbContext.Set<LabResult>()
+        var labRequests = await clinicalDbContext.Set<LabRequest>()
             .AsNoTracking()
-            .Where(r => visitIds.Contains(r.LabRequest.VisitId))
-            .Select(r => new
-            {
-                r.LabRequest.VisitId,
-                r.LabRequest.TestName,
-                r.ResultValue,
-                r.Unit,
-                r.ReferenceRange,
-                r.ReportedAt
-            })
+            .Where(l => visitIds.Contains(l.VisitId))
+            .Include(l => l.LabResults)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
@@ -540,9 +532,13 @@ public sealed class AdminClinicPatientQueryService(
                 .OrderByDescending(p => p.IssuedAt)
                 .Select(p => new AdminClinicVisitPrescriptionDto
                 {
+                    Id = p.Id,
                     VisitId = p.VisitId,
                     VisitStart = Start(p.VisitId),
                     IssuedAt = p.IssuedAt,
+                    Status = p.Status,
+                    PickupCode = p.PickupCode,
+                    DispensedAt = p.DispensedAt,
                     Notes = p.Notes,
                     Items = p.PrescriptionItems
                         .Select(i => new AdminClinicVisitPrescriptionItemDto
@@ -577,17 +573,25 @@ public sealed class AdminClinicPatientQueryService(
                     Plan = s.Plan
                 })
                 .ToList(),
-            LabResults = labRows
-                .OrderByDescending(r => r.ReportedAt)
-                .Select(r => new AdminClinicVisitLabResultDto
+            LabResults = labRequests
+                .OrderByDescending(l => l.RequestedAt)
+                .Select(l =>
                 {
-                    VisitId = r.VisitId,
-                    VisitStart = Start(r.VisitId),
-                    TestName = r.TestName,
-                    ResultValue = r.ResultValue,
-                    Unit = r.Unit,
-                    ReferenceRange = r.ReferenceRange,
-                    ReportedAt = r.ReportedAt
+                    var result = l.LabResults.OrderByDescending(r => r.ReportedAt).FirstOrDefault();
+                    return new AdminClinicVisitLabResultDto
+                    {
+                        Id = l.Id,
+                        VisitId = l.VisitId,
+                        VisitStart = Start(l.VisitId),
+                        TestName = l.TestName,
+                        Status = l.Status,
+                        PickupCode = l.PickupCode,
+                        RequestedAt = l.RequestedAt,
+                        ResultValue = result?.ResultValue,
+                        Unit = result?.Unit,
+                        ReferenceRange = result?.ReferenceRange,
+                        ReportedAt = result?.ReportedAt
+                    };
                 })
                 .ToList()
         };

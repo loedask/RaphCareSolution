@@ -1224,26 +1224,152 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         {
             var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
             using var response = await client
-                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/lab-results", request, cancellationToken)
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/visits/{visitId}/lab-orders", request, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
                 var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
                 if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                    error = "Only hospital administrators can add lab results.";
+                    error = "Only hospital administrators can order lab tests.";
                 return Response<ClinicVisitLabResult>.Failure(error, (int)response.StatusCode);
             }
 
             var dto = await response.Content.ReadFromJsonAsync<VisitLabResultDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
             if (dto is null)
-                return Response<ClinicVisitLabResult>.Failure("Could not add the lab result.");
+                return Response<ClinicVisitLabResult>.Failure("Could not order the lab test.");
 
             return Response<ClinicVisitLabResult>.Success(MapLabResult(dto));
         }
         catch (HttpRequestException)
         {
             return Response<ClinicVisitLabResult>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitLabResult>> CompleteLabOrderAsync(
+        Guid clinicId,
+        Guid labRequestId,
+        CompleteVisitLabOrderRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync($"api/admin/clinics/{clinicId}/lab-orders/{labRequestId}/results", request, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital staff can record lab results.";
+                return Response<ClinicVisitLabResult>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitLabResultDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitLabResult>.Failure("Could not record the lab result.");
+
+            return Response<ClinicVisitLabResult>.Success(MapLabResult(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitLabResult>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicVisitPrescription>> DispensePrescriptionAsync(
+        Guid clinicId,
+        Guid prescriptionId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/prescriptions/{prescriptionId}/dispense", null, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital staff can mark a prescription as collected.";
+                return Response<ClinicVisitPrescription>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitPrescriptionDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitPrescription>.Failure("Could not mark the prescription as collected.");
+
+            return Response<ClinicVisitPrescription>.Success(MapPrescription(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitPrescription>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicCollectionBoard>> GetCollectionOrdersAsync(
+        Guid clinicId,
+        string? search = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var url = $"api/admin/clinics/{clinicId}/collection-orders";
+            if (!string.IsNullOrWhiteSpace(search))
+                url += $"?search={Uri.EscapeDataString(search.Trim())}";
+
+            using var response = await client.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicCollectionBoard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicCollectionBoard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<CollectionBoardDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicCollectionBoard>.Failure("Could not load collection orders.");
+
+            return Response<ClinicCollectionBoard>.Success(new ClinicCollectionBoard
+            {
+                Prescriptions = dto.Prescriptions?.Select(p => new ClinicCollectionPrescription
+                {
+                    Id = p.Id,
+                    VisitId = p.VisitId,
+                    PatientId = p.PatientId,
+                    PatientName = p.PatientName ?? "Patient",
+                    NationalHealthId = p.NationalHealthId,
+                    PickupCode = p.PickupCode ?? string.Empty,
+                    IssuedAt = p.IssuedAt,
+                    Notes = p.Notes,
+                    Items = p.Items?.Select(i => new ClinicVisitPrescriptionItem
+                    {
+                        MedicationName = i.MedicationName ?? string.Empty,
+                        Dosage = i.Dosage,
+                        Frequency = i.Frequency,
+                        DurationDays = i.DurationDays
+                    }).ToList() ?? []
+                }).ToList() ?? [],
+                LabOrders = dto.LabOrders?.Select(l => new ClinicCollectionLabOrder
+                {
+                    Id = l.Id,
+                    VisitId = l.VisitId,
+                    PatientId = l.PatientId,
+                    PatientName = l.PatientName ?? "Patient",
+                    NationalHealthId = l.NationalHealthId,
+                    PickupCode = l.PickupCode ?? string.Empty,
+                    TestName = l.TestName ?? string.Empty,
+                    RequestedAt = l.RequestedAt
+                }).ToList() ?? []
+            });
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicCollectionBoard>.Failure("We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -2091,9 +2217,13 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
 
     private static ClinicVisitPrescription MapPrescription(VisitPrescriptionDto dto) => new()
     {
+        Id = dto.Id,
         VisitId = dto.VisitId,
         VisitStart = dto.VisitStart,
         IssuedAt = dto.IssuedAt,
+        Status = dto.Status ?? "Pending",
+        PickupCode = dto.PickupCode ?? string.Empty,
+        DispensedAt = dto.DispensedAt,
         Notes = dto.Notes,
         Items = dto.Items?.Select(i => new ClinicVisitPrescriptionItem
         {
@@ -2124,9 +2254,13 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
 
     private static ClinicVisitLabResult MapLabResult(VisitLabResultDto dto) => new()
     {
+        Id = dto.Id,
         VisitId = dto.VisitId,
         VisitStart = dto.VisitStart,
         TestName = dto.TestName,
+        Status = dto.Status ?? "Pending",
+        PickupCode = dto.PickupCode ?? string.Empty,
+        RequestedAt = dto.RequestedAt,
         ResultValue = dto.ResultValue,
         Unit = dto.Unit,
         ReferenceRange = dto.ReferenceRange,
@@ -2584,9 +2718,13 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
 
     private sealed class VisitPrescriptionDto
     {
+        public Guid Id { get; set; }
         public Guid VisitId { get; set; }
         public DateTime VisitStart { get; set; }
         public DateTime IssuedAt { get; set; }
+        public string? Status { get; set; }
+        public string? PickupCode { get; set; }
+        public DateTime? DispensedAt { get; set; }
         public string? Notes { get; set; }
         public List<VisitPrescriptionItemDto>? Items { get; set; }
     }
@@ -2619,13 +2757,48 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
 
     private sealed class VisitLabResultDto
     {
+        public Guid Id { get; set; }
         public Guid VisitId { get; set; }
         public DateTime VisitStart { get; set; }
         public string TestName { get; set; } = string.Empty;
-        public string ResultValue { get; set; } = string.Empty;
+        public string? Status { get; set; }
+        public string? PickupCode { get; set; }
+        public DateTime RequestedAt { get; set; }
+        public string? ResultValue { get; set; }
         public string? Unit { get; set; }
         public string? ReferenceRange { get; set; }
-        public DateTime ReportedAt { get; set; }
+        public DateTime? ReportedAt { get; set; }
+    }
+
+    private sealed class CollectionBoardDto
+    {
+        public List<CollectionPrescriptionDto>? Prescriptions { get; set; }
+        public List<CollectionLabOrderDto>? LabOrders { get; set; }
+    }
+
+    private sealed class CollectionPrescriptionDto
+    {
+        public Guid Id { get; set; }
+        public Guid VisitId { get; set; }
+        public Guid PatientId { get; set; }
+        public string? PatientName { get; set; }
+        public string? NationalHealthId { get; set; }
+        public string? PickupCode { get; set; }
+        public DateTime IssuedAt { get; set; }
+        public string? Notes { get; set; }
+        public List<VisitPrescriptionItemDto>? Items { get; set; }
+    }
+
+    private sealed class CollectionLabOrderDto
+    {
+        public Guid Id { get; set; }
+        public Guid VisitId { get; set; }
+        public Guid PatientId { get; set; }
+        public string? PatientName { get; set; }
+        public string? NationalHealthId { get; set; }
+        public string? PickupCode { get; set; }
+        public string? TestName { get; set; }
+        public DateTime RequestedAt { get; set; }
     }
 
     private sealed class DeviceListItemDto

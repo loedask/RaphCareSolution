@@ -2296,10 +2296,10 @@
     <value>Plan</value>
   </data>
   <data name="Common_LabResultsTitle" xml:space="preserve">
-    <value>Lab results</value>
+    <value>Lab orders</value>
   </data>
   <data name="Common_NoLabResults" xml:space="preserve">
-    <value>No lab results recorded.</value>
+    <value>No lab orders yet.</value>
   </data>
   <data name="Common_Test" xml:space="preserve">
     <value>Test</value>
@@ -2402,5 +2402,119 @@
   </data>
   <data name="Common_LabResultAdded" xml:space="preserve">
     <value>Lab result added.</value>
+  </data>
+  <data name="Collection_PageTitle" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="Collection_Title" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="Collection_Lead" xml:space="preserve">
+    <value>Medicines and lab tests waiting at {0}.</value>
+  </data>
+  <data name="Collection_Loading" xml:space="preserve">
+    <value>Loading collection board.</value>
+  </data>
+  <data name="Collection_Eyebrow" xml:space="preserve">
+    <value>Find</value>
+  </data>
+  <data name="Collection_FindTitle" xml:space="preserve">
+    <value>Find an order</value>
+  </data>
+  <data name="Collection_SearchLabel" xml:space="preserve">
+    <value>Pickup code, name, or national health ID</value>
+  </data>
+  <data name="Collection_SearchPlaceholder" xml:space="preserve">
+    <value>Code, name, or ID</value>
+  </data>
+  <data name="Collection_Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Collection_PharmacyEyebrow" xml:space="preserve">
+    <value>Pharmacy</value>
+  </data>
+  <data name="Collection_PrescriptionsTitle" xml:space="preserve">
+    <value>Prescriptions to collect</value>
+  </data>
+  <data name="Collection_NoPrescriptions" xml:space="preserve">
+    <value>No prescriptions waiting.</value>
+  </data>
+  <data name="Collection_MarkCollected" xml:space="preserve">
+    <value>Mark collected</value>
+  </data>
+  <data name="Collection_MarkingCollected" xml:space="preserve">
+    <value>Marking collected</value>
+  </data>
+  <data name="Collection_LabEyebrow" xml:space="preserve">
+    <value>Lab</value>
+  </data>
+  <data name="Collection_LabsTitle" xml:space="preserve">
+    <value>Lab tests to complete</value>
+  </data>
+  <data name="Collection_NoLabs" xml:space="preserve">
+    <value>No lab tests waiting.</value>
+  </data>
+  <data name="Collection_EnterResult" xml:space="preserve">
+    <value>Enter result</value>
+  </data>
+  <data name="Collection_SaveResult" xml:space="preserve">
+    <value>Save result</value>
+  </data>
+  <data name="Collection_SavingResult" xml:space="preserve">
+    <value>Saving result</value>
+  </data>
+  <data name="Collection_PendingOne" xml:space="preserve">
+    <value>{0} waiting</value>
+  </data>
+  <data name="Collection_PendingMany" xml:space="preserve">
+    <value>{0} waiting</value>
+  </data>
+  <data name="Collection_CouldNotLoad" xml:space="preserve">
+    <value>Could not load collection orders.</value>
+  </data>
+  <data name="Collection_CouldNotCollect" xml:space="preserve">
+    <value>Could not mark this prescription as collected.</value>
+  </data>
+  <data name="Collection_PrescriptionCollected" xml:space="preserve">
+    <value>Prescription marked as collected.</value>
+  </data>
+  <data name="Collection_CouldNotSaveResult" xml:space="preserve">
+    <value>Could not save the lab result.</value>
+  </data>
+  <data name="Collection_ResultSaved" xml:space="preserve">
+    <value>Lab result saved.</value>
+  </data>
+  <data name="Common_PickupCode" xml:space="preserve">
+    <value>Pickup code</value>
+  </data>
+  <data name="Common_OrderLab" xml:space="preserve">
+    <value>Order lab</value>
+  </data>
+  <data name="Common_OrderingLab" xml:space="preserve">
+    <value>Ordering lab</value>
+  </data>
+  <data name="Common_LabOrdered" xml:space="preserve">
+    <value>Lab ordered.</value>
+  </data>
+  <data name="Common_CouldNotOrderLab" xml:space="preserve">
+    <value>Could not order the lab.</value>
+  </data>
+  <data name="Common_Waiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="Common_Collected" xml:space="preserve">
+    <value>Collected</value>
+  </data>
+  <data name="Common_CompletedStatus" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Common_Issued" xml:space="preserve">
+    <value>Issued</value>
+  </data>
+  <data name="Common_Requested" xml:space="preserve">
+    <value>Requested</value>
+  </data>
+  <data name="Visit_OrderLabLead" xml:space="preserve">
+    <value>Order the test while the visit is open. Staff enter the result on Collection, including after the visit is closed.</value>
   </data>
 </root>

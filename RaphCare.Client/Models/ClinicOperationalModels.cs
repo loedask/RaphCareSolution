@@ -251,9 +251,13 @@ public sealed class ClinicVisitDiagnosis
 
 public sealed class ClinicVisitPrescription
 {
+    public Guid Id { get; set; }
     public Guid VisitId { get; set; }
     public DateTime VisitStart { get; set; }
     public DateTime IssuedAt { get; set; }
+    public string Status { get; set; } = "Pending";
+    public string PickupCode { get; set; } = string.Empty;
+    public DateTime? DispensedAt { get; set; }
     public string? Notes { get; set; }
     public IReadOnlyList<ClinicVisitPrescriptionItem> Items { get; set; } = Array.Empty<ClinicVisitPrescriptionItem>();
 }
@@ -286,13 +290,17 @@ public sealed class ClinicVisitSoapNote
 
 public sealed class ClinicVisitLabResult
 {
+    public Guid Id { get; set; }
     public Guid VisitId { get; set; }
     public DateTime VisitStart { get; set; }
     public string TestName { get; set; } = string.Empty;
-    public string ResultValue { get; set; } = string.Empty;
+    public string Status { get; set; } = "Pending";
+    public string PickupCode { get; set; } = string.Empty;
+    public DateTime RequestedAt { get; set; }
+    public string? ResultValue { get; set; }
     public string? Unit { get; set; }
     public string? ReferenceRange { get; set; }
-    public DateTime ReportedAt { get; set; }
+    public DateTime? ReportedAt { get; set; }
 }
 
 public sealed class RecordVisitVitalRequest
@@ -329,9 +337,49 @@ public sealed class AddVisitPrescriptionRequest
 public sealed class AddVisitLabResultRequest
 {
     public string TestName { get; set; } = string.Empty;
+    public string? Priority { get; set; }
+}
+
+public sealed class CompleteVisitLabOrderRequest
+{
     public string ResultValue { get; set; } = string.Empty;
     public string? Unit { get; set; }
     public string? ReferenceRange { get; set; }
+}
+
+public sealed class ClinicCollectionBoard
+{
+    public IReadOnlyList<ClinicCollectionPrescription> Prescriptions { get; set; } =
+        Array.Empty<ClinicCollectionPrescription>();
+
+    public IReadOnlyList<ClinicCollectionLabOrder> LabOrders { get; set; } =
+        Array.Empty<ClinicCollectionLabOrder>();
+}
+
+public sealed class ClinicCollectionPrescription
+{
+    public Guid Id { get; set; }
+    public Guid VisitId { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public string? NationalHealthId { get; set; }
+    public string PickupCode { get; set; } = string.Empty;
+    public DateTime IssuedAt { get; set; }
+    public string? Notes { get; set; }
+    public IReadOnlyList<ClinicVisitPrescriptionItem> Items { get; set; } =
+        Array.Empty<ClinicVisitPrescriptionItem>();
+}
+
+public sealed class ClinicCollectionLabOrder
+{
+    public Guid Id { get; set; }
+    public Guid VisitId { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public string? NationalHealthId { get; set; }
+    public string PickupCode { get; set; } = string.Empty;
+    public string TestName { get; set; } = string.Empty;
+    public DateTime RequestedAt { get; set; }
 }
 
 public sealed class ClinicDeviceListItem

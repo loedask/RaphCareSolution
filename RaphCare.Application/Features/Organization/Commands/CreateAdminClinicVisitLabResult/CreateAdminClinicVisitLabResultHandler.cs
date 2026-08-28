@@ -10,6 +10,7 @@ public sealed class CreateAdminClinicVisitLabResultHandler(
     IClinicStaffMembershipService clinicStaffMembershipService,
     IUserRoleAssignmentService roleAssignmentService,
     IRepository<Visit> visitRepository,
+    IRepository<Prescription> prescriptionRepository,
     IRepository<LabRequest> labRequestRepository,
     IDateTimeProvider clock,
     IUnitOfWork unitOfWork)
@@ -26,40 +27,37 @@ public sealed class CreateAdminClinicVisitLabResultHandler(
                 visitRepository,
                 request.ClinicId,
                 request.VisitId,
-                "Only hospital administrators can add lab results.",
+                "Only hospital administrators can order lab tests.",
                 cancellationToken)
             .ConfigureAwait(false);
         if (visit is null)
             return null;
 
-        var now = clock.UtcNow;
         var labRequest = new LabRequest
         {
             VisitId = visit.Id,
             TestName = request.TestName.Trim(),
-            RequestedAt = now
+            Priority = string.IsNullOrWhiteSpace(request.Priority) ? null : request.Priority.Trim(),
+            RequestedAt = clock.UtcNow,
+            Status = "Pending",
+            PickupCode = await ClinicalPickupCode.AllocateAsync(
+                prescriptionRepository,
+                labRequestRepository,
+                cancellationToken).ConfigureAwait(false)
         };
-        labRequest.LabResults.Add(new LabResult
-        {
-            ResultValue = request.ResultValue.Trim(),
-            Unit = string.IsNullOrWhiteSpace(request.Unit) ? null : request.Unit.Trim(),
-            ReferenceRange = string.IsNullOrWhiteSpace(request.ReferenceRange) ? null : request.ReferenceRange.Trim(),
-            ReportedAt = now
-        });
 
         await labRequestRepository.AddAsync(labRequest, cancellationToken).ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        var result = labRequest.LabResults.First();
         return new AdminClinicVisitLabResultDto
         {
+            Id = labRequest.Id,
             VisitId = visit.Id,
             VisitStart = visit.VisitStart,
             TestName = labRequest.TestName,
-            ResultValue = result.ResultValue,
-            Unit = result.Unit,
-            ReferenceRange = result.ReferenceRange,
-            ReportedAt = result.ReportedAt
+            Status = labRequest.Status,
+            PickupCode = labRequest.PickupCode,
+            RequestedAt = labRequest.RequestedAt
         };
     }
 }

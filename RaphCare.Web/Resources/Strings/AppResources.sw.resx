@@ -2342,10 +2342,10 @@
     <value>Mpango</value>
   </data>
   <data name="Common_LabResultsTitle" xml:space="preserve">
-    <value>Matokeo ya maabara</value>
+    <value>Maagizo ya maabara</value>
   </data>
   <data name="Common_NoLabResults" xml:space="preserve">
-    <value>Hakuna matokeo ya maabara yaliyorekodiwa.</value>
+    <value>Hakuna maagizo ya maabara bado.</value>
   </data>
   <data name="Common_Test" xml:space="preserve">
     <value>Kipimo</value>
@@ -2448,5 +2448,119 @@
   </data>
   <data name="Common_LabResultAdded" xml:space="preserve">
     <value>Matokeo ya maabara yameongezwa.</value>
+  </data>
+  <data name="Collection_PageTitle" xml:space="preserve">
+    <value>Ukusanyaji</value>
+  </data>
+  <data name="Collection_Title" xml:space="preserve">
+    <value>Ukusanyaji</value>
+  </data>
+  <data name="Collection_Lead" xml:space="preserve">
+    <value>Dawa na vipimo vinavyosubiri katika {0}.</value>
+  </data>
+  <data name="Collection_Loading" xml:space="preserve">
+    <value>Inapakia ubao wa ukusanyaji.</value>
+  </data>
+  <data name="Collection_Eyebrow" xml:space="preserve">
+    <value>Tafuta</value>
+  </data>
+  <data name="Collection_FindTitle" xml:space="preserve">
+    <value>Tafuta agizo</value>
+  </data>
+  <data name="Collection_SearchLabel" xml:space="preserve">
+    <value>Msimbo wa kuchukua, jina, au kitambulisho cha afya</value>
+  </data>
+  <data name="Collection_SearchPlaceholder" xml:space="preserve">
+    <value>Msimbo, jina, au ID</value>
+  </data>
+  <data name="Collection_Search" xml:space="preserve">
+    <value>Tafuta</value>
+  </data>
+  <data name="Collection_PharmacyEyebrow" xml:space="preserve">
+    <value>Famasia</value>
+  </data>
+  <data name="Collection_PrescriptionsTitle" xml:space="preserve">
+    <value>Maagizo ya dawa ya kuchukua</value>
+  </data>
+  <data name="Collection_NoPrescriptions" xml:space="preserve">
+    <value>Hakuna maagizo ya dawa yanayosubiri.</value>
+  </data>
+  <data name="Collection_MarkCollected" xml:space="preserve">
+    <value>Weka kuwa imechukuliwa</value>
+  </data>
+  <data name="Collection_MarkingCollected" xml:space="preserve">
+    <value>Inaweka kuwa imechukuliwa</value>
+  </data>
+  <data name="Collection_LabEyebrow" xml:space="preserve">
+    <value>Maabara</value>
+  </data>
+  <data name="Collection_LabsTitle" xml:space="preserve">
+    <value>Vipimo vya kukamilisha</value>
+  </data>
+  <data name="Collection_NoLabs" xml:space="preserve">
+    <value>Hakuna vipimo vinavyosubiri.</value>
+  </data>
+  <data name="Collection_EnterResult" xml:space="preserve">
+    <value>Weka matokeo</value>
+  </data>
+  <data name="Collection_SaveResult" xml:space="preserve">
+    <value>Hifadhi matokeo</value>
+  </data>
+  <data name="Collection_SavingResult" xml:space="preserve">
+    <value>Inahifadhi matokeo</value>
+  </data>
+  <data name="Collection_PendingOne" xml:space="preserve">
+    <value>{0} linasubiri</value>
+  </data>
+  <data name="Collection_PendingMany" xml:space="preserve">
+    <value>{0} yanayosubiri</value>
+  </data>
+  <data name="Collection_CouldNotLoad" xml:space="preserve">
+    <value>Haikuweza kupakia maagizo ya ukusanyaji.</value>
+  </data>
+  <data name="Collection_CouldNotCollect" xml:space="preserve">
+    <value>Haikuweza kuweka agizo hili kuwa limechukuliwa.</value>
+  </data>
+  <data name="Collection_PrescriptionCollected" xml:space="preserve">
+    <value>Agizo la dawa limewekwa kuwa limechukuliwa.</value>
+  </data>
+  <data name="Collection_CouldNotSaveResult" xml:space="preserve">
+    <value>Haikuweza kuhifadhi matokeo ya maabara.</value>
+  </data>
+  <data name="Collection_ResultSaved" xml:space="preserve">
+    <value>Matokeo ya maabara yamehifadhiwa.</value>
+  </data>
+  <data name="Common_PickupCode" xml:space="preserve">
+    <value>Msimbo wa kuchukua</value>
+  </data>
+  <data name="Common_OrderLab" xml:space="preserve">
+    <value>Agiza kipimo</value>
+  </data>
+  <data name="Common_OrderingLab" xml:space="preserve">
+    <value>Inaagiza kipimo</value>
+  </data>
+  <data name="Common_LabOrdered" xml:space="preserve">
+    <value>Kipimo kimeagizwa.</value>
+  </data>
+  <data name="Common_CouldNotOrderLab" xml:space="preserve">
+    <value>Haikuweza kuagiza kipimo.</value>
+  </data>
+  <data name="Common_Waiting" xml:space="preserve">
+    <value>Inasubiri</value>
+  </data>
+  <data name="Common_Collected" xml:space="preserve">
+    <value>Imechukuliwa</value>
+  </data>
+  <data name="Common_CompletedStatus" xml:space="preserve">
+    <value>Imekamilika</value>
+  </data>
+  <data name="Common_Issued" xml:space="preserve">
+    <value>Imetolewa</value>
+  </data>
+  <data name="Common_Requested" xml:space="preserve">
+    <value>Imeombwa</value>
+  </data>
+  <data name="Visit_OrderLabLead" xml:space="preserve">
+    <value>Agiza kipimo wakati ziara inaendelea. Wafanyakazi wanaweka matokeo katika Ukusanyaji, hata baada ya ziara kufungwa.</value>
   </data>
 </root>

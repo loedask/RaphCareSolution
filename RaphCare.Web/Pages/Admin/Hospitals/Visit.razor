@@ -200,6 +200,8 @@
                                     <th>@AppResources.T("Common_Dosage")</th>
                                     <th>@AppResources.T("Common_Frequency")</th>
                                     <th>@AppResources.T("Common_DurationDays")</th>
+                                    <th>@AppResources.T("Common_PickupCode")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
                                     <th>@AppResources.T("Common_Notes")</th>
                                 </tr>
                             </thead>
@@ -213,6 +215,8 @@
                                             <td>@AppResources.T("Common_EmptyCell")</td>
                                             <td>@AppResources.T("Common_EmptyCell")</td>
                                             <td>@AppResources.T("Common_EmptyCell")</td>
+                                            <td class="pickup-code">@(string.IsNullOrWhiteSpace(rx.PickupCode) ? AppResources.T("Common_EmptyCell") : rx.PickupCode)</td>
+                                            <td>@FormatOrderStatus(rx.Status)</td>
                                             <td>@(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)</td>
                                         </tr>
                                     }
@@ -225,6 +229,8 @@
                                                 <td>@(string.IsNullOrWhiteSpace(item.Dosage) ? AppResources.T("Common_EmptyCell") : item.Dosage)</td>
                                                 <td>@(string.IsNullOrWhiteSpace(item.Frequency) ? AppResources.T("Common_EmptyCell") : item.Frequency)</td>
                                                 <td>@item.DurationDays</td>
+                                                <td class="pickup-code">@(string.IsNullOrWhiteSpace(rx.PickupCode) ? AppResources.T("Common_EmptyCell") : rx.PickupCode)</td>
+                                                <td>@FormatOrderStatus(rx.Status)</td>
                                                 <td>@(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)</td>
                                             </tr>
                                         }
@@ -328,7 +334,7 @@
 
         <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
                        Title="@AppResources.T("Common_LabResultsTitle")"
-                       Lead="@AppResources.T("Visit_OpenVisitDocumentLead")">
+                       Lead="@AppResources.T("Visit_OrderLabLead")">
             <div class="admin-page-card-body">
                 @if (CanDocument)
                 {
@@ -337,22 +343,10 @@
                             @AppResources.T("Common_Test")
                             <input class="form-control" @bind="_labTestName" />
                         </label>
-                        <label>
-                            @AppResources.T("Common_Value")
-                            <input class="form-control" @bind="_labResultValue" />
-                        </label>
-                        <label>
-                            @AppResources.T("Visit_UnitLabel")
-                            <input class="form-control" @bind="_labUnit" />
-                        </label>
-                        <label>
-                            @AppResources.T("Common_ReferenceRange")
-                            <input class="form-control" @bind="_labReferenceRange" />
-                        </label>
                     </div>
                     <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
                         <button type="button" class="btn btn-primary" disabled="@_savingLab" @onclick="AddLabResultAsync">
-                            @(_savingLab ? AppResources.T("Common_AddingLab") : AppResources.T("Common_AddLabResult"))
+                            @(_savingLab ? AppResources.T("Common_OrderingLab") : AppResources.T("Common_OrderLab"))
                         </button>
                     </div>
                 }
@@ -367,6 +361,8 @@
                             <thead>
                                 <tr>
                                     <th>@AppResources.T("Common_Test")</th>
+                                    <th>@AppResources.T("Common_PickupCode")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
                                     <th>@AppResources.T("Common_Value")</th>
                                     <th>@AppResources.T("Common_ReferenceRange")</th>
                                     <th>@AppResources.T("Common_Reported")</th>
@@ -377,9 +373,11 @@
                                 {
                                     <tr>
                                         <td>@lab.TestName</td>
-                                        <td>@lab.ResultValue @(lab.Unit ?? "")</td>
+                                        <td class="pickup-code">@(string.IsNullOrWhiteSpace(lab.PickupCode) ? AppResources.T("Common_EmptyCell") : lab.PickupCode)</td>
+                                        <td>@FormatOrderStatus(lab.Status)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(lab.ResultValue) ? AppResources.T("Common_Waiting") : $"{lab.ResultValue} {lab.Unit ?? ""}".Trim())</td>
                                         <td>@(string.IsNullOrWhiteSpace(lab.ReferenceRange) ? AppResources.T("Common_EmptyCell") : lab.ReferenceRange)</td>
-                                        <td>@FormatLocal(lab.ReportedAt)</td>
+                                        <td>@(lab.ReportedAt is { } reported ? FormatLocal(reported) : AppResources.T("Common_EmptyCell"))</td>
                                     </tr>
                                 }
                             </tbody>
@@ -431,9 +429,6 @@
     private int _rxDurationDays;
     private string _rxNotes = string.Empty;
     private string _labTestName = string.Empty;
-    private string _labResultValue = string.Empty;
-    private string _labUnit = string.Empty;
-    private string _labReferenceRange = string.Empty;
 
     private IReadOnlyList<SelectOption<string>> VitalTypeOptions =>
     [
@@ -492,6 +487,15 @@
 
     private string FormatLocal(DateTime utc) =>
         ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private static string FormatOrderStatus(string status) =>
+        status switch
+        {
+            "Dispensed" => AppResources.T("Common_Collected"),
+            "Completed" => AppResources.T("Common_CompletedStatus"),
+            "Pending" => AppResources.T("Common_Waiting"),
+            _ => status
+        };
 
     private static string FormatVitalCount(int count) =>
         count == 1
@@ -633,24 +637,18 @@
         _success = null;
         var response = await AdminClinicService.AddVisitLabResultAsync(ClinicId, VisitId, new AddVisitLabResultRequest
         {
-            TestName = _labTestName,
-            ResultValue = _labResultValue,
-            Unit = _labUnit,
-            ReferenceRange = _labReferenceRange
+            TestName = _labTestName
         });
         _savingLab = false;
 
         if (!response.IsSuccess)
         {
-            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotAddLab");
+            _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotOrderLab");
             return;
         }
 
-        _success = AppResources.T("Common_LabResultAdded");
+        _success = AppResources.T("Common_LabOrdered");
         _labTestName = string.Empty;
-        _labResultValue = string.Empty;
-        _labUnit = string.Empty;
-        _labReferenceRange = string.Empty;
         await LoadVisitAsync();
     }
 }

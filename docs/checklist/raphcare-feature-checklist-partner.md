@@ -38,13 +38,14 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Patient chart (view) | Done | See medical info, emergency contacts, insurance, invoices, mood, care plans, notes, prescriptions, labs. Staff view this; they do not edit it here. |
 | Providers and schedules | Done | Add providers; manage schedules |
 | Appointments | Done | Book, cancel, reschedule |
-| Visits and vitals | Done | Start a visit; record vitals, notes, prescriptions, and labs while the visit is open; complete |
+| Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete |
+| Collection counter | Done | Search by pickup code, name, or health ID. Mark a prescription collected. Enter a lab result. Any hospital staff can do this, including after the visit is closed. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read and visit notes they can add while a visit is open. Opening a hospital hides the left menu so staff can focus on that hospital.
+**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read, visit notes they can add while a visit is open, and a collection counter for medicines and lab tests. Opening a hospital hides the left menu so staff can focus on that hospital.
 
 **Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan. Detail: [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
@@ -82,7 +83,7 @@ What patients see on Android / iPhone.
 | Home and navigation | Done | Some areas can be turned off with feature flags |
 | Appointments (list, book, detail) | Done | |
 | Care / request a call / join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
-| Health records | Done | |
+| Health records | Done | Includes pickup codes for medicines and lab tests waiting at the hospital |
 | Insurance | Done | |
 | Billing / payment methods | Done | |
 | Family members | Done | |
@@ -153,9 +154,11 @@ What patients see on Android / iPhone.
 1. **Admin web:** open a hospital. The left menu should hide. Use All hospitals in the top bar to return to the list.
 2. **Admin web:** on that hospital, open Inpatient. Add a ward/room/bed if needed, admit someone, discharge them.
 3. **Admin web:** open a patient chart. You should see medical info, insurance, invoices, and visit notes (empty until data exists).
-4. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, prescription, or lab result.
-5. **Patient app on Android:** sign in, open Home, try Appointments and Devices (Bluetooth band if you have one).
-6. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
+4. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription, or a lab order (not a result).
+5. **Admin web:** open Collection. Search by pickup code, name, or health ID. Mark a prescription collected, or enter a lab result.
+6. **Patient app on Android:** sign in, open Health records. If a medicine or lab test is waiting, you should see a large pickup code.
+7. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
+8. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
 
 ---
 

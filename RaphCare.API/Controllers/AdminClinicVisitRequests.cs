@@ -44,6 +44,11 @@ public sealed class CreateAdminClinicVisitPrescriptionRequest
 public sealed class CreateAdminClinicVisitLabResultRequest
 {
     public string TestName { get; set; } = string.Empty;
+    public string? Priority { get; set; }
+}
+
+public sealed class CompleteAdminClinicLabOrderRequest
+{
     public string ResultValue { get; set; } = string.Empty;
     public string? Unit { get; set; }
     public string? ReferenceRange { get; set; }
