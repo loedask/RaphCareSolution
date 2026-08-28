@@ -1816,6 +1816,9 @@
   <data name="Inpatient_LoadingBoard" xml:space="preserve">
     <value>Chargement du tableau des patients hospitalisés…</value>
   </data>
+  <data name="Inpatient_SectionsAria" xml:space="preserve">
+    <value>Sections d&apos;hospitalisation</value>
+  </data>
   <data name="Inpatient_SetupEyebrow" xml:space="preserve">
     <value>Installation</value>
   </data>

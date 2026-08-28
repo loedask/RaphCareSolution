@@ -55,7 +55,7 @@ Overnight stays: set up rooms and beds, put a patient in a bed, discharge them.
 
 | Area | Status | What you can do |
 |------|--------|-----------------|
-| See bed board (how many free / full) | Done | Open Inpatient on a hospital in admin |
+| See bed board (how many free / full) | Done | Open Inpatient on a hospital in admin. Use the left tabs to switch sections. |
 | Add ward, room, bed | Done | Admins can create capacity |
 | Admit a patient to a bed | Done | Search patients and pick an available bed |
 | Discharge (free the bed) | Done | End an active stay with optional notes |

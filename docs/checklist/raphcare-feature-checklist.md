@@ -99,7 +99,7 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ### Admin panel (Web)
 
-- [x] `/admin/hospitals/{id}/inpatient`: occupancy stats, add capacity, admit, active list + discharge, beds-by-ward map
+- [x] `/admin/hospitals/{id}/inpatient`: occupancy stats, left section tabs, add capacity, admit, active list + discharge, beds-by-ward map
 - [x] Nav link from hospital detail
 - [x] Edit / delete / deactivate capacity UI
 - [x] Maintenance toggle UI

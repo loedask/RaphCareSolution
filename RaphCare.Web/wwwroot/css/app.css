@@ -1644,6 +1644,68 @@ a:hover { text-decoration: underline; }
 .inpatient-search-row .form-control { flex: 1; }
 .inpatient-checkbox { display: flex; align-items: center; gap: 0.5rem; margin-top: 1.6rem; }
 
+.inpatient-layout {
+    display: grid;
+    grid-template-columns: 14rem minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.inpatient-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.4rem;
+    background: #eef2f7;
+    border: 1px solid var(--rc-border);
+    border-radius: 0.85rem;
+    position: sticky;
+    top: 5rem;
+}
+
+.inpatient-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+    padding: 0.65rem 0.85rem;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #64748b;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1.25;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.inpatient-tab:hover:not(.active) {
+    color: #334155;
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.inpatient-tab.active {
+    color: #ffffff;
+    background: var(--rc-admin-accent-dark);
+    box-shadow: 0 2px 8px rgba(15, 118, 110, 0.28);
+}
+
+.inpatient-tab-count {
+    margin-left: auto;
+    font-size: 0.72rem;
+    font-weight: 700;
+    min-width: 1.25rem;
+    text-align: right;
+    opacity: 0.9;
+}
+
+.inpatient-tab-panel {
+    min-width: 0;
+}
+
 .verification-row { display: flex; gap: 0.5rem; }
 .verification-row .form-control { flex: 1; }
 
@@ -1939,6 +2001,13 @@ a:hover { text-decoration: underline; }
     .admin-brand-page .brand-hero { padding: 1.35rem 1.15rem; }
     .hospitals-empty-paths { grid-template-columns: 1fr; }
     .claim-form-row { flex-direction: column; }
+    .inpatient-layout { grid-template-columns: 1fr; }
+    .inpatient-tabs {
+        flex-direction: row;
+        flex-wrap: wrap;
+        position: static;
+    }
+    .inpatient-tab { width: auto; }
 }
 
 /* ── Auth shell (split-screen, Yindula-style) ── */

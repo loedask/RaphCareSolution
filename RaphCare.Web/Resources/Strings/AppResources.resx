@@ -1770,6 +1770,9 @@
   <data name="Inpatient_LoadingBoard" xml:space="preserve">
     <value>Loading inpatient board…</value>
   </data>
+  <data name="Inpatient_SectionsAria" xml:space="preserve">
+    <value>Inpatient sections</value>
+  </data>
   <data name="Inpatient_SetupEyebrow" xml:space="preserve">
     <value>Setup</value>
   </data>

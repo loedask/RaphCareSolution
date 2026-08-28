@@ -52,7 +52,35 @@
             </div>
         </div>
 
-        @if (_isAdministrator)
+        <div class="inpatient-layout">
+            <nav class="inpatient-tabs" aria-label="@AppResources.T("Inpatient_SectionsAria")">
+                @if (_isAdministrator)
+                {
+                    <button type="button" class="inpatient-tab @(_tab == "capacity" ? "active" : "")" @onclick='() => SetTab("capacity")'>
+                        <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+                        @AppResources.T("Inpatient_AddCapacity")
+                    </button>
+                    <button type="button" class="inpatient-tab @(_tab == "admit" ? "active" : "")" @onclick='() => SetTab("admit")'>
+                        <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3.1-6 7-6"/><path d="M16 11v6M13 14h6"/></svg>
+                        @AppResources.T("Inpatient_AdmitPatientTitle")
+                    </button>
+                }
+                <button type="button" class="inpatient-tab @(_tab == "admissions" ? "active" : "")" @onclick='() => SetTab("admissions")'>
+                    <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    <span>@AppResources.T("Inpatient_ActiveAdmissionsTitle")</span>
+                    <span class="inpatient-tab-count">@_board.ActiveAdmissionsList.Count</span>
+                </button>
+                <button type="button" class="inpatient-tab @(_tab == "beds" ? "active" : "")" @onclick='() => SetTab("beds")'>
+                    <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M3 11h18"/><path d="M8 7V5h8v2"/></svg>
+                    @AppResources.T("Inpatient_BedsByWardTitle")
+                </button>
+                <button type="button" class="inpatient-tab @(_tab == "history" ? "active" : "")" @onclick='() => SetTab("history")'>
+                    <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    @AppResources.T("Inpatient_AdmissionHistoryTitle")
+                </button>
+            </nav>
+            <div class="inpatient-tab-panel">
+        @if (_isAdministrator && _tab == "capacity")
         {
             <div class="admin-page-card">
                 <header class="admin-page-card-head">
@@ -122,7 +150,10 @@
                     </div>
                 </div>
             </div>
+        }
 
+        @if (_isAdministrator && _tab == "admit")
+        {
             <div class="admin-page-card">
                 <header class="admin-page-card-head">
                     <div>
@@ -167,6 +198,8 @@
             </div>
         }
 
+        @if (_tab == "admissions")
+        {
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
@@ -263,7 +296,10 @@
                 }
             </div>
         </div>
+        }
 
+        @if (_tab == "beds")
+        {
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
@@ -442,7 +478,10 @@
                 }
             </div>
         </div>
+        }
 
+        @if (_tab == "history")
+        {
         <div class="admin-page-card">
             <header class="admin-page-card-head">
                 <div>
@@ -512,6 +551,9 @@
                 }
             </div>
         </div>
+        }
+            </div>
+        </div>
     }
 
     <div class="admin-page-actions">
@@ -521,6 +563,7 @@
 
 @code {
     [Parameter] public Guid ClinicId { get; set; }
+    [SupplyParameterFromQuery(Name = "tab")] public string? TabQuery { get; set; }
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
@@ -530,6 +573,7 @@
     private bool _searchingPatients;
     private bool _loadingHistory;
     private bool _isAdministrator;
+    private string _tab = "admissions";
     private Guid? _dischargingId;
     private Guid? _transferringId;
     private Guid? _dischargeAdmissionId;
@@ -638,6 +682,37 @@
 
         await LoadBoardAsync();
         await LoadHistoryAsync();
+        ApplyInitialTab();
+    }
+
+    private bool IsTabAllowed(string tab) =>
+        tab is "admissions" or "beds" or "history"
+        || (_isAdministrator && tab is "capacity" or "admit");
+
+    private void ApplyInitialTab()
+    {
+        if (!string.IsNullOrWhiteSpace(TabQuery) && IsTabAllowed(TabQuery))
+        {
+            _tab = TabQuery;
+            return;
+        }
+
+        _tab = _isAdministrator && (_board is null || _board.Wards.Count == 0)
+            ? "capacity"
+            : "admissions";
+    }
+
+    private void SetTab(string tab)
+    {
+        if (!IsTabAllowed(tab))
+            return;
+
+        _tab = tab;
+        if (tab != "admissions")
+        {
+            CancelDischarge();
+            CancelTransfer();
+        }
     }
 
     private async Task LoadBoardAsync()
@@ -814,6 +889,7 @@
 
         _success = AppResources.T("Inpatient_PatientAdmitted");
         _admitReason = string.Empty;
+        _tab = "admissions";
         await LoadBoardAsync();
         await LoadHistoryAsync();
     }

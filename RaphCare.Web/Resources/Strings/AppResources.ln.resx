@@ -1816,6 +1816,9 @@
   <data name="Inpatient_LoadingBoard" xml:space="preserve">
     <value>Chargement ya tableau ya ba malades hospitalisés...</value>
   </data>
+  <data name="Inpatient_SectionsAria" xml:space="preserve">
+    <value>Biteni ya ba malades hospitalisés</value>
+  </data>
   <data name="Inpatient_SetupEyebrow" xml:space="preserve">
     <value>Kobongisa</value>
   </data>
