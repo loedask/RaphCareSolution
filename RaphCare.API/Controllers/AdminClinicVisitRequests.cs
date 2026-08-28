@@ -39,6 +39,15 @@ public sealed class CreateAdminClinicVisitPrescriptionRequest
     public string? Frequency { get; set; }
     public int DurationDays { get; set; }
     public string? Notes { get; set; }
+    public IReadOnlyList<CreateAdminClinicVisitPrescriptionItemRequest>? Items { get; set; }
+}
+
+public sealed class CreateAdminClinicVisitPrescriptionItemRequest
+{
+    public string MedicationName { get; set; } = string.Empty;
+    public string? Dosage { get; set; }
+    public string? Frequency { get; set; }
+    public int DurationDays { get; set; }
 }
 
 public sealed class CreateAdminClinicVisitLabResultRequest

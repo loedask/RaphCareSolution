@@ -24,18 +24,16 @@ public sealed class AdminClinicCollectionQueryService(ClinicalDbContext clinical
 
         var prescriptions = await clinicalDbContext.Set<Prescription>()
             .AsNoTracking()
-            .Where(p => p.Status == "Pending" && p.Visit.ClinicId == clinicId)
+            .Where(p => p.Visit.ClinicId == clinicId)
             .Include(p => p.PrescriptionItems)
             .Include(p => p.Visit)
-            .OrderBy(p => p.IssuedAt)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var labOrders = await clinicalDbContext.Set<LabRequest>()
             .AsNoTracking()
-            .Where(l => l.Status == "Pending" && l.Visit.ClinicId == clinicId)
+            .Where(l => l.Visit.ClinicId == clinicId)
             .Include(l => l.Visit)
-            .OrderBy(l => l.RequestedAt)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
@@ -79,51 +77,77 @@ public sealed class AdminClinicCollectionQueryService(ClinicalDbContext clinical
                     && patient.NationalHealthId.Contains(term, StringComparison.OrdinalIgnoreCase));
         }
 
+        AdminClinicCollectionPrescriptionDto MapRx(Prescription p)
+        {
+            patientLookup.TryGetValue(p.Visit.PatientId, out var patient);
+            return new AdminClinicCollectionPrescriptionDto
+            {
+                Id = p.Id,
+                VisitId = p.VisitId,
+                PatientId = p.Visit.PatientId,
+                PatientName = Name(p.Visit.PatientId),
+                NationalHealthId = patient?.NationalHealthId,
+                PickupCode = p.PickupCode,
+                IssuedAt = p.IssuedAt,
+                Status = p.Status,
+                DispensedAt = p.DispensedAt,
+                Notes = p.Notes,
+                Items = p.PrescriptionItems.Select(i => new AdminClinicVisitPrescriptionItemDto
+                {
+                    MedicationName = i.MedicationName,
+                    Dosage = i.Dosage,
+                    Frequency = i.Frequency,
+                    DurationDays = i.DurationDays
+                }).ToList()
+            };
+        }
+
+        AdminClinicCollectionLabOrderDto MapLab(LabRequest l)
+        {
+            patientLookup.TryGetValue(l.Visit.PatientId, out var patient);
+            return new AdminClinicCollectionLabOrderDto
+            {
+                Id = l.Id,
+                VisitId = l.VisitId,
+                PatientId = l.Visit.PatientId,
+                PatientName = Name(l.Visit.PatientId),
+                NationalHealthId = patient?.NationalHealthId,
+                PickupCode = l.PickupCode,
+                TestName = l.TestName,
+                Status = l.Status,
+                RequestedAt = l.RequestedAt
+            };
+        }
+
+        var pendingRx = prescriptions
+            .Where(p => p.Status == "Pending" && Matches(p.Visit.PatientId, p.PickupCode))
+            .OrderBy(p => p.IssuedAt)
+            .Select(MapRx)
+            .ToList();
+        var recentRx = prescriptions
+            .Where(p => p.Status is "Dispensed" or "Cancelled" && Matches(p.Visit.PatientId, p.PickupCode))
+            .OrderByDescending(p => p.DispensedAt ?? p.IssuedAt)
+            .Take(50)
+            .Select(MapRx)
+            .ToList();
+        var pendingLabs = labOrders
+            .Where(l => l.Status == "Pending" && Matches(l.Visit.PatientId, l.PickupCode))
+            .OrderBy(l => l.RequestedAt)
+            .Select(MapLab)
+            .ToList();
+        var recentLabs = labOrders
+            .Where(l => l.Status is "Completed" or "Cancelled" && Matches(l.Visit.PatientId, l.PickupCode))
+            .OrderByDescending(l => l.RequestedAt)
+            .Take(50)
+            .Select(MapLab)
+            .ToList();
+
         return new AdminClinicCollectionBoardDto
         {
-            Prescriptions = prescriptions
-                .Where(p => Matches(p.Visit.PatientId, p.PickupCode))
-                .Select(p =>
-                {
-                    patientLookup.TryGetValue(p.Visit.PatientId, out var patient);
-                    return new AdminClinicCollectionPrescriptionDto
-                    {
-                        Id = p.Id,
-                        VisitId = p.VisitId,
-                        PatientId = p.Visit.PatientId,
-                        PatientName = Name(p.Visit.PatientId),
-                        NationalHealthId = patient?.NationalHealthId,
-                        PickupCode = p.PickupCode,
-                        IssuedAt = p.IssuedAt,
-                        Notes = p.Notes,
-                        Items = p.PrescriptionItems.Select(i => new AdminClinicVisitPrescriptionItemDto
-                        {
-                            MedicationName = i.MedicationName,
-                            Dosage = i.Dosage,
-                            Frequency = i.Frequency,
-                            DurationDays = i.DurationDays
-                        }).ToList()
-                    };
-                })
-                .ToList(),
-            LabOrders = labOrders
-                .Where(l => Matches(l.Visit.PatientId, l.PickupCode))
-                .Select(l =>
-                {
-                    patientLookup.TryGetValue(l.Visit.PatientId, out var patient);
-                    return new AdminClinicCollectionLabOrderDto
-                    {
-                        Id = l.Id,
-                        VisitId = l.VisitId,
-                        PatientId = l.Visit.PatientId,
-                        PatientName = Name(l.Visit.PatientId),
-                        NationalHealthId = patient?.NationalHealthId,
-                        PickupCode = l.PickupCode,
-                        TestName = l.TestName,
-                        RequestedAt = l.RequestedAt
-                    };
-                })
-                .ToList()
+            Prescriptions = pendingRx,
+            LabOrders = pendingLabs,
+            RecentPrescriptions = recentRx,
+            RecentLabOrders = recentLabs
         };
     }
 }

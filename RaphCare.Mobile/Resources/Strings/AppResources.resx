@@ -884,6 +884,9 @@ Accessible. Intelligent. Human.</value>
   <data name="RecordsLabsSection" xml:space="preserve">
     <value>Lab orders</value>
   </data>
+  <data name="RecordsPickupCancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
   <data name="InsuranceListTitle" xml:space="preserve">
     <value>Insurance</value>
   </data>

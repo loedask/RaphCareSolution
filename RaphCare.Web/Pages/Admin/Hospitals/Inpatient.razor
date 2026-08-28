@@ -9,10 +9,15 @@
 <section class="admin-page">
     <AdminPageHeader Title="@AppResources.T("Common_Inpatient")"
                      Lead="@AppResources.Format("Inpatient_Lead", _clinicName)">
-        @if (_board is not null)
-        {
-            <span class="admin-progress-pill">@AppResources.Format("Inpatient_OccupiedPill", _board.OccupiedBeds, _board.TotalBeds)</span>
-        }
+        <StartContent>
+            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
+        </StartContent>
+        <ChildContent>
+            @if (_board is not null)
+            {
+                <span class="admin-progress-pill">@AppResources.Format("Inpatient_OccupiedPill", _board.OccupiedBeds, _board.TotalBeds)</span>
+            }
+        </ChildContent>
     </AdminPageHeader>
 
     <AdminAlert Message="@_error" />
@@ -61,65 +66,131 @@
             <div class="inpatient-tab-panel">
         @if (_isAdministrator && _tab == "capacity")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Inpatient_SetupEyebrow")" Title="@AppResources.T("Inpatient_AddCapacity")">
+            <AdminPageCard Eyebrow="@AppResources.T("Inpatient_SetupEyebrow")"
+                           Title="@AppResources.T("Inpatient_AddCapacity")"
+                           Lead="@AppResources.T("Inpatient_AddCapacityLead")">
                 <div class="admin-page-card-body">
-                    <div class="form-grid">
-                        <label>
-                            @AppResources.T("Inpatient_FacilityWardLabel")
-                            <SearchableSelect TValue="string"
-                                              @bind-Value="_wardFacilityId"
-                                              Placeholder="@AppResources.T("Inpatient_SelectFacility")"
-                                              Options="FacilitySelectOptions" />
-                        </label>
-                        <label>
-                            @AppResources.T("Inpatient_WardNameLabel")
-                            <input class="form-control" @bind="_wardName" placeholder="@AppResources.T("Inpatient_WardNamePlaceholder")" />
-                        </label>
-                        <label>
-                            @AppResources.T("Inpatient_CodeLabel")
-                            <input class="form-control" @bind="_wardCode" placeholder="@AppResources.T("Common_Optional")" />
-                        </label>
-                    </div>
-                    <div class="admin-page-actions">
-                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateWardAsync">@AppResources.T("Inpatient_AddWard")</button>
-                    </div>
+                    <div class="inpatient-capacity-steps">
+                        <section class="inpatient-capacity-step" aria-labelledby="capacity-step-ward">
+                            <div class="inpatient-capacity-step-head">
+                                <span class="inpatient-capacity-step-num" aria-hidden="true">1</span>
+                                <h3 id="capacity-step-ward">@AppResources.T("Inpatient_AddWard")</h3>
+                            </div>
+                            <div class="inpatient-capacity-grid">
+                                <label>
+                                    @AppResources.T("Common_Facility")
+                                    <SearchableSelect @ref="_facilitySelect"
+                                                      TValue="string"
+                                                      @bind-Value="_wardFacilityId"
+                                                      Placeholder="@AppResources.T("Inpatient_SelectFacility")"
+                                                      Options="FacilitySelectOptions">
+                                        <Footer>
+                                            <button type="button" class="searchable-select-footer-btn" @onclick="BeginAddFacility">
+                                                @AppResources.T("Common_AddFacility")
+                                            </button>
+                                        </Footer>
+                                    </SearchableSelect>
+                                </label>
+                                <label>
+                                    @AppResources.T("Inpatient_WardNameLabel")
+                                    <input class="form-control" @bind="_wardName" placeholder="@AppResources.T("Inpatient_WardNamePlaceholder")" />
+                                </label>
+                                <label>
+                                    @AppResources.T("Inpatient_CodeLabel")
+                                    <input class="form-control" @bind="_wardCode" placeholder="@AppResources.T("Common_Optional")" />
+                                </label>
+                            </div>
+                            @if (_showFacilityForm)
+                            {
+                                <div class="inpatient-action-panel">
+                                    <h3>@AppResources.T("Common_AddFacility")</h3>
+                                    @if (_physicalFacilities.Count == 0)
+                                    {
+                                        <p class="text-muted">@AppResources.T("Inpatient_NoFacilitiesHint")</p>
+                                    }
+                                    <div class="form-grid">
+                                        <label>
+                                            @AppResources.T("Common_Name")
+                                            <input class="form-control" @bind="_facilityName" placeholder="@AppResources.T("Common_MainCampusPlaceholder")" />
+                                        </label>
+                                        <label>
+                                            @AppResources.T("Common_City")
+                                            <input class="form-control" @bind="_facilityCity" placeholder="@AppResources.T("Common_JohannesburgPlaceholder")" />
+                                        </label>
+                                        <label>
+                                            @AppResources.T("Common_Address")
+                                            <input class="form-control" @bind="_facilityAddress" placeholder="@AppResources.T("Common_StreetAddress")" />
+                                        </label>
+                                        <label>
+                                            @AppResources.T("Common_Country")
+                                            <input class="form-control" @bind="_facilityCountry" placeholder="@_clinicCountry" />
+                                        </label>
+                                    </div>
+                                    <div class="admin-page-actions" style="margin-top: 0.75rem;">
+                                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateFacilityAsync">
+                                            @AppResources.T("Common_AddFacilityButton")
+                                        </button>
+                                        @if (_physicalFacilities.Count > 0)
+                                        {
+                                            <button type="button" class="btn btn-ghost" @onclick="CancelAddFacility">@AppResources.T("Common_Cancel")</button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            <div class="admin-page-actions">
+                                <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateWardAsync">@AppResources.T("Inpatient_AddWard")</button>
+                            </div>
+                        </section>
 
-                    <div class="form-grid" style="margin-top: 1.25rem;">
-                        <label>
-                            @AppResources.T("Inpatient_WardRoomLabel")
-                            <SearchableSelect TValue="string"
-                                              @bind-Value="_roomWardId"
-                                              Placeholder="@AppResources.T("Inpatient_SelectWard")"
-                                              Options="WardSelectOptions" />
-                        </label>
-                        <label>
-                            @AppResources.T("Inpatient_RoomNameLabel")
-                            <input class="form-control" @bind="_roomName" placeholder="@AppResources.T("Inpatient_RoomNamePlaceholder")" />
-                        </label>
-                        <label>
-                            @AppResources.T("Inpatient_RoomTypeLabel")
-                            <input class="form-control" @bind="_roomType" placeholder="@AppResources.T("Common_Optional")" />
-                        </label>
-                    </div>
-                    <div class="admin-page-actions">
-                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateRoomAsync">@AppResources.T("Inpatient_AddRoom")</button>
-                    </div>
+                        <section class="inpatient-capacity-step" aria-labelledby="capacity-step-room">
+                            <div class="inpatient-capacity-step-head">
+                                <span class="inpatient-capacity-step-num" aria-hidden="true">2</span>
+                                <h3 id="capacity-step-room">@AppResources.T("Inpatient_AddRoom")</h3>
+                            </div>
+                            <div class="inpatient-capacity-grid">
+                                <label>
+                                    @AppResources.T("Inpatient_WardLabel")
+                                    <SearchableSelect TValue="string"
+                                                      @bind-Value="_roomWardId"
+                                                      Placeholder="@AppResources.T("Inpatient_SelectWard")"
+                                                      Options="WardSelectOptions" />
+                                </label>
+                                <label>
+                                    @AppResources.T("Inpatient_RoomNameLabel")
+                                    <input class="form-control" @bind="_roomName" placeholder="@AppResources.T("Inpatient_RoomNamePlaceholder")" />
+                                </label>
+                                <label>
+                                    @AppResources.T("Inpatient_RoomTypeLabel")
+                                    <input class="form-control" @bind="_roomType" placeholder="@AppResources.T("Common_Optional")" />
+                                </label>
+                            </div>
+                            <div class="admin-page-actions">
+                                <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateRoomAsync">@AppResources.T("Inpatient_AddRoom")</button>
+                            </div>
+                        </section>
 
-                    <div class="form-grid" style="margin-top: 1.25rem;">
-                        <label>
-                            @AppResources.T("Inpatient_RoomBedLabel")
-                            <SearchableSelect TValue="string"
-                                              @bind-Value="_bedRoomId"
-                                              Placeholder="@AppResources.T("Inpatient_SelectRoom")"
-                                              Options="RoomSelectOptions" />
-                        </label>
-                        <label>
-                            @AppResources.T("Common_BedLabel")
-                            <input class="form-control" @bind="_bedLabel" placeholder="@AppResources.T("Inpatient_BedLabelPlaceholder")" />
-                        </label>
-                    </div>
-                    <div class="admin-page-actions">
-                        <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateBedAsync">@AppResources.T("Inpatient_AddBed")</button>
+                        <section class="inpatient-capacity-step" aria-labelledby="capacity-step-bed">
+                            <div class="inpatient-capacity-step-head">
+                                <span class="inpatient-capacity-step-num" aria-hidden="true">3</span>
+                                <h3 id="capacity-step-bed">@AppResources.T("Inpatient_AddBed")</h3>
+                            </div>
+                            <div class="inpatient-capacity-grid inpatient-capacity-grid-bed">
+                                <label>
+                                    @AppResources.T("Common_Room")
+                                    <SearchableSelect TValue="string"
+                                                      @bind-Value="_bedRoomId"
+                                                      Placeholder="@AppResources.T("Inpatient_SelectRoom")"
+                                                      Options="RoomSelectOptions" />
+                                </label>
+                                <label>
+                                    @AppResources.T("Common_BedLabel")
+                                    <input class="form-control" @bind="_bedLabel" placeholder="@AppResources.T("Inpatient_BedLabelPlaceholder")" />
+                                </label>
+                            </div>
+                            <div class="admin-page-actions">
+                                <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateBedAsync">@AppResources.T("Inpatient_AddBed")</button>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </AdminPageCard>
@@ -542,6 +613,13 @@
     private int _historyPage = 1;
     private const int HistoryPageSize = 20;
 
+    private SearchableSelect<string>? _facilitySelect;
+    private bool _showFacilityForm;
+    private string _clinicCountry = string.Empty;
+    private string _facilityName = string.Empty;
+    private string _facilityCity = string.Empty;
+    private string _facilityAddress = string.Empty;
+    private string _facilityCountry = string.Empty;
     private string _wardFacilityId = string.Empty;
     private string _wardName = string.Empty;
     private string _wardCode = string.Empty;
@@ -622,7 +700,10 @@
             _clinicName = clinicResponse.Data.Name;
             _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
+            _clinicCountry = clinicResponse.Data.Country;
+            _facilityCountry = clinicResponse.Data.Country;
             _physicalFacilities = clinicResponse.Data.Facilities.Where(f => !f.IsVirtual).ToList();
+            _showFacilityForm = _physicalFacilities.Count == 0;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
@@ -666,7 +747,9 @@
 
     private async Task LoadBoardAsync()
     {
-        _loading = true;
+        var showFullPage = _board is null;
+        if (showFullPage)
+            _loading = true;
         _error = null;
         var response = await AdminClinicService.GetInpatientBoardAsync(ClinicId);
         _loading = false;
@@ -724,6 +807,72 @@
             _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotLoadMoreAdmissions");
     }
 
+    private void BeginAddFacility()
+    {
+        _facilitySelect?.Close();
+        if (string.IsNullOrWhiteSpace(_facilityCountry))
+            _facilityCountry = _clinicCountry;
+        _showFacilityForm = true;
+    }
+
+    private void CancelAddFacility()
+    {
+        _showFacilityForm = false;
+        ResetFacilityForm();
+    }
+
+    private void ResetFacilityForm()
+    {
+        _facilityName = string.Empty;
+        _facilityCity = string.Empty;
+        _facilityAddress = string.Empty;
+        _facilityCountry = _clinicCountry;
+    }
+
+    private async Task CreateFacilityAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_facilityName))
+        {
+            _error = AppResources.T("Inpatient_FacilityNameRequired");
+            return;
+        }
+
+        var country = string.IsNullOrWhiteSpace(_facilityCountry) ? _clinicCountry : _facilityCountry.Trim();
+        if (string.IsNullOrWhiteSpace(country))
+        {
+            _error = AppResources.T("Inpatient_FacilityCountryRequired");
+            return;
+        }
+
+        _saving = true;
+        ClearMessages();
+        var response = await AdminClinicService.CreateFacilityAsync(ClinicId, new SaveFacilityRequest
+        {
+            Name = _facilityName.Trim(),
+            City = _facilityCity.Trim(),
+            Address = _facilityAddress.Trim(),
+            Country = country,
+            IsVirtual = false
+        });
+        _saving = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotAddFacility");
+            return;
+        }
+
+        if (!response.Data.IsVirtual)
+        {
+            _physicalFacilities = _physicalFacilities.Append(response.Data).ToList();
+            _wardFacilityId = response.Data.Id.ToString();
+        }
+
+        _success = AppResources.T("Inpatient_FacilityCreated");
+        _showFacilityForm = false;
+        ResetFacilityForm();
+    }
+
     private async Task CreateWardAsync()
     {
         if (!Guid.TryParse(_wardFacilityId, out var facilityId) || string.IsNullOrWhiteSpace(_wardName))
@@ -751,6 +900,8 @@
         _success = AppResources.T("Inpatient_WardCreated");
         _wardName = string.Empty;
         _wardCode = string.Empty;
+        if (response.Data is not null)
+            _roomWardId = response.Data.Id.ToString();
         await LoadBoardAsync();
     }
 
@@ -781,6 +932,8 @@
         _success = AppResources.T("Inpatient_RoomCreated");
         _roomName = string.Empty;
         _roomType = string.Empty;
+        if (response.Data is not null)
+            _bedRoomId = response.Data.Id.ToString();
         await LoadBoardAsync();
     }
 

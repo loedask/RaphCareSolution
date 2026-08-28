@@ -1312,6 +1312,124 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public Task<Response<ClinicVisitPrescription>> CancelPrescriptionAsync(
+        Guid clinicId,
+        Guid prescriptionId,
+        CancellationToken cancellationToken = default) =>
+        PostPrescriptionActionAsync(
+            clinicId,
+            prescriptionId,
+            "cancel",
+            "Only hospital staff can cancel a prescription.",
+            "Could not cancel the prescription.",
+            cancellationToken);
+
+    public Task<Response<ClinicVisitPrescription>> UndoPrescriptionAsync(
+        Guid clinicId,
+        Guid prescriptionId,
+        CancellationToken cancellationToken = default) =>
+        PostPrescriptionActionAsync(
+            clinicId,
+            prescriptionId,
+            "undo",
+            "Only hospital staff can undo a prescription collection.",
+            "Could not undo the prescription.",
+            cancellationToken);
+
+    public Task<Response<ClinicVisitLabResult>> CancelLabOrderAsync(
+        Guid clinicId,
+        Guid labRequestId,
+        CancellationToken cancellationToken = default) =>
+        PostLabActionAsync(
+            clinicId,
+            labRequestId,
+            "cancel",
+            "Only hospital staff can cancel a lab order.",
+            "Could not cancel the lab order.",
+            cancellationToken);
+
+    public Task<Response<ClinicVisitLabResult>> UndoLabOrderAsync(
+        Guid clinicId,
+        Guid labRequestId,
+        CancellationToken cancellationToken = default) =>
+        PostLabActionAsync(
+            clinicId,
+            labRequestId,
+            "undo",
+            "Only hospital staff can undo a lab result.",
+            "Could not undo the lab result.",
+            cancellationToken);
+
+    private async Task<Response<ClinicVisitPrescription>> PostPrescriptionActionAsync(
+        Guid clinicId,
+        Guid prescriptionId,
+        string action,
+        string forbiddenMessage,
+        string fallbackMessage,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/prescriptions/{prescriptionId}/{action}", null, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = forbiddenMessage;
+                return Response<ClinicVisitPrescription>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitPrescriptionDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitPrescription>.Failure(fallbackMessage);
+
+            return Response<ClinicVisitPrescription>.Success(MapPrescription(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitPrescription>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    private async Task<Response<ClinicVisitLabResult>> PostLabActionAsync(
+        Guid clinicId,
+        Guid labRequestId,
+        string action,
+        string forbiddenMessage,
+        string fallbackMessage,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/lab-orders/{labRequestId}/{action}", null, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = forbiddenMessage;
+                return Response<ClinicVisitLabResult>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<VisitLabResultDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicVisitLabResult>.Failure(fallbackMessage);
+
+            return Response<ClinicVisitLabResult>.Success(MapLabResult(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicVisitLabResult>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<ClinicCollectionBoard>> GetCollectionOrdersAsync(
         Guid clinicId,
         string? search = null,
@@ -1336,35 +1454,10 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
 
             return Response<ClinicCollectionBoard>.Success(new ClinicCollectionBoard
             {
-                Prescriptions = dto.Prescriptions?.Select(p => new ClinicCollectionPrescription
-                {
-                    Id = p.Id,
-                    VisitId = p.VisitId,
-                    PatientId = p.PatientId,
-                    PatientName = p.PatientName ?? "Patient",
-                    NationalHealthId = p.NationalHealthId,
-                    PickupCode = p.PickupCode ?? string.Empty,
-                    IssuedAt = p.IssuedAt,
-                    Notes = p.Notes,
-                    Items = p.Items?.Select(i => new ClinicVisitPrescriptionItem
-                    {
-                        MedicationName = i.MedicationName ?? string.Empty,
-                        Dosage = i.Dosage,
-                        Frequency = i.Frequency,
-                        DurationDays = i.DurationDays
-                    }).ToList() ?? []
-                }).ToList() ?? [],
-                LabOrders = dto.LabOrders?.Select(l => new ClinicCollectionLabOrder
-                {
-                    Id = l.Id,
-                    VisitId = l.VisitId,
-                    PatientId = l.PatientId,
-                    PatientName = l.PatientName ?? "Patient",
-                    NationalHealthId = l.NationalHealthId,
-                    PickupCode = l.PickupCode ?? string.Empty,
-                    TestName = l.TestName ?? string.Empty,
-                    RequestedAt = l.RequestedAt
-                }).ToList() ?? []
+                Prescriptions = MapCollectionPrescriptions(dto.Prescriptions),
+                LabOrders = MapCollectionLabs(dto.LabOrders),
+                RecentPrescriptions = MapCollectionPrescriptions(dto.RecentPrescriptions),
+                RecentLabOrders = MapCollectionLabs(dto.RecentLabOrders)
             });
         }
         catch (HttpRequestException)
@@ -2234,6 +2327,44 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }).ToList() ?? []
     };
 
+    private static List<ClinicCollectionPrescription> MapCollectionPrescriptions(
+        List<CollectionPrescriptionDto>? items) =>
+        items?.Select(p => new ClinicCollectionPrescription
+        {
+            Id = p.Id,
+            VisitId = p.VisitId,
+            PatientId = p.PatientId,
+            PatientName = p.PatientName ?? "Patient",
+            NationalHealthId = p.NationalHealthId,
+            PickupCode = p.PickupCode ?? string.Empty,
+            IssuedAt = p.IssuedAt,
+            Status = p.Status ?? "Pending",
+            DispensedAt = p.DispensedAt,
+            Notes = p.Notes,
+            Items = p.Items?.Select(i => new ClinicVisitPrescriptionItem
+            {
+                MedicationName = i.MedicationName ?? string.Empty,
+                Dosage = i.Dosage,
+                Frequency = i.Frequency,
+                DurationDays = i.DurationDays
+            }).ToList() ?? []
+        }).ToList() ?? [];
+
+    private static List<ClinicCollectionLabOrder> MapCollectionLabs(
+        List<CollectionLabOrderDto>? items) =>
+        items?.Select(l => new ClinicCollectionLabOrder
+        {
+            Id = l.Id,
+            VisitId = l.VisitId,
+            PatientId = l.PatientId,
+            PatientName = l.PatientName ?? "Patient",
+            NationalHealthId = l.NationalHealthId,
+            PickupCode = l.PickupCode ?? string.Empty,
+            TestName = l.TestName ?? string.Empty,
+            Status = l.Status ?? "Pending",
+            RequestedAt = l.RequestedAt
+        }).ToList() ?? [];
+
     private static ClinicVisitNote MapClinicalNote(VisitNoteDto dto) => new()
     {
         VisitId = dto.VisitId,
@@ -2774,6 +2905,8 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
     {
         public List<CollectionPrescriptionDto>? Prescriptions { get; set; }
         public List<CollectionLabOrderDto>? LabOrders { get; set; }
+        public List<CollectionPrescriptionDto>? RecentPrescriptions { get; set; }
+        public List<CollectionLabOrderDto>? RecentLabOrders { get; set; }
     }
 
     private sealed class CollectionPrescriptionDto
@@ -2785,6 +2918,8 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string? NationalHealthId { get; set; }
         public string? PickupCode { get; set; }
         public DateTime IssuedAt { get; set; }
+        public string? Status { get; set; }
+        public DateTime? DispensedAt { get; set; }
         public string? Notes { get; set; }
         public List<VisitPrescriptionItemDto>? Items { get; set; }
     }
@@ -2798,6 +2933,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string? NationalHealthId { get; set; }
         public string? PickupCode { get; set; }
         public string? TestName { get; set; }
+        public string? Status { get; set; }
         public DateTime RequestedAt { get; set; }
     }
 

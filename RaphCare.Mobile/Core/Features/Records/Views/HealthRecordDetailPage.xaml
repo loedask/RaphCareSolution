@@ -63,6 +63,11 @@
                                            Style="{StaticResource TitleMedium}"
                                            CharacterSpacing="4"
                                            Margin="0" />
+                                    <Image Source="{Binding QrImage}"
+                                           HeightRequest="120"
+                                           WidthRequest="140"
+                                           HorizontalOptions="Start"
+                                           Aspect="AspectFit" />
                                     <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
                                     <Label Text="{Binding StatusText}"
                                            Style="{StaticResource BodySmall}"
@@ -87,6 +92,11 @@
                                            Style="{StaticResource TitleMedium}"
                                            CharacterSpacing="4"
                                            Margin="0" />
+                                    <Image Source="{Binding QrImage}"
+                                           HeightRequest="120"
+                                           WidthRequest="140"
+                                           HorizontalOptions="Start"
+                                           Aspect="AspectFit" />
                                     <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
                                     <Label Text="{Binding StatusText}"
                                            Style="{StaticResource BodySmall}"

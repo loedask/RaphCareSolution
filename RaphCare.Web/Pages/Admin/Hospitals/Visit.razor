@@ -158,29 +158,43 @@
             <div class="admin-page-card-body">
                 @if (CanDocument)
                 {
+                    @foreach (var line in _rxLines)
+                    {
+                        <div class="form-grid" style="margin-bottom: 0.75rem;">
+                            <label>
+                                @AppResources.T("Common_MedicationName")
+                                <input class="form-control" @bind="line.MedicationName" />
+                            </label>
+                            <label>
+                                @AppResources.T("Common_Dosage")
+                                <input class="form-control" @bind="line.Dosage" />
+                            </label>
+                            <label>
+                                @AppResources.T("Common_Frequency")
+                                <input class="form-control" @bind="line.Frequency" />
+                            </label>
+                            <label>
+                                @AppResources.T("Common_DurationDays")
+                                <input class="form-control" type="number" min="0" @bind="line.DurationDays" />
+                            </label>
+                        </div>
+                    }
                     <div class="form-grid" style="margin-bottom: 1rem;">
-                        <label>
-                            @AppResources.T("Common_MedicationName")
-                            <input class="form-control" @bind="_rxMedication" />
-                        </label>
-                        <label>
-                            @AppResources.T("Common_Dosage")
-                            <input class="form-control" @bind="_rxDosage" />
-                        </label>
-                        <label>
-                            @AppResources.T("Common_Frequency")
-                            <input class="form-control" @bind="_rxFrequency" />
-                        </label>
-                        <label>
-                            @AppResources.T("Common_DurationDays")
-                            <input class="form-control" type="number" min="0" @bind="_rxDurationDays" />
-                        </label>
                         <label>
                             @AppResources.T("Common_Notes")
                             <input class="form-control" @bind="_rxNotes" />
                         </label>
                     </div>
                     <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                        <button type="button" class="btn btn-secondary" @onclick="AddPrescriptionLine">
+                            @AppResources.T("Common_AddMedicationLine")
+                        </button>
+                        @if (_rxLines.Count > 1)
+                        {
+                            <button type="button" class="btn btn-ghost" @onclick="RemoveLastPrescriptionLine">
+                                @AppResources.T("Common_RemoveLine")
+                            </button>
+                        }
                         <button type="button" class="btn btn-primary" disabled="@_savingPrescription" @onclick="AddPrescriptionAsync">
                             @(_savingPrescription ? AppResources.T("Common_AddingPrescription") : AppResources.T("Common_AddPrescription"))
                         </button>
@@ -217,13 +231,32 @@
                                             <td>@AppResources.T("Common_EmptyCell")</td>
                                             <td class="pickup-code">@(string.IsNullOrWhiteSpace(rx.PickupCode) ? AppResources.T("Common_EmptyCell") : rx.PickupCode)</td>
                                             <td>@FormatOrderStatus(rx.Status)</td>
-                                            <td>@(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)</td>
+                                            <td>
+                                                @(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)
+                                                @if (CanDocument && rx.Status == "Pending")
+                                                {
+                                                    <div class="admin-page-actions" style="margin-top: 0.5rem;">
+                                                        <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => CancelPrescriptionAsync(rx.Id)">
+                                                            @AppResources.T("Collection_CancelOrder")
+                                                        </button>
+                                                    </div>
+                                                }
+                                                else if (CanDocument && rx.Status == "Cancelled")
+                                                {
+                                                    <div class="admin-page-actions" style="margin-top: 0.5rem;">
+                                                        <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => UndoPrescriptionAsync(rx.Id)">
+                                                            @AppResources.T("Collection_Undo")
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </td>
                                         </tr>
                                     }
                                     else
                                     {
-                                        @foreach (var item in rx.Items)
+                                        @for (var i = 0; i < rx.Items.Count; i++)
                                         {
+                                            var item = rx.Items[i];
                                             <tr>
                                                 <td>@item.MedicationName</td>
                                                 <td>@(string.IsNullOrWhiteSpace(item.Dosage) ? AppResources.T("Common_EmptyCell") : item.Dosage)</td>
@@ -231,7 +264,25 @@
                                                 <td>@item.DurationDays</td>
                                                 <td class="pickup-code">@(string.IsNullOrWhiteSpace(rx.PickupCode) ? AppResources.T("Common_EmptyCell") : rx.PickupCode)</td>
                                                 <td>@FormatOrderStatus(rx.Status)</td>
-                                                <td>@(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)</td>
+                                                <td>
+                                                    @(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)
+                                                    @if (i == 0 && CanDocument && rx.Status == "Pending")
+                                                    {
+                                                        <div class="admin-page-actions" style="margin-top: 0.5rem;">
+                                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => CancelPrescriptionAsync(rx.Id)">
+                                                                @AppResources.T("Collection_CancelOrder")
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                    else if (i == 0 && CanDocument && rx.Status == "Cancelled")
+                                                    {
+                                                        <div class="admin-page-actions" style="margin-top: 0.5rem;">
+                                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => UndoPrescriptionAsync(rx.Id)">
+                                                                @AppResources.T("Collection_Undo")
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                </td>
                                             </tr>
                                         }
                                     }
@@ -366,6 +417,7 @@
                                     <th>@AppResources.T("Common_Value")</th>
                                     <th>@AppResources.T("Common_ReferenceRange")</th>
                                     <th>@AppResources.T("Common_Reported")</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -378,6 +430,20 @@
                                         <td>@(string.IsNullOrWhiteSpace(lab.ResultValue) ? AppResources.T("Common_Waiting") : $"{lab.ResultValue} {lab.Unit ?? ""}".Trim())</td>
                                         <td>@(string.IsNullOrWhiteSpace(lab.ReferenceRange) ? AppResources.T("Common_EmptyCell") : lab.ReferenceRange)</td>
                                         <td>@(lab.ReportedAt is { } reported ? FormatLocal(reported) : AppResources.T("Common_EmptyCell"))</td>
+                                        <td>
+                                            @if (CanDocument && lab.Status == "Pending")
+                                            {
+                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => CancelLabAsync(lab.Id)">
+                                                    @AppResources.T("Collection_CancelOrder")
+                                                </button>
+                                            }
+                                            else if (CanDocument && lab.Status == "Cancelled")
+                                            {
+                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => UndoLabAsync(lab.Id)">
+                                                    @AppResources.T("Collection_Undo")
+                                                </button>
+                                            }
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
@@ -409,6 +475,7 @@
     private bool _savingNote;
     private bool _savingPrescription;
     private bool _savingLab;
+    private Guid? _savingId;
     private string? _error;
     private string? _success;
     private string _clinicTimeZone = "UTC";
@@ -423,10 +490,7 @@
     private string _soapPlan = string.Empty;
     private string _noteCategory = string.Empty;
     private string _noteText = string.Empty;
-    private string _rxMedication = string.Empty;
-    private string _rxDosage = string.Empty;
-    private string _rxFrequency = string.Empty;
-    private int _rxDurationDays;
+    private readonly List<ClinicVisitPrescriptionItem> _rxLines = [new()];
     private string _rxNotes = string.Empty;
     private string _labTestName = string.Empty;
 
@@ -494,6 +558,7 @@
             "Dispensed" => AppResources.T("Common_Collected"),
             "Completed" => AppResources.T("Common_CompletedStatus"),
             "Pending" => AppResources.T("Common_Waiting"),
+            "Cancelled" => AppResources.T("Common_Cancelled"),
             _ => status
         };
 
@@ -600,18 +665,33 @@
         await LoadVisitAsync();
     }
 
+    private void AddPrescriptionLine() => _rxLines.Add(new ClinicVisitPrescriptionItem());
+
+    private void RemoveLastPrescriptionLine()
+    {
+        if (_rxLines.Count > 1)
+            _rxLines.RemoveAt(_rxLines.Count - 1);
+    }
+
     private async Task AddPrescriptionAsync()
     {
         _savingPrescription = true;
         _error = null;
         _success = null;
+        var lines = _rxLines
+            .Where(l => !string.IsNullOrWhiteSpace(l.MedicationName))
+            .Select(l => new ClinicVisitPrescriptionItem
+            {
+                MedicationName = l.MedicationName,
+                Dosage = l.Dosage,
+                Frequency = l.Frequency,
+                DurationDays = l.DurationDays
+            })
+            .ToList();
         var response = await AdminClinicService.AddVisitPrescriptionAsync(ClinicId, VisitId, new AddVisitPrescriptionRequest
         {
-            MedicationName = _rxMedication,
-            Dosage = _rxDosage,
-            Frequency = _rxFrequency,
-            DurationDays = _rxDurationDays,
-            Notes = _rxNotes
+            Notes = _rxNotes,
+            Items = lines
         });
         _savingPrescription = false;
 
@@ -622,11 +702,77 @@
         }
 
         _success = AppResources.T("Common_PrescriptionAdded");
-        _rxMedication = string.Empty;
-        _rxDosage = string.Empty;
-        _rxFrequency = string.Empty;
-        _rxDurationDays = 0;
+        _rxLines.Clear();
+        _rxLines.Add(new ClinicVisitPrescriptionItem());
         _rxNotes = string.Empty;
+        await LoadVisitAsync();
+    }
+
+    private async Task CancelPrescriptionAsync(Guid prescriptionId)
+    {
+        _savingId = prescriptionId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CancelPrescriptionAsync(ClinicId, prescriptionId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotCancel");
+            return;
+        }
+
+        _success = AppResources.T("Collection_OrderCancelled");
+        await LoadVisitAsync();
+    }
+
+    private async Task CancelLabAsync(Guid labRequestId)
+    {
+        _savingId = labRequestId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CancelLabOrderAsync(ClinicId, labRequestId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotCancel");
+            return;
+        }
+
+        _success = AppResources.T("Collection_OrderCancelled");
+        await LoadVisitAsync();
+    }
+
+    private async Task UndoPrescriptionAsync(Guid prescriptionId)
+    {
+        _savingId = prescriptionId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.UndoPrescriptionAsync(ClinicId, prescriptionId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotUndo");
+            return;
+        }
+
+        _success = AppResources.T("Collection_OrderRestored");
+        await LoadVisitAsync();
+    }
+
+    private async Task UndoLabAsync(Guid labRequestId)
+    {
+        _savingId = labRequestId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.UndoLabOrderAsync(ClinicId, labRequestId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotUndo");
+            return;
+        }
+
+        _success = AppResources.T("Collection_OrderRestored");
         await LoadVisitAsync();
     }
 

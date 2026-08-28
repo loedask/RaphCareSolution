@@ -46,7 +46,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Providers: list, detail, create, set active, schedules create / delete
 - [x] Appointments: list, book, cancel, reschedule
 - [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, lab orders (admin, InProgress)
-- [x] Collection board: search pending prescriptions/labs, dispense, complete lab result (clinic staff; visit may be closed)
+- [x] Collection board: search pending prescriptions/labs, dispense, complete lab result, cancel, undo, recent history, print slip with QR (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs
 - [x] Clinic devices list
 - [x] Tele-session start (Agora join info for admin)
@@ -60,7 +60,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Provider detail + schedules
 - [x] Appointments page
 - [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress)
-- [x] Collection page (search by code / name / health ID; mark collected; enter lab result)
+- [x] Collection page (search by code / name / health ID; mark collected; enter lab result; cancel; undo; print slip)
 - [x] Tele join page
 - [x] Admin dashboard
 - [x] Web UI language switcher (en / fr / ln / sw)
@@ -151,7 +151,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 |------|-----|--------|-----------|-------|
 | Appointments | [x] | [x] | [x] | List / book / detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
-| Health records | [x] | [x] | [x] | List + detail + pickup codes for pending meds/labs |
+| Health records | [x] | [x] | [x] | List + detail + pickup codes and QR for pending meds/labs |
 | Devices / BLE vitals | [x] | [x] | [x] | Offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |

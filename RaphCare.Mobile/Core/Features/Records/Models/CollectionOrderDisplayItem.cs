@@ -1,3 +1,5 @@
+using Microsoft.Maui.Controls;
+
 namespace RaphCare.Mobile.Core.Features.Records.Models;
 
 public sealed class CollectionOrderDisplayItem
@@ -8,4 +10,5 @@ public sealed class CollectionOrderDisplayItem
     public string PickupCode { get; init; } = string.Empty;
     public string DetailLine { get; init; } = string.Empty;
     public string StatusText { get; init; } = string.Empty;
+    public ImageSource? QrImage { get; init; }
 }

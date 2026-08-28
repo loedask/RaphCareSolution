@@ -1825,11 +1825,29 @@
   <data name="Inpatient_AddCapacity" xml:space="preserve">
     <value>Ajouter de la capacité</value>
   </data>
+  <data name="Inpatient_AddCapacityLead" xml:space="preserve">
+    <value>Ajoutez un établissement si besoin, puis une salle, des chambres et des lits.</value>
+  </data>
+  <data name="Inpatient_NoFacilitiesHint" xml:space="preserve">
+    <value>Cet hôpital n'a pas encore d'établissement physique. Ajoutez-en un pour créer des salles.</value>
+  </data>
+  <data name="Inpatient_FacilityCreated" xml:space="preserve">
+    <value>Établissement créé.</value>
+  </data>
+  <data name="Inpatient_FacilityNameRequired" xml:space="preserve">
+    <value>Saisissez le nom de l'établissement.</value>
+  </data>
+  <data name="Inpatient_FacilityCountryRequired" xml:space="preserve">
+    <value>Saisissez un pays.</value>
+  </data>
   <data name="Inpatient_FacilityWardLabel" xml:space="preserve">
     <value>Établissement (quartier)</value>
   </data>
   <data name="Inpatient_SelectFacility" xml:space="preserve">
     <value>Sélectionnez l’établissement…</value>
+  </data>
+  <data name="Inpatient_WardLabel" xml:space="preserve">
+    <value>Salle</value>
   </data>
   <data name="Inpatient_WardNameLabel" xml:space="preserve">
     <value>Nom du quartier</value>
@@ -2562,5 +2580,50 @@
   </data>
   <data name="Visit_OrderLabLead" xml:space="preserve">
     <value>Commandez le test pendant que la visite est ouverte. Le personnel saisit le résultat dans Collecte, y compris après la clôture de la visite.</value>
+  </data>
+  <data name="Common_AddMedicationLine" xml:space="preserve">
+    <value>Ajouter un autre médicament</value>
+  </data>
+  <data name="Common_RemoveLine" xml:space="preserve">
+    <value>Retirer la dernière ligne</value>
+  </data>
+  <data name="Common_Cancelled" xml:space="preserve">
+    <value>Annulé</value>
+  </data>
+  <data name="Collection_CancelOrder" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Collection_Undo" xml:space="preserve">
+    <value>Annuler l'action</value>
+  </data>
+  <data name="Collection_PrintSlip" xml:space="preserve">
+    <value>Imprimer le bon</value>
+  </data>
+  <data name="Collection_RecentPrescriptionsTitle" xml:space="preserve">
+    <value>Récemment retirés</value>
+  </data>
+  <data name="Collection_RecentLabsTitle" xml:space="preserve">
+    <value>Analyses récemment terminées</value>
+  </data>
+  <data name="Collection_NoRecent" xml:space="preserve">
+    <value>Aucun retrait dans cette recherche.</value>
+  </data>
+  <data name="Collection_CouldNotCancel" xml:space="preserve">
+    <value>Impossible d'annuler cette commande.</value>
+  </data>
+  <data name="Collection_OrderCancelled" xml:space="preserve">
+    <value>Commande annulée.</value>
+  </data>
+  <data name="Collection_CouldNotUndo" xml:space="preserve">
+    <value>Impossible d'annuler cette action.</value>
+  </data>
+  <data name="Collection_OrderRestored" xml:space="preserve">
+    <value>La commande est de nouveau en attente.</value>
+  </data>
+  <data name="Collection_SlipTitle" xml:space="preserve">
+    <value>Bon de retrait</value>
+  </data>
+  <data name="Collection_ShowCode" xml:space="preserve">
+    <value>Présentez ce code au comptoir.</value>
   </data>
 </root>

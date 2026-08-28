@@ -1,6 +1,7 @@
 @page "/admin/hospitals/{ClinicId:guid}/collection"
 @layout AdminLayout
 @using RaphCare.Domain.Common
+@using RaphCare.Client
 @inject IUiCultureService CultureService
 @implements IDisposable
 
@@ -88,6 +89,12 @@
                                             <button type="button" class="btn btn-primary" disabled="@(_savingId == rx.Id)" @onclick="() => DispenseAsync(rx.Id)">
                                                 @(_savingId == rx.Id ? AppResources.T("Collection_MarkingCollected") : AppResources.T("Collection_MarkCollected"))
                                             </button>
+                                            <button type="button" class="btn btn-secondary" @onclick="() => PrintPrescription(rx)">
+                                                @AppResources.T("Collection_PrintSlip")
+                                            </button>
+                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => CancelPrescriptionAsync(rx.Id)">
+                                                @AppResources.T("Collection_CancelOrder")
+                                            </button>
                                         </td>
                                     </tr>
                                 }
@@ -135,6 +142,12 @@
                                             <button type="button" class="btn btn-secondary" @onclick="() => SelectLab(lab.Id)">
                                                 @AppResources.T("Collection_EnterResult")
                                             </button>
+                                            <button type="button" class="btn btn-secondary" @onclick="() => PrintLab(lab)">
+                                                @AppResources.T("Collection_PrintSlip")
+                                            </button>
+                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => CancelLabAsync(lab.Id)">
+                                                @AppResources.T("Collection_CancelOrder")
+                                            </button>
                                         </td>
                                     </tr>
                                     @if (_selectedLabId == lab.Id)
@@ -171,6 +184,106 @@
                 }
             </div>
         </AdminPageCard>
+
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")" Title="@AppResources.T("Collection_RecentPrescriptionsTitle")">
+            <div class="admin-page-card-body">
+                @if (_board is null || _board.RecentPrescriptions.Count == 0)
+                {
+                    <p class="text-muted">@AppResources.T("Collection_NoRecent")</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>@AppResources.T("Common_PickupCode")</th>
+                                    <th>@AppResources.T("Common_Patient")</th>
+                                    <th>@AppResources.T("Common_Medications")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var rx in _board.RecentPrescriptions)
+                                {
+                                    <tr>
+                                        <td class="pickup-code">@rx.PickupCode</td>
+                                        <td>
+                                            <a href="/admin/hospitals/@ClinicId/patients/@rx.PatientId">@rx.PatientName</a>
+                                        </td>
+                                        <td>
+                                            @if (rx.Items.Count == 0)
+                                            {
+                                                @AppResources.T("Common_EmptyCell")
+                                            }
+                                            else
+                                            {
+                                                <ul class="admin-inline-list">
+                                                    @foreach (var item in rx.Items)
+                                                    {
+                                                        <li>@item.MedicationName @(item.Dosage ?? "") @(item.Frequency ?? "")</li>
+                                                    }
+                                                </ul>
+                                            }
+                                        </td>
+                                        <td>@FormatOrderStatus(rx.Status)</td>
+                                        <td>
+                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => UndoPrescriptionAsync(rx.Id)">
+                                                @AppResources.T("Collection_Undo")
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </AdminPageCard>
+
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")" Title="@AppResources.T("Collection_RecentLabsTitle")">
+            <div class="admin-page-card-body">
+                @if (_board is null || _board.RecentLabOrders.Count == 0)
+                {
+                    <p class="text-muted">@AppResources.T("Collection_NoRecent")</p>
+                }
+                else
+                {
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>@AppResources.T("Common_PickupCode")</th>
+                                    <th>@AppResources.T("Common_Patient")</th>
+                                    <th>@AppResources.T("Common_Test")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var lab in _board.RecentLabOrders)
+                                {
+                                    <tr>
+                                        <td class="pickup-code">@lab.PickupCode</td>
+                                        <td>
+                                            <a href="/admin/hospitals/@ClinicId/patients/@lab.PatientId">@lab.PatientName</a>
+                                        </td>
+                                        <td>@lab.TestName</td>
+                                        <td>@FormatOrderStatus(lab.Status)</td>
+                                        <td>
+                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => UndoLabAsync(lab.Id)">
+                                                @AppResources.T("Collection_Undo")
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </AdminPageCard>
     }
 
     <div class="admin-page-actions">
@@ -178,11 +291,29 @@
     </div>
 </section>
 
+@if (_printSlip is not null)
+{
+    <div class="print-slip">
+        <p class="print-slip-eyebrow">@_clinicName</p>
+        <h1>@AppResources.T("Collection_SlipTitle")</h1>
+        <p class="print-slip-patient">@_printSlip.PatientName</p>
+        @if (!string.IsNullOrWhiteSpace(_printSlip.NationalHealthId))
+        {
+            <p>@_printSlip.NationalHealthId</p>
+        }
+        <p class="print-slip-hint">@AppResources.T("Collection_ShowCode")</p>
+        <p class="pickup-code print-slip-code">@_printSlip.PickupCode</p>
+        <img class="print-slip-qr" src="@_printSlip.QrDataUri" alt="" />
+        <p>@_printSlip.Detail</p>
+    </div>
+}
+
 @code {
     [Parameter] public Guid ClinicId { get; set; }
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+    [Inject] private IJSRuntime Js { get; set; } = default!;
 
     private bool _loading = true;
     private bool _busy;
@@ -197,6 +328,16 @@
     private string _labUnit = string.Empty;
     private string _labReferenceRange = string.Empty;
     private ClinicCollectionBoard? _board;
+    private PrintSlip? _printSlip;
+
+    private sealed class PrintSlip
+    {
+        public string PatientName { get; init; } = string.Empty;
+        public string? NationalHealthId { get; init; }
+        public string PickupCode { get; init; } = string.Empty;
+        public string Detail { get; init; } = string.Empty;
+        public string QrDataUri { get; init; } = string.Empty;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -297,5 +438,108 @@
         _success = AppResources.T("Collection_ResultSaved");
         ClearLabForm();
         await LoadOrdersAsync();
+    }
+
+    private static string FormatOrderStatus(string? status) =>
+        status switch
+        {
+            "Dispensed" => AppResources.T("Common_Collected"),
+            "Completed" => AppResources.T("Common_CompletedStatus"),
+            "Pending" => AppResources.T("Common_Waiting"),
+            "Cancelled" => AppResources.T("Common_Cancelled"),
+            _ => string.IsNullOrWhiteSpace(status) ? AppResources.T("Common_EmptyCell") : status
+        };
+
+    private async Task CancelPrescriptionAsync(Guid prescriptionId)
+    {
+        _savingId = prescriptionId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CancelPrescriptionAsync(ClinicId, prescriptionId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotCancel");
+            return;
+        }
+
+        _success = AppResources.T("Collection_OrderCancelled");
+        await LoadOrdersAsync();
+    }
+
+    private async Task UndoPrescriptionAsync(Guid prescriptionId)
+    {
+        _savingId = prescriptionId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.UndoPrescriptionAsync(ClinicId, prescriptionId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotUndo");
+            return;
+        }
+
+        _success = AppResources.T("Collection_OrderRestored");
+        await LoadOrdersAsync();
+    }
+
+    private async Task CancelLabAsync(Guid labRequestId)
+    {
+        _savingId = labRequestId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CancelLabOrderAsync(ClinicId, labRequestId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotCancel");
+            return;
+        }
+
+        _success = AppResources.T("Collection_OrderCancelled");
+        await LoadOrdersAsync();
+    }
+
+    private async Task UndoLabAsync(Guid labRequestId)
+    {
+        _savingId = labRequestId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.UndoLabOrderAsync(ClinicId, labRequestId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotUndo");
+            return;
+        }
+
+        _success = AppResources.T("Collection_OrderRestored");
+        await LoadOrdersAsync();
+    }
+
+    private async Task PrintPrescription(ClinicCollectionPrescription rx)
+    {
+        var detail = rx.Items.Count == 0
+            ? AppResources.T("Common_PrescriptionsTitle")
+            : string.Join(", ", rx.Items.Select(i => i.MedicationName));
+        await PrintAsync(rx.PatientName, rx.NationalHealthId, rx.PickupCode, detail);
+    }
+
+    private async Task PrintLab(ClinicCollectionLabOrder lab) =>
+        await PrintAsync(lab.PatientName, lab.NationalHealthId, lab.PickupCode, lab.TestName);
+
+    private async Task PrintAsync(string patientName, string? nationalHealthId, string pickupCode, string detail)
+    {
+        _printSlip = new PrintSlip
+        {
+            PatientName = patientName,
+            NationalHealthId = nationalHealthId,
+            PickupCode = pickupCode,
+            Detail = detail,
+            QrDataUri = PickupQr.ToPngDataUri(pickupCode)
+        };
+        await InvokeAsync(StateHasChanged);
+        await Js.InvokeVoidAsync("raphCareClinic.printPage");
     }
 }

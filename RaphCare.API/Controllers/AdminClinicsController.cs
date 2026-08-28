@@ -39,6 +39,8 @@ using RaphCare.Application.Features.Organization.Commands.UpdateAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinic;
 using RaphCare.Application.Features.Organization.Commands.UpdateClinicStaffRole;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicLabOrder;
+using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicPrescription;
 using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicLabOrder;
 using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicVisit;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitLabResult;
@@ -47,6 +49,8 @@ using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisit
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitVital;
 using RaphCare.Application.Features.Organization.Commands.DispenseAdminClinicPrescription;
 using RaphCare.Application.Features.Organization.Commands.StartAdminClinicVisit;
+using RaphCare.Application.Features.Organization.Commands.UndoAdminClinicLabOrder;
+using RaphCare.Application.Features.Organization.Commands.UndoAdminClinicPrescription;
 using RaphCare.Application.Features.Organization.Commands.UpsertAdminClinicVisitSoapNote;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicCollectionOrders;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicDevices;
@@ -747,7 +751,7 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             : CreatedAtAction(nameof(GetVisitById), new { id, visitId }, result);
     }
 
-    /// <summary>Add a prescription with one medication line.</summary>
+    /// <summary>Add a prescription with one or more medication lines.</summary>
     [HttpPost("{id:guid}/visits/{visitId:guid}/prescriptions", Name = "CreateAdminClinicVisitPrescription")]
     [ProducesResponseType(typeof(AdminClinicVisitPrescriptionDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -767,7 +771,16 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
                 Dosage = body.Dosage,
                 Frequency = body.Frequency,
                 DurationDays = body.DurationDays,
-                Notes = body.Notes
+                Notes = body.Notes,
+                Items = (body.Items ?? Array.Empty<CreateAdminClinicVisitPrescriptionItemRequest>())
+                    .Select(i => new CreateAdminClinicVisitPrescriptionLine
+                    {
+                        MedicationName = i.MedicationName,
+                        Dosage = i.Dosage,
+                        Frequency = i.Frequency,
+                        DurationDays = i.DurationDays
+                    })
+                    .ToList()
             },
             cancellationToken);
         return result is null
@@ -839,6 +852,86 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             {
                 ClinicId = id,
                 PrescriptionId = prescriptionId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Cancel a waiting prescription. Any hospital staff can do this.</summary>
+    [HttpPost("{id:guid}/prescriptions/{prescriptionId:guid}/cancel", Name = "CancelAdminClinicPrescription")]
+    [ProducesResponseType(typeof(AdminClinicVisitPrescriptionDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelPrescription(
+        Guid id,
+        Guid prescriptionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CancelAdminClinicPrescriptionCommand
+            {
+                ClinicId = id,
+                PrescriptionId = prescriptionId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Put a collected or cancelled prescription back to waiting.</summary>
+    [HttpPost("{id:guid}/prescriptions/{prescriptionId:guid}/undo", Name = "UndoAdminClinicPrescription")]
+    [ProducesResponseType(typeof(AdminClinicVisitPrescriptionDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UndoPrescription(
+        Guid id,
+        Guid prescriptionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new UndoAdminClinicPrescriptionCommand
+            {
+                ClinicId = id,
+                PrescriptionId = prescriptionId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Cancel a waiting lab order. Any hospital staff can do this.</summary>
+    [HttpPost("{id:guid}/lab-orders/{labRequestId:guid}/cancel", Name = "CancelAdminClinicLabOrder")]
+    [ProducesResponseType(typeof(AdminClinicVisitLabResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelLabOrder(
+        Guid id,
+        Guid labRequestId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CancelAdminClinicLabOrderCommand
+            {
+                ClinicId = id,
+                LabRequestId = labRequestId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Put a completed or cancelled lab order back to waiting.</summary>
+    [HttpPost("{id:guid}/lab-orders/{labRequestId:guid}/undo", Name = "UndoAdminClinicLabOrder")]
+    [ProducesResponseType(typeof(AdminClinicVisitLabResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UndoLabOrder(
+        Guid id,
+        Guid labRequestId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new UndoAdminClinicLabOrderCommand
+            {
+                ClinicId = id,
+                LabRequestId = labRequestId
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);

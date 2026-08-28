@@ -5,26 +5,25 @@ using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Domain.Clinical;
 
-namespace RaphCare.Application.Features.Organization.Commands.DispenseAdminClinicPrescription;
+namespace RaphCare.Application.Features.Organization.Commands.CancelAdminClinicPrescription;
 
-public sealed class DispenseAdminClinicPrescriptionHandler(
+public sealed class CancelAdminClinicPrescriptionHandler(
     ICurrentUserService currentUserService,
     IClinicStaffMembershipService clinicStaffMembershipService,
     IRepository<Visit> visitRepository,
     IRepository<Prescription> prescriptionRepository,
-    IDateTimeProvider clock,
     IUnitOfWork unitOfWork)
-    : IRequestHandler<DispenseAdminClinicPrescriptionCommand, AdminClinicVisitPrescriptionDto?>
+    : IRequestHandler<CancelAdminClinicPrescriptionCommand, AdminClinicVisitPrescriptionDto?>
 {
     public async Task<AdminClinicVisitPrescriptionDto?> Handle(
-        DispenseAdminClinicPrescriptionCommand request,
+        CancelAdminClinicPrescriptionCommand request,
         CancellationToken cancellationToken)
     {
         await AdminClinicAuthorization.EnsureClinicStaffAsync(
                 currentUserService,
                 clinicStaffMembershipService,
                 request.ClinicId,
-                "Only hospital staff can mark a prescription as collected.",
+                "Only hospital staff can cancel a prescription.",
                 cancellationToken)
             .ConfigureAwait(false);
 
@@ -36,16 +35,22 @@ public sealed class DispenseAdminClinicPrescriptionHandler(
         if (visit is null || visit.ClinicId != request.ClinicId)
             return null;
 
-        if (prescription.Status == "Dispensed")
-            throw new BusinessRuleException("This prescription was already collected.");
         if (prescription.Status != "Pending")
-            throw new BusinessRuleException("Only a waiting prescription can be collected.");
+            throw new BusinessRuleException("Only a waiting prescription can be cancelled.");
 
-        prescription.Status = "Dispensed";
-        prescription.DispensedAt = clock.UtcNow;
+        prescription.Status = "Cancelled";
         await prescriptionRepository.UpdateAsync(prescription, cancellationToken).ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+        return await MapAsync(prescriptionRepository, prescription, visit, cancellationToken).ConfigureAwait(false);
+    }
+
+    internal static async Task<AdminClinicVisitPrescriptionDto> MapAsync(
+        IRepository<Prescription> prescriptionRepository,
+        Prescription prescription,
+        Visit visit,
+        CancellationToken cancellationToken)
+    {
         var withItems = await prescriptionRepository.SearchAsync(
             q => q.Where(p => p.Id == prescription.Id).Include(p => p.PrescriptionItems),
             1,

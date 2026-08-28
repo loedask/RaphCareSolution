@@ -4,27 +4,25 @@ using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Domain.Clinical;
 
-namespace RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicLabOrder;
+namespace RaphCare.Application.Features.Organization.Commands.CancelAdminClinicLabOrder;
 
-public sealed class CompleteAdminClinicLabOrderHandler(
+public sealed class CancelAdminClinicLabOrderHandler(
     ICurrentUserService currentUserService,
     IClinicStaffMembershipService clinicStaffMembershipService,
     IRepository<Visit> visitRepository,
     IRepository<LabRequest> labRequestRepository,
-    IRepository<LabResult> labResultRepository,
-    IDateTimeProvider clock,
     IUnitOfWork unitOfWork)
-    : IRequestHandler<CompleteAdminClinicLabOrderCommand, AdminClinicVisitLabResultDto?>
+    : IRequestHandler<CancelAdminClinicLabOrderCommand, AdminClinicVisitLabResultDto?>
 {
     public async Task<AdminClinicVisitLabResultDto?> Handle(
-        CompleteAdminClinicLabOrderCommand request,
+        CancelAdminClinicLabOrderCommand request,
         CancellationToken cancellationToken)
     {
         await AdminClinicAuthorization.EnsureClinicStaffAsync(
                 currentUserService,
                 clinicStaffMembershipService,
                 request.ClinicId,
-                "Only hospital staff can record lab results.",
+                "Only hospital staff can cancel a lab order.",
                 cancellationToken)
             .ConfigureAwait(false);
 
@@ -36,28 +34,18 @@ public sealed class CompleteAdminClinicLabOrderHandler(
         if (visit is null || visit.ClinicId != request.ClinicId)
             return null;
 
-        if (labRequest.Status is "Completed" or "Cancelled")
-            throw new BusinessRuleException(
-                labRequest.Status == "Cancelled"
-                    ? "This lab order was cancelled."
-                    : "This lab order already has a result.");
+        if (labRequest.Status != "Pending")
+            throw new BusinessRuleException("Only a waiting lab order can be cancelled.");
 
-        var now = clock.UtcNow;
-        var result = new LabResult
-        {
-            LabRequestId = labRequest.Id,
-            ResultValue = request.ResultValue.Trim(),
-            Unit = string.IsNullOrWhiteSpace(request.Unit) ? null : request.Unit.Trim(),
-            ReferenceRange = string.IsNullOrWhiteSpace(request.ReferenceRange) ? null : request.ReferenceRange.Trim(),
-            ReportedAt = now
-        };
-
-        labRequest.Status = "Completed";
-        await labResultRepository.AddAsync(result, cancellationToken).ConfigureAwait(false);
+        labRequest.Status = "Cancelled";
         await labRequestRepository.UpdateAsync(labRequest, cancellationToken).ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return new AdminClinicVisitLabResultDto
+        return Map(labRequest, visit, result: null);
+    }
+
+    internal static AdminClinicVisitLabResultDto Map(LabRequest labRequest, Visit visit, LabResult? result) =>
+        new()
         {
             Id = labRequest.Id,
             VisitId = visit.Id,
@@ -66,10 +54,9 @@ public sealed class CompleteAdminClinicLabOrderHandler(
             Status = labRequest.Status,
             PickupCode = labRequest.PickupCode,
             RequestedAt = labRequest.RequestedAt,
-            ResultValue = result.ResultValue,
-            Unit = result.Unit,
-            ReferenceRange = result.ReferenceRange,
-            ReportedAt = result.ReportedAt
+            ResultValue = result?.ResultValue,
+            Unit = result?.Unit,
+            ReferenceRange = result?.ReferenceRange,
+            ReportedAt = result?.ReportedAt
         };
-    }
 }

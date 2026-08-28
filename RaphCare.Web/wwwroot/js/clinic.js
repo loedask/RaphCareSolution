@@ -15,5 +15,8 @@ window.raphCareClinic = {
   },
   clearPendingClinicId: function () {
     localStorage.removeItem("rc_pending_clinic_id");
+  },
+  printPage: function () {
+    window.print();
   }
 };

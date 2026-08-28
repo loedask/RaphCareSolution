@@ -332,6 +332,8 @@ public sealed class AddVisitPrescriptionRequest
     public string? Frequency { get; set; }
     public int DurationDays { get; set; }
     public string? Notes { get; set; }
+    public IReadOnlyList<ClinicVisitPrescriptionItem> Items { get; set; } =
+        Array.Empty<ClinicVisitPrescriptionItem>();
 }
 
 public sealed class AddVisitLabResultRequest
@@ -354,6 +356,12 @@ public sealed class ClinicCollectionBoard
 
     public IReadOnlyList<ClinicCollectionLabOrder> LabOrders { get; set; } =
         Array.Empty<ClinicCollectionLabOrder>();
+
+    public IReadOnlyList<ClinicCollectionPrescription> RecentPrescriptions { get; set; } =
+        Array.Empty<ClinicCollectionPrescription>();
+
+    public IReadOnlyList<ClinicCollectionLabOrder> RecentLabOrders { get; set; } =
+        Array.Empty<ClinicCollectionLabOrder>();
 }
 
 public sealed class ClinicCollectionPrescription
@@ -365,6 +373,8 @@ public sealed class ClinicCollectionPrescription
     public string? NationalHealthId { get; set; }
     public string PickupCode { get; set; } = string.Empty;
     public DateTime IssuedAt { get; set; }
+    public string Status { get; set; } = "Pending";
+    public DateTime? DispensedAt { get; set; }
     public string? Notes { get; set; }
     public IReadOnlyList<ClinicVisitPrescriptionItem> Items { get; set; } =
         Array.Empty<ClinicVisitPrescriptionItem>();
@@ -379,6 +389,7 @@ public sealed class ClinicCollectionLabOrder
     public string? NationalHealthId { get; set; }
     public string PickupCode { get; set; } = string.Empty;
     public string TestName { get; set; } = string.Empty;
+    public string Status { get; set; } = "Pending";
     public DateTime RequestedAt { get; set; }
 }
 

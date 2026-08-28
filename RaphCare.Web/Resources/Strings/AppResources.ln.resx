@@ -1825,11 +1825,29 @@
   <data name="Inpatient_AddCapacity" xml:space="preserve">
     <value>Bakisa makoki</value>
   </data>
+  <data name="Inpatient_AddCapacityLead" xml:space="preserve">
+    <value>Bakisa esika soki esengeli, na nsima palwasi, ba shambre, mpe ba mbeto.</value>
+  </data>
+  <data name="Inpatient_NoFacilitiesHint" xml:space="preserve">
+    <value>Lopitalo oyo ezali naino na esika ya nzoto te. Bakisa moko mpo okoki kobakisa palwasi.</value>
+  </data>
+  <data name="Inpatient_FacilityCreated" xml:space="preserve">
+    <value>Esika ebakisami.</value>
+  </data>
+  <data name="Inpatient_FacilityNameRequired" xml:space="preserve">
+    <value>Koma nkombo ya esika.</value>
+  </data>
+  <data name="Inpatient_FacilityCountryRequired" xml:space="preserve">
+    <value>Koma mboka.</value>
+  </data>
   <data name="Inpatient_FacilityWardLabel" xml:space="preserve">
     <value>Esika ya kosala (palwasi) .</value>
   </data>
   <data name="Inpatient_SelectFacility" xml:space="preserve">
     <value>Pona esika ya kofanda...</value>
+  </data>
+  <data name="Inpatient_WardLabel" xml:space="preserve">
+    <value>Palwasi</value>
   </data>
   <data name="Inpatient_WardNameLabel" xml:space="preserve">
     <value>Nkombo ya palwasi</value>
@@ -2562,5 +2580,50 @@
   </data>
   <data name="Visit_OrderLabLead" xml:space="preserve">
     <value>Tinda test ntango visite ezali kokende. Ba staff bakoma résultat na Kozwa, ata nsima visite esili.</value>
+  </data>
+  <data name="Common_AddMedicationLine" xml:space="preserve">
+    <value>Bakisa nkisi mosusu</value>
+  </data>
+  <data name="Common_RemoveLine" xml:space="preserve">
+    <value>Longola ligne ya nsuka</value>
+  </data>
+  <data name="Common_Cancelled" xml:space="preserve">
+    <value>Elongolami</value>
+  </data>
+  <data name="Collection_CancelOrder" xml:space="preserve">
+    <value>Longola</value>
+  </data>
+  <data name="Collection_Undo" xml:space="preserve">
+    <value>Zongisa</value>
+  </data>
+  <data name="Collection_PrintSlip" xml:space="preserve">
+    <value>Imprimer bulletin</value>
+  </data>
+  <data name="Collection_RecentPrescriptionsTitle" xml:space="preserve">
+    <value>Ezwami sika</value>
+  </data>
+  <data name="Collection_RecentLabsTitle" xml:space="preserve">
+    <value>Ba tests esilisi sika</value>
+  </data>
+  <data name="Collection_NoRecent" xml:space="preserve">
+    <value>Eloko ezwami te na boluki oyo.</value>
+  </data>
+  <data name="Collection_CouldNotCancel" xml:space="preserve">
+    <value>Kolongola commande oyo ekoki te.</value>
+  </data>
+  <data name="Collection_OrderCancelled" xml:space="preserve">
+    <value>Commande elongolami.</value>
+  </data>
+  <data name="Collection_CouldNotUndo" xml:space="preserve">
+    <value>Kozongisa ekoki te.</value>
+  </data>
+  <data name="Collection_OrderRestored" xml:space="preserve">
+    <value>Commande ezali kozela lisusu.</value>
+  </data>
+  <data name="Collection_SlipTitle" xml:space="preserve">
+    <value>Bulletin ya kozwa</value>
+  </data>
+  <data name="Collection_ShowCode" xml:space="preserve">
+    <value>Lakisa code oyo na comptoir.</value>
   </data>
 </root>

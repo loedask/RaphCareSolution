@@ -19,14 +19,15 @@
     }
     else
     {
-        <div class="admin-page-actions">
-            <a class="btn btn-secondary" href="/admin/hospitals">@AppResources.T("Common_BackToHospitals")</a>
-        </div>
-
         <AdminPageHeader Title="@_detail.Name" Lead="@AppResources.T("HospitalDetail_Lead")">
-            <span class="badge @(_detail.IsActive ? "badge-success" : "badge-muted")">
-                @(_detail.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
-            </span>
+            <StartContent>
+                <a class="btn btn-secondary" href="/admin/hospitals">@AppResources.T("Common_BackToHospitals")</a>
+            </StartContent>
+            <ChildContent>
+                <span class="badge @(_detail.IsActive ? "badge-success" : "badge-muted")">
+                    @(_detail.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
+                </span>
+            </ChildContent>
         </AdminPageHeader>
 
         <nav class="admin-detail-tabs" aria-label="@AppResources.T("Common_HospitalSectionsAria")">

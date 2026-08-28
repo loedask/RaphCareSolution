@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
+using RaphCare.Client;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.HealthRecords;
 using RaphCare.Mobile.Core.Features.Records.Models;
@@ -116,7 +117,8 @@ public sealed class RecordsViewModel : BaseViewModel
             ClinicName = rx.ClinicName,
             PickupCode = rx.PickupCode,
             DetailLine = meds,
-            StatusText = FormatOrderStatus(rx.Status)
+            StatusText = FormatOrderStatus(rx.Status),
+            QrImage = QrImage(rx.PickupCode)
         };
     }
 
@@ -127,8 +129,17 @@ public sealed class RecordsViewModel : BaseViewModel
         ClinicName = lab.ClinicName,
         PickupCode = lab.PickupCode,
         DetailLine = lab.TestName,
-        StatusText = FormatOrderStatus(lab.Status)
+        StatusText = FormatOrderStatus(lab.Status),
+        QrImage = QrImage(lab.PickupCode)
     };
+
+    private static ImageSource? QrImage(string pickupCode)
+    {
+        if (string.IsNullOrWhiteSpace(pickupCode))
+            return null;
+        var bytes = PickupQr.ToPng(pickupCode);
+        return ImageSource.FromStream(() => new MemoryStream(bytes));
+    }
 
     private static string FormatOrderStatus(string? status) =>
         status switch
@@ -136,6 +147,7 @@ public sealed class RecordsViewModel : BaseViewModel
             "Dispensed" => T("RecordsPickupCollected"),
             "Completed" => T("RecordsPickupCompleted"),
             "Pending" => T("RecordsPickupWaiting"),
+            "Cancelled" => T("RecordsPickupCancelled"),
             _ => string.IsNullOrWhiteSpace(status) ? string.Empty : status
         };
 

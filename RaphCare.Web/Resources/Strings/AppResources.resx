@@ -1779,11 +1779,29 @@
   <data name="Inpatient_AddCapacity" xml:space="preserve">
     <value>Add capacity</value>
   </data>
+  <data name="Inpatient_AddCapacityLead" xml:space="preserve">
+    <value>Add a facility if needed, then a ward, then rooms, then beds.</value>
+  </data>
+  <data name="Inpatient_NoFacilitiesHint" xml:space="preserve">
+    <value>This hospital has no physical facility yet. Add one so you can create wards.</value>
+  </data>
+  <data name="Inpatient_FacilityCreated" xml:space="preserve">
+    <value>Facility created.</value>
+  </data>
+  <data name="Inpatient_FacilityNameRequired" xml:space="preserve">
+    <value>Enter a facility name.</value>
+  </data>
+  <data name="Inpatient_FacilityCountryRequired" xml:space="preserve">
+    <value>Enter a country.</value>
+  </data>
   <data name="Inpatient_FacilityWardLabel" xml:space="preserve">
     <value>Facility (ward)</value>
   </data>
   <data name="Inpatient_SelectFacility" xml:space="preserve">
     <value>Select facility…</value>
+  </data>
+  <data name="Inpatient_WardLabel" xml:space="preserve">
+    <value>Ward</value>
   </data>
   <data name="Inpatient_WardNameLabel" xml:space="preserve">
     <value>Ward name</value>
@@ -2516,5 +2534,50 @@
   </data>
   <data name="Visit_OrderLabLead" xml:space="preserve">
     <value>Order the test while the visit is open. Staff enter the result on Collection, including after the visit is closed.</value>
+  </data>
+  <data name="Common_AddMedicationLine" xml:space="preserve">
+    <value>Add another medicine</value>
+  </data>
+  <data name="Common_RemoveLine" xml:space="preserve">
+    <value>Remove last line</value>
+  </data>
+  <data name="Common_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Collection_CancelOrder" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Collection_Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="Collection_PrintSlip" xml:space="preserve">
+    <value>Print slip</value>
+  </data>
+  <data name="Collection_RecentPrescriptionsTitle" xml:space="preserve">
+    <value>Recently collected</value>
+  </data>
+  <data name="Collection_RecentLabsTitle" xml:space="preserve">
+    <value>Recently completed labs</value>
+  </data>
+  <data name="Collection_NoRecent" xml:space="preserve">
+    <value>Nothing collected yet in this search.</value>
+  </data>
+  <data name="Collection_CouldNotCancel" xml:space="preserve">
+    <value>Could not cancel this order.</value>
+  </data>
+  <data name="Collection_OrderCancelled" xml:space="preserve">
+    <value>Order cancelled.</value>
+  </data>
+  <data name="Collection_CouldNotUndo" xml:space="preserve">
+    <value>Could not undo this action.</value>
+  </data>
+  <data name="Collection_OrderRestored" xml:space="preserve">
+    <value>Order is waiting again.</value>
+  </data>
+  <data name="Collection_SlipTitle" xml:space="preserve">
+    <value>Pickup slip</value>
+  </data>
+  <data name="Collection_ShowCode" xml:space="preserve">
+    <value>Show this code at the counter.</value>
   </data>
 </root>

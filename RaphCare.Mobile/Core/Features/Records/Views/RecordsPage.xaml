@@ -37,6 +37,11 @@
                                            CharacterSpacing="4"
                                            HorizontalTextAlignment="Center"
                                            Margin="0" />
+                                    <Image Source="{Binding QrImage}"
+                                           HeightRequest="140"
+                                           WidthRequest="140"
+                                           HorizontalOptions="Center"
+                                           Aspect="AspectFit" />
                                     <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
                                     <Label Text="{Binding ClinicName}"
                                            Style="{StaticResource BodySmall}"

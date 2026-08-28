@@ -1825,11 +1825,29 @@
   <data name="Inpatient_AddCapacity" xml:space="preserve">
     <value>Ongeza uwezo</value>
   </data>
+  <data name="Inpatient_AddCapacityLead" xml:space="preserve">
+    <value>Ongeza kituo ikiwa inahitajika, kisha kata, vyumba, na vitanda.</value>
+  </data>
+  <data name="Inpatient_NoFacilitiesHint" xml:space="preserve">
+    <value>Hospitali hii bado haina kituo cha kimwili. Ongeza kimoja ili uweze kuunda kata.</value>
+  </data>
+  <data name="Inpatient_FacilityCreated" xml:space="preserve">
+    <value>Kituo kimeongezwa.</value>
+  </data>
+  <data name="Inpatient_FacilityNameRequired" xml:space="preserve">
+    <value>Weka jina la kituo.</value>
+  </data>
+  <data name="Inpatient_FacilityCountryRequired" xml:space="preserve">
+    <value>Weka nchi.</value>
+  </data>
   <data name="Inpatient_FacilityWardLabel" xml:space="preserve">
     <value>Kituo (kata)</value>
   </data>
   <data name="Inpatient_SelectFacility" xml:space="preserve">
     <value>Chagua kituo...</value>
+  </data>
+  <data name="Inpatient_WardLabel" xml:space="preserve">
+    <value>Kata</value>
   </data>
   <data name="Inpatient_WardNameLabel" xml:space="preserve">
     <value>Jina la kata</value>
@@ -2562,5 +2580,50 @@
   </data>
   <data name="Visit_OrderLabLead" xml:space="preserve">
     <value>Agiza kipimo wakati ziara inaendelea. Wafanyakazi wanaweka matokeo katika Ukusanyaji, hata baada ya ziara kufungwa.</value>
+  </data>
+  <data name="Common_AddMedicationLine" xml:space="preserve">
+    <value>Ongeza dawa nyingine</value>
+  </data>
+  <data name="Common_RemoveLine" xml:space="preserve">
+    <value>Ondoa mstari wa mwisho</value>
+  </data>
+  <data name="Common_Cancelled" xml:space="preserve">
+    <value>Imeghairiwa</value>
+  </data>
+  <data name="Collection_CancelOrder" xml:space="preserve">
+    <value>Ghairi</value>
+  </data>
+  <data name="Collection_Undo" xml:space="preserve">
+    <value>Rudisha</value>
+  </data>
+  <data name="Collection_PrintSlip" xml:space="preserve">
+    <value>Chapisha stakabadhi</value>
+  </data>
+  <data name="Collection_RecentPrescriptionsTitle" xml:space="preserve">
+    <value>Zilizochukuliwa hivi karibuni</value>
+  </data>
+  <data name="Collection_RecentLabsTitle" xml:space="preserve">
+    <value>Vipimo vilivyokamilika hivi karibuni</value>
+  </data>
+  <data name="Collection_NoRecent" xml:space="preserve">
+    <value>Hakuna kilichochukuliwa katika utafutaji huu.</value>
+  </data>
+  <data name="Collection_CouldNotCancel" xml:space="preserve">
+    <value>Haikuweza kughairi agizo hili.</value>
+  </data>
+  <data name="Collection_OrderCancelled" xml:space="preserve">
+    <value>Agizo limeghairiwa.</value>
+  </data>
+  <data name="Collection_CouldNotUndo" xml:space="preserve">
+    <value>Haikuweza kurudisha hatua hii.</value>
+  </data>
+  <data name="Collection_OrderRestored" xml:space="preserve">
+    <value>Agizo linasubiri tena.</value>
+  </data>
+  <data name="Collection_SlipTitle" xml:space="preserve">
+    <value>Stakabadhi ya kuchukua</value>
+  </data>
+  <data name="Collection_ShowCode" xml:space="preserve">
+    <value>Onyesha msimbo huu kwenye kaunta.</value>
   </data>
 </root>

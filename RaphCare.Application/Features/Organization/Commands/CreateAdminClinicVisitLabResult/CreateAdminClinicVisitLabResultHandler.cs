@@ -2,6 +2,7 @@ using MediatR;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Domain.Clinical;
+using RaphCare.Domain.Organization;
 
 namespace RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitLabResult;
 
@@ -12,8 +13,10 @@ public sealed class CreateAdminClinicVisitLabResultHandler(
     IRepository<Visit> visitRepository,
     IRepository<Prescription> prescriptionRepository,
     IRepository<LabRequest> labRequestRepository,
+    IRepository<Clinic> clinicRepository,
     IDateTimeProvider clock,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    IMediator mediator)
     : IRequestHandler<CreateAdminClinicVisitLabResultCommand, AdminClinicVisitLabResultDto?>
 {
     public async Task<AdminClinicVisitLabResultDto?> Handle(
@@ -48,6 +51,16 @@ public sealed class CreateAdminClinicVisitLabResultHandler(
 
         await labRequestRepository.AddAsync(labRequest, cancellationToken).ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        var clinic = await clinicRepository.GetByIdAsync(visit.ClinicId, cancellationToken).ConfigureAwait(false);
+        await CollectionPatientNotifier.NotifyReadyAsync(
+                mediator,
+                visit.PatientId,
+                clinic?.Name ?? string.Empty,
+                labRequest.PickupCode,
+                isLab: true,
+                cancellationToken)
+            .ConfigureAwait(false);
 
         return new AdminClinicVisitLabResultDto
         {
