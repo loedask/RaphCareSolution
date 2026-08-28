@@ -40,12 +40,13 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Clinic list / detail / update
 - [x] Register clinic + platform reference code + claim by reference or registration number + ensure membership
 - [x] Patients: list, detail, grant / revoke access
-- [x] Staff: invite, role, resend, cancel pending, remove
+- [x] Staff: invite, job (staff / doctor / pharmacist / lab technician), administrator flag, resend, cancel pending, remove
 - [x] Facilities CRUD (physical + virtual)
 - [x] Dashboard metrics
 - [x] Providers: list, detail, create, set active, schedules create / delete
 - [x] Appointments: list, book, cancel, reschedule
-- [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, labs (admin, InProgress)
+- [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, lab orders (admin or doctor, InProgress)
+- [x] Collection board: search pending prescriptions/labs, camera QR scan, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs
 - [x] Clinic devices list
 - [x] Tele-session start (Agora join info for admin)
@@ -58,7 +59,8 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Patient detail page (staff chart: medical info, coverage, invoices, mood, visit notes)
 - [x] Provider detail + schedules
 - [x] Appointments page
-- [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / labs on InProgress)
+- [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress)
+- [x] Collection page (search by code / name / health ID; scan QR; mark collected; enter lab result; cancel; undo; print slip or wall poster)
 - [x] Tele join page
 - [x] Admin dashboard
 - [x] Web UI language switcher (en / fr / ln / sw)
@@ -70,7 +72,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view) and visit documentation while a visit is in progress. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), and a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -149,7 +151,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 |------|-----|--------|-----------|-------|
 | Appointments | [x] | [x] | [x] | List / book / detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
-| Health records | [x] | [x] | [x] | List + detail |
+| Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in |
 | Devices / BLE vitals | [x] | [x] | [x] | Offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
@@ -294,10 +296,10 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 | Surface | Primary owner | Status snapshot |
 |---------|---------------|-----------------|
-| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete |
-| **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; config-dependent push / AI / iOS RTC |
+| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete; collection board; staff jobs Doctor / Pharmacist / LabTechnician |
+| **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + staff patient chart (view) + visit documentation on InProgress; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + staff patient chart (view) + visit documentation on InProgress + collection counter; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

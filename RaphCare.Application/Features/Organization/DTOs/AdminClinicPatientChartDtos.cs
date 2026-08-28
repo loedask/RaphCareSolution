@@ -85,9 +85,13 @@ public sealed class AdminClinicVisitDiagnosisDto
 
 public sealed class AdminClinicVisitPrescriptionDto
 {
+    public Guid Id { get; set; }
     public Guid VisitId { get; set; }
     public DateTime VisitStart { get; set; }
     public DateTime IssuedAt { get; set; }
+    public string Status { get; set; } = "Pending";
+    public string PickupCode { get; set; } = string.Empty;
+    public DateTime? DispensedAt { get; set; }
     public string? Notes { get; set; }
     public IReadOnlyList<AdminClinicVisitPrescriptionItemDto> Items { get; set; } = Array.Empty<AdminClinicVisitPrescriptionItemDto>();
 }
@@ -120,13 +124,17 @@ public sealed class AdminClinicVisitSoapNoteDto
 
 public sealed class AdminClinicVisitLabResultDto
 {
+    public Guid Id { get; set; }
     public Guid VisitId { get; set; }
     public DateTime VisitStart { get; set; }
     public string TestName { get; set; } = string.Empty;
-    public string ResultValue { get; set; } = string.Empty;
+    public string Status { get; set; } = "Pending";
+    public string PickupCode { get; set; } = string.Empty;
+    public DateTime RequestedAt { get; set; }
+    public string? ResultValue { get; set; }
     public string? Unit { get; set; }
     public string? ReferenceRange { get; set; }
-    public DateTime ReportedAt { get; set; }
+    public DateTime? ReportedAt { get; set; }
 }
 
 /// <summary>Visit-scoped clinical documentation for a staff chart (read-only).</summary>

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
+using RaphCare.Client;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.HealthRecords;
 using RaphCare.Mobile.Core.Features.Records.Models;
@@ -28,8 +29,12 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
         SummaryLabel = T("RecordsSummary");
         WhenLabel = T("RecordsWhen");
         VitalsSectionTitle = T("RecordsVitalsSection");
+        PrescriptionsSectionTitle = T("RecordsPrescriptionsSection");
+        LabsSectionTitle = T("RecordsLabsSection");
         BackCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
         VitalSigns = new ObservableCollection<VitalSignDisplayItem>();
+        Prescriptions = new ObservableCollection<CollectionOrderDisplayItem>();
+        LabOrders = new ObservableCollection<CollectionOrderDisplayItem>();
     }
 
     public string WhenLabel { get; }
@@ -37,6 +42,8 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
     public string TypeLabel { get; }
     public string SummaryLabel { get; }
     public string VitalsSectionTitle { get; }
+    public string PrescriptionsSectionTitle { get; }
+    public string LabsSectionTitle { get; }
 
     public string WhenText
     {
@@ -69,6 +76,8 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
     }
 
     public ObservableCollection<VitalSignDisplayItem> VitalSigns { get; }
+    public ObservableCollection<CollectionOrderDisplayItem> Prescriptions { get; }
+    public ObservableCollection<CollectionOrderDisplayItem> LabOrders { get; }
 
     public ICommand BackCommand { get; }
 
@@ -90,6 +99,8 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
         ErrorMessage = null;
         IsBusy = true;
         VitalSigns.Clear();
+        Prescriptions.Clear();
+        LabOrders.Clear();
         try
         {
             var response = await _healthRecords.GetMyHealthRecordAsync(_visitId, CancellationToken.None).ConfigureAwait(false);
@@ -105,7 +116,7 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
             var end = r.VisitEnd?.ToLocalTime();
             WhenText = end is null
                 ? start.ToString("F", culture)
-                : $"{start.ToString("F", culture)} – {end.Value.ToString("t", culture)}";
+                : $"{start.ToString("F", culture)} to {end.Value.ToString("t", culture)}";
             StatusText = r.Status;
             VisitTypeText = r.VisitType;
             SummaryText = string.IsNullOrWhiteSpace(r.Summary) ? "—" : r.Summary!;
@@ -119,10 +130,61 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
                     RecordedLine = v.RecordedAt.ToLocalTime().ToString("g", culture)
                 });
             }
+
+            foreach (var rx in r.Prescriptions)
+            {
+                var meds = rx.Items.Count == 0
+                    ? T("RecordsPickupPrescription")
+                    : string.Join(", ", rx.Items.Select(i => i.MedicationName));
+                Prescriptions.Add(new CollectionOrderDisplayItem
+                {
+                    VisitId = rx.VisitId,
+                    ClinicId = rx.ClinicId,
+                    KindLabel = T("RecordsPickupPrescription"),
+                    ClinicName = rx.ClinicName,
+                    PickupCode = rx.PickupCode,
+                    DetailLine = meds,
+                    StatusText = FormatOrderStatus(rx.Status),
+                    QrImage = QrImage(rx.PickupCode)
+                });
+            }
+
+            foreach (var lab in r.LabOrders)
+            {
+                LabOrders.Add(new CollectionOrderDisplayItem
+                {
+                    VisitId = lab.VisitId,
+                    ClinicId = lab.ClinicId,
+                    KindLabel = T("RecordsPickupLab"),
+                    ClinicName = lab.ClinicName,
+                    PickupCode = lab.PickupCode,
+                    DetailLine = lab.TestName,
+                    StatusText = FormatOrderStatus(lab.Status),
+                    QrImage = QrImage(lab.PickupCode)
+                });
+            }
         }
         finally
         {
             IsBusy = false;
         }
     }
+
+    private static ImageSource? QrImage(string pickupCode)
+    {
+        if (string.IsNullOrWhiteSpace(pickupCode))
+            return null;
+        var bytes = PickupQr.ToPng(pickupCode);
+        return ImageSource.FromStream(() => new MemoryStream(bytes));
+    }
+
+    private static string FormatOrderStatus(string? status) =>
+        status switch
+        {
+            "Dispensed" => T("RecordsPickupCollected"),
+            "Completed" => T("RecordsPickupCompleted"),
+            "Pending" => T("RecordsPickupWaiting"),
+            "Cancelled" => T("RecordsPickupCancelled"),
+            _ => string.IsNullOrWhiteSpace(status) ? string.Empty : status
+        };
 }

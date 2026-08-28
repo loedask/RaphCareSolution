@@ -17,6 +17,16 @@ public partial class RecordsPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is RecordsViewModel vm)
+        {
+            vm.Attach();
             await vm.LoadAsync();
+        }
+    }
+
+    protected override void OnDisappearing()
+    {
+        if (BindingContext is RecordsViewModel vm)
+            vm.Detach();
+        base.OnDisappearing();
     }
 }

@@ -13,6 +13,7 @@ public class ClinicStaffInvitation : BaseEntity
     public DateTime? AcceptedAt { get; set; }
     public Guid? AcceptedApplicationUserId { get; set; }
     public bool IsCancelled { get; set; }
+    public string JobRole { get; set; } = "Clinician";
 
     public Clinic Clinic { get; set; } = null!;
 }

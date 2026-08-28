@@ -11,6 +11,8 @@ public class LabRequest : BaseEntity
     public string TestName { get; set; } = string.Empty;
     public string? Priority { get; set; }
     public DateTime RequestedAt { get; set; }
+    public string Status { get; set; } = "Pending";
+    public string PickupCode { get; set; } = string.Empty;
 
     public Visit Visit { get; set; } = null!;
     public ICollection<LabResult> LabResults { get; set; } = new List<LabResult>();

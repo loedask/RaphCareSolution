@@ -40,8 +40,10 @@ Alternatively you can use **`.../.default`** in the client if you prefer; then a
 
 Controllers use policies such as **RequireProvider** / **RequireAdmin**, which map to **role** claims. In the **RaphCare API** registration:
 
-1. **App roles** → create roles whose **Value** matches what the API expects, e.g. `Administrator`, `Clinician`, `Patient`.
+1. **App roles** → create roles whose **Value** matches what the API expects: `Administrator`, `Clinician`, `Doctor`, `Pharmacist`, `LabTechnician`, `Patient`.
 2. **Enterprise applications** → your API app → **Users and groups** → assign users (or groups) to those app roles.
+
+`Doctor` can document visits and order prescriptions or lab tests. `Pharmacist` can mark prescriptions collected. `LabTechnician` can enter lab results. `Clinician` is general staff and can still complete collection. `Administrator` can do hospital setup and all of the above.
 
 Without role assignment, the user may authenticate (200 on token validation) but receive **403** on role-protected endpoints.
 

@@ -58,4 +58,19 @@ public sealed class UserRoleAssignmentService(IdentityDbContext identityDbContex
         identityDbContext.UserRoles.Remove(link);
         await identityDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
+
+    public async Task SetStaffJobRoleAsync(Guid userId, string jobRole, CancellationToken cancellationToken = default)
+    {
+        var canonical = RaphCareRoles.NormalizeJobRole(jobRole);
+        var current = await GetRoleNamesAsync(userId, cancellationToken).ConfigureAwait(false);
+        foreach (var name in RaphCareRoles.JobRoles)
+        {
+            if (string.Equals(name, canonical, StringComparison.OrdinalIgnoreCase))
+                continue;
+            if (current.Any(existing => string.Equals(existing, name, StringComparison.OrdinalIgnoreCase)))
+                await RemoveRoleAsync(userId, name, cancellationToken).ConfigureAwait(false);
+        }
+
+        await AssignRoleIfMissingAsync(userId, canonical, cancellationToken).ConfigureAwait(false);
+    }
 }

@@ -9,6 +9,9 @@ public class Prescription : BaseEntity
 {
     public Guid VisitId { get; set; }
     public DateTime IssuedAt { get; set; }
+    public string Status { get; set; } = "Pending";
+    public string PickupCode { get; set; } = string.Empty;
+    public DateTime? DispensedAt { get; set; }
     public string? Notes { get; set; }
 
     public Visit Visit { get; set; } = null!;

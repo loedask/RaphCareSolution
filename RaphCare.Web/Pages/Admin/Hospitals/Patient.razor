@@ -391,6 +391,8 @@
                                 <tr>
                                     <th>@AppResources.T("Common_Visit")</th>
                                     <th>@AppResources.T("Common_Medications")</th>
+                                    <th>@AppResources.T("Common_PickupCode")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
                                     <th>@AppResources.T("Common_Notes")</th>
                                 </tr>
                             </thead>
@@ -414,6 +416,8 @@
                                                 </ul>
                                             }
                                         </td>
+                                        <td class="pickup-code">@DisplayOrEmpty(rx.PickupCode)</td>
+                                        <td>@FormatOrderStatus(rx.Status)</td>
                                         <td>@DisplayOrEmpty(rx.Notes)</td>
                                     </tr>
                                 }
@@ -488,6 +492,8 @@
                                 <tr>
                                     <th>@AppResources.T("Common_Visit")</th>
                                     <th>@AppResources.T("Common_Test")</th>
+                                    <th>@AppResources.T("Common_PickupCode")</th>
+                                    <th>@AppResources.T("Common_Status")</th>
                                     <th>@AppResources.T("Common_Value")</th>
                                     <th>@AppResources.T("Common_ReferenceRange")</th>
                                     <th>@AppResources.T("Common_Reported")</th>
@@ -499,9 +505,11 @@
                                     <tr>
                                         <td><a href="/admin/hospitals/@ClinicId/visits/@lab.VisitId">@FormatLocal(lab.VisitStart)</a></td>
                                         <td>@lab.TestName</td>
-                                        <td>@lab.ResultValue @(lab.Unit ?? "")</td>
+                                        <td class="pickup-code">@DisplayOrEmpty(lab.PickupCode)</td>
+                                        <td>@FormatOrderStatus(lab.Status)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(lab.ResultValue) ? AppResources.T("Common_Waiting") : $"{lab.ResultValue} {lab.Unit ?? ""}".Trim())</td>
                                         <td>@DisplayOrEmpty(lab.ReferenceRange)</td>
-                                        <td>@FormatLocal(lab.ReportedAt)</td>
+                                        <td>@(lab.ReportedAt is { } reported ? FormatLocal(reported) : AppResources.T("Common_EmptyCell"))</td>
                                     </tr>
                                 }
                             </tbody>
@@ -894,6 +902,16 @@
 
     private string FormatLocal(DateTime utc) =>
         ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private static string FormatOrderStatus(string? status) =>
+        status switch
+        {
+            "Dispensed" => AppResources.T("Common_Collected"),
+            "Completed" => AppResources.T("Common_CompletedStatus"),
+            "Pending" => AppResources.T("Common_Waiting"),
+            "Cancelled" => AppResources.T("Common_Cancelled"),
+            _ => string.IsNullOrWhiteSpace(status) ? AppResources.T("Common_EmptyCell") : status
+        };
 
     private string FormatLocalDate(DateTime utc) =>
         ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);

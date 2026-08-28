@@ -10,10 +10,13 @@ namespace RaphCare.Identity.Entra;
 /// </summary>
 public partial class EntraUserProvisioningService(
     IApplicationUserStore userStore,
+    IUserRoleAssignmentService roleAssignmentService,
     ILogger<EntraUserProvisioningService> logger
     ) : IUserProvisioningService
 {
     private readonly IApplicationUserStore _userStore = userStore ?? throw new ArgumentNullException(nameof(userStore));
+    private readonly IUserRoleAssignmentService _roleAssignmentService =
+        roleAssignmentService ?? throw new ArgumentNullException(nameof(roleAssignmentService));
     private readonly ILogger<EntraUserProvisioningService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <summary>Ensures a domain user exists for the principal; creates or updates from Entra claims (oid, email, name).</summary>
@@ -30,6 +33,7 @@ public partial class EntraUserProvisioningService(
         if (existing != null)
         {
             await SyncUserAsync(existing, principal, cancellationToken).ConfigureAwait(false);
+            await SyncRolesFromPrincipalAsync(existing.Id, principal, cancellationToken).ConfigureAwait(false);
             return existing;
         }
 
@@ -45,6 +49,7 @@ public partial class EntraUserProvisioningService(
         };
 
         await _userStore.CreateAsync(user, cancellationToken).ConfigureAwait(false);
+        await SyncRolesFromPrincipalAsync(user.Id, principal, cancellationToken).ConfigureAwait(false);
         LogProvisionedNewUser(user.EntraObjectId, user.Email);
         return user;
     }
@@ -56,6 +61,19 @@ public partial class EntraUserProvisioningService(
         user.IsActive = true;
         user.UpdatedAt = DateTime.UtcNow;
         await _userStore.UpdateAsync(user, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task SyncRolesFromPrincipalAsync(
+        Guid userId,
+        ClaimsPrincipal principal,
+        CancellationToken cancellationToken)
+    {
+        foreach (var role in EntraRoleMapper.MapRoles(principal))
+        {
+            if (RaphCareRoles.IsPatient(role))
+                continue;
+            await _roleAssignmentService.AssignRoleIfMissingAsync(userId, role, cancellationToken).ConfigureAwait(false);
+        }
     }
 
     private static string GetEntraObjectId(ClaimsPrincipal principal)

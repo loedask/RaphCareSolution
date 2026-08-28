@@ -854,6 +854,57 @@ Accessible. Intelligent. Human.</value>
   <data name="RecordsDetailFailed" xml:space="preserve">
     <value>Could not load this record.</value>
   </data>
+  <data name="RecordsPickupSection" xml:space="preserve">
+    <value>To collect</value>
+  </data>
+  <data name="RecordsPickupHint" xml:space="preserve">
+    <value>Show this code at the counter when you collect medicines or lab tests.</value>
+  </data>
+  <data name="RecordsPickupPrescription" xml:space="preserve">
+    <value>Prescription</value>
+  </data>
+  <data name="RecordsPickupLab" xml:space="preserve">
+    <value>Lab test</value>
+  </data>
+  <data name="RecordsPickupWaiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="RecordsPickupCollected" xml:space="preserve">
+    <value>Collected</value>
+  </data>
+  <data name="RecordsPickupCompleted" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="RecordsPickupCodeLabel" xml:space="preserve">
+    <value>Pickup code</value>
+  </data>
+  <data name="RecordsPrescriptionsSection" xml:space="preserve">
+    <value>Prescriptions</value>
+  </data>
+  <data name="RecordsLabsSection" xml:space="preserve">
+    <value>Lab orders</value>
+  </data>
+  <data name="RecordsPickupCancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="RecordsScanPoster" xml:space="preserve">
+    <value>Scan poster</value>
+  </data>
+  <data name="RecordsClearCheckIn" xml:space="preserve">
+    <value>Show all hospitals</value>
+  </data>
+  <data name="RecordsPickupCheckInHint" xml:space="preserve">
+    <value>Show these codes at this hospital counter.</value>
+  </data>
+  <data name="RecordsScanCameraDenied" xml:space="preserve">
+    <value>Camera permission is needed to scan a poster.</value>
+  </data>
+  <data name="RecordsScanFailed" xml:space="preserve">
+    <value>Could not read a QR code from that photo. Try again, closer to the poster.</value>
+  </data>
+  <data name="RecordsScanNotPoster" xml:space="preserve">
+    <value>That QR is not a hospital collection poster.</value>
+  </data>
   <data name="InsuranceListTitle" xml:space="preserve">
     <value>Insurance</value>
   </data>

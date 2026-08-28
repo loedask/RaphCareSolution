@@ -18,11 +18,14 @@
 
 ## Role Definitions
 
-- **Administrator** — Full system access.
-- **Clinician** — Clinical access (provider role).
+- **Administrator** — Hospital setup and all collection actions.
+- **Clinician** — General hospital staff. Can complete pharmacy and lab collection.
+- **Doctor** — Start and document visits, including prescriptions and lab orders.
+- **Pharmacist** — Mark prescriptions as collected.
+- **LabTechnician** — Enter lab results at collection.
 - **Patient** — Patient portal access.
 
-Roles are seeded by IdentitySeeder (Administrator, Clinician, Patient). EntraRoleMapper maps Entra roles/groups from the JWT (e.g. `roles` claim) to these internal role names for authorization.
+Roles are seeded by IdentitySeeder. Entra app-role values on the JWT are mapped to these names (`Doctor`, `Pharmacist`, `LabTechnician`, plus aliases such as `Physician` and `Lab Tech`). Staff invited in admin web also get a job role stored on the user.
 
 ## Permission Handling
 

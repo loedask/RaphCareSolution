@@ -128,7 +128,7 @@
                                 <th>@AppResources.T("Common_Type")</th>
                                 <th>@AppResources.T("Common_Status")</th>
                                 <th>@AppResources.T("Common_Reason")</th>
-                                @if (_isAdministrator)
+                                @if (ShowAppointmentActions)
                                 {
                                     <th></th>
                                 }
@@ -146,10 +146,10 @@
                                     <td>@DisplayAppointmentType(appt.Type)</td>
                                     <td>@appt.Status</td>
                                     <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? AppResources.T("Common_EmptyCell") : appt.Reason)</td>
-                                    @if (_isAdministrator && appt.Status != "Cancelled")
+                                    @if (ShowAppointmentActions && appt.Status != "Cancelled")
                                     {
                                         <td class="admin-table-actions">
-                                            @if (string.Equals(appt.Type, "Telemedicine", StringComparison.OrdinalIgnoreCase) && appt.Status != "Completed")
+                                            @if (_isAdministrator && string.Equals(appt.Type, "Telemedicine", StringComparison.OrdinalIgnoreCase) && appt.Status != "Completed")
                                             {
                                                 <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments/@appt.Id/tele">@AppResources.T("Common_JoinTelehealth")</a>
                                             }
@@ -157,19 +157,22 @@
                                             {
                                                 <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/visits/@visitId">@AppResources.T("Common_OpenVisit")</a>
                                             }
-                                            else if (appt.Status != "Completed")
+                                            else if (_canDocumentVisits && appt.Status != "Completed")
                                             {
                                                 <button type="button" class="btn btn-ghost btn-sm" disabled="@(_startingVisitId == appt.Id)" @onclick="() => StartVisitAsync(appt.Id)">
                                                     @(_startingVisitId == appt.Id ? "…" : AppResources.T("Common_StartVisit"))
                                                 </button>
                                             }
-                                            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => StartReschedule(appt)">@AppResources.T("Common_Reschedule")</button>
-                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@(_cancellingId == appt.Id)" @onclick="() => CancelAppointmentAsync(appt.Id)">
-                                                @(_cancellingId == appt.Id ? "…" : AppResources.T("Common_Cancel"))
-                                            </button>
+                                            @if (_isAdministrator)
+                                            {
+                                                <button type="button" class="btn btn-ghost btn-sm" @onclick="() => StartReschedule(appt)">@AppResources.T("Common_Reschedule")</button>
+                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@(_cancellingId == appt.Id)" @onclick="() => CancelAppointmentAsync(appt.Id)">
+                                                    @(_cancellingId == appt.Id ? "…" : AppResources.T("Common_Cancel"))
+                                                </button>
+                                            }
                                         </td>
                                     }
-                                    else if (_isAdministrator)
+                                    else if (ShowAppointmentActions)
                                     {
                                         <td></td>
                                     }
@@ -207,6 +210,8 @@
     private bool _booking;
     private bool _rescheduling;
     private bool _isAdministrator;
+    private bool _canDocumentVisits;
+    private bool ShowAppointmentActions => _isAdministrator || _canDocumentVisits;
     private string? _error;
     private string? _success;
     private string _clinicName = string.Empty;
@@ -266,6 +271,7 @@
         {
             _clinicName = clinicResponse.Data.Name;
             _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            _canDocumentVisits = clinicResponse.Data.CurrentUserCanDocumentVisits;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
             _timeZoneLabel = string.IsNullOrWhiteSpace(_clinicTimeZone)
                 ? AppResources.T("Common_HospitalTime")

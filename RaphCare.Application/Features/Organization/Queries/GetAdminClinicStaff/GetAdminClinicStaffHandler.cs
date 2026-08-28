@@ -78,6 +78,9 @@ public sealed class GetAdminClinicStaffHandler(
                 IsPendingInvitation = true,
                 Email = pending.Email,
                 DisplayName = pending.Email,
+                Roles = string.IsNullOrWhiteSpace(pending.JobRole)
+                    ? Array.Empty<string>()
+                    : [pending.JobRole],
                 JoinedAt = pending.InvitedAt,
                 IsActive = true,
                 HasLoggedIn = false,

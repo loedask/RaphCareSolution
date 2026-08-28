@@ -4,6 +4,7 @@ public sealed class PendingStaffInvitationEntry
 {
     public Guid InvitationId { get; init; }
     public string Email { get; init; } = string.Empty;
+    public string JobRole { get; init; } = string.Empty;
     public DateTime InvitedAt { get; init; }
     public DateTime? LastInvitationSentAt { get; init; }
 }
@@ -14,6 +15,7 @@ public interface IClinicStaffPendingInvitationService
         Guid clinicId,
         string email,
         Guid invitedByApplicationUserId,
+        string jobRole,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<PendingStaffInvitationEntry>> GetPendingForClinicAsync(

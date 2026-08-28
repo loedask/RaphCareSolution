@@ -8,14 +8,70 @@
              Title="{Binding Title}"
              BackgroundColor="{StaticResource BackgroundColor}">
 
-    <Grid RowDefinitions="Auto,*" Padding="24" RowSpacing="12">
-        <Button Grid.Row="0"
-                Text="{Binding RefreshButtonText}"
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="24" RowSpacing="12">
+        <HorizontalStackLayout Grid.Row="0" Spacing="8">
+            <Button Text="{Binding RefreshButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding RefreshCommand}" />
+            <Button Text="{Binding ScanButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding ScanPosterCommand}" />
+        </HorizontalStackLayout>
+
+        <Button Grid.Row="1"
+                Text="{Binding ClearCheckInButtonText}"
+                IsVisible="{Binding ShowClearCheckIn}"
                 Style="{StaticResource SecondaryButton}"
-                Command="{Binding RefreshCommand}"
+                Command="{Binding ClearCheckInCommand}"
                 HorizontalOptions="Start" />
 
-        <Grid Grid.Row="1">
+        <VerticalStackLayout Grid.Row="2"
+                             Spacing="8"
+                             IsVisible="{Binding ShowPickup}">
+            <Label Text="{Binding PickupSectionTitle}" Style="{StaticResource SectionTitle}" />
+            <Label Text="{Binding PickupHint}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding PickupItems}" Spacing="8">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:CollectionOrderDisplayItem">
+                        <Grid>
+                            <Border Style="{StaticResource CardBorder}" Padding="16" Margin="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="4" InputTransparent="True">
+                                    <Label Text="{Binding KindLabel}" Style="{StaticResource BodySmall}" />
+                                    <Label Text="{Binding PickupCode}"
+                                           Style="{StaticResource TitleLarge}"
+                                           CharacterSpacing="4"
+                                           HorizontalTextAlignment="Center"
+                                           Margin="0" />
+                                    <Image Source="{Binding QrImage}"
+                                           HeightRequest="140"
+                                           WidthRequest="140"
+                                           HorizontalOptions="Center"
+                                           Aspect="AspectFit" />
+                                    <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                    <Label Text="{Binding ClinicName}"
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                    <Label Text="{Binding StatusText}"
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Button BackgroundColor="Transparent"
+                                    Opacity="0.02"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenDetailCommand}"
+                                    CommandParameter="{Binding VisitId}" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="3">
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" Color="{StaticResource PrimaryColor}" />
 
             <CollectionView ItemsSource="{Binding Items}"

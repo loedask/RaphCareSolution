@@ -1825,11 +1825,29 @@
   <data name="Inpatient_AddCapacity" xml:space="preserve">
     <value>Bakisa makoki</value>
   </data>
+  <data name="Inpatient_AddCapacityLead" xml:space="preserve">
+    <value>Bakisa esika soki esengeli, na nsima palwasi, ba shambre, mpe ba mbeto.</value>
+  </data>
+  <data name="Inpatient_NoFacilitiesHint" xml:space="preserve">
+    <value>Lopitalo oyo ezali naino na esika ya nzoto te. Bakisa moko mpo okoki kobakisa palwasi.</value>
+  </data>
+  <data name="Inpatient_FacilityCreated" xml:space="preserve">
+    <value>Esika ebakisami.</value>
+  </data>
+  <data name="Inpatient_FacilityNameRequired" xml:space="preserve">
+    <value>Koma nkombo ya esika.</value>
+  </data>
+  <data name="Inpatient_FacilityCountryRequired" xml:space="preserve">
+    <value>Koma mboka.</value>
+  </data>
   <data name="Inpatient_FacilityWardLabel" xml:space="preserve">
     <value>Esika ya kosala (palwasi) .</value>
   </data>
   <data name="Inpatient_SelectFacility" xml:space="preserve">
     <value>Pona esika ya kofanda...</value>
+  </data>
+  <data name="Inpatient_WardLabel" xml:space="preserve">
+    <value>Palwasi</value>
   </data>
   <data name="Inpatient_WardNameLabel" xml:space="preserve">
     <value>Nkombo ya palwasi</value>
@@ -2342,10 +2360,10 @@
     <value>Plan</value>
   </data>
   <data name="Common_LabResultsTitle" xml:space="preserve">
-    <value>Ba résultats ya labo</value>
+    <value>Ba tests ya labo</value>
   </data>
   <data name="Common_NoLabResults" xml:space="preserve">
-    <value>Résultat ya labo ekomami te.</value>
+    <value>Ba tests ya labo ezali te.</value>
   </data>
   <data name="Common_Test" xml:space="preserve">
     <value>Test</value>
@@ -2448,5 +2466,212 @@
   </data>
   <data name="Common_LabResultAdded" xml:space="preserve">
     <value>Résultat ya labo ebakisami.</value>
+  </data>
+  <data name="Collection_PageTitle" xml:space="preserve">
+    <value>Kozwa</value>
+  </data>
+  <data name="Collection_Title" xml:space="preserve">
+    <value>Kozwa</value>
+  </data>
+  <data name="Collection_Lead" xml:space="preserve">
+    <value>Ba nkisi mpe ba tests ya labo bazali kozela na {0}.</value>
+  </data>
+  <data name="Collection_Loading" xml:space="preserve">
+    <value>Kozwa liste ezali kokota.</value>
+  </data>
+  <data name="Collection_Eyebrow" xml:space="preserve">
+    <value>Luka</value>
+  </data>
+  <data name="Collection_FindTitle" xml:space="preserve">
+    <value>Luka commande</value>
+  </data>
+  <data name="Collection_SearchLabel" xml:space="preserve">
+    <value>Code ya kozwa, kombo, to ID ya santé ya mboka</value>
+  </data>
+  <data name="Collection_SearchPlaceholder" xml:space="preserve">
+    <value>Code, kombo, to ID</value>
+  </data>
+  <data name="Collection_Search" xml:space="preserve">
+    <value>Luka</value>
+  </data>
+  <data name="Collection_PharmacyEyebrow" xml:space="preserve">
+    <value>Pharmacie</value>
+  </data>
+  <data name="Collection_PrescriptionsTitle" xml:space="preserve">
+    <value>Ba ordonnances ya kozwa</value>
+  </data>
+  <data name="Collection_NoPrescriptions" xml:space="preserve">
+    <value>Ordonnance ezali kozela te.</value>
+  </data>
+  <data name="Collection_MarkCollected" xml:space="preserve">
+    <value>Tia ete azwaki</value>
+  </data>
+  <data name="Collection_MarkingCollected" xml:space="preserve">
+    <value>Kotya ete azwaki</value>
+  </data>
+  <data name="Collection_LabEyebrow" xml:space="preserve">
+    <value>Labo</value>
+  </data>
+  <data name="Collection_LabsTitle" xml:space="preserve">
+    <value>Ba tests ya labo ya kosilisa</value>
+  </data>
+  <data name="Collection_NoLabs" xml:space="preserve">
+    <value>Test ya labo ezali kozela te.</value>
+  </data>
+  <data name="Collection_EnterResult" xml:space="preserve">
+    <value>Koma résultat</value>
+  </data>
+  <data name="Collection_SaveResult" xml:space="preserve">
+    <value>Bomba résultat</value>
+  </data>
+  <data name="Collection_SavingResult" xml:space="preserve">
+    <value>Kobomba résultat</value>
+  </data>
+  <data name="Collection_PendingOne" xml:space="preserve">
+    <value>{0} ezali kozela</value>
+  </data>
+  <data name="Collection_PendingMany" xml:space="preserve">
+    <value>{0} bazali kozela</value>
+  </data>
+  <data name="Collection_CouldNotLoad" xml:space="preserve">
+    <value>Kozwa ba commandes ekoki te.</value>
+  </data>
+  <data name="Collection_CouldNotCollect" xml:space="preserve">
+    <value>Kotya ete ordonnance ezwami ekoki te.</value>
+  </data>
+  <data name="Collection_PrescriptionCollected" xml:space="preserve">
+    <value>Ordonnance ezwami.</value>
+  </data>
+  <data name="Collection_CouldNotSaveResult" xml:space="preserve">
+    <value>Kobomba résultat ya labo ekoki te.</value>
+  </data>
+  <data name="Collection_ResultSaved" xml:space="preserve">
+    <value>Résultat ya labo ebombami.</value>
+  </data>
+  <data name="Common_PickupCode" xml:space="preserve">
+    <value>Code ya kozwa</value>
+  </data>
+  <data name="Common_OrderLab" xml:space="preserve">
+    <value>Tinda test ya labo</value>
+  </data>
+  <data name="Common_OrderingLab" xml:space="preserve">
+    <value>Kotinda test ya labo</value>
+  </data>
+  <data name="Common_LabOrdered" xml:space="preserve">
+    <value>Test ya labo etindami.</value>
+  </data>
+  <data name="Common_CouldNotOrderLab" xml:space="preserve">
+    <value>Kotinda test ya labo ekoki te.</value>
+  </data>
+  <data name="Common_Waiting" xml:space="preserve">
+    <value>Kozela</value>
+  </data>
+  <data name="Common_Collected" xml:space="preserve">
+    <value>Ezwami</value>
+  </data>
+  <data name="Common_CompletedStatus" xml:space="preserve">
+    <value>Esilisi</value>
+  </data>
+  <data name="Common_Issued" xml:space="preserve">
+    <value>Epesami</value>
+  </data>
+  <data name="Common_Requested" xml:space="preserve">
+    <value>Esengami</value>
+  </data>
+  <data name="Visit_OrderLabLead" xml:space="preserve">
+    <value>Tinda test ntango visite ezali kokende. Ba staff bakoma résultat na Kozwa, ata nsima visite esili.</value>
+  </data>
+  <data name="Common_AddMedicationLine" xml:space="preserve">
+    <value>Bakisa nkisi mosusu</value>
+  </data>
+  <data name="Common_RemoveLine" xml:space="preserve">
+    <value>Longola ligne ya nsuka</value>
+  </data>
+  <data name="Common_Cancelled" xml:space="preserve">
+    <value>Elongolami</value>
+  </data>
+  <data name="Collection_CancelOrder" xml:space="preserve">
+    <value>Longola</value>
+  </data>
+  <data name="Collection_Undo" xml:space="preserve">
+    <value>Zongisa</value>
+  </data>
+  <data name="Collection_PrintSlip" xml:space="preserve">
+    <value>Imprimer bulletin</value>
+  </data>
+  <data name="Collection_RecentPrescriptionsTitle" xml:space="preserve">
+    <value>Ezwami sika</value>
+  </data>
+  <data name="Collection_RecentLabsTitle" xml:space="preserve">
+    <value>Ba tests esilisi sika</value>
+  </data>
+  <data name="Collection_NoRecent" xml:space="preserve">
+    <value>Eloko ezwami te na boluki oyo.</value>
+  </data>
+  <data name="Collection_CouldNotCancel" xml:space="preserve">
+    <value>Kolongola commande oyo ekoki te.</value>
+  </data>
+  <data name="Collection_OrderCancelled" xml:space="preserve">
+    <value>Commande elongolami.</value>
+  </data>
+  <data name="Collection_CouldNotUndo" xml:space="preserve">
+    <value>Kozongisa ekoki te.</value>
+  </data>
+  <data name="Collection_OrderRestored" xml:space="preserve">
+    <value>Commande ezali kozela lisusu.</value>
+  </data>
+  <data name="Collection_SlipTitle" xml:space="preserve">
+    <value>Bulletin ya kozwa</value>
+  </data>
+  <data name="Collection_ShowCode" xml:space="preserve">
+    <value>Lakisa code oyo na comptoir.</value>
+  </data>
+  <data name="Collection_ScanQr" xml:space="preserve">
+    <value>Scan QR</value>
+  </data>
+  <data name="Collection_StopScan" xml:space="preserve">
+    <value>Tika camera</value>
+  </data>
+  <data name="Collection_PrintPoster" xml:space="preserve">
+    <value>Imprimer affiche</value>
+  </data>
+  <data name="Collection_ScanUnsupported" xml:space="preserve">
+    <value>Navigateur oyo ekoki ko fungola camera te. Salela Chrome to Edge, to koma code.</value>
+  </data>
+  <data name="Collection_ScanFound" xml:space="preserve">
+    <value>Code ya kozwa escani.</value>
+  </data>
+  <data name="Collection_ScanPosterHere" xml:space="preserve">
+    <value>Oyo ezali affiche ya lopitalo oyo. Mokili ascanela na telephone na ye.</value>
+  </data>
+  <data name="Collection_ScanPosterOther" xml:space="preserve">
+    <value>Affiche oyo ezali ya lopitalo mosusu.</value>
+  </data>
+  <data name="Collection_ScanUnrecognized" xml:space="preserve">
+    <value>Tokoki kotanga code ya kozwa na QR oyo te.</value>
+  </data>
+  <data name="Collection_PosterTitle" xml:space="preserve">
+    <value>Scanela mpo na kozwa</value>
+  </data>
+  <data name="Collection_PosterHint" xml:space="preserve">
+    <value>Fungola application RaphCare mpe scanela affiche oyo mpo na komona ba code na yo.</value>
+  </data>
+  <data name="Collection_PosterDetail" xml:space="preserve">
+    <value>Kozwa na pharmacie mpe laboratoire</value>
+  </data>
+  <data name="StaffJob_Staff" xml:space="preserve">
+    <value>Mosali</value>
+  </data>
+  <data name="StaffJob_Doctor" xml:space="preserve">
+    <value>Monganga</value>
+  </data>
+  <data name="StaffJob_Pharmacist" xml:space="preserve">
+    <value>Pharmacien</value>
+  </data>
+  <data name="StaffJob_LabTechnician" xml:space="preserve">
+    <value>Technicien ya labo</value>
+  </data>
+  <data name="StaffJob_Administrator" xml:space="preserve">
+    <value>Mokambi</value>
   </data>
 </root>

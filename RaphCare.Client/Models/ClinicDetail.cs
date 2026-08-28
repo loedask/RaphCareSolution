@@ -12,6 +12,9 @@ public sealed class ClinicDetail
     public DateTime CreatedAt { get; set; }
     public Guid? RegisteredByApplicationUserId { get; set; }
     public bool CurrentUserIsAdministrator { get; set; }
+    public bool CurrentUserCanDocumentVisits { get; set; }
+    public bool CurrentUserCanDispense { get; set; }
+    public bool CurrentUserCanCompleteLabs { get; set; }
     public IReadOnlyList<FacilityListItem> Facilities { get; set; } = Array.Empty<FacilityListItem>();
 }
 

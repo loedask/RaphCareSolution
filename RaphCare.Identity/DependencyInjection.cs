@@ -90,6 +90,7 @@ public static class DependencyInjection
                         var provisioning = context.HttpContext.RequestServices
                             .GetRequiredService<IUserProvisioningService>();
                         await provisioning.EnsureUserExistsAsync(context.Principal, context.HttpContext.RequestAborted);
+                        EntraRoleMapper.ApplyAuthorizationRoleClaims(context.Principal);
                     }
                 };
             });

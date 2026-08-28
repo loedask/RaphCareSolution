@@ -20,14 +20,14 @@ public sealed class CreateAdminClinicVisitVitalHandler(
         CreateAdminClinicVisitVitalCommand request,
         CancellationToken cancellationToken)
     {
-        if (!await AdminClinicAuthorization.IsClinicAdministratorAsync(
+        if (!await AdminClinicAuthorization.CanDocumentVisitsAsync(
                 currentUserService,
                 clinicStaffMembershipService,
                 roleAssignmentService,
                 request.ClinicId,
                 cancellationToken)
             .ConfigureAwait(false))
-            throw new ForbiddenAccessException("Only hospital administrators can record vitals.");
+            throw new ForbiddenAccessException("Only a doctor or hospital administrator can record vitals.");
 
         var visit = await visitRepository.GetByIdAsync(request.VisitId, cancellationToken).ConfigureAwait(false);
         if (visit is null || visit.ClinicId != request.ClinicId)

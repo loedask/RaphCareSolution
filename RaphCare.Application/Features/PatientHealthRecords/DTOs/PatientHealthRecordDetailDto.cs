@@ -10,4 +10,8 @@ public class PatientHealthRecordDetailDto
     public string Status { get; set; } = string.Empty;
     public string? Summary { get; set; }
     public IReadOnlyList<PatientVitalSignDto> VitalSigns { get; init; } = Array.Empty<PatientVitalSignDto>();
+    public IReadOnlyList<PatientCollectionPrescriptionDto> Prescriptions { get; init; } =
+        Array.Empty<PatientCollectionPrescriptionDto>();
+    public IReadOnlyList<PatientCollectionLabOrderDto> LabOrders { get; init; } =
+        Array.Empty<PatientCollectionLabOrderDto>();
 }

@@ -1825,11 +1825,29 @@
   <data name="Inpatient_AddCapacity" xml:space="preserve">
     <value>Ajouter de la capacité</value>
   </data>
+  <data name="Inpatient_AddCapacityLead" xml:space="preserve">
+    <value>Ajoutez un établissement si besoin, puis une salle, des chambres et des lits.</value>
+  </data>
+  <data name="Inpatient_NoFacilitiesHint" xml:space="preserve">
+    <value>Cet hôpital n'a pas encore d'établissement physique. Ajoutez-en un pour créer des salles.</value>
+  </data>
+  <data name="Inpatient_FacilityCreated" xml:space="preserve">
+    <value>Établissement créé.</value>
+  </data>
+  <data name="Inpatient_FacilityNameRequired" xml:space="preserve">
+    <value>Saisissez le nom de l'établissement.</value>
+  </data>
+  <data name="Inpatient_FacilityCountryRequired" xml:space="preserve">
+    <value>Saisissez un pays.</value>
+  </data>
   <data name="Inpatient_FacilityWardLabel" xml:space="preserve">
     <value>Établissement (quartier)</value>
   </data>
   <data name="Inpatient_SelectFacility" xml:space="preserve">
     <value>Sélectionnez l’établissement…</value>
+  </data>
+  <data name="Inpatient_WardLabel" xml:space="preserve">
+    <value>Salle</value>
   </data>
   <data name="Inpatient_WardNameLabel" xml:space="preserve">
     <value>Nom du quartier</value>
@@ -2342,10 +2360,10 @@
     <value>Plan</value>
   </data>
   <data name="Common_LabResultsTitle" xml:space="preserve">
-    <value>Résultats de labo</value>
+    <value>Analyses</value>
   </data>
   <data name="Common_NoLabResults" xml:space="preserve">
-    <value>Aucun résultat de labo enregistré.</value>
+    <value>Aucune demande de labo pour le moment.</value>
   </data>
   <data name="Common_Test" xml:space="preserve">
     <value>Test</value>
@@ -2448,5 +2466,212 @@
   </data>
   <data name="Common_LabResultAdded" xml:space="preserve">
     <value>Résultat de labo ajouté.</value>
+  </data>
+  <data name="Collection_PageTitle" xml:space="preserve">
+    <value>Collecte</value>
+  </data>
+  <data name="Collection_Title" xml:space="preserve">
+    <value>Collecte</value>
+  </data>
+  <data name="Collection_Lead" xml:space="preserve">
+    <value>Médicaments et analyses en attente à {0}.</value>
+  </data>
+  <data name="Collection_Loading" xml:space="preserve">
+    <value>Chargement du tableau de collecte.</value>
+  </data>
+  <data name="Collection_Eyebrow" xml:space="preserve">
+    <value>Recherche</value>
+  </data>
+  <data name="Collection_FindTitle" xml:space="preserve">
+    <value>Trouver une commande</value>
+  </data>
+  <data name="Collection_SearchLabel" xml:space="preserve">
+    <value>Code de retrait, nom ou identifiant national de santé</value>
+  </data>
+  <data name="Collection_SearchPlaceholder" xml:space="preserve">
+    <value>Code, nom ou ID</value>
+  </data>
+  <data name="Collection_Search" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
+  <data name="Collection_PharmacyEyebrow" xml:space="preserve">
+    <value>Pharmacie</value>
+  </data>
+  <data name="Collection_PrescriptionsTitle" xml:space="preserve">
+    <value>Ordonnances à retirer</value>
+  </data>
+  <data name="Collection_NoPrescriptions" xml:space="preserve">
+    <value>Aucune ordonnance en attente.</value>
+  </data>
+  <data name="Collection_MarkCollected" xml:space="preserve">
+    <value>Marquer comme retiré</value>
+  </data>
+  <data name="Collection_MarkingCollected" xml:space="preserve">
+    <value>Marquage en cours</value>
+  </data>
+  <data name="Collection_LabEyebrow" xml:space="preserve">
+    <value>Labo</value>
+  </data>
+  <data name="Collection_LabsTitle" xml:space="preserve">
+    <value>Analyses à terminer</value>
+  </data>
+  <data name="Collection_NoLabs" xml:space="preserve">
+    <value>Aucune analyse en attente.</value>
+  </data>
+  <data name="Collection_EnterResult" xml:space="preserve">
+    <value>Saisir le résultat</value>
+  </data>
+  <data name="Collection_SaveResult" xml:space="preserve">
+    <value>Enregistrer le résultat</value>
+  </data>
+  <data name="Collection_SavingResult" xml:space="preserve">
+    <value>Enregistrement du résultat</value>
+  </data>
+  <data name="Collection_PendingOne" xml:space="preserve">
+    <value>{0} en attente</value>
+  </data>
+  <data name="Collection_PendingMany" xml:space="preserve">
+    <value>{0} en attente</value>
+  </data>
+  <data name="Collection_CouldNotLoad" xml:space="preserve">
+    <value>Impossible de charger les commandes à collecter.</value>
+  </data>
+  <data name="Collection_CouldNotCollect" xml:space="preserve">
+    <value>Impossible de marquer cette ordonnance comme retirée.</value>
+  </data>
+  <data name="Collection_PrescriptionCollected" xml:space="preserve">
+    <value>Ordonnance marquée comme retirée.</value>
+  </data>
+  <data name="Collection_CouldNotSaveResult" xml:space="preserve">
+    <value>Impossible d'enregistrer le résultat de labo.</value>
+  </data>
+  <data name="Collection_ResultSaved" xml:space="preserve">
+    <value>Résultat de labo enregistré.</value>
+  </data>
+  <data name="Common_PickupCode" xml:space="preserve">
+    <value>Code de retrait</value>
+  </data>
+  <data name="Common_OrderLab" xml:space="preserve">
+    <value>Commander l'analyse</value>
+  </data>
+  <data name="Common_OrderingLab" xml:space="preserve">
+    <value>Commande de l'analyse</value>
+  </data>
+  <data name="Common_LabOrdered" xml:space="preserve">
+    <value>Analyse commandée.</value>
+  </data>
+  <data name="Common_CouldNotOrderLab" xml:space="preserve">
+    <value>Impossible de commander l'analyse.</value>
+  </data>
+  <data name="Common_Waiting" xml:space="preserve">
+    <value>En attente</value>
+  </data>
+  <data name="Common_Collected" xml:space="preserve">
+    <value>Retiré</value>
+  </data>
+  <data name="Common_CompletedStatus" xml:space="preserve">
+    <value>Terminé</value>
+  </data>
+  <data name="Common_Issued" xml:space="preserve">
+    <value>Émis</value>
+  </data>
+  <data name="Common_Requested" xml:space="preserve">
+    <value>Demandé</value>
+  </data>
+  <data name="Visit_OrderLabLead" xml:space="preserve">
+    <value>Commandez le test pendant que la visite est ouverte. Le personnel saisit le résultat dans Collecte, y compris après la clôture de la visite.</value>
+  </data>
+  <data name="Common_AddMedicationLine" xml:space="preserve">
+    <value>Ajouter un autre médicament</value>
+  </data>
+  <data name="Common_RemoveLine" xml:space="preserve">
+    <value>Retirer la dernière ligne</value>
+  </data>
+  <data name="Common_Cancelled" xml:space="preserve">
+    <value>Annulé</value>
+  </data>
+  <data name="Collection_CancelOrder" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Collection_Undo" xml:space="preserve">
+    <value>Annuler l'action</value>
+  </data>
+  <data name="Collection_PrintSlip" xml:space="preserve">
+    <value>Imprimer le bon</value>
+  </data>
+  <data name="Collection_RecentPrescriptionsTitle" xml:space="preserve">
+    <value>Récemment retirés</value>
+  </data>
+  <data name="Collection_RecentLabsTitle" xml:space="preserve">
+    <value>Analyses récemment terminées</value>
+  </data>
+  <data name="Collection_NoRecent" xml:space="preserve">
+    <value>Aucun retrait dans cette recherche.</value>
+  </data>
+  <data name="Collection_CouldNotCancel" xml:space="preserve">
+    <value>Impossible d'annuler cette commande.</value>
+  </data>
+  <data name="Collection_OrderCancelled" xml:space="preserve">
+    <value>Commande annulée.</value>
+  </data>
+  <data name="Collection_CouldNotUndo" xml:space="preserve">
+    <value>Impossible d'annuler cette action.</value>
+  </data>
+  <data name="Collection_OrderRestored" xml:space="preserve">
+    <value>La commande est de nouveau en attente.</value>
+  </data>
+  <data name="Collection_SlipTitle" xml:space="preserve">
+    <value>Bon de retrait</value>
+  </data>
+  <data name="Collection_ShowCode" xml:space="preserve">
+    <value>Présentez ce code au comptoir.</value>
+  </data>
+  <data name="Collection_ScanQr" xml:space="preserve">
+    <value>Scanner le QR</value>
+  </data>
+  <data name="Collection_StopScan" xml:space="preserve">
+    <value>Arrêter la caméra</value>
+  </data>
+  <data name="Collection_PrintPoster" xml:space="preserve">
+    <value>Imprimer l&apos;affiche</value>
+  </data>
+  <data name="Collection_ScanUnsupported" xml:space="preserve">
+    <value>Ce navigateur ne peut pas ouvrir la caméra. Utilisez Chrome ou Edge, ou tapez le code.</value>
+  </data>
+  <data name="Collection_ScanFound" xml:space="preserve">
+    <value>Code de retrait scanné.</value>
+  </data>
+  <data name="Collection_ScanPosterHere" xml:space="preserve">
+    <value>C&apos;est l&apos;affiche de cet hôpital. Le patient doit la scanner sur son téléphone.</value>
+  </data>
+  <data name="Collection_ScanPosterOther" xml:space="preserve">
+    <value>Cette affiche est pour un autre hôpital.</value>
+  </data>
+  <data name="Collection_ScanUnrecognized" xml:space="preserve">
+    <value>Impossible de lire un code de retrait sur ce QR.</value>
+  </data>
+  <data name="Collection_PosterTitle" xml:space="preserve">
+    <value>Scannez pour retirer</value>
+  </data>
+  <data name="Collection_PosterHint" xml:space="preserve">
+    <value>Ouvrez l&apos;application RaphCare et scannez cette affiche pour afficher vos codes.</value>
+  </data>
+  <data name="Collection_PosterDetail" xml:space="preserve">
+    <value>Retrait pharmacie et laboratoire</value>
+  </data>
+  <data name="StaffJob_Staff" xml:space="preserve">
+    <value>Personnel</value>
+  </data>
+  <data name="StaffJob_Doctor" xml:space="preserve">
+    <value>Médecin</value>
+  </data>
+  <data name="StaffJob_Pharmacist" xml:space="preserve">
+    <value>Pharmacien</value>
+  </data>
+  <data name="StaffJob_LabTechnician" xml:space="preserve">
+    <value>Technicien de laboratoire</value>
+  </data>
+  <data name="StaffJob_Administrator" xml:space="preserve">
+    <value>Administrateur</value>
   </data>
 </root>

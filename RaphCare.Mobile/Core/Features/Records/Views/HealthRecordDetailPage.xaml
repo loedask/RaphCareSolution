@@ -48,6 +48,64 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <Label Text="{Binding PrescriptionsSectionTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,16,0,0" />
+                <CollectionView ItemsSource="{Binding Prescriptions}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:CollectionOrderDisplayItem">
+                            <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,8">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding KindLabel}" Style="{StaticResource BodySmall}" />
+                                    <Label Text="{Binding PickupCode}"
+                                           Style="{StaticResource TitleMedium}"
+                                           CharacterSpacing="4"
+                                           Margin="0" />
+                                    <Image Source="{Binding QrImage}"
+                                           HeightRequest="120"
+                                           WidthRequest="140"
+                                           HorizontalOptions="Start"
+                                           Aspect="AspectFit" />
+                                    <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                    <Label Text="{Binding StatusText}"
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Label Text="{Binding LabsSectionTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,16,0,0" />
+                <CollectionView ItemsSource="{Binding LabOrders}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:CollectionOrderDisplayItem">
+                            <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,8">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding KindLabel}" Style="{StaticResource BodySmall}" />
+                                    <Label Text="{Binding PickupCode}"
+                                           Style="{StaticResource TitleMedium}"
+                                           CharacterSpacing="4"
+                                           Margin="0" />
+                                    <Image Source="{Binding QrImage}"
+                                           HeightRequest="120"
+                                           WidthRequest="140"
+                                           HorizontalOptions="Start"
+                                           Aspect="AspectFit" />
+                                    <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                    <Label Text="{Binding StatusText}"
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </VerticalStackLayout>
 
             <Button Text="← Back"

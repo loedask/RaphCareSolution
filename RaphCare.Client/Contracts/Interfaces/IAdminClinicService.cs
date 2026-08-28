@@ -15,12 +15,12 @@ public interface IAdminClinicService
     Task<Response<Guid?>> ClaimByRegistrationNumberAsync(string registrationNumber, CancellationToken cancellationToken = default);
     Task<Response<RegisterClinicResult>> RegisterClinicAsync(RegisterClinicRequest request, CancellationToken cancellationToken = default);
     Task<Response<IReadOnlyList<ClinicStaffMember>>> GetStaffAsync(Guid clinicId, CancellationToken cancellationToken = default);
-    Task<Response<ClinicStaffMember>> InviteStaffAsync(Guid clinicId, string email, CancellationToken cancellationToken = default);
+    Task<Response<ClinicStaffMember>> InviteStaffAsync(Guid clinicId, string email, string? jobRole = null, CancellationToken cancellationToken = default);
     Task<Response<bool>> ResendStaffInvitationAsync(Guid clinicId, Guid userId, CancellationToken cancellationToken = default);
     Task<Response<bool>> ResendPendingInvitationAsync(Guid clinicId, Guid invitationId, CancellationToken cancellationToken = default);
     Task<Response<bool>> CancelPendingInvitationAsync(Guid clinicId, Guid invitationId, CancellationToken cancellationToken = default);
     Task<Response<bool>> RemoveStaffAsync(Guid clinicId, Guid userId, CancellationToken cancellationToken = default);
-    Task<Response<bool>> UpdateStaffRoleAsync(Guid clinicId, Guid userId, bool isAdministrator, CancellationToken cancellationToken = default);
+    Task<Response<bool>> UpdateStaffRoleAsync(Guid clinicId, Guid userId, bool isAdministrator, string? jobRole = null, CancellationToken cancellationToken = default);
     Task<Response<FacilityListItem>> CreateFacilityAsync(Guid clinicId, SaveFacilityRequest request, CancellationToken cancellationToken = default);
     Task<Response<FacilityListItem>> UpdateFacilityAsync(Guid clinicId, Guid facilityId, SaveFacilityRequest request, CancellationToken cancellationToken = default);
     Task<Response<bool>> DeleteFacilityAsync(Guid clinicId, Guid facilityId, CancellationToken cancellationToken = default);
@@ -43,6 +43,13 @@ public interface IAdminClinicService
     Task<Response<ClinicVisitNote>> AddVisitNoteAsync(Guid clinicId, Guid visitId, AddVisitNoteRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicVisitPrescription>> AddVisitPrescriptionAsync(Guid clinicId, Guid visitId, AddVisitPrescriptionRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicVisitLabResult>> AddVisitLabResultAsync(Guid clinicId, Guid visitId, AddVisitLabResultRequest request, CancellationToken cancellationToken = default);
+    Task<Response<ClinicVisitLabResult>> CompleteLabOrderAsync(Guid clinicId, Guid labRequestId, CompleteVisitLabOrderRequest request, CancellationToken cancellationToken = default);
+    Task<Response<ClinicVisitPrescription>> DispensePrescriptionAsync(Guid clinicId, Guid prescriptionId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicVisitPrescription>> CancelPrescriptionAsync(Guid clinicId, Guid prescriptionId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicVisitPrescription>> UndoPrescriptionAsync(Guid clinicId, Guid prescriptionId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicVisitLabResult>> CancelLabOrderAsync(Guid clinicId, Guid labRequestId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicVisitLabResult>> UndoLabOrderAsync(Guid clinicId, Guid labRequestId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicCollectionBoard>> GetCollectionOrdersAsync(Guid clinicId, string? search = null, CancellationToken cancellationToken = default);
     Task<Response<IReadOnlyList<ClinicDeviceListItem>>> GetDevicesAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicInpatientBoard>> GetInpatientBoardAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicWard>> CreateWardAsync(Guid clinicId, CreateWardRequest request, CancellationToken cancellationToken = default);

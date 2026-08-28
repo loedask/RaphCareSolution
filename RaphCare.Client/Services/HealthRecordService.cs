@@ -32,6 +32,15 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
         return Response<HealthRecordDetailViewModel?>.Success(result.Data is null ? null : MapDetail(result.Data));
     }
 
+    public async Task<Response<PatientCollectionOrdersViewModel>> GetMyCollectionOrdersAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await GetAsync<CollectionOrdersDto>("api/patient/collection-orders", cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess || result.Data is null)
+            return Response<PatientCollectionOrdersViewModel>.Failure(result.ErrorMessage ?? "Could not load items to collect.", result.StatusCode);
+
+        return Response<PatientCollectionOrdersViewModel>.Success(MapCollection(result.Data));
+    }
+
     private static PagedHealthRecordsViewModel MapPaged(PagedApiResult<HealthRecordListItemDto> paged)
     {
         var items = (paged.Items ?? Array.Empty<HealthRecordListItemDto>())
@@ -75,9 +84,62 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
             VisitType = dto.VisitType ?? string.Empty,
             Status = dto.Status ?? string.Empty,
             Summary = dto.Summary,
-            VitalSigns = vitals
+            VitalSigns = vitals,
+            Prescriptions = MapPrescriptions(dto.Prescriptions),
+            LabOrders = MapLabs(dto.LabOrders)
         };
     }
+
+    private static PatientCollectionOrdersViewModel MapCollection(CollectionOrdersDto dto) => new()
+    {
+        Prescriptions = MapPrescriptions(dto.Prescriptions),
+        LabOrders = MapLabs(dto.LabOrders)
+    };
+
+    private static List<PatientCollectionPrescriptionViewModel> MapPrescriptions(
+        IReadOnlyList<CollectionPrescriptionDto>? items) =>
+        (items ?? Array.Empty<CollectionPrescriptionDto>())
+        .Select(p => new PatientCollectionPrescriptionViewModel
+        {
+            Id = p.Id,
+            VisitId = p.VisitId,
+            ClinicId = p.ClinicId,
+            ClinicName = p.ClinicName ?? string.Empty,
+            PickupCode = p.PickupCode ?? string.Empty,
+            IssuedAt = p.IssuedAt,
+            Status = p.Status ?? string.Empty,
+            Notes = p.Notes,
+            Items = (p.Items ?? Array.Empty<CollectionPrescriptionItemDto>())
+                .Select(i => new PatientCollectionPrescriptionItemViewModel
+                {
+                    MedicationName = i.MedicationName ?? string.Empty,
+                    Dosage = i.Dosage,
+                    Frequency = i.Frequency,
+                    DurationDays = i.DurationDays
+                })
+                .ToList()
+        })
+        .ToList();
+
+    private static List<PatientCollectionLabOrderViewModel> MapLabs(
+        IReadOnlyList<CollectionLabOrderDto>? items) =>
+        (items ?? Array.Empty<CollectionLabOrderDto>())
+        .Select(l => new PatientCollectionLabOrderViewModel
+        {
+            Id = l.Id,
+            VisitId = l.VisitId,
+            ClinicId = l.ClinicId,
+            ClinicName = l.ClinicName ?? string.Empty,
+            PickupCode = l.PickupCode ?? string.Empty,
+            TestName = l.TestName ?? string.Empty,
+            Status = l.Status ?? string.Empty,
+            RequestedAt = l.RequestedAt,
+            ResultValue = l.ResultValue,
+            Unit = l.Unit,
+            ReferenceRange = l.ReferenceRange,
+            ReportedAt = l.ReportedAt
+        })
+        .ToList();
 
     private sealed class HealthRecordListItemDto
     {
@@ -98,6 +160,51 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
         public string? Status { get; set; }
         public string? Summary { get; set; }
         public IReadOnlyList<VitalSignDto>? VitalSigns { get; set; }
+        public IReadOnlyList<CollectionPrescriptionDto>? Prescriptions { get; set; }
+        public IReadOnlyList<CollectionLabOrderDto>? LabOrders { get; set; }
+    }
+
+    private sealed class CollectionOrdersDto
+    {
+        public IReadOnlyList<CollectionPrescriptionDto>? Prescriptions { get; set; }
+        public IReadOnlyList<CollectionLabOrderDto>? LabOrders { get; set; }
+    }
+
+    private sealed class CollectionPrescriptionDto
+    {
+        public Guid Id { get; set; }
+        public Guid VisitId { get; set; }
+        public Guid ClinicId { get; set; }
+        public string? ClinicName { get; set; }
+        public string? PickupCode { get; set; }
+        public DateTime IssuedAt { get; set; }
+        public string? Status { get; set; }
+        public string? Notes { get; set; }
+        public IReadOnlyList<CollectionPrescriptionItemDto>? Items { get; set; }
+    }
+
+    private sealed class CollectionPrescriptionItemDto
+    {
+        public string? MedicationName { get; set; }
+        public string? Dosage { get; set; }
+        public string? Frequency { get; set; }
+        public int DurationDays { get; set; }
+    }
+
+    private sealed class CollectionLabOrderDto
+    {
+        public Guid Id { get; set; }
+        public Guid VisitId { get; set; }
+        public Guid ClinicId { get; set; }
+        public string? ClinicName { get; set; }
+        public string? PickupCode { get; set; }
+        public string? TestName { get; set; }
+        public string? Status { get; set; }
+        public DateTime RequestedAt { get; set; }
+        public string? ResultValue { get; set; }
+        public string? Unit { get; set; }
+        public string? ReferenceRange { get; set; }
+        public DateTime? ReportedAt { get; set; }
     }
 
     private sealed class VitalSignDto

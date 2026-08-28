@@ -12,4 +12,14 @@ public sealed class CreateAdminClinicVisitPrescriptionCommand : IRequest<AdminCl
     public string? Frequency { get; set; }
     public int DurationDays { get; set; }
     public string? Notes { get; set; }
+    public IReadOnlyList<CreateAdminClinicVisitPrescriptionLine> Items { get; set; } =
+        Array.Empty<CreateAdminClinicVisitPrescriptionLine>();
+}
+
+public sealed class CreateAdminClinicVisitPrescriptionLine
+{
+    public string MedicationName { get; set; } = string.Empty;
+    public string? Dosage { get; set; }
+    public string? Frequency { get; set; }
+    public int DurationDays { get; set; }
 }
