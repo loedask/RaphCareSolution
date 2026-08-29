@@ -2592,6 +2592,54 @@
   <data name="Collection_PrintPoster" xml:space="preserve">
     <value>Print wall poster</value>
   </data>
+  <data name="Collection_OpenDisplay" xml:space="preserve">
+    <value>Waiting screen</value>
+  </data>
+  <data name="Collection_DisplayHint" xml:space="preserve">
+    <value>Call a pickup code to show it on the waiting screen. The screen shows codes only, not names. Open it on a TV or tablet and bookmark the page.</value>
+  </data>
+  <data name="Collection_Call" xml:space="preserve">
+    <value>Call</value>
+  </data>
+  <data name="Collection_OnScreen" xml:space="preserve">
+    <value>On screen</value>
+  </data>
+  <data name="Collection_Called" xml:space="preserve">
+    <value>That pickup code is on the waiting screen.</value>
+  </data>
+  <data name="Collection_CouldNotCall" xml:space="preserve">
+    <value>Could not call this pickup code.</value>
+  </data>
+  <data name="Collection_CouldNotOpenDisplay" xml:space="preserve">
+    <value>Could not open the waiting screen.</value>
+  </data>
+  <data name="Display_PageTitle" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="Display_Eyebrow" xml:space="preserve">
+    <value>Pharmacy and lab</value>
+  </data>
+  <data name="Display_NowServing" xml:space="preserve">
+    <value>Now serving</value>
+  </data>
+  <data name="Display_Waiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="Display_Idle" xml:space="preserve">
+    <value>Please wait. Staff will call your pickup code.</value>
+  </data>
+  <data name="Display_Hint" xml:space="preserve">
+    <value>Match the code on your pickup slip.</value>
+  </data>
+  <data name="Display_KindPharmacy" xml:space="preserve">
+    <value>Pharmacy</value>
+  </data>
+  <data name="Display_KindLab" xml:space="preserve">
+    <value>Lab</value>
+  </data>
+  <data name="Display_CouldNotLoad" xml:space="preserve">
+    <value>Could not load the waiting screen.</value>
+  </data>
   <data name="Collection_ScanUnsupported" xml:space="preserve">
     <value>This browser cannot open the camera. Use Chrome or Edge, or type the pickup code.</value>
   </data>

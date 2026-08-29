@@ -28,6 +28,11 @@ public class Clinic : AggregateRoot, ISoftDelete
     public DateTime? DeletedAt { get; set; }
     public Guid? RegisteredByApplicationUserId { get; set; }
 
+    /// <summary>
+    /// Unguessable token for the public waiting-room URL. The display shows pickup codes only.
+    /// </summary>
+    public string? CollectionDisplayToken { get; set; }
+
     public ICollection<Facility> Facilities { get; set; } = new List<Facility>();
     public ICollection<Department> Departments { get; set; } = new List<Department>();
     public ICollection<Provider> Providers { get; set; } = new List<Provider>();

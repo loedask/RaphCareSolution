@@ -46,7 +46,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Providers: list, detail, create, set active, schedules create / delete
 - [x] Appointments: list, book, cancel, reschedule
 - [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, lab orders (admin or doctor, InProgress)
-- [x] Collection board: search pending prescriptions/labs, camera QR scan, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR (clinic staff; visit may be closed)
+- [x] Collection board: search pending prescriptions/labs, camera QR scan, call a code onto the waiting screen, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR, public waiting-screen token (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs
 - [x] Clinic devices list
 - [x] Tele-session start (Agora join info for admin)
@@ -60,7 +60,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Provider detail + schedules
 - [x] Appointments page
 - [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress)
-- [x] Collection page (search by code / name / health ID; scan QR; mark collected; enter lab result; cancel; undo; print slip or wall poster). Command-deck header and numbered section rail.
+- [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page
 - [x] Admin dashboard
 - [x] Web UI language switcher (en / fr / ln / sw)
@@ -72,7 +72,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), and a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -296,10 +296,10 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 | Surface | Primary owner | Status snapshot |
 |---------|---------------|-----------------|
-| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete; collection board; staff jobs Doctor / Pharmacist / LabTechnician |
+| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + staff patient chart (view) + visit documentation on InProgress + collection counter; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screen; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

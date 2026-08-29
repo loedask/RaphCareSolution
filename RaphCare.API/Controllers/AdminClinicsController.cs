@@ -19,6 +19,9 @@ using RaphCare.Application.Features.Organization.Queries.GetAdminClinicAdmission
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicAdmissions;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicInpatientBoard;
 using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicAppointment;
+using RaphCare.Application.Features.Organization.Commands.CallAdminClinicLabOrder;
+using RaphCare.Application.Features.Organization.Commands.CallAdminClinicPrescription;
+using RaphCare.Application.Features.Organization.Commands.EnsureCollectionDisplayToken;
 using RaphCare.Application.Features.Organization.Commands.SetAdminClinicProviderActive;
 using RaphCare.Application.Features.Organization.Commands.StartAdminClinicTeleSession;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicAppointment;
@@ -938,6 +941,46 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
         return result is null ? NotFound() : Ok(result);
     }
 
+    /// <summary>Call a waiting prescription so its pickup code shows on the waiting screen.</summary>
+    [HttpPost("{id:guid}/prescriptions/{prescriptionId:guid}/call", Name = "CallAdminClinicPrescription")]
+    [ProducesResponseType(typeof(AdminClinicVisitPrescriptionDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CallPrescription(
+        Guid id,
+        Guid prescriptionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CallAdminClinicPrescriptionCommand
+            {
+                ClinicId = id,
+                PrescriptionId = prescriptionId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Call a waiting lab order so its pickup code shows on the waiting screen.</summary>
+    [HttpPost("{id:guid}/lab-orders/{labRequestId:guid}/call", Name = "CallAdminClinicLabOrder")]
+    [ProducesResponseType(typeof(AdminClinicVisitLabResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CallLabOrder(
+        Guid id,
+        Guid labRequestId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CallAdminClinicLabOrderCommand
+            {
+                ClinicId = id,
+                LabRequestId = labRequestId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
     /// <summary>Pending prescriptions and lab orders waiting at this hospital.</summary>
     [HttpGet("{id:guid}/collection-orders", Name = "GetAdminClinicCollectionOrders")]
     [ProducesResponseType(typeof(AdminClinicCollectionBoardDto), StatusCodes.Status200OK)]
@@ -949,6 +992,20 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(
             new GetAdminClinicCollectionOrdersQuery { ClinicId = id, Search = search },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Create or return the waiting-screen token for this hospital.</summary>
+    [HttpPost("{id:guid}/collection-display", Name = "EnsureAdminClinicCollectionDisplay")]
+    [ProducesResponseType(typeof(CollectionDisplayLinkDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> EnsureCollectionDisplay(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new EnsureCollectionDisplayTokenCommand { ClinicId = id },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }

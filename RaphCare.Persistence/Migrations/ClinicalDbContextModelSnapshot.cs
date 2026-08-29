@@ -345,6 +345,9 @@ namespace RaphCare.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("CalledAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -377,6 +380,8 @@ namespace RaphCare.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CalledAt");
 
                     b.HasIndex("PickupCode")
                         .IsUnique();
@@ -432,6 +437,9 @@ namespace RaphCare.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("CalledAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -462,6 +470,8 @@ namespace RaphCare.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CalledAt");
 
                     b.HasIndex("PickupCode")
                         .IsUnique();
@@ -915,6 +925,10 @@ namespace RaphCare.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CollectionDisplayToken")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -959,6 +973,10 @@ namespace RaphCare.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CollectionDisplayToken")
+                        .IsUnique()
+                        .HasFilter("[CollectionDisplayToken] IS NOT NULL");
 
                     b.HasIndex("IsDeleted");
 

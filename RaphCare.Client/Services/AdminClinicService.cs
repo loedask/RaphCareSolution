@@ -1362,6 +1362,55 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             "Could not undo the lab result.",
             cancellationToken);
 
+    public Task<Response<ClinicVisitPrescription>> CallPrescriptionAsync(
+        Guid clinicId,
+        Guid prescriptionId,
+        CancellationToken cancellationToken = default) =>
+        PostPrescriptionActionAsync(
+            clinicId,
+            prescriptionId,
+            "call",
+            "Only hospital staff can call a pickup code.",
+            "Could not call this pickup code.",
+            cancellationToken);
+
+    public Task<Response<ClinicVisitLabResult>> CallLabOrderAsync(
+        Guid clinicId,
+        Guid labRequestId,
+        CancellationToken cancellationToken = default) =>
+        PostLabActionAsync(
+            clinicId,
+            labRequestId,
+            "call",
+            "Only hospital staff can call a pickup code.",
+            "Could not call this pickup code.",
+            cancellationToken);
+
+    public async Task<Response<string>> EnsureCollectionDisplayTokenAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/collection-display", null, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<string>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<CollectionDisplayLinkDto>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            if (dto is null || string.IsNullOrWhiteSpace(dto.Token))
+                return Response<string>.Failure("Could not open the waiting screen.");
+
+            return Response<string>.Success(dto.Token);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<string>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     private async Task<Response<ClinicVisitPrescription>> PostPrescriptionActionAsync(
         Guid clinicId,
         Guid prescriptionId,
@@ -2345,6 +2394,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             IssuedAt = p.IssuedAt,
             Status = p.Status ?? "Pending",
             DispensedAt = p.DispensedAt,
+            CalledAt = p.CalledAt,
             Notes = p.Notes,
             Items = p.Items?.Select(i => new ClinicVisitPrescriptionItem
             {
@@ -2367,7 +2417,8 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             PickupCode = l.PickupCode ?? string.Empty,
             TestName = l.TestName ?? string.Empty,
             Status = l.Status ?? "Pending",
-            RequestedAt = l.RequestedAt
+            RequestedAt = l.RequestedAt,
+            CalledAt = l.CalledAt
         }).ToList() ?? [];
 
     private static ClinicVisitNote MapClinicalNote(VisitNoteDto dto) => new()
@@ -2909,6 +2960,11 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public DateTime? ReportedAt { get; set; }
     }
 
+    private sealed class CollectionDisplayLinkDto
+    {
+        public string Token { get; set; } = string.Empty;
+    }
+
     private sealed class CollectionBoardDto
     {
         public List<CollectionPrescriptionDto>? Prescriptions { get; set; }
@@ -2928,6 +2984,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public DateTime IssuedAt { get; set; }
         public string? Status { get; set; }
         public DateTime? DispensedAt { get; set; }
+        public DateTime? CalledAt { get; set; }
         public string? Notes { get; set; }
         public List<VisitPrescriptionItemDto>? Items { get; set; }
     }
@@ -2943,6 +3000,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string? TestName { get; set; }
         public string? Status { get; set; }
         public DateTime RequestedAt { get; set; }
+        public DateTime? CalledAt { get; set; }
     }
 
     private sealed class DeviceListItemDto

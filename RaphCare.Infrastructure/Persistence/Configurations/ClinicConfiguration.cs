@@ -17,8 +17,12 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
         builder.Property(e => e.Country).IsRequired().HasMaxLength(100);
         builder.Property(e => e.TimeZone).IsRequired().HasMaxLength(50);
         builder.Property(e => e.RegisteredByApplicationUserId);
+        builder.Property(e => e.CollectionDisplayToken).HasMaxLength(ClinicCollectionDisplayToken.Length);
         builder.HasIndex(e => e.RegistrationNumber);
         builder.HasIndex(e => e.ReferenceCode).IsUnique();
+        builder.HasIndex(e => e.CollectionDisplayToken)
+            .IsUnique()
+            .HasFilter("[CollectionDisplayToken] IS NOT NULL");
         builder.HasIndex(e => e.IsDeleted);
         builder.HasQueryFilter(e => !e.IsDeleted);
         builder.HasMany(e => e.Facilities).WithOne(f => f.Clinic).HasForeignKey(f => f.ClinicId).OnDelete(DeleteBehavior.Restrict);

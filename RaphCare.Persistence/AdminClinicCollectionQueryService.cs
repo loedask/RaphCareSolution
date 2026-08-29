@@ -91,6 +91,7 @@ public sealed class AdminClinicCollectionQueryService(ClinicalDbContext clinical
                 IssuedAt = p.IssuedAt,
                 Status = p.Status,
                 DispensedAt = p.DispensedAt,
+                CalledAt = p.CalledAt,
                 Notes = p.Notes,
                 Items = p.PrescriptionItems.Select(i => new AdminClinicVisitPrescriptionItemDto
                 {
@@ -115,7 +116,8 @@ public sealed class AdminClinicCollectionQueryService(ClinicalDbContext clinical
                 PickupCode = l.PickupCode,
                 TestName = l.TestName,
                 Status = l.Status,
-                RequestedAt = l.RequestedAt
+                RequestedAt = l.RequestedAt,
+                CalledAt = l.CalledAt
             };
         }
 
@@ -150,4 +152,69 @@ public sealed class AdminClinicCollectionQueryService(ClinicalDbContext clinical
             RecentLabOrders = recentLabs
         };
     }
+
+    public async Task<CollectionDisplayBoardDto?> GetDisplayBoardAsync(
+        string token,
+        CancellationToken cancellationToken = default)
+    {
+        var trimmed = token?.Trim() ?? string.Empty;
+        if (trimmed.Length == 0)
+            return null;
+
+        var clinic = await clinicalDbContext.Clinics
+            .AsNoTracking()
+            .Where(c => c.CollectionDisplayToken == trimmed && c.IsActive)
+            .Select(c => new { c.Id, c.Name })
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (clinic is null)
+            return null;
+
+        var prescriptions = await clinicalDbContext.Set<Prescription>()
+            .AsNoTracking()
+            .Where(p => p.Visit.ClinicId == clinic.Id && p.Status == "Pending")
+            .Select(p => new { p.PickupCode, Kind = CollectionDisplayBoardDto.PrescriptionKind, QueuedAt = p.IssuedAt, p.CalledAt })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var labOrders = await clinicalDbContext.Set<LabRequest>()
+            .AsNoTracking()
+            .Where(l => l.Visit.ClinicId == clinic.Id && l.Status == "Pending")
+            .Select(l => new { l.PickupCode, Kind = CollectionDisplayBoardDto.LabKind, QueuedAt = l.RequestedAt, l.CalledAt })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var pending = prescriptions
+            .Concat(labOrders)
+            .Select(r => new DisplayRow(r.PickupCode, r.Kind, r.QueuedAt, r.CalledAt))
+            .ToList();
+        var nowServing = pending
+            .Where(r => r.CalledAt is not null)
+            .OrderByDescending(r => r.CalledAt)
+            .Select(ToTicket)
+            .FirstOrDefault();
+
+        var waiting = pending
+            .Where(r => nowServing is null || r.PickupCode != nowServing.PickupCode)
+            .OrderBy(r => r.QueuedAt)
+            .Take(8)
+            .Select(ToTicket)
+            .ToList();
+
+        return new CollectionDisplayBoardDto
+        {
+            ClinicName = clinic.Name,
+            NowServing = nowServing,
+            Waiting = waiting
+        };
+    }
+
+    private sealed record DisplayRow(string PickupCode, string Kind, DateTime QueuedAt, DateTime? CalledAt);
+
+    private static CollectionDisplayTicketDto ToTicket(DisplayRow row) =>
+        new()
+        {
+            PickupCode = row.PickupCode,
+            Kind = row.Kind
+        };
 }

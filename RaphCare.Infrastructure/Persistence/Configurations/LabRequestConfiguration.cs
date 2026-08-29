@@ -12,5 +12,6 @@ public class LabRequestConfiguration : IEntityTypeConfiguration<LabRequest>
         builder.Property(e => e.PickupCode).IsRequired().HasMaxLength(8);
         builder.HasIndex(e => e.PickupCode).IsUnique();
         builder.HasIndex(e => e.Status);
+        builder.HasIndex(e => e.CalledAt);
     }
 }
