@@ -18,6 +18,7 @@ public sealed class PatientCollectionPrescriptionViewModel
     public string PickupCode { get; set; } = string.Empty;
     public DateTime IssuedAt { get; set; }
     public string Status { get; set; } = string.Empty;
+    public DateTime? CalledAt { get; set; }
     public string? Notes { get; set; }
     public IReadOnlyList<PatientCollectionPrescriptionItemViewModel> Items { get; set; } =
         Array.Empty<PatientCollectionPrescriptionItemViewModel>();
@@ -41,6 +42,7 @@ public sealed class PatientCollectionLabOrderViewModel
     public string TestName { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public DateTime RequestedAt { get; set; }
+    public DateTime? CalledAt { get; set; }
     public string? ResultValue { get; set; }
     public string? Unit { get; set; }
     public string? ReferenceRange { get; set; }

@@ -71,7 +71,14 @@
                                     <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
                                     <Label Text="{Binding StatusText}"
                                            Style="{StaticResource BodySmall}"
-                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                           TextColor="{StaticResource MutedForegroundColor}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsCalled}" Value="True">
+                                                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                                                <Setter Property="FontAttributes" Value="Bold" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
                                 </VerticalStackLayout>
                             </Border>
                         </DataTemplate>
@@ -100,7 +107,14 @@
                                     <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
                                     <Label Text="{Binding StatusText}"
                                            Style="{StaticResource BodySmall}"
-                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                           TextColor="{StaticResource MutedForegroundColor}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsCalled}" Value="True">
+                                                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                                                <Setter Property="FontAttributes" Value="Bold" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
                                 </VerticalStackLayout>
                             </Border>
                         </DataTemplate>

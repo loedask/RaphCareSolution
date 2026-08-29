@@ -144,7 +144,8 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
                     ClinicName = rx.ClinicName,
                     PickupCode = rx.PickupCode,
                     DetailLine = meds,
-                    StatusText = FormatOrderStatus(rx.Status),
+                    StatusText = FormatOrderStatus(rx.Status, rx.CalledAt),
+                    IsCalled = rx.CalledAt is not null && rx.Status == "Pending",
                     QrImage = QrImage(rx.PickupCode)
                 });
             }
@@ -159,7 +160,8 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
                     ClinicName = lab.ClinicName,
                     PickupCode = lab.PickupCode,
                     DetailLine = lab.TestName,
-                    StatusText = FormatOrderStatus(lab.Status),
+                    StatusText = FormatOrderStatus(lab.Status, lab.CalledAt),
+                    IsCalled = lab.CalledAt is not null && lab.Status == "Pending",
                     QrImage = QrImage(lab.PickupCode)
                 });
             }
@@ -178,11 +180,12 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
         return ImageSource.FromStream(() => new MemoryStream(bytes));
     }
 
-    private static string FormatOrderStatus(string? status) =>
+    private static string FormatOrderStatus(string? status, DateTime? calledAt) =>
         status switch
         {
             "Dispensed" => T("RecordsPickupCollected"),
             "Completed" => T("RecordsPickupCompleted"),
+            "Pending" when calledAt is not null => T("RecordsPickupCalled"),
             "Pending" => T("RecordsPickupWaiting"),
             "Cancelled" => T("RecordsPickupCancelled"),
             _ => string.IsNullOrWhiteSpace(status) ? string.Empty : status

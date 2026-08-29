@@ -84,7 +84,7 @@ What patients see on Android / iPhone.
 | Home and navigation | Done | Some areas can be turned off with feature flags |
 | Appointments (list, book, detail) | Done | |
 | Care / request a call / join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
-| Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. |
+| Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. When staff call your code, you get a notice and Health records say come to the counter. |
 | Insurance | Done | |
 | Billing / payment methods | Done | |
 | Family members | Done | |
@@ -157,7 +157,7 @@ What patients see on Android / iPhone.
 3. **Admin web:** open a patient chart. You should see medical info, insurance, invoices, and visit notes (empty until data exists).
 4. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
 5. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
-6. **Patient app on Android:** sign in. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster to show only that hospital.
+6. **Patient app on Android:** sign in. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
 7. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
 8. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
 

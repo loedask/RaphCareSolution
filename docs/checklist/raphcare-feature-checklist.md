@@ -151,7 +151,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 |------|-----|--------|-----------|-------|
 | Appointments | [x] | [x] | [x] | List / book / detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
-| Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in |
+| Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
 | Devices / BLE vitals | [x] | [x] | [x] | Offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |

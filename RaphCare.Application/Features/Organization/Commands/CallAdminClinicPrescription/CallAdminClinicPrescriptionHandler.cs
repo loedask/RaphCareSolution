@@ -4,6 +4,7 @@ using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicPrescription;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Domain.Clinical;
+using RaphCare.Domain.Organization;
 
 namespace RaphCare.Application.Features.Organization.Commands.CallAdminClinicPrescription;
 
@@ -12,8 +13,10 @@ public sealed class CallAdminClinicPrescriptionHandler(
     IClinicStaffMembershipService clinicStaffMembershipService,
     IRepository<Visit> visitRepository,
     IRepository<Prescription> prescriptionRepository,
+    IRepository<Clinic> clinicRepository,
     IDateTimeProvider clock,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    IMediator mediator)
     : IRequestHandler<CallAdminClinicPrescriptionCommand, AdminClinicVisitPrescriptionDto?>
 {
     public async Task<AdminClinicVisitPrescriptionDto?> Handle(
@@ -43,6 +46,16 @@ public sealed class CallAdminClinicPrescriptionHandler(
         prescription.CalledAt = clock.UtcNow;
         await prescriptionRepository.UpdateAsync(prescription, cancellationToken).ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        var clinic = await clinicRepository.GetByIdAsync(visit.ClinicId, cancellationToken).ConfigureAwait(false);
+        await CollectionPatientNotifier.NotifyCalledAsync(
+                mediator,
+                visit.PatientId,
+                clinic?.Name ?? string.Empty,
+                prescription.PickupCode,
+                isLab: false,
+                cancellationToken)
+            .ConfigureAwait(false);
 
         return await CancelAdminClinicPrescriptionHandler.MapAsync(
                 prescriptionRepository, prescription, visit, cancellationToken)

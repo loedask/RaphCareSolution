@@ -82,6 +82,7 @@ public sealed class GetMyCollectionOrdersHandler(
                 PickupCode = p.PickupCode,
                 IssuedAt = p.IssuedAt,
                 Status = p.Status,
+                CalledAt = p.CalledAt,
                 Notes = p.Notes,
                 Items = p.PrescriptionItems.Select(i => new PatientCollectionPrescriptionItemDto
                 {
@@ -104,6 +105,7 @@ public sealed class GetMyCollectionOrdersHandler(
                     TestName = l.TestName,
                     Status = l.Status,
                     RequestedAt = l.RequestedAt,
+                    CalledAt = l.CalledAt,
                     ResultValue = result?.ResultValue,
                     Unit = result?.Unit,
                     ReferenceRange = result?.ReferenceRange,
