@@ -2122,6 +2122,12 @@
   <data name="Appointments_PageTitle" xml:space="preserve">
     <value>Rendez-vous - Administrateur RaphCare</value>
   </data>
+  <data name="Appointments_SectionsAria" xml:space="preserve">
+    <value>Sections des rendez-vous</value>
+  </data>
+  <data name="Appointments_TabSchedule" xml:space="preserve">
+    <value>Planning</value>
+  </data>
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Patient</value>
   </data>

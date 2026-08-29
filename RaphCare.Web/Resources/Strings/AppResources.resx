@@ -2076,6 +2076,12 @@
   <data name="Appointments_PageTitle" xml:space="preserve">
     <value>Appointments - RaphCare Admin</value>
   </data>
+  <data name="Appointments_SectionsAria" xml:space="preserve">
+    <value>Appointment sections</value>
+  </data>
+  <data name="Appointments_TabSchedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Patient</value>
   </data>

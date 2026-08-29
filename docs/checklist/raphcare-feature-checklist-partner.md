@@ -36,9 +36,9 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Staff invites and roles | Done | Invite people. Set staff, doctor, pharmacist, or lab technician. Admins can still do hospital setup. |
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |
 | Patient chart (view) | Done | Same large header and section menu as other hospital pages. Sections: overview, clinical, coverage, devices, and care. Staff view this; they do not edit it here. |
-| Providers and schedules | Done | Add providers; manage schedules |
-| Appointments | Done | Book, cancel, reschedule |
-| Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete |
+| Providers and schedules | Done | Add providers; manage schedules. Provider detail uses the same large header and section menu. |
+| Appointments | Done | Book, cancel, reschedule. The appointments page uses the same large header and section menu. |
+| Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete. Visit and tele join pages match the hospital page layout. |
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |

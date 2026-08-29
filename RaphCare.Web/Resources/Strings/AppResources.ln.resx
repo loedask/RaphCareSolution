@@ -2122,6 +2122,12 @@
   <data name="Appointments_PageTitle" xml:space="preserve">
     <value>Ba rendez-vous - RaphCare Admin</value>
   </data>
+  <data name="Appointments_SectionsAria" xml:space="preserve">
+    <value>Biteni ya ba rendez-vous</value>
+  </data>
+  <data name="Appointments_TabSchedule" xml:space="preserve">
+    <value>Programme</value>
+  </data>
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Moto ya maladi</value>
   </data>

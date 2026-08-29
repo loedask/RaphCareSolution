@@ -57,11 +57,11 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Hospital detail (overview, facilities, patients, providers, staff). Opening a hospital hides the platform sidebar; All hospitals, language, and sign out sit in the top bar. Detail page uses a command-deck identity header and a numbered section rail.
 - [x] Shared admin UI (`AdminPageCard`, `AdminPageHeader`, `AdminStatCard`, `AdminReviewItem`, `AdminAlert`, `AdminEmptyState`, `AdminDefinitionItem`, `HospitalDeck*` command-deck pieces) used across hospital admin pages
 - [x] Patient detail page (staff chart on hospital-deck: overview, clinical, coverage, devices, care)
-- [x] Provider detail + schedules
-- [x] Appointments page
-- [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress)
+- [x] Provider detail + schedules (hospital-deck)
+- [x] Appointments page (hospital-deck)
+- [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress; hospital-deck)
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
-- [x] Tele join page
+- [x] Tele join page (hospital-deck)
 - [x] Admin dashboard
 - [x] Web UI language switcher (en / fr / ln / sw)
 - [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md)

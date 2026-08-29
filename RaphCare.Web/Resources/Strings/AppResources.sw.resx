@@ -2122,6 +2122,12 @@
   <data name="Appointments_PageTitle" xml:space="preserve">
     <value>Miadi - RaphCare Msimamizi</value>
   </data>
+  <data name="Appointments_SectionsAria" xml:space="preserve">
+    <value>Sehemu za miadi</value>
+  </data>
+  <data name="Appointments_TabSchedule" xml:space="preserve">
+    <value>Ratiba</value>
+  </data>
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Mgonjwa</value>
   </data>
