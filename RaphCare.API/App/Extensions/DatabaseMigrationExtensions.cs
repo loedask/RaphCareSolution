@@ -33,5 +33,8 @@ public static class DatabaseMigrationExtensions
         }
 
         await DatabaseSeeder.SeedAsync(services);
+
+        if (env.IsStaging())
+            await DemoPackSeeder.SeedAsync(services);
     }
 }

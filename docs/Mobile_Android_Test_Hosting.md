@@ -147,6 +147,18 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Set-RaphCareAzureTes
 
 Set App Service **`ASPNETCORE_ENVIRONMENT=Staging`** on **raphcare-api**. Startup then runs `ApplyMigrationsAsync` (migrate + seed) automatically.
 
+Staging also fills **RaphCare Demo Clinic** and these email/password accounts (no Microsoft sign-in, no extra email code):
+
+| Role | Email |
+|------|--------|
+| Hospital admin | `demo.admin@raphcare.com` |
+| Doctor | `demo.doctor@raphcare.com` |
+| Pharmacist | `demo.pharmacy@raphcare.com` |
+| Lab | `demo.lab@raphcare.com` |
+| Patient (mobile) | `demo.patient@raphcare.com` |
+
+Password: App Service setting **`Demo:Password`**. If that is empty, the seeder uses `RaphCareDemo!2026`. Rotate it on the App Service when you want a new password. The pack is additive. It does not delete Daskana or other hospitals.
+
 You can still migrate from a PC that can reach Azure SQL:
 
 ```powershell

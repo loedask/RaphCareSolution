@@ -25,13 +25,15 @@ public sealed class SignInProfessionalWithEmailHandler(
 
         if (string.IsNullOrWhiteSpace(request.VerificationCode))
         {
-            await EmailVerificationHelper.SendVerificationEmailAsync(
-                request.Email, emailOtpService, emailService, cancellationToken).ConfigureAwait(false);
-            return new EmailAuthResult { Success = true, RequiresVerification = true };
+            if (!DemoPackAccounts.IsDemoEmail(request.Email))
+            {
+                await EmailVerificationHelper.SendVerificationEmailAsync(
+                    request.Email, emailOtpService, emailService, cancellationToken).ConfigureAwait(false);
+                return new EmailAuthResult { Success = true, RequiresVerification = true };
+            }
         }
-
-        if (!await EmailVerificationHelper.ValidateCodeAsync(request.Email, request.VerificationCode, emailOtpService, cancellationToken)
-                .ConfigureAwait(false))
+        else if (!await EmailVerificationHelper.ValidateCodeAsync(request.Email, request.VerificationCode, emailOtpService, cancellationToken)
+                     .ConfigureAwait(false))
         {
             return new EmailAuthResult { Success = false, Error = "Invalid or expired verification code." };
         }

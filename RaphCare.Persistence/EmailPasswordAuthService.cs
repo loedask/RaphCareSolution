@@ -251,7 +251,13 @@ public class EmailPasswordAuthService(
         var hasStaffRole = await _identityDbContext.UserRoles
             .Where(ur => ur.UserId == user.Id)
             .Join(_identityDbContext.Roles, ur => ur.RoleId, r => r.Id, (_, r) => r.Name)
-            .AnyAsync(name => name == RaphCareRoles.Clinician || name == RaphCareRoles.Administrator, cancellationToken)
+            .AnyAsync(
+                name => name == RaphCareRoles.Administrator
+                    || name == RaphCareRoles.Clinician
+                    || name == RaphCareRoles.Doctor
+                    || name == RaphCareRoles.Pharmacist
+                    || name == RaphCareRoles.LabTechnician,
+                cancellationToken)
             .ConfigureAwait(false);
         if (!hasStaffRole)
             return (false, "This account is not registered as a healthcare professional.", null);
