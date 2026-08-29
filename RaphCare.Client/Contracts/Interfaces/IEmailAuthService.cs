@@ -6,11 +6,17 @@ public sealed class RegistrationClinicItem
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = string.Empty;
+    public string ReferenceCode { get; init; } = string.Empty;
 }
 
 public interface IEmailAuthService
 {
     Task<Response<IReadOnlyList<RegistrationClinicItem>>> GetRegistrationClinicsAsync(
+        string? search = null,
+        CancellationToken cancellationToken = default);
+
+    Task<Response<RegistrationClinicItem>> ResolveClinicByReferenceAsync(
+        string referenceCode,
         CancellationToken cancellationToken = default);
 
     Task<Response<EmailAuthResult>> RegisterAsync(

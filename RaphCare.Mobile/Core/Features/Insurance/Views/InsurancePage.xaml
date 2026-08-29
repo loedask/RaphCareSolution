@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:RaphCare.Mobile.Core.Features.Insurance.Models"
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Insurance.ViewModels"
+             xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Common.Controls"
              x:Class="RaphCare.Mobile.Core.Features.Insurance.Views.InsurancePage"
              x:DataType="vm:InsuranceViewModel"
              Title="{Binding Title}"
@@ -21,8 +22,6 @@
         </HorizontalStackLayout>
 
         <Grid Grid.Row="1">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" Color="{StaticResource PrimaryColor}" />
-
             <CollectionView ItemsSource="{Binding Items}"
                             SelectionMode="None"
                             IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
@@ -62,6 +61,8 @@
                    HorizontalTextAlignment="Center"
                    IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
                    InputTransparent="True" />
+
+            <shared:BusyOverlay IsBusy="{Binding IsBusy}" Message="{Binding BusyMessage}" />
         </Grid>
     </Grid>
 </ContentPage>

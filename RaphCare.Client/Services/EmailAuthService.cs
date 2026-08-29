@@ -10,19 +10,23 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     public async Task<Response<IReadOnlyList<RegistrationClinicItem>>> GetRegistrationClinicsAsync(
+        string? search = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
             var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var uri = string.IsNullOrWhiteSpace(search)
+                ? "api/auth/email/clinics"
+                : $"api/auth/email/clinics?q={Uri.EscapeDataString(search.Trim())}";
             var clinics = await client
-                .GetFromJsonAsync<List<RegistrationClinicDto>>("api/auth/email/clinics", JsonOptions, cancellationToken)
+                .GetFromJsonAsync<List<RegistrationClinicDto>>(uri, JsonOptions, cancellationToken)
                 .ConfigureAwait(false);
             if (clinics is null)
                 return Response<IReadOnlyList<RegistrationClinicItem>>.Failure("Could not load clinics.");
 
             IReadOnlyList<RegistrationClinicItem> items = clinics
-                .Select(c => new RegistrationClinicItem { Id = c.Id, Name = c.Name })
+                .Select(MapClinic)
                 .ToList();
             return Response<IReadOnlyList<RegistrationClinicItem>>.Success(items);
         }
@@ -31,6 +35,46 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
             return Response<IReadOnlyList<RegistrationClinicItem>>.Failure(ex.Message);
         }
     }
+
+    public async Task<Response<RegistrationClinicItem>> ResolveClinicByReferenceAsync(
+        string referenceCode,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var uri = $"api/auth/email/clinics/by-reference?code={Uri.EscapeDataString(referenceCode.Trim())}";
+            using var response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<RegistrationClinicItem>.Failure("No clinic found for that reference code.", 404);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                return Response<RegistrationClinicItem>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<RegistrationClinicDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<RegistrationClinicItem>.Failure("Could not resolve clinic.");
+
+            return Response<RegistrationClinicItem>.Success(MapClinic(dto));
+        }
+        catch (HttpRequestException ex)
+        {
+            return Response<RegistrationClinicItem>.Failure(ex.Message);
+        }
+    }
+
+    private static RegistrationClinicItem MapClinic(RegistrationClinicDto c) =>
+        new()
+        {
+            Id = c.Id,
+            Name = c.Name,
+            ReferenceCode = c.ReferenceCode
+        };
 
     public async Task<Response<object>> SendEmailVerificationAsync(string email, CancellationToken cancellationToken = default)
     {
@@ -202,38 +246,7 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
     private static async Task<string> ReadErrorAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         var body = response.Content is null ? null : await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        if (!string.IsNullOrWhiteSpace(body))
-        {
-            try
-            {
-                var dto = JsonSerializer.Deserialize<ErrorDto>(body, JsonOptions);
-                if (!string.IsNullOrWhiteSpace(dto?.Error))
-                    return dto.Error;
-
-                if (dto?.Errors is { Count: > 0 })
-                    return FormatValidationErrors(dto.Errors);
-
-                if (!string.IsNullOrWhiteSpace(dto?.Detail))
-                    return dto.Detail;
-            }
-            catch
-            {
-            }
-        }
-
-        return response.ReasonPhrase ?? "Request failed.";
-    }
-
-    private static string FormatValidationErrors(Dictionary<string, string[]> errors)
-    {
-        var messages = errors
-            .SelectMany(pair => pair.Value)
-            .Where(message => !string.IsNullOrWhiteSpace(message))
-            .ToList();
-
-        return messages.Count > 0
-            ? string.Join(" ", messages)
-            : "One or more validation failures have occurred.";
+        return RaphCare.Client.Services.Base.ApiErrorMessages.FromBody(body, response.StatusCode);
     }
 
     private sealed class AuthResponseDto
@@ -243,16 +256,10 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
         public bool RequiresVerification { get; set; }
     }
 
-    private sealed class ErrorDto
-    {
-        public string? Error { get; set; }
-        public string? Detail { get; set; }
-        public Dictionary<string, string[]>? Errors { get; set; }
-    }
-
     private sealed class RegistrationClinicDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string ReferenceCode { get; set; } = string.Empty;
     }
 }

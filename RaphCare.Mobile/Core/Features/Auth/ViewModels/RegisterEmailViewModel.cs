@@ -3,6 +3,7 @@ using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Auth.Models;
 using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.Services.Api;
 using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
@@ -15,22 +16,28 @@ public class RegisterEmailViewModel : BaseViewModel
 {
     private readonly IAuthService _authService;
     private readonly IEmailAuthService _emailAuthService;
+    private readonly ISelectedClinicStore _selectedClinicStore;
 
     private string _firstName = string.Empty;
     private string _lastName = string.Empty;
     private string _email = string.Empty;
     private string _password = string.Empty;
     private string _verificationCode = string.Empty;
+    private string _clinicSearchText = string.Empty;
     private ClinicPickerItem? _selectedClinic;
     private string? _errorMessage;
     private string? _statusMessage;
     private bool _sendingCode;
     private bool _awaitingVerification;
 
-    public RegisterEmailViewModel(IAuthService authService, IEmailAuthService emailAuthService)
+    public RegisterEmailViewModel(
+        IAuthService authService,
+        IEmailAuthService emailAuthService,
+        ISelectedClinicStore selectedClinicStore)
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _emailAuthService = emailAuthService ?? throw new ArgumentNullException(nameof(emailAuthService));
+        _selectedClinicStore = selectedClinicStore ?? throw new ArgumentNullException(nameof(selectedClinicStore));
         Title = T("RegisterEmailTitle");
         PageTitle = T("RegisterEmailTitle");
         DetailsSubtitle = T("RegisterEmailSubtitle");
@@ -42,6 +49,8 @@ public class RegisterEmailViewModel : BaseViewModel
         VerificationCodeLabel = T("RegisterEmailVerificationCode");
         ClinicLabel = T("RegisterEmailClinic");
         ClinicHint = T("RegisterEmailClinicHint");
+        ClinicSearchPlaceholder = T("RegisterEmailClinicSearchPlaceholder");
+        ClinicSearchButtonText = T("RegisterEmailClinicSearchButton");
         PlaceholderFirst = T("RegisterEmailPlaceholderFirst");
         PlaceholderLast = T("RegisterEmailPlaceholderLast");
         PlaceholderEmail = T("RegisterEmailPlaceholderEmail");
@@ -57,6 +66,7 @@ public class RegisterEmailViewModel : BaseViewModel
 
         ContinueCommand = new Command(async () => await ContinueAsync(), () => !IsBusy);
         SendCodeCommand = new Command(async () => await SendCodeAsync(), () => !IsBusy && !SendingCode);
+        SearchClinicsCommand = new Command(async () => await LoadClinicsAsync(), () => !IsBusy);
         BackCommand = new Command(async () => await GoBackAsync());
         SignInCommand = new Command(async () => await SafeShellNavigator.GoToAsync("SignInPage"));
     }
@@ -73,6 +83,8 @@ public class RegisterEmailViewModel : BaseViewModel
     public string VerificationCodeLabel { get; }
     public string ClinicLabel { get; }
     public string ClinicHint { get; }
+    public string ClinicSearchPlaceholder { get; }
+    public string ClinicSearchButtonText { get; }
     public string PlaceholderFirst { get; }
     public string PlaceholderLast { get; }
     public string PlaceholderEmail { get; }
@@ -116,6 +128,12 @@ public class RegisterEmailViewModel : BaseViewModel
     {
         get => _verificationCode;
         set => SetProperty(ref _verificationCode, value ?? string.Empty);
+    }
+
+    public string ClinicSearchText
+    {
+        get => _clinicSearchText;
+        set => SetProperty(ref _clinicSearchText, value ?? string.Empty);
     }
 
     public ClinicPickerItem? SelectedClinic
@@ -167,6 +185,7 @@ public class RegisterEmailViewModel : BaseViewModel
 
     public ICommand ContinueCommand { get; }
     public ICommand SendCodeCommand { get; }
+    public ICommand SearchClinicsCommand { get; }
     public ICommand BackCommand { get; }
     public ICommand SignInCommand { get; }
 
@@ -174,13 +193,18 @@ public class RegisterEmailViewModel : BaseViewModel
     {
         ErrorMessage = null;
         IsBusy = true;
+        BusyMessage = T("CommonLoadingShort");
         try
         {
-            var response = await _emailAuthService.GetRegistrationClinicsAsync(CancellationToken.None).ConfigureAwait(false);
+            var search = string.IsNullOrWhiteSpace(ClinicSearchText) ? null : ClinicSearchText.Trim();
+            var response = await _emailAuthService
+                .GetRegistrationClinicsAsync(search, CancellationToken.None)
+                .ConfigureAwait(false);
             Clinics.Clear();
             Clinics.Add(new ClinicPickerItem
             {
                 Id = null,
+                Name = T("RegisterEmailClinicNone"),
                 DisplayName = T("RegisterEmailClinicNone")
             });
 
@@ -188,10 +212,16 @@ public class RegisterEmailViewModel : BaseViewModel
             {
                 foreach (var clinic in response.Data)
                 {
+                    var code = clinic.ReferenceCode?.Trim() ?? string.Empty;
+                    var display = string.IsNullOrEmpty(code)
+                        ? clinic.Name
+                        : $"{clinic.Name} ({code})";
                     Clinics.Add(new ClinicPickerItem
                     {
                         Id = clinic.Id,
-                        DisplayName = clinic.Name
+                        Name = clinic.Name,
+                        ReferenceCode = code,
+                        DisplayName = display
                     });
                 }
             }
@@ -205,6 +235,7 @@ public class RegisterEmailViewModel : BaseViewModel
                 Clinics.Add(new ClinicPickerItem
                 {
                     Id = null,
+                    Name = T("RegisterEmailClinicNone"),
                     DisplayName = T("RegisterEmailClinicNone")
                 });
                 SelectedClinic = Clinics[0];
@@ -213,6 +244,7 @@ public class RegisterEmailViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
+            (SearchClinicsCommand as Command)?.ChangeCanExecute();
         }
     }
 
@@ -238,6 +270,7 @@ public class RegisterEmailViewModel : BaseViewModel
             return;
 
         IsBusy = true;
+        BusyMessage = T("RegisterEmailSendingBusy");
         try
         {
             var sent = await TrySendCodeAsync().ConfigureAwait(false);
@@ -310,6 +343,7 @@ public class RegisterEmailViewModel : BaseViewModel
         }
 
         IsBusy = true;
+        BusyMessage = T("RegisterEmailCreatingBusy");
         try
         {
             var clinicId = SelectedClinic?.Id;
@@ -326,6 +360,14 @@ public class RegisterEmailViewModel : BaseViewModel
 
             if (result.Success)
             {
+                if (SelectedClinic?.Id is { } selectedId)
+                {
+                    _selectedClinicStore.SetClinic(
+                        selectedId,
+                        SelectedClinic.Name,
+                        SelectedClinic.ReferenceCode);
+                }
+
                 await SafeShellNavigator.GoToAsync($"//{AppNavigator.AccountCreated}").ConfigureAwait(false);
             }
             else

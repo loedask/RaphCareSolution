@@ -9,6 +9,7 @@ using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Settings.Models;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.Services.Api;
 using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.Services.Localization;
 using RaphCare.Mobile.Core.Common.ViewModels;
@@ -22,6 +23,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
     private readonly IPatientProfileService _profileApi;
     private readonly IPatientEmergencyContactsService _emergencyContactsApi;
     private readonly ILocalPatientProfileStore _localProfile;
+    private readonly ISelectedClinicStore _selectedClinic;
     private int _emergencyContactCount;
     private string _displayName = string.Empty;
     private string _emailLine = string.Empty;
@@ -32,12 +34,14 @@ public sealed class ProfileHubViewModel : BaseViewModel
         IAuthService auth,
         IPatientProfileService profileApi,
         IPatientEmergencyContactsService emergencyContactsApi,
-        ILocalPatientProfileStore localProfile)
+        ILocalPatientProfileStore localProfile,
+        ISelectedClinicStore selectedClinic)
     {
         _auth = auth ?? throw new ArgumentNullException(nameof(auth));
         _profileApi = profileApi ?? throw new ArgumentNullException(nameof(profileApi));
         _emergencyContactsApi = emergencyContactsApi ?? throw new ArgumentNullException(nameof(emergencyContactsApi));
         _localProfile = localProfile ?? throw new ArgumentNullException(nameof(localProfile));
+        _selectedClinic = selectedClinic ?? throw new ArgumentNullException(nameof(selectedClinic));
 
         Title = T("ProfileHubTitle");
         EditProfileCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.EditProfile));
@@ -226,6 +230,13 @@ public sealed class ProfileHubViewModel : BaseViewModel
                 },
                 new ProfileMenuRowModel
                 {
+                    Title = T("ProfileMyClinic"),
+                    Subtitle = ClinicSubtitle(),
+                    IconGlyph = "🏥",
+                    TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.SelectClinic)),
+                },
+                new ProfileMenuRowModel
+                {
                     Title = T("ProfileChangePassword"),
                     Subtitle = T("ProfileChangePasswordHint"),
                     IconGlyph = "🔒",
@@ -338,6 +349,17 @@ public sealed class ProfileHubViewModel : BaseViewModel
         });
     }
 
+    private string ClinicSubtitle()
+    {
+        if (_selectedClinic.ClinicId is null)
+            return T("ProfileMyClinicHint");
+
+        var name = _selectedClinic.ClinicName ?? T("SelectClinicUnknownName");
+        return string.IsNullOrWhiteSpace(_selectedClinic.ReferenceCode)
+            ? name
+            : Format(T("ProfileMyClinicSelectedFormat"), name, _selectedClinic.ReferenceCode);
+    }
+
     private static string CurrentLanguageSubtitle() => AppLanguagePreference.CurrentNativeName;
 
     private string EmergencyContactsSubtitle()
@@ -360,6 +382,6 @@ public sealed class ProfileHubViewModel : BaseViewModel
             return;
 
         await _auth.SignOutAsync(CancellationToken.None);
-        await SafeShellNavigator.GoToAsync("//" + AppNavigator.Landing);
+        await SafeShellNavigator.GoToAsync($"//{AppNavigator.Landing}");
     }
 }

@@ -25,4 +25,10 @@ public class FeatureFlagOptions
     public bool FamilyMembersEnabled { get; set; }
     public bool AiAssistantEnabled { get; set; }
     public bool NotificationsEnabled { get; set; }
+
+    /// <summary>Create-account option: phone OTP registration. Off until the flow is production-ready.</summary>
+    public bool PhoneRegistrationEnabled { get; set; }
+
+    /// <summary>Create-account option: voice registration. Off until the flow is production-ready.</summary>
+    public bool VoiceRegistrationEnabled { get; set; }
 }

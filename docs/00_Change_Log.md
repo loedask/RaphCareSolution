@@ -1,4 +1,18 @@
-# RaphCare Dev Companion — Change Log
+# RaphCare Dev Companion - Change Log
+
+## Date
+
+2026-08-29
+
+## High-level summary of changes
+
+Admin hospital sub-pages (patient chart, appointments, visit, provider, tele join) use the same hospital-deck chrome as hospital detail, inpatient, and collection: masthead, section rail, and staged panels instead of one long stack of cards.
+
+## Modules modified
+
+- **RaphCare.Web:** `Pages/Admin/Hospitals/Patient.razor`, `Appointments.razor`, `Visit.razor`, `Provider.razor`, and `TeleJoin.razor` restyled; en/fr/ln/sw strings for deck sections.
+
+---
 
 ## Date
 
@@ -20,12 +34,12 @@ Documented the future goal that staff use the existing web admin on a phone. Dir
 
 ## High-level summary of changes
 
-Inpatient lifecycle completed in admin (capacity edit/delete, maintenance, transfer, admission history). Staff mental-health assessments persisted; reporting dashboard snapshot seeded. Mobile push device registration wired for demos; admin topbar search enabled. Y6 emergency events on admin patient chart and hospital Devices board. Agora server token path verified (Crc32.NET fix + smoke script). Companion docs updated.
+Inpatient lifecycle completed in admin (capacity edit/delete, maintenance, transfer, admission history). Staff mental-health assessments persisted; reporting dashboard snapshot seeded. Mobile push device registration wired for demos; admin topbar search enabled. Y6 emergency events on admin patient chart and hospital Devices board. Agora server token path verified (Crc32.NET fix and smoke script). Companion docs updated.
 
 ## Modules modified
 
 - **RaphCare.API / Application / Client / Web:** Admin inpatient update/delete/status/transfer/history endpoints and UI; Y6 emergency events on admin patient chart and hospital Devices board (`GET api/clinical/emergency-events`).
-- **RaphCare.Persistence:** MentalHealthAssessments migration; ClinicalSeeder inpatient capacity + demo patient/assessment; ReportingSeeder dashboard snapshot.
+- **RaphCare.Persistence:** MentalHealthAssessments migration; ClinicalSeeder inpatient capacity and demo patient/assessment; ReportingSeeder dashboard snapshot.
 - **RaphCare.Infrastructure:** Explicit **Crc32.NET** reference for Agora token minting.
 - **RaphCare.Mobile:** Push registration service; iOS Agora session scaffolding.
 - **tools:** `verify-agora-rtc-config.ps1` Agora token smoke.
@@ -52,11 +66,11 @@ Documentation was re-analyzed against the current codebase and updated so that t
 
 ## Modules modified
 
-- **RaphCare.API:** Added AuthController (api/auth/otp — POST send, POST verify), VoiceOnboardingController (api/onboarding — POST voice, multipart).
+- **RaphCare.API:** Added AuthController (api/auth/otp: POST send, POST verify), VoiceOnboardingController (api/onboarding: POST voice, multipart).
 - **RaphCare.Application:** Added interfaces IOtpService, ITokenService, ISpeechToTextService; features Auth (SendOtp, VerifyOtp), Onboarding (CreatePatientFromVoice); TranscriptionResult DTO.
 - **RaphCare.Domain:** Added OtpCode (Identity), VoiceRecording (Patients); Patient has VoiceRecordings collection.
 - **RaphCare.Infrastructure:** Added OtpService, TokenService (JwtOptions), AzureSpeechToTextService (placeholder); OtpCodeConfiguration, VoiceRecordingConfiguration.
-- **RaphCare.Persistence:** IdentityDbContext — OtpCodes DbSet and OtpCodeConfiguration; ClinicalDbContext — VoiceRecordings DbSet and VoiceRecordingConfiguration; IRepository&lt;VoiceRecording&gt; registration.
+- **RaphCare.Persistence:** IdentityDbContext: OtpCodes DbSet and OtpCodeConfiguration; ClinicalDbContext: VoiceRecordings DbSet and VoiceRecordingConfiguration; IRepository&lt;VoiceRecording&gt; registration.
 
 ## Database changes
 

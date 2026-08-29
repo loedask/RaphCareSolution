@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Plugin.Maui.Audio;
+using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Auth.Models;
 using RaphCare.Mobile.Core.Features.Auth.Services;
@@ -19,6 +20,7 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
 {
     private readonly IVoiceOnboardingService _voice;
     private readonly OnboardingOptions _onboarding;
+    private readonly IClinicIdProvider _clinicIdProvider;
     private readonly IAudioManager _audioManager;
 
     private IAudioRecorder? _recorder;
@@ -39,10 +41,12 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
     public VoiceSubmitViewModel(
         IVoiceOnboardingService voice,
         IOptions<OnboardingOptions> onboarding,
+        IClinicIdProvider clinicIdProvider,
         IAudioManager audioManager)
     {
         _voice = voice ?? throw new ArgumentNullException(nameof(voice));
         _onboarding = onboarding?.Value ?? throw new ArgumentNullException(nameof(onboarding));
+        _clinicIdProvider = clinicIdProvider ?? throw new ArgumentNullException(nameof(clinicIdProvider));
         _audioManager = audioManager ?? throw new ArgumentNullException(nameof(audioManager));
         _language = string.IsNullOrWhiteSpace(_onboarding.DefaultVoiceLanguage) ? "en-ZA" : _onboarding.DefaultVoiceLanguage;
 
@@ -255,7 +259,7 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
             return;
         }
 
-        var clinicId = _onboarding.VoiceRegistrationClinicId;
+        var clinicId = _clinicIdProvider.GetClinicId();
         if (clinicId is null || clinicId == Guid.Empty)
         {
             ErrorMessage = T("VoiceSubmitNoClinic");
@@ -294,7 +298,7 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
     {
         if (_recorder is null || !IsRecording) return;
 
-        var clinicId = _onboarding.VoiceRegistrationClinicId;
+        var clinicId = _clinicIdProvider.GetClinicId();
         if (clinicId is null || clinicId == Guid.Empty)
         {
             ErrorMessage = T("VoiceSubmitNoClinic");

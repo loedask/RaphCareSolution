@@ -13,13 +13,27 @@ public abstract class BaseViewModel : INotifyPropertyChanged
 {
     private bool _isBusy;
     private string? _title;
+    private string? _busyMessage;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public bool IsBusy
     {
         get => _isBusy;
-        set => SetProperty(ref _isBusy, value);
+        set
+        {
+            if (!SetProperty(ref _isBusy, value))
+                return;
+            if (!value)
+                BusyMessage = null;
+        }
+    }
+
+    /// <summary>Optional message for <c>BusyOverlay</c> while <see cref="IsBusy"/> is true.</summary>
+    public string? BusyMessage
+    {
+        get => _busyMessage;
+        set => SetProperty(ref _busyMessage, value);
     }
 
     public string? Title
@@ -28,19 +42,21 @@ public abstract class BaseViewModel : INotifyPropertyChanged
         set => SetProperty(ref _title, value);
     }
 
-    protected void SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string? propertyName = null)
+    /// <returns><see langword="true"/> when the value changed.</returns>
+    protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(backingStore, value))
-            return;
+            return false;
         backingStore = value;
         OnPropertyChanged(propertyName);
+        return true;
     }
 
     /// <summary>
     /// Raises <see cref="PropertyChanged"/> on the main thread so bindings stay valid after
     /// <c>await</c> with <c>ConfigureAwait(false)</c> (common in ViewModels).
     /// </summary>
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         var handler = PropertyChanged;
         if (handler is null)

@@ -83,6 +83,30 @@ Accessible. Intelligent. Human.</value>
   <data name="AuthSignIn" xml:space="preserve">
     <value>Sign In</value>
   </data>
+  <data name="AuthSigningInBusy" xml:space="preserve">
+    <value>Signing in…</value>
+  </data>
+  <data name="AuthVerifyingBusy" xml:space="preserve">
+    <value>Verifying…</value>
+  </data>
+  <data name="AuthOpeningHomeBusy" xml:space="preserve">
+    <value>Opening your home…</value>
+  </data>
+  <data name="CommonLoading" xml:space="preserve">
+    <value>Please wait…</value>
+  </data>
+  <data name="CommonLoadingShort" xml:space="preserve">
+    <value>Loading…</value>
+  </data>
+  <data name="RegisterEmailCreatingBusy" xml:space="preserve">
+    <value>Creating your account…</value>
+  </data>
+  <data name="RegisterEmailSendingBusy" xml:space="preserve">
+    <value>Sending code…</value>
+  </data>
+  <data name="ForgotPasswordBusy" xml:space="preserve">
+    <value>Please wait…</value>
+  </data>
   <data name="AuthCreateAccount" xml:space="preserve">
     <value>Create Account</value>
   </data>
@@ -300,7 +324,7 @@ Accessible. Intelligent. Human.</value>
     <value>Could not finish recording. Try again.</value>
   </data>
   <data name="VoiceSubmitNoClinic" xml:space="preserve">
-    <value>Set Onboarding:VoiceRegistrationClinicId in appsettings (or User Secrets) to your demo clinic Guid.</value>
+    <value>Choose your clinic in Profile (My clinic), or set Api:ClinicId for local demos.</value>
   </data>
   <data name="VoiceSubmitFailed" xml:space="preserve">
     <value>Upload failed.</value>
@@ -423,10 +447,16 @@ Accessible. Intelligent. Human.</value>
     <value>Clinic (optional)</value>
   </data>
   <data name="RegisterEmailClinicHint" xml:space="preserve">
-    <value>You can register without choosing a clinic and link one later.</value>
+    <value>Search by clinic name, or pick one that shows a code like RC-DEMCLN. You can also set this later under Profile, My clinic.</value>
   </data>
   <data name="RegisterEmailClinicNone" xml:space="preserve">
     <value>No clinic: register without linking</value>
+  </data>
+  <data name="RegisterEmailClinicSearchPlaceholder" xml:space="preserve">
+    <value>Search by name or RC- code</value>
+  </data>
+  <data name="RegisterEmailClinicSearchButton" xml:space="preserve">
+    <value>Search</value>
   </data>
   <data name="RegisterEmailFailed" xml:space="preserve">
     <value>Registration failed.</value>
@@ -830,11 +860,41 @@ Accessible. Intelligent. Human.</value>
   <data name="AppointmentsProviderId" xml:space="preserve">
     <value>Provider ID</value>
   </data>
+  <data name="AppointmentsClinicLabel" xml:space="preserve">
+    <value>Clinic</value>
+  </data>
+  <data name="AppointmentsProviderLabel" xml:space="preserve">
+    <value>Provider</value>
+  </data>
+  <data name="AppointmentsChangeClinic" xml:space="preserve">
+    <value>Choose clinic</value>
+  </data>
+  <data name="AppointmentsNoClinicSelected" xml:space="preserve">
+    <value>Choose your clinic first (Profile, My clinic).</value>
+  </data>
+  <data name="AppointmentsClinicConfigured" xml:space="preserve">
+    <value>Your clinic is ready for booking</value>
+  </data>
+  <data name="AppointmentsClinicSummaryWithCodeFormat" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="AppointmentsSelectProvider" xml:space="preserve">
+    <value>Select a provider.</value>
+  </data>
+  <data name="AppointmentsProvidersLoadFailed" xml:space="preserve">
+    <value>Could not load providers for this clinic.</value>
+  </data>
+  <data name="AppointmentsNoProviders" xml:space="preserve">
+    <value>No providers are available at this clinic yet.</value>
+  </data>
+  <data name="AppointmentsProviderFallback" xml:space="preserve">
+    <value>Provider</value>
+  </data>
   <data name="AppointmentsBookTitle" xml:space="preserve">
     <value>Book appointment</value>
   </data>
   <data name="AppointmentsBookSubtitle" xml:space="preserve">
-    <value>Enter clinic and provider identifiers from your care team, then choose date and times.</value>
+    <value>Pick a provider, then choose the date and times.</value>
   </data>
   <data name="AppointmentsDate" xml:space="preserve">
     <value>Date</value>
@@ -852,7 +912,7 @@ Accessible. Intelligent. Human.</value>
     <value>Cancel</value>
   </data>
   <data name="AppointmentsInvalidGuid" xml:space="preserve">
-    <value>Enter valid clinic and provider IDs (GUIDs).</value>
+    <value>Choose a clinic and provider before booking.</value>
   </data>
   <data name="AppointmentsEndBeforeStart" xml:space="preserve">
     <value>End time must be after start time.</value>
@@ -1358,6 +1418,15 @@ Accessible. Intelligent. Human.</value>
   <data name="ProfilePersonalInformationHint" xml:space="preserve">
     <value>Name, email, phone</value>
   </data>
+  <data name="ProfileMyClinic" xml:space="preserve">
+    <value>My clinic</value>
+  </data>
+  <data name="ProfileMyClinicHint" xml:space="preserve">
+    <value>Search by name or enter an RC- code</value>
+  </data>
+  <data name="ProfileMyClinicSelectedFormat" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
   <data name="ProfileChangePassword" xml:space="preserve">
     <value>Change password</value>
   </data>
@@ -1690,6 +1759,63 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="LanguageSettingsTitle" xml:space="preserve">
     <value>Language</value>
+  </data>
+  <data name="SelectClinicTitle" xml:space="preserve">
+    <value>My clinic</value>
+  </data>
+  <data name="SelectClinicHint" xml:space="preserve">
+    <value>Pick your hospital by name, or enter the clinic code they gave you (for example RC-DEMCLN). The app uses this for your appointments and records.</value>
+  </data>
+  <data name="SelectClinicSearchLabel" xml:space="preserve">
+    <value>Search clinics</value>
+  </data>
+  <data name="SelectClinicSearchPlaceholder" xml:space="preserve">
+    <value>Clinic name or RC- code</value>
+  </data>
+  <data name="SelectClinicSearchButton" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SelectClinicReferenceLabel" xml:space="preserve">
+    <value>Clinic reference code</value>
+  </data>
+  <data name="SelectClinicReferencePlaceholder" xml:space="preserve">
+    <value>RC-DEMCLN</value>
+  </data>
+  <data name="SelectClinicUseCodeButton" xml:space="preserve">
+    <value>Use code</value>
+  </data>
+  <data name="SelectClinicClearButton" xml:space="preserve">
+    <value>Clear selection</value>
+  </data>
+  <data name="SelectClinicNoneSelected" xml:space="preserve">
+    <value>No clinic selected yet</value>
+  </data>
+  <data name="SelectClinicUnknownName" xml:space="preserve">
+    <value>Selected clinic</value>
+  </data>
+  <data name="SelectClinicCurrentFormat" xml:space="preserve">
+    <value>Current: {0}</value>
+  </data>
+  <data name="SelectClinicCurrentWithCodeFormat" xml:space="preserve">
+    <value>Current: {0} ({1})</value>
+  </data>
+  <data name="SelectClinicLoadFailed" xml:space="preserve">
+    <value>Could not load clinics. Check your connection and try again.</value>
+  </data>
+  <data name="SelectClinicNoResults" xml:space="preserve">
+    <value>No clinics matched that search.</value>
+  </data>
+  <data name="SelectClinicReferenceRequired" xml:space="preserve">
+    <value>Enter a clinic reference code.</value>
+  </data>
+  <data name="SelectClinicReferenceNotFound" xml:space="preserve">
+    <value>No clinic found for that reference code.</value>
+  </data>
+  <data name="SelectClinicSaved" xml:space="preserve">
+    <value>Clinic saved. Refresh appointments and records if they were open.</value>
+  </data>
+  <data name="SelectClinicCleared" xml:space="preserve">
+    <value>Clinic selection cleared.</value>
   </data>
   <data name="LanguageSettingsUpdatedFormat" xml:space="preserve">
     <value>App language set to {0}.</value>

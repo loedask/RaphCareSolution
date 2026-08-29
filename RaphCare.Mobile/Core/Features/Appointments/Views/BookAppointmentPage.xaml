@@ -15,32 +15,47 @@
                    TextColor="{StaticResource MutedForegroundColor}"
                    Margin="0,0,0,8" />
 
-            <shared:InputField LabelText="{Binding ClinicIdLabel}" Text="{Binding ClinicIdText}" />
-            <shared:InputField LabelText="{Binding ProviderIdLabel}" Text="{Binding ProviderIdText}" />
+            <Label Text="{Binding ClinicLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+            <Label Text="{Binding ClinicSummary}"
+                   Style="{StaticResource BodyMedium}" />
+            <Button Text="{Binding ChangeClinicLabel}"
+                    Style="{StaticResource AuthSecondaryButton}"
+                    Command="{Binding ChangeClinicCommand}"
+                    HorizontalOptions="Start" />
 
-            <Label Text="{Binding DateLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-            <DatePicker Date="{Binding AppointmentDate}" TextColor="{StaticResource ForegroundColor}" />
+            <VerticalStackLayout Spacing="14" IsVisible="{Binding HasClinic}">
+                <Label Text="{Binding ProviderLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <Picker Title="{Binding ProviderLabel}"
+                        ItemsSource="{Binding Providers}"
+                        ItemDisplayBinding="{Binding DisplayName}"
+                        SelectedItem="{Binding SelectedProvider}"
+                        TextColor="{StaticResource ForegroundColor}"
+                        BackgroundColor="{StaticResource CardColor}" />
 
-            <Label Text="{Binding StartLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-            <TimePicker Time="{Binding StartTime}" TextColor="{StaticResource ForegroundColor}" />
+                <Label Text="{Binding DateLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <DatePicker Date="{Binding AppointmentDate}" TextColor="{StaticResource ForegroundColor}" />
 
-            <Label Text="{Binding EndLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-            <TimePicker Time="{Binding EndTime}" TextColor="{StaticResource ForegroundColor}" />
+                <Label Text="{Binding StartLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <TimePicker Time="{Binding StartTime}" TextColor="{StaticResource ForegroundColor}" />
 
-            <Label Text="{Binding TypeLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-            <Picker Title="{Binding TypeLabel}"
-                    ItemsSource="{Binding VisitTypes}"
-                    SelectedItem="{Binding SelectedType}"
-                    TextColor="{StaticResource ForegroundColor}"
-                    BackgroundColor="{StaticResource CardColor}" />
+                <Label Text="{Binding EndLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <TimePicker Time="{Binding EndTime}" TextColor="{StaticResource ForegroundColor}" />
 
-            <Label Text="{Binding ReasonLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-            <Editor Text="{Binding Reason}"
-                    Placeholder="Optional"
-                    AutoSize="TextChanges"
-                    MinimumHeightRequest="80"
-                    TextColor="{StaticResource ForegroundColor}"
-                    BackgroundColor="{StaticResource CardColor}" />
+                <Label Text="{Binding TypeLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <Picker Title="{Binding TypeLabel}"
+                        ItemsSource="{Binding VisitTypes}"
+                        SelectedItem="{Binding SelectedType}"
+                        TextColor="{StaticResource ForegroundColor}"
+                        BackgroundColor="{StaticResource CardColor}" />
+
+                <Label Text="{Binding ReasonLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                <Editor Text="{Binding Reason}"
+                        Placeholder="{Binding ReasonLabel}"
+                        AutoSize="TextChanges"
+                        MinimumHeightRequest="80"
+                        TextColor="{StaticResource ForegroundColor}"
+                        BackgroundColor="{StaticResource CardColor}" />
+            </VerticalStackLayout>
 
             <Label Text="{Binding ErrorMessage}"
                    TextColor="{StaticResource ErrorColor}"
@@ -50,6 +65,7 @@
             <shared:GradientButton Text="{Binding SubmitLabel}"
                                    Command="{Binding SubmitCommand}"
                                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                   IsVisible="{Binding HasClinic}"
                                    Margin="0,16,0,0" />
 
             <Button Text="{Binding CancelLabel}"

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Notifications.ViewModels"
              xmlns:cn="clr-namespace:RaphCare.Client.Models.Notifications;assembly=RaphCare.Client"
+             xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Common.Controls"
              x:Class="RaphCare.Mobile.Core.Features.Notifications.Views.NotificationsPage"
              x:DataType="vm:NotificationsViewModel"
              Title="{Binding Title}"
@@ -26,8 +27,6 @@
                TextColor="{StaticResource MutedForegroundColor}" />
 
         <Grid Grid.Row="2">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" Color="{StaticResource PrimaryColor}" />
-
             <CollectionView ItemsSource="{Binding Items}"
                             SelectionMode="None"
                             IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
@@ -90,6 +89,8 @@
                    HorizontalTextAlignment="Center"
                    IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
                    InputTransparent="True" />
+
+            <shared:BusyOverlay IsBusy="{Binding IsBusy}" Message="{Binding BusyMessage}" />
         </Grid>
     </Grid>
 </ContentPage>

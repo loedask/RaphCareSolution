@@ -64,7 +64,8 @@ public static class MobileServiceCollectionExtensions
         services.Configure<FeatureFlagOptions>(configuration.GetSection(FeatureFlagOptions.SectionName));
 
         services.AddSingleton<IAuthService, EntraAuthService>();
-        services.AddSingleton<IClinicIdProvider, ConfigurationClinicIdProvider>();
+        services.AddSingleton<ISelectedClinicStore, PreferencesSelectedClinicStore>();
+        services.AddSingleton<IClinicIdProvider, MobileClinicIdProvider>();
         services.AddSingleton<RaphCare.Client.Contracts.IAccessTokenProvider, SecureStorageAccessTokenProvider>();
 
 #if ANDROID
@@ -158,6 +159,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<ProfileHubViewModel>();
         services.AddTransient<EditProfileViewModel>();
         services.AddTransient<PersonalInformationViewModel>();
+        services.AddTransient<SelectClinicViewModel>();
         services.AddTransient<ChangePasswordViewModel>();
         services.AddTransient<LanguageSettingsViewModel>();
         services.AddTransient<MedicalInformationViewModel>();
@@ -169,6 +171,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<SettingsPage>();
         services.AddTransient<EditProfilePage>();
         services.AddTransient<PersonalInformationPage>();
+        services.AddTransient<SelectClinicPage>();
         services.AddTransient<ChangePasswordPage>();
         services.AddTransient<LanguageSettingsPage>();
         services.AddTransient<MedicalInformationPage>();

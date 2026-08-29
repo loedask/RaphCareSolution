@@ -2076,8 +2076,23 @@
   <data name="Appointments_PageTitle" xml:space="preserve">
     <value>Appointments - RaphCare Admin</value>
   </data>
+  <data name="Appointments_SectionsAria" xml:space="preserve">
+    <value>Appointment sections</value>
+  </data>
+  <data name="Appointments_TabSchedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Patient</value>
+  </data>
+  <data name="PatientDetail_ChartEyebrow" xml:space="preserve">
+    <value>Patient chart</value>
+  </data>
+  <data name="PatientDetail_SectionsAria" xml:space="preserve">
+    <value>Patient chart sections</value>
+  </data>
+  <data name="PatientDetail_TabCare" xml:space="preserve">
+    <value>Care</value>
   </data>
   <data name="PatientDetail_CouldNotLoadPatient" xml:space="preserve">
     <value>Could not load patient.</value>
@@ -2088,8 +2103,20 @@
   <data name="Visit_PageTitleFallback" xml:space="preserve">
     <value>Visit</value>
   </data>
+  <data name="Visit_SectionsAria" xml:space="preserve">
+    <value>Visit sections</value>
+  </data>
+  <data name="Visit_TabClinical" xml:space="preserve">
+    <value>Clinical</value>
+  </data>
   <data name="TeleJoin_PageTitle" xml:space="preserve">
     <value>Telehealth - RaphCare Admin</value>
+  </data>
+  <data name="TeleJoin_SectionsAria" xml:space="preserve">
+    <value>Telehealth sections</value>
+  </data>
+  <data name="TeleJoin_TabSession" xml:space="preserve">
+    <value>Session</value>
   </data>
   <data name="PatientDetail_Gender" xml:space="preserve">
     <value>Gender</value>
@@ -2117,6 +2144,9 @@
   </data>
   <data name="ProviderDetail_AvailabilityEyebrow" xml:space="preserve">
     <value>Availability</value>
+  </data>
+  <data name="ProviderDetail_SectionsAria" xml:space="preserve">
+    <value>Provider sections</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} · {1} · times in {2}</value>

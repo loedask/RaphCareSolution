@@ -46,7 +46,8 @@
                         Opacity="0.02" />
             </Grid>
 
-            <Grid Margin="0,0,0,12">
+            <Grid Margin="0,0,0,12"
+                  IsVisible="{Binding IsPhoneRegistrationVisible}">
                 <Border Style="{StaticResource CardBorder}" Padding="20" Margin="0">
                     <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                     <HorizontalStackLayout Spacing="16" VerticalOptions="Center" InputTransparent="True">
@@ -71,7 +72,8 @@
                         Opacity="0.02" />
             </Grid>
 
-            <Grid Margin="0,0,0,12">
+            <Grid Margin="0,0,0,12"
+                  IsVisible="{Binding IsVoiceRegistrationVisible}">
                 <Border Style="{StaticResource CardBorder}" Padding="20" Margin="0">
                     <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                     <HorizontalStackLayout Spacing="16" VerticalOptions="Center" InputTransparent="True">
