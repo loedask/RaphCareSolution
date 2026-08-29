@@ -28,5 +28,6 @@
     <Project Path="RaphCare.Application.Tests/RaphCare.Application.Tests.csproj" />
     <Project Path="RaphCare.Client.Tests/RaphCare.Client.Tests.csproj" />
     <Project Path="RaphCare.Mobile.Tests/RaphCare.Mobile.Tests.csproj" />
+    <Project Path="RaphCare.Web.Tests/RaphCare.Web.Tests.csproj" />
   </Folder>
 </Solution>

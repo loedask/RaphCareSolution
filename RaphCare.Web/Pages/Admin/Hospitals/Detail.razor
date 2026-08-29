@@ -1,6 +1,7 @@
 @page "/admin/hospitals/{ClinicId:guid}"
 @layout AdminLayout
 @using RaphCare.Client.Models.Clinical
+@using RaphCare.Client.Services.Base
 @using RaphCare.Domain.Common
 @inject IUiCultureService CultureService
 @implements IDisposable
@@ -438,7 +439,14 @@
                     }
                     else if (!string.IsNullOrEmpty(_emergencyError))
                     {
-                        <AdminAlert Message="@_emergencyError" />
+                        @if (_emergencyClinicContextMissing)
+                        {
+                            <ClinicContextRequiredAlert OnRetry="RetryClinicEmergenciesAsync" />
+                        }
+                        else
+                        {
+                            <AdminAlert Message="@_emergencyError" />
+                        }
                     }
                     else if (_emergencyEvents.Count == 0)
                     {
@@ -678,6 +686,7 @@
     private string? _error;
     private string? _actionError;
     private string? _emergencyError;
+    private bool _emergencyClinicContextMissing;
     private string _tab = "overview";
     private string _inviteEmail = string.Empty;
     private string _inviteJobRole = RaphCareRoles.Clinician;
@@ -981,12 +990,14 @@
 
         _loadingEmergencies = true;
         _emergencyError = null;
+        _emergencyClinicContextMissing = false;
         var response = await DeviceReadingsService.GetClinicEmergencyEventsAsync(_emergencyPage, EmergencyPageSize);
         _loadingEmergencies = false;
 
         if (!response.IsSuccess || response.Data is null)
         {
             _emergencyError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadEmergencyEvents");
+            _emergencyClinicContextMissing = ApiErrorMessages.IsClinicSelectionRequired(_emergencyError);
             return;
         }
 
@@ -997,6 +1008,13 @@
 
         _emergencyTotal = response.Data.TotalCount;
         _emergenciesLoaded = true;
+    }
+
+    private async Task RetryClinicEmergenciesAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail?.Name).ConfigureAwait(false);
+        _emergenciesLoaded = false;
+        await LoadClinicEmergenciesAsync(reset: true);
     }
 
     private async Task LoadMoreClinicEmergenciesAsync()

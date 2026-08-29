@@ -2,7 +2,8 @@ using RaphCare.Client.Contracts;
 
 namespace RaphCare.Web.Services;
 
-public sealed class WebClinicIdProvider(IClinicContextService clinicContext) : IClinicIdProvider
+/// <summary>Supplies <c>X-Clinic-Id</c> from the process-wide active clinic store.</summary>
+public sealed class WebClinicIdProvider(WebActiveClinicIdStore store) : IClinicIdProvider
 {
-    public Guid? GetClinicId() => clinicContext.CurrentClinicId;
+    public Guid? GetClinicId() => store.ClinicId;
 }

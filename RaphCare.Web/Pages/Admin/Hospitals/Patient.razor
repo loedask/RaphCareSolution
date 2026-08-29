@@ -2,6 +2,7 @@
 @layout AdminLayout
 @using RaphCare.Domain.Common
 @using RaphCare.Client.Models.Clinical
+@using RaphCare.Client.Services.Base
 @inject NavigationManager Navigation
 @inject IUiCultureService CultureService
 @implements IDisposable
@@ -606,7 +607,14 @@
                             }
                             else if (!string.IsNullOrEmpty(_emergencyError))
                             {
-                                <AdminAlert Message="@_emergencyError" />
+                                @if (_emergencyClinicContextMissing)
+                                {
+                                    <ClinicContextRequiredAlert OnRetry="RetryEmergenciesAsync" />
+                                }
+                                else
+                                {
+                                    <AdminAlert Message="@_emergencyError" />
+                                }
                             }
                             else if (_emergencyEvents.Count == 0)
                             {
@@ -869,6 +877,7 @@
     private string? _error;
     private string? _actionError;
     private string? _emergencyError;
+    private bool _emergencyClinicContextMissing;
     private string? _clinicName;
     private string _clinicTimeZone = "UTC";
     private ClinicPatientDetail? _patient;
@@ -960,6 +969,7 @@
 
         _loadingEmergencies = true;
         _emergencyError = null;
+        _emergencyClinicContextMissing = false;
         var response = await DeviceReadingsService.GetEmergencyEventsAsync(
             PatientId, _emergencyPage, EmergencyPageSize);
         _loadingEmergencies = false;
@@ -967,6 +977,7 @@
         if (!response.IsSuccess || response.Data is null)
         {
             _emergencyError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadEmergencyEvents");
+            _emergencyClinicContextMissing = ApiErrorMessages.IsClinicSelectionRequired(_emergencyError);
             return;
         }
 
@@ -976,6 +987,12 @@
             _emergencyEvents.AddRange(response.Data.Items);
 
         _emergencyTotal = response.Data.TotalCount;
+    }
+
+    private async Task RetryEmergenciesAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId, _clinicName).ConfigureAwait(false);
+        await LoadEmergenciesAsync(reset: true);
     }
 
     private async Task LoadMoreEmergenciesAsync()

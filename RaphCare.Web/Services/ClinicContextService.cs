@@ -17,6 +17,7 @@ public interface IClinicContextService
 
 public sealed class ClinicContextService(
     IAdminClinicService adminClinicService,
+    WebActiveClinicIdStore activeClinicId,
     IJSRuntime js) : IClinicContextService
 {
     private bool _initialized;
@@ -46,11 +47,14 @@ public sealed class ClinicContextService(
             {
                 CurrentClinicId = clinicId;
                 CurrentClinicName = match.Name;
+                activeClinicId.ClinicId = clinicId;
             }
         }
 
         if (CurrentClinicId is null && MyClinics.Count == 1)
             await SetCurrentClinicAsync(MyClinics[0].Id, MyClinics[0].Name).ConfigureAwait(true);
+        else if (CurrentClinicId is null)
+            activeClinicId.ClinicId = null;
 
         _initialized = true;
         Changed?.Invoke();
@@ -60,6 +64,7 @@ public sealed class ClinicContextService(
     {
         CurrentClinicId = clinicId;
         CurrentClinicName = name ?? MyClinics.FirstOrDefault(c => c.Id == clinicId)?.Name;
+        activeClinicId.ClinicId = clinicId;
         await js.InvokeVoidAsync("raphCareClinic.setClinicId", clinicId.ToString()).ConfigureAwait(true);
         Changed?.Invoke();
     }

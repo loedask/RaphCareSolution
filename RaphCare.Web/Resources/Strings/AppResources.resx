@@ -384,6 +384,15 @@
   <data name="Common_CouldNotLoadEmergencyEvents" xml:space="preserve">
     <value>Could not load emergency events.</value>
   </data>
+  <data name="Common_ClinicContextRequired" xml:space="preserve">
+    <value>Emergency events need this hospital selected for your session.</value>
+  </data>
+  <data name="Common_ClinicContextRequiredHint" xml:space="preserve">
+    <value>Use Try again below to select this hospital, or open Hospitals to pick one from the list.</value>
+  </data>
+  <data name="Common_TryAgainForThisHospital" xml:space="preserve">
+    <value>Try again for this hospital</value>
+  </data>
   <data name="Common_CouldNotResendInvitation" xml:space="preserve">
     <value>Could not resend invitation.</value>
   </data>
