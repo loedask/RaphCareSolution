@@ -6,7 +6,7 @@ namespace RaphCare.Mobile.Tests;
 public class AuthResultTests
 {
     [Fact]
-    public void Ok_sets_success_and_tokens()
+    public void OkSetsSuccessAndTokens()
     {
         var expires = DateTimeOffset.UtcNow.AddHours(1);
         var r = AuthResult.Ok("at", "rt", expires);
@@ -19,7 +19,7 @@ public class AuthResultTests
     }
 
     [Fact]
-    public void Fail_sets_message()
+    public void FailSetsMessage()
     {
         var r = AuthResult.Fail("bad");
 

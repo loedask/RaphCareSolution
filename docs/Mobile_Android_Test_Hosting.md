@@ -147,6 +147,18 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Set-RaphCareAzureTes
 
 Set App Service **`ASPNETCORE_ENVIRONMENT=Staging`** on **raphcare-api**. Startup then runs `ApplyMigrationsAsync` (migrate + seed) automatically.
 
+Staging also fills **RaphCare Demo Clinic** and these email/password accounts (no Microsoft sign-in, no extra email code):
+
+| Role | Email |
+|------|--------|
+| Hospital admin | `demo.admin@raphcare.com` |
+| Doctor | `demo.doctor@raphcare.com` |
+| Pharmacist | `demo.pharmacy@raphcare.com` |
+| Lab | `demo.lab@raphcare.com` |
+| Patient (mobile) | `demo.patient@raphcare.com` |
+
+Password: App Service setting **`Demo:Password`**. If that is empty, the seeder uses `RaphCareDemo!2026`. Rotate it on the App Service when you want a new password. The pack is additive. It does not delete Daskana or other hospitals.
+
 You can still migrate from a PC that can reach Azure SQL:
 
 ```powershell
@@ -261,23 +273,43 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/New-RaphCareAndroidU
   -KeyPassword '<secret>'
 ```
 
+Versions live in `RaphCare.Mobile.csproj`:
+
+- **ApplicationDisplayVersion** (for example `1.0.0`): what Settings shows, and the marketing part of the file name
+- **ApplicationVersion** (integer, for example `2`): Android `versionCode`. Raise this for every Play upload, and for each sideload you want partners to tell apart
+
+Artifact names look like `RaphCare-v1.0.0+2.aab` / `RaphCare-v1.0.0+2.apk`. A copy named `RaphCare-latest.apk` is written for convenience; prefer the versioned file when you send a build to someone.
+
 Build the signed AAB (updates TestHosting API URL from `artifacts/azure-test-environment.json` when present):
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareAndroidPlay.ps1 `
   -KeystorePassword '<secret>' `
-  -KeyPassword '<secret>'
+  -KeyPassword '<secret>' `
+  -BumpBuild
 ```
 
-### 5.6 Create the app and Internal testing
+Omit `-BumpBuild` if you already raised `ApplicationVersion` by hand.
+
+### 5.6 Sideload APK (partner / device install)
+
+Debug-signed Release APK pointed at the staging API (no Play keystore):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareAndroidSideload.ps1 -BumpBuild
+```
+
+Send the versioned file under `artifacts/android/` (for example `RaphCare-v1.0.0+2.apk`). Uninstall any older RaphCare install first if Android refuses the update.
+
+### 5.7 Create the app and Internal testing
 
 After the organization account is approved:
 
 1. Play Console → create app **RaphCare** → package **`com.yindula.raphcare`**.
-2. **Testing → Internal testing** → upload the AAB under `artifacts/android/`.
+2. **Testing → Internal testing** → upload the versioned AAB under `artifacts/android/`.
 3. Add tester Gmail accounts → copy the opt-in link.
 
-Optional while Play setup finishes: sideload the APK produced next to the AAB.
+Optional while Play setup finishes: sideload the versioned APK produced next to the AAB.
 
 ---
 

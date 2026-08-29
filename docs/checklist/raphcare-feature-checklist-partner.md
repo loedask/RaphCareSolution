@@ -6,7 +6,7 @@ PDF: [`raphcare-feature-checklist-partner.pdf`](raphcare-feature-checklist-partn
 
 Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md)
 
-**Overall completion:** **75%**
+**Overall completion:** **76%**
 
 **How to read this**
 
@@ -80,7 +80,7 @@ What patients see on Android / iPhone.
 
 | Area | Status | Notes |
 |------|--------|-------|
-| Sign up / sign in (email, phone code, voice) | Done | |
+| Sign up / sign in (email, phone code, voice) | Done | Includes forgot password: email code, then new password |
 | Home and navigation | Done | Some areas can be turned off with feature flags |
 | Appointments (list, book, detail) | Done | |
 | Care / request a call / join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
@@ -124,17 +124,18 @@ What patients see on Android / iPhone.
 
 ---
 
-## 4. Other staff / system pieces - 80%
+## 4. Other staff / system pieces - 83%
 
 | Area | Status | Notes |
 |------|--------|-------|
 | Core clinical and patient APIs | Done | Power the app and admin |
 | FHIR export | Done | For interoperability |
 | Emergency webhook | Done | Integration hook |
+| Staging demo sign-in accounts | Done | Staging only. Sign in with demo.admin / demo.doctor / demo.pharmacy / demo.lab / demo.patient at raphcare.com. Password is on the API as Demo:Password (default RaphCareDemo!2026). Does not wipe other hospitals. |
 | Staff mental-health assessment store | Partial | List exists; deeper storage later |
 | Reporting / big dashboards | Partial | Grows with product needs |
 
-**Bottom line (80%):** core APIs and hooks are in; deeper mental-health storage and reporting grow with product needs.
+**Bottom line (83%):** core APIs, hooks, and Staging demo accounts are in; deeper mental-health storage and reporting grow with product needs.
 
 ---
 
@@ -145,21 +146,22 @@ What patients see on Android / iPhone.
 | 1. Hospital admin (outpatient) | 100% | Ready on web |
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 58% | iPhone video, push, wearables |
-| 4. Other staff / system | 80% | Storage and reporting polish |
-| **Overall** | **75%** | Excludes "not for mobile / clinical / BLE" rows |
+| 4. Other staff / system | 83% | Demo accounts on Staging |
+| **Overall** | **76%** | Excludes "not for mobile / clinical / BLE" rows |
 
 ---
 
 ## What to try this week (partner)
 
-1. **Admin web:** open a hospital. The left menu should hide. Use All hospitals in the top bar to return to the list.
-2. **Admin web:** on that hospital, open Inpatient. Add a ward/room/bed if needed, admit someone, discharge them.
-3. **Admin web:** open a patient chart. You should see medical info, insurance, invoices, and visit notes (empty until data exists).
-4. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
-5. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
-6. **Patient app on Android:** sign in. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
-7. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
-8. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
+1. **Admin web:** sign in as `demo.admin@raphcare.com` (password `RaphCareDemo!2026` unless you changed `Demo:Password`). Open **RaphCare Demo Clinic**.
+2. **Admin web:** the left menu should hide on a hospital. Use All hospitals in the top bar to return to the list.
+3. **Admin web:** on that hospital, open Inpatient. Add a ward/room/bed if needed, admit someone, discharge them.
+4. **Admin web:** open a patient chart. You should see medical info, insurance, invoices, and visit notes (empty until data exists).
+5. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
+6. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
+7. **Patient app on Android:** sign in as `demo.patient@raphcare.com`. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster at the counter to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
+8. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
+9. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
 
 ---
 

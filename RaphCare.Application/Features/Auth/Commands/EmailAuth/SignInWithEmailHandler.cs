@@ -1,5 +1,6 @@
 using MediatR;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Domain.Identity;
 
 namespace RaphCare.Application.Features.Auth.Commands.EmailAuth;
 
@@ -20,13 +21,15 @@ public sealed class SignInWithEmailHandler(
 
         if (string.IsNullOrWhiteSpace(request.VerificationCode))
         {
-            await EmailVerificationHelper.SendVerificationEmailAsync(
-                request.Email, emailOtpService, emailService, cancellationToken).ConfigureAwait(false);
-            return new EmailAuthResult { Success = true, RequiresVerification = true };
+            if (!DemoPackAccounts.IsDemoEmail(request.Email))
+            {
+                await EmailVerificationHelper.SendVerificationEmailAsync(
+                    request.Email, emailOtpService, emailService, cancellationToken).ConfigureAwait(false);
+                return new EmailAuthResult { Success = true, RequiresVerification = true };
+            }
         }
-
-        if (!await EmailVerificationHelper.ValidateCodeAsync(request.Email, request.VerificationCode, emailOtpService, cancellationToken)
-                .ConfigureAwait(false))
+        else if (!await EmailVerificationHelper.ValidateCodeAsync(request.Email, request.VerificationCode, emailOtpService, cancellationToken)
+                     .ConfigureAwait(false))
         {
             return new EmailAuthResult { Success = false, Error = "Invalid or expired verification code." };
         }

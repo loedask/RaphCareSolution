@@ -1,6 +1,4 @@
 using System.Windows.Input;
-using Microsoft.Extensions.Options;
-using Microsoft.Maui.ApplicationModel;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.ViewModels;
@@ -13,7 +11,6 @@ namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 public class SignInViewModel : BaseViewModel
 {
     private readonly IAuthService _authService;
-    private readonly EntraAuthOptions _options;
 
     private string? _errorMessage;
     private string? _statusMessage;
@@ -89,10 +86,9 @@ public class SignInViewModel : BaseViewModel
     public ICommand SignUpCommand { get; }
     public ICommand ForgotPasswordCommand { get; }
 
-    public SignInViewModel(IAuthService authService, IOptions<EntraAuthOptions> options)
+    public SignInViewModel(IAuthService authService)
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
-        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         Title = T("AuthSignInPageTitle");
         WelcomeBack = T("AuthWelcomeBack");
         SignInSubtitle = T("AuthSignInToContinue");
@@ -118,33 +114,11 @@ public class SignInViewModel : BaseViewModel
 
     private async Task OpenPasswordResetAsync()
     {
-        if (!string.IsNullOrWhiteSpace(_options.B2CPasswordResetAuthority))
-        {
-            ErrorMessage = null;
-            IsBusy = true;
-            try
-            {
-                var scopes = _options.GetPasswordResetScopes();
-                var result = await _authService
-                    .AcquireTokenInteractiveAsync(_options.B2CPasswordResetAuthority.Trim(), scopes, CancellationToken.None)
-                    .ConfigureAwait(false);
-                if (result.Success)
-                    await SafeShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
-                else
-                    ErrorMessage = result.ErrorMessage;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-
-            return;
-        }
-
-        var url = string.IsNullOrWhiteSpace(_options.SelfServicePasswordResetUrl)
-            ? "https://passwordreset.microsoftonline.com/"
-            : _options.SelfServicePasswordResetUrl.Trim();
-        await Launcher.Default.OpenAsync(new Uri(url, UriKind.Absolute)).ConfigureAwait(false);
+        var email = Uri.EscapeDataString(Email.Trim());
+        var route = string.IsNullOrEmpty(email)
+            ? AppNavigator.ForgotPassword
+            : $"{AppNavigator.ForgotPassword}?email={email}";
+        await SafeShellNavigator.GoToAsync(route).ConfigureAwait(false);
     }
 
     private async Task SignInAsync()

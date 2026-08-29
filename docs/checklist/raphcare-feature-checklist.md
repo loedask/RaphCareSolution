@@ -6,8 +6,8 @@ Plain-language twin for non-technical partners: [`raphcare-feature-checklist-par
 
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
-**Overall completion (this checklist):** **78%**  
-**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **82%**
+**Overall completion (this checklist):** **79%**  
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **83%**
 
 **How to mark items and score %**
 
@@ -138,6 +138,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 
 - [x] Landing / welcome
 - [x] Sign-in (email) + verify email
+- [x] Forgot password (email code + new password)
 - [x] Register options: email / phone / voice
 - [x] Phone OTP send / verify -> API JWT
 - [x] Voice onboarding (record -> API)
@@ -260,7 +261,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 ---
 
-## Cross-cutting - 86%
+## Cross-cutting - 88%
 
 - [x] Solution layers: Domain -> Application -> Persistence / Infrastructure / Identity -> API; Client -> Web / Mobile
 - [x] `RaphCare.Client` + `AddRaphCareClient` for Web and Mobile
@@ -268,11 +269,12 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 - [x] MPI / patient merge pipeline (see audit docs)
 - [x] Inpatient documented in companion docs (Step 2 docs rows)
 - [x] Web UI localization (en / fr / ln / sw): `AppResources` + language picker on admin layout
+- [x] Staging demo pack: email/password accounts on `RaphCare Demo Clinic` (idempotent; does not wipe other hospitals)
 - [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API
 
 ### Cross-cutting status
 
-**86%.** Platform wiring includes Web UI languages. Missing an automated E2E smoke against a running API.
+**88%.** Platform wiring includes Web UI languages and a Staging demo pack. Missing an automated E2E smoke against a running API.
 
 ---
 
@@ -284,9 +286,9 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 60% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
-| Cross-cutting | 86% | E2E smoke open |
-| **Overall (scored items)** | **78%** | Out of scope / open optional excluded |
-| **Without wearable Phase 2+ metrics** | **82%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+| Cross-cutting | 88% | Demo pack on Staging; E2E smoke open |
+| **Overall (scored items)** | **79%** | Out of scope / open optional excluded |
+| **Without wearable Phase 2+ metrics** | **83%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
 **Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then E2E smoke script.
 

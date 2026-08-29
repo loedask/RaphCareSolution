@@ -35,4 +35,13 @@ public interface IEmailPasswordAuthService
         string currentPassword,
         string newPassword,
         CancellationToken cancellationToken = default);
+
+    /// <summary>True when the email has a local password credential (not Microsoft-only).</summary>
+    Task<bool> HasEmailPasswordCredentialAsync(string email, CancellationToken cancellationToken = default);
+
+    /// <summary>Sets a new password after a validated email reset code (no current password).</summary>
+    Task<(bool Success, string? Error)> ResetPasswordByEmailAsync(
+        string email,
+        string newPassword,
+        CancellationToken cancellationToken = default);
 }

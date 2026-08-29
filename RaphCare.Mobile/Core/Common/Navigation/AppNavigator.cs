@@ -32,6 +32,7 @@ public static class AppNavigator
     public const string VerifyEmail = "VerifyEmailPage";
     public const string AccountCreated = "AccountCreatedPage";
     public const string SignIn = "SignInPage";
+    public const string ForgotPassword = "ForgotPasswordPage";
     public const string Home = "HomePage";
     public const string Records = "RecordsPage";
     public const string HealthRecordDetail = "HealthRecordDetailPage";
@@ -114,6 +115,7 @@ public static class AppNavigator
         Routing.RegisterRoute(VerifyEmail, typeof(VerifyEmailPage));
         Routing.RegisterRoute(AccountCreated, typeof(AccountCreatedPage));
         Routing.RegisterRoute(SignIn, typeof(SignInPage));
+        Routing.RegisterRoute(ForgotPassword, typeof(ForgotPasswordPage));
 
         // Feature pages (pushed from tabs or deep links — not ShellContent routes)
         Routing.RegisterRoute(HealthRecordDetail, typeof(HealthRecordDetailPage));
