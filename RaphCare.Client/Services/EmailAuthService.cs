@@ -53,6 +53,47 @@ public sealed class EmailAuthService(IHttpClientFactory httpClientFactory) : IEm
         }
     }
 
+    public async Task<Response<object>> RequestPasswordResetAsync(string email, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync("api/auth/email/forgot-password", new { email }, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+                return Response<object>.Success(new object());
+
+            var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+            return Response<object>.Failure(error, (int)response.StatusCode);
+        }
+        catch (HttpRequestException ex)
+        {
+            return Response<object>.Failure(ex.Message);
+        }
+    }
+
+    public async Task<Response<EmailAuthResult>> ConfirmPasswordResetAsync(
+        string email,
+        string verificationCode,
+        string newPassword,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await PostAuthAsync(
+                    "api/auth/email/reset-password",
+                    new { email, verificationCode, newPassword },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex)
+        {
+            return Response<EmailAuthResult>.Failure(ex.Message);
+        }
+    }
+
     public async Task<Response<EmailAuthResult>> RegisterAsync(
         string firstName,
         string lastName,

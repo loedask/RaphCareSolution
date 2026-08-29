@@ -13,3 +13,4 @@ alwaysApply: true
 - Do not commit feature work directly to `master`.
 - Preserve the configured Git Flow branch names, prefixes, and `v` version-tag prefix (`master`, `develop`, `feature/`, `release/`, `hotfix/`, `bugfix/`, `support/`).
 - Ask before deviating from Git Flow or rewriting shared branch history.
+- Do not push after a Git Flow finish unless the user explicitly asks. See `.cursor/rules/git-push-safety.mdc`.

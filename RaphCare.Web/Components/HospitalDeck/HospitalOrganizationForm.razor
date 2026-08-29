@@ -1,0 +1,41 @@
+<AdminPageCard Eyebrow="@AppResources.T("Common_HospitalProfileEyebrow")"
+               Title="@AppResources.T("Common_OrganizationDetails")"
+               Lead="@AppResources.T("Common_UpdateHospitalLead")">
+    <div class="admin-page-card-body">
+        <div class="admin-inline-form">
+            <div class="form-grid">
+                <label>
+                    @AppResources.T("HospitalsRegister_HospitalNameLabel").TrimEnd(' ', '*')
+                    <input class="form-control" @bind="Model.Name" />
+                </label>
+                <label>
+                    @AppResources.T("Common_Country")
+                    <input class="form-control" @bind="Model.Country" />
+                </label>
+                <label>
+                    @AppResources.T("Common_TimeZone")
+                    <input class="form-control" @bind="Model.TimeZone" placeholder="@AppResources.T("HospitalDetail_TimeZonePlaceholder")" />
+                </label>
+                @if (IsAdministrator)
+                {
+                    <label class="form-check">
+                        <input type="checkbox" @bind="Model.IsActive" />
+                        @AppResources.T("Common_HospitalIsActive")
+                    </label>
+                }
+            </div>
+            <div class="admin-form-actions">
+                <button type="button" class="btn btn-primary" disabled="@Saving" @onclick="OnSave">
+                    @(Saving ? AppResources.T("Common_Saving") : AppResources.T("Common_SaveChanges"))
+                </button>
+            </div>
+        </div>
+    </div>
+</AdminPageCard>
+
+@code {
+    [Parameter] public UpdateClinicRequest Model { get; set; } = new();
+    [Parameter] public bool IsAdministrator { get; set; }
+    [Parameter] public bool Saving { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+}

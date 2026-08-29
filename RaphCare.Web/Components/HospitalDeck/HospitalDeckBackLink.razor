@@ -1,0 +1,11 @@
+<a class="hospital-deck-back" href="@Href">
+    <svg class="hospital-deck-back-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15 18l-6-6 6-6" />
+    </svg>
+    <span>@Text</span>
+</a>
+
+@code {
+    [Parameter] public string Href { get; set; } = "/admin/hospitals";
+    [Parameter] public string Text { get; set; } = string.Empty;
+}

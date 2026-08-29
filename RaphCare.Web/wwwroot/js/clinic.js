@@ -19,6 +19,9 @@ window.raphCareClinic = {
   printPage: function () {
     window.print();
   },
+  openWindow: function (url, name) {
+    window.open(url, name || "_blank");
+  },
   _qrScan: null,
   startQrScan: async function (dotNetHelper) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)

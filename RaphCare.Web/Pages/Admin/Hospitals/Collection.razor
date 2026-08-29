@@ -7,43 +7,86 @@
 
 <PageTitle>@AppResources.T("Collection_PageTitle")</PageTitle>
 
-<section class="admin-page">
-    <AdminPageHeader Title="@AppResources.T("Collection_Title")"
-                     Lead="@AppResources.Format("Collection_Lead", _clinicName)">
-        <span class="admin-progress-pill">@FormatPendingCount()</span>
-    </AdminPageHeader>
-
-    <AdminAlert Message="@_error" />
-    <AdminAlert Tone="success" Message="@_success" />
-
+<section class="admin-page hospital-deck">
     @if (_loading && _board is null)
     {
-        <p class="text-muted">@AppResources.T("Collection_Loading")</p>
+        <HospitalDeckLoading Message="@AppResources.T("Collection_Loading")" />
     }
     else
     {
-        <AdminPageCard Eyebrow="@AppResources.T("Collection_Eyebrow")" Title="@AppResources.T("Collection_FindTitle")">
-            <div class="admin-page-card-body">
-                <div class="form-grid" style="margin-bottom: 0;">
-                    <label>
-                        @AppResources.T("Collection_SearchLabel")
-                        <input class="form-control" @bind="_search" @bind:event="oninput" placeholder="@AppResources.T("Collection_SearchPlaceholder")" />
-                    </label>
-                </div>
-                <div class="admin-page-actions" style="margin-top: 1rem;">
-                    <button type="button" class="btn btn-primary" disabled="@_busy" @onclick="LoadOrdersAsync">
-                        @AppResources.T("Collection_Search")
-                    </button>
-                    <button type="button" class="btn btn-secondary" disabled="@_scanning" @onclick="StartScanAsync">
-                        @AppResources.T("Collection_ScanQr")
-                    </button>
-                    <button type="button" class="btn btn-ghost" @onclick="PrintPosterAsync">
-                        @AppResources.T("Collection_PrintPoster")
-                    </button>
-                </div>
-            </div>
-        </AdminPageCard>
+        <HospitalDeckMasthead BackHref="@($"/admin/hospitals/{ClinicId}")"
+                              BackText="@AppResources.T("Common_BackToHospital")"
+                              Monogram="@HospitalDeckInitials.FromName(_clinicName)"
+                              Eyebrow="@AppResources.T("Collection_Title")"
+                              Title="@_clinicName"
+                              Lead="@AppResources.Format("Collection_Lead", _clinicName)"
+                              StatusText="@FormatPendingCount()">
+            <HospitalDeckChip Label="@AppResources.T("Collection_PrescriptionsTitle")" Value="@PendingPrescriptions.ToString()" />
+            <HospitalDeckChip Label="@AppResources.T("Collection_LabsTitle")" Value="@PendingLabs.ToString()" />
+        </HospitalDeckMasthead>
 
+        <AdminAlert Message="@_error" />
+        <AdminAlert Tone="success" Message="@_success" />
+
+        <div class="hospital-deck-workspace">
+        <HospitalDeckRail AriaLabel="@AppResources.T("Collection_Title")"
+                          Kicker="@AppResources.T("Collection_Title")">
+            <HospitalDeckRailItem Index="01" Icon="grid" IsActive="@(_tab == "find")" OnSelect='() => SetTab("find")'>
+                @AppResources.T("Collection_FindTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="02" Icon="collection" IsActive="@(_tab == "prescriptions")" Count="@PendingPrescriptions" OnSelect='() => SetTab("prescriptions")'>
+                @AppResources.T("Collection_PrescriptionsTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="03" Icon="lab" IsActive="@(_tab == "labs")" Count="@PendingLabs" OnSelect='() => SetTab("labs")'>
+                @AppResources.T("Collection_LabsTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="04" Icon="history" IsActive="@(_tab == "recent")" OnSelect='() => SetTab("recent")'>
+                @AppResources.T("Collection_RecentPrescriptionsTitle")
+            </HospitalDeckRailItem>
+        </HospitalDeckRail>
+
+        <div class="hospital-deck-stage">
+        @if (_tab == "find")
+        {
+            <div class="hospital-overview">
+                <HospitalIdentityPlate Kicker="@AppResources.T("Collection_Title")"
+                                       Serial="@FormatPendingCount()">
+                    <dl class="hospital-identity-facts">
+                        <HospitalIdentityFact Label="@AppResources.T("Collection_PrescriptionsTitle")" Value="@PendingPrescriptions.ToString()" />
+                        <HospitalIdentityFact Label="@AppResources.T("Collection_LabsTitle")" Value="@PendingLabs.ToString()" />
+                    </dl>
+                </HospitalIdentityPlate>
+
+                <AdminPageCard Eyebrow="@AppResources.T("Collection_Eyebrow")" Title="@AppResources.T("Collection_FindTitle")">
+                    <div class="admin-page-card-body">
+                        <div class="form-grid collection-find-grid">
+                            <label>
+                                @AppResources.T("Collection_SearchLabel")
+                                <input class="form-control" @bind="_search" @bind:event="oninput" placeholder="@AppResources.T("Collection_SearchPlaceholder")" />
+                            </label>
+                        </div>
+                        <div class="admin-page-actions collection-find-actions">
+                            <button type="button" class="btn btn-primary" disabled="@_busy" @onclick="LoadOrdersAsync">
+                                @AppResources.T("Collection_Search")
+                            </button>
+                            <button type="button" class="btn btn-secondary" disabled="@_scanning" @onclick="StartScanAsync">
+                                @AppResources.T("Collection_ScanQr")
+                            </button>
+                            <button type="button" class="btn btn-ghost" @onclick="PrintPosterAsync">
+                                @AppResources.T("Collection_PrintPoster")
+                            </button>
+                            <button type="button" class="btn btn-ghost" disabled="@_busy" @onclick="OpenWaitingScreenAsync">
+                                @AppResources.T("Collection_OpenDisplay")
+                            </button>
+                        </div>
+                        <p class="hint">@AppResources.T("Collection_ScanBrowserHint")</p>
+                        <p class="hint">@AppResources.T("Collection_DisplayHint")</p>
+                    </div>
+                </AdminPageCard>
+            </div>
+        }
+        else if (_tab == "prescriptions")
+        {
         <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")" Title="@AppResources.T("Collection_PrescriptionsTitle")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.Prescriptions.Count == 0)
@@ -67,9 +110,16 @@
                                 @foreach (var rx in _board.Prescriptions)
                                 {
                                     <tr>
-                                        <td class="pickup-code">@rx.PickupCode</td>
+                                        <td class="pickup-code">
+                                            @rx.PickupCode
+                                            @if (rx.CalledAt is not null)
+                                            {
+                                                <span class="badge badge-success">@AppResources.T("Collection_OnScreen")</span>
+                                            }
+                                        </td>
                                         <td>
-                                            <a href="/admin/hospitals/@ClinicId/patients/@rx.PatientId">@rx.PatientName</a>
+                                            <HospitalDirectoryPerson Name="@rx.PatientName"
+                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{rx.PatientId}")" />
                                             @if (!string.IsNullOrWhiteSpace(rx.NationalHealthId))
                                             {
                                                 <span class="hint">@rx.NationalHealthId</span>
@@ -92,6 +142,9 @@
                                         </td>
                                         <td>@FormatLocal(rx.IssuedAt)</td>
                                         <td>
+                                            <button type="button" class="btn btn-secondary" disabled="@(_savingId == rx.Id)" @onclick="() => CallPrescriptionAsync(rx.Id)">
+                                                @AppResources.T("Collection_Call")
+                                            </button>
                                             @if (_canDispense)
                                             {
                                                 <button type="button" class="btn btn-primary" disabled="@(_savingId == rx.Id)" @onclick="() => DispenseAsync(rx.Id)">
@@ -113,7 +166,9 @@
                 }
             </div>
         </AdminPageCard>
-
+        }
+        else if (_tab == "labs")
+        {
         <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")" Title="@AppResources.T("Collection_LabsTitle")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.LabOrders.Count == 0)
@@ -137,9 +192,16 @@
                                 @foreach (var lab in _board.LabOrders)
                                 {
                                     <tr>
-                                        <td class="pickup-code">@lab.PickupCode</td>
+                                        <td class="pickup-code">
+                                            @lab.PickupCode
+                                            @if (lab.CalledAt is not null)
+                                            {
+                                                <span class="badge badge-success">@AppResources.T("Collection_OnScreen")</span>
+                                            }
+                                        </td>
                                         <td>
-                                            <a href="/admin/hospitals/@ClinicId/patients/@lab.PatientId">@lab.PatientName</a>
+                                            <HospitalDirectoryPerson Name="@lab.PatientName"
+                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{lab.PatientId}")" />
                                             @if (!string.IsNullOrWhiteSpace(lab.NationalHealthId))
                                             {
                                                 <span class="hint">@lab.NationalHealthId</span>
@@ -148,6 +210,9 @@
                                         <td>@lab.TestName</td>
                                         <td>@FormatLocal(lab.RequestedAt)</td>
                                         <td>
+                                            <button type="button" class="btn btn-secondary" disabled="@(_savingId == lab.Id)" @onclick="() => CallLabAsync(lab.Id)">
+                                                @AppResources.T("Collection_Call")
+                                            </button>
                                             @if (_canCompleteLabs)
                                             {
                                                 <button type="button" class="btn btn-secondary" @onclick="() => SelectLab(lab.Id)">
@@ -180,7 +245,7 @@
                                                         <input class="form-control" @bind="_labReferenceRange" />
                                                     </label>
                                                 </div>
-                                                <div class="admin-page-actions" style="margin-top: 0.75rem;">
+                                                <div class="admin-page-actions inpatient-nested-actions">
                                                     <button type="button" class="btn btn-primary" disabled="@(_savingId == lab.Id)" @onclick="() => CompleteLabAsync(lab.Id)">
                                                         @(_savingId == lab.Id ? AppResources.T("Collection_SavingResult") : AppResources.T("Collection_SaveResult"))
                                                     </button>
@@ -196,7 +261,9 @@
                 }
             </div>
         </AdminPageCard>
-
+        }
+        else if (_tab == "recent")
+        {
         <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")" Title="@AppResources.T("Collection_RecentPrescriptionsTitle")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.RecentPrescriptions.Count == 0)
@@ -222,7 +289,8 @@
                                     <tr>
                                         <td class="pickup-code">@rx.PickupCode</td>
                                         <td>
-                                            <a href="/admin/hospitals/@ClinicId/patients/@rx.PatientId">@rx.PatientName</a>
+                                            <HospitalDirectoryPerson Name="@rx.PatientName"
+                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{rx.PatientId}")" />
                                         </td>
                                         <td>
                                             @if (rx.Items.Count == 0)
@@ -279,7 +347,8 @@
                                     <tr>
                                         <td class="pickup-code">@lab.PickupCode</td>
                                         <td>
-                                            <a href="/admin/hospitals/@ClinicId/patients/@lab.PatientId">@lab.PatientName</a>
+                                            <HospitalDirectoryPerson Name="@lab.PatientName"
+                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{lab.PatientId}")" />
                                         </td>
                                         <td>@lab.TestName</td>
                                         <td>@FormatOrderStatus(lab.Status)</td>
@@ -296,11 +365,14 @@
                 }
             </div>
         </AdminPageCard>
-    }
+        }
+        </div>
+        </div>
 
-    <div class="admin-page-actions">
-        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
-    </div>
+        <div class="hospital-deck-foot">
+            <HospitalDeckBackLink Href="@($"/admin/hospitals/{ClinicId}")" Text="@AppResources.T("Common_BackToHospital")" />
+        </div>
+    }
 </section>
 
 @if (_scanning)
@@ -342,12 +414,14 @@
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
     [Inject] private IJSRuntime Js { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private bool _loading = true;
     private bool _busy;
     private bool _scanning;
     private bool _canDispense;
     private bool _canCompleteLabs;
+    private string _tab = "find";
     private Guid? _savingId;
     private Guid? _selectedLabId;
     private string? _error;
@@ -409,11 +483,17 @@
 
     private string FormatPendingCount()
     {
-        var count = (_board?.Prescriptions.Count ?? 0) + (_board?.LabOrders.Count ?? 0);
+        var count = PendingPrescriptions + PendingLabs;
         return count == 1
             ? AppResources.Format("Collection_PendingOne", count)
             : AppResources.Format("Collection_PendingMany", count);
     }
+
+    private int PendingPrescriptions => _board?.Prescriptions.Count ?? 0;
+
+    private int PendingLabs => _board?.LabOrders.Count ?? 0;
+
+    private void SetTab(string tab) => _tab = tab;
 
     private string FormatLocal(DateTime utc) =>
         ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
@@ -448,6 +528,56 @@
 
         _success = AppResources.T("Collection_PrescriptionCollected");
         await LoadOrdersAsync();
+    }
+
+    private async Task CallPrescriptionAsync(Guid prescriptionId)
+    {
+        _savingId = prescriptionId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CallPrescriptionAsync(ClinicId, prescriptionId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotCall");
+            return;
+        }
+
+        _success = AppResources.T("Collection_Called");
+        await LoadOrdersAsync();
+    }
+
+    private async Task CallLabAsync(Guid labRequestId)
+    {
+        _savingId = labRequestId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CallLabOrderAsync(ClinicId, labRequestId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotCall");
+            return;
+        }
+
+        _success = AppResources.T("Collection_Called");
+        await LoadOrdersAsync();
+    }
+
+    private async Task OpenWaitingScreenAsync()
+    {
+        _busy = true;
+        _error = null;
+        var response = await AdminClinicService.EnsureCollectionDisplayTokenAsync(ClinicId);
+        _busy = false;
+        if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data))
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotOpenDisplay");
+            return;
+        }
+
+        var url = Navigation.ToAbsoluteUri($"display/{response.Data}").ToString();
+        await Js.InvokeVoidAsync("raphCareClinic.openWindow", url, "raphcareCollectionDisplay");
     }
 
     private void SelectLab(Guid labRequestId)

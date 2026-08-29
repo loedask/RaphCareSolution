@@ -49,6 +49,9 @@ public interface IAdminClinicService
     Task<Response<ClinicVisitPrescription>> UndoPrescriptionAsync(Guid clinicId, Guid prescriptionId, CancellationToken cancellationToken = default);
     Task<Response<ClinicVisitLabResult>> CancelLabOrderAsync(Guid clinicId, Guid labRequestId, CancellationToken cancellationToken = default);
     Task<Response<ClinicVisitLabResult>> UndoLabOrderAsync(Guid clinicId, Guid labRequestId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicVisitPrescription>> CallPrescriptionAsync(Guid clinicId, Guid prescriptionId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicVisitLabResult>> CallLabOrderAsync(Guid clinicId, Guid labRequestId, CancellationToken cancellationToken = default);
+    Task<Response<string>> EnsureCollectionDisplayTokenAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicCollectionBoard>> GetCollectionOrdersAsync(Guid clinicId, string? search = null, CancellationToken cancellationToken = default);
     Task<Response<IReadOnlyList<ClinicDeviceListItem>>> GetDevicesAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicInpatientBoard>> GetInpatientBoardAsync(Guid clinicId, CancellationToken cancellationToken = default);

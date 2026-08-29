@@ -12,6 +12,7 @@ public class Prescription : BaseEntity
     public string Status { get; set; } = "Pending";
     public string PickupCode { get; set; } = string.Empty;
     public DateTime? DispensedAt { get; set; }
+    public DateTime? CalledAt { get; set; }
     public string? Notes { get; set; }
 
     public Visit Visit { get; set; } = null!;

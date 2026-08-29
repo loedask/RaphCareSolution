@@ -1,0 +1,10 @@
+<div class="hospital-deck-missing">
+    <AdminAlert Message="@Message" />
+    <HospitalDeckBackLink Href="@BackHref" Text="@BackText" />
+</div>
+
+@code {
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public string BackHref { get; set; } = "/admin/hospitals";
+    [Parameter] public string BackText { get; set; } = string.Empty;
+}

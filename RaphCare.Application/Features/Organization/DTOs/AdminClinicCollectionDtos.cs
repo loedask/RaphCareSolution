@@ -26,6 +26,7 @@ public sealed class AdminClinicCollectionPrescriptionDto
     public DateTime IssuedAt { get; set; }
     public string Status { get; set; } = "Pending";
     public DateTime? DispensedAt { get; set; }
+    public DateTime? CalledAt { get; set; }
     public string? Notes { get; set; }
     public IReadOnlyList<AdminClinicVisitPrescriptionItemDto> Items { get; set; } =
         Array.Empty<AdminClinicVisitPrescriptionItemDto>();
@@ -42,4 +43,5 @@ public sealed class AdminClinicCollectionLabOrderDto
     public string TestName { get; set; } = string.Empty;
     public string Status { get; set; } = "Pending";
     public DateTime RequestedAt { get; set; }
+    public DateTime? CalledAt { get; set; }
 }

@@ -6,8 +6,8 @@ Plain-language twin for non-technical partners: [`raphcare-feature-checklist-par
 
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
-**Overall completion (this checklist):** **78%**  
-**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **82%**
+**Overall completion (this checklist):** **79%**  
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **83%**
 
 **How to mark items and score %**
 
@@ -27,7 +27,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-08-28
+Last reviewed: 2026-08-29
 
 ---
 
@@ -46,7 +46,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Providers: list, detail, create, set active, schedules create / delete
 - [x] Appointments: list, book, cancel, reschedule
 - [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, lab orders (admin or doctor, InProgress)
-- [x] Collection board: search pending prescriptions/labs, camera QR scan, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR (clinic staff; visit may be closed)
+- [x] Collection board: search pending prescriptions/labs, camera QR scan, call a code onto the waiting screen, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR, public waiting-screen token (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs
 - [x] Clinic devices list
 - [x] Tele-session start (Agora join info for admin)
@@ -54,13 +54,13 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 ### Admin panel (Web)
 
 - [x] Hospitals index / register / claim
-- [x] Hospital detail (overview, facilities, patients, providers, staff). Opening a hospital hides the platform sidebar; All hospitals, language, and sign out sit in the top bar.
-- [x] Shared admin UI (`AdminPageCard`, `AdminPageHeader`, `AdminStatCard`, `AdminReviewItem`, `AdminAlert`, `AdminEmptyState`, `AdminDefinitionItem`) used across hospital admin pages
+- [x] Hospital detail (overview, facilities, patients, providers, staff). Opening a hospital hides the platform sidebar; All hospitals, language, and sign out sit in the top bar. Detail page uses a command-deck identity header and a numbered section rail.
+- [x] Shared admin UI (`AdminPageCard`, `AdminPageHeader`, `AdminStatCard`, `AdminReviewItem`, `AdminAlert`, `AdminEmptyState`, `AdminDefinitionItem`, `HospitalDeck*` command-deck pieces) used across hospital admin pages
 - [x] Patient detail page (staff chart: medical info, coverage, invoices, mood, visit notes)
 - [x] Provider detail + schedules
 - [x] Appointments page
 - [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress)
-- [x] Collection page (search by code / name / health ID; scan QR; mark collected; enter lab result; cancel; undo; print slip or wall poster)
+- [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page
 - [x] Admin dashboard
 - [x] Web UI language switcher (en / fr / ln / sw)
@@ -72,7 +72,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), and a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -103,7 +103,7 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ### Admin panel (Web)
 
-- [x] `/admin/hospitals/{id}/inpatient`: occupancy stats, left section tabs, add capacity, admit, active list + discharge, beds-by-ward map
+- [x] `/admin/hospitals/{id}/inpatient`: occupancy stats, command-deck header and numbered section rail, add capacity, admit, active list + discharge, beds-by-ward map
 - [x] Nav link from hospital detail
 - [x] Edit / delete / deactivate capacity UI
 - [x] Maintenance toggle UI
@@ -138,6 +138,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 
 - [x] Landing / welcome
 - [x] Sign-in (email) + verify email
+- [x] Forgot password (email code + new password)
 - [x] Register options: email / phone / voice
 - [x] Phone OTP send / verify -> API JWT
 - [x] Voice onboarding (record -> API)
@@ -151,7 +152,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 |------|-----|--------|-----------|-------|
 | Appointments | [x] | [x] | [x] | List / book / detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
-| Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in |
+| Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
 | Devices / BLE vitals | [x] | [x] | [x] | Offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
@@ -260,7 +261,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 ---
 
-## Cross-cutting - 86%
+## Cross-cutting - 88%
 
 - [x] Solution layers: Domain -> Application -> Persistence / Infrastructure / Identity -> API; Client -> Web / Mobile
 - [x] `RaphCare.Client` + `AddRaphCareClient` for Web and Mobile
@@ -268,11 +269,12 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 - [x] MPI / patient merge pipeline (see audit docs)
 - [x] Inpatient documented in companion docs (Step 2 docs rows)
 - [x] Web UI localization (en / fr / ln / sw): `AppResources` + language picker on admin layout
+- [x] Staging demo pack: email/password accounts on `RaphCare Demo Clinic` (idempotent; does not wipe other hospitals)
 - [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API
 
 ### Cross-cutting status
 
-**86%.** Platform wiring includes Web UI languages. Missing an automated E2E smoke against a running API.
+**88%.** Platform wiring includes Web UI languages and a Staging demo pack. Missing an automated E2E smoke against a running API.
 
 ---
 
@@ -284,9 +286,9 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 60% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
-| Cross-cutting | 86% | E2E smoke open |
-| **Overall (scored items)** | **78%** | Out of scope / open optional excluded |
-| **Without wearable Phase 2+ metrics** | **82%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+| Cross-cutting | 88% | Demo pack on Staging; E2E smoke open |
+| **Overall (scored items)** | **79%** | Out of scope / open optional excluded |
+| **Without wearable Phase 2+ metrics** | **83%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
 **Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then E2E smoke script.
 
@@ -296,10 +298,10 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 | Surface | Primary owner | Status snapshot |
 |---------|---------------|-----------------|
-| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete; collection board; staff jobs Doctor / Pharmacist / LabTechnician |
+| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + staff patient chart (view) + visit documentation on InProgress + collection counter; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screen; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

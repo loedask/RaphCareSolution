@@ -1,0 +1,19 @@
+<div class="hospital-deck-chip">
+    <span>@Label</span>
+    <strong>
+        @if (ChildContent is not null)
+        {
+            @ChildContent
+        }
+        else
+        {
+            @Value
+        }
+    </strong>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

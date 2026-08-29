@@ -1,0 +1,46 @@
+---
+description: Never push unless asked; scan for Cursor co-author, fix commits, then push
+alwaysApply: true
+---
+
+# Git Push Safety
+
+## Never push on your own
+
+- Do **not** run `git push`, `git push -u`, or any remote-updating push unless the user explicitly asks to push in that message.
+- Creating a commit, finishing a feature, or opening a PR does **not** imply permission to push.
+- Do not push “to be helpful” after a commit, merge, or `git flow` finish.
+
+## When the user asks you to push
+
+Before every push (including `git push -u origin HEAD` for a new branch):
+
+1. Inspect the commits that will leave this machine (`git log` / `git status` vs the upstream tracking branch, or `origin/<branch>` when known).
+2. Check those commit messages and authorship for Cursor or AI attribution, for example:
+   - `Co-authored-by: Cursor <cursoragent@cursor.com>`
+   - Any `Co-authored-by:` naming Cursor, Cursor Agent, or another AI tool
+   - Author or committer name/email that is clearly a Cursor or AI agent identity
+3. If clean, push as requested.
+4. If attribution is found, **do not push yet**. Fix the commits first (below), re-check, then push only when clean.
+
+## Fix commits before push
+
+When step 2 finds Cursor or AI attribution on commits that are **not yet on the remote** (branch is ahead, or has no upstream):
+
+1. Rewrite those local commits to remove AI co-author lines and restore human author/committer from the repo owner’s configured `user.name` / `user.email`.
+2. Prefer the smallest safe rewrite:
+   - Single bad tip commit, unpushed: `git commit --amend` with a cleaned message (no AI trailer), keeping authorship human.
+   - Multiple unpushed bad commits: non-interactive rewrite only (for example `git rebase` with `GIT_SEQUENCE_EDITOR` / `FILTER_BRANCH` style tooling as needed). Never use `git rebase -i` (interactive).
+3. After rewriting, verify again: no Cursor/AI `Co-authored-by`, no agent author/committer on the commits about to be pushed.
+4. Then push (normal push; force only if history was rewritten **and** the user already asked to push those commits, and the rewritten commits were never successfully published—or the user explicitly allows force-with-lease).
+
+If the bad attribution is on commits **already published** to the remote:
+
+- Do **not** rewrite or force-push unless the user explicitly asks to rewrite shared history.
+- Report which remote commits are affected and wait for instructions.
+
+## Related
+
+- Commit creation still follows `.cursor/rules/no-cursor-coauthor.mdc` (never add AI attribution when committing).
+- Branching still follows `.cursor/rules/git-flow-workflow.mdc`. Finishing a feature does not imply a push.
+- This rule is the push gate: scan, fix local bad commits when asked to push, then push only when clean.

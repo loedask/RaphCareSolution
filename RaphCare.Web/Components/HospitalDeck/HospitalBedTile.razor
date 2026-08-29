@@ -1,0 +1,26 @@
+<div class="bed-chip-wrap">
+    <span class="bed-chip @ToneClass" title="@Title">
+        @Label
+        @if (!string.IsNullOrWhiteSpace(Caption))
+        {
+            <small>@Caption</small>
+        }
+    </span>
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Caption { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string Tone { get; set; } = "other";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string ToneClass => Tone switch
+    {
+        "occupied" => "bed-chip-occupied",
+        "available" => "bed-chip-free",
+        "maintenance" => "bed-chip-maintenance",
+        _ => "bed-chip-other"
+    };
+}

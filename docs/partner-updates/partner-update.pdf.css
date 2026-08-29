@@ -82,3 +82,33 @@ strong {
 p {
   margin: 0.55em 0;
 }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.7em 0 1em;
+  font-size: 10pt;
+  page-break-inside: avoid;
+}
+
+th,
+td {
+  border: 1px solid #c5d5dc;
+  padding: 0.4em 0.55em;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #e8f2f4;
+  color: #002d58;
+  font-weight: 600;
+}
+
+code {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.95em;
+  background: #eef4f6;
+  padding: 0.08em 0.28em;
+  border-radius: 3px;
+}

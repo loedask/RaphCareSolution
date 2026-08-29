@@ -1,0 +1,49 @@
+<header class="hospital-deck-masthead">
+    <HospitalDeckBackLink Href="@BackHref" Text="@BackText" />
+    <div class="hospital-deck-monogram" aria-hidden="true">@Monogram</div>
+    <div class="hospital-deck-identity">
+        <div class="hospital-deck-kicker">
+            @if (!string.IsNullOrEmpty(Eyebrow))
+            {
+                <p class="admin-page-eyebrow">@Eyebrow</p>
+            }
+            @if (IsActive is bool active)
+            {
+                <span class="hospital-deck-status @(active ? null : "is-inactive")">
+                    <span class="hospital-deck-status-dot" aria-hidden="true"></span>
+                    @(active ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
+                </span>
+            }
+            else if (!string.IsNullOrEmpty(StatusText))
+            {
+                <span class="hospital-deck-status">
+                    <span class="hospital-deck-status-dot" aria-hidden="true"></span>
+                    @StatusText
+                </span>
+            }
+        </div>
+        <h1 class="hospital-deck-name">@Title</h1>
+        @if (!string.IsNullOrEmpty(Lead))
+        {
+            <p class="hospital-deck-lead">@Lead</p>
+        }
+    </div>
+    @if (ChildContent is not null)
+    {
+        <div class="hospital-deck-meta">
+            @ChildContent
+        </div>
+    }
+</header>
+
+@code {
+    [Parameter] public string BackHref { get; set; } = "/admin/hospitals";
+    [Parameter] public string BackText { get; set; } = string.Empty;
+    [Parameter] public string Monogram { get; set; } = "?";
+    [Parameter] public string? Eyebrow { get; set; }
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Lead { get; set; }
+    [Parameter] public bool? IsActive { get; set; }
+    [Parameter] public string? StatusText { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

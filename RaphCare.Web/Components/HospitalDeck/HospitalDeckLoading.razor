@@ -1,0 +1,8 @@
+<div class="hospital-deck-loading" aria-busy="true">
+    <div class="hospital-deck-loading-mark" aria-hidden="true"></div>
+    <p>@Message</p>
+</div>
+
+@code {
+    [Parameter] public string Message { get; set; } = string.Empty;
+}

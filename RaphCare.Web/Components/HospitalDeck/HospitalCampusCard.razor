@@ -1,0 +1,29 @@
+<article class="hospital-campus-card @(Facility.IsVirtual ? "is-virtual" : "is-physical") @(IsEditing ? "is-editing" : null)">
+    <div class="hospital-campus-card-head">
+        <span class="badge @(Facility.IsVirtual ? "badge-muted" : "badge-success")">
+            @(Facility.IsVirtual ? AppResources.T("Common_Virtual") : AppResources.T("Common_Physical"))
+        </span>
+        <div class="admin-row-actions">
+            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => OnEdit.InvokeAsync(Facility)">@AppResources.T("Common_Edit")</button>
+            @if (IsAdministrator)
+            {
+                <button type="button" class="btn btn-ghost btn-sm" disabled="@IsDeleting" @onclick="() => OnDelete.InvokeAsync(Facility.Id)">
+                    @(IsDeleting ? AppResources.T("Common_Deleting") : AppResources.T("Common_Delete"))
+                </button>
+            }
+        </div>
+    </div>
+    <h3>@Facility.Name</h3>
+    <p class="hospital-campus-city">@(string.IsNullOrWhiteSpace(Facility.City) ? AppResources.T("Common_EmptyCell") : Facility.City)</p>
+    <p class="hospital-campus-address">@(string.IsNullOrWhiteSpace(Facility.Address) ? AppResources.T("Common_EmptyCell") : Facility.Address)</p>
+    <p class="hospital-campus-country">@Facility.Country</p>
+</article>
+
+@code {
+    [Parameter] public FacilityListItem Facility { get; set; } = new();
+    [Parameter] public bool IsEditing { get; set; }
+    [Parameter] public bool IsAdministrator { get; set; }
+    [Parameter] public bool IsDeleting { get; set; }
+    [Parameter] public EventCallback<FacilityListItem> OnEdit { get; set; }
+    [Parameter] public EventCallback<Guid> OnDelete { get; set; }
+}

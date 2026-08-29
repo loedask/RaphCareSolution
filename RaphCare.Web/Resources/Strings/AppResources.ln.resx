@@ -83,10 +83,10 @@
     <value>Kozonga na ndako</value>
   </data>
   <data name="Common_BackToHospitals" xml:space="preserve">
-    <value>← Kozonga na balopitalo</value>
+    <value>Kozonga na balopitalo</value>
   </data>
   <data name="Common_BackToHospital" xml:space="preserve">
-    <value>← Kozonga na lopitalo</value>
+    <value>Kozonga na lopitalo</value>
   </data>
   <data name="Common_BackToAppointments" xml:space="preserve">
     <value>← Kozonga na ba rendez-vous</value>
@@ -2629,11 +2629,62 @@
   <data name="Collection_ScanQr" xml:space="preserve">
     <value>Scan QR</value>
   </data>
+  <data name="Collection_ScanBrowserHint" xml:space="preserve">
+    <value>Scan ya camera esalaka na Chrome to Edge. Na Safari to Firefox, koma code ya kozwa.</value>
+  </data>
   <data name="Collection_StopScan" xml:space="preserve">
     <value>Tika camera</value>
   </data>
   <data name="Collection_PrintPoster" xml:space="preserve">
     <value>Imprimer affiche</value>
+  </data>
+  <data name="Collection_OpenDisplay" xml:space="preserve">
+    <value>Écran ya kozela</value>
+  </data>
+  <data name="Collection_DisplayHint" xml:space="preserve">
+    <value>Benga code ya kozwa mpo na komonisa yango na écran. Écran emonisa kaka ba code, nkombo te. Fungola yango na TV to tablette mpe batela lokasa.</value>
+  </data>
+  <data name="Collection_Call" xml:space="preserve">
+    <value>Benga</value>
+  </data>
+  <data name="Collection_OnScreen" xml:space="preserve">
+    <value>Na écran</value>
+  </data>
+  <data name="Collection_Called" xml:space="preserve">
+    <value>Code yango ezali na écran ya kozela.</value>
+  </data>
+  <data name="Collection_CouldNotCall" xml:space="preserve">
+    <value>Kobenga code oyo ekoki te.</value>
+  </data>
+  <data name="Collection_CouldNotOpenDisplay" xml:space="preserve">
+    <value>Kofungola écran ya kozela ekoki te.</value>
+  </data>
+  <data name="Display_PageTitle" xml:space="preserve">
+    <value>Kozwa</value>
+  </data>
+  <data name="Display_Eyebrow" xml:space="preserve">
+    <value>Pharmacie mpe laboratoire</value>
+  </data>
+  <data name="Display_NowServing" xml:space="preserve">
+    <value>Bazali kosalela</value>
+  </data>
+  <data name="Display_Waiting" xml:space="preserve">
+    <value>Bazali kozela</value>
+  </data>
+  <data name="Display_Idle" xml:space="preserve">
+    <value>Zela moke. Basali bakobenga code na yo.</value>
+  </data>
+  <data name="Display_Hint" xml:space="preserve">
+    <value>Tala soki code ezali ndenge moko na bulletin na yo.</value>
+  </data>
+  <data name="Display_KindPharmacy" xml:space="preserve">
+    <value>Pharmacie</value>
+  </data>
+  <data name="Display_KindLab" xml:space="preserve">
+    <value>Laboratoire</value>
+  </data>
+  <data name="Display_CouldNotLoad" xml:space="preserve">
+    <value>Kofungola écran ya kozela ekoki te.</value>
   </data>
   <data name="Collection_ScanUnsupported" xml:space="preserve">
     <value>Navigateur oyo ekoki ko fungola camera te. Salela Chrome to Edge, to koma code.</value>

@@ -6,7 +6,7 @@ PDF: [`raphcare-feature-checklist-partner.pdf`](raphcare-feature-checklist-partn
 
 Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md)
 
-**Overall completion:** **75%**
+**Overall completion:** **76%**
 
 **How to read this**
 
@@ -20,7 +20,7 @@ Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-ch
 
 Each section shows its % in the heading. Numbers stay in sync with the engineering checklist when status changes.
 
-Last reviewed: 2026-08-28
+Last reviewed: 2026-08-29
 
 ---
 
@@ -32,7 +32,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 |------|--------|-----------------|
 | Hospital list, register, claim | Done | Find or register a hospital. Each hospital gets a short RaphCare reference staff can share. |
 | Opening a hospital | Done | The left menu hides so the hospital tools have more room. Use All hospitals in the top bar to go back. Language and sign out are there too. |
-| Hospital profile and facilities | Done | Edit details; add physical or virtual locations. Headers, alerts, empty states, and cards look the same across hospital screens. |
+| Hospital profile and facilities | Done | Edit details; add physical or virtual locations. The hospital page opens with a large header and a section menu on the side. |
 | Staff invites and roles | Done | Invite people. Set staff, doctor, pharmacist, or lab technician. Admins can still do hospital setup. |
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |
@@ -40,13 +40,13 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Providers and schedules | Done | Add providers; manage schedules |
 | Appointments | Done | Book, cancel, reschedule |
 | Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete |
-| Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
+| Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read, visit notes doctors can add while a visit is open, and a collection counter for medicines and lab tests. Opening a hospital hides the left menu so staff can focus on that hospital.
+**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Opening a hospital hides the left menu so staff can focus on that hospital.
 
 **Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan. Detail: [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
@@ -58,7 +58,7 @@ Overnight stays: set up rooms and beds, put a patient in a bed, discharge them.
 
 | Area | Status | What you can do |
 |------|--------|-----------------|
-| See bed board (how many free / full) | Done | Open Inpatient on a hospital in admin. Use the left tabs to switch sections. |
+| See bed board (how many free / full) | Done | Open Inpatient on a hospital in admin. The page uses the same large header as hospital details, with a section menu on the side. |
 | Add ward, room, bed | Done | Admins can create capacity |
 | Admit a patient to a bed | Done | Search patients and pick an available bed |
 | Discharge (free the bed) | Done | End an active stay with optional notes |
@@ -80,11 +80,11 @@ What patients see on Android / iPhone.
 
 | Area | Status | Notes |
 |------|--------|-------|
-| Sign up / sign in (email, phone code, voice) | Done | |
+| Sign up / sign in (email, phone code, voice) | Done | Includes forgot password: email code, then new password |
 | Home and navigation | Done | Some areas can be turned off with feature flags |
 | Appointments (list, book, detail) | Done | |
 | Care / request a call / join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
-| Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. |
+| Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. When staff call your code, you get a notice and Health records say come to the counter. |
 | Insurance | Done | |
 | Billing / payment methods | Done | |
 | Family members | Done | |
@@ -124,17 +124,18 @@ What patients see on Android / iPhone.
 
 ---
 
-## 4. Other staff / system pieces - 80%
+## 4. Other staff / system pieces - 83%
 
 | Area | Status | Notes |
 |------|--------|-------|
 | Core clinical and patient APIs | Done | Power the app and admin |
 | FHIR export | Done | For interoperability |
 | Emergency webhook | Done | Integration hook |
+| Staging demo sign-in accounts | Done | Staging only. Sign in with demo.admin / demo.doctor / demo.pharmacy / demo.lab / demo.patient at raphcare.com. Password is on the API as Demo:Password (default RaphCareDemo!2026). Does not wipe other hospitals. |
 | Staff mental-health assessment store | Partial | List exists; deeper storage later |
 | Reporting / big dashboards | Partial | Grows with product needs |
 
-**Bottom line (80%):** core APIs and hooks are in; deeper mental-health storage and reporting grow with product needs.
+**Bottom line (83%):** core APIs, hooks, and Staging demo accounts are in; deeper mental-health storage and reporting grow with product needs.
 
 ---
 
@@ -145,21 +146,22 @@ What patients see on Android / iPhone.
 | 1. Hospital admin (outpatient) | 100% | Ready on web |
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 58% | iPhone video, push, wearables |
-| 4. Other staff / system | 80% | Storage and reporting polish |
-| **Overall** | **75%** | Excludes "not for mobile / clinical / BLE" rows |
+| 4. Other staff / system | 83% | Demo accounts on Staging |
+| **Overall** | **76%** | Excludes "not for mobile / clinical / BLE" rows |
 
 ---
 
 ## What to try this week (partner)
 
-1. **Admin web:** open a hospital. The left menu should hide. Use All hospitals in the top bar to return to the list.
-2. **Admin web:** on that hospital, open Inpatient. Add a ward/room/bed if needed, admit someone, discharge them.
-3. **Admin web:** open a patient chart. You should see medical info, insurance, invoices, and visit notes (empty until data exists).
-4. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
-5. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
-6. **Patient app on Android:** sign in. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster to show only that hospital.
-7. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
-8. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
+1. **Admin web:** sign in as `demo.admin@raphcare.com` (password `RaphCareDemo!2026` unless you changed `Demo:Password`). Open **RaphCare Demo Clinic**.
+2. **Admin web:** the left menu should hide on a hospital. Use All hospitals in the top bar to return to the list.
+3. **Admin web:** on that hospital, open Inpatient. Add a ward/room/bed if needed, admit someone, discharge them.
+4. **Admin web:** open a patient chart. You should see medical info, insurance, invoices, and visit notes (empty until data exists).
+5. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
+6. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
+7. **Patient app on Android:** sign in as `demo.patient@raphcare.com`. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster at the counter to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
+8. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
+9. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
 
 ---
 

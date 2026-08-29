@@ -11,5 +11,6 @@ public sealed class CollectionOrderDisplayItem
     public string PickupCode { get; init; } = string.Empty;
     public string DetailLine { get; init; } = string.Empty;
     public string StatusText { get; init; } = string.Empty;
+    public bool IsCalled { get; init; }
     public ImageSource? QrImage { get; init; }
 }

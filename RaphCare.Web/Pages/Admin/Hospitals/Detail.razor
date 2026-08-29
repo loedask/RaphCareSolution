@@ -7,122 +7,90 @@
 
 <PageTitle>@PageTitleText</PageTitle>
 
-<section class="admin-page">
+<section class="admin-page hospital-deck">
     @if (_loading)
     {
-        <p class="text-muted">@AppResources.T("Common_LoadingHospital")</p>
+        <HospitalDeckLoading Message="@AppResources.T("Common_LoadingHospital")" />
     }
     else if (_detail is null)
     {
-        <AdminAlert Message="@(_error ?? AppResources.T("Common_HospitalNotFound"))" />
-        <a class="btn btn-secondary" href="/admin/hospitals">@AppResources.T("Common_BackToHospitals")</a>
+        <HospitalDeckMissing Message="@(_error ?? AppResources.T("Common_HospitalNotFound"))"
+                             BackText="@AppResources.T("Common_BackToHospitals")" />
     }
     else
     {
-        <AdminPageHeader Title="@_detail.Name" Lead="@AppResources.T("HospitalDetail_Lead")">
-            <StartContent>
-                <a class="btn btn-secondary" href="/admin/hospitals">@AppResources.T("Common_BackToHospitals")</a>
-            </StartContent>
-            <ChildContent>
-                <span class="badge @(_detail.IsActive ? "badge-success" : "badge-muted")">
-                    @(_detail.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
-                </span>
-            </ChildContent>
-        </AdminPageHeader>
+        <HospitalDeckMasthead BackHref="/admin/hospitals"
+                              BackText="@AppResources.T("Common_BackToHospitals")"
+                              Monogram="@HospitalDeckInitials.FromName(_detail.Name)"
+                              Eyebrow="@AppResources.T("Common_HospitalProfileEyebrow")"
+                              Title="@_detail.Name"
+                              Lead="@AppResources.T("HospitalDetail_Lead")"
+                              IsActive="@_detail.IsActive">
+            <HospitalDeckChip Label="@AppResources.T("Common_Country")" Value="@_detail.Country" />
+            <HospitalDeckChip Label="@AppResources.T("Common_TimeZone")" Value="@_detail.TimeZone" />
+            <HospitalDeckChip Label="@AppResources.T("Common_HospitalReference")">
+                <code>@_detail.ReferenceCode</code>
+            </HospitalDeckChip>
+        </HospitalDeckMasthead>
 
-        <nav class="admin-detail-tabs" aria-label="@AppResources.T("Common_HospitalSectionsAria")">
-            <button type="button" class="admin-detail-tab @(_tab == "overview" ? "active" : "")" @onclick='() => SetTab("overview")'>
-                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <div class="hospital-deck-workspace">
+        <HospitalDeckRail AriaLabel="@AppResources.T("Common_HospitalSectionsAria")"
+                          Kicker="@AppResources.T("Common_HospitalSectionsAria")">
+            <HospitalDeckRailItem Index="01" Icon="grid" IsActive="@(_tab == "overview")" OnSelect='() => SetTab("overview")'>
                 @AppResources.T("Common_Overview")
-            </button>
-            <button type="button" class="admin-detail-tab @(_tab == "facilities" ? "active" : "")" @onclick='() => SetTab("facilities")'>
-                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="02" Icon="campus" IsActive="@(_tab == "facilities")" Count="@_detail.Facilities.Count" OnSelect='() => SetTab("facilities")'>
                 @AppResources.T("Common_Facilities")
-            </button>
-            <button type="button" class="admin-detail-tab @(_tab == "patients" ? "active" : "")" @onclick='() => SetTab("patients")'>
-                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="03" Icon="people" IsActive="@(_tab == "patients")" Count="@(_patientsLoaded ? _patientTotalCount : null)" OnSelect='() => SetTab("patients")'>
                 @AppResources.T("Common_PatientsStat")
-            </button>
-            <button type="button" class="admin-detail-tab @(_tab == "providers" ? "active" : "")" @onclick='() => SetTab("providers")'>
-                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2 4 4 .5-3 3 .8 4.5L12 13l-3.8 1.5.8-4.5-3-3 4-.5z"/><circle cx="12" cy="12" r="3"/></svg>
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="04" Icon="provider" IsActive="@(_tab == "providers")" Count="@(_providersLoaded ? _providers.Count : null)" OnSelect='() => SetTab("providers")'>
                 @AppResources.T("Common_ProvidersStat")
-            </button>
-            <button type="button" class="admin-detail-tab @(_tab == "appointments" ? "active" : "")" @onclick='() => SetTab("appointments")'>
-                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="05" Icon="calendar" IsActive="@(_tab == "appointments")" OnSelect='() => SetTab("appointments")'>
                 @AppResources.T("Common_Appointments")
-            </button>
-            <button type="button" class="admin-detail-tab @(_tab == "devices" ? "active" : "")" @onclick='() => SetTab("devices")'>
-                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="06" Icon="device" IsActive="@(_tab == "devices")" Count="@(_devicesLoaded ? _devices.Count : null)" OnSelect='() => SetTab("devices")'>
                 @AppResources.T("Common_Devices")
-            </button>
-            <a class="admin-detail-tab" href="/admin/hospitals/@ClinicId/inpatient">
-                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M3 11h18"/><path d="M8 7V5h8v2"/></svg>
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="07" Icon="inpatient" Href="@($"/admin/hospitals/{ClinicId}/inpatient")">
                 @AppResources.T("Common_Inpatient")
-            </a>
-            <a class="admin-detail-tab" href="/admin/hospitals/@ClinicId/collection">
-                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/><path d="M8 12h8"/></svg>
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="08" Icon="collection" Href="@($"/admin/hospitals/{ClinicId}/collection")">
                 @AppResources.T("Collection_Title")
-            </a>
-            <button type="button" class="admin-detail-tab @(_tab == "staff" ? "active" : "")" @onclick='() => SetTab("staff")'>
-                <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3.1-6 7-6"/><circle cx="17" cy="9" r="2.5"/><path d="M14 20c0-2.5 2.2-4.5 5-4.5"/></svg>
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="09" Icon="staff" IsActive="@(_tab == "staff")" Count="@(_staffLoaded ? _staff.Count : null)" OnSelect='() => SetTab("staff")'>
                 @AppResources.T("Common_Staff")
-            </button>
-        </nav>
+            </HospitalDeckRailItem>
+        </HospitalDeckRail>
 
+        <div class="hospital-deck-stage">
         <AdminAlert Message="@_actionError" />
 
         @if (_tab == "overview")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Common_HospitalProfileEyebrow")"
-                           Title="@AppResources.T("Common_OrganizationDetails")"
-                           Lead="@AppResources.T("Common_UpdateHospitalLead")"
-                           LargeTitle="true">
-                <div class="admin-page-card-body">
-                    <div class="admin-inline-form">
-                        <div class="form-grid">
-                            <label>
-                                @AppResources.T("HospitalsRegister_HospitalNameLabel").TrimEnd(' ', '*')
-                                <input class="form-control" @bind="_clinicForm.Name" />
-                            </label>
-                            <label>
-                                @AppResources.T("Common_Country")
-                                <input class="form-control" @bind="_clinicForm.Country" />
-                            </label>
-                            <label>
-                                @AppResources.T("Common_TimeZone")
-                                <input class="form-control" @bind="_clinicForm.TimeZone" placeholder="@AppResources.T("HospitalDetail_TimeZonePlaceholder")" />
-                            </label>
-                            @if (_isAdministrator)
-                            {
-                                <label class="form-check">
-                                    <input type="checkbox" @bind="_clinicForm.IsActive" />
-                                    @AppResources.T("Common_HospitalIsActive")
-                                </label>
-                            }
-                        </div>
-                        <div class="admin-form-actions">
-                            <button type="button" class="btn btn-primary" disabled="@_savingClinic" @onclick="SaveClinicAsync">
-                                @(_savingClinic ? AppResources.T("Common_Saving") : AppResources.T("Common_SaveChanges"))
-                            </button>
-                        </div>
-                    </div>
+            <div class="hospital-overview">
+                <HospitalIdentityPlate Kicker="@AppResources.T("Common_HospitalReference")"
+                                       Serial="@_detail.ReferenceCode">
+                    <dl class="hospital-identity-facts">
+                        <HospitalIdentityFact Label="@AppResources.T("Common_RegistrationNumberShort")" Value="@_detail.RegistrationNumber" />
+                        <HospitalIdentityFact Label="@AppResources.T("Common_Registered")" Value="@_detail.CreatedAt.ToString("dd MMM yyyy")" />
+                        <HospitalIdentityFact Label="@AppResources.T("Common_Facilities")" Value="@FacilityCountLabel(_detail.Facilities.Count)" />
+                    </dl>
+                </HospitalIdentityPlate>
 
-                    <AdminReviewGrid style="margin-top: 1.5rem;">
-                        <AdminReviewItem Label="@AppResources.T("Common_HospitalReference")">
-                            <code>@_detail.ReferenceCode</code>
-                        </AdminReviewItem>
-                        <AdminReviewItem Label="@AppResources.T("Common_RegistrationNumberShort")" Value="@_detail.RegistrationNumber" />
-                        <AdminReviewItem Label="@AppResources.T("Common_Registered")" Value="@_detail.CreatedAt.ToString("dd MMM yyyy")" />
-                    </AdminReviewGrid>
-                </div>
-            </AdminPageCard>
+                <HospitalOrganizationForm Model="_clinicForm"
+                                          IsAdministrator="_isAdministrator"
+                                          Saving="_savingClinic"
+                                          OnSave="SaveClinicAsync" />
+            </div>
         }
         else if (_tab == "facilities")
         {
             <AdminPageCard Eyebrow="@AppResources.T("Common_LocationsEyebrow")"
                            Title="@AppResources.T("Common_Facilities")"
-                           Lead="@AppResources.T("Common_PhysicalCampusesLead")"
-                           LargeTitle="true">
+                           Lead="@AppResources.T("Common_PhysicalCampusesLead")">
                 <AdminPageCardMeta>
                     <span class="admin-progress-pill">@FacilityCountLabel(_detail.Facilities.Count)</span>
                 </AdminPageCardMeta>
@@ -170,44 +138,20 @@
 
                     @if (_detail.Facilities.Count == 0)
                     {
-                        <p class="text-muted">@AppResources.T("Common_NoFacilitiesYet")</p>
+                        <p class="hospital-deck-empty">@AppResources.T("Common_NoFacilitiesYet")</p>
                     }
                     else
                     {
-                        <div class="table-wrap">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>@AppResources.T("Common_Name")</th>
-                                        <th>@AppResources.T("Common_City")</th>
-                                        <th>@AppResources.T("Common_Address")</th>
-                                        <th>@AppResources.T("Common_Country")</th>
-                                        <th>@AppResources.T("Common_Type")</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var facility in _detail.Facilities)
-                                    {
-                                        <tr>
-                                            <td><strong>@facility.Name</strong></td>
-                                            <td>@(string.IsNullOrWhiteSpace(facility.City) ? AppResources.T("Common_EmptyCell") : facility.City)</td>
-                                            <td>@(string.IsNullOrWhiteSpace(facility.Address) ? AppResources.T("Common_EmptyCell") : facility.Address)</td>
-                                            <td>@facility.Country</td>
-                                            <td>@(facility.IsVirtual ? AppResources.T("Common_Virtual") : AppResources.T("Common_Physical"))</td>
-                                            <td class="admin-row-actions">
-                                                <button type="button" class="btn btn-ghost btn-sm" @onclick="() => StartEditFacility(facility)">@AppResources.T("Common_Edit")</button>
-                                                @if (_isAdministrator)
-                                                {
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_deletingFacilityId == facility.Id" @onclick="() => DeleteFacilityAsync(facility.Id)">
-                                                        @(_deletingFacilityId == facility.Id ? AppResources.T("Common_Deleting") : AppResources.T("Common_Delete"))
-                                                    </button>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                        <div class="hospital-campus-grid">
+                            @foreach (var facility in _detail.Facilities)
+                            {
+                                <HospitalCampusCard Facility="facility"
+                                                    IsEditing="@(_editingFacilityId == facility.Id)"
+                                                    IsAdministrator="_isAdministrator"
+                                                    IsDeleting="@(_deletingFacilityId == facility.Id)"
+                                                    OnEdit="StartEditFacility"
+                                                    OnDelete="DeleteFacilityAsync" />
+                            }
                         </div>
                     }
                 </div>
@@ -217,8 +161,7 @@
         {
             <AdminPageCard Eyebrow="@AppResources.T("Common_CareRecipientsEyebrow")"
                            Title="@AppResources.T("Common_PatientsStat")"
-                           Lead="@AppResources.T("Common_PatientsLead")"
-                           LargeTitle="true">
+                           Lead="@AppResources.T("Common_PatientsLead")">
                 <AdminPageCardMeta>
                     <span class="admin-progress-pill">@PatientCountLabel(_patientTotalCount)</span>
                 </AdminPageCardMeta>
@@ -277,9 +220,8 @@
                                     {
                                         <tr>
                                             <td>
-                                                <a href="/admin/hospitals/@ClinicId/patients/@patient.PatientId">
-                                                    <strong>@patient.FirstName @patient.LastName</strong>
-                                                </a>
+                                                <HospitalDirectoryPerson Name="@($"{patient.FirstName} {patient.LastName}")"
+                                                                         Href="@($"/admin/hospitals/{ClinicId}/patients/{patient.PatientId}")" />
                                             </td>
                                             <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
                                             <td>@patient.AccessType</td>
@@ -307,8 +249,7 @@
         {
             <AdminPageCard Eyebrow="@AppResources.T("Common_ClinicalTeamEyebrow")"
                            Title="@AppResources.T("Common_ProvidersStat")"
-                           Lead="@AppResources.T("Common_ProvidersLead")"
-                           LargeTitle="true">
+                           Lead="@AppResources.T("Common_ProvidersLead")">
                 <AdminPageCardMeta>
                     <span class="admin-progress-pill">@ProviderCountLabel(_providers.Count)</span>
                 </AdminPageCardMeta>
@@ -357,9 +298,8 @@
                                     {
                                         <tr>
                                             <td>
-                                                <a href="/admin/hospitals/@ClinicId/providers/@provider.ProviderId">
-                                                    <strong>@provider.DisplayName</strong>
-                                                </a>
+                                                <HospitalDirectoryPerson Name="@provider.DisplayName"
+                                                                         Href="@($"/admin/hospitals/{ClinicId}/providers/{provider.ProviderId}")" />
                                             </td>
                                             <td>@provider.Email</td>
                                             <td>@(string.IsNullOrWhiteSpace(provider.LicenseNumber) ? AppResources.T("Common_EmptyCell") : provider.LicenseNumber)</td>
@@ -382,8 +322,7 @@
         {
             <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")"
                            Title="@AppResources.T("Common_Appointments")"
-                           Lead="@AppResources.T("Common_AppointmentsLead")"
-                           LargeTitle="true">
+                           Lead="@AppResources.T("Common_AppointmentsLead")">
                 <AdminPageCardMeta>
                     <a class="btn btn-secondary btn-sm" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_FullList")</a>
                 </AdminPageCardMeta>
@@ -429,8 +368,7 @@
         {
             <AdminPageCard Eyebrow="@AppResources.T("Common_FleetEyebrow")"
                            Title="@AppResources.T("Common_Devices")"
-                           Lead="@AppResources.T("Common_DevicesLead")"
-                           LargeTitle="true">
+                           Lead="@AppResources.T("Common_DevicesLead")">
                 <AdminPageCardMeta>
                     <span class="admin-progress-pill">@DeviceCountLabel(_devices.Count)</span>
                 </AdminPageCardMeta>
@@ -489,8 +427,7 @@
 
             <AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
                            Title="@AppResources.T("Common_EmergencyEventsTitle")"
-                           Lead="@AppResources.T("Common_EmergencyEventsLeadClinic")"
-                           LargeTitle="true">
+                           Lead="@AppResources.T("Common_EmergencyEventsLeadClinic")">
                 <AdminPageCardMeta>
                     <span class="admin-progress-pill">@EventCountLabel(_emergencyTotal)</span>
                 </AdminPageCardMeta>
@@ -563,8 +500,7 @@
         {
             <AdminPageCard Eyebrow="@AppResources.T("Common_TeamEyebrow")"
                            Title="@AppResources.T("Common_Staff")"
-                           Lead="@AppResources.T("Common_StaffLead")"
-                           LargeTitle="true">
+                           Lead="@AppResources.T("Common_StaffLead")">
                 <AdminPageCardMeta>
                     <span class="admin-progress-pill">@MemberCountLabel(_staff.Count)</span>
                 </AdminPageCardMeta>
@@ -619,7 +555,9 @@
                                     @foreach (var member in _staff)
                                     {
                                         <tr>
-                                            <td><strong>@member.DisplayName</strong></td>
+                                            <td>
+                                                <HospitalDirectoryPerson Name="@member.DisplayName" />
+                                            </td>
                                             <td>@member.Email</td>
                                             <td>@FormatStaffRoles(member.Roles)</td>
                                             <td>
@@ -703,8 +641,10 @@
             </AdminPageCard>
         }
 
-        <div class="admin-page-actions">
-            <a class="btn btn-secondary" href="/admin/hospitals">@AppResources.T("Common_BackToHospitals")</a>
+        <div class="hospital-deck-foot">
+            <HospitalDeckBackLink Href="/admin/hospitals" Text="@AppResources.T("Common_BackToHospitals")" />
+        </div>
+        </div>
         </div>
     }
 </section>
