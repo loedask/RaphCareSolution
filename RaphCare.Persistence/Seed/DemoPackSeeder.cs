@@ -55,6 +55,7 @@ public static class DemoPackSeeder
         {
             await EnsureDemoClinicAsync(clinical, cancellationToken).ConfigureAwait(false);
             await EnsureDemoCapacityAsync(clinical, cancellationToken).ConfigureAwait(false);
+            await MigrateLegacyDemoEmailsAsync(identity, cancellationToken).ConfigureAwait(false);
             await EnsureAccountsAsync(identity, roles, password, cancellationToken).ConfigureAwait(false);
             await EnsureDemoProviderAsync(clinical, cancellationToken).ConfigureAwait(false);
             await EnsureMembershipsAsync(clinical, cancellationToken).ConfigureAwait(false);
@@ -65,6 +66,36 @@ public static class DemoPackSeeder
         catch (Exception ex)
         {
             LogPackFailed(logger, ex);
+        }
+    }
+
+    private static async Task MigrateLegacyDemoEmailsAsync(
+        IdentityDbContext identity,
+        CancellationToken cancellationToken)
+    {
+        // Older staging seeds used @raphcare.demo. Rewrite to the documented @raphcare.com addresses.
+        string[] pairs =
+        [
+            DemoPackAccounts.AdminEmail,
+            DemoPackAccounts.DoctorEmail,
+            DemoPackAccounts.PharmacistEmail,
+            DemoPackAccounts.LabEmail,
+            DemoPackAccounts.PatientEmail
+        ];
+
+        foreach (var canonical in pairs)
+        {
+            var legacy = DemoPackAccounts.ToLegacyDemoEmail(canonical);
+            await identity.Database
+                .ExecuteSqlInterpolatedAsync(
+                    $"UPDATE ApplicationUsers SET Email = {canonical} WHERE Email = {legacy}",
+                    cancellationToken)
+                .ConfigureAwait(false);
+            await identity.Database
+                .ExecuteSqlInterpolatedAsync(
+                    $"UPDATE EmailPasswordCredentials SET Email = {canonical} WHERE Email = {legacy}",
+                    cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 
@@ -246,11 +277,13 @@ public static class DemoPackSeeder
         string? jobRole,
         CancellationToken cancellationToken)
     {
+        var legacyEmail = DemoPackAccounts.ToLegacyDemoEmail(email);
+
         var user = await identity.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken).ConfigureAwait(false);
         if (user is null)
         {
             user = await identity.Users
-                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken)
+                .FirstOrDefaultAsync(u => u.Email == email || u.Email == legacyEmail, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -272,15 +305,19 @@ public static class DemoPackSeeder
         }
         else
         {
+            // Rewrite legacy @raphcare.demo addresses to the documented @raphcare.com emails.
             user.Email = email;
             user.DisplayName = displayName;
             user.IsActive = true;
             user.IsDeleted = false;
+            identity.Entry(user).Property(u => u.Email).IsModified = true;
             await identity.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         var credential = await identity.EmailPasswordCredentials
-            .FirstOrDefaultAsync(c => c.UserId == user.Id || c.Email == email, cancellationToken)
+            .FirstOrDefaultAsync(
+                c => c.UserId == user.Id || c.Email == email || c.Email == legacyEmail,
+                cancellationToken)
             .ConfigureAwait(false);
         var hash = PasswordHasher.HashPassword(email, password);
         if (credential is null)
@@ -300,9 +337,22 @@ public static class DemoPackSeeder
             credential.Email = email;
             credential.PasswordHash = hash;
             credential.UpdatedAt = DateTime.UtcNow;
+            identity.Entry(credential).Property(c => c.Email).IsModified = true;
+            identity.Entry(credential).Property(c => c.PasswordHash).IsModified = true;
         }
 
         await identity.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        // Drop any leftover legacy-domain credential rows for this account.
+        var orphanLegacy = await identity.EmailPasswordCredentials
+            .Where(c => c.Email == legacyEmail && c.UserId != user.Id)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (orphanLegacy.Count > 0)
+        {
+            identity.EmailPasswordCredentials.RemoveRange(orphanLegacy);
+            await identity.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
         await roles.AssignRoleIfMissingAsync(user.Id, primaryRole, cancellationToken).ConfigureAwait(false);
         if (jobRole is not null)
             await roles.SetStaffJobRoleAsync(user.Id, jobRole, cancellationToken).ConfigureAwait(false);
@@ -404,9 +454,15 @@ public static class DemoPackSeeder
         }
         else
         {
-            if (patient.ApplicationUserId is null)
+            if (patient.ApplicationUserId is null
+                || patient.ApplicationUserId != ClinicalSeedIds.DemoPatientUserId)
+            {
                 patient.LinkToApplicationUser(ClinicalSeedIds.DemoPatientUserId);
+                clinical.Entry(patient).Property(p => p.ApplicationUserId).IsModified = true;
+            }
+
             patient.Email = DemoPackAccounts.PatientEmail;
+            clinical.Entry(patient).Property(p => p.Email).IsModified = true;
             await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 

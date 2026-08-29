@@ -28,14 +28,13 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
 
-        builder.Configuration
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        AddAppPackageJson(builder.Configuration, "appsettings.json");
 
 #if DEBUG
-        builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+        AddAppPackageJson(builder.Configuration, "appsettings.Development.json");
 #else
-        // Release / Play test builds: hosted API URL (override via publish script before packaging).
-        builder.Configuration.AddJsonFile("appsettings.TestHosting.json", optional: true, reloadOnChange: true);
+        // Release / Play / sideload: hosted API URL (publish scripts may rewrite this file before packaging).
+        AddAppPackageJson(builder.Configuration, "appsettings.TestHosting.json");
 #endif
 
         builder.Configuration.AddUserSecrets(typeof(App).Assembly, optional: true);
@@ -87,5 +86,29 @@ public static class MauiProgram
         FeatureFlags.Initialize(featureOptions);
 
         return app;
+    }
+
+    /// <summary>
+    /// Loads JSON from the app package (Android/iOS assets). Plain <c>AddJsonFile</c> only sees the
+    /// desktop output folder, so Release APKs would keep falling back to localhost.
+    /// </summary>
+    private static void AddAppPackageJson(ConfigurationManager configuration, string fileName)
+    {
+        try
+        {
+            using var package = FileSystem.OpenAppPackageFileAsync(fileName).GetAwaiter().GetResult();
+            var copy = new MemoryStream();
+            package.CopyTo(copy);
+            copy.Position = 0;
+            configuration.AddJsonStream(copy);
+        }
+        catch (FileNotFoundException)
+        {
+            // optional files (Development / TestHosting) may be absent in some hosts
+        }
+        catch (DirectoryNotFoundException)
+        {
+            // same
+        }
     }
 }

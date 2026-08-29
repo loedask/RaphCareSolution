@@ -138,6 +138,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 
 - [x] Landing / welcome
 - [x] Sign-in (email) + verify email
+- [x] Forgot password (email code + new password)
 - [x] Register options: email / phone / voice
 - [x] Phone OTP send / verify -> API JWT
 - [x] Voice onboarding (record -> API)

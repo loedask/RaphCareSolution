@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Client;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Common.Configuration;
 using RaphCare.Mobile.Core.Features.Appointments.ViewModels;
 using RaphCare.Mobile.Core.Features.Appointments.Views;
 using RaphCare.Mobile.Core.Features.Auth.ViewModels;
@@ -42,7 +43,6 @@ using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Features.Settings.ViewModels;
 using RaphCare.Mobile.Core.Features.Settings.Views;
 using RaphCare.Client.Contracts;
-using RaphCare.Mobile.Core.Common.Configuration;
 using RaphCare.Mobile.Core.Common.Services.Api;
 using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.Services.FeatureFlags;
@@ -97,6 +97,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<VerifyEmailViewModel>();
         services.AddTransient<AccountCreatedViewModel>();
         services.AddTransient<SignInViewModel>();
+        services.AddTransient<ForgotPasswordViewModel>();
         services.AddTransient<HomeViewModel>();
         services.AddTransient<AppointmentsViewModel>();
         services.AddTransient<AppointmentDetailViewModel>();
@@ -123,6 +124,7 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<VerifyEmailPage>();
         services.AddTransient<AccountCreatedPage>();
         services.AddTransient<SignInPage>();
+        services.AddTransient<ForgotPasswordPage>();
         services.AddTransient<HomePage>();
         services.AddTransient<RecordsPage>();
         services.AddTransient<HealthRecordDetailPage>();
@@ -190,18 +192,19 @@ public static class MobileServiceCollectionExtensions
 
     private static string ResolveApiBaseAddress(string? configured)
     {
-        var address = string.IsNullOrWhiteSpace(configured) ? "http://localhost:5281/" : configured.Trim();
+#if DEBUG
+        const bool isDebugBuild = true;
+#else
+        const bool isDebugBuild = false;
+#endif
+        var address = MobileApiBaseAddress.Resolve(configured, isDebugBuild);
 
 #if DEBUG && ANDROID
-        // Emulator: localhost is the device. Local ASP.NET dev HTTPS certs are not trusted on Android.
-        if (Uri.TryCreate(address, UriKind.Absolute, out var uri)
-            && (uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
-                || uri.Host.Equals("10.0.2.2", StringComparison.OrdinalIgnoreCase)))
-        {
+        // Emulator: localhost is the device. Local ASP.NET HTTPS certs are not trusted on Android.
+        if (MobileApiBaseAddress.IsLoopback(address))
             return "http://10.0.2.2:5281/";
-        }
 #endif
 
-        return address.EndsWith('/') ? address : address + "/";
+        return address;
     }
 }

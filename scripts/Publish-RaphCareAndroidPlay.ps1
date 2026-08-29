@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
   Builds a signed Release Android App Bundle (and APK) for Play Internal testing.
+  Output names use ApplicationDisplayVersion + ApplicationVersion, e.g. RaphCare-v1.0.0+2.aab.
 #>
 [CmdletBinding()]
 param(
@@ -11,11 +12,22 @@ param(
     [string] $KeystorePassword,
     [Parameter(Mandatory = $true)]
     [string] $KeyPassword,
-    [string] $ApiBaseAddress = ""
+    [string] $ApiBaseAddress = "",
+    [switch] $BumpBuild
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot "RaphCareMobileVersion.ps1")
+
+if ($BumpBuild) {
+    $version = Step-RaphCareMobileVersionCode -RepoRoot $repoRoot
+    Write-Host "Bumped ApplicationVersion to $($version.VersionCode) ($($version.Label))"
+}
+else {
+    $version = Get-RaphCareMobileVersion -RepoRoot $repoRoot
+}
+
 $artifactsDir = Join-Path $repoRoot "artifacts\android"
 New-Item -ItemType Directory -Force -Path $artifactsDir | Out-Null
 
@@ -46,7 +58,7 @@ $csproj = Join-Path $repoRoot "RaphCare.Mobile\RaphCare.Mobile.csproj"
 $publishDir = Join-Path $artifactsDir "publish"
 Remove-Item -Recurse -Force $publishDir -ErrorAction SilentlyContinue
 
-Write-Host "Publishing net10.0-android Release AAB (Api:BaseAddress=$ApiBaseAddress) ..."
+Write-Host "Publishing net10.0-android Release AAB $($version.Label) (Api:BaseAddress=$ApiBaseAddress) ..."
 dotnet publish $csproj `
     -f net10.0-android `
     -c Release `
@@ -76,14 +88,10 @@ dotnet publish $csproj `
 
 if ($LASTEXITCODE -ne 0) { throw "Android APK publish failed" }
 
-Get-ChildItem -Path $publishDir, $apkDir -Recurse -Include *.aab, *.apk -ErrorAction SilentlyContinue |
-    ForEach-Object {
-        $dest = Join-Path $artifactsDir $_.Name
-        Copy-Item $_.FullName $dest -Force
-        Write-Host "Output: $dest"
-    }
+Copy-RaphCareAndroidArtifacts -ArtifactsDir $artifactsDir -FileStem $version.FileStem -SearchRoots @($publishDir, $apkDir) | Out-Null
 
 Write-Host ""
-Write-Host "Upload the .aab in Play Console > Testing > Internal testing."
+Write-Host "Upload $(Join-Path $artifactsDir ($version.FileStem + '.aab')) in Play Console > Testing > Internal testing."
 Write-Host "Package id: com.yindula.raphcare"
+Write-Host "Display version $($version.DisplayVersion), build $($version.VersionCode)"
 Write-Host "See docs/Mobile_Android_Test_Hosting.md"

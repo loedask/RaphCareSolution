@@ -293,5 +293,42 @@ public class EmailPasswordAuthService(
         return (true, null);
     }
 
+    public async Task<bool> HasEmailPasswordCredentialAsync(
+        string email,
+        CancellationToken cancellationToken = default)
+    {
+        var normalizedEmail = NormalizeEmail(email);
+        if (string.IsNullOrWhiteSpace(normalizedEmail))
+            return false;
+
+        return await _identityDbContext.EmailPasswordCredentials
+            .AnyAsync(x => x.Email == normalizedEmail, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<(bool Success, string? Error)> ResetPasswordByEmailAsync(
+        string email,
+        string newPassword,
+        CancellationToken cancellationToken = default)
+    {
+        var normalizedEmail = NormalizeEmail(email);
+        if (string.IsNullOrWhiteSpace(normalizedEmail))
+            return (false, "Email is required.");
+
+        if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 8)
+            return (false, "New password must be at least 8 characters.");
+
+        var credential = await _identityDbContext.EmailPasswordCredentials
+            .FirstOrDefaultAsync(x => x.Email == normalizedEmail, cancellationToken)
+            .ConfigureAwait(false);
+        if (credential is null)
+            return (false, "No password account was found for this email.");
+
+        credential.PasswordHash = _passwordHasher.HashPassword(credential.Email, newPassword);
+        credential.UpdatedAt = _clock.UtcNow;
+        await _identityDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return (true, null);
+    }
+
     private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
 }

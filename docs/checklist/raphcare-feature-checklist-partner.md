@@ -80,7 +80,7 @@ What patients see on Android / iPhone.
 
 | Area | Status | Notes |
 |------|--------|-------|
-| Sign up / sign in (email, phone code, voice) | Done | |
+| Sign up / sign in (email, phone code, voice) | Done | Includes forgot password: email code, then new password |
 | Home and navigation | Done | Some areas can be turned off with feature flags |
 | Appointments (list, book, detail) | Done | |
 | Care / request a call / join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |

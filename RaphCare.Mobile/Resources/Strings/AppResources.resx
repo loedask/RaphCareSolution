@@ -116,11 +116,56 @@ Accessible. Intelligent. Human.</value>
   <data name="AuthPasswordRequired" xml:space="preserve">
     <value>Please enter your password.</value>
   </data>
+  <data name="AuthShowPassword" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="AuthHidePassword" xml:space="preserve">
+    <value>Hide</value>
+  </data>
   <data name="AuthSignInSecureHint" xml:space="preserve">
-    <value>You'll sign in securely with Microsoft (Entra ID). A browser window will open to complete sign-in—same as the web app, optimized for mobile.</value>
+    <value>You'll sign in securely with Microsoft (Entra ID). A browser window will open to complete sign-in, same as the web app, optimized for mobile.</value>
   </data>
   <data name="AuthForgotPassword" xml:space="preserve">
     <value>Forgot password?</value>
+  </data>
+  <data name="ForgotPasswordTitle" xml:space="preserve">
+    <value>Reset password</value>
+  </data>
+  <data name="ForgotPasswordSubtitle" xml:space="preserve">
+    <value>Enter your email and we will send a code. Then choose a new password.</value>
+  </data>
+  <data name="ForgotPasswordCodeLabel" xml:space="preserve">
+    <value>Reset code</value>
+  </data>
+  <data name="ForgotPasswordNewLabel" xml:space="preserve">
+    <value>New password</value>
+  </data>
+  <data name="ForgotPasswordConfirmLabel" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="ForgotPasswordSendCode" xml:space="preserve">
+    <value>Send code</value>
+  </data>
+  <data name="ForgotPasswordReset" xml:space="preserve">
+    <value>Update password</value>
+  </data>
+  <data name="ForgotPasswordCodeSent" xml:space="preserve">
+    <value>If that email has an account, we sent a code. Check your inbox.</value>
+  </data>
+  <data name="ForgotPasswordSendFailed" xml:space="preserve">
+    <value>Could not send a reset code. Try again.</value>
+  </data>
+  <data name="ForgotPasswordResetFailed" xml:space="preserve">
+    <value>Could not update your password. Check the code and try again.</value>
+  </data>
+  <data name="ForgotPasswordTooShort" xml:space="preserve">
+    <value>Password must be at least 8 characters.</value>
+  </data>
+  <data name="ForgotPasswordMismatch" xml:space="preserve">
+    <value>The new passwords do not match.</value>
+  </data>
+  <data name="ForgotPasswordSuccess" xml:space="preserve">
+    <value>Your password was updated. Sign in with the new one.</value>
   </data>
   <data name="AuthDontHaveAccount" xml:space="preserve">
     <value>Don't have an account?</value>
@@ -381,7 +426,7 @@ Accessible. Intelligent. Human.</value>
     <value>You can register without choosing a clinic and link one later.</value>
   </data>
   <data name="RegisterEmailClinicNone" xml:space="preserve">
-    <value>No clinic — register without linking</value>
+    <value>No clinic: register without linking</value>
   </data>
   <data name="RegisterEmailFailed" xml:space="preserve">
     <value>Registration failed.</value>
@@ -567,7 +612,7 @@ Accessible. Intelligent. Human.</value>
     <value>Daily Health Tip</value>
   </data>
   <data name="HomeWellnessMessage" xml:space="preserve">
-    <value>Your mood has been consistently positive this week. Keep up the good routines — regular sleep and your morning walks seem to be helping.</value>
+    <value>Your mood has been consistently positive this week. Keep up the good routines: regular sleep and your morning walks seem to be helping.</value>
   </data>
   <data name="HomeAskAiAssistant" xml:space="preserve">
     <value>Ask AI Assistant</value>
@@ -579,7 +624,7 @@ Accessible. Intelligent. Human.</value>
     <value>Everything in one place</value>
   </data>
   <data name="HomeHeroSubtitle" xml:space="preserve">
-    <value>Records, appointments, devices, and more—tap a card to continue.</value>
+    <value>Records, appointments, devices, and more. Tap a card to continue.</value>
   </data>
   <data name="HomeDashHintRecords" xml:space="preserve">
     <value>History &amp; vitals</value>
@@ -615,7 +660,7 @@ Accessible. Intelligent. Human.</value>
     <value>Current plan</value>
   </data>
   <data name="BillingCurrentPlanFormat" xml:space="preserve">
-    <value>{0} — {1}</value>
+    <value>{0}: {1}</value>
   </data>
   <data name="BillingRenewsFormat" xml:space="preserve">
     <value>Renews {0}</value>
@@ -1593,7 +1638,7 @@ Accessible. Intelligent. Human.</value>
     <value>Message sent</value>
   </data>
   <data name="SupportMessageSentBody" xml:space="preserve">
-    <value>Thanks — our team will reply to your account email when possible.</value>
+    <value>Thanks. Our team will reply to your account email when possible.</value>
   </data>
   <data name="SupportMessageFailed" xml:space="preserve">
     <value>Could not send your message. Try again.</value>

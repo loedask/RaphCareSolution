@@ -24,4 +24,8 @@
     <Project Path="RaphCare.Web.Host/RaphCare.Web.Host.csproj" />
     <Project Path="RaphCare.Web/RaphCare.Web.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="RaphCare.Application.Tests/RaphCare.Application.Tests.csproj" />
+    <Project Path="RaphCare.Mobile.Tests/RaphCare.Mobile.Tests.csproj" />
+  </Folder>
 </Solution>

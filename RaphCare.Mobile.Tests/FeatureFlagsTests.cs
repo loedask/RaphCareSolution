@@ -6,7 +6,7 @@ namespace RaphCare.Mobile.Tests;
 public class FeatureFlagsTests
 {
     [Fact]
-    public void Initialize_copies_options_to_static_flags()
+    public void InitializeCopiesOptionsToStaticFlags()
     {
         var options = new FeatureFlagOptions
         {
@@ -32,7 +32,7 @@ public class FeatureFlagsTests
     }
 
     [Fact]
-    public void Initialize_throws_on_null_options()
+    public void InitializeThrowsOnNullOptions()
     {
         Assert.Throws<ArgumentNullException>(() => FeatureFlags.Initialize(null!));
     }

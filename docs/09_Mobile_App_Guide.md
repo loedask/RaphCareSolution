@@ -21,13 +21,14 @@ The UI design target is the **React + Vite** app at **`C:\laragon\www\raphcare-m
 
 ## Configuration layers (order)
 
-Loaded in `MauiProgram` for the MAUI host:
+Loaded in `MauiProgram` for the MAUI host (JSON is packaged as **MauiAsset** and read with `FileSystem.OpenAppPackageFileAsync`, so Release phones get the same files):
 
 1. `appsettings.json` (optional, tracked defaults)
 2. `appsettings.Development.json` (optional, **DEBUG only**)
-3. .NET **User Secrets** (optional; `UserSecretsId` in `RaphCare.Mobile.csproj`)
+3. `appsettings.TestHosting.json` (optional, **Release only**: staging API base URL for sideload / Play test builds)
+4. .NET **User Secrets** (optional; `UserSecretsId` in `RaphCare.Mobile.csproj`)
 
-Later sources override earlier ones for the same keys.
+Later sources override earlier ones for the same keys. Release builds also refuse a localhost API URL and fall back to the staging host if config is missing.
 
 ### Azure Entra (API + mobile)
 

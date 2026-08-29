@@ -78,6 +78,36 @@ public class EmailAuthController(IMediator mediator) : ControllerBase
         return AuthResult(result);
     }
 
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    public async Task<IActionResult> ForgotPassword(
+        [FromBody] RequestPasswordResetCommand command,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await mediator.Send(command, cancellationToken).ConfigureAwait(false);
+            return NoContent();
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("limit", StringComparison.OrdinalIgnoreCase))
+        {
+            return StatusCode(StatusCodes.Status429TooManyRequests, new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("reset-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword(
+        [FromBody] ConfirmPasswordResetCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(command, cancellationToken).ConfigureAwait(false);
+        return AuthResult(result);
+    }
+
     private IActionResult AuthResult(EmailAuthResult result)
     {
         if (!result.Success)

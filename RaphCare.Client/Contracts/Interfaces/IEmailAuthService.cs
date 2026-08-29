@@ -43,6 +43,14 @@ public interface IEmailAuthService
         CancellationToken cancellationToken = default);
 
     Task<Response<object>> SendEmailVerificationAsync(string email, CancellationToken cancellationToken = default);
+
+    Task<Response<object>> RequestPasswordResetAsync(string email, CancellationToken cancellationToken = default);
+
+    Task<Response<EmailAuthResult>> ConfirmPasswordResetAsync(
+        string email,
+        string verificationCode,
+        string newPassword,
+        CancellationToken cancellationToken = default);
 }
 
 public sealed class EmailAuthResult
