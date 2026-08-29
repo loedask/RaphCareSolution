@@ -9,15 +9,13 @@
 <section class="admin-page">
     <AdminPageHeader Title="@AppResources.T("Common_Inpatient")"
                      Lead="@AppResources.Format("Inpatient_Lead", _clinicName)">
-        <StartContent>
-            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
-        </StartContent>
-        <ChildContent>
+        <div class="admin-page-actions">
             @if (_board is not null)
             {
                 <span class="admin-progress-pill">@AppResources.Format("Inpatient_OccupiedPill", _board.OccupiedBeds, _board.TotalBeds)</span>
             }
-        </ChildContent>
+            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
+        </div>
     </AdminPageHeader>
 
     <AdminAlert Message="@_error" />
