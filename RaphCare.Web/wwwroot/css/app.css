@@ -1932,6 +1932,21 @@ a:hover { text-decoration: underline; }
     color: #f8fafc;
 }
 
+.hospital-occupancy-bar {
+    margin-top: 1.1rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+}
+
+.hospital-occupancy-bar > span {
+    display: block;
+    height: 100%;
+    width: var(--occupancy, 0%);
+    background: linear-gradient(90deg, #5eead4, #14b8a6);
+}
+
 .hospital-campus-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
@@ -2284,6 +2299,74 @@ a.hospital-directory-person:hover strong {
 .bed-chip-other { background: #f1f5f9; color: var(--rc-muted); }
 .bed-chip-wrap { display: flex; flex-direction: column; gap: 0.25rem; }
 .bed-chip-actions { flex-wrap: wrap; }
+
+.hospital-deck .bed-chip-row {
+    gap: 0.7rem;
+    margin-top: 0.75rem;
+}
+
+.hospital-deck .bed-chip {
+    min-width: 5.5rem;
+    padding: 0.7rem 0.8rem 0.65rem;
+    border-radius: 0.9rem;
+    font-family: "Space Grotesk", "DM Sans", sans-serif;
+    font-size: 0.92rem;
+    box-shadow: 0 8px 18px rgba(7, 17, 31, 0.05);
+}
+
+.hospital-deck .bed-chip-occupied {
+    background: linear-gradient(180deg, #ecfeff 0%, #cffafe 100%);
+    border-color: #67e8f9;
+    color: #0e7490;
+}
+
+.hospital-deck .bed-chip-free {
+    background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+.hospital-deck .inpatient-ward {
+    margin-bottom: 1.15rem;
+    padding: 1.05rem 1.1rem 1.1rem;
+    border-radius: 1.1rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fffd 100%);
+    border: 1px solid rgba(13, 148, 136, 0.16);
+    box-shadow: 0 10px 28px rgba(7, 17, 31, 0.05);
+}
+
+.hospital-deck .inpatient-ward:last-child {
+    margin-bottom: 0;
+}
+
+.hospital-deck .inpatient-ward-head h3 {
+    margin: 0;
+    font-family: "Space Grotesk", "DM Sans", sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.hospital-deck .inpatient-room {
+    margin: 0.85rem 0 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(13, 148, 136, 0.12);
+}
+
+.hospital-deck .inpatient-action-panel {
+    background: linear-gradient(180deg, #f0fdfa 0%, #f8fafc 100%);
+    border-color: rgba(13, 148, 136, 0.16);
+    border-radius: 1rem;
+}
+
+.inpatient-nested-actions {
+    margin-top: 0.75rem;
+}
+
+.inpatient-history-filters {
+    margin-bottom: 1rem;
+}
+
+.inpatient-history-apply {
+    align-self: end;
+}
+
 .inpatient-ward-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.35rem; }
 .inpatient-actions { display: flex; flex-wrap: wrap; gap: 0.25rem; }
 .inpatient-action-panel { margin-top: 1rem; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 0.75rem; background: #f8fafc; }
@@ -2538,6 +2621,20 @@ a.hospital-directory-person:hover strong {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     letter-spacing: 0.12em;
     font-weight: 600;
+}
+
+.hospital-deck .pickup-code {
+    font-family: "Space Grotesk", ui-monospace, monospace;
+    color: #0f766e;
+    letter-spacing: 0.08em;
+}
+
+.collection-find-grid {
+    margin-bottom: 0;
+}
+
+.collection-find-actions {
+    margin-top: 1rem;
 }
 
 .print-slip {

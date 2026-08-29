@@ -1,0 +1,13 @@
+<nav class="hospital-deck-rail" aria-label="@AriaLabel">
+    @if (!string.IsNullOrEmpty(Kicker))
+    {
+        <p class="hospital-deck-rail-kicker" aria-hidden="true">@Kicker</p>
+    }
+    @ChildContent
+</nav>
+
+@code {
+    [Parameter] public string AriaLabel { get; set; } = string.Empty;
+    [Parameter] public string? Kicker { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

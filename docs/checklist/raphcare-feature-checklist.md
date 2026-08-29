@@ -27,7 +27,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-08-28
+Last reviewed: 2026-08-29
 
 ---
 
@@ -55,12 +55,12 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 - [x] Hospitals index / register / claim
 - [x] Hospital detail (overview, facilities, patients, providers, staff). Opening a hospital hides the platform sidebar; All hospitals, language, and sign out sit in the top bar. Detail page uses a command-deck identity header and a numbered section rail.
-- [x] Shared admin UI (`AdminPageCard`, `AdminPageHeader`, `AdminStatCard`, `AdminReviewItem`, `AdminAlert`, `AdminEmptyState`, `AdminDefinitionItem`) used across hospital admin pages
+- [x] Shared admin UI (`AdminPageCard`, `AdminPageHeader`, `AdminStatCard`, `AdminReviewItem`, `AdminAlert`, `AdminEmptyState`, `AdminDefinitionItem`, `HospitalDeck*` command-deck pieces) used across hospital admin pages
 - [x] Patient detail page (staff chart: medical info, coverage, invoices, mood, visit notes)
 - [x] Provider detail + schedules
 - [x] Appointments page
 - [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress)
-- [x] Collection page (search by code / name / health ID; scan QR; mark collected; enter lab result; cancel; undo; print slip or wall poster)
+- [x] Collection page (search by code / name / health ID; scan QR; mark collected; enter lab result; cancel; undo; print slip or wall poster). Command-deck header and numbered section rail.
 - [x] Tele join page
 - [x] Admin dashboard
 - [x] Web UI language switcher (en / fr / ln / sw)
@@ -103,7 +103,7 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ### Admin panel (Web)
 
-- [x] `/admin/hospitals/{id}/inpatient`: occupancy stats, left section tabs, add capacity, admit, active list + discharge, beds-by-ward map
+- [x] `/admin/hospitals/{id}/inpatient`: occupancy stats, command-deck header and numbered section rail, add capacity, admit, active list + discharge, beds-by-ward map
 - [x] Nav link from hospital detail
 - [x] Edit / delete / deactivate capacity UI
 - [x] Maintenance toggle UI

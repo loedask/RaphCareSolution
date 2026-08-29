@@ -6,62 +6,56 @@
 
 <PageTitle>@AppResources.T("Inpatient_PageTitle")</PageTitle>
 
-<section class="admin-page">
-    <AdminPageHeader Title="@AppResources.T("Common_Inpatient")"
-                     Lead="@AppResources.Format("Inpatient_Lead", _clinicName)">
-        <div class="admin-page-actions">
+<section class="admin-page hospital-deck">
+    @if (_loading)
+    {
+        <HospitalDeckLoading Message="@AppResources.T("Inpatient_LoadingBoard")" />
+    }
+    else
+    {
+        <HospitalDeckMasthead BackHref="@($"/admin/hospitals/{ClinicId}")"
+                              BackText="@AppResources.T("Common_BackToHospital")"
+                              Monogram="@HospitalDeckInitials.FromName(_clinicName)"
+                              Eyebrow="@AppResources.T("Common_Inpatient")"
+                              Title="@_clinicName"
+                              Lead="@AppResources.Format("Inpatient_Lead", _clinicName)"
+                              StatusText="@(_board is null ? null : AppResources.Format("Inpatient_OccupiedPill", _board.OccupiedBeds, _board.TotalBeds))">
             @if (_board is not null)
             {
-                <span class="admin-progress-pill">@AppResources.Format("Inpatient_OccupiedPill", _board.OccupiedBeds, _board.TotalBeds)</span>
+                <HospitalDeckChip Label="@AppResources.T("Common_Available")" Value="@_board.AvailableBeds.ToString()" />
+                <HospitalDeckChip Label="@AppResources.T("Common_Occupied")" Value="@_board.OccupiedBeds.ToString()" />
+                <HospitalDeckChip Label="@AppResources.T("Common_Maintenance")" Value="@_board.MaintenanceBeds.ToString()" />
             }
-            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
-        </div>
-    </AdminPageHeader>
+        </HospitalDeckMasthead>
 
     <AdminAlert Message="@_error" />
     <AdminAlert Tone="success" Message="@_success" />
 
-    @if (_loading)
+    @if (_board is not null)
     {
-        <p class="text-muted">@AppResources.T("Inpatient_LoadingBoard")</p>
-    }
-    else if (_board is not null)
-    {
-        <AdminStatGrid>
-            <AdminStatCard Label="@AppResources.T("Common_Beds")" Value="@_board.TotalBeds" Accent="accent" />
-            <AdminStatCard Label="@AppResources.T("Common_Available")" Value="@_board.AvailableBeds" Accent="success" />
-            <AdminStatCard Label="@AppResources.T("Common_Occupied")" Value="@_board.OccupiedBeds" Accent="violet" />
-            <AdminStatCard Label="@AppResources.T("Common_Maintenance")" Value="@_board.MaintenanceBeds" />
-        </AdminStatGrid>
-
-        <div class="inpatient-layout">
-            <nav class="inpatient-tabs" aria-label="@AppResources.T("Inpatient_SectionsAria")">
-                @if (_isAdministrator)
-                {
-                    <button type="button" class="inpatient-tab @(_tab == "capacity" ? "active" : "")" @onclick='() => SetTab("capacity")'>
-                        <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
-                        @AppResources.T("Inpatient_AddCapacity")
-                    </button>
-                    <button type="button" class="inpatient-tab @(_tab == "admit" ? "active" : "")" @onclick='() => SetTab("admit")'>
-                        <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3.1-6 7-6"/><path d="M16 11v6M13 14h6"/></svg>
-                        @AppResources.T("Inpatient_AdmitPatientTitle")
-                    </button>
-                }
-                <button type="button" class="inpatient-tab @(_tab == "admissions" ? "active" : "")" @onclick='() => SetTab("admissions")'>
-                    <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                    <span>@AppResources.T("Inpatient_ActiveAdmissionsTitle")</span>
-                    <span class="inpatient-tab-count">@_board.ActiveAdmissionsList.Count</span>
-                </button>
-                <button type="button" class="inpatient-tab @(_tab == "beds" ? "active" : "")" @onclick='() => SetTab("beds")'>
-                    <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M3 11h18"/><path d="M8 7V5h8v2"/></svg>
-                    @AppResources.T("Inpatient_BedsByWardTitle")
-                </button>
-                <button type="button" class="inpatient-tab @(_tab == "history" ? "active" : "")" @onclick='() => SetTab("history")'>
-                    <svg class="admin-detail-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                    @AppResources.T("Inpatient_AdmissionHistoryTitle")
-                </button>
-            </nav>
-            <div class="inpatient-tab-panel">
+        <div class="hospital-deck-workspace">
+        <HospitalDeckRail AriaLabel="@AppResources.T("Inpatient_SectionsAria")"
+                          Kicker="@AppResources.T("Inpatient_SectionsAria")">
+            @if (_isAdministrator)
+            {
+                <HospitalDeckRailItem Index="01" Icon="campus" IsActive="@(_tab == "capacity")" OnSelect='() => SetTab("capacity")'>
+                    @AppResources.T("Inpatient_AddCapacity")
+                </HospitalDeckRailItem>
+                <HospitalDeckRailItem Index="02" Icon="admit" IsActive="@(_tab == "admit")" OnSelect='() => SetTab("admit")'>
+                    @AppResources.T("Inpatient_AdmitPatientTitle")
+                </HospitalDeckRailItem>
+            }
+            <HospitalDeckRailItem Index="@(_isAdministrator ? "03" : "01")" Icon="calendar" IsActive="@(_tab == "admissions")" Count="@_board.ActiveAdmissionsList.Count" OnSelect='() => SetTab("admissions")'>
+                @AppResources.T("Inpatient_ActiveAdmissionsTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="@(_isAdministrator ? "04" : "02")" Icon="inpatient" IsActive="@(_tab == "beds")" Count="@_board.TotalBeds" OnSelect='() => SetTab("beds")'>
+                @AppResources.T("Inpatient_BedsByWardTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="@(_isAdministrator ? "05" : "03")" Icon="history" IsActive="@(_tab == "history")" OnSelect='() => SetTab("history")'>
+                @AppResources.T("Inpatient_AdmissionHistoryTitle")
+            </HospitalDeckRailItem>
+        </HospitalDeckRail>
+            <div class="hospital-deck-stage">
         @if (_isAdministrator && _tab == "capacity")
         {
             <AdminPageCard Eyebrow="@AppResources.T("Inpatient_SetupEyebrow")"
@@ -124,7 +118,7 @@
                                             <input class="form-control" @bind="_facilityCountry" placeholder="@_clinicCountry" />
                                         </label>
                                     </div>
-                                    <div class="admin-page-actions" style="margin-top: 0.75rem;">
+                                    <div class="admin-page-actions inpatient-nested-actions">
                                         <button type="button" class="btn btn-secondary" disabled="@_saving" @onclick="CreateFacilityAsync">
                                             @AppResources.T("Common_AddFacilityButton")
                                         </button>
@@ -236,6 +230,18 @@
 
         @if (_tab == "admissions")
         {
+        <div class="hospital-overview">
+            <HospitalIdentityPlate Kicker="@AppResources.T("Common_Beds")"
+                                   Serial="@AppResources.Format("Inpatient_OccupiedPill", _board.OccupiedBeds, _board.TotalBeds)">
+                <dl class="hospital-identity-facts">
+                    <HospitalIdentityFact Label="@AppResources.T("Common_Available")" Value="@_board.AvailableBeds.ToString()" />
+                    <HospitalIdentityFact Label="@AppResources.T("Common_Occupied")" Value="@_board.OccupiedBeds.ToString()" />
+                    <HospitalIdentityFact Label="@AppResources.T("Common_Maintenance")" Value="@_board.MaintenanceBeds.ToString()" />
+                </dl>
+                <div class="hospital-occupancy-bar" style="--occupancy: @(OccupancyPercent)%;" aria-hidden="true">
+                    <span></span>
+                </div>
+            </HospitalIdentityPlate>
         <AdminPageCard Eyebrow="@AppResources.T("Inpatient_BoardEyebrow")" Title="@AppResources.T("Inpatient_ActiveAdmissionsTitle")">
             <div class="admin-page-card-body">
                 @if (_board.ActiveAdmissionsList.Count == 0)
@@ -263,11 +269,12 @@
                                 {
                                     <tr>
                                         <td>
-                                            <a href="/admin/hospitals/@ClinicId/patients/@adm.PatientId">@adm.PatientName</a>
+                                            <HospitalDirectoryPerson Name="@adm.PatientName"
+                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{adm.PatientId}")" />
                                         </td>
                                         <td>@AppResources.Format("Inpatient_LocationFormat", adm.FacilityName, adm.WardName, adm.RoomName, adm.BedLabel)</td>
                                         <td>@ClinicTimeZoneHelper.FormatClinicLocal(adm.AdmittedAt, _clinicTimeZone)</td>
-                                        <td>@(string.IsNullOrWhiteSpace(adm.Reason) ? "—" : adm.Reason)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(adm.Reason) ? AppResources.T("Common_EmptyCell") : adm.Reason)</td>
                                         @if (_isAdministrator)
                                         {
                                             <td class="inpatient-actions">
@@ -326,6 +333,7 @@
                 }
             </div>
         </AdminPageCard>
+        </div>
         }
 
         @if (_tab == "beds")
@@ -340,7 +348,7 @@
                 {
                     @foreach (var ward in _board.Wards)
                     {
-                        <div class="inpatient-ward" style="margin-bottom: 1.25rem;">
+                        <div class="inpatient-ward">
                             <div class="inpatient-ward-head">
                                 <h3>
                                     @ward.Name
@@ -390,7 +398,7 @@
                             {
                                 @foreach (var room in ward.Rooms)
                                 {
-                                    <div style="margin: 0.75rem 0;">
+                                    <div class="inpatient-room">
                                         <div class="inpatient-ward-head">
                                             <strong>
                                                 @AppResources.Format("Common_RoomLabel", room.Name)
@@ -435,27 +443,19 @@
                                         <div class="bed-chip-row">
                                             @foreach (var bed in room.Beds)
                                             {
-                                                var chipClass = !bed.IsActive
-                                                    ? "bed-chip-other"
+                                                var tone = !bed.IsActive
+                                                    ? "other"
                                                     : bed.Status == "Occupied"
-                                                        ? "bed-chip-occupied"
+                                                        ? "occupied"
                                                         : bed.Status == "Available"
-                                                            ? "bed-chip-free"
+                                                            ? "available"
                                                             : bed.Status == "Maintenance"
-                                                                ? "bed-chip-maintenance"
-                                                                : "bed-chip-other";
-                                                <div class="bed-chip-wrap">
-                                                    <span class="bed-chip @chipClass" title="@BedTitle(bed)">
-                                                        @bed.Label
-                                                        @if (!string.IsNullOrWhiteSpace(bed.CurrentPatientName))
-                                                        {
-                                                            <small>@bed.CurrentPatientName</small>
-                                                        }
-                                                        else
-                                                        {
-                                                            <small>@bed.Status</small>
-                                                        }
-                                                    </span>
+                                                                ? "maintenance"
+                                                                : "other";
+                                                <HospitalBedTile Label="@bed.Label"
+                                                                 Caption="@(string.IsNullOrWhiteSpace(bed.CurrentPatientName) ? bed.Status : bed.CurrentPatientName)"
+                                                                 Title="@BedTitle(bed)"
+                                                                 Tone="@tone">
                                                     @if (_isAdministrator)
                                                     {
                                                         <div class="inpatient-actions bed-chip-actions">
@@ -471,7 +471,7 @@
                                                             <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteBedAsync(bed.Id)">@AppResources.T("Common_Delete")</button>
                                                         </div>
                                                     }
-                                                </div>
+                                                </HospitalBedTile>
                                             }
                                         </div>
 
@@ -508,7 +508,7 @@
         {
         <AdminPageCard Eyebrow="@AppResources.T("Inpatient_HistoryEyebrow")" Title="@AppResources.T("Inpatient_AdmissionHistoryTitle")">
             <div class="admin-page-card-body">
-                <div class="form-grid" style="margin-bottom: 1rem;">
+                <div class="form-grid inpatient-history-filters">
                     <label>
                         @AppResources.T("Inpatient_StatusFilterLabel")
                         <SearchableSelect TValue="string"
@@ -516,7 +516,7 @@
                                           Placeholder="@AppResources.T("Common_All")"
                                           Options="HistoryStatusOptions" />
                     </label>
-                    <div class="admin-page-actions" style="align-self: end;">
+                    <div class="admin-page-actions inpatient-history-apply">
                         <button type="button" class="btn btn-secondary" disabled="@_loadingHistory" @onclick="LoadHistoryAsync">
                             @(_loadingHistory ? AppResources.T("Common_PleaseWait") : AppResources.T("Common_Apply"))
                         </button>
@@ -546,13 +546,14 @@
                                 {
                                     <tr>
                                         <td>
-                                            <a href="/admin/hospitals/@ClinicId/patients/@adm.PatientId">@adm.PatientName</a>
+                                            <HospitalDirectoryPerson Name="@adm.PatientName"
+                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{adm.PatientId}")" />
                                         </td>
                                         <td>@AppResources.Format("Inpatient_LocationFormat", adm.FacilityName, adm.WardName, adm.RoomName, adm.BedLabel)</td>
                                         <td>@ClinicTimeZoneHelper.FormatClinicLocal(adm.AdmittedAt, _clinicTimeZone)</td>
-                                        <td>@(adm.DischargedAt is null ? "—" : ClinicTimeZoneHelper.FormatClinicLocal(adm.DischargedAt.Value, _clinicTimeZone))</td>
+                                        <td>@(adm.DischargedAt is null ? AppResources.T("Common_EmptyCell") : ClinicTimeZoneHelper.FormatClinicLocal(adm.DischargedAt.Value, _clinicTimeZone))</td>
                                         <td>@adm.Status</td>
-                                        <td>@(string.IsNullOrWhiteSpace(adm.Notes) ? "—" : adm.Notes)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(adm.Notes) ? AppResources.T("Common_EmptyCell") : adm.Notes)</td>
                                     </tr>
                                 }
                             </tbody>
@@ -574,9 +575,10 @@
         </div>
     }
 
-    <div class="admin-page-actions">
-        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
-    </div>
+        <div class="admin-page-actions hospital-deck-foot">
+            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
+        </div>
+    }
 </section>
 
 @code {
@@ -681,6 +683,11 @@
         new("Admitted", AppResources.T("Inpatient_StatusAdmitted")),
         new("Discharged", AppResources.T("Inpatient_StatusDischarged"))
     ];
+
+    private int OccupancyPercent =>
+        _board is null || _board.TotalBeds == 0
+            ? 0
+            : (int)Math.Round(100d * _board.OccupiedBeds / _board.TotalBeds);
 
     protected override void OnInitialized() =>
         CultureService.CultureChanged += OnCultureChanged;

@@ -1,0 +1,19 @@
+@if (!string.IsNullOrEmpty(Href))
+{
+    <a class="hospital-directory-person" href="@Href">
+        <span class="hospital-directory-avatar" aria-hidden="true">@HospitalDeckInitials.FromName(Name)</span>
+        <strong>@Name</strong>
+    </a>
+}
+else
+{
+    <span class="hospital-directory-person">
+        <span class="hospital-directory-avatar" aria-hidden="true">@HospitalDeckInitials.FromName(Name)</span>
+        <strong>@Name</strong>
+    </span>
+}
+
+@code {
+    [Parameter] public string Name { get; set; } = string.Empty;
+    [Parameter] public string? Href { get; set; }
+}

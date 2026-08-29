@@ -1,0 +1,11 @@
+<aside class="hospital-identity-plate">
+    <p class="hospital-identity-kicker">@Kicker</p>
+    <p class="hospital-identity-serial">@Serial</p>
+    @ChildContent
+</aside>
+
+@code {
+    [Parameter] public string Kicker { get; set; } = string.Empty;
+    [Parameter] public string Serial { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

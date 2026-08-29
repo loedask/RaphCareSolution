@@ -20,7 +20,7 @@ Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-ch
 
 Each section shows its % in the heading. Numbers stay in sync with the engineering checklist when status changes.
 
-Last reviewed: 2026-08-28
+Last reviewed: 2026-08-29
 
 ---
 
@@ -40,7 +40,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Providers and schedules | Done | Add providers; manage schedules |
 | Appointments | Done | Book, cancel, reschedule |
 | Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete |
-| Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
+| Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
@@ -58,7 +58,7 @@ Overnight stays: set up rooms and beds, put a patient in a bed, discharge them.
 
 | Area | Status | What you can do |
 |------|--------|-----------------|
-| See bed board (how many free / full) | Done | Open Inpatient on a hospital in admin. Use the left tabs to switch sections. |
+| See bed board (how many free / full) | Done | Open Inpatient on a hospital in admin. The page uses the same large header as hospital details, with a section menu on the side. |
 | Add ward, room, bed | Done | Admins can create capacity |
 | Admit a patient to a bed | Done | Search patients and pick an available bed |
 | Discharge (free the bed) | Done | End an active stay with optional notes |
