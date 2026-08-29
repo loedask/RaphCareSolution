@@ -37,10 +37,10 @@
     <value>Back to home</value>
   </data>
   <data name="Common_BackToHospitals" xml:space="preserve">
-    <value>← Back to hospitals</value>
+    <value>Back to hospitals</value>
   </data>
   <data name="Common_BackToHospital" xml:space="preserve">
-    <value>← Back to hospital</value>
+    <value>Back to hospital</value>
   </data>
   <data name="Common_BackToAppointments" xml:space="preserve">
     <value>← Back to appointments</value>

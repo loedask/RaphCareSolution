@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Human-Sounding Copy
 
-Applies to UI strings, i18n / `AppResources` values, landing/marketing text, docs, commit messages, PR bodies, and replies to the user.
+Applies to UI strings, i18n / `AppResources` values, Blazor admin copy, landing/marketing text, docs, checklists, commit messages, PR bodies, and replies to the user.
 
 ## Do not sound like a model
 
@@ -15,6 +15,9 @@ Applies to UI strings, i18n / `AppResources` values, landing/marketing text, doc
 - Avoid hype adjectives and empty intensifiers ("seamless", "robust", "cutting-edge", "powerful", "unlock", "elevate", "leverage").
 - Avoid parallel marketing cadence ("Play local. Win real. Feel alive.") unless the existing brand voice already uses it.
 - Do not over-explain. Say the useful thing once.
+- Do not pack features with `+` or `/` shorthand ("detect + manual", "search/filter/status", "compose/reply"). Write it in plain words ("scan with the camera or type the code"). Paths, URLs, code, and existing UI labels can keep normal separators.
+- Do not chain steps with arrows ("Board → Call → Display"). Use a comma list in order, or "then" if order needs stressing. Numbered steps are fine when the UI or docs already number them.
+- Do not jam product rules into schematic parentheses ("12 chars, no names", "Chrome/Edge only", "admin only"). Say the behavior in a normal sentence if it matters; drop it if it is implementation detail.
 
 ## Punctuation tells
 
@@ -33,9 +36,22 @@ Good: Create a user and assign roles in a few steps.
 
 Bad: It's important to note that the token expires after 15 minutes.
 Good: The token expires after 15 minutes.
+
+Bad: Pickup scan (camera + typed code) / waiting TV
+Good: Scan the pickup code with the camera, or type it. The waiting screen shows codes on a TV.
+
+Bad: Collection flow (Board → Call → Display)
+Good: Collection flow (board, Call, waiting screen)
+
+Bad: Waiting screen (codes only, no names/meds)
+Good: The waiting screen shows pickup codes only. It does not show names or medicines.
 ```
 
 ## When editing existing copy
 
 - Match the voice already in nearby strings for that locale (MAUI `AppResources`, Blazor admin pages, concept translations).
 - Do not "polish" copy into generic AI tone while translating or refactoring.
+
+## Full-file check (required)
+
+When you touch README, contributor docs, UI copy, checklists, or any other file this rule covers, scan the **whole file** for every bullet above before you finish. Do not stop at the line you changed. The user should not have to point out leftover `+` / `/` shorthand, schematic parentheses, arrows, or em dashes elsewhere in the same document.

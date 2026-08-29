@@ -369,8 +369,8 @@
         </div>
         </div>
 
-        <div class="admin-page-actions hospital-deck-foot">
-            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
+        <div class="hospital-deck-foot">
+            <HospitalDeckBackLink Href="@($"/admin/hospitals/{ClinicId}")" Text="@AppResources.T("Common_BackToHospital")" />
         </div>
     }
 </section>

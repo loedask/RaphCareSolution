@@ -40,4 +40,4 @@ Applies to **`RaphCare.Application`**. Cross-cutting doc: **`RaphCare.Applicatio
 
 ## Tests
 
-- When adding a unit-test project for Application, mirror paths under **`Features/{Feature}/Commands|Queries`** and name `*HandlerTests` / `*ValidatorTests`. This repo may not yet have that project; do not reference removed template paths like `TCSA.Solution.UnitTests`.
+- When adding a unit-test project for Application, mirror paths under **`Features/{Feature}/Commands|Queries`** and name `*HandlerTests` / `*ValidatorTests`. This repo may not yet have that project; do not reference removed template paths like `TCSA.Solution.UnitTests`. Bug fixes still need a regression test: see `.cursor/rules/bug-fix-regression-tests.mdc`.

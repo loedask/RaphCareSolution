@@ -83,10 +83,10 @@
     <value>Rudi nyumbani</value>
   </data>
   <data name="Common_BackToHospitals" xml:space="preserve">
-    <value>← Rudi hospitalini</value>
+    <value>Rudi hospitalini</value>
   </data>
   <data name="Common_BackToHospital" xml:space="preserve">
-    <value>← Rudi hospitalini</value>
+    <value>Rudi hospitalini</value>
   </data>
   <data name="Common_BackToAppointments" xml:space="preserve">
     <value>← Rudi kwa miadi</value>

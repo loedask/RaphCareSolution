@@ -83,10 +83,10 @@
     <value>Retour à la maison</value>
   </data>
   <data name="Common_BackToHospitals" xml:space="preserve">
-    <value>← Retour aux hôpitaux</value>
+    <value>Retour aux hôpitaux</value>
   </data>
   <data name="Common_BackToHospital" xml:space="preserve">
-    <value>← Retour à l&apos;hôpital</value>
+    <value>Retour à l&apos;hôpital</value>
   </data>
   <data name="Common_BackToAppointments" xml:space="preserve">
     <value>← Retour aux rendez-vous</value>

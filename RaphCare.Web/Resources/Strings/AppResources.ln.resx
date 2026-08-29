@@ -83,10 +83,10 @@
     <value>Kozonga na ndako</value>
   </data>
   <data name="Common_BackToHospitals" xml:space="preserve">
-    <value>← Kozonga na balopitalo</value>
+    <value>Kozonga na balopitalo</value>
   </data>
   <data name="Common_BackToHospital" xml:space="preserve">
-    <value>← Kozonga na lopitalo</value>
+    <value>Kozonga na lopitalo</value>
   </data>
   <data name="Common_BackToAppointments" xml:space="preserve">
     <value>← Kozonga na ba rendez-vous</value>

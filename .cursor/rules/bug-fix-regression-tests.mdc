@@ -1,0 +1,32 @@
+---
+description: Every bug fix must include a regression test that would have failed before the fix
+alwaysApply: true
+---
+
+# Bug Fix Regression Tests
+
+When fixing a bug (user report, production issue, or a defect found while coding), do not finish until a regression test locks the correct behavior.
+
+## Required
+
+- Search for an existing xUnit test that already fails on the buggy behavior.
+- If none exists, add one in the test project for the layer that owns the bug. If that project does not exist yet, create the smallest xUnit `net10.0` project, add it to `RaphCareSolution.slnx`, and put the test there.
+- The new test must fail against the buggy code and pass after the fix. Assert the real failure mode, not only a nearby happy path.
+- Name the test so the bug is obvious (what broke, what must not happen again).
+- Run the new or updated tests with `dotnet test <project> --filter ...` and report that they passed before claiming the bug is fixed.
+
+## Where tests go
+
+- **Domain / Application** (handlers, validators, domain rules): `RaphCare.Application.Tests` (create if missing). Mirror `Features/{Feature}/Commands|Queries` and name `*HandlerTests` / `*ValidatorTests`. See `.cursor/rules/raphcare-application.mdc`.
+- **Mobile.Kernel** (`AuthResult`, feature flags): `RaphCare.Mobile.Tests`. Do **not** reference `RaphCare.Mobile` (MAUI Resizetizer breaks `dotnet test`).
+- **Client** mapping or HTTP-shape logic that is hand-written: a `RaphCare.Client.Tests` project if needed. Do not test NSwag-generated files.
+- Prefer tests against Application handlers over API controllers when both would cover the same rule.
+
+## Coverage expectations
+
+- Do not treat manual reproduction or a warning-free `dotnet build` as done.
+- Do not skip the test because the fix looks obvious or is a one-liner.
+
+## Exceptions
+
+- Only skip a regression test when the user explicitly says not to add one, or when there is no meaningful automated seam. State that blocker (for example MAUI/XAML-only layout, platform JNI, or generated NSwag output with no hand-written logic to assert).
