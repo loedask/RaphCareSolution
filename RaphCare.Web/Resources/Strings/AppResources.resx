@@ -52,10 +52,10 @@
     <value>Continue</value>
   </data>
   <data name="Common_ContinueArrow" xml:space="preserve">
-    <value>Continue →</value>
+    <value>Continue</value>
   </data>
   <data name="Common_VerifyAndSignIn" xml:space="preserve">
-    <value>Verify and sign in →</value>
+    <value>Verify and sign in</value>
   </data>
   <data name="Common_VerifyAndCreateAccount" xml:space="preserve">
     <value>Verify and create account</value>
@@ -139,10 +139,10 @@
     <value>Cancelling…</value>
   </data>
   <data name="Common_Open" xml:space="preserve">
-    <value>Open →</value>
+    <value>Open</value>
   </data>
   <data name="Common_ViewAll" xml:space="preserve">
-    <value>View all →</value>
+    <value>View all</value>
   </data>
   <data name="Common_Optional" xml:space="preserve">
     <value>Optional</value>
@@ -160,7 +160,7 @@
     <value>Patient</value>
   </data>
   <data name="Common_Provider" xml:space="preserve">
-    <value>Provider</value>
+    <value>Clinician</value>
   </data>
   <data name="Common_Professional" xml:space="preserve">
     <value>Professional</value>
@@ -274,7 +274,7 @@
     <value>Register hospital</value>
   </data>
   <data name="Common_RegisterHospitalButton" xml:space="preserve">
-    <value>+ Register hospital</value>
+    <value>Register hospital</value>
   </data>
   <data name="Common_HospitalDetails" xml:space="preserve">
     <value>Hospital details</value>
@@ -373,7 +373,7 @@
     <value>Could not load patients.</value>
   </data>
   <data name="Common_CouldNotLoadProviders" xml:space="preserve">
-    <value>Could not load providers.</value>
+    <value>Could not load the clinical team.</value>
   </data>
   <data name="Common_CouldNotLoadAppointments" xml:space="preserve">
     <value>Could not load appointments.</value>
@@ -409,7 +409,7 @@
     <value>Patient not found.</value>
   </data>
   <data name="Common_ProviderNotFound" xml:space="preserve">
-    <value>Provider not found.</value>
+    <value>Clinician not found.</value>
   </data>
   <data name="Common_VisitNotFound" xml:space="preserve">
     <value>Visit not found.</value>
@@ -541,7 +541,7 @@
     <value>Loading patients…</value>
   </data>
   <data name="Common_LoadingProviders" xml:space="preserve">
-    <value>Loading providers…</value>
+    <value>Loading clinical team…</value>
   </data>
   <data name="Common_LoadingAppointments" xml:space="preserve">
     <value>Loading appointments…</value>
@@ -562,7 +562,7 @@
     <value>Loading patient…</value>
   </data>
   <data name="Common_LoadingProvider" xml:space="preserve">
-    <value>Loading provider…</value>
+    <value>Loading clinician…</value>
   </data>
   <data name="Common_LoadingVisit" xml:space="preserve">
     <value>Loading visit…</value>
@@ -646,7 +646,7 @@
     <value>Patients</value>
   </data>
   <data name="Common_ProvidersStat" xml:space="preserve">
-    <value>Providers</value>
+    <value>Clinical team</value>
   </data>
   <data name="Common_Devices" xml:space="preserve">
     <value>Devices</value>
@@ -658,13 +658,13 @@
     <value>Overview</value>
   </data>
   <data name="Common_FullList" xml:space="preserve">
-    <value>Full list →</value>
+    <value>Full list</value>
   </data>
   <data name="Common_SelectPatient" xml:space="preserve">
     <value>Select patient…</value>
   </data>
   <data name="Common_SelectProvider" xml:space="preserve">
-    <value>Select provider…</value>
+    <value>Select clinician…</value>
   </data>
   <data name="Common_SelectStaffMemberOption" xml:space="preserve">
     <value>Select staff member…</value>
@@ -673,7 +673,7 @@
     <value>License # (optional)</value>
   </data>
   <data name="Common_AddProvider" xml:space="preserve">
-    <value>Add provider</value>
+    <value>Add clinician</value>
   </data>
   <data name="Common_SearchByNameEmailPhone" xml:space="preserve">
     <value>Search by name, email, or phone</value>
@@ -757,25 +757,25 @@
     <value>No patients match your search.</value>
   </data>
   <data name="Common_ClinicalTeamEyebrow" xml:space="preserve">
-    <value>Clinical team</value>
+    <value>Patient care</value>
   </data>
   <data name="Common_ProvidersLead" xml:space="preserve">
-    <value>Clinicians who can receive appointments at this hospital.</value>
+    <value>People who can receive appointments at this hospital.</value>
   </data>
   <data name="Common_ProviderCountLabel" xml:space="preserve">
-    <value>{0} provider</value>
+    <value>{0} clinician</value>
   </data>
   <data name="Common_ProviderCountLabelPlural" xml:space="preserve">
-    <value>{0} providers</value>
+    <value>{0} clinicians</value>
   </data>
   <data name="Common_AddProviderTitle" xml:space="preserve">
-    <value>Add provider</value>
+    <value>Add clinician</value>
   </data>
   <data name="Common_AddProviderLead" xml:space="preserve">
-    <value>Link a staff member as a clinical provider.</value>
+    <value>Link a staff member so they can receive appointments.</value>
   </data>
   <data name="Common_NoProvidersYet" xml:space="preserve">
-    <value>No providers linked yet. Add a staff member as a provider to manage schedules.</value>
+    <value>No clinicians linked yet. Add a staff member to manage their schedule.</value>
   </data>
   <data name="Common_ScheduleSlotCount" xml:space="preserve">
     <value>{0} slot</value>
@@ -808,7 +808,7 @@
     <value>No devices registered for this hospital yet. Devices appear after patient wearables sync or staff provisioning via the Devices API.</value>
   </data>
   <data name="Common_EmergencyEyebrow" xml:space="preserve">
-    <value>Y6 / 4G emergency</value>
+    <value>Y6 4G emergency</value>
   </data>
   <data name="Common_EmergencyEventsTitle" xml:space="preserve">
     <value>Emergency events</value>
@@ -970,7 +970,7 @@
     <value>Could not cancel appointment.</value>
   </data>
   <data name="Common_SelectPatientAndProvider" xml:space="preserve">
-    <value>Select a patient and provider.</value>
+    <value>Select a patient and clinician.</value>
   </data>
   <data name="Common_Upcoming30Days" xml:space="preserve">
     <value>Upcoming (30 days)</value>
@@ -1081,7 +1081,7 @@
     <value>Patient chart for {0}. Times in {1}.</value>
   </data>
   <data name="Common_ProviderDetailsTitle" xml:space="preserve">
-    <value>Provider details</value>
+    <value>Clinician details</value>
   </data>
   <data name="Common_WeeklyScheduleTitle" xml:space="preserve">
     <value>Weekly schedule</value>
@@ -1108,19 +1108,19 @@
     <value>No schedule slots yet.</value>
   </data>
   <data name="Common_DeactivateProvider" xml:space="preserve">
-    <value>Deactivate provider</value>
+    <value>Deactivate clinician</value>
   </data>
   <data name="Common_ReactivateProvider" xml:space="preserve">
-    <value>Reactivate provider</value>
+    <value>Reactivate clinician</value>
   </data>
   <data name="Common_Updating" xml:space="preserve">
     <value>Updating…</value>
   </data>
   <data name="Common_CouldNotUpdateProviderStatus" xml:space="preserve">
-    <value>Could not update provider status.</value>
+    <value>Could not update clinician status.</value>
   </data>
   <data name="Common_CouldNotLoadProvider" xml:space="preserve">
-    <value>Could not load provider.</value>
+    <value>Could not load clinician.</value>
   </data>
   <data name="Common_EnterValidStartEnd" xml:space="preserve">
     <value>Enter valid start and end times.</value>
@@ -1345,7 +1345,7 @@
     <value>Book care, view records, and connect with your clinic. Full mobile experience available in the RaphCare app.</value>
   </data>
   <data name="Home_PatientBullet1" xml:space="preserve">
-    <value>Email + password with verification code</value>
+    <value>Email and password with verification code</value>
   </data>
   <data name="Home_PatientBullet2" xml:space="preserve">
     <value>Link to your hospital during registration</value>
@@ -1507,7 +1507,7 @@
     <value>Hospital details</value>
   </data>
   <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
-    <value>Provider</value>
+    <value>Clinician</value>
   </data>
   <data name="AdminLayout_AllHospitals" xml:space="preserve">
     <value>All hospitals</value>
@@ -1669,7 +1669,7 @@
     <value>City</value>
   </data>
   <data name="HospitalsRegister_VirtualFacilityCheckbox" xml:space="preserve">
-    <value>Virtual / telehealth-only site</value>
+    <value>Virtual or telehealth-only site</value>
   </data>
   <data name="HospitalsRegister_AdminNameLabel" xml:space="preserve">
     <value>Administrator full name</value>
@@ -1759,7 +1759,7 @@
     <value>Could not update staff role.</value>
   </data>
   <data name="HospitalDetail_CouldNotAddProvider" xml:space="preserve">
-    <value>Could not add provider.</value>
+    <value>Could not add clinician.</value>
   </data>
   <data name="HospitalDetail_CouldNotRemoveStaff" xml:space="preserve">
     <value>Could not remove staff.</value>
@@ -1774,7 +1774,7 @@
     <value>Wards, rooms, beds, and admissions for {0}.</value>
   </data>
   <data name="Inpatient_OccupiedPill" xml:space="preserve">
-    <value>{0} / {1} occupied</value>
+    <value>{0} of {1} occupied</value>
   </data>
   <data name="Inpatient_LoadingBoard" xml:space="preserve">
     <value>Loading inpatient board…</value>
@@ -2107,7 +2107,7 @@
     <value>Could not load patient.</value>
   </data>
   <data name="ProviderDetail_PageTitleFallback" xml:space="preserve">
-    <value>Provider</value>
+    <value>Clinician</value>
   </data>
   <data name="Visit_PageTitleFallback" xml:space="preserve">
     <value>Visit</value>
@@ -2155,7 +2155,7 @@
     <value>Availability</value>
   </data>
   <data name="ProviderDetail_SectionsAria" xml:space="preserve">
-    <value>Provider sections</value>
+    <value>Clinician sections</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} · {1} · times in {2}</value>

@@ -98,10 +98,10 @@
     <value>Continuer</value>
   </data>
   <data name="Common_ContinueArrow" xml:space="preserve">
-    <value>Continuer →</value>
+    <value>Continuer</value>
   </data>
   <data name="Common_VerifyAndSignIn" xml:space="preserve">
-    <value>Vérifiez et connectez-vous →</value>
+    <value>Vérifiez et connectez-vous</value>
   </data>
   <data name="Common_VerifyAndCreateAccount" xml:space="preserve">
     <value>Vérifier et créer un compte</value>
@@ -185,10 +185,10 @@
     <value>Annulation…</value>
   </data>
   <data name="Common_Open" xml:space="preserve">
-    <value>Ouvrir →</value>
+    <value>Ouvrir</value>
   </data>
   <data name="Common_ViewAll" xml:space="preserve">
-    <value>Voir tout →</value>
+    <value>Voir tout</value>
   </data>
   <data name="Common_Optional" xml:space="preserve">
     <value>Facultatif</value>
@@ -206,7 +206,7 @@
     <value>Patient</value>
   </data>
   <data name="Common_Provider" xml:space="preserve">
-    <value>Fournisseur</value>
+    <value>Clinicien</value>
   </data>
   <data name="Common_Professional" xml:space="preserve">
     <value>Professionnel</value>
@@ -419,7 +419,7 @@
     <value>Impossible de charger les patients.</value>
   </data>
   <data name="Common_CouldNotLoadProviders" xml:space="preserve">
-    <value>Impossible de charger les fournisseurs.</value>
+    <value>Impossible de charger l&apos;équipe clinique.</value>
   </data>
   <data name="Common_CouldNotLoadAppointments" xml:space="preserve">
     <value>Impossible de charger les rendez-vous.</value>
@@ -446,7 +446,7 @@
     <value>Patient introuvable.</value>
   </data>
   <data name="Common_ProviderNotFound" xml:space="preserve">
-    <value>Fournisseur introuvable.</value>
+    <value>Clinicien introuvable.</value>
   </data>
   <data name="Common_VisitNotFound" xml:space="preserve">
     <value>Visite introuvable.</value>
@@ -578,7 +578,7 @@
     <value>Chargement des patients…</value>
   </data>
   <data name="Common_LoadingProviders" xml:space="preserve">
-    <value>Chargement des fournisseurs…</value>
+    <value>Chargement de l&apos;équipe clinique…</value>
   </data>
   <data name="Common_LoadingAppointments" xml:space="preserve">
     <value>Chargement des rendez-vous…</value>
@@ -599,7 +599,7 @@
     <value>Chargement du patient…</value>
   </data>
   <data name="Common_LoadingProvider" xml:space="preserve">
-    <value>Chargement du fournisseur…</value>
+    <value>Chargement du clinicien…</value>
   </data>
   <data name="Common_LoadingVisit" xml:space="preserve">
     <value>Chargement de la visite…</value>
@@ -683,7 +683,7 @@
     <value>Patients</value>
   </data>
   <data name="Common_ProvidersStat" xml:space="preserve">
-    <value>Fournisseurs</value>
+    <value>Équipe clinique</value>
   </data>
   <data name="Common_Devices" xml:space="preserve">
     <value>Appareils</value>
@@ -695,13 +695,13 @@
     <value>Aperçu</value>
   </data>
   <data name="Common_FullList" xml:space="preserve">
-    <value>Liste complète →</value>
+    <value>Liste complète</value>
   </data>
   <data name="Common_SelectPatient" xml:space="preserve">
     <value>Sélectionnez le patient…</value>
   </data>
   <data name="Common_SelectProvider" xml:space="preserve">
-    <value>Sélectionnez le fournisseur…</value>
+    <value>Sélectionnez un clinicien…</value>
   </data>
   <data name="Common_SelectStaffMemberOption" xml:space="preserve">
     <value>Sélectionnez un membre du personnel…</value>
@@ -710,7 +710,7 @@
     <value>Numéro de licence (facultatif)</value>
   </data>
   <data name="Common_AddProvider" xml:space="preserve">
-    <value>Ajouter un fournisseur</value>
+    <value>Ajouter un clinicien</value>
   </data>
   <data name="Common_SearchByNameEmailPhone" xml:space="preserve">
     <value>Rechercher par nom, e-mail ou téléphone</value>
@@ -794,25 +794,25 @@
     <value>Aucun patient ne correspond à votre recherche.</value>
   </data>
   <data name="Common_ClinicalTeamEyebrow" xml:space="preserve">
-    <value>Équipe clinique</value>
+    <value>Soins aux patients</value>
   </data>
   <data name="Common_ProvidersLead" xml:space="preserve">
-    <value>Cliniciens qui peuvent recevoir des rendez-vous dans cet hôpital.</value>
+    <value>Personnes qui peuvent recevoir des rendez-vous dans cet hôpital.</value>
   </data>
   <data name="Common_ProviderCountLabel" xml:space="preserve">
-    <value>Fournisseur {0}</value>
+    <value>{0} clinicien</value>
   </data>
   <data name="Common_ProviderCountLabelPlural" xml:space="preserve">
-    <value>Fournisseurs {0}</value>
+    <value>{0} cliniciens</value>
   </data>
   <data name="Common_AddProviderTitle" xml:space="preserve">
-    <value>Ajouter un fournisseur</value>
+    <value>Ajouter un clinicien</value>
   </data>
   <data name="Common_AddProviderLead" xml:space="preserve">
-    <value>Associez un membre du personnel en tant que prestataire clinique.</value>
+    <value>Associez un membre du personnel pour qu&apos;il puisse recevoir des rendez-vous.</value>
   </data>
   <data name="Common_NoProvidersYet" xml:space="preserve">
-    <value>Aucun fournisseur lié pour l&apos;instant. Ajoutez un membre du personnel en tant que fournisseur pour gérer les plannings.</value>
+    <value>Aucun clinicien lié pour l&apos;instant. Ajoutez un membre du personnel pour gérer son planning.</value>
   </data>
   <data name="Common_ScheduleSlotCount" xml:space="preserve">
     <value>Emplacement {0}</value>
@@ -1007,7 +1007,7 @@
     <value>Impossible d&apos;annuler le rendez-vous.</value>
   </data>
   <data name="Common_SelectPatientAndProvider" xml:space="preserve">
-    <value>Sélectionnez un patient et un prestataire.</value>
+    <value>Sélectionnez un patient et un clinicien.</value>
   </data>
   <data name="Common_Upcoming30Days" xml:space="preserve">
     <value>À venir (30 jours)</value>
@@ -1118,7 +1118,7 @@
     <value>Dossier patient pour {0}. Horaires en {1}.</value>
   </data>
   <data name="Common_ProviderDetailsTitle" xml:space="preserve">
-    <value>Détails du fournisseur</value>
+    <value>Détails du clinicien</value>
   </data>
   <data name="Common_WeeklyScheduleTitle" xml:space="preserve">
     <value>Horaire hebdomadaire</value>
@@ -1145,19 +1145,19 @@
     <value>Aucun créneau horaire pour l&apos;instant.</value>
   </data>
   <data name="Common_DeactivateProvider" xml:space="preserve">
-    <value>Désactiver le fournisseur</value>
+    <value>Désactiver le clinicien</value>
   </data>
   <data name="Common_ReactivateProvider" xml:space="preserve">
-    <value>Réactiver le fournisseur</value>
+    <value>Réactiver le clinicien</value>
   </data>
   <data name="Common_Updating" xml:space="preserve">
     <value>Mise à jour…</value>
   </data>
   <data name="Common_CouldNotUpdateProviderStatus" xml:space="preserve">
-    <value>Impossible de mettre à jour le statut du fournisseur.</value>
+    <value>Impossible de mettre à jour le statut du clinicien.</value>
   </data>
   <data name="Common_CouldNotLoadProvider" xml:space="preserve">
-    <value>Impossible de charger le fournisseur.</value>
+    <value>Impossible de charger le clinicien.</value>
   </data>
   <data name="Common_EnterValidStartEnd" xml:space="preserve">
     <value>Saisissez des heures de début et de fin valides.</value>
@@ -1544,7 +1544,7 @@
     <value>Détails de l&apos;hôpital</value>
   </data>
   <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
-    <value>Fournisseur</value>
+    <value>Clinicien</value>
   </data>
   <data name="AdminLayout_AllHospitals" xml:space="preserve">
     <value>Tous les hôpitaux</value>
@@ -1796,7 +1796,7 @@
     <value>Impossible de mettre à jour le rôle du personnel.</value>
   </data>
   <data name="HospitalDetail_CouldNotAddProvider" xml:space="preserve">
-    <value>Impossible d&apos;ajouter un fournisseur.</value>
+    <value>Impossible d&apos;ajouter un clinicien.</value>
   </data>
   <data name="HospitalDetail_CouldNotRemoveStaff" xml:space="preserve">
     <value>Impossible de supprimer le personnel.</value>
@@ -2144,7 +2144,7 @@
     <value>Impossible de charger le patient.</value>
   </data>
   <data name="ProviderDetail_PageTitleFallback" xml:space="preserve">
-    <value>Fournisseur</value>
+    <value>Clinicien</value>
   </data>
   <data name="Visit_PageTitleFallback" xml:space="preserve">
     <value>Visite</value>
@@ -2192,7 +2192,7 @@
     <value>Disponibilité</value>
   </data>
   <data name="ProviderDetail_SectionsAria" xml:space="preserve">
-    <value>Sections du prestataire</value>
+    <value>Sections du clinicien</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} · {1} · horaires en {2}</value>

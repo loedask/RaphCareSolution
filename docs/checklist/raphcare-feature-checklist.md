@@ -43,7 +43,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Staff: invite, job (staff / doctor / pharmacist / lab technician), administrator flag, resend, cancel pending, remove
 - [x] Facilities CRUD (physical + virtual)
 - [x] Dashboard metrics
-- [x] Providers: list, detail, create, set active, schedules create / delete
+- [x] Clinical team (providers): list, detail, create, set active, create and delete schedules
 - [x] Appointments: list, book, cancel, reschedule
 - [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, lab orders (admin or doctor, InProgress)
 - [x] Collection board: search pending prescriptions/labs, camera QR scan, call a code onto the waiting screen, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR, public waiting-screen token (clinic staff; visit may be closed)
@@ -54,10 +54,10 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 ### Admin panel (Web)
 
 - [x] Hospitals index / register / claim
-- [x] Hospital detail (overview, facilities, patients, providers, staff). Opening a hospital hides the platform sidebar; All hospitals, language, and sign out sit in the top bar. Detail page uses a command-deck identity header and a numbered section rail.
+- [x] Hospital detail (overview, facilities, patients, clinical team, staff). Opening a hospital hides the platform sidebar; All hospitals, language, and sign out sit in the top bar. Detail page uses a command-deck identity header and a numbered section rail.
 - [x] Shared admin UI (`AdminPageCard`, `AdminPageHeader`, `AdminStatCard`, `AdminReviewItem`, `AdminAlert`, `AdminEmptyState`, `AdminDefinitionItem`, `HospitalDeck*` command-deck pieces) used across hospital admin pages
 - [x] Patient detail page (staff chart on hospital-deck: overview, clinical, coverage, devices, care)
-- [x] Provider detail + schedules (hospital-deck)
+- [x] Clinician (provider) detail and schedules (hospital-deck)
 - [x] Appointments page (hospital-deck)
 - [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress; hospital-deck)
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
@@ -130,7 +130,7 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ---
 
-## Step 3: Patient Mobile (concept parity + APIs) - 61%
+## Step 3: Patient Mobile (concept parity + APIs) - 62%
 
 Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobile.Kernel` / `FeatureFlags`.
 
@@ -144,6 +144,8 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 - [x] Voice onboarding (record -> API)
 - [x] Account created
 - [x] Home dashboard + quick links
+- [x] Monochrome tintable icons on Home, Profile, Privacy, and Help (no multicolor emoji)
+- [x] Shell navigation and list loads hardened so failed taps / off-thread UI updates do not close the Android app
 - [x] Feature-flagged navigation / under-construction fallback
 - [x] Patient clinic selection: name search + `RC-…` reference code (Profile My clinic; registration picker); `X-Clinic-Id` from selected clinic with config fallback for demos; friendly tenant error messages
 
@@ -151,7 +153,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 
 | Area | API | Client | Mobile UI | Notes |
 |------|-----|--------|-----------|-------|
-| Appointments | [x] | [x] | [x] | List / book (clinic from My clinic + provider picker by name) / detail |
+| Appointments | [x] | [x] | [x] | List, book (clinic from My clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
 | Devices / BLE vitals | [x] | [x] | [x] | Offline outbox retries |
@@ -238,7 +240,7 @@ Permissions / hardware UX:
 
 ### Step 3 status
 
-**61%.** Concept screens and patient APIs are largely in. Patients can pick a clinic by name or reference code. Android is ahead of iOS for video; BLE E580/E585 path exists; wearable catalog is in `docs/14`. Catch-up: phone/OS verification, iOS Agora, push config, store packaging, and wearables depth (live HR/SpO₂, auto sync, activity/sleep and related metrics).
+**62%.** Concept screens and patient APIs are largely in. Patients can pick a clinic by name or reference code. Home and Profile use monochrome tintable icons. Shell navigation and list loads are hardened against Android tap crashes. Android is ahead of iOS for video; BLE E580/E585 path exists; wearable catalog is in `docs/14`. Catch-up: phone/OS verification, iOS Agora, push config, store packaging, and wearables depth (live HR/SpO₂, auto sync, activity/sleep and related metrics).
 
 ---
 
@@ -285,7 +287,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 |------|--:|-------|
 | Step 1 Admin outpatient | 100% | Clinician Mobile out of scope |
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
-| Step 3 Patient Mobile | 61% | iOS video, push, wearables depth |
+| Step 3 Patient Mobile | 62% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
 | Cross-cutting | 88% | Demo pack on Staging; E2E smoke open |
 | **Overall (scored items)** | **80%** | Out of scope / open optional excluded |

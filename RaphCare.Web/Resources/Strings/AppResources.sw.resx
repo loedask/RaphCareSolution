@@ -98,10 +98,10 @@
     <value>Endelea</value>
   </data>
   <data name="Common_ContinueArrow" xml:space="preserve">
-    <value>Endelea →</value>
+    <value>Endelea</value>
   </data>
   <data name="Common_VerifyAndSignIn" xml:space="preserve">
-    <value>Thibitisha na uingie →</value>
+    <value>Thibitisha na uingie</value>
   </data>
   <data name="Common_VerifyAndCreateAccount" xml:space="preserve">
     <value>Thibitisha na uunde akaunti</value>
@@ -185,10 +185,10 @@
     <value>Inaghairi...</value>
   </data>
   <data name="Common_Open" xml:space="preserve">
-    <value>Fungua →</value>
+    <value>Fungua</value>
   </data>
   <data name="Common_ViewAll" xml:space="preserve">
-    <value>Tazama zote →</value>
+    <value>Tazama zote</value>
   </data>
   <data name="Common_Optional" xml:space="preserve">
     <value>Hiari</value>
@@ -206,7 +206,7 @@
     <value>Mgonjwa</value>
   </data>
   <data name="Common_Provider" xml:space="preserve">
-    <value>Mtoa huduma</value>
+    <value>Daktari</value>
   </data>
   <data name="Common_Professional" xml:space="preserve">
     <value>Mtaalamu</value>
@@ -419,7 +419,7 @@
     <value>Haikuweza kupakia wagonjwa.</value>
   </data>
   <data name="Common_CouldNotLoadProviders" xml:space="preserve">
-    <value>Haikuweza kupakia watoa huduma.</value>
+    <value>Haikuweza kupakia timu ya kliniki.</value>
   </data>
   <data name="Common_CouldNotLoadAppointments" xml:space="preserve">
     <value>Haikuweza kupakia miadi.</value>
@@ -446,7 +446,7 @@
     <value>Mgonjwa hakupatikana.</value>
   </data>
   <data name="Common_ProviderNotFound" xml:space="preserve">
-    <value>Mtoa huduma hakupatikana.</value>
+    <value>Daktari hakupatikana.</value>
   </data>
   <data name="Common_VisitNotFound" xml:space="preserve">
     <value>Tembelea haikupatikana.</value>
@@ -578,7 +578,7 @@
     <value>Inapakia wagonjwa...</value>
   </data>
   <data name="Common_LoadingProviders" xml:space="preserve">
-    <value>Inapakia watoa huduma...</value>
+    <value>Inapakia timu ya kliniki…</value>
   </data>
   <data name="Common_LoadingAppointments" xml:space="preserve">
     <value>Inapakia miadi...</value>
@@ -599,7 +599,7 @@
     <value>Inapakia mgonjwa...</value>
   </data>
   <data name="Common_LoadingProvider" xml:space="preserve">
-    <value>Inapakia mtoa huduma...</value>
+    <value>Inapakia daktari…</value>
   </data>
   <data name="Common_LoadingVisit" xml:space="preserve">
     <value>Inapakia ziara...</value>
@@ -683,7 +683,7 @@
     <value>Wagonjwa</value>
   </data>
   <data name="Common_ProvidersStat" xml:space="preserve">
-    <value>Watoa huduma</value>
+    <value>Timu ya kliniki</value>
   </data>
   <data name="Common_Devices" xml:space="preserve">
     <value>Vifaa</value>
@@ -695,13 +695,13 @@
     <value>Muhtasari</value>
   </data>
   <data name="Common_FullList" xml:space="preserve">
-    <value>Orodha kamili →</value>
+    <value>Orodha kamili</value>
   </data>
   <data name="Common_SelectPatient" xml:space="preserve">
     <value>Chagua mgonjwa...</value>
   </data>
   <data name="Common_SelectProvider" xml:space="preserve">
-    <value>Chagua mtoa huduma...</value>
+    <value>Chagua daktari…</value>
   </data>
   <data name="Common_SelectStaffMemberOption" xml:space="preserve">
     <value>Chagua mfanyakazi…</value>
@@ -710,7 +710,7 @@
     <value>Leseni # (ya hiari)</value>
   </data>
   <data name="Common_AddProvider" xml:space="preserve">
-    <value>Ongeza mtoaji</value>
+    <value>Ongeza daktari</value>
   </data>
   <data name="Common_SearchByNameEmailPhone" xml:space="preserve">
     <value>Tafuta kwa jina, barua pepe au simu</value>
@@ -794,25 +794,25 @@
     <value>Hakuna wagonjwa wanaolingana na utafutaji wako.</value>
   </data>
   <data name="Common_ClinicalTeamEyebrow" xml:space="preserve">
-    <value>Timu ya kliniki</value>
+    <value>Huduma kwa wagonjwa</value>
   </data>
   <data name="Common_ProvidersLead" xml:space="preserve">
-    <value>Madaktari ambao wanaweza kupokea miadi katika hospitali hii.</value>
+    <value>Watu wanaoweza kupokea miadi katika hospitali hii.</value>
   </data>
   <data name="Common_ProviderCountLabel" xml:space="preserve">
-    <value>{0} mtoaji</value>
+    <value>{0} daktari</value>
   </data>
   <data name="Common_ProviderCountLabelPlural" xml:space="preserve">
-    <value>{0} watoa huduma</value>
+    <value>{0} madaktari</value>
   </data>
   <data name="Common_AddProviderTitle" xml:space="preserve">
-    <value>Ongeza mtoaji</value>
+    <value>Ongeza daktari</value>
   </data>
   <data name="Common_AddProviderLead" xml:space="preserve">
-    <value>Unganisha mfanyakazi kama mtoa huduma wa kliniki.</value>
+    <value>Unganisha mfanyakazi ili aweze kupokea miadi.</value>
   </data>
   <data name="Common_NoProvidersYet" xml:space="preserve">
-    <value>Bado hakuna watoa huduma waliounganishwa. Ongeza mfanyakazi kama mtoa huduma ili kudhibiti ratiba.</value>
+    <value>Bado hakuna madaktari waliounganishwa. Ongeza mfanyakazi ili kudhibiti ratiba yake.</value>
   </data>
   <data name="Common_ScheduleSlotCount" xml:space="preserve">
     <value>{0} nafasi</value>
@@ -1007,7 +1007,7 @@
     <value>Haikuweza kughairi miadi.</value>
   </data>
   <data name="Common_SelectPatientAndProvider" xml:space="preserve">
-    <value>Chagua mgonjwa na mtoaji.</value>
+    <value>Chagua mgonjwa na daktari.</value>
   </data>
   <data name="Common_Upcoming30Days" xml:space="preserve">
     <value>Ijayo (siku 30)</value>
@@ -1118,7 +1118,7 @@
     <value>Chati ya wagonjwa ya {0}. Saa katika {1}.</value>
   </data>
   <data name="Common_ProviderDetailsTitle" xml:space="preserve">
-    <value>Maelezo ya mtoaji</value>
+    <value>Maelezo ya daktari</value>
   </data>
   <data name="Common_WeeklyScheduleTitle" xml:space="preserve">
     <value>Ratiba ya kila wiki</value>
@@ -1145,19 +1145,19 @@
     <value>Bado hakuna nafasi za ratiba.</value>
   </data>
   <data name="Common_DeactivateProvider" xml:space="preserve">
-    <value>Zima mtoa huduma</value>
+    <value>Zima daktari</value>
   </data>
   <data name="Common_ReactivateProvider" xml:space="preserve">
-    <value>Anzisha tena mtoa huduma</value>
+    <value>Anzisha tena daktari</value>
   </data>
   <data name="Common_Updating" xml:space="preserve">
     <value>Inasasisha...</value>
   </data>
   <data name="Common_CouldNotUpdateProviderStatus" xml:space="preserve">
-    <value>Haikuweza kusasisha hali ya mtoa huduma.</value>
+    <value>Haikuweza kusasisha hali ya daktari.</value>
   </data>
   <data name="Common_CouldNotLoadProvider" xml:space="preserve">
-    <value>Haikuweza kupakia mtoaji.</value>
+    <value>Haikuweza kupakia daktari.</value>
   </data>
   <data name="Common_EnterValidStartEnd" xml:space="preserve">
     <value>Weka saa halali za kuanza na kumalizia.</value>
@@ -1544,7 +1544,7 @@
     <value>Maelezo ya hospitali</value>
   </data>
   <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
-    <value>Mtoa huduma</value>
+    <value>Daktari</value>
   </data>
   <data name="AdminLayout_AllHospitals" xml:space="preserve">
     <value>Hospitali zote</value>
@@ -1796,7 +1796,7 @@
     <value>Haikuweza kusasisha jukumu la wafanyikazi.</value>
   </data>
   <data name="HospitalDetail_CouldNotAddProvider" xml:space="preserve">
-    <value>Haikuweza kuongeza mtoaji.</value>
+    <value>Haikuweza kuongeza daktari.</value>
   </data>
   <data name="HospitalDetail_CouldNotRemoveStaff" xml:space="preserve">
     <value>Haikuweza kuondoa wafanyakazi.</value>
@@ -2144,7 +2144,7 @@
     <value>Haikuweza kupakia mgonjwa.</value>
   </data>
   <data name="ProviderDetail_PageTitleFallback" xml:space="preserve">
-    <value>Mtoa huduma</value>
+    <value>Daktari</value>
   </data>
   <data name="Visit_PageTitleFallback" xml:space="preserve">
     <value>Tembelea</value>
@@ -2192,7 +2192,7 @@
     <value>Upatikanaji</value>
   </data>
   <data name="ProviderDetail_SectionsAria" xml:space="preserve">
-    <value>Sehemu za mtoa huduma</value>
+    <value>Sehemu za daktari</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} · {1} · nyakati katika {2}</value>

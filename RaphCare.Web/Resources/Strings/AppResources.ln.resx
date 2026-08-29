@@ -98,10 +98,10 @@
     <value>Kokoba</value>
   </data>
   <data name="Common_ContinueArrow" xml:space="preserve">
-    <value>Koba →</value>
+    <value>Koba</value>
   </data>
   <data name="Common_VerifyAndSignIn" xml:space="preserve">
-    <value>Verifier pe ko kota →</value>
+    <value>Verifier pe ko kota</value>
   </data>
   <data name="Common_VerifyAndCreateAccount" xml:space="preserve">
     <value>Verifier pe créer compte</value>
@@ -185,10 +185,10 @@
     <value>Kolongolama...</value>
   </data>
   <data name="Common_Open" xml:space="preserve">
-    <value>Fungola →</value>
+    <value>Fungola</value>
   </data>
   <data name="Common_ViewAll" xml:space="preserve">
-    <value>Tala nionso →</value>
+    <value>Tala nionso</value>
   </data>
   <data name="Common_Optional" xml:space="preserve">
     <value>Soki olingi</value>
@@ -206,7 +206,7 @@
     <value>Moto ya maladi</value>
   </data>
   <data name="Common_Provider" xml:space="preserve">
-    <value>Mopesi</value>
+    <value>Mopesi ya clinique</value>
   </data>
   <data name="Common_Professional" xml:space="preserve">
     <value>Ayebi mosala</value>
@@ -419,7 +419,7 @@
     <value>Ekokaki te ko charger ba malades.</value>
   </data>
   <data name="Common_CouldNotLoadProviders" xml:space="preserve">
-    <value>Ekokaki te ko charger ba fournisseurs.</value>
+    <value>Ekokaki te ko charger ekipi ya kliniki.</value>
   </data>
   <data name="Common_CouldNotLoadAppointments" xml:space="preserve">
     <value>Ekokaki te ko charger ba rendez-vous.</value>
@@ -446,7 +446,7 @@
     <value>Mobɛli azwami te.</value>
   </data>
   <data name="Common_ProviderNotFound" xml:space="preserve">
-    <value>Mopesi azwami te.</value>
+    <value>Mopesi ya clinique azwami te.</value>
   </data>
   <data name="Common_VisitNotFound" xml:space="preserve">
     <value>Visite ezwami te.</value>
@@ -578,7 +578,7 @@
     <value>Ko charger ba malades...</value>
   </data>
   <data name="Common_LoadingProviders" xml:space="preserve">
-    <value>Chargement ya ba fournisseurs...</value>
+    <value>Chargement ya ekipi ya kliniki…</value>
   </data>
   <data name="Common_LoadingAppointments" xml:space="preserve">
     <value>Chargement ya ba rendez-vous...</value>
@@ -599,7 +599,7 @@
     <value>Chargement ya mobeli...</value>
   </data>
   <data name="Common_LoadingProvider" xml:space="preserve">
-    <value>Chargement ya fournisseur...</value>
+    <value>Chargement ya mopesi ya clinique…</value>
   </data>
   <data name="Common_LoadingVisit" xml:space="preserve">
     <value>Bozali ko charger visite...</value>
@@ -683,7 +683,7 @@
     <value>Bato ya maladi</value>
   </data>
   <data name="Common_ProvidersStat" xml:space="preserve">
-    <value>Ba fournisseurs</value>
+    <value>Ekipi ya kliniki</value>
   </data>
   <data name="Common_Devices" xml:space="preserve">
     <value>Ba appareils</value>
@@ -695,13 +695,13 @@
     <value>Botali ya mozindo</value>
   </data>
   <data name="Common_FullList" xml:space="preserve">
-    <value>Liste mobimba →</value>
+    <value>Liste mobimba</value>
   </data>
   <data name="Common_SelectPatient" xml:space="preserve">
     <value>Pona mobeli...</value>
   </data>
   <data name="Common_SelectProvider" xml:space="preserve">
-    <value>Pona mopesi...</value>
+    <value>Pona mopesi ya clinique…</value>
   </data>
   <data name="Common_SelectStaffMemberOption" xml:space="preserve">
     <value>Pona mosali ya mosala...</value>
@@ -710,7 +710,7 @@
     <value>Licence # (ekoki kozala ya bolingi)</value>
   </data>
   <data name="Common_AddProvider" xml:space="preserve">
-    <value>Bakisa mopesi</value>
+    <value>Bakisa mopesi ya clinique</value>
   </data>
   <data name="Common_SearchByNameEmailPhone" xml:space="preserve">
     <value>Luká na nkombo, na email, to na telefone</value>
@@ -794,25 +794,25 @@
     <value>Mobɛli moko te oyo ekokani na bolukiluki na yo.</value>
   </data>
   <data name="Common_ClinicalTeamEyebrow" xml:space="preserve">
-    <value>Ekipi ya kliniki</value>
+    <value>Bosalisami ya bakonzi</value>
   </data>
   <data name="Common_ProvidersLead" xml:space="preserve">
-    <value>Ba cliniciens oyo bakoki kozua ba rendez-vous na lopitalo oyo.</value>
+    <value>Batu oyo bakoki kozua ba rendez-vous na lopitalo oyo.</value>
   </data>
   <data name="Common_ProviderCountLabel" xml:space="preserve">
-    <value>{0} mopesi</value>
+    <value>{0} mopesi ya clinique</value>
   </data>
   <data name="Common_ProviderCountLabelPlural" xml:space="preserve">
-    <value>{0} ba fournisseurs</value>
+    <value>{0} ba mopesi ya clinique</value>
   </data>
   <data name="Common_AddProviderTitle" xml:space="preserve">
-    <value>Bakisa mopesi</value>
+    <value>Bakisa mopesi ya clinique</value>
   </data>
   <data name="Common_AddProviderLead" xml:space="preserve">
-    <value>Bokanga mosali ya mosala lokola mopesi ya clinique.</value>
+    <value>Bokanga mosali mpo akoka kozua ba rendez-vous.</value>
   </data>
   <data name="Common_NoProvidersYet" xml:space="preserve">
-    <value>Ba fournisseurs moko te azali na lien nanu. Bakisa mosali lokola mopesi mpo na kotambwisa manaka.</value>
+    <value>Mopesi ya clinique moko te azali nanu. Bakisa mosali mpo na kotambwisa manaka na ye.</value>
   </data>
   <data name="Common_ScheduleSlotCount" xml:space="preserve">
     <value>{0} esika ya kofanda</value>
@@ -1007,7 +1007,7 @@
     <value>Ekokaki te ko annuler rendez-vous.</value>
   </data>
   <data name="Common_SelectPatientAndProvider" xml:space="preserve">
-    <value>Pona mobɛli mpe mopesi lisalisi.</value>
+    <value>Pona moběli mpe mopesi ya clinique.</value>
   </data>
   <data name="Common_Upcoming30Days" xml:space="preserve">
     <value>Ekoya (mikolo 30)</value>
@@ -1118,7 +1118,7 @@
     <value>Etanda ya mobeli mpo na {0}. Tango na {1}.</value>
   </data>
   <data name="Common_ProviderDetailsTitle" xml:space="preserve">
-    <value>Makambo ya mopesi</value>
+    <value>Makambo ya mopesi ya clinique</value>
   </data>
   <data name="Common_WeeklyScheduleTitle" xml:space="preserve">
     <value>Programme ya poso na poso</value>
@@ -1145,19 +1145,19 @@
     <value>Ba slots ya programme nanu te.</value>
   </data>
   <data name="Common_DeactivateProvider" xml:space="preserve">
-    <value>Désactivé fournisseur</value>
+    <value>Zila mopesi ya clinique</value>
   </data>
   <data name="Common_ReactivateProvider" xml:space="preserve">
-    <value>Réactivé fournisseur</value>
+    <value>Fungola lisusu mopesi ya clinique</value>
   </data>
   <data name="Common_Updating" xml:space="preserve">
     <value>Kosala mise à jour...</value>
   </data>
   <data name="Common_CouldNotUpdateProviderStatus" xml:space="preserve">
-    <value>Ekoki te kosala mikolo oyo ezalela ya mopesi.</value>
+    <value>Ekoki te kosala mikolo oyo ezalela ya mopesi ya clinique.</value>
   </data>
   <data name="Common_CouldNotLoadProvider" xml:space="preserve">
-    <value>Ekokaki te ko charger fournisseur.</value>
+    <value>Ekokaki te ko charger mopesi ya clinique.</value>
   </data>
   <data name="Common_EnterValidStartEnd" xml:space="preserve">
     <value>Tyá ngonga ya kobanda mpe ya nsuka oyo ezali na ntina.</value>
@@ -1544,7 +1544,7 @@
     <value>Makambo ya lopitalo</value>
   </data>
   <data name="AdminLayout_BreadcrumbProvider" xml:space="preserve">
-    <value>Mopesi</value>
+    <value>Mopesi ya clinique</value>
   </data>
   <data name="AdminLayout_AllHospitals" xml:space="preserve">
     <value>Ba lopitalo nyonso</value>
@@ -1796,7 +1796,7 @@
     <value>Ekoki te ko mettre à jour rôle ya staff.</value>
   </data>
   <data name="HospitalDetail_CouldNotAddProvider" xml:space="preserve">
-    <value>Ekoki te kobakisa mopesi.</value>
+    <value>Ekoki te kobakisa mopesi ya clinique.</value>
   </data>
   <data name="HospitalDetail_CouldNotRemoveStaff" xml:space="preserve">
     <value>Ekokaki kolongola basali te.</value>
@@ -2144,7 +2144,7 @@
     <value>Ekokaki te ko charger patient.</value>
   </data>
   <data name="ProviderDetail_PageTitleFallback" xml:space="preserve">
-    <value>Mopesi</value>
+    <value>Mopesi ya clinique</value>
   </data>
   <data name="Visit_PageTitleFallback" xml:space="preserve">
     <value>Kokende kotala</value>
@@ -2192,7 +2192,7 @@
     <value>Disponibilité</value>
   </data>
   <data name="ProviderDetail_SectionsAria" xml:space="preserve">
-    <value>Biteni ya mosaleli</value>
+    <value>Biteni ya mopesi ya clinique</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} · {1} · ntango na {2}</value>

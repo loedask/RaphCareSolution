@@ -36,7 +36,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Staff invites and roles | Done | Invite people. Set staff, doctor, pharmacist, or lab technician. Admins can still do hospital setup. |
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |
 | Patient chart (view) | Done | Same large header and section menu as other hospital pages. Sections: overview, clinical, coverage, devices, and care. Staff view this; they do not edit it here. |
-| Providers and schedules | Done | Add providers; manage schedules. Provider detail uses the same large header and section menu. |
+| Clinical team and schedules | Done | Add clinicians; manage schedules. Clinician detail uses the same large header and section menu. |
 | Appointments | Done | Book, cancel, reschedule. The appointments page uses the same large header and section menu. |
 | Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete. Visit and tele join pages match the hospital page layout. |
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
@@ -80,8 +80,8 @@ What patients see on Android and iPhone.
 | Area | Status | Notes |
 |------|--------|-------|
 | Sign up or sign in (email, phone code, voice) | Done | Includes forgot password: email code, then new password |
-| Home and navigation | Done | Some areas can be turned off with feature flags |
-| Appointments (list, book, detail) | Done | Book uses your clinic and a provider name list (no Guids) |
+| Home and navigation | Done | Monochrome icons (same teal tint style as the web). Failed taps should not close the app. Some areas can be turned off with feature flags |
+| Appointments (list, book, detail) | Done | Book uses your clinic and a clinician name list |
 | Care, request a call, join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
 | Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. When staff call your code, you get a notice and Health records say come to the counter. |
 | Insurance | Done | |
@@ -120,7 +120,7 @@ What patients see on Android and iPhone.
 
 **Wearable feature list (survives changing watch models):** `docs/14_Wearable_Capability_Catalog.md`
 
-**Bottom line (59%):** the patient app screens are largely there, including choosing a clinic by name or short code. Catch-up work is mostly **iPhone video**, **real push**, **wearables depth** (live vitals, full sync, background), and **testing the same flows on both phone types**.
+**Bottom line (59%):** the patient app screens are largely there, including choosing a clinic by name or short code. Home and Profile icons are monochrome now. Catch-up work is mostly **iPhone video**, **real push**, **wearables depth** (live vitals, full sync, background), and **testing the same flows on both phone types**.
 
 ---
 
