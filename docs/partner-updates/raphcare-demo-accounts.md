@@ -71,6 +71,6 @@ The waiting screen shows pickup codes only. It does not show names or medicines.
 
 The staging sites can take a minute to wake up. Refresh once. If sign-in still fails, tell me which email you used and what the screen said.
 
-These accounts live on staging only. They are not for a live clinic. The public site is [raphcare.com](https://raphcare.com).
+Please note, these accounts live on staging only. They are not for a live clinic. The public site is [raphcare.com](https://raphcare.com).
 
 <p class="signoff">Thanks,<br />Daskana</p>
