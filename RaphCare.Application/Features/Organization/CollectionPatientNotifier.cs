@@ -35,4 +35,38 @@ internal static class CollectionPatientNotifier
             // The order is already saved. A failed notice must not fail the write.
         }
     }
+
+    public static async Task NotifyCalledAsync(
+        IMediator mediator,
+        Guid patientId,
+        string clinicName,
+        string pickupCode,
+        bool isLab,
+        CancellationToken cancellationToken)
+    {
+        var place = isLab ? "the lab" : "the pharmacy";
+        if (!string.IsNullOrWhiteSpace(clinicName))
+            place = isLab ? $"the lab at {clinicName.Trim()}" : $"the pharmacy at {clinicName.Trim()}";
+
+        var title = isLab ? "Come to the lab" : "Come to the pharmacy";
+        var body = $"Come to {place}. Your code is {pickupCode}.";
+        try
+        {
+            await mediator.Send(
+                    new CreatePatientInAppNotificationCommand
+                    {
+                        PatientId = patientId,
+                        Title = title,
+                        Body = body,
+                        Type = "collection",
+                        SendPush = true
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            // The call is already saved. A failed notice must not fail the write.
+        }
+    }
 }

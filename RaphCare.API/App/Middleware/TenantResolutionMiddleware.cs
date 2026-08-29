@@ -48,7 +48,8 @@ public partial class TenantResolutionMiddleware(RequestDelegate next, ILogger<Te
     /// <summary>Paths that operate above tenant scope or before a clinic exists.</summary>
     private static bool IsTenantExemptPath(string path) =>
         path.StartsWith("/api/auth/email", StringComparison.OrdinalIgnoreCase)
-        || path.StartsWith("/api/admin/", StringComparison.OrdinalIgnoreCase);
+        || path.StartsWith("/api/admin/", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/api/display/", StringComparison.OrdinalIgnoreCase);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Request rejected: missing or empty {Header} header")]
     private partial void LogMissingClinicHeader(string header);

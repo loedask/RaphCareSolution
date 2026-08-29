@@ -1706,19 +1706,74 @@ a:hover { text-decoration: underline; }
 }
 
 .hospital-deck-back {
-    grid-column: 1 / -1;
-    justify-self: start;
-    color: #99f6e4;
-    background: rgba(15, 23, 42, 0.28);
-    border-color: rgba(153, 246, 228, 0.22);
-    padding: 0.35rem 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.38rem 0.85rem 0.38rem 0.55rem;
+    border-radius: 999px;
     font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    color: #99f6e4;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(153, 246, 228, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.hospital-deck-back-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.hospital-deck-back:visited {
+    color: #99f6e4;
 }
 
 .hospital-deck-back:hover {
     color: #fff;
     text-decoration: none;
-    background: rgba(15, 23, 42, 0.45);
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(153, 246, 228, 0.5);
+}
+
+.hospital-deck-back:focus-visible {
+    outline: 2px solid #5eead4;
+    outline-offset: 2px;
+}
+
+.hospital-deck-masthead .hospital-deck-back {
+    grid-column: 1 / -1;
+    justify-self: start;
+}
+
+.hospital-deck-foot {
+    margin-top: 0.25rem;
+}
+
+.hospital-deck-foot .hospital-deck-back {
+    color: #0f766e;
+    background: transparent;
+    border-color: rgba(13, 148, 136, 0.28);
+    box-shadow: none;
+}
+
+.hospital-deck-foot .hospital-deck-back:hover {
+    color: #115e59;
+    background: #f0fdfa;
+    border-color: rgba(13, 148, 136, 0.4);
+}
+
+.hospital-deck-foot .hospital-deck-back:visited {
+    color: #0f766e;
 }
 
 .hospital-deck-workspace {
@@ -2046,10 +2101,6 @@ a.hospital-directory-person:hover strong {
 
 .hospital-deck .data-table tbody tr:hover {
     background: #f0fdfa;
-}
-
-.hospital-deck-foot {
-    margin-top: 0.25rem;
 }
 
 @keyframes hospital-deck-spin {
@@ -2635,6 +2686,129 @@ a.hospital-directory-person:hover strong {
 
 .collection-find-actions {
     margin-top: 1rem;
+}
+
+.collection-display {
+    min-height: 100vh;
+    box-sizing: border-box;
+    background: #0c1222;
+    color: #f8fafc;
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.collection-display-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.collection-display-eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.collection-display-hospital {
+    margin: 0.35rem 0 0;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+}
+
+.collection-display-label {
+    margin: 0.5rem 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.95rem;
+    color: #5eead4;
+}
+
+.collection-display-code {
+    margin: 0.2rem 0 0;
+    font-family: "Space Grotesk", ui-monospace, monospace;
+    font-size: clamp(4rem, 14vw, 9rem);
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    line-height: 1.05;
+}
+
+.collection-display-kind,
+.collection-display-idle {
+    margin: 0;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    color: #cbd5e1;
+}
+
+.collection-display-idle {
+    margin-top: 3rem;
+}
+
+.collection-display-error {
+    margin-top: 2rem;
+    font-size: 1.25rem;
+    color: #fca5a5;
+}
+
+.collection-display-waiting {
+    margin-top: 1.5rem;
+}
+
+.collection-display-queue {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.collection-display-queue li {
+    background: #1e293b;
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    min-width: 8rem;
+}
+
+.collection-display-queue-code {
+    display: block;
+    font-family: "Space Grotesk", ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.collection-display-queue-kind {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.collection-display-hint {
+    margin-top: auto;
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+.collection-display .language-picker-label {
+    color: #94a3b8;
+}
+
+.collection-display .searchable-select-trigger {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: #334155;
+}
+
+.hospital-deck .pickup-code .badge {
+    letter-spacing: 0;
+    margin-left: 0.5rem;
+    vertical-align: middle;
 }
 
 .print-slip {

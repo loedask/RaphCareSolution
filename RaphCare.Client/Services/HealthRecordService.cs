@@ -108,6 +108,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
             PickupCode = p.PickupCode ?? string.Empty,
             IssuedAt = p.IssuedAt,
             Status = p.Status ?? string.Empty,
+            CalledAt = p.CalledAt,
             Notes = p.Notes,
             Items = (p.Items ?? Array.Empty<CollectionPrescriptionItemDto>())
                 .Select(i => new PatientCollectionPrescriptionItemViewModel
@@ -134,6 +135,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
             TestName = l.TestName ?? string.Empty,
             Status = l.Status ?? string.Empty,
             RequestedAt = l.RequestedAt,
+            CalledAt = l.CalledAt,
             ResultValue = l.ResultValue,
             Unit = l.Unit,
             ReferenceRange = l.ReferenceRange,
@@ -179,6 +181,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
         public string? PickupCode { get; set; }
         public DateTime IssuedAt { get; set; }
         public string? Status { get; set; }
+        public DateTime? CalledAt { get; set; }
         public string? Notes { get; set; }
         public IReadOnlyList<CollectionPrescriptionItemDto>? Items { get; set; }
     }
@@ -201,6 +204,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
         public string? TestName { get; set; }
         public string? Status { get; set; }
         public DateTime RequestedAt { get; set; }
+        public DateTime? CalledAt { get; set; }
         public string? ResultValue { get; set; }
         public string? Unit { get; set; }
         public string? ReferenceRange { get; set; }

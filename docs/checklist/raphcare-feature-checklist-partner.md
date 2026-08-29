@@ -40,13 +40,13 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Providers and schedules | Done | Add providers; manage schedules |
 | Appointments | Done | Book, cancel, reschedule |
 | Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete |
-| Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
+| Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read, visit notes doctors can add while a visit is open, and a collection counter for medicines and lab tests. Opening a hospital hides the left menu so staff can focus on that hospital.
+**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Opening a hospital hides the left menu so staff can focus on that hospital.
 
 **Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan. Detail: [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
 
@@ -84,7 +84,7 @@ What patients see on Android / iPhone.
 | Home and navigation | Done | Some areas can be turned off with feature flags |
 | Appointments (list, book, detail) | Done | |
 | Care / request a call / join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
-| Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. |
+| Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. When staff call your code, you get a notice and Health records say come to the counter. |
 | Insurance | Done | |
 | Billing / payment methods | Done | |
 | Family members | Done | |
@@ -156,8 +156,8 @@ What patients see on Android / iPhone.
 2. **Admin web:** on that hospital, open Inpatient. Add a ward/room/bed if needed, admit someone, discharge them.
 3. **Admin web:** open a patient chart. You should see medical info, insurance, invoices, and visit notes (empty until data exists).
 4. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
-5. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
-6. **Patient app on Android:** sign in. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster to show only that hospital.
+5. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
+6. **Patient app on Android:** sign in. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
 7. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
 8. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
 

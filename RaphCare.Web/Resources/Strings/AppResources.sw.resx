@@ -83,10 +83,10 @@
     <value>Rudi nyumbani</value>
   </data>
   <data name="Common_BackToHospitals" xml:space="preserve">
-    <value>← Rudi hospitalini</value>
+    <value>Rudi hospitalini</value>
   </data>
   <data name="Common_BackToHospital" xml:space="preserve">
-    <value>← Rudi hospitalini</value>
+    <value>Rudi hospitalini</value>
   </data>
   <data name="Common_BackToAppointments" xml:space="preserve">
     <value>← Rudi kwa miadi</value>
@@ -2637,6 +2637,54 @@
   </data>
   <data name="Collection_PrintPoster" xml:space="preserve">
     <value>Chapisha bango</value>
+  </data>
+  <data name="Collection_OpenDisplay" xml:space="preserve">
+    <value>Skrini ya kusubiri</value>
+  </data>
+  <data name="Collection_DisplayHint" xml:space="preserve">
+    <value>Ita msimbo wa kuchukua ili uonekane kwenye skrini. Skrini inaonyesha misimbo tu, si majina. Fungua kwenye TV au tableti na uihifadhi.</value>
+  </data>
+  <data name="Collection_Call" xml:space="preserve">
+    <value>Ita</value>
+  </data>
+  <data name="Collection_OnScreen" xml:space="preserve">
+    <value>Kwenye skrini</value>
+  </data>
+  <data name="Collection_Called" xml:space="preserve">
+    <value>Msimbo huo uko kwenye skrini ya kusubiri.</value>
+  </data>
+  <data name="Collection_CouldNotCall" xml:space="preserve">
+    <value>Haikuweza kuita msimbo huu.</value>
+  </data>
+  <data name="Collection_CouldNotOpenDisplay" xml:space="preserve">
+    <value>Haikuweza kufungua skrini ya kusubiri.</value>
+  </data>
+  <data name="Display_PageTitle" xml:space="preserve">
+    <value>Kuchukua</value>
+  </data>
+  <data name="Display_Eyebrow" xml:space="preserve">
+    <value>Duka la dawa na maabara</value>
+  </data>
+  <data name="Display_NowServing" xml:space="preserve">
+    <value>Anayehudumiwa</value>
+  </data>
+  <data name="Display_Waiting" xml:space="preserve">
+    <value>Wanaosubiri</value>
+  </data>
+  <data name="Display_Idle" xml:space="preserve">
+    <value>Tafadhali subiri. Wafanyakazi wataita msimbo wako.</value>
+  </data>
+  <data name="Display_Hint" xml:space="preserve">
+    <value>Linganisha na msimbo kwenye stakabadhi yako.</value>
+  </data>
+  <data name="Display_KindPharmacy" xml:space="preserve">
+    <value>Duka la dawa</value>
+  </data>
+  <data name="Display_KindLab" xml:space="preserve">
+    <value>Maabara</value>
+  </data>
+  <data name="Display_CouldNotLoad" xml:space="preserve">
+    <value>Haikuweza kupakia skrini ya kusubiri.</value>
   </data>
   <data name="Collection_ScanUnsupported" xml:space="preserve">
     <value>Kivinjari hiki hakiwezi kufungua kamera. Tumia Chrome au Edge, au andika msimbo.</value>

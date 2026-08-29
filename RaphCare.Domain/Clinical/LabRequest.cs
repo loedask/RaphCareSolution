@@ -13,6 +13,7 @@ public class LabRequest : BaseEntity
     public DateTime RequestedAt { get; set; }
     public string Status { get; set; } = "Pending";
     public string PickupCode { get; set; } = string.Empty;
+    public DateTime? CalledAt { get; set; }
 
     public Visit Visit { get; set; } = null!;
     public ICollection<LabResult> LabResults { get; set; } = new List<LabResult>();

@@ -8,4 +8,8 @@ public interface IAdminClinicCollectionQueryService
         Guid clinicId,
         string? search,
         CancellationToken cancellationToken = default);
+
+    Task<CollectionDisplayBoardDto?> GetDisplayBoardAsync(
+        string token,
+        CancellationToken cancellationToken = default);
 }

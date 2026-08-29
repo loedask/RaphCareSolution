@@ -75,8 +75,12 @@
                             <button type="button" class="btn btn-ghost" @onclick="PrintPosterAsync">
                                 @AppResources.T("Collection_PrintPoster")
                             </button>
+                            <button type="button" class="btn btn-ghost" disabled="@_busy" @onclick="OpenWaitingScreenAsync">
+                                @AppResources.T("Collection_OpenDisplay")
+                            </button>
                         </div>
                         <p class="hint">@AppResources.T("Collection_ScanBrowserHint")</p>
+                        <p class="hint">@AppResources.T("Collection_DisplayHint")</p>
                     </div>
                 </AdminPageCard>
             </div>
@@ -106,7 +110,13 @@
                                 @foreach (var rx in _board.Prescriptions)
                                 {
                                     <tr>
-                                        <td class="pickup-code">@rx.PickupCode</td>
+                                        <td class="pickup-code">
+                                            @rx.PickupCode
+                                            @if (rx.CalledAt is not null)
+                                            {
+                                                <span class="badge badge-success">@AppResources.T("Collection_OnScreen")</span>
+                                            }
+                                        </td>
                                         <td>
                                             <HospitalDirectoryPerson Name="@rx.PatientName"
                                                                      Href="@($"/admin/hospitals/{ClinicId}/patients/{rx.PatientId}")" />
@@ -132,6 +142,9 @@
                                         </td>
                                         <td>@FormatLocal(rx.IssuedAt)</td>
                                         <td>
+                                            <button type="button" class="btn btn-secondary" disabled="@(_savingId == rx.Id)" @onclick="() => CallPrescriptionAsync(rx.Id)">
+                                                @AppResources.T("Collection_Call")
+                                            </button>
                                             @if (_canDispense)
                                             {
                                                 <button type="button" class="btn btn-primary" disabled="@(_savingId == rx.Id)" @onclick="() => DispenseAsync(rx.Id)">
@@ -179,7 +192,13 @@
                                 @foreach (var lab in _board.LabOrders)
                                 {
                                     <tr>
-                                        <td class="pickup-code">@lab.PickupCode</td>
+                                        <td class="pickup-code">
+                                            @lab.PickupCode
+                                            @if (lab.CalledAt is not null)
+                                            {
+                                                <span class="badge badge-success">@AppResources.T("Collection_OnScreen")</span>
+                                            }
+                                        </td>
                                         <td>
                                             <HospitalDirectoryPerson Name="@lab.PatientName"
                                                                      Href="@($"/admin/hospitals/{ClinicId}/patients/{lab.PatientId}")" />
@@ -191,6 +210,9 @@
                                         <td>@lab.TestName</td>
                                         <td>@FormatLocal(lab.RequestedAt)</td>
                                         <td>
+                                            <button type="button" class="btn btn-secondary" disabled="@(_savingId == lab.Id)" @onclick="() => CallLabAsync(lab.Id)">
+                                                @AppResources.T("Collection_Call")
+                                            </button>
                                             @if (_canCompleteLabs)
                                             {
                                                 <button type="button" class="btn btn-secondary" @onclick="() => SelectLab(lab.Id)">
@@ -347,8 +369,8 @@
         </div>
         </div>
 
-        <div class="admin-page-actions hospital-deck-foot">
-            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId">@AppResources.T("Common_BackToHospital")</a>
+        <div class="hospital-deck-foot">
+            <HospitalDeckBackLink Href="@($"/admin/hospitals/{ClinicId}")" Text="@AppResources.T("Common_BackToHospital")" />
         </div>
     }
 </section>
@@ -392,6 +414,7 @@
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
     [Inject] private IJSRuntime Js { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private bool _loading = true;
     private bool _busy;
@@ -505,6 +528,56 @@
 
         _success = AppResources.T("Collection_PrescriptionCollected");
         await LoadOrdersAsync();
+    }
+
+    private async Task CallPrescriptionAsync(Guid prescriptionId)
+    {
+        _savingId = prescriptionId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CallPrescriptionAsync(ClinicId, prescriptionId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotCall");
+            return;
+        }
+
+        _success = AppResources.T("Collection_Called");
+        await LoadOrdersAsync();
+    }
+
+    private async Task CallLabAsync(Guid labRequestId)
+    {
+        _savingId = labRequestId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CallLabOrderAsync(ClinicId, labRequestId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotCall");
+            return;
+        }
+
+        _success = AppResources.T("Collection_Called");
+        await LoadOrdersAsync();
+    }
+
+    private async Task OpenWaitingScreenAsync()
+    {
+        _busy = true;
+        _error = null;
+        var response = await AdminClinicService.EnsureCollectionDisplayTokenAsync(ClinicId);
+        _busy = false;
+        if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data))
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Collection_CouldNotOpenDisplay");
+            return;
+        }
+
+        var url = Navigation.ToAbsoluteUri($"display/{response.Data}").ToString();
+        await Js.InvokeVoidAsync("raphCareClinic.openWindow", url, "raphcareCollectionDisplay");
     }
 
     private void SelectLab(Guid labRequestId)

@@ -375,6 +375,7 @@ public sealed class ClinicCollectionPrescription
     public DateTime IssuedAt { get; set; }
     public string Status { get; set; } = "Pending";
     public DateTime? DispensedAt { get; set; }
+    public DateTime? CalledAt { get; set; }
     public string? Notes { get; set; }
     public IReadOnlyList<ClinicVisitPrescriptionItem> Items { get; set; } =
         Array.Empty<ClinicVisitPrescriptionItem>();
@@ -391,6 +392,7 @@ public sealed class ClinicCollectionLabOrder
     public string TestName { get; set; } = string.Empty;
     public string Status { get; set; } = "Pending";
     public DateTime RequestedAt { get; set; }
+    public DateTime? CalledAt { get; set; }
 }
 
 public sealed class ClinicDeviceListItem

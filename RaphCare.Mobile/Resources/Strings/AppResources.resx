@@ -869,6 +869,12 @@ Accessible. Intelligent. Human.</value>
   <data name="RecordsPickupWaiting" xml:space="preserve">
     <value>Waiting</value>
   </data>
+  <data name="RecordsPickupCalled" xml:space="preserve">
+    <value>Come to the counter</value>
+  </data>
+  <data name="RecordsPickupCalledHint" xml:space="preserve">
+    <value>Your code is on the waiting screen. Come to the counter.</value>
+  </data>
   <data name="RecordsPickupCollected" xml:space="preserve">
     <value>Collected</value>
   </data>
