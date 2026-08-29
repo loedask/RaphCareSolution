@@ -122,6 +122,7 @@ public sealed class ForgotPasswordViewModel : BaseViewModel
         }
 
         IsBusy = true;
+        BusyMessage = T("ForgotPasswordBusy");
         try
         {
             if (!AwaitingCode)

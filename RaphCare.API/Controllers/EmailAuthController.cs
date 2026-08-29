@@ -13,10 +13,29 @@ public class EmailAuthController(IMediator mediator) : ControllerBase
 {
     [HttpGet("clinics")]
     [ProducesResponseType(typeof(IReadOnlyList<RegistrationClinicDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetRegistrationClinics(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetRegistrationClinics(
+        [FromQuery] string? q,
+        CancellationToken cancellationToken)
     {
-        var clinics = await mediator.Send(new GetRegistrationClinicsQuery(), cancellationToken).ConfigureAwait(false);
+        var clinics = await mediator
+            .Send(new GetRegistrationClinicsQuery { Search = q }, cancellationToken)
+            .ConfigureAwait(false);
         return Ok(clinics);
+    }
+
+    [HttpGet("clinics/by-reference")]
+    [ProducesResponseType(typeof(RegistrationClinicDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResolveClinicByReference(
+        [FromQuery] string code,
+        CancellationToken cancellationToken)
+    {
+        var clinic = await mediator
+            .Send(new ResolveRegistrationClinicByReferenceQuery { ReferenceCode = code }, cancellationToken)
+            .ConfigureAwait(false);
+        if (clinic is null)
+            return NotFound(new { error = "No clinic found for that reference code." });
+        return Ok(clinic);
     }
 
     [HttpPost("send-verification")]

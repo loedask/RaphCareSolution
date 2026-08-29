@@ -1,4 +1,4 @@
-# RaphCare.Mobile — structure, configuration, and testing
+# RaphCare.Mobile: structure, configuration, and testing
 
 **Run the patient app + API (demo checklist, ports, Entra, flags):** [Mobile_Demo_Launch_Guide.md](./Mobile_Demo_Launch_Guide.md).
 
@@ -12,12 +12,12 @@
 | **`Core/Common/`** | Reused across features: navigation, auth services, MAUI **Controls**, **ViewModels** (e.g. `BaseViewModel`), shared views. |
 | **`Core/Infrastructure/`** | Composition and DI registration (`MobileServiceCollectionExtensions`), service resolution (`MobileServiceHub`) for Shell/XAML constraints. |
 | **`Blazor/`** | Razor UI hosted inside **BlazorWebView** (see `BlazorHostPage`). |
-| **`RaphCare.Mobile.Kernel`** | Small **net10.0** library: `AuthResult`, feature flags types—no MAUI references. Keeps logic unit-testable without pulling MAUI workloads into test projects. |
-| **`RaphCare.Client`** | HTTP, API contracts, DTOs, `IAccessTokenProvider` consumption from the app—**not** duplicated in Mobile. |
+| **`RaphCare.Mobile.Kernel`** | Small **net10.0** library: `AuthResult`, feature flags types. No MAUI references. Keeps logic unit-testable without pulling MAUI workloads into test projects. |
+| **`RaphCare.Client`** | HTTP, API contracts, DTOs, `IAccessTokenProvider` consumption from the app. Do **not** duplicate those in Mobile. |
 
 ## Design port (React concept)
 
-The UI design target is the **React + Vite** app at **`C:\laragon\www\raphcare-mobile-app-concept`**. **Match its look** (colors, type, spacing, radii, shadows, layout) in MAUI—see **`docs/Mobile_Concept_Port.md`** for tokens, fonts, route mapping, and a parity checklist. Cursor: **`.cursor/rules/raphcare-mobile-concept-template.mdc`**.
+The UI design target is the **React + Vite** app at **`C:\laragon\www\raphcare-mobile-app-concept`**. **Match its look** (colors, type, spacing, radii, shadows, layout) in MAUI. See **`docs/Mobile_Concept_Port.md`** for tokens, fonts, route mapping, and a parity checklist. Cursor: **`.cursor/rules/raphcare-mobile-concept-template.mdc`**.
 
 ## Configuration layers (order)
 
@@ -44,13 +44,16 @@ dotnet user-secrets set "FeatureFlags:RecordsEnabled" "true" --project RaphCare.
 
 ### Voice onboarding (optional)
 
-`POST api/onboarding/voice` requires a **clinic id**. After seeding (e.g. **ClinicalSeeder**), copy the demo clinic’s `Id` from the database and set:
+`POST api/onboarding/voice` requires a **clinic id**. Prefer **Profile, My clinic** (search by name or enter an `RC-` reference code such as seeded `RC-DEMCLN`). Local DEBUG builds also set **`Api:ClinicId`** (and related defaults) to the demo clinic Guid.
+
+Optional config fallbacks (User Secrets or `appsettings.Development.json`):
 
 ```bash
-dotnet user-secrets set "Onboarding:VoiceRegistrationClinicId" "<guid>" --project RaphCare.Mobile
+dotnet user-secrets set "Api:ClinicId" "11111111-1111-1111-1111-111111111101" --project RaphCare.Mobile
+dotnet user-secrets set "Onboarding:VoiceRegistrationClinicId" "11111111-1111-1111-1111-111111111101" --project RaphCare.Mobile
 ```
 
-Optional: `Onboarding:DefaultVoiceLanguage` (default `en-ZA` in **appsettings.json**). Without a valid clinic Guid, **VoiceSubmit** shows a configuration error instead of calling the API.
+Optional: `Onboarding:DefaultVoiceLanguage` (default `en-ZA` in **appsettings.json**). Without a clinic (selected or configured), **VoiceSubmit** shows a friendly error instead of calling the API.
 
 ### Create account (design parity)
 

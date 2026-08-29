@@ -1,10 +1,14 @@
-using System.Globalization;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Microsoft.Extensions.Options;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
+using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Appointments;
 using RaphCare.Mobile.Core.Common.Configuration;
 using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.Services.Api;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Appointments.ViewModels;
@@ -12,69 +16,92 @@ namespace RaphCare.Mobile.Core.Features.Appointments.ViewModels;
 public sealed class BookAppointmentViewModel : BaseViewModel
 {
     private readonly IAppointmentService _appointments;
+    private readonly ISelectedClinicStore _selectedClinic;
+    private readonly IClinicIdProvider _clinicIdProvider;
     private readonly AppointmentsMobileOptions _defaults;
 
-    private string _clinicIdText = string.Empty;
-    private string _providerIdText = string.Empty;
+    private string _clinicSummary = string.Empty;
+    private ProviderPickerItem? _selectedProvider;
     private DateTime _appointmentDate = DateTime.Today.AddDays(1);
     private TimeSpan _startTime = new(9, 0, 0);
     private TimeSpan _endTime = new(9, 30, 0);
     private string _selectedType = "InPerson";
     private string _reason = string.Empty;
     private string? _errorMessage;
+    private bool _hasClinic;
 
-    public BookAppointmentViewModel(IAppointmentService appointments, IOptions<AppointmentsMobileOptions> options)
+    public BookAppointmentViewModel(
+        IAppointmentService appointments,
+        ISelectedClinicStore selectedClinic,
+        IClinicIdProvider clinicIdProvider,
+        IOptions<AppointmentsMobileOptions> options)
     {
         _appointments = appointments ?? throw new ArgumentNullException(nameof(appointments));
+        _selectedClinic = selectedClinic ?? throw new ArgumentNullException(nameof(selectedClinic));
+        _clinicIdProvider = clinicIdProvider ?? throw new ArgumentNullException(nameof(clinicIdProvider));
         _defaults = options?.Value ?? new AppointmentsMobileOptions();
         Title = T("AppointmentsBookTitle");
 
-    PageSubtitle = T("AppointmentsBookSubtitle");
-
-    ClinicIdLabel = T("AppointmentsClinicId");
-    ProviderIdLabel = T("AppointmentsProviderId");
-    DateLabel = T("AppointmentsDate");
-    StartLabel = T("AppointmentsStartTime");
-    EndLabel = T("AppointmentsEndTime");
-    TypeLabel = T("AppointmentsType");
-    ReasonLabel = T("AppointmentsReason");
+        PageSubtitle = T("AppointmentsBookSubtitle");
+        ClinicLabel = T("AppointmentsClinicLabel");
+        ChangeClinicLabel = T("AppointmentsChangeClinic");
+        ProviderLabel = T("AppointmentsProviderLabel");
+        DateLabel = T("AppointmentsDate");
+        StartLabel = T("AppointmentsStartTime");
+        EndLabel = T("AppointmentsEndTime");
+        TypeLabel = T("AppointmentsType");
+        ReasonLabel = T("AppointmentsReason");
         SubmitLabel = T("AppointmentsSubmit");
         CancelLabel = T("AppointmentsCancel");
 
-        if (Guid.TryParse(_defaults.DefaultClinicId, out var c))
-            ClinicIdText = c.ToString("D", CultureInfo.InvariantCulture);
-        if (Guid.TryParse(_defaults.DefaultProviderId, out var p))
-            ProviderIdText = p.ToString("D", CultureInfo.InvariantCulture);
+        Providers = new ObservableCollection<ProviderPickerItem>();
 
-        SubmitCommand = new Command(async () => await SubmitAsync());
+        SubmitCommand = new Command(async () => await SubmitAsync(), () => !IsBusy && HasClinic);
         CancelCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
+        ChangeClinicCommand = new Command(async () =>
+            await SafeShellNavigator.GoToAsync(AppNavigator.SelectClinic));
+        RefreshCommand = new Command(async () => await LoadAsync(), () => !IsBusy);
     }
 
     public string SubmitLabel { get; }
     public string CancelLabel { get; }
-
     public string PageSubtitle { get; }
-
-    public string ClinicIdLabel { get; }
-    public string ProviderIdLabel { get; }
+    public string ClinicLabel { get; }
+    public string ChangeClinicLabel { get; }
+    public string ProviderLabel { get; }
     public string DateLabel { get; }
     public string StartLabel { get; }
     public string EndLabel { get; }
     public string TypeLabel { get; }
     public string ReasonLabel { get; }
 
-    public IReadOnlyList<string> VisitTypes { get; } = new[] { "InPerson", "Telemedicine" };
+    public IReadOnlyList<string> VisitTypes { get; } = ["InPerson", "Telemedicine"];
 
-    public string ClinicIdText
+    public ObservableCollection<ProviderPickerItem> Providers { get; }
+
+    public string ClinicSummary
     {
-        get => _clinicIdText;
-        set => SetProperty(ref _clinicIdText, value ?? string.Empty);
+        get => _clinicSummary;
+        private set => SetProperty(ref _clinicSummary, value);
     }
 
-    public string ProviderIdText
+    public bool HasClinic
     {
-        get => _providerIdText;
-        set => SetProperty(ref _providerIdText, value ?? string.Empty);
+        get => _hasClinic;
+        private set
+        {
+            if (_hasClinic == value)
+                return;
+            _hasClinic = value;
+            OnPropertyChanged();
+            (SubmitCommand as Command)?.ChangeCanExecute();
+        }
+    }
+
+    public ProviderPickerItem? SelectedProvider
+    {
+        get => _selectedProvider;
+        set => SetProperty(ref _selectedProvider, value);
     }
 
     public DateTime AppointmentDate
@@ -115,15 +142,125 @@ public sealed class BookAppointmentViewModel : BaseViewModel
 
     public ICommand SubmitCommand { get; }
     public ICommand CancelCommand { get; }
+    public ICommand ChangeClinicCommand { get; }
+    public ICommand RefreshCommand { get; }
+
+    public async Task LoadAsync()
+    {
+        ErrorMessage = null;
+        RefreshClinicSummary();
+
+        if (!HasClinic)
+        {
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Providers.Clear();
+                SelectedProvider = null;
+            });
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var response = await _appointments
+                .GetBookableProvidersAsync(CancellationToken.None)
+                .ConfigureAwait(false);
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Providers.Clear();
+                if (!response.IsSuccess || response.Data is null)
+                {
+                    ErrorMessage = response.ErrorMessage ?? T("AppointmentsProvidersLoadFailed");
+                    SelectedProvider = null;
+                    return;
+                }
+
+                foreach (var provider in response.Data)
+                {
+                    Providers.Add(new ProviderPickerItem
+                    {
+                        Id = provider.Id,
+                        DisplayName = string.IsNullOrWhiteSpace(provider.DisplayName)
+                            ? T("AppointmentsProviderFallback")
+                            : provider.DisplayName
+                    });
+                }
+
+                if (Providers.Count == 0)
+                {
+                    ErrorMessage = T("AppointmentsNoProviders");
+                    SelectedProvider = null;
+                    return;
+                }
+
+                SelectedProvider = PickDefaultProvider();
+            });
+        }
+        catch (Exception)
+        {
+            ErrorMessage = T("AppointmentsProvidersLoadFailed");
+        }
+        finally
+        {
+            IsBusy = false;
+            (SubmitCommand as Command)?.ChangeCanExecute();
+            (RefreshCommand as Command)?.ChangeCanExecute();
+        }
+    }
+
+    private void RefreshClinicSummary()
+    {
+        var clinicId = _clinicIdProvider.GetClinicId();
+        HasClinic = clinicId is { } id && id != Guid.Empty;
+
+        if (!HasClinic)
+        {
+            ClinicSummary = T("AppointmentsNoClinicSelected");
+            return;
+        }
+
+        var name = _selectedClinic.ClinicName;
+        var code = _selectedClinic.ReferenceCode;
+        if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(code))
+            ClinicSummary = Format(T("AppointmentsClinicSummaryWithCodeFormat"), name, code);
+        else if (!string.IsNullOrWhiteSpace(name))
+            ClinicSummary = name;
+        else
+            ClinicSummary = T("AppointmentsClinicConfigured");
+    }
+
+    private ProviderPickerItem? PickDefaultProvider()
+    {
+        if (Providers.Count == 0)
+            return null;
+
+        if (Guid.TryParse(_defaults.DefaultProviderId, out var defaultId))
+        {
+            var match = Providers.FirstOrDefault(p => p.Id == defaultId);
+            if (match is not null)
+                return match;
+        }
+
+        return Providers[0];
+    }
 
     private async Task SubmitAsync()
     {
         if (IsBusy) return;
         ErrorMessage = null;
 
-        if (!Guid.TryParse(ClinicIdText.Trim(), out var clinicId) || !Guid.TryParse(ProviderIdText.Trim(), out var providerId))
+        var clinicId = _clinicIdProvider.GetClinicId();
+        if (clinicId is null || clinicId == Guid.Empty)
         {
-            ErrorMessage = T("AppointmentsInvalidGuid");
+            ErrorMessage = T("AppointmentsNoClinicSelected");
+            return;
+        }
+
+        if (SelectedProvider is null)
+        {
+            ErrorMessage = T("AppointmentsSelectProvider");
             return;
         }
 
@@ -141,8 +278,8 @@ public sealed class BookAppointmentViewModel : BaseViewModel
         {
             var request = new BookAppointmentRequest
             {
-                ClinicId = clinicId,
-                ProviderId = providerId,
+                ClinicId = clinicId.Value,
+                ProviderId = SelectedProvider.Id,
                 ScheduledStart = DateTime.SpecifyKind(start, DateTimeKind.Local).ToUniversalTime(),
                 ScheduledEnd = DateTime.SpecifyKind(end, DateTimeKind.Local).ToUniversalTime(),
                 Type = SelectedType,
@@ -158,13 +295,21 @@ public sealed class BookAppointmentViewModel : BaseViewModel
 
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                await Shell.Current.DisplayAlertAsync(Title, T("AppointmentsBookingOk"), "OK");
+                await Shell.Current.DisplayAlertAsync(Title, T("AppointmentsBookingOk"), T("CommonOk"));
                 await SafeShellNavigator.GoToAsync("..");
             });
         }
         finally
         {
             IsBusy = false;
+            (SubmitCommand as Command)?.ChangeCanExecute();
+            (RefreshCommand as Command)?.ChangeCanExecute();
         }
     }
+}
+
+public sealed class ProviderPickerItem
+{
+    public Guid Id { get; init; }
+    public string DisplayName { get; init; } = string.Empty;
 }

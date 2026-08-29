@@ -25,6 +25,8 @@ RaphCare.Mobile.Tests/obj/
 RaphCare.Mobile.Tests/bin/
 RaphCare.Application.Tests/obj/
 RaphCare.Application.Tests/bin/
+RaphCare.Client.Tests/obj/
+RaphCare.Client.Tests/bin/
 concepts/
 _agoraProbe/AgoraProbe/bin/
 _agoraProbe/AgoraProbe/obj/

@@ -13,6 +13,21 @@ public sealed class AppointmentService(HttpClient httpClient) : BaseHttpService(
     public Task<Response<AppointmentViewModel?>> GetMyAppointmentAsync(Guid id, CancellationToken cancellationToken = default) =>
         GetAsync<AppointmentViewModel?>($"api/patient/appointments/{id}", cancellationToken);
 
+    public async Task<Response<IReadOnlyList<BookableProviderViewModel>>> GetBookableProvidersAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var result = await GetAsync<List<BookableProviderViewModel>>(
+            "api/patient/appointments/providers",
+            cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess)
+            return Response<IReadOnlyList<BookableProviderViewModel>>.Failure(
+                result.ErrorMessage ?? "Could not load providers.",
+                result.StatusCode);
+
+        IReadOnlyList<BookableProviderViewModel> items = result.Data ?? [];
+        return Response<IReadOnlyList<BookableProviderViewModel>>.Success(items);
+    }
+
     public async Task<Response<Guid>> BookAsync(BookAppointmentRequest request, CancellationToken cancellationToken = default)
     {
         var result = await PostAsync<CreatedGuidApiResponse>("api/patient/appointments", request, cancellationToken).ConfigureAwait(false);

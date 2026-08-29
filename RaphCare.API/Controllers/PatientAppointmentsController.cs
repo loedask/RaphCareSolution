@@ -5,6 +5,7 @@ using RaphCare.API.App.Contracts;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.Appointments.Commands.CreatePatientAppointment;
 using RaphCare.Application.Features.Appointments.DTOs;
+using RaphCare.Application.Features.Appointments.Queries.GetBookableProviders;
 using RaphCare.Application.Features.Appointments.Queries.GetMyAppointmentById;
 using RaphCare.Application.Features.Appointments.Queries.GetMyAppointments;
 
@@ -22,6 +23,15 @@ public class PatientAppointmentsController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(new GetMyAppointmentsQuery { PageNumber = pageNumber, PageSize = pageSize }, cancellationToken).ConfigureAwait(false);
         return Ok(result);
+    }
+
+    [HttpGet("providers", Name = "GetBookableProviders")]
+    [ProducesResponseType(typeof(IReadOnlyList<BookableProviderDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetProviders(CancellationToken cancellationToken)
+    {
+        var providers = await mediator.Send(new GetBookableProvidersQuery(), cancellationToken).ConfigureAwait(false);
+        return Ok(providers);
     }
 
     [HttpGet("{id:guid}", Name = "GetMyAppointmentById")]

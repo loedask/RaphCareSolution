@@ -2,83 +2,90 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Common.Controls"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Auth.ViewModels"
              x:Class="RaphCare.Mobile.Core.Features.Auth.Views.SignInPage"
+             x:DataType="vm:SignInViewModel"
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="False"
              BackgroundColor="{StaticResource BackgroundColor}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24,48,24,24" Spacing="0">
-            <HorizontalStackLayout Margin="0,0,0,24" HorizontalOptions="Start">
-                <Button Style="{StaticResource IconBackButton}"
-                        Text="←"
-                        FontSize="20"
-                        Command="{Binding BackCommand}" />
-            </HorizontalStackLayout>
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="24,48,24,24" Spacing="0">
+                <HorizontalStackLayout Margin="0,0,0,24" HorizontalOptions="Start">
+                    <Button Style="{StaticResource IconBackButton}"
+                            Text="←"
+                            FontSize="20"
+                            Command="{Binding BackCommand}" />
+                </HorizontalStackLayout>
 
-            <Label Text="{Binding WelcomeBack}"
-                   Style="{StaticResource TitleLarge}"
-                   TextColor="{StaticResource ForegroundColor}" />
+                <Label Text="{Binding WelcomeBack}"
+                       Style="{StaticResource TitleLarge}"
+                       TextColor="{StaticResource ForegroundColor}" />
 
-            <Label Text="{Binding SignInSubtitle}"
-                   FontSize="14"
-                   TextColor="{StaticResource MutedForegroundColor}"
-                   Margin="0,0,0,20" />
-
-            <shared:InputField LabelText="{Binding EmailLabel}"
-                               Placeholder="{Binding EmailPlaceholder}"
-                               Keyboard="Email"
-                               Text="{Binding Email}" />
-
-            <shared:InputField LabelText="{Binding PasswordLabel}"
-                               Placeholder="{Binding PasswordPlaceholder}"
-                               IsPassword="True"
-                               Text="{Binding Password}" />
-
-            <shared:InputField LabelText="{Binding VerificationCodeLabel}"
-                               Placeholder="{Binding VerificationCodePlaceholder}"
-                               Keyboard="Numeric"
-                               Text="{Binding VerificationCode}"
-                               IsVisible="{Binding AwaitingVerification}" />
-
-            <Label Text="{Binding StatusMessage}"
-                   TextColor="{StaticResource MutedForegroundColor}"
-                   FontSize="12"
-                   IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   Margin="0,8,0,0" />
-
-            <Label Text="{Binding ErrorMessage}"
-                   TextColor="{StaticResource ErrorColor}"
-                   FontSize="12"
-                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   Margin="0,8,0,0" />
-
-            <shared:GradientButton Text="{Binding SignInButtonText}"
-                                   Command="{Binding SignInCommand}"
-                                   IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                                   Margin="0,24,0,0" />
-
-            <Button Text="{Binding ForgotPasswordText}"
-                    Style="{StaticResource TextButton}"
-                    Padding="0"
-                    FontSize="14"
-                    HorizontalOptions="End"
-                    Command="{Binding ForgotPasswordCommand}"
-                    Margin="0,8,0,0" />
-
-            <HorizontalStackLayout Margin="0,32,0,0"
-                                   HorizontalOptions="Center"
-                                   Spacing="4">
-                <Label Text="{Binding DontHaveAccountText}"
+                <Label Text="{Binding SignInSubtitle}"
                        FontSize="14"
                        TextColor="{StaticResource MutedForegroundColor}"
-                       VerticalOptions="Center" />
-                <Button Text="{Binding SignUpText}"
+                       Margin="0,0,0,20" />
+
+                <shared:InputField LabelText="{Binding EmailLabel}"
+                                   Placeholder="{Binding EmailPlaceholder}"
+                                   Keyboard="Email"
+                                   Text="{Binding Email}" />
+
+                <shared:InputField LabelText="{Binding PasswordLabel}"
+                                   Placeholder="{Binding PasswordPlaceholder}"
+                                   IsPassword="True"
+                                   Text="{Binding Password}" />
+
+                <shared:InputField LabelText="{Binding VerificationCodeLabel}"
+                                   Placeholder="{Binding VerificationCodePlaceholder}"
+                                   Keyboard="Numeric"
+                                   Text="{Binding VerificationCode}"
+                                   IsVisible="{Binding AwaitingVerification}" />
+
+                <Label Text="{Binding StatusMessage}"
+                       TextColor="{StaticResource MutedForegroundColor}"
+                       FontSize="12"
+                       IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                       Margin="0,8,0,0" />
+
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="{StaticResource ErrorColor}"
+                       FontSize="12"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                       Margin="0,8,0,0" />
+
+                <shared:GradientButton Text="{Binding SignInButtonText}"
+                                       Command="{Binding SignInCommand}"
+                                       IsBusy="{Binding IsBusy}"
+                                       Margin="0,24,0,0" />
+
+                <Button Text="{Binding ForgotPasswordText}"
                         Style="{StaticResource TextButton}"
                         Padding="0"
                         FontSize="14"
-                        Command="{Binding SignUpCommand}" />
-            </HorizontalStackLayout>
-        </VerticalStackLayout>
-    </ScrollView>
+                        HorizontalOptions="End"
+                        Command="{Binding ForgotPasswordCommand}"
+                        Margin="0,8,0,0" />
+
+                <HorizontalStackLayout Margin="0,32,0,0"
+                                       HorizontalOptions="Center"
+                                       Spacing="4">
+                    <Label Text="{Binding DontHaveAccountText}"
+                           FontSize="14"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           VerticalOptions="Center" />
+                    <Button Text="{Binding SignUpText}"
+                            Style="{StaticResource TextButton}"
+                            Padding="0"
+                            FontSize="14"
+                            Command="{Binding SignUpCommand}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <shared:BusyOverlay IsBusy="{Binding IsBusy}"
+                            Message="{Binding BusyMessage}" />
+    </Grid>
 </ContentPage>
