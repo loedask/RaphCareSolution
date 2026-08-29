@@ -22,6 +22,8 @@ public static class FeatureFlags
     public static bool FamilyMembersEnabled { get; private set; }
     public static bool AiAssistantEnabled { get; private set; }
     public static bool NotificationsEnabled { get; private set; }
+    public static bool PhoneRegistrationEnabled { get; private set; }
+    public static bool VoiceRegistrationEnabled { get; private set; }
 
     /// <summary>
     /// Applies options from configuration (called once at startup after the MAUI app is built).
@@ -40,5 +42,7 @@ public static class FeatureFlags
         FamilyMembersEnabled = options.FamilyMembersEnabled;
         AiAssistantEnabled = options.AiAssistantEnabled;
         NotificationsEnabled = options.NotificationsEnabled;
+        PhoneRegistrationEnabled = options.PhoneRegistrationEnabled;
+        VoiceRegistrationEnabled = options.VoiceRegistrationEnabled;
     }
 }

@@ -8,792 +8,847 @@
 
 <PageTitle>@(_patient is null ? AppResources.T("PatientDetail_PageTitleFallback") : $"{_patient.FirstName} {_patient.LastName}") @AppResources.T("Common_PageTitleAdminSuffix")</PageTitle>
 
-<section class="admin-page">
+<section class="admin-page hospital-deck">
     @if (_loading)
     {
-        <p class="text-muted">@AppResources.T("Common_LoadingPatient")</p>
+        <HospitalDeckLoading Message="@AppResources.T("Common_LoadingPatient")" />
     }
     else if (_patient is null)
     {
-        <AdminAlert Message="@(_error ?? AppResources.T("Common_PatientNotFound"))" />
-        <a class="btn btn-secondary" href="@BackUrl">@AppResources.T("Common_BackToHospital")</a>
+        <HospitalDeckMissing Message="@(_error ?? AppResources.T("Common_PatientNotFound"))"
+                             BackHref="@BackUrl"
+                             BackText="@AppResources.T("Common_BackToHospital")" />
     }
     else
     {
-        <AdminPageHeader Title="@($"{_patient.FirstName} {_patient.LastName}")"
-                         Lead="@AppResources.Format("Common_PatientChartLead", ClinicDisplayName, TimeZoneLabel)">
-            <span class="badge badge-success">@_patient.AccessType</span>
-        </AdminPageHeader>
+        <HospitalDeckMasthead BackHref="@BackUrl"
+                              BackText="@AppResources.T("Common_BackToHospital")"
+                              Monogram="@HospitalDeckInitials.FromName($"{_patient.FirstName} {_patient.LastName}")"
+                              Eyebrow="@AppResources.T("PatientDetail_ChartEyebrow")"
+                              Title="@($"{_patient.FirstName} {_patient.LastName}")"
+                              Lead="@AppResources.Format("Common_PatientChartLead", ClinicDisplayName, TimeZoneLabel)"
+                              StatusText="@_patient.AccessType">
+            <HospitalDeckChip Label="@AppResources.T("Common_DateOfBirth")" Value="@_patient.DateOfBirth.ToString("dd MMM yyyy")" />
+            <HospitalDeckChip Label="@AppResources.T("PatientDetail_Gender")"
+                              Value="@(string.IsNullOrWhiteSpace(_patient.Gender) ? AppResources.T("Common_EmptyCell") : _patient.Gender)" />
+            <HospitalDeckChip Label="@AppResources.T("Common_TimeZone")" Value="@TimeZoneLabel" />
+        </HospitalDeckMasthead>
 
         <AdminAlert Message="@_actionError" />
 
-        <AdminPageCard Eyebrow="@AppResources.T("Common_DemographicsEyebrow")" Title="@AppResources.T("Common_Profile")">
-            <div class="admin-page-card-body">
-                <AdminDefinitionGrid>
-                    <AdminDefinitionItem Label="@AppResources.T("Common_DateOfBirth")" Value="@_patient.DateOfBirth.ToString("dd MMM yyyy")" />
-                    <AdminDefinitionItem Label="@AppResources.T("PatientDetail_Gender")" Value="@(string.IsNullOrWhiteSpace(_patient.Gender) ? AppResources.T("Common_EmptyCell") : _patient.Gender)" />
-                    <AdminDefinitionItem Label="@AppResources.T("Common_Email")" Value="@(string.IsNullOrWhiteSpace(_patient.Email) ? AppResources.T("Common_EmptyCell") : _patient.Email)" />
-                    <AdminDefinitionItem Label="@AppResources.T("PatientDetail_Phone")" Value="@(string.IsNullOrWhiteSpace(_patient.PhoneNumber) ? AppResources.T("Common_EmptyCell") : _patient.PhoneNumber)" />
-                    <AdminDefinitionItem Label="@AppResources.T("Common_NationalHealthId")" Value="@(string.IsNullOrWhiteSpace(_patient.NationalHealthId) ? AppResources.T("Common_EmptyCell") : _patient.NationalHealthId)" />
-                </AdminDefinitionGrid>
-            </div>
-        </AdminPageCard>
+        <div class="hospital-deck-workspace">
+            <HospitalDeckRail AriaLabel="@AppResources.T("PatientDetail_SectionsAria")"
+                              Kicker="@AppResources.T("PatientDetail_SectionsAria")">
+                <HospitalDeckRailItem Index="01" Icon="people" IsActive="@(_tab == "overview")" OnSelect='() => SetTab("overview")'>
+                    @AppResources.T("Common_Overview")
+                </HospitalDeckRailItem>
+                <HospitalDeckRailItem Index="02" Icon="lab" IsActive="@(_tab == "clinical")" Count="@ClinicalSectionCount" OnSelect='() => SetTab("clinical")'>
+                    @AppResources.T("PatientDetail_ClinicalEyebrow")
+                </HospitalDeckRailItem>
+                <HospitalDeckRailItem Index="03" Icon="collection" IsActive="@(_tab == "coverage")" Count="@CoverageSectionCount" OnSelect='() => SetTab("coverage")'>
+                    @AppResources.T("PatientDetail_CoverageEyebrow")
+                </HospitalDeckRailItem>
+                <HospitalDeckRailItem Index="04" Icon="device" IsActive="@(_tab == "devices")" Count="@DevicesSectionCount" OnSelect='() => SetTab("devices")'>
+                    @AppResources.T("Common_Devices")
+                </HospitalDeckRailItem>
+                <HospitalDeckRailItem Index="05" Icon="calendar" IsActive="@(_tab == "care")" Count="@CareSectionCount" OnSelect='() => SetTab("care")'>
+                    @AppResources.T("PatientDetail_TabCare")
+                </HospitalDeckRailItem>
+            </HospitalDeckRail>
 
-        <AdminPageCard Eyebrow="@AppResources.T("Common_HospitalLinkEyebrow")" Title="@AppResources.T("Common_AccessSection")">
-            <div class="admin-page-card-body">
-                <AdminDefinitionGrid>
-                    <AdminDefinitionItem Label="@AppResources.T("Common_Granted")" Value="@_patient.GrantedAt.ToString("dd MMM yyyy")" />
-                    <AdminDefinitionItem Label="@AppResources.T("PatientDetail_Rule")" Value="@_patient.GrantedByRule" />
-                    @if (!string.IsNullOrWhiteSpace(_patient.Notes))
-                    {
-                        <AdminDefinitionItem Label="@AppResources.T("Common_Notes")" Value="@_patient.Notes" Full="true" />
-                    }
-                </AdminDefinitionGrid>
-                @if (_isAdministrator)
+            <div class="hospital-deck-stage">
+                @if (_tab == "overview")
                 {
-                    <div class="admin-page-actions">
-                        <button type="button" class="btn btn-ghost" disabled="@_revoking" @onclick="RevokeAccessAsync">
-                            @(_revoking ? AppResources.T("Common_Revoking") : AppResources.T("Common_RevokeHospitalAccess"))
-                        </button>
+                    <div class="hospital-overview">
+                        <HospitalIdentityPlate Kicker="@AppResources.T("PatientDetail_ChartEyebrow")"
+                                               Serial="@DisplayOrEmpty(_patient.NationalHealthId)">
+                            <dl class="hospital-identity-facts">
+                                <HospitalIdentityFact Label="@AppResources.T("Common_DateOfBirth")" Value="@_patient.DateOfBirth.ToString("dd MMM yyyy")" />
+                                <HospitalIdentityFact Label="@AppResources.T("PatientDetail_Gender")" Value="@(string.IsNullOrWhiteSpace(_patient.Gender) ? AppResources.T("Common_EmptyCell") : _patient.Gender)" />
+                                <HospitalIdentityFact Label="@AppResources.T("Common_Email")" Value="@(string.IsNullOrWhiteSpace(_patient.Email) ? AppResources.T("Common_EmptyCell") : _patient.Email)" />
+                                <HospitalIdentityFact Label="@AppResources.T("PatientDetail_Phone")" Value="@(string.IsNullOrWhiteSpace(_patient.PhoneNumber) ? AppResources.T("Common_EmptyCell") : _patient.PhoneNumber)" />
+                            </dl>
+                        </HospitalIdentityPlate>
+
+                        <AdminPageCard Eyebrow="@AppResources.T("Common_DemographicsEyebrow")" Title="@AppResources.T("Common_Profile")">
+                            <div class="admin-page-card-body">
+                                <AdminDefinitionGrid>
+                                    <AdminDefinitionItem Label="@AppResources.T("Common_DateOfBirth")" Value="@_patient.DateOfBirth.ToString("dd MMM yyyy")" />
+                                    <AdminDefinitionItem Label="@AppResources.T("PatientDetail_Gender")" Value="@(string.IsNullOrWhiteSpace(_patient.Gender) ? AppResources.T("Common_EmptyCell") : _patient.Gender)" />
+                                    <AdminDefinitionItem Label="@AppResources.T("Common_Email")" Value="@(string.IsNullOrWhiteSpace(_patient.Email) ? AppResources.T("Common_EmptyCell") : _patient.Email)" />
+                                    <AdminDefinitionItem Label="@AppResources.T("PatientDetail_Phone")" Value="@(string.IsNullOrWhiteSpace(_patient.PhoneNumber) ? AppResources.T("Common_EmptyCell") : _patient.PhoneNumber)" />
+                                    <AdminDefinitionItem Label="@AppResources.T("Common_NationalHealthId")" Value="@(string.IsNullOrWhiteSpace(_patient.NationalHealthId) ? AppResources.T("Common_EmptyCell") : _patient.NationalHealthId)" />
+                                </AdminDefinitionGrid>
+                            </div>
+                        </AdminPageCard>
                     </div>
-                }
-            </div>
-        </AdminPageCard>
 
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_MedicalInfoTitle")"
-                       Lead="@AppResources.T("PatientDetail_MedicalLead")">
-            <div class="admin-page-card-body">
-                @if (!HasMedicalInfo(_patient.MedicalSummary))
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoMedicalInfo")</p>
-                }
-                else
-                {
-                    <AdminDefinitionGrid>
-                        <AdminDefinitionItem Label="@AppResources.T("Common_BloodType")" Value="@DisplayOrEmpty(_patient.MedicalSummary.BloodType)" />
-                        <AdminDefinitionItem Label="@AppResources.T("Common_PrimaryDoctor")" Value="@DisplayOrEmpty(_patient.MedicalSummary.PrimaryDoctor)" />
-                        <AdminDefinitionItem Label="@AppResources.T("Common_Allergies")" Value="@DisplayOrEmpty(_patient.MedicalSummary.Allergies)" Full="true" />
-                        <AdminDefinitionItem Label="@AppResources.T("Common_ChronicConditions")" Value="@DisplayOrEmpty(_patient.MedicalSummary.ChronicConditions)" Full="true" />
-                        <AdminDefinitionItem Label="@AppResources.T("Common_Medications")" Value="@DisplayOrEmpty(_patient.MedicalSummary.Medications)" Full="true" />
-                    </AdminDefinitionGrid>
-                    @if (_patient.MedicalSummary.RecordedAllergies.Count > 0)
-                    {
-                        <h3 class="admin-page-subhead">@AppResources.T("Common_RecordedAllergies")</h3>
-                        <div class="table-wrap">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>@AppResources.T("Common_Substance")</th>
-                                        <th>@AppResources.T("Common_Reaction")</th>
-                                        <th>@AppResources.T("Common_Severity")</th>
-                                        <th>@AppResources.T("Common_Recorded")</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var allergy in _patient.MedicalSummary.RecordedAllergies)
-                                    {
-                                        <tr>
-                                            <td>@allergy.Substance</td>
-                                            <td>@DisplayOrEmpty(allergy.Reaction)</td>
-                                            <td>@DisplayOrEmpty(allergy.Severity)</td>
-                                            <td>@FormatLocal(allergy.RecordedAt)</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    @if (_patient.MedicalSummary.RecordedMedications.Count > 0)
-                    {
-                        <h3 class="admin-page-subhead">@AppResources.T("Common_RecordedMedications")</h3>
-                        <div class="table-wrap">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>@AppResources.T("Common_Medications")</th>
-                                        <th>@AppResources.T("Common_Dosage")</th>
-                                        <th>@AppResources.T("Common_Frequency")</th>
-                                        <th>@AppResources.T("Common_StartedOn")</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var med in _patient.MedicalSummary.RecordedMedications)
-                                    {
-                                        <tr>
-                                            <td>@med.MedicationName</td>
-                                            <td>@DisplayOrEmpty(med.Dosage)</td>
-                                            <td>@DisplayOrEmpty(med.Frequency)</td>
-                                            <td>@FormatLocalDate(med.StartDate)</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
-                       Title="@AppResources.T("Common_EmergencyContactsTitle")"
-                       Lead="@AppResources.T("Common_EmergencyContactsLead")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatContactCount(_patient.EmergencyContacts.Count)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (_patient.EmergencyContacts.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoEmergencyContacts")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Name")</th>
-                                    <th>@AppResources.T("Common_Relationship")</th>
-                                    <th>@AppResources.T("PatientDetail_Phone")</th>
-                                    <th>@AppResources.T("Common_Email")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var contact in _patient.EmergencyContacts)
-                                {
-                                    <tr>
-                                        <td>@contact.Name</td>
-                                        <td>@DisplayOrEmpty(contact.Relationship)</td>
-                                        <td>@DisplayOrEmpty(contact.PhoneNumber)</td>
-                                        <td>@DisplayOrEmpty(contact.Email)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_CoverageEyebrow")"
-                       Title="@AppResources.T("Common_InsuranceTitle")"
-                       Lead="@AppResources.T("Common_InsuranceLead")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatInsuranceCount(_patient.InsuranceProfiles.Count)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (_patient.InsuranceProfiles.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoInsurance")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Plan")</th>
-                                    <th>@AppResources.T("Common_MembershipNumber")</th>
-                                    <th>@AppResources.T("Common_StartedOn")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var plan in _patient.InsuranceProfiles)
-                                {
-                                    <tr>
-                                        <td>@plan.PlanName</td>
-                                        <td>@plan.MembershipNumber</td>
-                                        <td>@FormatLocalDate(plan.StartDate)</td>
-                                        <td>@(plan.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_BillingEyebrow")"
-                       Title="@AppResources.T("Common_InvoicesTitle")"
-                       Lead="@AppResources.T("Common_InvoicesLead")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatInvoiceCount(_patient.Invoices.Count)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (_patient.Invoices.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoInvoices")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Due")</th>
-                                    <th>@AppResources.T("Common_Amount")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                    <th>@AppResources.T("Common_Paid")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var invoice in _patient.Invoices)
-                                {
-                                    <tr>
-                                        <td>@FormatLocalDate(invoice.DueDate)</td>
-                                        <td>@invoice.Amount.ToString("0.00") @invoice.Currency</td>
-                                        <td>@invoice.Status</td>
-                                        <td>@(invoice.PaidAt is { } paid ? FormatLocalDate(paid) : AppResources.T("Common_EmptyCell"))</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_WellbeingEyebrow")"
-                       Title="@AppResources.T("Common_MoodTitle")"
-                       Lead="@AppResources.T("Common_MoodLead")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatMoodCount(_patient.MoodLogs.Count)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (_patient.MoodLogs.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoMoodLogs")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Date")</th>
-                                    <th>@AppResources.T("Common_Mood")</th>
-                                    <th>@AppResources.T("Common_Notes")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var mood in _patient.MoodLogs)
-                                {
-                                    <tr>
-                                        <td>@FormatLocal(mood.LoggedAt)</td>
-                                        <td>
-                                            @MoodLabel(mood.MoodScore)
-                                            @if (mood.IsFlagged)
-                                            {
-                                                <span class="badge badge-muted">@AppResources.T("Common_Flagged")</span>
-                                            }
-                                        </td>
-                                        <td>@DisplayOrEmpty(mood.Notes)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_CarePlansTitle")"
-                       Lead="@AppResources.T("Common_CarePlansLead")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatCarePlanCount(_patient.CarePlans.Count)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (_patient.CarePlans.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoCarePlans")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Title")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                    <th>@AppResources.T("Common_StartedOn")</th>
-                                    <th>@AppResources.T("Common_Notes")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var plan in _patient.CarePlans)
-                                {
-                                    <tr>
-                                        <td>@plan.Title</td>
-                                        <td>@plan.Status</td>
-                                        <td>@FormatLocalDate(plan.StartDate)</td>
-                                        <td>@DisplayOrEmpty(plan.Description)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_DiagnosesTitle")"
-                       Lead="@AppResources.T("PatientDetail_ClinicalDocsLead")">
-            <div class="admin-page-card-body">
-                @if (_patient.Diagnoses.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoDiagnoses")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Visit")</th>
-                                    <th>@AppResources.T("Common_Code")</th>
-                                    <th>@AppResources.T("Common_Description")</th>
-                                    <th>@AppResources.T("Common_Severity")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var diagnosis in _patient.Diagnoses)
-                                {
-                                    <tr>
-                                        <td><a href="/admin/hospitals/@ClinicId/visits/@diagnosis.VisitId">@FormatLocal(diagnosis.VisitStart)</a></td>
-                                        <td>@diagnosis.Code</td>
-                                        <td>@DisplayOrEmpty(diagnosis.Description)</td>
-                                        <td>@DisplayOrEmpty(diagnosis.Severity)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_PrescriptionsTitle")">
-            <div class="admin-page-card-body">
-                @if (_patient.Prescriptions.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoPrescriptions")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Visit")</th>
-                                    <th>@AppResources.T("Common_Medications")</th>
-                                    <th>@AppResources.T("Common_PickupCode")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                    <th>@AppResources.T("Common_Notes")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var rx in _patient.Prescriptions)
-                                {
-                                    <tr>
-                                        <td><a href="/admin/hospitals/@ClinicId/visits/@rx.VisitId">@FormatLocal(rx.VisitStart)</a></td>
-                                        <td>
-                                            @if (rx.Items.Count == 0)
-                                            {
-                                                @AppResources.T("Common_EmptyCell")
-                                            }
-                                            else
-                                            {
-                                                <ul class="admin-inline-list">
-                                                    @foreach (var item in rx.Items)
-                                                    {
-                                                        <li>@item.MedicationName @DisplayOrEmpty(item.Dosage) @DisplayOrEmpty(item.Frequency)</li>
-                                                    }
-                                                </ul>
-                                            }
-                                        </td>
-                                        <td class="pickup-code">@DisplayOrEmpty(rx.PickupCode)</td>
-                                        <td>@FormatOrderStatus(rx.Status)</td>
-                                        <td>@DisplayOrEmpty(rx.Notes)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_SoapNotesTitle")">
-            <div class="admin-page-card-body">
-                @if (_patient.SoapNotes.Count == 0 && _patient.ClinicalNotes.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoClinicalNotes")</p>
-                }
-                else
-                {
-                    @foreach (var soap in _patient.SoapNotes)
-                    {
-                        <div class="admin-note-block">
-                            <p class="admin-page-eyebrow"><a href="/admin/hospitals/@ClinicId/visits/@soap.VisitId">@FormatLocal(soap.VisitStart)</a></p>
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_HospitalLinkEyebrow")" Title="@AppResources.T("Common_AccessSection")">
+                        <div class="admin-page-card-body">
                             <AdminDefinitionGrid>
-                                <AdminDefinitionItem Label="@AppResources.T("Common_Subjective")" Value="@DisplayOrEmpty(soap.Subjective)" Full="true" />
-                                <AdminDefinitionItem Label="@AppResources.T("Common_Objective")" Value="@DisplayOrEmpty(soap.Objective)" Full="true" />
-                                <AdminDefinitionItem Label="@AppResources.T("Common_Assessment")" Value="@DisplayOrEmpty(soap.Assessment)" Full="true" />
-                                <AdminDefinitionItem Label="@AppResources.T("Common_SoapPlan")" Value="@DisplayOrEmpty(soap.Plan)" Full="true" />
-                            </AdminDefinitionGrid>
-                        </div>
-                    }
-                    @if (_patient.ClinicalNotes.Count > 0)
-                    {
-                        <div class="table-wrap">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>@AppResources.T("Common_Visit")</th>
-                                        <th>@AppResources.T("Common_Type")</th>
-                                        <th>@AppResources.T("Common_Notes")</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var note in _patient.ClinicalNotes)
-                                    {
-                                        <tr>
-                                            <td><a href="/admin/hospitals/@ClinicId/visits/@note.VisitId">@FormatLocal(note.VisitStart)</a></td>
-                                            <td>@DisplayOrEmpty(note.Category)</td>
-                                            <td>@note.Notes</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_LabResultsTitle")">
-            <div class="admin-page-card-body">
-                @if (_patient.LabResults.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoLabResults")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Visit")</th>
-                                    <th>@AppResources.T("Common_Test")</th>
-                                    <th>@AppResources.T("Common_PickupCode")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                    <th>@AppResources.T("Common_Value")</th>
-                                    <th>@AppResources.T("Common_ReferenceRange")</th>
-                                    <th>@AppResources.T("Common_Reported")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var lab in _patient.LabResults)
+                                <AdminDefinitionItem Label="@AppResources.T("Common_Granted")" Value="@_patient.GrantedAt.ToString("dd MMM yyyy")" />
+                                <AdminDefinitionItem Label="@AppResources.T("PatientDetail_Rule")" Value="@_patient.GrantedByRule" />
+                                @if (!string.IsNullOrWhiteSpace(_patient.Notes))
                                 {
-                                    <tr>
-                                        <td><a href="/admin/hospitals/@ClinicId/visits/@lab.VisitId">@FormatLocal(lab.VisitStart)</a></td>
-                                        <td>@lab.TestName</td>
-                                        <td class="pickup-code">@DisplayOrEmpty(lab.PickupCode)</td>
-                                        <td>@FormatOrderStatus(lab.Status)</td>
-                                        <td>@(string.IsNullOrWhiteSpace(lab.ResultValue) ? AppResources.T("Common_Waiting") : $"{lab.ResultValue} {lab.Unit ?? ""}".Trim())</td>
-                                        <td>@DisplayOrEmpty(lab.ReferenceRange)</td>
-                                        <td>@(lab.ReportedAt is { } reported ? FormatLocal(reported) : AppResources.T("Common_EmptyCell"))</td>
-                                    </tr>
+                                    <AdminDefinitionItem Label="@AppResources.T("Common_Notes")" Value="@_patient.Notes" Full="true" />
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("Common_WearablesEyebrow")"
-                       Title="@AppResources.T("Common_DeviceReadingsTitle")"
-                       Lead="@AppResources.T("Common_DeviceReadingsLead")">
-            <div class="admin-page-card-body">
-                @if (_patient.DeviceDailyRollups.Count == 0 && _patient.RecentDeviceReadings.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoDeviceReadings")</p>
-                }
-                else
-                {
-                    @if (_patient.DeviceDailyRollups.Count > 0)
-                    {
-                        <div class="chart-rollup-grid">
-                            @foreach (var day in _patient.DeviceDailyRollups)
+                            </AdminDefinitionGrid>
+                            @if (_isAdministrator)
                             {
-                                <div class="chart-rollup-day">
-                                    <div class="chart-rollup-date">@day.Date.ToString("dd MMM")</div>
-                                    @if (day.AvgHeartRateBpm is { } hr)
-                                    {
-                                        <div class="chart-rollup-metric" title="@AppResources.T("Common_HeartRateTitle")">
-                                            <span class="chart-rollup-label">@AppResources.T("Common_HeartRateLabel")</span>
-                                            <span class="chart-rollup-value">@AppResources.Format("Common_HeartRateBpm", hr.ToString("0"))</span>
-                                            <span class="chart-rollup-range">@day.MinHeartRateBpm–@day.MaxHeartRateBpm</span>
-                                            <div class="chart-rollup-bar" style="width: @(Math.Clamp((int)(hr / 1.6m), 8, 100))%"></div>
-                                        </div>
-                                    }
-                                    @if (day.AvgSpO2Percent is { } spo2)
-                                    {
-                                        <div class="chart-rollup-metric chart-rollup-metric-spo2" title="@AppResources.T("Common_Spo2Title")">
-                                            <span class="chart-rollup-label">@AppResources.T("Common_Spo2Label")</span>
-                                            <span class="chart-rollup-value">@AppResources.Format("PatientDetail_Spo2Value", spo2.ToString("0"))</span>
-                                            <span class="chart-rollup-range">@day.MinSpO2Percent–@day.MaxSpO2Percent</span>
-                                            <div class="chart-rollup-bar" style="width: @Math.Clamp((int)spo2, 8, 100)%"></div>
-                                        </div>
-                                    }
+                                <div class="admin-page-actions">
+                                    <button type="button" class="btn btn-ghost" disabled="@_revoking" @onclick="RevokeAccessAsync">
+                                        @(_revoking ? AppResources.T("Common_Revoking") : AppResources.T("Common_RevokeHospitalAccess"))
+                                    </button>
                                 </div>
                             }
                         </div>
-                    }
+                    </AdminPageCard>
 
-                    @if (_patient.RecentDeviceReadings.Count > 0)
-                    {
-                        <div class="table-wrap" style="margin-top: 1rem;">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>@AppResources.T("Common_Recorded")</th>
-                                        <th>@AppResources.T("Common_Type")</th>
-                                        <th>@AppResources.T("Common_Value")</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var reading in _patient.RecentDeviceReadings)
-                                    {
-                                        <tr>
-                                            <td>@FormatLocal(reading.RecordedAt)</td>
-                                            <td>@reading.ReadingType</td>
-                                            <td>@FormatDeviceValue(reading)</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_MedicalInfoTitle")"
+                                   Lead="@AppResources.T("PatientDetail_MedicalLead")">
+                        <div class="admin-page-card-body">
+                            @if (!HasMedicalInfo(_patient.MedicalSummary))
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoMedicalInfo")</p>
+                            }
+                            else
+                            {
+                                <AdminDefinitionGrid>
+                                    <AdminDefinitionItem Label="@AppResources.T("Common_BloodType")" Value="@DisplayOrEmpty(_patient.MedicalSummary.BloodType)" />
+                                    <AdminDefinitionItem Label="@AppResources.T("Common_PrimaryDoctor")" Value="@DisplayOrEmpty(_patient.MedicalSummary.PrimaryDoctor)" />
+                                    <AdminDefinitionItem Label="@AppResources.T("Common_Allergies")" Value="@DisplayOrEmpty(_patient.MedicalSummary.Allergies)" Full="true" />
+                                    <AdminDefinitionItem Label="@AppResources.T("Common_ChronicConditions")" Value="@DisplayOrEmpty(_patient.MedicalSummary.ChronicConditions)" Full="true" />
+                                    <AdminDefinitionItem Label="@AppResources.T("Common_Medications")" Value="@DisplayOrEmpty(_patient.MedicalSummary.Medications)" Full="true" />
+                                </AdminDefinitionGrid>
+                                @if (_patient.MedicalSummary.RecordedAllergies.Count > 0)
+                                {
+                                    <h3 class="admin-page-subhead">@AppResources.T("Common_RecordedAllergies")</h3>
+                                    <div class="table-wrap">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>@AppResources.T("Common_Substance")</th>
+                                                    <th>@AppResources.T("Common_Reaction")</th>
+                                                    <th>@AppResources.T("Common_Severity")</th>
+                                                    <th>@AppResources.T("Common_Recorded")</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var allergy in _patient.MedicalSummary.RecordedAllergies)
+                                                {
+                                                    <tr>
+                                                        <td>@allergy.Substance</td>
+                                                        <td>@DisplayOrEmpty(allergy.Reaction)</td>
+                                                        <td>@DisplayOrEmpty(allergy.Severity)</td>
+                                                        <td>@FormatLocal(allergy.RecordedAt)</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                @if (_patient.MedicalSummary.RecordedMedications.Count > 0)
+                                {
+                                    <h3 class="admin-page-subhead">@AppResources.T("Common_RecordedMedications")</h3>
+                                    <div class="table-wrap">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>@AppResources.T("Common_Medications")</th>
+                                                    <th>@AppResources.T("Common_Dosage")</th>
+                                                    <th>@AppResources.T("Common_Frequency")</th>
+                                                    <th>@AppResources.T("Common_StartedOn")</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var med in _patient.MedicalSummary.RecordedMedications)
+                                                {
+                                                    <tr>
+                                                        <td>@med.MedicationName</td>
+                                                        <td>@DisplayOrEmpty(med.Dosage)</td>
+                                                        <td>@DisplayOrEmpty(med.Frequency)</td>
+                                                        <td>@FormatLocalDate(med.StartDate)</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            }
                         </div>
-                    }
-                }
-            </div>
-        </AdminPageCard>
+                    </AdminPageCard>
 
-        <AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
-                       Title="@AppResources.T("Common_EmergencyEventsTitle")"
-                       Lead="@AppResources.T("Common_EmergencyEventsLeadPatient")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatEventCount(_emergencyTotal)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (_loadingEmergencies)
-                {
-                    <p class="text-muted">@AppResources.T("Common_LoadingEmergencyEvents")</p>
-                }
-                else if (!string.IsNullOrEmpty(_emergencyError))
-                {
-                    <AdminAlert Message="@_emergencyError" />
-                }
-                else if (_emergencyEvents.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoEmergencyEventsPatient")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Occurred")</th>
-                                    <th>@AppResources.T("Common_Type")</th>
-                                    <th>@AppResources.T("PatientDetail_Device")</th>
-                                    <th>@AppResources.T("Common_Location")</th>
-                                    <th>@AppResources.T("Common_Caregivers")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var ev in _emergencyEvents)
-                                {
-                                    <tr>
-                                        <td>@FormatLocal(ev.OccurredAtUtc)</td>
-                                        <td><span class="badge badge-error">@ev.EventType</span></td>
-                                        <td>@(string.IsNullOrWhiteSpace(ev.Model) ? ev.SerialNumber : $"{ev.Model} · {ev.SerialNumber}")</td>
-                                        <td>@FormatLocation(ev)</td>
-                                        <td>
-                                            @if (ev.CaregiversNotified)
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
+                                   Title="@AppResources.T("Common_EmergencyContactsTitle")"
+                                   Lead="@AppResources.T("Common_EmergencyContactsLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatContactCount(_patient.EmergencyContacts.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (_patient.EmergencyContacts.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoEmergencyContacts")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Name")</th>
+                                                <th>@AppResources.T("Common_Relationship")</th>
+                                                <th>@AppResources.T("PatientDetail_Phone")</th>
+                                                <th>@AppResources.T("Common_Email")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var contact in _patient.EmergencyContacts)
                                             {
-                                                <span title="@(ev.CaregiverNotificationSummary ?? "")">@AppResources.T("Common_Notified") @(ev.CaregiversNotifiedAtUtc is null ? "" : FormatLocal(ev.CaregiversNotifiedAtUtc.Value))</span>
+                                                <tr>
+                                                    <td>@contact.Name</td>
+                                                    <td>@DisplayOrEmpty(contact.Relationship)</td>
+                                                    <td>@DisplayOrEmpty(contact.PhoneNumber)</td>
+                                                    <td>@DisplayOrEmpty(contact.Email)</td>
+                                                </tr>
                                             }
-                                            else
-                                            {
-                                                <span class="text-muted">@AppResources.T("Common_EmptyCell")</span>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    @if (_emergencyTotal > _emergencyEvents.Count)
-                    {
-                        <div class="admin-page-actions">
-                            <button type="button" class="btn btn-secondary" disabled="@_loadingEmergencies" @onclick="LoadMoreEmergenciesAsync">
-                                @AppResources.Format("Common_LoadMore", _emergencyEvents.Count, _emergencyTotal)
-                            </button>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
                         </div>
-                    }
+                    </AdminPageCard>
                 }
-            </div>
-        </AdminPageCard>
+                else if (_tab == "clinical")
+                {
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_CarePlansTitle")"
+                                   Lead="@AppResources.T("Common_CarePlansLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatCarePlanCount(_patient.CarePlans.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (_patient.CarePlans.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoCarePlans")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Title")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_StartedOn")</th>
+                                                <th>@AppResources.T("Common_Notes")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var plan in _patient.CarePlans)
+                                            {
+                                                <tr>
+                                                    <td>@plan.Title</td>
+                                                    <td>@plan.Status</td>
+                                                    <td>@FormatLocalDate(plan.StartDate)</td>
+                                                    <td>@DisplayOrEmpty(plan.Description)</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
 
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_VisitVitalsTitle")"
-                       Lead="@AppResources.T("Common_VisitVitalsLead")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatVitalCount(_patient.RecentVitals.Count)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (_patient.RecentVitals.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoVisitVitals")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Recorded")</th>
-                                    <th>@AppResources.T("Common_Type")</th>
-                                    <th>@AppResources.T("Common_Value")</th>
-                                    <th>@AppResources.T("Common_Visit")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var vital in _patient.RecentVitals)
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_DiagnosesTitle")"
+                                   Lead="@AppResources.T("PatientDetail_ClinicalDocsLead")">
+                        <div class="admin-page-card-body">
+                            @if (_patient.Diagnoses.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoDiagnoses")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Visit")</th>
+                                                <th>@AppResources.T("Common_Code")</th>
+                                                <th>@AppResources.T("Common_Description")</th>
+                                                <th>@AppResources.T("Common_Severity")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var diagnosis in _patient.Diagnoses)
+                                            {
+                                                <tr>
+                                                    <td><a href="/admin/hospitals/@ClinicId/visits/@diagnosis.VisitId">@FormatLocal(diagnosis.VisitStart)</a></td>
+                                                    <td>@diagnosis.Code</td>
+                                                    <td>@DisplayOrEmpty(diagnosis.Description)</td>
+                                                    <td>@DisplayOrEmpty(diagnosis.Severity)</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_PrescriptionsTitle")">
+                        <div class="admin-page-card-body">
+                            @if (_patient.Prescriptions.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoPrescriptions")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Visit")</th>
+                                                <th>@AppResources.T("Common_Medications")</th>
+                                                <th>@AppResources.T("Common_PickupCode")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_Notes")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var rx in _patient.Prescriptions)
+                                            {
+                                                <tr>
+                                                    <td><a href="/admin/hospitals/@ClinicId/visits/@rx.VisitId">@FormatLocal(rx.VisitStart)</a></td>
+                                                    <td>
+                                                        @if (rx.Items.Count == 0)
+                                                        {
+                                                            @AppResources.T("Common_EmptyCell")
+                                                        }
+                                                        else
+                                                        {
+                                                            <ul class="admin-inline-list">
+                                                                @foreach (var item in rx.Items)
+                                                                {
+                                                                    <li>@item.MedicationName @DisplayOrEmpty(item.Dosage) @DisplayOrEmpty(item.Frequency)</li>
+                                                                }
+                                                            </ul>
+                                                        }
+                                                    </td>
+                                                    <td class="pickup-code">@DisplayOrEmpty(rx.PickupCode)</td>
+                                                    <td>@FormatOrderStatus(rx.Status)</td>
+                                                    <td>@DisplayOrEmpty(rx.Notes)</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_SoapNotesTitle")">
+                        <div class="admin-page-card-body">
+                            @if (_patient.SoapNotes.Count == 0 && _patient.ClinicalNotes.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoClinicalNotes")</p>
+                            }
+                            else
+                            {
+                                @foreach (var soap in _patient.SoapNotes)
                                 {
-                                    <tr>
-                                        <td>@FormatLocal(vital.RecordedAt)</td>
-                                        <td>@vital.Type</td>
-                                        <td>@vital.Value @vital.Unit</td>
-                                        <td>@(vital.VisitType ?? AppResources.T("Common_EmptyCell"))</td>
-                                    </tr>
+                                    <div class="admin-note-block">
+                                        <p class="admin-page-eyebrow"><a href="/admin/hospitals/@ClinicId/visits/@soap.VisitId">@FormatLocal(soap.VisitStart)</a></p>
+                                        <AdminDefinitionGrid>
+                                            <AdminDefinitionItem Label="@AppResources.T("Common_Subjective")" Value="@DisplayOrEmpty(soap.Subjective)" Full="true" />
+                                            <AdminDefinitionItem Label="@AppResources.T("Common_Objective")" Value="@DisplayOrEmpty(soap.Objective)" Full="true" />
+                                            <AdminDefinitionItem Label="@AppResources.T("Common_Assessment")" Value="@DisplayOrEmpty(soap.Assessment)" Full="true" />
+                                            <AdminDefinitionItem Label="@AppResources.T("Common_SoapPlan")" Value="@DisplayOrEmpty(soap.Plan)" Full="true" />
+                                        </AdminDefinitionGrid>
+                                    </div>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")"
-                       Title="@AppResources.T("Common_Appointments")"
-                       Lead="@AppResources.T("PatientDetail_AppointmentsLead")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatAppointmentCount(_patient.Appointments.Count)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (_patient.Appointments.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoAppointmentsPatient") <a href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_BookOneLink")</a>.</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Date")</th>
-                                    <th>@AppResources.T("Common_Provider")</th>
-                                    <th>@AppResources.T("Common_Type")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                    <th>@AppResources.T("Common_Reason")</th>
-                                    @if (_isAdministrator)
-                                    {
-                                        <th></th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var appt in _patient.Appointments)
+                                @if (_patient.ClinicalNotes.Count > 0)
                                 {
-                                    <tr>
-                                        <td>@FormatLocal(appt.ScheduledStart)</td>
-                                        <td>@appt.ProviderName</td>
-                                        <td>@appt.Type</td>
-                                        <td>@appt.Status</td>
-                                        <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? AppResources.T("Common_EmptyCell") : appt.Reason)</td>
-                                        @if (_isAdministrator && appt.Status != "Cancelled")
+                                    <div class="table-wrap">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>@AppResources.T("Common_Visit")</th>
+                                                    <th>@AppResources.T("Common_Type")</th>
+                                                    <th>@AppResources.T("Common_Notes")</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var note in _patient.ClinicalNotes)
+                                                {
+                                                    <tr>
+                                                        <td><a href="/admin/hospitals/@ClinicId/visits/@note.VisitId">@FormatLocal(note.VisitStart)</a></td>
+                                                        <td>@DisplayOrEmpty(note.Category)</td>
+                                                        <td>@note.Notes</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_LabResultsTitle")">
+                        <div class="admin-page-card-body">
+                            @if (_patient.LabResults.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoLabResults")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Visit")</th>
+                                                <th>@AppResources.T("Common_Test")</th>
+                                                <th>@AppResources.T("Common_PickupCode")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_Value")</th>
+                                                <th>@AppResources.T("Common_ReferenceRange")</th>
+                                                <th>@AppResources.T("Common_Reported")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var lab in _patient.LabResults)
+                                            {
+                                                <tr>
+                                                    <td><a href="/admin/hospitals/@ClinicId/visits/@lab.VisitId">@FormatLocal(lab.VisitStart)</a></td>
+                                                    <td>@lab.TestName</td>
+                                                    <td class="pickup-code">@DisplayOrEmpty(lab.PickupCode)</td>
+                                                    <td>@FormatOrderStatus(lab.Status)</td>
+                                                    <td>@(string.IsNullOrWhiteSpace(lab.ResultValue) ? AppResources.T("Common_Waiting") : $"{lab.ResultValue} {lab.Unit ?? ""}".Trim())</td>
+                                                    <td>@DisplayOrEmpty(lab.ReferenceRange)</td>
+                                                    <td>@(lab.ReportedAt is { } reported ? FormatLocal(reported) : AppResources.T("Common_EmptyCell"))</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+                }
+                else if (_tab == "coverage")
+                {
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_CoverageEyebrow")"
+                                   Title="@AppResources.T("Common_InsuranceTitle")"
+                                   Lead="@AppResources.T("Common_InsuranceLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatInsuranceCount(_patient.InsuranceProfiles.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (_patient.InsuranceProfiles.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoInsurance")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Plan")</th>
+                                                <th>@AppResources.T("Common_MembershipNumber")</th>
+                                                <th>@AppResources.T("Common_StartedOn")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var plan in _patient.InsuranceProfiles)
+                                            {
+                                                <tr>
+                                                    <td>@plan.PlanName</td>
+                                                    <td>@plan.MembershipNumber</td>
+                                                    <td>@FormatLocalDate(plan.StartDate)</td>
+                                                    <td>@(plan.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_BillingEyebrow")"
+                                   Title="@AppResources.T("Common_InvoicesTitle")"
+                                   Lead="@AppResources.T("Common_InvoicesLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatInvoiceCount(_patient.Invoices.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (_patient.Invoices.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoInvoices")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Due")</th>
+                                                <th>@AppResources.T("Common_Amount")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_Paid")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var invoice in _patient.Invoices)
+                                            {
+                                                <tr>
+                                                    <td>@FormatLocalDate(invoice.DueDate)</td>
+                                                    <td>@invoice.Amount.ToString("0.00") @invoice.Currency</td>
+                                                    <td>@invoice.Status</td>
+                                                    <td>@(invoice.PaidAt is { } paid ? FormatLocalDate(paid) : AppResources.T("Common_EmptyCell"))</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+                }
+                else if (_tab == "devices")
+                {
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_WearablesEyebrow")"
+                                   Title="@AppResources.T("Common_DeviceReadingsTitle")"
+                                   Lead="@AppResources.T("Common_DeviceReadingsLead")">
+                        <div class="admin-page-card-body">
+                            @if (_patient.DeviceDailyRollups.Count == 0 && _patient.RecentDeviceReadings.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoDeviceReadings")</p>
+                            }
+                            else
+                            {
+                                @if (_patient.DeviceDailyRollups.Count > 0)
+                                {
+                                    <div class="chart-rollup-grid">
+                                        @foreach (var day in _patient.DeviceDailyRollups)
                                         {
-                                            <td class="admin-table-actions">
-                                                <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_Manage")</a>
-                                            </td>
+                                            <div class="chart-rollup-day">
+                                                <div class="chart-rollup-date">@day.Date.ToString("dd MMM")</div>
+                                                @if (day.AvgHeartRateBpm is { } hr)
+                                                {
+                                                    <div class="chart-rollup-metric" title="@AppResources.T("Common_HeartRateTitle")">
+                                                        <span class="chart-rollup-label">@AppResources.T("Common_HeartRateLabel")</span>
+                                                        <span class="chart-rollup-value">@AppResources.Format("Common_HeartRateBpm", hr.ToString("0"))</span>
+                                                        <span class="chart-rollup-range">@day.MinHeartRateBpm-@day.MaxHeartRateBpm</span>
+                                                        <div class="chart-rollup-bar" style="width: @(Math.Clamp((int)(hr / 1.6m), 8, 100))%"></div>
+                                                    </div>
+                                                }
+                                                @if (day.AvgSpO2Percent is { } spo2)
+                                                {
+                                                    <div class="chart-rollup-metric chart-rollup-metric-spo2" title="@AppResources.T("Common_Spo2Title")">
+                                                        <span class="chart-rollup-label">@AppResources.T("Common_Spo2Label")</span>
+                                                        <span class="chart-rollup-value">@AppResources.Format("PatientDetail_Spo2Value", spo2.ToString("0"))</span>
+                                                        <span class="chart-rollup-range">@day.MinSpO2Percent-@day.MaxSpO2Percent</span>
+                                                        <div class="chart-rollup-bar" style="width: @(Math.Clamp((int)spo2, 8, 100))%"></div>
+                                                    </div>
+                                                }
+                                            </div>
                                         }
-                                        else if (_isAdministrator)
-                                        {
-                                            <td></td>
-                                        }
-                                    </tr>
+                                    </div>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
 
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_RecentVisitsTitle")"
-                       Lead="@AppResources.T("Common_RecentVisitsLead")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatVisitCount(_patient.RecentVisits.Count)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (_patient.RecentVisits.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoVisitsPatient")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Date")</th>
-                                    <th>@AppResources.T("Common_Type")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                    <th>@AppResources.T("Common_Summary")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var visit in _patient.RecentVisits)
+                                @if (_patient.RecentDeviceReadings.Count > 0)
                                 {
-                                    <tr>
-                                        <td>
-                                            <a href="/admin/hospitals/@ClinicId/visits/@visit.Id">@FormatLocal(visit.VisitStart)</a>
-                                        </td>
-                                        <td>@visit.VisitType</td>
-                                        <td>@visit.Status</td>
-                                        <td>@(string.IsNullOrWhiteSpace(visit.Summary) ? AppResources.T("Common_EmptyCell") : visit.Summary)</td>
-                                    </tr>
+                                    <div class="table-wrap" style="margin-top: 1rem;">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>@AppResources.T("Common_Recorded")</th>
+                                                    <th>@AppResources.T("Common_Type")</th>
+                                                    <th>@AppResources.T("Common_Value")</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var reading in _patient.RecentDeviceReadings)
+                                                {
+                                                    <tr>
+                                                        <td>@FormatLocal(reading.RecordedAt)</td>
+                                                        <td>@reading.ReadingType</td>
+                                                        <td>@FormatDeviceValue(reading)</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
+                                   Title="@AppResources.T("Common_EmergencyEventsTitle")"
+                                   Lead="@AppResources.T("Common_EmergencyEventsLeadPatient")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatEventCount(_emergencyTotal)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (_loadingEmergencies)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_LoadingEmergencyEvents")</p>
+                            }
+                            else if (!string.IsNullOrEmpty(_emergencyError))
+                            {
+                                <AdminAlert Message="@_emergencyError" />
+                            }
+                            else if (_emergencyEvents.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoEmergencyEventsPatient")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Occurred")</th>
+                                                <th>@AppResources.T("Common_Type")</th>
+                                                <th>@AppResources.T("PatientDetail_Device")</th>
+                                                <th>@AppResources.T("Common_Location")</th>
+                                                <th>@AppResources.T("Common_Caregivers")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var ev in _emergencyEvents)
+                                            {
+                                                <tr>
+                                                    <td>@FormatLocal(ev.OccurredAtUtc)</td>
+                                                    <td><span class="badge badge-error">@ev.EventType</span></td>
+                                                    <td>@(string.IsNullOrWhiteSpace(ev.Model) ? ev.SerialNumber : $"{ev.Model} · {ev.SerialNumber}")</td>
+                                                    <td>@FormatLocation(ev)</td>
+                                                    <td>
+                                                        @if (ev.CaregiversNotified)
+                                                        {
+                                                            <span title="@(ev.CaregiverNotificationSummary ?? "")">@AppResources.T("Common_Notified") @(ev.CaregiversNotifiedAtUtc is null ? "" : FormatLocal(ev.CaregiversNotifiedAtUtc.Value))</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">@AppResources.T("Common_EmptyCell")</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if (_emergencyTotal > _emergencyEvents.Count)
+                                {
+                                    <div class="admin-page-actions">
+                                        <button type="button" class="btn btn-secondary" disabled="@_loadingEmergencies" @onclick="LoadMoreEmergenciesAsync">
+                                            @AppResources.Format("Common_LoadMore", _emergencyEvents.Count, _emergencyTotal)
+                                        </button>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </AdminPageCard>
+                }
+                else if (_tab == "care")
+                {
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_WellbeingEyebrow")"
+                                   Title="@AppResources.T("Common_MoodTitle")"
+                                   Lead="@AppResources.T("Common_MoodLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatMoodCount(_patient.MoodLogs.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (_patient.MoodLogs.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoMoodLogs")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Date")</th>
+                                                <th>@AppResources.T("Common_Mood")</th>
+                                                <th>@AppResources.T("Common_Notes")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var mood in _patient.MoodLogs)
+                                            {
+                                                <tr>
+                                                    <td>@FormatLocal(mood.LoggedAt)</td>
+                                                    <td>
+                                                        @MoodLabel(mood.MoodScore)
+                                                        @if (mood.IsFlagged)
+                                                        {
+                                                            <span class="badge badge-muted">@AppResources.T("Common_Flagged")</span>
+                                                        }
+                                                    </td>
+                                                    <td>@DisplayOrEmpty(mood.Notes)</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_VisitVitalsTitle")"
+                                   Lead="@AppResources.T("Common_VisitVitalsLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatVitalCount(_patient.RecentVitals.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (_patient.RecentVitals.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoVisitVitals")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Recorded")</th>
+                                                <th>@AppResources.T("Common_Type")</th>
+                                                <th>@AppResources.T("Common_Value")</th>
+                                                <th>@AppResources.T("Common_Visit")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var vital in _patient.RecentVitals)
+                                            {
+                                                <tr>
+                                                    <td>@FormatLocal(vital.RecordedAt)</td>
+                                                    <td>@vital.Type</td>
+                                                    <td>@vital.Value @vital.Unit</td>
+                                                    <td>@(vital.VisitType ?? AppResources.T("Common_EmptyCell"))</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")"
+                                   Title="@AppResources.T("Common_Appointments")"
+                                   Lead="@AppResources.T("PatientDetail_AppointmentsLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatAppointmentCount(_patient.Appointments.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (_patient.Appointments.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoAppointmentsPatient") <a href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_BookOneLink")</a>.</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Date")</th>
+                                                <th>@AppResources.T("Common_Provider")</th>
+                                                <th>@AppResources.T("Common_Type")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_Reason")</th>
+                                                @if (_isAdministrator)
+                                                {
+                                                    <th></th>
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var appt in _patient.Appointments)
+                                            {
+                                                <tr>
+                                                    <td>@FormatLocal(appt.ScheduledStart)</td>
+                                                    <td>@appt.ProviderName</td>
+                                                    <td>@appt.Type</td>
+                                                    <td>@appt.Status</td>
+                                                    <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? AppResources.T("Common_EmptyCell") : appt.Reason)</td>
+                                                    @if (_isAdministrator && appt.Status != "Cancelled")
+                                                    {
+                                                        <td class="admin-table-actions">
+                                                            <a class="btn btn-ghost btn-sm" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_Manage")</a>
+                                                        </td>
+                                                    }
+                                                    else if (_isAdministrator)
+                                                    {
+                                                        <td></td>
+                                                    }
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_RecentVisitsTitle")"
+                                   Lead="@AppResources.T("Common_RecentVisitsLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatVisitCount(_patient.RecentVisits.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (_patient.RecentVisits.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoVisitsPatient")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Date")</th>
+                                                <th>@AppResources.T("Common_Type")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_Summary")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var visit in _patient.RecentVisits)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <a href="/admin/hospitals/@ClinicId/visits/@visit.Id">@FormatLocal(visit.VisitStart)</a>
+                                                    </td>
+                                                    <td>@visit.VisitType</td>
+                                                    <td>@visit.Status</td>
+                                                    <td>@(string.IsNullOrWhiteSpace(visit.Summary) ? AppResources.T("Common_EmptyCell") : visit.Summary)</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
                 }
             </div>
-        </AdminPageCard>
+        </div>
 
-        <div class="admin-page-actions">
-            <a class="btn btn-secondary" href="@BackUrl">@AppResources.T("Common_BackToHospital")</a>
+        <div class="hospital-deck-foot">
+            <HospitalDeckBackLink Href="@BackUrl" Text="@AppResources.T("Common_BackToHospital")" />
         </div>
     }
 </section>
@@ -810,6 +865,7 @@
     private bool _loadingEmergencies;
     private bool _revoking;
     private bool _isAdministrator;
+    private string _tab = "overview";
     private string? _error;
     private string? _actionError;
     private string? _emergencyError;
@@ -827,6 +883,32 @@
 
     private string TimeZoneLabel =>
         string.IsNullOrWhiteSpace(_clinicTimeZone) ? AppResources.T("Common_HospitalTime") : _clinicTimeZone;
+
+    private int ClinicalSectionCount =>
+        _patient is null
+            ? 0
+            : _patient.CarePlans.Count
+              + _patient.Diagnoses.Count
+              + _patient.Prescriptions.Count
+              + _patient.SoapNotes.Count
+              + _patient.ClinicalNotes.Count
+              + _patient.LabResults.Count;
+
+    private int CoverageSectionCount =>
+        _patient is null ? 0 : _patient.InsuranceProfiles.Count + _patient.Invoices.Count;
+
+    private int DevicesSectionCount =>
+        _patient is null
+            ? _emergencyTotal
+            : _patient.DeviceDailyRollups.Count + _patient.RecentDeviceReadings.Count + _emergencyTotal;
+
+    private int CareSectionCount =>
+        _patient is null
+            ? 0
+            : _patient.MoodLogs.Count
+              + _patient.RecentVitals.Count
+              + _patient.Appointments.Count
+              + _patient.RecentVisits.Count;
 
     protected override async Task OnInitializedAsync()
     {
@@ -851,6 +933,8 @@
     private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
 
     public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private void SetTab(string tab) => _tab = tab;
 
     private async Task LoadPatientAsync()
     {

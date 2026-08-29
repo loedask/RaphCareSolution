@@ -29,6 +29,23 @@ public class FeatureFlagsTests
         Assert.False(FeatureFlags.FamilyMembersEnabled);
         Assert.False(FeatureFlags.AiAssistantEnabled);
         Assert.False(FeatureFlags.NotificationsEnabled);
+        Assert.False(FeatureFlags.PhoneRegistrationEnabled);
+        Assert.False(FeatureFlags.VoiceRegistrationEnabled);
+    }
+
+    [Fact]
+    public void InitializeCopiesPhoneAndVoiceRegistrationFlags()
+    {
+        var options = new FeatureFlagOptions
+        {
+            PhoneRegistrationEnabled = true,
+            VoiceRegistrationEnabled = true
+        };
+
+        FeatureFlags.Initialize(options);
+
+        Assert.True(FeatureFlags.PhoneRegistrationEnabled);
+        Assert.True(FeatureFlags.VoiceRegistrationEnabled);
     }
 
     [Fact]

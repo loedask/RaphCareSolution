@@ -59,6 +59,7 @@ public static class AppNavigator
     public const string PersonalInformation = "PersonalInformationPage";
     public const string ChangePassword = "ChangePasswordPage";
     public const string LanguageSettings = "LanguageSettingsPage";
+    public const string SelectClinic = "SelectClinicPage";
     public const string MedicalInformation = "MedicalInformationPage";
     public const string EmergencyContacts = "EmergencyContactsPage";
     public const string RequestCall = "RequestCallPage";
@@ -131,6 +132,7 @@ public static class AppNavigator
         Routing.RegisterRoute(PersonalInformation, typeof(PersonalInformationPage));
         Routing.RegisterRoute(ChangePassword, typeof(ChangePasswordPage));
         Routing.RegisterRoute(LanguageSettings, typeof(LanguageSettingsPage));
+        Routing.RegisterRoute(SelectClinic, typeof(SelectClinicPage));
         Routing.RegisterRoute(MedicalInformation, typeof(MedicalInformationPage));
         Routing.RegisterRoute(EmergencyContacts, typeof(EmergencyContactsPage));
 
@@ -198,6 +200,8 @@ public static class AppNavigator
             AiAssistant => (FeatureFlags.AiAssistantEnabled, AiAssistant),
             Notifications => (FeatureFlags.NotificationsEnabled, Notifications),
             RequestCall => (FeatureFlags.CareTelehealthEnabled, RequestCall),
+            RegisterPhone => (FeatureFlags.PhoneRegistrationEnabled, RegisterPhone),
+            RegisterVoiceIntro => (FeatureFlags.VoiceRegistrationEnabled, RegisterVoiceIntro),
             _ => (true, route)
         };
     }

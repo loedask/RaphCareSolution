@@ -112,7 +112,7 @@ public abstract class BaseHttpService(HttpClient httpClient)
     private static async Task<Response<T>> ToErrorResponseAsync<T>(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        var message = string.IsNullOrEmpty(body) ? $"API error: {response.StatusCode}" : body;
+        var message = ApiErrorMessages.FromBody(body, response.StatusCode);
         return Response<T>.Failure(message, (int)response.StatusCode);
     }
 }

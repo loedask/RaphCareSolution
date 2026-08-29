@@ -2125,6 +2125,15 @@
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Moto ya maladi</value>
   </data>
+  <data name="PatientDetail_ChartEyebrow" xml:space="preserve">
+    <value>Dossier ya maladi</value>
+  </data>
+  <data name="PatientDetail_SectionsAria" xml:space="preserve">
+    <value>Biteni ya dossier ya maladi</value>
+  </data>
+  <data name="PatientDetail_TabCare" xml:space="preserve">
+    <value>Bosaleli</value>
+  </data>
   <data name="PatientDetail_CouldNotLoadPatient" xml:space="preserve">
     <value>Ekokaki te ko charger patient.</value>
   </data>
@@ -2134,8 +2143,20 @@
   <data name="Visit_PageTitleFallback" xml:space="preserve">
     <value>Kokende kotala</value>
   </data>
+  <data name="Visit_SectionsAria" xml:space="preserve">
+    <value>Biteni ya kokende kotala</value>
+  </data>
+  <data name="Visit_TabClinical" xml:space="preserve">
+    <value>Ya lopitalo</value>
+  </data>
   <data name="TeleJoin_PageTitle" xml:space="preserve">
     <value>Telesanté - RaphCare Mokambi ya mosala</value>
+  </data>
+  <data name="TeleJoin_SectionsAria" xml:space="preserve">
+    <value>Biteni ya telesanté</value>
+  </data>
+  <data name="TeleJoin_TabSession" xml:space="preserve">
+    <value>Eteni</value>
   </data>
   <data name="PatientDetail_Gender" xml:space="preserve">
     <value>Mobali/mwasi</value>
@@ -2163,6 +2184,9 @@
   </data>
   <data name="ProviderDetail_AvailabilityEyebrow" xml:space="preserve">
     <value>Disponibilité</value>
+  </data>
+  <data name="ProviderDetail_SectionsAria" xml:space="preserve">
+    <value>Biteni ya mosaleli</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} · {1} · ntango na {2}</value>

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.Services.Auth;
@@ -42,8 +43,15 @@ public class SignInViewModel : BaseViewModel
     public string PasswordPlaceholder { get; }
     public string VerificationCodePlaceholder { get; }
 
-    public string SignInButtonText =>
-        AwaitingVerification ? T("AuthSignInVerifyButton") : T("AuthSignIn");
+    public string SignInButtonText
+    {
+        get
+        {
+            if (IsBusy)
+                return AwaitingVerification ? T("AuthVerifyingBusy") : T("AuthSigningInBusy");
+            return AwaitingVerification ? T("AuthSignInVerifyButton") : T("AuthSignIn");
+        }
+    }
 
     public string ForgotPasswordText { get; }
 
@@ -107,6 +115,16 @@ public class SignInViewModel : BaseViewModel
         ForgotPasswordCommand = new Command(async () => await OpenPasswordResetAsync().ConfigureAwait(false));
     }
 
+    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+        if (propertyName is nameof(IsBusy) or nameof(AwaitingVerification))
+        {
+            OnPropertyChanged(nameof(SignInButtonText));
+            (SignInCommand as Command)?.ChangeCanExecute();
+        }
+    }
+
     private static async Task OpenSignUpAsync()
     {
         await SafeShellNavigator.GoToAsync("RegisterOptionsPage").ConfigureAwait(false);
@@ -146,6 +164,9 @@ public class SignInViewModel : BaseViewModel
         }
 
         IsBusy = true;
+        BusyMessage = AwaitingVerification ? T("AuthVerifyingBusy") : T("AuthSigningInBusy");
+        (SignInCommand as Command)?.ChangeCanExecute();
+        OnPropertyChanged(nameof(SignInButtonText));
         try
         {
             var code = AwaitingVerification ? VerificationCode.Trim() : null;
@@ -162,6 +183,7 @@ public class SignInViewModel : BaseViewModel
 
             if (result.Success)
             {
+                BusyMessage = T("AuthOpeningHomeBusy");
                 await SafeShellNavigator.GoToAsync("//HomePage").ConfigureAwait(false);
             }
             else
@@ -176,6 +198,8 @@ public class SignInViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
+            (SignInCommand as Command)?.ChangeCanExecute();
+            OnPropertyChanged(nameof(SignInButtonText));
         }
     }
 

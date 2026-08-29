@@ -10,7 +10,7 @@
         CornerRadius="12"
         Padding="24,14"
         MinimumHeightRequest="48"
-        >
+        Opacity="1">
     <Button.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
             <GradientStop Color="{StaticResource TealColor}" Offset="0" />

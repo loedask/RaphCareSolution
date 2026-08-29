@@ -7,455 +7,490 @@
 
 <PageTitle>@(_visit is null ? AppResources.T("Visit_PageTitleFallback") : AppResources.Format("Common_VisitHeader", _visit.PatientName)) @AppResources.T("Common_PageTitleAdminSuffix")</PageTitle>
 
-<section class="admin-page">
+<section class="admin-page hospital-deck">
     @if (_loading)
     {
-        <p class="text-muted">@AppResources.T("Common_LoadingVisit")</p>
+        <HospitalDeckLoading Message="@AppResources.T("Common_LoadingVisit")" />
     }
     else if (_visit is null)
     {
-        <AdminAlert Message="@(_error ?? AppResources.T("Common_VisitNotFound"))" />
-        <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_BackToAppointments")</a>
+        <HospitalDeckMissing Message="@(_error ?? AppResources.T("Common_VisitNotFound"))"
+                             BackHref="@AppointmentsUrl"
+                             BackText="@AppResources.T("Common_BackToAppointments")" />
     }
     else
     {
-        <AdminPageHeader Title="@AppResources.Format("Common_VisitHeader", _visit.PatientName)"
-                         Lead="@AppResources.Format("Visit_DetailLead", _visit.VisitType, _visit.ProviderName, TimeZoneLabel)">
-            <span class="badge @(_visit.Status == "Completed" ? "badge-muted" : "badge-success")">@_visit.Status</span>
-        </AdminPageHeader>
+        <HospitalDeckMasthead BackHref="@AppointmentsUrl"
+                              BackText="@AppResources.T("Common_BackToAppointments")"
+                              Monogram="@HospitalDeckInitials.FromName(_visit.PatientName)"
+                              Eyebrow="@AppResources.T("Common_EncounterEyebrow")"
+                              Title="@AppResources.Format("Common_VisitHeader", _visit.PatientName)"
+                              Lead="@AppResources.Format("Visit_DetailLead", _visit.VisitType, _visit.ProviderName, TimeZoneLabel)"
+                              StatusText="@_visit.Status">
+            <HospitalDeckChip Label="@AppResources.T("Common_Type")" Value="@_visit.VisitType" />
+            <HospitalDeckChip Label="@AppResources.T("Common_Provider")" Value="@_visit.ProviderName" />
+            <HospitalDeckChip Label="@AppResources.T("Common_TimeZone")" Value="@TimeZoneLabel" />
+            <HospitalDeckChip Label="@AppResources.T("Common_Hospital")" Value="@ClinicDisplayName" />
+        </HospitalDeckMasthead>
 
         <AdminAlert Message="@_error" />
         <AdminAlert Tone="success" Message="@_success" />
 
-        <AdminPageCard Eyebrow="@AppResources.T("Common_EncounterEyebrow")" Title="@AppResources.T("Common_Details")">
-            <div class="admin-page-card-body">
-                <AdminDefinitionGrid>
-                    <AdminDefinitionItem Label="@AppResources.T("Common_Started")" Value="@FormatLocal(_visit.VisitStart)" />
-                    <AdminDefinitionItem Label="@AppResources.T("Common_Ended")" Value="@(_visit.VisitEnd is { } end ? FormatLocal(end) : AppResources.T("Common_EmptyCell"))" />
-                    <AdminDefinitionItem Label="@AppResources.T("Common_Patient")">
-                        <a href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">@_visit.PatientName</a>
-                    </AdminDefinitionItem>
-                    <AdminDefinitionItem Label="@AppResources.T("Common_Provider")" Value="@_visit.ProviderName" />
-                </AdminDefinitionGrid>
-                @if (!string.IsNullOrWhiteSpace(_visit.Summary))
-                {
-                    <p class="hint" style="margin-top: 1rem;">@_visit.Summary</p>
-                }
-                @if (CanDocument)
-                {
-                    <div class="admin-page-actions" style="margin-top: 1rem;">
-                        <label>
-                            @AppResources.T("Common_Summary")
-                            <input class="form-control" @bind="_completeSummary" placeholder="@AppResources.T("Common_OptionalVisitSummary")" />
-                        </label>
-                        <button type="button" class="btn btn-primary" disabled="@_completing" @onclick="CompleteVisitAsync">
-                            @(_completing ? AppResources.T("Common_Completing") : AppResources.T("Common_CompleteVisit"))
-                        </button>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
+        <div class="hospital-deck-workspace">
+            <HospitalDeckRail AriaLabel="@AppResources.T("Visit_SectionsAria")"
+                              Kicker="@AppResources.T("Visit_SectionsAria")">
+                <HospitalDeckRailItem Index="01" Icon="grid" IsActive="@(_tab == "details")" OnSelect='() => SetTab("details")'>
+                    @AppResources.T("Common_Details")
+                </HospitalDeckRailItem>
+                <HospitalDeckRailItem Index="02" Icon="device" IsActive="@(_tab == "vitals")" Count="@_visit.Vitals.Count" OnSelect='() => SetTab("vitals")'>
+                    @AppResources.T("Common_VitalsTitle")
+                </HospitalDeckRailItem>
+                <HospitalDeckRailItem Index="03" Icon="lab" IsActive="@(_tab == "clinical")" Count="@ClinicalSectionCount" OnSelect='() => SetTab("clinical")'>
+                    @AppResources.T("Visit_TabClinical")
+                </HospitalDeckRailItem>
+            </HospitalDeckRail>
 
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")" Title="@AppResources.T("Common_VitalsTitle")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@FormatVitalCount(_visit.Vitals.Count)</span>
-            </AdminPageCardMeta>
-            <div class="admin-page-card-body">
-                @if (CanDocument)
+            <div class="hospital-deck-stage">
+                @if (_tab == "details")
                 {
-                    <div class="form-grid" style="margin-bottom: 1rem;">
-                        <label>
-                            @AppResources.T("Common_Type")
-                            <SearchableSelect TValue="string"
-                                              @bind-Value="_vitalType"
-                                              Options="VitalTypeOptions" />
-                        </label>
-                        <label>
-                            @AppResources.T("Common_Value")
-                            <input class="form-control" type="number" step="0.1" @bind="_vitalValue" />
-                        </label>
-                        <label>
-                            @AppResources.T("Visit_UnitLabel")
-                            <input class="form-control" @bind="_vitalUnit" placeholder="@AppResources.T("Common_UnitPlaceholder")" />
-                        </label>
-                    </div>
-                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
-                        <button type="button" class="btn btn-primary" disabled="@_recording" @onclick="RecordVitalAsync">
-                            @(_recording ? AppResources.T("Common_Saving") : AppResources.T("Common_RecordVital"))
-                        </button>
-                    </div>
-                }
-
-                @if (_visit.Vitals.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoVitalsYet")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Recorded")</th>
-                                    <th>@AppResources.T("Common_Type")</th>
-                                    <th>@AppResources.T("Common_Value")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var vital in _visit.Vitals)
-                                {
-                                    <tr>
-                                        <td>@FormatLocal(vital.RecordedAt)</td>
-                                        <td>@vital.Type</td>
-                                        <td>@vital.Value @(vital.Unit ?? "")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_DiagnosesTitle")"
-                       Lead="@AppResources.T("Visit_ClinicalDocsLead")">
-            <div class="admin-page-card-body">
-                @if (_visit.Diagnoses.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoDiagnoses")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Code")</th>
-                                    <th>@AppResources.T("Common_Description")</th>
-                                    <th>@AppResources.T("Common_Severity")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var diagnosis in _visit.Diagnoses)
-                                {
-                                    <tr>
-                                        <td>@diagnosis.Code</td>
-                                        <td>@(string.IsNullOrWhiteSpace(diagnosis.Description) ? AppResources.T("Common_EmptyCell") : diagnosis.Description)</td>
-                                        <td>@(string.IsNullOrWhiteSpace(diagnosis.Severity) ? AppResources.T("Common_EmptyCell") : diagnosis.Severity)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_PrescriptionsTitle")"
-                       Lead="@AppResources.T("Visit_OpenVisitDocumentLead")">
-            <div class="admin-page-card-body">
-                @if (CanDocument)
-                {
-                    @foreach (var line in _rxLines)
-                    {
-                        <div class="form-grid" style="margin-bottom: 0.75rem;">
-                            <label>
-                                @AppResources.T("Common_MedicationName")
-                                <input class="form-control" @bind="line.MedicationName" />
-                            </label>
-                            <label>
-                                @AppResources.T("Common_Dosage")
-                                <input class="form-control" @bind="line.Dosage" />
-                            </label>
-                            <label>
-                                @AppResources.T("Common_Frequency")
-                                <input class="form-control" @bind="line.Frequency" />
-                            </label>
-                            <label>
-                                @AppResources.T("Common_DurationDays")
-                                <input class="form-control" type="number" min="0" @bind="line.DurationDays" />
-                            </label>
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_EncounterEyebrow")" Title="@AppResources.T("Common_Details")">
+                        <div class="admin-page-card-body">
+                            <AdminDefinitionGrid>
+                                <AdminDefinitionItem Label="@AppResources.T("Common_Started")" Value="@FormatLocal(_visit.VisitStart)" />
+                                <AdminDefinitionItem Label="@AppResources.T("Common_Ended")" Value="@(_visit.VisitEnd is { } end ? FormatLocal(end) : AppResources.T("Common_EmptyCell"))" />
+                                <AdminDefinitionItem Label="@AppResources.T("Common_Patient")">
+                                    <a href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">@_visit.PatientName</a>
+                                </AdminDefinitionItem>
+                                <AdminDefinitionItem Label="@AppResources.T("Common_Provider")" Value="@_visit.ProviderName" />
+                            </AdminDefinitionGrid>
+                            @if (!string.IsNullOrWhiteSpace(_visit.Summary))
+                            {
+                                <p class="hint" style="margin-top: 1rem;">@_visit.Summary</p>
+                            }
+                            @if (CanDocument)
+                            {
+                                <div class="admin-page-actions" style="margin-top: 1rem;">
+                                    <label>
+                                        @AppResources.T("Common_Summary")
+                                        <input class="form-control" @bind="_completeSummary" placeholder="@AppResources.T("Common_OptionalVisitSummary")" />
+                                    </label>
+                                    <button type="button" class="btn btn-primary" disabled="@_completing" @onclick="CompleteVisitAsync">
+                                        @(_completing ? AppResources.T("Common_Completing") : AppResources.T("Common_CompleteVisit"))
+                                    </button>
+                                </div>
+                            }
                         </div>
-                    }
-                    <div class="form-grid" style="margin-bottom: 1rem;">
-                        <label>
-                            @AppResources.T("Common_Notes")
-                            <input class="form-control" @bind="_rxNotes" />
-                        </label>
-                    </div>
-                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
-                        <button type="button" class="btn btn-secondary" @onclick="AddPrescriptionLine">
-                            @AppResources.T("Common_AddMedicationLine")
-                        </button>
-                        @if (_rxLines.Count > 1)
-                        {
-                            <button type="button" class="btn btn-ghost" @onclick="RemoveLastPrescriptionLine">
-                                @AppResources.T("Common_RemoveLine")
-                            </button>
-                        }
-                        <button type="button" class="btn btn-primary" disabled="@_savingPrescription" @onclick="AddPrescriptionAsync">
-                            @(_savingPrescription ? AppResources.T("Common_AddingPrescription") : AppResources.T("Common_AddPrescription"))
-                        </button>
-                    </div>
+                    </AdminPageCard>
                 }
-                @if (_visit.Prescriptions.Count == 0)
+                else if (_tab == "vitals")
                 {
-                    <p class="text-muted">@AppResources.T("Common_NoPrescriptions")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Medications")</th>
-                                    <th>@AppResources.T("Common_Dosage")</th>
-                                    <th>@AppResources.T("Common_Frequency")</th>
-                                    <th>@AppResources.T("Common_DurationDays")</th>
-                                    <th>@AppResources.T("Common_PickupCode")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                    <th>@AppResources.T("Common_Notes")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var rx in _visit.Prescriptions)
-                                {
-                                    @if (rx.Items.Count == 0)
-                                    {
-                                        <tr>
-                                            <td>@AppResources.T("Common_EmptyCell")</td>
-                                            <td>@AppResources.T("Common_EmptyCell")</td>
-                                            <td>@AppResources.T("Common_EmptyCell")</td>
-                                            <td>@AppResources.T("Common_EmptyCell")</td>
-                                            <td class="pickup-code">@(string.IsNullOrWhiteSpace(rx.PickupCode) ? AppResources.T("Common_EmptyCell") : rx.PickupCode)</td>
-                                            <td>@FormatOrderStatus(rx.Status)</td>
-                                            <td>
-                                                @(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)
-                                                @if (CanDocument && rx.Status == "Pending")
-                                                {
-                                                    <div class="admin-page-actions" style="margin-top: 0.5rem;">
-                                                        <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => CancelPrescriptionAsync(rx.Id)">
-                                                            @AppResources.T("Collection_CancelOrder")
-                                                        </button>
-                                                    </div>
-                                                }
-                                                else if (CanDocument && rx.Status == "Cancelled")
-                                                {
-                                                    <div class="admin-page-actions" style="margin-top: 0.5rem;">
-                                                        <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => UndoPrescriptionAsync(rx.Id)">
-                                                            @AppResources.T("Collection_Undo")
-                                                        </button>
-                                                    </div>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                    else
-                                    {
-                                        @for (var i = 0; i < rx.Items.Count; i++)
-                                        {
-                                            var item = rx.Items[i];
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")" Title="@AppResources.T("Common_VitalsTitle")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatVitalCount(_visit.Vitals.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            @if (CanDocument)
+                            {
+                                <div class="form-grid" style="margin-bottom: 1rem;">
+                                    <label>
+                                        @AppResources.T("Common_Type")
+                                        <SearchableSelect TValue="string"
+                                                          @bind-Value="_vitalType"
+                                                          Options="VitalTypeOptions" />
+                                    </label>
+                                    <label>
+                                        @AppResources.T("Common_Value")
+                                        <input class="form-control" type="number" step="0.1" @bind="_vitalValue" />
+                                    </label>
+                                    <label>
+                                        @AppResources.T("Visit_UnitLabel")
+                                        <input class="form-control" @bind="_vitalUnit" placeholder="@AppResources.T("Common_UnitPlaceholder")" />
+                                    </label>
+                                </div>
+                                <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                                    <button type="button" class="btn btn-primary" disabled="@_recording" @onclick="RecordVitalAsync">
+                                        @(_recording ? AppResources.T("Common_Saving") : AppResources.T("Common_RecordVital"))
+                                    </button>
+                                </div>
+                            }
+
+                            @if (_visit.Vitals.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoVitalsYet")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
                                             <tr>
-                                                <td>@item.MedicationName</td>
-                                                <td>@(string.IsNullOrWhiteSpace(item.Dosage) ? AppResources.T("Common_EmptyCell") : item.Dosage)</td>
-                                                <td>@(string.IsNullOrWhiteSpace(item.Frequency) ? AppResources.T("Common_EmptyCell") : item.Frequency)</td>
-                                                <td>@item.DurationDays</td>
-                                                <td class="pickup-code">@(string.IsNullOrWhiteSpace(rx.PickupCode) ? AppResources.T("Common_EmptyCell") : rx.PickupCode)</td>
-                                                <td>@FormatOrderStatus(rx.Status)</td>
-                                                <td>
-                                                    @(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)
-                                                    @if (i == 0 && CanDocument && rx.Status == "Pending")
+                                                <th>@AppResources.T("Common_Recorded")</th>
+                                                <th>@AppResources.T("Common_Type")</th>
+                                                <th>@AppResources.T("Common_Value")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var vital in _visit.Vitals)
+                                            {
+                                                <tr>
+                                                    <td>@FormatLocal(vital.RecordedAt)</td>
+                                                    <td>@vital.Type</td>
+                                                    <td>@vital.Value @(vital.Unit ?? "")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+                }
+                else if (_tab == "clinical")
+                {
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_DiagnosesTitle")"
+                                   Lead="@AppResources.T("Visit_ClinicalDocsLead")">
+                        <div class="admin-page-card-body">
+                            @if (_visit.Diagnoses.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoDiagnoses")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Code")</th>
+                                                <th>@AppResources.T("Common_Description")</th>
+                                                <th>@AppResources.T("Common_Severity")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var diagnosis in _visit.Diagnoses)
+                                            {
+                                                <tr>
+                                                    <td>@diagnosis.Code</td>
+                                                    <td>@(string.IsNullOrWhiteSpace(diagnosis.Description) ? AppResources.T("Common_EmptyCell") : diagnosis.Description)</td>
+                                                    <td>@(string.IsNullOrWhiteSpace(diagnosis.Severity) ? AppResources.T("Common_EmptyCell") : diagnosis.Severity)</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_PrescriptionsTitle")"
+                                   Lead="@AppResources.T("Visit_OpenVisitDocumentLead")">
+                        <div class="admin-page-card-body">
+                            @if (CanDocument)
+                            {
+                                @foreach (var line in _rxLines)
+                                {
+                                    <div class="form-grid" style="margin-bottom: 0.75rem;">
+                                        <label>
+                                            @AppResources.T("Common_MedicationName")
+                                            <input class="form-control" @bind="line.MedicationName" />
+                                        </label>
+                                        <label>
+                                            @AppResources.T("Common_Dosage")
+                                            <input class="form-control" @bind="line.Dosage" />
+                                        </label>
+                                        <label>
+                                            @AppResources.T("Common_Frequency")
+                                            <input class="form-control" @bind="line.Frequency" />
+                                        </label>
+                                        <label>
+                                            @AppResources.T("Common_DurationDays")
+                                            <input class="form-control" type="number" min="0" @bind="line.DurationDays" />
+                                        </label>
+                                    </div>
+                                }
+                                <div class="form-grid" style="margin-bottom: 1rem;">
+                                    <label>
+                                        @AppResources.T("Common_Notes")
+                                        <input class="form-control" @bind="_rxNotes" />
+                                    </label>
+                                </div>
+                                <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                                    <button type="button" class="btn btn-secondary" @onclick="AddPrescriptionLine">
+                                        @AppResources.T("Common_AddMedicationLine")
+                                    </button>
+                                    @if (_rxLines.Count > 1)
+                                    {
+                                        <button type="button" class="btn btn-ghost" @onclick="RemoveLastPrescriptionLine">
+                                            @AppResources.T("Common_RemoveLine")
+                                        </button>
+                                    }
+                                    <button type="button" class="btn btn-primary" disabled="@_savingPrescription" @onclick="AddPrescriptionAsync">
+                                        @(_savingPrescription ? AppResources.T("Common_AddingPrescription") : AppResources.T("Common_AddPrescription"))
+                                    </button>
+                                </div>
+                            }
+                            @if (_visit.Prescriptions.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoPrescriptions")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Medications")</th>
+                                                <th>@AppResources.T("Common_Dosage")</th>
+                                                <th>@AppResources.T("Common_Frequency")</th>
+                                                <th>@AppResources.T("Common_DurationDays")</th>
+                                                <th>@AppResources.T("Common_PickupCode")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_Notes")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var rx in _visit.Prescriptions)
+                                            {
+                                                @if (rx.Items.Count == 0)
+                                                {
+                                                    <tr>
+                                                        <td>@AppResources.T("Common_EmptyCell")</td>
+                                                        <td>@AppResources.T("Common_EmptyCell")</td>
+                                                        <td>@AppResources.T("Common_EmptyCell")</td>
+                                                        <td>@AppResources.T("Common_EmptyCell")</td>
+                                                        <td class="pickup-code">@(string.IsNullOrWhiteSpace(rx.PickupCode) ? AppResources.T("Common_EmptyCell") : rx.PickupCode)</td>
+                                                        <td>@FormatOrderStatus(rx.Status)</td>
+                                                        <td>
+                                                            @(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)
+                                                            @if (CanDocument && rx.Status == "Pending")
+                                                            {
+                                                                <div class="admin-page-actions" style="margin-top: 0.5rem;">
+                                                                    <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => CancelPrescriptionAsync(rx.Id)">
+                                                                        @AppResources.T("Collection_CancelOrder")
+                                                                    </button>
+                                                                </div>
+                                                            }
+                                                            else if (CanDocument && rx.Status == "Cancelled")
+                                                            {
+                                                                <div class="admin-page-actions" style="margin-top: 0.5rem;">
+                                                                    <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => UndoPrescriptionAsync(rx.Id)">
+                                                                        @AppResources.T("Collection_Undo")
+                                                                    </button>
+                                                                </div>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                else
+                                                {
+                                                    @for (var i = 0; i < rx.Items.Count; i++)
                                                     {
-                                                        <div class="admin-page-actions" style="margin-top: 0.5rem;">
-                                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => CancelPrescriptionAsync(rx.Id)">
+                                                        var item = rx.Items[i];
+                                                        <tr>
+                                                            <td>@item.MedicationName</td>
+                                                            <td>@(string.IsNullOrWhiteSpace(item.Dosage) ? AppResources.T("Common_EmptyCell") : item.Dosage)</td>
+                                                            <td>@(string.IsNullOrWhiteSpace(item.Frequency) ? AppResources.T("Common_EmptyCell") : item.Frequency)</td>
+                                                            <td>@item.DurationDays</td>
+                                                            <td class="pickup-code">@(string.IsNullOrWhiteSpace(rx.PickupCode) ? AppResources.T("Common_EmptyCell") : rx.PickupCode)</td>
+                                                            <td>@FormatOrderStatus(rx.Status)</td>
+                                                            <td>
+                                                                @(string.IsNullOrWhiteSpace(rx.Notes) ? AppResources.T("Common_EmptyCell") : rx.Notes)
+                                                                @if (i == 0 && CanDocument && rx.Status == "Pending")
+                                                                {
+                                                                    <div class="admin-page-actions" style="margin-top: 0.5rem;">
+                                                                        <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => CancelPrescriptionAsync(rx.Id)">
+                                                                            @AppResources.T("Collection_CancelOrder")
+                                                                        </button>
+                                                                    </div>
+                                                                }
+                                                                else if (i == 0 && CanDocument && rx.Status == "Cancelled")
+                                                                {
+                                                                    <div class="admin-page-actions" style="margin-top: 0.5rem;">
+                                                                        <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => UndoPrescriptionAsync(rx.Id)">
+                                                                            @AppResources.T("Collection_Undo")
+                                                                        </button>
+                                                                    </div>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_SoapNotesTitle")"
+                                   Lead="@AppResources.T("Visit_NotesLead")">
+                        <div class="admin-page-card-body">
+                            @if (CanDocument)
+                            {
+                                <div class="form-grid single-column" style="margin-bottom: 1rem;">
+                                    <label>
+                                        @AppResources.T("Common_Subjective")
+                                        <textarea class="form-control admin-textarea" @bind="_soapSubjective"></textarea>
+                                    </label>
+                                    <label>
+                                        @AppResources.T("Common_Objective")
+                                        <textarea class="form-control admin-textarea" @bind="_soapObjective"></textarea>
+                                    </label>
+                                    <label>
+                                        @AppResources.T("Common_Assessment")
+                                        <textarea class="form-control admin-textarea" @bind="_soapAssessment"></textarea>
+                                    </label>
+                                    <label>
+                                        @AppResources.T("Common_SoapPlan")
+                                        <textarea class="form-control admin-textarea" @bind="_soapPlan"></textarea>
+                                    </label>
+                                </div>
+                                <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                                    <button type="button" class="btn btn-primary" disabled="@_savingSoap" @onclick="SaveSoapAsync">
+                                        @(_savingSoap ? AppResources.T("Common_SavingSoap") : AppResources.T("Common_SaveSoap"))
+                                    </button>
+                                </div>
+                                <div class="form-grid" style="margin-bottom: 1rem;">
+                                    <label>
+                                        @AppResources.T("Common_Type")
+                                        <input class="form-control" @bind="_noteCategory" placeholder="@AppResources.T("Common_NoteCategoryPlaceholder")" />
+                                    </label>
+                                    <label>
+                                        @AppResources.T("Common_Notes")
+                                        <textarea class="form-control admin-textarea" @bind="_noteText"></textarea>
+                                    </label>
+                                </div>
+                                <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                                    <button type="button" class="btn btn-primary" disabled="@_savingNote" @onclick="AddNoteAsync">
+                                        @(_savingNote ? AppResources.T("Common_AddingNote") : AppResources.T("Common_AddNote"))
+                                    </button>
+                                </div>
+                            }
+                            @if (!CanDocument && _visit.SoapNotes.Count == 0 && _visit.ClinicalNotes.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoClinicalNotes")</p>
+                            }
+                            else
+                            {
+                                @if (!CanDocument)
+                                {
+                                    @foreach (var soap in _visit.SoapNotes)
+                                    {
+                                        <AdminDefinitionGrid>
+                                            <AdminDefinitionItem Label="@AppResources.T("Common_Subjective")" Value="@(string.IsNullOrWhiteSpace(soap.Subjective) ? AppResources.T("Common_EmptyCell") : soap.Subjective)" Full="true" />
+                                            <AdminDefinitionItem Label="@AppResources.T("Common_Objective")" Value="@(string.IsNullOrWhiteSpace(soap.Objective) ? AppResources.T("Common_EmptyCell") : soap.Objective)" Full="true" />
+                                            <AdminDefinitionItem Label="@AppResources.T("Common_Assessment")" Value="@(string.IsNullOrWhiteSpace(soap.Assessment) ? AppResources.T("Common_EmptyCell") : soap.Assessment)" Full="true" />
+                                            <AdminDefinitionItem Label="@AppResources.T("Common_SoapPlan")" Value="@(string.IsNullOrWhiteSpace(soap.Plan) ? AppResources.T("Common_EmptyCell") : soap.Plan)" Full="true" />
+                                        </AdminDefinitionGrid>
+                                    }
+                                }
+                                @if (_visit.ClinicalNotes.Count > 0)
+                                {
+                                    <div class="table-wrap">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>@AppResources.T("Common_Type")</th>
+                                                    <th>@AppResources.T("Common_Notes")</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var note in _visit.ClinicalNotes)
+                                                {
+                                                    <tr>
+                                                        <td>@(string.IsNullOrWhiteSpace(note.Category) ? AppResources.T("Common_EmptyCell") : note.Category)</td>
+                                                        <td>@note.Notes</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_LabResultsTitle")"
+                                   Lead="@AppResources.T("Visit_OrderLabLead")">
+                        <div class="admin-page-card-body">
+                            @if (CanDocument)
+                            {
+                                <div class="form-grid" style="margin-bottom: 1rem;">
+                                    <label>
+                                        @AppResources.T("Common_Test")
+                                        <input class="form-control" @bind="_labTestName" />
+                                    </label>
+                                </div>
+                                <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
+                                    <button type="button" class="btn btn-primary" disabled="@_savingLab" @onclick="AddLabResultAsync">
+                                        @(_savingLab ? AppResources.T("Common_OrderingLab") : AppResources.T("Common_OrderLab"))
+                                    </button>
+                                </div>
+                            }
+                            @if (_visit.LabResults.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoLabResults")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Test")</th>
+                                                <th>@AppResources.T("Common_PickupCode")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_Value")</th>
+                                                <th>@AppResources.T("Common_ReferenceRange")</th>
+                                                <th>@AppResources.T("Common_Reported")</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var lab in _visit.LabResults)
+                                            {
+                                                <tr>
+                                                    <td>@lab.TestName</td>
+                                                    <td class="pickup-code">@(string.IsNullOrWhiteSpace(lab.PickupCode) ? AppResources.T("Common_EmptyCell") : lab.PickupCode)</td>
+                                                    <td>@FormatOrderStatus(lab.Status)</td>
+                                                    <td>@(string.IsNullOrWhiteSpace(lab.ResultValue) ? AppResources.T("Common_Waiting") : $"{lab.ResultValue} {lab.Unit ?? ""}".Trim())</td>
+                                                    <td>@(string.IsNullOrWhiteSpace(lab.ReferenceRange) ? AppResources.T("Common_EmptyCell") : lab.ReferenceRange)</td>
+                                                    <td>@(lab.ReportedAt is { } reported ? FormatLocal(reported) : AppResources.T("Common_EmptyCell"))</td>
+                                                    <td>
+                                                        @if (CanDocument && lab.Status == "Pending")
+                                                        {
+                                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => CancelLabAsync(lab.Id)">
                                                                 @AppResources.T("Collection_CancelOrder")
                                                             </button>
-                                                        </div>
-                                                    }
-                                                    else if (i == 0 && CanDocument && rx.Status == "Cancelled")
-                                                    {
-                                                        <div class="admin-page-actions" style="margin-top: 0.5rem;">
-                                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => UndoPrescriptionAsync(rx.Id)">
+                                                        }
+                                                        else if (CanDocument && lab.Status == "Cancelled")
+                                                        {
+                                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => UndoLabAsync(lab.Id)">
                                                                 @AppResources.T("Collection_Undo")
                                                             </button>
-                                                        </div>
-                                                    }
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </AdminPageCard>
-
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_SoapNotesTitle")"
-                       Lead="@AppResources.T("Visit_NotesLead")">
-            <div class="admin-page-card-body">
-                @if (CanDocument)
-                {
-                    <div class="form-grid single-column" style="margin-bottom: 1rem;">
-                        <label>
-                            @AppResources.T("Common_Subjective")
-                            <textarea class="form-control admin-textarea" @bind="_soapSubjective"></textarea>
-                        </label>
-                        <label>
-                            @AppResources.T("Common_Objective")
-                            <textarea class="form-control admin-textarea" @bind="_soapObjective"></textarea>
-                        </label>
-                        <label>
-                            @AppResources.T("Common_Assessment")
-                            <textarea class="form-control admin-textarea" @bind="_soapAssessment"></textarea>
-                        </label>
-                        <label>
-                            @AppResources.T("Common_SoapPlan")
-                            <textarea class="form-control admin-textarea" @bind="_soapPlan"></textarea>
-                        </label>
-                    </div>
-                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
-                        <button type="button" class="btn btn-primary" disabled="@_savingSoap" @onclick="SaveSoapAsync">
-                            @(_savingSoap ? AppResources.T("Common_SavingSoap") : AppResources.T("Common_SaveSoap"))
-                        </button>
-                    </div>
-                    <div class="form-grid" style="margin-bottom: 1rem;">
-                        <label>
-                            @AppResources.T("Common_Type")
-                            <input class="form-control" @bind="_noteCategory" placeholder="@AppResources.T("Common_NoteCategoryPlaceholder")" />
-                        </label>
-                        <label>
-                            @AppResources.T("Common_Notes")
-                            <textarea class="form-control admin-textarea" @bind="_noteText"></textarea>
-                        </label>
-                    </div>
-                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
-                        <button type="button" class="btn btn-primary" disabled="@_savingNote" @onclick="AddNoteAsync">
-                            @(_savingNote ? AppResources.T("Common_AddingNote") : AppResources.T("Common_AddNote"))
-                        </button>
-                    </div>
-                }
-                @if (!CanDocument && _visit.SoapNotes.Count == 0 && _visit.ClinicalNotes.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoClinicalNotes")</p>
-                }
-                else
-                {
-                    @if (!CanDocument)
-                    {
-                        @foreach (var soap in _visit.SoapNotes)
-                        {
-                            <AdminDefinitionGrid>
-                                <AdminDefinitionItem Label="@AppResources.T("Common_Subjective")" Value="@(string.IsNullOrWhiteSpace(soap.Subjective) ? AppResources.T("Common_EmptyCell") : soap.Subjective)" Full="true" />
-                                <AdminDefinitionItem Label="@AppResources.T("Common_Objective")" Value="@(string.IsNullOrWhiteSpace(soap.Objective) ? AppResources.T("Common_EmptyCell") : soap.Objective)" Full="true" />
-                                <AdminDefinitionItem Label="@AppResources.T("Common_Assessment")" Value="@(string.IsNullOrWhiteSpace(soap.Assessment) ? AppResources.T("Common_EmptyCell") : soap.Assessment)" Full="true" />
-                                <AdminDefinitionItem Label="@AppResources.T("Common_SoapPlan")" Value="@(string.IsNullOrWhiteSpace(soap.Plan) ? AppResources.T("Common_EmptyCell") : soap.Plan)" Full="true" />
-                            </AdminDefinitionGrid>
-                        }
-                    }
-                    @if (_visit.ClinicalNotes.Count > 0)
-                    {
-                        <div class="table-wrap">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>@AppResources.T("Common_Type")</th>
-                                        <th>@AppResources.T("Common_Notes")</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var note in _visit.ClinicalNotes)
-                                    {
-                                        <tr>
-                                            <td>@(string.IsNullOrWhiteSpace(note.Category) ? AppResources.T("Common_EmptyCell") : note.Category)</td>
-                                            <td>@note.Notes</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
                         </div>
-                    }
+                    </AdminPageCard>
                 }
             </div>
-        </AdminPageCard>
+        </div>
 
-        <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
-                       Title="@AppResources.T("Common_LabResultsTitle")"
-                       Lead="@AppResources.T("Visit_OrderLabLead")">
-            <div class="admin-page-card-body">
-                @if (CanDocument)
-                {
-                    <div class="form-grid" style="margin-bottom: 1rem;">
-                        <label>
-                            @AppResources.T("Common_Test")
-                            <input class="form-control" @bind="_labTestName" />
-                        </label>
-                    </div>
-                    <div class="admin-page-actions" style="margin-bottom: 1.25rem;">
-                        <button type="button" class="btn btn-primary" disabled="@_savingLab" @onclick="AddLabResultAsync">
-                            @(_savingLab ? AppResources.T("Common_OrderingLab") : AppResources.T("Common_OrderLab"))
-                        </button>
-                    </div>
-                }
-                @if (_visit.LabResults.Count == 0)
-                {
-                    <p class="text-muted">@AppResources.T("Common_NoLabResults")</p>
-                }
-                else
-                {
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Test")</th>
-                                    <th>@AppResources.T("Common_PickupCode")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                    <th>@AppResources.T("Common_Value")</th>
-                                    <th>@AppResources.T("Common_ReferenceRange")</th>
-                                    <th>@AppResources.T("Common_Reported")</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var lab in _visit.LabResults)
-                                {
-                                    <tr>
-                                        <td>@lab.TestName</td>
-                                        <td class="pickup-code">@(string.IsNullOrWhiteSpace(lab.PickupCode) ? AppResources.T("Common_EmptyCell") : lab.PickupCode)</td>
-                                        <td>@FormatOrderStatus(lab.Status)</td>
-                                        <td>@(string.IsNullOrWhiteSpace(lab.ResultValue) ? AppResources.T("Common_Waiting") : $"{lab.ResultValue} {lab.Unit ?? ""}".Trim())</td>
-                                        <td>@(string.IsNullOrWhiteSpace(lab.ReferenceRange) ? AppResources.T("Common_EmptyCell") : lab.ReferenceRange)</td>
-                                        <td>@(lab.ReportedAt is { } reported ? FormatLocal(reported) : AppResources.T("Common_EmptyCell"))</td>
-                                        <td>
-                                            @if (CanDocument && lab.Status == "Pending")
-                                            {
-                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => CancelLabAsync(lab.Id)">
-                                                    @AppResources.T("Collection_CancelOrder")
-                                                </button>
-                                            }
-                                            else if (CanDocument && lab.Status == "Cancelled")
-                                            {
-                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => UndoLabAsync(lab.Id)">
-                                                    @AppResources.T("Collection_Undo")
-                                                </button>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
+        <div class="hospital-deck-foot">
+            <div class="admin-page-actions">
+                <HospitalDeckBackLink Href="@AppointmentsUrl" Text="@AppResources.T("Common_BackToAppointments")" />
+                <a class="btn btn-ghost" href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">@AppResources.T("Common_PatientChartLink")</a>
             </div>
-        </AdminPageCard>
-
-        <div class="admin-page-actions">
-            <a class="btn btn-secondary" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Visit_AppointmentsNav")</a>
-            <a class="btn btn-ghost" href="/admin/hospitals/@ClinicId/patients/@_visit.PatientId">@AppResources.T("Common_PatientChartLink")</a>
         </div>
     }
 </section>
@@ -476,8 +511,10 @@
     private bool _savingPrescription;
     private bool _savingLab;
     private Guid? _savingId;
+    private string _tab = "details";
     private string? _error;
     private string? _success;
+    private string? _clinicName;
     private string _clinicTimeZone = "UTC";
     private ClinicVisitDetail? _visit;
     private string _vitalType = "HR";
@@ -494,6 +531,10 @@
     private string _rxNotes = string.Empty;
     private string _labTestName = string.Empty;
 
+    private string AppointmentsUrl => $"/admin/hospitals/{ClinicId}/appointments";
+
+    private string ClinicDisplayName => _clinicName ?? AppResources.T("Common_ThisHospital");
+
     private IReadOnlyList<SelectOption<string>> VitalTypeOptions =>
     [
         new("HR", AppResources.T("Common_HeartRateOption")),
@@ -509,6 +550,15 @@
     private bool CanDocument =>
         _canDocumentVisits && _visit is { Status: "InProgress" };
 
+    private int ClinicalSectionCount =>
+        _visit is null
+            ? 0
+            : _visit.Diagnoses.Count
+              + _visit.Prescriptions.Count
+              + _visit.SoapNotes.Count
+              + _visit.ClinicalNotes.Count
+              + _visit.LabResults.Count;
+
     protected override async Task OnInitializedAsync()
     {
         CultureService.CultureChanged += OnCultureChanged;
@@ -516,6 +566,7 @@
         var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
         if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
         {
+            _clinicName = clinicResponse.Data.Name;
             _canDocumentVisits = clinicResponse.Data.CurrentUserCanDocumentVisits;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
@@ -527,6 +578,8 @@
     private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
 
     public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private void SetTab(string tab) => _tab = tab;
 
     private async Task LoadVisitAsync()
     {

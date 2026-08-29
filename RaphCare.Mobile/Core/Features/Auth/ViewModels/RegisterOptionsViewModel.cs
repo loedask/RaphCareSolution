@@ -1,10 +1,11 @@
 using System.Windows.Input;
 using RaphCare.Mobile.Core.Common.Navigation;
+using RaphCare.Mobile.Core.Common.Services.FeatureFlags;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Auth.ViewModels;
 
-/// <summary>Create account: Email (password + verification), Phone (OTP + API JWT), or Voice (phone OTP then multipart upload).</summary>
+/// <summary>Create account: Email (password + verification). Phone and Voice options appear when their feature flags are on.</summary>
 public class RegisterOptionsViewModel : BaseViewModel
 {
     public RegisterOptionsViewModel()
@@ -20,6 +21,9 @@ public class RegisterOptionsViewModel : BaseViewModel
         VoiceSubtitle = T("RegisterOptionVoiceSubtitle");
         AlreadyHaveAccount = T("RegisterAlreadyHaveAccount");
         SignInText = T("AuthSignIn");
+
+        IsPhoneRegistrationVisible = FeatureFlags.PhoneRegistrationEnabled;
+        IsVoiceRegistrationVisible = FeatureFlags.VoiceRegistrationEnabled;
 
         CreateWithEmailCommand = new Command(async () => await SafeShellNavigator.GoToAsync("RegisterEmailPage"));
         CreateWithPhoneCommand = new Command(async () => await SafeShellNavigator.GoToAsync("RegisterPhonePage"));
@@ -38,6 +42,9 @@ public class RegisterOptionsViewModel : BaseViewModel
     public string VoiceSubtitle { get; }
     public string AlreadyHaveAccount { get; }
     public string SignInText { get; }
+
+    public bool IsPhoneRegistrationVisible { get; }
+    public bool IsVoiceRegistrationVisible { get; }
 
     public ICommand CreateWithEmailCommand { get; }
     public ICommand CreateWithPhoneCommand { get; }

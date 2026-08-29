@@ -2125,6 +2125,15 @@
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Mgonjwa</value>
   </data>
+  <data name="PatientDetail_ChartEyebrow" xml:space="preserve">
+    <value>Chati ya mgonjwa</value>
+  </data>
+  <data name="PatientDetail_SectionsAria" xml:space="preserve">
+    <value>Sehemu za chati ya mgonjwa</value>
+  </data>
+  <data name="PatientDetail_TabCare" xml:space="preserve">
+    <value>Huduma</value>
+  </data>
   <data name="PatientDetail_CouldNotLoadPatient" xml:space="preserve">
     <value>Haikuweza kupakia mgonjwa.</value>
   </data>
@@ -2134,8 +2143,20 @@
   <data name="Visit_PageTitleFallback" xml:space="preserve">
     <value>Tembelea</value>
   </data>
+  <data name="Visit_SectionsAria" xml:space="preserve">
+    <value>Sehemu za ziara</value>
+  </data>
+  <data name="Visit_TabClinical" xml:space="preserve">
+    <value>Kliniki</value>
+  </data>
   <data name="TeleJoin_PageTitle" xml:space="preserve">
     <value>Telehealth - RaphCare Msimamizi</value>
+  </data>
+  <data name="TeleJoin_SectionsAria" xml:space="preserve">
+    <value>Sehemu za telehealth</value>
+  </data>
+  <data name="TeleJoin_TabSession" xml:space="preserve">
+    <value>Kikao</value>
   </data>
   <data name="PatientDetail_Gender" xml:space="preserve">
     <value>Jinsia</value>
@@ -2163,6 +2184,9 @@
   </data>
   <data name="ProviderDetail_AvailabilityEyebrow" xml:space="preserve">
     <value>Upatikanaji</value>
+  </data>
+  <data name="ProviderDetail_SectionsAria" xml:space="preserve">
+    <value>Sehemu za mtoa huduma</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} · {1} · nyakati katika {2}</value>

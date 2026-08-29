@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <TargetFrameworks>net10.0-android</TargetFrameworks>
@@ -32,7 +32,7 @@
 
         <!-- Versions: display = marketing (Settings / APK name); code = Android versionCode (must rise for each Play upload). -->
         <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-        <ApplicationVersion>5</ApplicationVersion>
+        <ApplicationVersion>6</ApplicationVersion>
 
         <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
         <WindowsPackageType>None</WindowsPackageType>
@@ -108,7 +108,7 @@
         <PackageReference Include="Microsoft.Identity.Client" Version="4.66.0" />
     </ItemGroup>
 
-    <!-- Native Agora RTC (Java); Bind=false — we call RtcEngine via JNI from Platforms/Android. -->
+    <!-- Native Agora RTC (Java); Bind=false â€” we call RtcEngine via JNI from Platforms/Android. -->
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <AndroidMavenLibrary Include="io.agora.rtc:full-sdk" Version="4.5.2" Bind="false" VerifyDependencies="false" />
     </ItemGroup>
@@ -118,7 +118,7 @@
         <NativeReference Include="Platforms\iOS\AgoraRtcKit\AgoraRtcKit.xcframework" Kind="Framework" />
     </ItemGroup>
 
-    <!-- HBand / Veepoo vendor SDK (optional). Run tools/download-hband-android-libs.ps1. Bind=false — C# uses Platforms/Android/HBand JNI bridge. See docs/12.
+    <!-- HBand / Veepoo vendor SDK (optional). Run tools/download-hband-android-libs.ps1. Bind=false â€” C# uses Platforms/Android/HBand JNI bridge. See docs/12.
          Do not embed gson-*.jar: GoogleGson is already pulled in and duplicates break D8. -->
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' AND Exists('Platforms\Android\libs\vpbluetooth-1.20.aar') AND Exists('Platforms\Android\libs\vpprotocol-2.3.71.15.aar')">
         <AndroidLibrary Include="Platforms\Android\libs\vpbluetooth-1.20.aar" Bind="false" />

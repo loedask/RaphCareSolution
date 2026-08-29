@@ -2125,6 +2125,15 @@
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Patient</value>
   </data>
+  <data name="PatientDetail_ChartEyebrow" xml:space="preserve">
+    <value>Dossier patient</value>
+  </data>
+  <data name="PatientDetail_SectionsAria" xml:space="preserve">
+    <value>Sections du dossier patient</value>
+  </data>
+  <data name="PatientDetail_TabCare" xml:space="preserve">
+    <value>Soins</value>
+  </data>
   <data name="PatientDetail_CouldNotLoadPatient" xml:space="preserve">
     <value>Impossible de charger le patient.</value>
   </data>
@@ -2134,8 +2143,20 @@
   <data name="Visit_PageTitleFallback" xml:space="preserve">
     <value>Visite</value>
   </data>
+  <data name="Visit_SectionsAria" xml:space="preserve">
+    <value>Sections de la visite</value>
+  </data>
+  <data name="Visit_TabClinical" xml:space="preserve">
+    <value>Clinique</value>
+  </data>
   <data name="TeleJoin_PageTitle" xml:space="preserve">
     <value>Télésanté - Administrateur RaphCare</value>
+  </data>
+  <data name="TeleJoin_SectionsAria" xml:space="preserve">
+    <value>Sections de télésanté</value>
+  </data>
+  <data name="TeleJoin_TabSession" xml:space="preserve">
+    <value>Session</value>
   </data>
   <data name="PatientDetail_Gender" xml:space="preserve">
     <value>Genre</value>
@@ -2163,6 +2184,9 @@
   </data>
   <data name="ProviderDetail_AvailabilityEyebrow" xml:space="preserve">
     <value>Disponibilité</value>
+  </data>
+  <data name="ProviderDetail_SectionsAria" xml:space="preserve">
+    <value>Sections du prestataire</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} · {1} · horaires en {2}</value>

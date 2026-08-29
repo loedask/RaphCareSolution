@@ -12,4 +12,11 @@ public partial class BookAppointmentPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is BookAppointmentViewModel vm)
+            await vm.LoadAsync();
+    }
 }

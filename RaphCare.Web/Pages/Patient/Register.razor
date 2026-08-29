@@ -99,7 +99,13 @@
     private string? _status;
 
     private IReadOnlyList<SelectOption<string>> ClinicSelectOptions =>
-        _clinics.Select(clinic => new SelectOption<string>(clinic.Id.ToString(), clinic.Name)).ToArray();
+        _clinics.Select(clinic =>
+        {
+            var label = string.IsNullOrWhiteSpace(clinic.ReferenceCode)
+                ? clinic.Name
+                : $"{clinic.Name} ({clinic.ReferenceCode})";
+            return new SelectOption<string>(clinic.Id.ToString(), label);
+        }).ToArray();
 
     protected override async Task OnInitializedAsync()
     {
