@@ -2629,6 +2629,9 @@
   <data name="Collection_ScanQr" xml:space="preserve">
     <value>Scan QR</value>
   </data>
+  <data name="Collection_ScanBrowserHint" xml:space="preserve">
+    <value>Scan ya camera esalaka na Chrome to Edge. Na Safari to Firefox, koma code ya kozwa.</value>
+  </data>
   <data name="Collection_StopScan" xml:space="preserve">
     <value>Tika camera</value>
   </data>

@@ -2583,6 +2583,9 @@
   <data name="Collection_ScanQr" xml:space="preserve">
     <value>Scan QR</value>
   </data>
+  <data name="Collection_ScanBrowserHint" xml:space="preserve">
+    <value>Camera scan works in Chrome or Edge. In Safari or Firefox, type the pickup code.</value>
+  </data>
   <data name="Collection_StopScan" xml:space="preserve">
     <value>Stop camera</value>
   </data>

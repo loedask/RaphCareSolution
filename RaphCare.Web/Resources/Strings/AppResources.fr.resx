@@ -2629,6 +2629,9 @@
   <data name="Collection_ScanQr" xml:space="preserve">
     <value>Scanner le QR</value>
   </data>
+  <data name="Collection_ScanBrowserHint" xml:space="preserve">
+    <value>Le scan caméra fonctionne dans Chrome ou Edge. Dans Safari ou Firefox, tapez le code de retrait.</value>
+  </data>
   <data name="Collection_StopScan" xml:space="preserve">
     <value>Arrêter la caméra</value>
   </data>

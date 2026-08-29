@@ -32,7 +32,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 |------|--------|-----------------|
 | Hospital list, register, claim | Done | Find or register a hospital. Each hospital gets a short RaphCare reference staff can share. |
 | Opening a hospital | Done | The left menu hides so the hospital tools have more room. Use All hospitals in the top bar to go back. Language and sign out are there too. |
-| Hospital profile and facilities | Done | Edit details; add physical or virtual locations. Headers, alerts, empty states, and cards look the same across hospital screens. |
+| Hospital profile and facilities | Done | Edit details; add physical or virtual locations. The hospital page opens with a large header and a section menu on the side. |
 | Staff invites and roles | Done | Invite people. Set staff, doctor, pharmacist, or lab technician. Admins can still do hospital setup. |
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |

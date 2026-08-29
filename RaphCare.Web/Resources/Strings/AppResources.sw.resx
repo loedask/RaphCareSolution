@@ -2629,6 +2629,9 @@
   <data name="Collection_ScanQr" xml:space="preserve">
     <value>Changanua QR</value>
   </data>
+  <data name="Collection_ScanBrowserHint" xml:space="preserve">
+    <value>Uchanganuzi wa kamera hufanya kazi kwenye Chrome au Edge. Kwenye Safari au Firefox, andika msimbo wa kuchukua.</value>
+  </data>
   <data name="Collection_StopScan" xml:space="preserve">
     <value>Simamisha kamera</value>
   </data>

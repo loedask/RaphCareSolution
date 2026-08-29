@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RaphCare.Application.Common.Interfaces;
@@ -44,11 +45,20 @@ public static class DependencyInjection
         string GetConnectionString(string name) =>
             configuration.GetConnectionString(name) ?? connectionString;
 
+        void ConfigureSqlServer(SqlServerDbContextOptionsBuilder sql)
+        {
+            sql.MigrationsAssembly(MigrationsAssemblyName);
+            // Azure SQL serverless resume after auto-pause often takes tens of seconds (error 40613).
+            sql.EnableRetryOnFailure(
+                maxRetryCount: 8,
+                maxRetryDelay: TimeSpan.FromSeconds(15),
+                errorNumbersToAdd: null);
+        }
+
         services.AddDbContext<IdentityDbContext>((sp, options) =>
         {
             options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
-            options.UseSqlServer(GetConnectionString("IdentityConnection"), sql =>
-                sql.MigrationsAssembly(MigrationsAssemblyName));
+            options.UseSqlServer(GetConnectionString("IdentityConnection"), ConfigureSqlServer);
             options.AddInterceptors(
                 sp.GetRequiredService<AuditableEntityInterceptor>(),
                 sp.GetRequiredService<SoftDeleteInterceptor>(),
@@ -64,8 +74,7 @@ public static class DependencyInjection
         services.AddDbContext<ClinicalDbContext>((sp, options) =>
         {
             options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
-            options.UseSqlServer(GetConnectionString("ClinicalConnection"), sql =>
-                sql.MigrationsAssembly(MigrationsAssemblyName));
+            options.UseSqlServer(GetConnectionString("ClinicalConnection"), ConfigureSqlServer);
             options.AddInterceptors(
                 sp.GetRequiredService<AuditableEntityInterceptor>(),
                 sp.GetRequiredService<SoftDeleteInterceptor>(),
@@ -81,8 +90,7 @@ public static class DependencyInjection
         services.AddDbContext<DeviceDbContext>((sp, options) =>
         {
             options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
-            options.UseSqlServer(GetConnectionString("DeviceConnection"), sql =>
-                sql.MigrationsAssembly(MigrationsAssemblyName));
+            options.UseSqlServer(GetConnectionString("DeviceConnection"), ConfigureSqlServer);
             options.AddInterceptors(
                 sp.GetRequiredService<AuditableEntityInterceptor>(),
                 sp.GetRequiredService<SoftDeleteInterceptor>(),
@@ -98,8 +106,7 @@ public static class DependencyInjection
         services.AddDbContext<InsuranceDbContext>((sp, options) =>
         {
             options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
-            options.UseSqlServer(GetConnectionString("InsuranceConnection"), sql =>
-                sql.MigrationsAssembly(MigrationsAssemblyName));
+            options.UseSqlServer(GetConnectionString("InsuranceConnection"), ConfigureSqlServer);
             options.AddInterceptors(
                 sp.GetRequiredService<AuditableEntityInterceptor>(),
                 sp.GetRequiredService<SoftDeleteInterceptor>(),
@@ -115,8 +122,7 @@ public static class DependencyInjection
         services.AddDbContext<BillingDbContext>((sp, options) =>
         {
             options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
-            options.UseSqlServer(GetConnectionString("BillingConnection"), sql =>
-                sql.MigrationsAssembly(MigrationsAssemblyName));
+            options.UseSqlServer(GetConnectionString("BillingConnection"), ConfigureSqlServer);
             options.AddInterceptors(
                 sp.GetRequiredService<AuditableEntityInterceptor>(),
                 sp.GetRequiredService<SoftDeleteInterceptor>(),
@@ -132,8 +138,7 @@ public static class DependencyInjection
         services.AddDbContext<AIDbContext>((sp, options) =>
         {
             options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
-            options.UseSqlServer(GetConnectionString("AIConnection"), sql =>
-                sql.MigrationsAssembly(MigrationsAssemblyName));
+            options.UseSqlServer(GetConnectionString("AIConnection"), ConfigureSqlServer);
             options.AddInterceptors(
                 sp.GetRequiredService<AuditableEntityInterceptor>(),
                 sp.GetRequiredService<SoftDeleteInterceptor>(),
