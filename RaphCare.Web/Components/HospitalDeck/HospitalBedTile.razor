@@ -1,9 +1,17 @@
 <div class="bed-chip-wrap">
-    <span class="bed-chip @ToneClass" title="@Title">
-        @Label
+    <span class="bed-chip @ToneClass"
+          title="@Title"
+          role="img"
+          aria-label="@(string.IsNullOrWhiteSpace(Title) ? Label : Title)">
+        <span class="bed-glyph" aria-hidden="true">
+            <span class="bed-glyph-pillow"></span>
+            <span class="bed-glyph-mattress">
+                <span class="bed-glyph-label">@Label</span>
+            </span>
+        </span>
         @if (!string.IsNullOrWhiteSpace(Caption))
         {
-            <small>@Caption</small>
+            <small class="bed-chip-caption">@Caption</small>
         }
     </span>
     @ChildContent
