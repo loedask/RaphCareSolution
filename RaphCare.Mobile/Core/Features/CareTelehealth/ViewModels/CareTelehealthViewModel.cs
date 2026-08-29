@@ -57,16 +57,24 @@ public sealed class CareTelehealthViewModel : BaseViewModel
             var response = await _telehealth.GetMySessionsAsync(1, 50, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? T("CareTelehealthLoadFailed");
-                Items.Clear();
-                OnPropertyChanged(nameof(ShowEmpty));
+                var failMessage = response.ErrorMessage ?? T("CareTelehealthLoadFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = failMessage;
+                    Items.Clear();
+                    OnPropertyChanged(nameof(ShowEmpty));
+                });
                 return;
             }
 
-            Items.Clear();
             var culture = CultureInfo.CurrentCulture;
-            foreach (var s in response.Data.Items)
-                Items.Add(MapItem(s, culture));
+            var mapped = response.Data.Items.Select(s => MapItem(s, culture)).ToList();
+            await RunOnMainThreadAsync(() =>
+            {
+                Items.Clear();
+                foreach (var item in mapped)
+                    Items.Add(item);
+            });
         }
         finally
         {

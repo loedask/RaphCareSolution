@@ -138,41 +138,57 @@ public sealed class BillingViewModel : BaseViewModel
 
             if (!plans.IsSuccess || plans.Data is null)
             {
-                ErrorMessage = plans.ErrorMessage ?? T("BillingLoadFailed");
-                ClearBillingLists();
+                var failMessage = plans.ErrorMessage ?? T("BillingLoadFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = failMessage;
+                    ClearBillingLists();
+                });
                 return;
             }
 
             if (!care.IsSuccess || care.Data is null)
             {
-                ErrorMessage = care.ErrorMessage ?? T("BillingLoadFailed");
-                ClearBillingLists();
+                var failMessage = care.ErrorMessage ?? T("BillingLoadFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = failMessage;
+                    ClearBillingLists();
+                });
                 return;
             }
 
-            _carePlan = care.Data;
-            CurrentPlanSummary = Format(T("BillingCurrentPlanFormat"), _carePlan.PlanDisplayName, _carePlan.Status);
-            if (_carePlan.RenewsOn is { } r)
-                CurrentPlanSummary += " · " + Format(T("BillingRenewsFormat"), r.ToLocalTime().ToString("d", CultureInfo.CurrentCulture));
+            var carePlan = care.Data;
+            var summary = Format(T("BillingCurrentPlanFormat"), carePlan.PlanDisplayName, carePlan.Status);
+            if (carePlan.RenewsOn is { } r)
+                summary += " · " + Format(T("BillingRenewsFormat"), r.ToLocalTime().ToString("d", CultureInfo.CurrentCulture));
 
-            PlanOptions.Clear();
-            foreach (var p in plans.Data.Where(x => x.Tier != _carePlan.Tier))
-                PlanOptions.Add(p);
-            OnPropertyChanged(nameof(HasUpgradeChoices));
+            var planOptions = plans.Data.Where(x => x.Tier != carePlan.Tier).ToList();
+            var paymentMethods = methods.IsSuccess && methods.Data is not null
+                ? methods.Data.ToList()
+                : [];
+            var invoices = inv.IsSuccess && inv.Data is not null
+                ? inv.Data.Items.ToList()
+                : [];
 
-            PaymentMethods.Clear();
-            if (methods.IsSuccess && methods.Data is not null)
+            await RunOnMainThreadAsync(() =>
             {
-                foreach (var m in methods.Data)
+                _carePlan = carePlan;
+                CurrentPlanSummary = summary;
+
+                PlanOptions.Clear();
+                foreach (var p in planOptions)
+                    PlanOptions.Add(p);
+                OnPropertyChanged(nameof(HasUpgradeChoices));
+
+                PaymentMethods.Clear();
+                foreach (var m in paymentMethods)
                     PaymentMethods.Add(m);
-            }
 
-            Invoices.Clear();
-            if (inv.IsSuccess && inv.Data is not null)
-            {
-                foreach (var i in inv.Data.Items)
+                Invoices.Clear();
+                foreach (var i in invoices)
                     Invoices.Add(i);
-            }
+            });
         }
         finally
         {

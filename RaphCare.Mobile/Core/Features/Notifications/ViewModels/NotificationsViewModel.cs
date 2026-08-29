@@ -68,14 +68,22 @@ public sealed class NotificationsViewModel : BaseViewModel
             var response = await _notifications.GetMyNotificationsAsync(CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? T("NotificationsLoadFailed");
-                Items.Clear();
+                var failMessage = response.ErrorMessage ?? T("NotificationsLoadFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = failMessage;
+                    Items.Clear();
+                });
                 return;
             }
 
-            Items.Clear();
-            foreach (var row in response.Data)
-                Items.Add(row);
+            var mapped = response.Data.ToList();
+            await RunOnMainThreadAsync(() =>
+            {
+                Items.Clear();
+                foreach (var row in mapped)
+                    Items.Add(row);
+            });
         }
         finally
         {

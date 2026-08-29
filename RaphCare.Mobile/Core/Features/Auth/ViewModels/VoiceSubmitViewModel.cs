@@ -71,7 +71,7 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
         StartRecordingCommand = new Command(async () => await StartRecordingAsync(), () => !IsBusy && !IsRecording && !IsProcessing && !IsSpeaking && !ShowSuccess);
         StopRecordingCommand = new Command(async () => await StopRecordingAndSubmitAsync(), () => !IsBusy && IsRecording);
         HearExampleCommand = new Command(async () => await SpeakExamplePromptAsync(), () => !IsBusy && !IsRecording && !IsProcessing && !IsSpeaking);
-        ContinueHomeCommand = new Command(async () => await SafeShellNavigator.GoToAsync($"//{AppNavigator.AccountCreated}"));
+        ContinueHomeCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.AccountCreated));
         BackCommand = new Command(async () => await GoBackAsync());
     }
 

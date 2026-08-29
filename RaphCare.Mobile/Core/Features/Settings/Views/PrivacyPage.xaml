@@ -16,7 +16,8 @@
                 <VerticalStackLayout Spacing="0">
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="16,14">
                         <Border Grid.Column="0" Style="{StaticResource ProfileMenuIconBorder}" Margin="0,0,12,0">
-                            <Label Text="🔒" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Source="icon_lock.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                             <Label Text="{Binding ChangePasswordTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
@@ -30,7 +31,8 @@
                     <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" Margin="16,0" />
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="16,14">
                         <Border Grid.Column="0" Style="{StaticResource ProfileMenuIconBorder}" Margin="0,0,12,0">
-                            <Label Text="🛡️" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Source="icon_shield.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                             <Label Text="{Binding TwoFactorTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
@@ -48,7 +50,8 @@
                 <VerticalStackLayout Spacing="0">
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="16,14">
                         <Border Grid.Column="0" Style="{StaticResource ProfileMenuIconBorder}" Margin="0,0,12,0">
-                            <Label Text="📤" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Source="icon_upload.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                             <Label Text="{Binding DataSharingTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
@@ -59,7 +62,8 @@
                     <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" Margin="16,0" />
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="16,14">
                         <Border Grid.Column="0" Style="{StaticResource ProfileMenuIconBorder}" Margin="0,0,12,0">
-                            <Label Text="⬇️" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Source="icon_download.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                             <Label Text="{Binding DownloadTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
@@ -73,7 +77,8 @@
                     <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" Margin="16,0" />
                     <Grid ColumnDefinitions="Auto,*" Padding="16,14">
                         <Border Grid.Column="0" Style="{StaticResource ProfileMenuIconBorder}" Margin="0,0,12,0">
-                            <Label Text="🗑️" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Source="icon_trash.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                             <Label Text="{Binding DeleteTitle}" TextColor="{StaticResource DestructiveColor}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
@@ -88,3 +93,4 @@
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
+

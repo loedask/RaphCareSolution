@@ -9,6 +9,9 @@ public sealed class HomeConnectedDeviceItem
     public required string Value { get; init; }
     public required string Unit { get; init; }
     public required string Synced { get; init; }
-    public required string IconGlyph { get; init; }
+
+    /// <summary>MAUI image resource (see <c>MonochromeIconKeys</c>), tinted in XAML.</summary>
+    public required string IconSource { get; init; }
+
     public required ICommand TapCommand { get; init; }
 }

@@ -56,14 +56,22 @@ public sealed class FamilyMembersViewModel : BaseViewModel
             var response = await _family.GetMyFamilyMembersAsync(CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? T("FamilyLoadFailed");
-                Items.Clear();
+                var failMessage = response.ErrorMessage ?? T("FamilyLoadFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = failMessage;
+                    Items.Clear();
+                });
                 return;
             }
 
-            Items.Clear();
-            foreach (var m in response.Data)
-                Items.Add(m);
+            var mapped = response.Data.ToList();
+            await RunOnMainThreadAsync(() =>
+            {
+                Items.Clear();
+                foreach (var m in mapped)
+                    Items.Add(m);
+            });
         }
         finally
         {

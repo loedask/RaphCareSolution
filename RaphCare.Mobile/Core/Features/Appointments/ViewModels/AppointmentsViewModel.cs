@@ -59,16 +59,24 @@ public sealed class AppointmentsViewModel : BaseViewModel
             var response = await _appointments.GetMyAppointmentsAsync(1, 50, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? T("AppointmentsLoadFailed");
-                Items.Clear();
-                NotifyEmptyChanged();
+                var failMessage = response.ErrorMessage ?? T("AppointmentsLoadFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = failMessage;
+                    Items.Clear();
+                    NotifyEmptyChanged();
+                });
                 return;
             }
 
-            Items.Clear();
             var culture = CultureInfo.CurrentCulture;
-            foreach (var a in response.Data.Items)
-                Items.Add(MapItem(a, culture));
+            var mapped = response.Data.Items.Select(a => MapItem(a, culture)).ToList();
+            await RunOnMainThreadAsync(() =>
+            {
+                Items.Clear();
+                foreach (var item in mapped)
+                    Items.Add(item);
+            });
         }
         finally
         {

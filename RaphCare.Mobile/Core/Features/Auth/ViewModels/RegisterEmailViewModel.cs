@@ -368,7 +368,7 @@ public class RegisterEmailViewModel : BaseViewModel
                         SelectedClinic.ReferenceCode);
                 }
 
-                await SafeShellNavigator.GoToAsync($"//{AppNavigator.AccountCreated}").ConfigureAwait(false);
+                await SafeShellNavigator.GoToAsync(AppNavigator.AccountCreated).ConfigureAwait(false);
             }
             else
             {

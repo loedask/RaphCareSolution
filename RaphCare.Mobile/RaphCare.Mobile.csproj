@@ -83,6 +83,7 @@
         <MauiImage Update="Resources\Images\tab_records.svg" BaseSize="24,24" />
         <MauiImage Update="Resources\Images\tab_insurance.svg" BaseSize="24,24" />
         <MauiImage Update="Resources\Images\tab_profile.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\icon_*.svg" BaseSize="24,24" />
 
         <!-- Custom Fonts (OFL license texts live alongside but are not MauiFont items) -->
         <MauiFont Include="Resources\Fonts\*.ttf" />

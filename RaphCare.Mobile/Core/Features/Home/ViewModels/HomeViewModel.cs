@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
+using RaphCare.Mobile.Core.Common.Icons;
 using RaphCare.Mobile.Core.Features.Home.Models;
 using RaphCare.Mobile.Core.Features.Notifications.Services;
 using RaphCare.Mobile.Core.Features.Settings.Services;
@@ -161,7 +162,7 @@ public sealed class HomeViewModel : BaseViewModel
         new HomeQuickActionItem
         {
             Title = T("HomeBookAppointment"),
-            IconGlyph = "📅",
+            IconSource = MonochromeIconKeys.CalendarOnAccent,
             IsAccent = true,
             TapCommand = new Command(async () =>
                 await AppNavigator.GoToFeatureAsync(AppNavigator.BookAppointment, T("HomeBookAppointment"))),
@@ -169,35 +170,35 @@ public sealed class HomeViewModel : BaseViewModel
         new HomeQuickActionItem
         {
             Title = T("HomeHealthRecordsQuick"),
-            IconGlyph = "📋",
+            IconSource = MonochromeIconKeys.Clipboard,
             TapCommand = new Command(async () =>
                 await AppNavigator.GoToFeatureAsync(AppNavigator.Records, T("HomeHubHealthRecords"))),
         },
         new HomeQuickActionItem
         {
             Title = T("HomeInsurancePlanQuick"),
-            IconGlyph = "🛡️",
+            IconSource = MonochromeIconKeys.Shield,
             TapCommand = new Command(async () =>
                 await AppNavigator.GoToFeatureAsync(AppNavigator.Insurance, T("HomeHubInsurance"))),
         },
         new HomeQuickActionItem
         {
             Title = T("HomeConnectedDevicesQuick"),
-            IconGlyph = "⌚",
+            IconSource = MonochromeIconKeys.Watch,
             TapCommand = new Command(async () =>
                 await AppNavigator.GoToFeatureAsync(AppNavigator.Devices, T("HomeHubDevices"))),
         },
         new HomeQuickActionItem
         {
             Title = T("HomeMentalHealthQuick"),
-            IconGlyph = "🧠",
+            IconSource = MonochromeIconKeys.Brain,
             TapCommand = new Command(async () =>
                 await AppNavigator.GoToFeatureAsync(AppNavigator.MentalHealth, T("HomeHubMentalHealth"))),
         },
         new HomeQuickActionItem
         {
             Title = T("HomeAiAssistantQuick"),
-            IconGlyph = "✨",
+            IconSource = MonochromeIconKeys.Sparkles,
             TapCommand = new Command(async () =>
                 await AppNavigator.GoToFeatureAsync(AppNavigator.AiAssistant, T("HomeHubAiAssistant"))),
         },
@@ -209,7 +210,7 @@ public sealed class HomeViewModel : BaseViewModel
             T("HomeHeartRate"),
             "72",
             "bpm",
-            "❤️",
+            MonochromeIconKeys.Heart,
             "+2",
             "↑",
             [40, 55, 35, 60, 50, 70, 45, 65, 55, 72]),
@@ -217,7 +218,7 @@ public sealed class HomeViewModel : BaseViewModel
             T("HomeBloodPressure"),
             "120/80",
             "mmHg",
-            "📈",
+            MonochromeIconKeys.Activity,
             "-1",
             "↓",
             [65, 58, 70, 55, 62, 68, 60, 72, 64, 66]),
@@ -227,7 +228,7 @@ public sealed class HomeViewModel : BaseViewModel
         string label,
         string value,
         string unit,
-        string icon,
+        string iconSource,
         string trendDelta,
         string trendGlyph,
         int[] barPercents)
@@ -250,7 +251,7 @@ public sealed class HomeViewModel : BaseViewModel
             Status = T("HomeNormal"),
             TrendLabel = $"{trendDelta} {T("HomeTrendVsLastWeek")}",
             TrendGlyph = trendGlyph,
-            IconGlyph = icon,
+            IconSource = iconSource,
             Sparkline = sparkline,
         };
     }
@@ -268,7 +269,7 @@ public sealed class HomeViewModel : BaseViewModel
                 Value = "120/80",
                 Unit = "mmHg",
                 Synced = T("HomeSyncedMinutesAgo").Replace("{0}", "2"),
-                IconGlyph = "📈",
+                IconSource = MonochromeIconKeys.Activity,
                 TapCommand = devicesCommand,
             },
             new HomeConnectedDeviceItem
@@ -277,7 +278,7 @@ public sealed class HomeViewModel : BaseViewModel
                 Value = "95",
                 Unit = "mg/dL",
                 Synced = T("HomeSyncedMinutesAgo").Replace("{0}", "15"),
-                IconGlyph = "💧",
+                IconSource = MonochromeIconKeys.Droplet,
                 TapCommand = devicesCommand,
             },
             new HomeConnectedDeviceItem
@@ -286,7 +287,7 @@ public sealed class HomeViewModel : BaseViewModel
                 Value = "72",
                 Unit = "bpm",
                 Synced = T("HomeSyncedLive"),
-                IconGlyph = "❤️",
+                IconSource = MonochromeIconKeys.Heart,
                 TapCommand = devicesCommand,
             },
         ];

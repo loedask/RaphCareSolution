@@ -6,7 +6,10 @@ namespace RaphCare.Mobile.Core.Features.Home.Models;
 public sealed class HomeQuickActionItem
 {
     public required string Title { get; init; }
-    public required string IconGlyph { get; init; }
+
+    /// <summary>MAUI image resource (see <c>MonochromeIconKeys</c>), tinted in XAML.</summary>
+    public required string IconSource { get; init; }
+
     public bool IsAccent { get; init; }
     public required ICommand TapCommand { get; init; }
 }
