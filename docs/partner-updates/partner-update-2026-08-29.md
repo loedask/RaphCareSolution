@@ -99,7 +99,5 @@ The partner status board is updated for this work. Rough rollup:
 6. Open Inpatient and confirm **Demo Inpatient** is in a bed. Check that beds look like top-down tiles on the ward map.
 7. Install the Android APK. Sign in as the demo patient. Check health records for a pickup code and QR. When staff tap Call, the app should say come to the counter.
 
-The full product status board is still the partner checklist.
-
 Thanks,  
 Daskana
