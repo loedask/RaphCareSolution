@@ -3,7 +3,7 @@
 <h1>RaphCare partner update (29 Aug 2026)</h1>
 </div>
 
-Here is what landed today. The short version: hospital admin and inpatient on the web are ready to demo, and staging has a ready-made clinic with logins for staff and the patient app. Overall partner checklist completion is about **77%**.
+Here is what landed today. The short version: hospital admin and inpatient on the web are ready to demo, staging has a ready-made clinic with logins, and there is a patient Android APK that talks to that same staging site. Overall partner checklist completion is about **77%**.
 
 ## 1. Demo clinic and accounts (staging)
 
@@ -65,13 +65,19 @@ What changed or is easy to try now:
 
 Video visit works on Android wiring; iPhone video still needs more setup. Live band vitals and background sync are still partial.
 
-## 4. Links
+## 4. Android app for the patient side
+
+I built a Release APK that talks to the staging API (not localhost). I can send you the install file. Copy it to the phone (USB, Drive, or email). Allow install from that source if Android asks. If an older RaphCare install blocks it, uninstall the old copy first. This build is for sideload testing, not the Play Store.
+
+On the app, sign in as `demo.patient@raphcare.com` with the password above.
+
+## 5. Links
 
 - Admin site: [https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net](https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net)
 - API: [https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net](https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net)
 - Public site: [raphcare.com](https://raphcare.com)
 
-## 5. Partner checklist
+## 6. Partner checklist
 
 The partner status board is updated for this work. Rough rollup:
 
@@ -91,7 +97,7 @@ The partner status board is updated for this work. Rough rollup:
 4. As pharmacist or admin, mark a prescription collected. Try print slip and wall poster if you want.
 5. As lab, find `2DEM2B` and enter a result.
 6. Open Inpatient and confirm **Demo Inpatient** is in a bed. Check that beds look like top-down tiles on the ward map.
-7. On the patient Android app, sign in as the demo patient. Check health records for a pickup code and QR. When staff tap Call, the app should say come to the counter.
+7. Install the Android APK. Sign in as the demo patient. Check health records for a pickup code and QR. When staff tap Call, the app should say come to the counter.
 
 The full product status board is still the partner checklist.
 
