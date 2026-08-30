@@ -67,7 +67,7 @@ Video visit works on Android wiring; iPhone video still needs more setup. Live b
 
 ## 4. Android app for the patient side
 
-I built a Release APK that talks to the staging API (not localhost). I can send you the install file. Copy it to the phone (USB, Drive, or email). Allow install from that source if Android asks. If an older RaphCare install blocks it, uninstall the old copy first. This build is for sideload testing, not the Play Store.
+I built a Release APK that talks to the staging API (not localhost). I have sent you the install file. Copy it to the phone (USB, Drive, or email). Allow install from that source if Android asks. If an older RaphCare install blocks it, uninstall the old copy first. This build is for sideload testing, not the Play Store.
 
 On the app, sign in as `demo.patient@raphcare.com` with the password above.
 
