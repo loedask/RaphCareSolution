@@ -6,6 +6,21 @@
 
 ## High-level summary of changes
 
+Outbound referral board: staff log a referral, then mark it accepted, completed, or cancelled until follow-through is clear.
+
+## Modules modified
+
+- **Domain / Application / Persistence / API / Client / Web:** evolved `Referral`, admin referral board and status APIs, `Referrals.razor` hospital rail page.
+- **docs:** hospital plan checklist (engineering + partner).
+
+---
+
+## Date
+
+2026-09-02
+
+## High-level summary of changes
+
 SafeCare SOS and fall alerts now appear on the hospital overview and the admin home when a hospital is selected, not only on Devices.
 
 ## Modules modified

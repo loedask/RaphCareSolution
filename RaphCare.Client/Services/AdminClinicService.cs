@@ -1663,6 +1663,105 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicReferralBoard>> GetReferralBoardAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/referrals/board", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicReferralBoard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicReferralBoard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ReferralBoardDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicReferralBoard>.Failure("Could not load the referral board.");
+
+            return Response<ClinicReferralBoard>.Success(MapReferralBoard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicReferralBoard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicReferral>> CreateReferralAsync(
+        Guid clinicId,
+        CreateReferralRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/referrals",
+                    new
+                    {
+                        request.PatientId,
+                        request.VisitId,
+                        request.ReferredTo,
+                        request.Reason,
+                        request.Specialty,
+                        request.Notes
+                    },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicReferral>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ReferralDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicReferral>.Failure("Could not log the referral.");
+
+            return Response<ClinicReferral>.Success(MapReferral(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicReferral>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicReferral>> UpdateReferralStatusAsync(
+        Guid clinicId,
+        Guid referralId,
+        string status,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/referrals/{referralId}/status",
+                    new { Status = status },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicReferral>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ReferralDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicReferral>.Failure("Could not update the referral.");
+
+            return Response<ClinicReferral>.Success(MapReferral(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicReferral>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     private static ClinicCasualtyBoard MapCasualtyBoard(CasualtyBoardDto dto) => new()
     {
         ClinicName = dto.ClinicName ?? string.Empty,
@@ -1709,6 +1808,32 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         SurgeonName = dto.SurgeonName,
         Status = dto.Status ?? string.Empty,
         Notes = dto.Notes
+    };
+
+    private static ClinicReferralBoard MapReferralBoard(ReferralBoardDto dto) => new()
+    {
+        ClinicName = dto.ClinicName ?? string.Empty,
+        SentCount = dto.SentCount,
+        AcceptedCount = dto.AcceptedCount,
+        CompletedCount = dto.CompletedCount,
+        Open = dto.Open?.Select(MapReferral).ToList() ?? [],
+        Recent = dto.Recent?.Select(MapReferral).ToList() ?? []
+    };
+
+    private static ClinicReferral MapReferral(ReferralDto dto) => new()
+    {
+        Id = dto.Id,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName ?? string.Empty,
+        VisitId = dto.VisitId,
+        ReferredTo = dto.ReferredTo ?? string.Empty,
+        Reason = dto.Reason,
+        Specialty = dto.Specialty,
+        Notes = dto.Notes,
+        Status = dto.Status ?? string.Empty,
+        ReferredAt = dto.ReferredAt,
+        AcceptedAt = dto.AcceptedAt,
+        CompletedAt = dto.CompletedAt
     };
 
     private async Task<Response<ClinicVisitPrescription>> PostPrescriptionActionAsync(
@@ -3394,6 +3519,32 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string? SurgeonName { get; set; }
         public string? Status { get; set; }
         public string? Notes { get; set; }
+    }
+
+    private sealed class ReferralBoardDto
+    {
+        public string? ClinicName { get; set; }
+        public int SentCount { get; set; }
+        public int AcceptedCount { get; set; }
+        public int CompletedCount { get; set; }
+        public List<ReferralDto>? Open { get; set; }
+        public List<ReferralDto>? Recent { get; set; }
+    }
+
+    private sealed class ReferralDto
+    {
+        public Guid Id { get; set; }
+        public Guid PatientId { get; set; }
+        public string? PatientName { get; set; }
+        public Guid? VisitId { get; set; }
+        public string? ReferredTo { get; set; }
+        public string? Reason { get; set; }
+        public string? Specialty { get; set; }
+        public string? Notes { get; set; }
+        public string? Status { get; set; }
+        public DateTime ReferredAt { get; set; }
+        public DateTime? AcceptedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
     }
 
     private sealed class CollectionBoardDto

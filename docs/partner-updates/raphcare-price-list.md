@@ -15,7 +15,7 @@ List prices below. They exclude tax. South Africa is billed in rand. Congo is bi
 | Plan | South Africa | Congo | What they get |
 |------|-------------:|------:|----------------|
 | Clinic | R 3,490 | $ 89 | One site. Outpatient admin, appointments, visits, patient chart. Up to 8 staff. |
-| Hospital | R 9,990 | $ 249 | Everything in Clinic, plus beds, ward notes, collection counter, waiting screen, discharge invoice, occupancy numbers, casualty queue, theatre list. Nurse job. Up to 25 staff. |
+| Hospital | R 9,990 | $ 249 | Everything in Clinic, plus beds, ward notes, collection counter, waiting screen, discharge invoice, occupancy numbers, casualty queue, theatre list, outbound referral tracking. Nurse job. Up to 25 staff. |
 | Network | From R 19,990 | From $ 499 | Several sites. Quoted. Shared patient index and reporting as we switch that on. |
 
 Extra staff seat: **R 249** or **$ 8** per month. No setup fee if they prepay the year.

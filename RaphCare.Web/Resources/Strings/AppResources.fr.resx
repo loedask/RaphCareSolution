@@ -697,6 +697,9 @@
   <data name="Common_Theatre" xml:space="preserve">
     <value>Bloc opÃ©ratoire</value>
   </data>
+  <data name="Common_Referrals" xml:space="preserve">
+    <value>References</value>
+  </data>
   <data name="Common_Overview" xml:space="preserve">
     <value>AperÃ§u</value>
   </data>
@@ -3090,5 +3093,98 @@
   </data>
   <data name="Theatre_DaySummary" xml:space="preserve">
     <value>{0} planifies, {1} en cours, {2} termines</value>
+  </data>
+  <data name="Referral_PageTitle" xml:space="preserve">
+    <value>Tableau des references</value>
+  </data>
+  <data name="Referral_Title" xml:space="preserve">
+    <value>References</value>
+  </data>
+  <data name="Referral_Lead" xml:space="preserve">
+    <value>References sortantes pour {0}.</value>
+  </data>
+  <data name="Referral_Loading" xml:space="preserve">
+    <value>Chargement du tableau des references…</value>
+  </data>
+  <data name="Referral_SectionsAria" xml:space="preserve">
+    <value>Sections des references</value>
+  </data>
+  <data name="Referral_Eyebrow" xml:space="preserve">
+    <value>Suivi des references</value>
+  </data>
+  <data name="Referral_Sent" xml:space="preserve">
+    <value>Envoyees</value>
+  </data>
+  <data name="Referral_Accepted" xml:space="preserve">
+    <value>Acceptees</value>
+  </data>
+  <data name="Referral_Completed" xml:space="preserve">
+    <value>Terminees</value>
+  </data>
+  <data name="Referral_OpenList" xml:space="preserve">
+    <value>Ouvertes</value>
+  </data>
+  <data name="Referral_Recent" xml:space="preserve">
+    <value>Recentes</value>
+  </data>
+  <data name="Referral_LogReferral" xml:space="preserve">
+    <value>Enregistrer une reference</value>
+  </data>
+  <data name="Referral_ReferredTo" xml:space="preserve">
+    <value>Oriente vers</value>
+  </data>
+  <data name="Referral_ReferredToPlaceholder" xml:space="preserve">
+    <value>Nom de l'hopital ou de la clinique</value>
+  </data>
+  <data name="Referral_Specialty" xml:space="preserve">
+    <value>Specialite</value>
+  </data>
+  <data name="Referral_Reason" xml:space="preserve">
+    <value>Motif</value>
+  </data>
+  <data name="Referral_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Referral_ReferredAt" xml:space="preserve">
+    <value>Date d'envoi</value>
+  </data>
+  <data name="Referral_Accept" xml:space="preserve">
+    <value>Accepter</value>
+  </data>
+  <data name="Referral_Complete" xml:space="preserve">
+    <value>Terminer</value>
+  </data>
+  <data name="Referral_Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Referral_NoOpen" xml:space="preserve">
+    <value>Aucune reference ouverte.</value>
+  </data>
+  <data name="Referral_NoRecent" xml:space="preserve">
+    <value>Aucune reference recente.</value>
+  </data>
+  <data name="Referral_PatientRequired" xml:space="preserve">
+    <value>Selectionnez un patient.</value>
+  </data>
+  <data name="Referral_ReferredToRequired" xml:space="preserve">
+    <value>Indiquez la destination de la reference.</value>
+  </data>
+  <data name="Referral_Created" xml:space="preserve">
+    <value>Reference enregistree.</value>
+  </data>
+  <data name="Referral_StatusUpdated" xml:space="preserve">
+    <value>Statut de la reference mis a jour.</value>
+  </data>
+  <data name="Referral_CouldNotLoad" xml:space="preserve">
+    <value>Impossible de charger le tableau des references.</value>
+  </data>
+  <data name="Referral_CouldNotCreate" xml:space="preserve">
+    <value>Impossible d'enregistrer la reference.</value>
+  </data>
+  <data name="Referral_CouldNotUpdate" xml:space="preserve">
+    <value>Impossible de mettre a jour la reference.</value>
+  </data>
+  <data name="Referral_StatusLine" xml:space="preserve">
+    <value>{0} envoyees, {1} acceptees, {2} terminees</value>
   </data>
 </root>

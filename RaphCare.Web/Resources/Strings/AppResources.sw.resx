@@ -697,6 +697,9 @@
   <data name="Common_Theatre" xml:space="preserve">
     <value>Chumba cha upasuaji</value>
   </data>
+  <data name="Common_Referrals" xml:space="preserve">
+    <value>Rufaa</value>
+  </data>
   <data name="Common_Overview" xml:space="preserve">
     <value>Muhtasari</value>
   </data>
@@ -3090,5 +3093,98 @@
   </data>
   <data name="Theatre_DaySummary" xml:space="preserve">
     <value>{0} zimepangwa, {1} zinaendelea, {2} zimekamilika</value>
+  </data>
+  <data name="Referral_PageTitle" xml:space="preserve">
+    <value>Ubao wa rufaa</value>
+  </data>
+  <data name="Referral_Title" xml:space="preserve">
+    <value>Rufaa</value>
+  </data>
+  <data name="Referral_Lead" xml:space="preserve">
+    <value>Rufaa zinazotumwa kutoka {0}.</value>
+  </data>
+  <data name="Referral_Loading" xml:space="preserve">
+    <value>Inapakia ubao wa rufaa…</value>
+  </data>
+  <data name="Referral_SectionsAria" xml:space="preserve">
+    <value>Sehemu za rufaa</value>
+  </data>
+  <data name="Referral_Eyebrow" xml:space="preserve">
+    <value>Ufuatiliaji wa rufaa</value>
+  </data>
+  <data name="Referral_Sent" xml:space="preserve">
+    <value>Zimetumwa</value>
+  </data>
+  <data name="Referral_Accepted" xml:space="preserve">
+    <value>Zimekubaliwa</value>
+  </data>
+  <data name="Referral_Completed" xml:space="preserve">
+    <value>Zimekamilika</value>
+  </data>
+  <data name="Referral_OpenList" xml:space="preserve">
+    <value>Zilizo wazi</value>
+  </data>
+  <data name="Referral_Recent" xml:space="preserve">
+    <value>Za hivi karibuni</value>
+  </data>
+  <data name="Referral_LogReferral" xml:space="preserve">
+    <value>Rekodi rufaa</value>
+  </data>
+  <data name="Referral_ReferredTo" xml:space="preserve">
+    <value>Imetumwa kwa</value>
+  </data>
+  <data name="Referral_ReferredToPlaceholder" xml:space="preserve">
+    <value>Jina la hospitali au kliniki</value>
+  </data>
+  <data name="Referral_Specialty" xml:space="preserve">
+    <value>Utaalamu</value>
+  </data>
+  <data name="Referral_Reason" xml:space="preserve">
+    <value>Sababu</value>
+  </data>
+  <data name="Referral_Notes" xml:space="preserve">
+    <value>Maelezo</value>
+  </data>
+  <data name="Referral_ReferredAt" xml:space="preserve">
+    <value>Imetumwa wakati</value>
+  </data>
+  <data name="Referral_Accept" xml:space="preserve">
+    <value>Kubali</value>
+  </data>
+  <data name="Referral_Complete" xml:space="preserve">
+    <value>Kamilisha</value>
+  </data>
+  <data name="Referral_Cancel" xml:space="preserve">
+    <value>Ghairi</value>
+  </data>
+  <data name="Referral_NoOpen" xml:space="preserve">
+    <value>Hakuna rufaa zilizo wazi.</value>
+  </data>
+  <data name="Referral_NoRecent" xml:space="preserve">
+    <value>Hakuna rufaa za hivi karibuni.</value>
+  </data>
+  <data name="Referral_PatientRequired" xml:space="preserve">
+    <value>Chagua mgonjwa.</value>
+  </data>
+  <data name="Referral_ReferredToRequired" xml:space="preserve">
+    <value>Andika mahali mgonjwa alipotumwa.</value>
+  </data>
+  <data name="Referral_Created" xml:space="preserve">
+    <value>Rufaa imerekodiwa.</value>
+  </data>
+  <data name="Referral_StatusUpdated" xml:space="preserve">
+    <value>Hali ya rufaa imesasishwa.</value>
+  </data>
+  <data name="Referral_CouldNotLoad" xml:space="preserve">
+    <value>Haikuweza kupakia ubao wa rufaa.</value>
+  </data>
+  <data name="Referral_CouldNotCreate" xml:space="preserve">
+    <value>Haikuweza kurekodi rufaa.</value>
+  </data>
+  <data name="Referral_CouldNotUpdate" xml:space="preserve">
+    <value>Haikuweza kusasisha rufaa.</value>
+  </data>
+  <data name="Referral_StatusLine" xml:space="preserve">
+    <value>{0} zimetumwa, {1} zimekubaliwa, {2} zimekamilika</value>
   </data>
 </root>

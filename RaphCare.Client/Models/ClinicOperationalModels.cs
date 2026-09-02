@@ -674,3 +674,41 @@ public sealed class CreateTheatreCaseRequest
     public string? Notes { get; set; }
 }
 
+public sealed class ClinicReferralBoard
+{
+    public string ClinicName { get; set; } = string.Empty;
+    public int SentCount { get; set; }
+    public int AcceptedCount { get; set; }
+    public int CompletedCount { get; set; }
+    public IReadOnlyList<ClinicReferral> Open { get; set; } =
+        Array.Empty<ClinicReferral>();
+    public IReadOnlyList<ClinicReferral> Recent { get; set; } =
+        Array.Empty<ClinicReferral>();
+}
+
+public sealed class ClinicReferral
+{
+    public Guid Id { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public Guid? VisitId { get; set; }
+    public string ReferredTo { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+    public string? Specialty { get; set; }
+    public string? Notes { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime ReferredAt { get; set; }
+    public DateTime? AcceptedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+}
+
+public sealed class CreateReferralRequest
+{
+    public Guid PatientId { get; set; }
+    public Guid? VisitId { get; set; }
+    public string ReferredTo { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+    public string? Specialty { get; set; }
+    public string? Notes { get; set; }
+}
+

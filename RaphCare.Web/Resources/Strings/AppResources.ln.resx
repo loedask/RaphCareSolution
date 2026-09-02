@@ -697,6 +697,9 @@
   <data name="Common_Theatre" xml:space="preserve">
     <value>Salle ya opÃ©ration</value>
   </data>
+  <data name="Common_Referrals" xml:space="preserve">
+    <value>Ba reference</value>
+  </data>
   <data name="Common_Overview" xml:space="preserve">
     <value>Botali ya mozindo</value>
   </data>
@@ -3090,5 +3093,98 @@
   </data>
   <data name="Theatre_DaySummary" xml:space="preserve">
     <value>{0} scheduled, {1} in progress, {2} completed</value>
+  </data>
+  <data name="Referral_PageTitle" xml:space="preserve">
+    <value>Tableau ya ba reference</value>
+  </data>
+  <data name="Referral_Title" xml:space="preserve">
+    <value>Ba reference</value>
+  </data>
+  <data name="Referral_Lead" xml:space="preserve">
+    <value>Ba reference oyo etindami mpo na {0}.</value>
+  </data>
+  <data name="Referral_Loading" xml:space="preserve">
+    <value>Ezali kocharger tableau ya ba reference…</value>
+  </data>
+  <data name="Referral_SectionsAria" xml:space="preserve">
+    <value>Ba section ya reference</value>
+  </data>
+  <data name="Referral_Eyebrow" xml:space="preserve">
+    <value>Kolanda ba reference</value>
+  </data>
+  <data name="Referral_Sent" xml:space="preserve">
+    <value>Etindami</value>
+  </data>
+  <data name="Referral_Accepted" xml:space="preserve">
+    <value>Endimami</value>
+  </data>
+  <data name="Referral_Completed" xml:space="preserve">
+    <value>Esili</value>
+  </data>
+  <data name="Referral_OpenList" xml:space="preserve">
+    <value>Efungoli</value>
+  </data>
+  <data name="Referral_Recent" xml:space="preserve">
+    <value>Ya sika</value>
+  </data>
+  <data name="Referral_LogReferral" xml:space="preserve">
+    <value>Kokomisa reference</value>
+  </data>
+  <data name="Referral_ReferredTo" xml:space="preserve">
+    <value>Etindami na</value>
+  </data>
+  <data name="Referral_ReferredToPlaceholder" xml:space="preserve">
+    <value>Nkombo ya hopital to clinique</value>
+  </data>
+  <data name="Referral_Specialty" xml:space="preserve">
+    <value>Specialite</value>
+  </data>
+  <data name="Referral_Reason" xml:space="preserve">
+    <value>Ntina</value>
+  </data>
+  <data name="Referral_Notes" xml:space="preserve">
+    <value>Ba note</value>
+  </data>
+  <data name="Referral_ReferredAt" xml:space="preserve">
+    <value>Mokolo ya botindi</value>
+  </data>
+  <data name="Referral_Accept" xml:space="preserve">
+    <value>Ndima</value>
+  </data>
+  <data name="Referral_Complete" xml:space="preserve">
+    <value>Silisa</value>
+  </data>
+  <data name="Referral_Cancel" xml:space="preserve">
+    <value>Longola</value>
+  </data>
+  <data name="Referral_NoOpen" xml:space="preserve">
+    <value>Reference efungoli ezali te.</value>
+  </data>
+  <data name="Referral_NoRecent" xml:space="preserve">
+    <value>Reference ya sika ezali te.</value>
+  </data>
+  <data name="Referral_PatientRequired" xml:space="preserve">
+    <value>Pona mobeli.</value>
+  </data>
+  <data name="Referral_ReferredToRequired" xml:space="preserve">
+    <value>Koma esika oyo etindami.</value>
+  </data>
+  <data name="Referral_Created" xml:space="preserve">
+    <value>Reference ekomami.</value>
+  </data>
+  <data name="Referral_StatusUpdated" xml:space="preserve">
+    <value>Statut ya reference ebongwani.</value>
+  </data>
+  <data name="Referral_CouldNotLoad" xml:space="preserve">
+    <value>Ekoki te kocharger tableau ya ba reference.</value>
+  </data>
+  <data name="Referral_CouldNotCreate" xml:space="preserve">
+    <value>Ekoki te kokomisa reference.</value>
+  </data>
+  <data name="Referral_CouldNotUpdate" xml:space="preserve">
+    <value>Ekoki te kobongola reference.</value>
+  </data>
+  <data name="Referral_StatusLine" xml:space="preserve">
+    <value>{0} etindami, {1} endimami, {2} esili</value>
   </data>
 </root>

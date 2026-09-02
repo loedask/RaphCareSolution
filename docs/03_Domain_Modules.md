@@ -33,12 +33,12 @@
 
 ## Clinical (Appointments & Visits)
 
-- **Purpose:** Appointments, clinical visits, care plans, prescriptions, notes, lab results, inpatient admissions, casualty queue, and theatre cases.
+- **Purpose:** Appointments, clinical visits, care plans, prescriptions, notes, lab results, inpatient admissions, casualty queue, theatre cases, and outbound referrals.
 - **Entities:** Appointment, Visit, CarePlan, Prescription, PrescriptionItem, ClinicalNote, LabResult, Diagnosis, Procedure, SOAPNote, VitalSignRecord, Referral, **InpatientAdmission**, **InpatientObservation**, **CasualtyTicket**, **TheatreCase**, etc.
-- **Application:** Create/Update/Get Appointment; Create/Update/Get Visit; GetVisits (paginated, optional clinicId). Admin clinic commands for ward/room/bed CRUD, admit, transfer, discharge (optional invoice and patient-facing summary), ward observations, casualty tickets, theatre cases, and admission history.
-- **Controllers:** AppointmentsController (CRUD); ClinicalController (visits: GET by id, GET list, POST, PUT); AdminClinicsController inpatient, casualty, and theatre routes under `api/admin/clinics/{id}/…`; public `api/display/collection/{token}` and `api/display/casualty/{token}`.
-- **Persistence:** ClinicalDbContext (Appointments, Visits, CarePlans, VoiceRecordings, Wards, Rooms, Beds, InpatientAdmissions, InpatientObservations, CasualtyTickets, TheatreCases, etc.).
-- **Relationships:** Appointment and Visit reference Patient and Clinic; Visit can have prescriptions, notes, lab results; VoiceRecording references Patient. InpatientAdmission links Patient + Bed until discharge. CasualtyTicket is a walk-in queue row (optional patient). TheatreCase is a scheduled OR case for a patient.
+- **Application:** Create/Update/Get Appointment; Create/Update/Get Visit; GetVisits (paginated, optional clinicId). Admin clinic commands for ward/room/bed CRUD, admit, transfer, discharge (optional invoice and patient-facing summary), ward observations, casualty tickets, theatre cases, outbound referrals, and admission history.
+- **Controllers:** AppointmentsController (CRUD); ClinicalController (visits: GET by id, GET list, POST, PUT); AdminClinicsController inpatient, casualty, theatre, and referral routes under `api/admin/clinics/{id}/…`; public `api/display/collection/{token}` and `api/display/casualty/{token}`.
+- **Persistence:** ClinicalDbContext (Appointments, Visits, CarePlans, VoiceRecordings, Wards, Rooms, Beds, InpatientAdmissions, InpatientObservations, CasualtyTickets, TheatreCases, Referrals, etc.).
+- **Relationships:** Appointment and Visit reference Patient and Clinic; Visit can have prescriptions, notes, lab results; VoiceRecording references Patient. InpatientAdmission links Patient + Bed until discharge. CasualtyTicket is a walk-in queue row (optional patient). TheatreCase is a scheduled OR case for a patient. Referral tracks an outbound send to another facility or clinician (Sent / Accepted / Completed / Cancelled).
 
 ---
 

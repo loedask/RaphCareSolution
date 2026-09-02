@@ -108,3 +108,18 @@ public sealed class UpdateAdminClinicTheatreCaseStatusRequest
     public string Status { get; set; } = string.Empty;
 }
 
+public sealed class CreateAdminClinicReferralRequest
+{
+    public Guid PatientId { get; set; }
+    public Guid? VisitId { get; set; }
+    public string ReferredTo { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+    public string? Specialty { get; set; }
+    public string? Notes { get; set; }
+}
+
+public sealed class UpdateAdminClinicReferralStatusRequest
+{
+    public string Status { get; set; } = string.Empty;
+}
+

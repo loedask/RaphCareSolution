@@ -68,7 +68,10 @@
             <HospitalDeckRailItem Index="10" Icon="theatre" Href="@($"/admin/hospitals/{ClinicId}/theatre")">
                 @AppResources.T("Common_Theatre")
             </HospitalDeckRailItem>
-            <HospitalDeckRailItem Index="11" Icon="staff" IsActive="@(_tab == "staff")" Count="@(_staffLoaded ? _staff.Count : null)" OnSelect='() => SetTab("staff")'>
+            <HospitalDeckRailItem Index="11" Icon="referral" Href="@($"/admin/hospitals/{ClinicId}/referrals")">
+                @AppResources.T("Common_Referrals")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="12" Icon="staff" IsActive="@(_tab == "staff")" Count="@(_staffLoaded ? _staff.Count : null)" OnSelect='() => SetTab("staff")'>
                 @AppResources.T("Common_Staff")
             </HospitalDeckRailItem>
         </HospitalDeckRail>

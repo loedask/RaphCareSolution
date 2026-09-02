@@ -660,6 +660,9 @@
   <data name="Common_Theatre" xml:space="preserve">
     <value>Theatre</value>
   </data>
+  <data name="Common_Referrals" xml:space="preserve">
+    <value>Referrals</value>
+  </data>
   <data name="Common_Overview" xml:space="preserve">
     <value>Overview</value>
   </data>
@@ -3053,5 +3056,98 @@
   </data>
   <data name="Theatre_DaySummary" xml:space="preserve">
     <value>{0} scheduled, {1} in progress, {2} completed</value>
+  </data>
+  <data name="Referral_PageTitle" xml:space="preserve">
+    <value>Referral board</value>
+  </data>
+  <data name="Referral_Title" xml:space="preserve">
+    <value>Referrals</value>
+  </data>
+  <data name="Referral_Lead" xml:space="preserve">
+    <value>Outbound referrals for {0}.</value>
+  </data>
+  <data name="Referral_Loading" xml:space="preserve">
+    <value>Loading the referral board…</value>
+  </data>
+  <data name="Referral_SectionsAria" xml:space="preserve">
+    <value>Referral sections</value>
+  </data>
+  <data name="Referral_Eyebrow" xml:space="preserve">
+    <value>Referral tracking</value>
+  </data>
+  <data name="Referral_Sent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="Referral_Accepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="Referral_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Referral_OpenList" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Referral_Recent" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="Referral_LogReferral" xml:space="preserve">
+    <value>Log referral</value>
+  </data>
+  <data name="Referral_ReferredTo" xml:space="preserve">
+    <value>Referred to</value>
+  </data>
+  <data name="Referral_ReferredToPlaceholder" xml:space="preserve">
+    <value>Hospital or clinic name</value>
+  </data>
+  <data name="Referral_Specialty" xml:space="preserve">
+    <value>Specialty</value>
+  </data>
+  <data name="Referral_Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="Referral_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Referral_ReferredAt" xml:space="preserve">
+    <value>Referred at</value>
+  </data>
+  <data name="Referral_Accept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="Referral_Complete" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="Referral_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Referral_NoOpen" xml:space="preserve">
+    <value>No open referrals.</value>
+  </data>
+  <data name="Referral_NoRecent" xml:space="preserve">
+    <value>No recent referrals.</value>
+  </data>
+  <data name="Referral_PatientRequired" xml:space="preserve">
+    <value>Select a patient.</value>
+  </data>
+  <data name="Referral_ReferredToRequired" xml:space="preserve">
+    <value>Enter where the patient was referred.</value>
+  </data>
+  <data name="Referral_Created" xml:space="preserve">
+    <value>Referral logged.</value>
+  </data>
+  <data name="Referral_StatusUpdated" xml:space="preserve">
+    <value>Referral status updated.</value>
+  </data>
+  <data name="Referral_CouldNotLoad" xml:space="preserve">
+    <value>Could not load the referral board.</value>
+  </data>
+  <data name="Referral_CouldNotCreate" xml:space="preserve">
+    <value>Could not log the referral.</value>
+  </data>
+  <data name="Referral_CouldNotUpdate" xml:space="preserve">
+    <value>Could not update the referral.</value>
+  </data>
+  <data name="Referral_StatusLine" xml:space="preserve">
+    <value>{0} sent, {1} accepted, {2} completed</value>
   </data>
 </root>

@@ -6,7 +6,7 @@ PDF: [`raphcare-feature-checklist-partner.pdf`](raphcare-feature-checklist-partn
 
 Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md)
 
-**Overall completion:** **74%**
+**Overall completion:** **75%**
 
 **How to read this**
 
@@ -139,9 +139,9 @@ What patients see on Android and iPhone.
 
 ---
 
-## 5. Hospital plan extras - 71%
+## 5. Hospital plan extras - 73%
 
-What a site gets when they pay for Hospital, not Clinic. Beds and the collection counter were already in. This step is the rest of the stay: ward notes, a bill at discharge, occupancy numbers, a nurse job, a casualty queue, today's theatre list, and SafeCare alerts on the hospital home.
+What a site gets when they pay for Hospital, not Clinic. Beds and the collection counter were already in. This step is the rest of the stay: ward notes, a bill at discharge, occupancy numbers, a nurse job, a casualty queue, today's theatre list, outbound referrals, and SafeCare alerts on the hospital home.
 
 | Area | Status | What you can do |
 |------|--------|-----------------|
@@ -151,15 +151,15 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 | Occupancy numbers | Done | See occupancy %, how many people came in or left today, and average length of stay. |
 | Nurse job | Done | Invite someone as a nurse. They can write ward notes. They cannot document an outpatient visit. |
 | Lab result on the phone | Partial | A completed lab already shows on that visit's health record. There is no separate "your result is ready" notice yet. |
-| Casualty / triage queue | Done | Add a walk-in with a priority colour. Call a code onto a second waiting screen. The TV shows codes only, not names. |
+| Casualty and triage queue | Done | Add a walk-in with a priority colour. Call a code onto a second waiting screen. The TV shows codes only, not names. |
 | Theatre list | Done | Put today's operations on one board. Start, complete, or cancel a case. |
 | Emergency list on the hospital home | Done | Recent SOS and fall alerts show on the hospital overview and the admin home. Full history stays on Devices. |
-| Follow a referral through | Not started | See whether a sent referral was actually completed. |
+| Follow a referral through | Done | Log an outbound referral, then mark it accepted, completed, or cancelled. |
 | Book a return visit at discharge | Not started | Offer the next appointment before the person leaves. |
 | Who is on today | Not started | A simple roster for the shift. |
 | Draft discharge summary with AI | Not started | Staff still write it. A draft can come later. |
 
-**Bottom line (71%):** the stay has notes, a cash invoice, occupancy, a nurse job, a casualty queue, a theatre list, and SafeCare alerts on the hospital home. Follow-up after discharge is still open.
+**Bottom line (73%):** the stay has notes, a cash invoice, occupancy, a nurse job, a casualty queue, a theatre list, referral tracking, and SafeCare alerts on the hospital home. Return visits, roster, and AI draft are still open.
 
 **Later (not in this %):** staff using the same web admin on a phone. Same note as section 1.
 
@@ -173,8 +173,8 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 59% | iPhone video, push, wearables |
 | 4. Other staff and system | 83% | Demo accounts on Staging |
-| 5. Hospital plan extras | 71% | Emergency alerts on the hospital home; follow-up after discharge open |
-| **Overall** | **74%** | Excludes "not for mobile, clinical, or BLE" rows |
+| 5. Hospital plan extras | 73% | Referral tracking in; return visit and roster open |
+| **Overall** | **75%** | Excludes "not for mobile, clinical, or BLE" rows |
 
 ---
 
@@ -183,7 +183,7 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 1. **Admin web:** sign in as `demo.admin@raphcare.com` (password `RaphCareDemo!2026` unless you changed `Demo:Password`). Open **RaphCare Demo Clinic**.
 2. **Admin web:** the left menu should hide on a hospital. Use All hospitals in the top bar to return to the list.
 3. **Admin web:** on that hospital, open Inpatient. Add a ward, room, or bed if needed, admit someone. Add a ward note. Discharge them with a summary and a nightly rate. Confirm occupancy numbers on the hospital dashboard.
-4. **Admin web:** open Casualty. Add a walk-in (with or without a patient). Call the code and open the casualty waiting screen on another tab. Open Theatre and add today's case, then start and complete it.
+4. **Admin web:** open Casualty. Add a walk-in (with or without a patient). Call the code and open the casualty waiting screen on another tab. Open Theatre and add today's case, then start and complete it. Open Referrals, log a referral, then accept or complete it.
 5. **Admin web:** on the hospital overview (and the admin home when that hospital is selected), confirm recent SOS or fall alerts show if any exist. Open Devices for the full list.
 6. **Admin web:** open a patient chart. Use the section menu for overview, clinical, coverage, devices, and care.
 7. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).

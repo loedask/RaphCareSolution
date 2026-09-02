@@ -27,11 +27,14 @@ using RaphCare.Application.Features.Organization.Commands.CallAdminClinicCasualt
 using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicCasualtyTicket;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicCasualtyTicket;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicTheatreCase;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicReferral;
 using RaphCare.Application.Features.Organization.Commands.EnsureCasualtyDisplayToken;
 using RaphCare.Application.Features.Organization.Commands.EnsureCollectionDisplayToken;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicTheatreCaseStatus;
+using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicReferralStatus;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicCasualtyBoard;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicTheatreBoard;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicReferralBoard;
 using RaphCare.Application.Features.Organization.Commands.SetAdminClinicProviderActive;
 using RaphCare.Application.Features.Organization.Commands.StartAdminClinicTeleSession;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicAppointment;
@@ -1162,6 +1165,65 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             {
                 ClinicId = id,
                 CaseId = caseId,
+                Status = body.Status
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Outbound referral board for this hospital.</summary>
+    [HttpGet("{id:guid}/referrals/board", Name = "GetAdminClinicReferralBoard")]
+    [ProducesResponseType(typeof(AdminClinicReferralBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetReferralBoard(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicReferralBoardQuery { ClinicId = id },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Log an outbound referral.</summary>
+    [HttpPost("{id:guid}/referrals", Name = "CreateAdminClinicReferral")]
+    [ProducesResponseType(typeof(AdminClinicReferralDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateReferral(
+        Guid id,
+        [FromBody] CreateAdminClinicReferralRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new CreateAdminClinicReferralRequest();
+        var result = await mediator.Send(
+            new CreateAdminClinicReferralCommand
+            {
+                ClinicId = id,
+                PatientId = body.PatientId,
+                VisitId = body.VisitId,
+                ReferredTo = body.ReferredTo,
+                Reason = body.Reason,
+                Specialty = body.Specialty,
+                Notes = body.Notes
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Update referral status (accept, complete, or cancel).</summary>
+    [HttpPost("{id:guid}/referrals/{referralId:guid}/status", Name = "UpdateAdminClinicReferralStatus")]
+    [ProducesResponseType(typeof(AdminClinicReferralDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateReferralStatus(
+        Guid id,
+        Guid referralId,
+        [FromBody] UpdateAdminClinicReferralStatusRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new UpdateAdminClinicReferralStatusRequest();
+        var result = await mediator.Send(
+            new UpdateAdminClinicReferralStatusCommand
+            {
+                ClinicId = id,
+                ReferralId = referralId,
                 Status = body.Status
             },
             cancellationToken);

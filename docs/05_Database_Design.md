@@ -7,7 +7,7 @@ Six bounded-context DbContexts live in RaphCare.Persistence. Each can use a dedi
 | DbContext | Connection string key | DbSets |
 |-----------|------------------------|--------|
 | IdentityDbContext | IdentityConnection (or Default) | Users (ApplicationUser), Roles, Permissions, UserRoles, RolePermissions, OtpCodes |
-| ClinicalDbContext | ClinicalConnection (or Default) | Patients, Clinics, Appointments, Visits, CarePlans, TeleSessions, Messages, VoiceRecordings, Wards, Rooms, Beds, InpatientAdmissions, InpatientObservations, CasualtyTickets, TheatreCases, MoodLogs, MentalHealthAssessments, PatientPushDevices, … |
+| ClinicalDbContext | ClinicalConnection (or Default) | Patients, Clinics, Appointments, Visits, CarePlans, TeleSessions, Messages, VoiceRecordings, Wards, Rooms, Beds, InpatientAdmissions, InpatientObservations, CasualtyTickets, TheatreCases, Referrals, MoodLogs, MentalHealthAssessments, PatientPushDevices, … |
 | DeviceDbContext | DeviceConnection (or Default) | Devices, DeviceTypes, DeviceManufacturers, DeviceFirmwares, DeviceAssignments |
 | InsuranceDbContext | InsuranceConnection (or Default) | InsurancePlans, InsuranceProfiles |
 | BillingDbContext | BillingConnection (or Default) | Invoices, InvoiceLineItems |
