@@ -174,7 +174,8 @@ public sealed partial class AIService : IAIService
     private static string ClinicalDraftSystemPrompt =>
         """
         You draft short hospital discharge summaries for clinicians. Write in plain clinical English.
-        Use only the stay facts provided. Do not invent diagnoses, medicines, or follow-up plans.
+        The input is intentionally limited: admission reason and ward vitals only (no free-text ward notes).
+        Use only those facts. Do not invent diagnoses, medicines, or follow-up plans.
         Keep it under 250 words. Use short paragraphs. Do not address the patient directly.
         This is a staff draft only; a clinician will edit it before saving.
         """;

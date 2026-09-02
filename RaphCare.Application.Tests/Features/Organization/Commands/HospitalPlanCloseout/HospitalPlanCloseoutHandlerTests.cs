@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
@@ -15,9 +16,16 @@ namespace RaphCare.Application.Tests.Features.Organization.Commands.HospitalPlan
 public sealed class DraftAdminClinicDischargeSummaryHandlerTests
 {
     [Fact]
-    public async Task HandleBuildsPromptFromReasonAndWardNotes()
+    public async Task HandleBuildsRedactedPromptFromReasonAndVitalsWithoutWardNoteText()
     {
         var clinicId = Guid.Parse("11111111-1111-1111-1111-111111111401");
+        var clinic = new Clinic
+        {
+            Name = "Demo",
+            AllowAiDischargeDraft = true
+        };
+        EntityId.SetId(clinic, clinicId);
+
         var admission = new InpatientAdmission
         {
             ClinicId = clinicId,
@@ -25,13 +33,14 @@ public sealed class DraftAdminClinicDischargeSummaryHandlerTests
             BedId = Guid.NewGuid(),
             AdmittedAt = new DateTime(2026, 9, 1, 8, 0, 0, DateTimeKind.Utc),
             Status = "Admitted",
-            Reason = "Malaria"
+            Reason = "Malaria",
+            Notes = "Patient named Jean lives at 12 Main Street"
         };
         var note = new InpatientObservation
         {
             AdmissionId = admission.Id,
             RecordedAt = admission.AdmittedAt.AddHours(6),
-            Note = "Fever down. Drinking fluids.",
+            Note = "Fever down. Drinking fluids. Call family at +243…",
             HeartRate = 88
         };
         var ai = new CapturingAiService("Draft: malaria treated. Continue tablets.");
@@ -39,9 +48,11 @@ public sealed class DraftAdminClinicDischargeSummaryHandlerTests
             new FakeCurrentUser(Guid.NewGuid()),
             new FakeMembership(true),
             new FakeRoles([RaphCareRoles.Administrator]),
+            new FakeRepository<Clinic>([clinic]),
             new FakeRepository<InpatientAdmission>([admission]),
             new FakeRepository<InpatientObservation>([note]),
-            ai);
+            ai,
+            NullLogger<DraftAdminClinicDischargeSummaryHandler>.Instance);
 
         var result = await handler.Handle(
             new DraftAdminClinicDischargeSummaryCommand
@@ -53,8 +64,54 @@ public sealed class DraftAdminClinicDischargeSummaryHandlerTests
 
         Assert.Equal("Draft: malaria treated. Continue tablets.", result!.DraftText);
         Assert.Contains("Malaria", ai.LastInput, StringComparison.Ordinal);
-        Assert.Contains("Fever down", ai.LastInput, StringComparison.Ordinal);
         Assert.Contains("HR 88", ai.LastInput, StringComparison.Ordinal);
+        Assert.DoesNotContain("Fever down", ai.LastInput, StringComparison.Ordinal);
+        Assert.DoesNotContain("Jean", ai.LastInput, StringComparison.Ordinal);
+        Assert.DoesNotContain("Main Street", ai.LastInput, StringComparison.Ordinal);
+        Assert.DoesNotContain("+243", ai.LastInput, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task HandleRejectsWhenHospitalDisablesAiDischargeDraft()
+    {
+        var clinicId = Guid.Parse("11111111-1111-1111-1111-111111111403");
+        var clinic = new Clinic
+        {
+            Name = "Locked",
+            AllowAiDischargeDraft = false
+        };
+        EntityId.SetId(clinic, clinicId);
+
+        var admission = new InpatientAdmission
+        {
+            ClinicId = clinicId,
+            PatientId = Guid.NewGuid(),
+            BedId = Guid.NewGuid(),
+            AdmittedAt = DateTime.UtcNow.AddDays(-1),
+            Status = "Admitted",
+            Reason = "Malaria"
+        };
+
+        var handler = new DraftAdminClinicDischargeSummaryHandler(
+            new FakeCurrentUser(Guid.NewGuid()),
+            new FakeMembership(true),
+            new FakeRoles([RaphCareRoles.Administrator]),
+            new FakeRepository<Clinic>([clinic]),
+            new FakeRepository<InpatientAdmission>([admission]),
+            new FakeRepository<InpatientObservation>(),
+            new CapturingAiService("should-not-run"),
+            NullLogger<DraftAdminClinicDischargeSummaryHandler>.Instance);
+
+        var ex = await Assert.ThrowsAsync<BusinessRuleException>(() =>
+            handler.Handle(
+                new DraftAdminClinicDischargeSummaryCommand
+                {
+                    ClinicId = clinicId,
+                    AdmissionId = admission.Id
+                },
+                CancellationToken.None));
+
+        Assert.Contains("turned off", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -64,9 +121,11 @@ public sealed class DraftAdminClinicDischargeSummaryHandlerTests
             new FakeCurrentUser(Guid.NewGuid()),
             new FakeMembership(true),
             new FakeRoles([RaphCareRoles.Nurse]),
+            new FakeRepository<Clinic>(),
             new FakeRepository<InpatientAdmission>(),
             new FakeRepository<InpatientObservation>(),
-            new CapturingAiService("x"));
+            new CapturingAiService("x"),
+            NullLogger<DraftAdminClinicDischargeSummaryHandler>.Instance);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() =>
             handler.Handle(

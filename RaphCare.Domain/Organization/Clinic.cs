@@ -24,6 +24,13 @@ public class Clinic : AggregateRoot, ISoftDelete
     public string Country { get; set; } = string.Empty;
     public string TimeZone { get; set; } = string.Empty;
     public bool IsActive { get; set; }
+
+    /// <summary>
+    /// When true, hospital administrators may request an AI draft of a discharge summary.
+    /// Clinical text is sent only to the configured Azure OpenAI resource.
+    /// </summary>
+    public bool AllowAiDischargeDraft { get; set; } = true;
+
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
     public Guid? RegisteredByApplicationUserId { get; set; }

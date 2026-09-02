@@ -153,7 +153,7 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 | Follow a referral through | Done | Log an outbound referral, then mark it accepted, completed, or cancelled. |
 | Book a return visit at discharge | Done | On discharge, optionally pick a clinician and time for the next visit before the person leaves. |
 | Who is on today | Done | Pick a day and see who is on Morning, Afternoon, or Night. Add or remove staff for a shift. |
-| Draft discharge summary with AI | Done | On discharge, tap Draft with AI. Staff edit the text, then save. Needs cloud AI keys in the environment; otherwise the button explains that drafting is unavailable. |
+| Draft discharge summary with AI | Done | On discharge, tap Draft with AI when the hospital allows it (toggle under Organization details). Staff edit the text, then save. The draft uses stay reason and ward vitals only, not free-text ward notes. Needs cloud AI keys on the server; otherwise drafting is unavailable. |
 
 **Bottom line (100%):** Hospital plan stay extras for this board are in. Ward notes, cash invoice, occupancy, nurse job, lab result-ready notice, casualty, theatre, referrals, SafeCare on the hospital home, return visit at discharge, who-is-on-today, and AI discharge draft.
 

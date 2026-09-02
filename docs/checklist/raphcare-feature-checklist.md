@@ -283,7 +283,7 @@ Work that makes the Hospital plan more than beds plus a waiting screen. Clinic s
 - [x] Outbound referral tracking so a sent referral is followed to completion
 - [x] Book a return visit at discharge (optional clinician, time, and reason on the discharge form)
 - [x] Who is on today (simple roster): Morning / Afternoon / Night board for a chosen day
-- [x] AI draft of the discharge summary (Hospital include; staff edits before save; uses Azure OpenAI when configured)
+- [x] AI draft of the discharge summary (Hospital include; staff edits before save; Azure OpenAI when configured; hospital toggle; redacted prompt; audit without prompt body)
 
 Shipped on API, Client, and Web admin. Discharged stays also show in the patient Health records list. Casualty, theatre, referral, and roster boards are on the hospital rail. SafeCare SOS and fall alerts also sit on the hospital overview and admin home. Discharge can book the next outpatient visit and draft the summary with AI.
 

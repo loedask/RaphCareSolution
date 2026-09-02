@@ -763,11 +763,14 @@
   <data name="Common_HospitalIsActive" xml:space="preserve">
     <value>Lopitalo ezali na mosala</value>
   </data>
+  <data name="Common_AllowAiDischargeDraft" xml:space="preserve">
+    <value>Ndima brouillon ya sortie na IA</value>
+  </data>
   <data name="Common_OrganizationDetails" xml:space="preserve">
     <value>Makambo ya mikemike ya ebongiseli</value>
   </data>
   <data name="Common_UpdateHospitalLead" xml:space="preserve">
-    <value>Bobongola nkombo ya lopitalo na yo, mboka, mpe fuseau horaire.</value>
+    <value>Bobongola nkombo, mboka, fuseau horaire, mpe soki IA ekoki kosala brouillon ya sortie.</value>
   </data>
   <data name="Common_HospitalProfileEyebrow" xml:space="preserve">
     <value>Profil ya lopitalo</value>
@@ -2844,6 +2847,9 @@
   </data>
   <data name="Inpatient_CouldNotDraftSummary" xml:space="preserve">
     <value>Ekoki te kobongisa resume ya kobima.</value>
+  </data>
+  <data name="Inpatient_AiDraftDisabled" xml:space="preserve">
+    <value>Brouillon ya IA ezali te mpo na lopitalo oyo. Fungola yango na makambo ya ebongiseli, to koma resume na maboko.</value>
   </data>
   <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
     <value>Ntalo ya butu</value>

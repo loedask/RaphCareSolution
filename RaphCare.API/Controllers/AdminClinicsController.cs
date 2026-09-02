@@ -133,7 +133,8 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
                 Name = body.Name,
                 Country = body.Country,
                 TimeZone = body.TimeZone,
-                IsActive = body.IsActive
+                IsActive = body.IsActive,
+                AllowAiDischargeDraft = body.AllowAiDischargeDraft
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
