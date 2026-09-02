@@ -20,7 +20,9 @@ if (-not $EnvironmentJsonPath) {
 }
 
 az account show -o none 2>$null
-if ($LASTEXITCODE -ne 0) { throw "Azure CLI is not logged in. Run: az login" }
+if ($LASTEXITCODE -ne 0) {
+    throw "Azure CLI is not logged in. Run: az login (interactive browser). See docs/Mobile_Android_Test_Hosting.md Phase 1. Do not use --tenant with --scope and --use-device-code."
+}
 
 if (-not $ApiBaseUrl -and (Test-Path $EnvironmentJsonPath)) {
     $ApiBaseUrl = (Get-Content $EnvironmentJsonPath -Raw | ConvertFrom-Json).apiBaseUrl

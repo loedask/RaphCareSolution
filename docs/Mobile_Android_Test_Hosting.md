@@ -108,10 +108,44 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Test-RaphCareMailbox
 
 ## Phase 1: Azure login and environment
 
+### Sign in (do this correctly)
+
+Prefer interactive browser login. It works with MFA and Entra security defaults:
+
 ```powershell
 az login
-# or: az login --use-device-code
+az account show
+az account list -o table
+```
 
+You need a listed **subscription**. If the list is empty, that Microsoft account is not on the Azure subscription yet (grant Owner or Contributor in the portal), or security defaults blocked the tenant.
+
+**Avoid this pattern** (it caused real failures on 2 Sep 2026):
+
+```powershell
+# Do not use for normal publish:
+az login --tenant '<tenant-id>' --scope 'https://management.core.windows.net//.default' --use-device-code
+```
+
+That often ends as:
+
+| Symptom | Likely cause |
+|---------|----------------|
+| Sign-in succeeded but **You don't have access to this** | Forced tenant + management scope on device code; wrong consent path |
+| `AADSTS530035` (security defaults) | Tenant blocks the auth method until MFA / security defaults are sorted |
+| `AADSTS50132` on `az webapp deploy` while `az account show` still works | Stale CLI session; run `az login` again (browser), then republish |
+| `AADSTS70020` / device code expired | Code timed out; start a new `az login` |
+| No subscriptions found for `raphcare@yindula.com` | Mailbox can authenticate but has no subscription role |
+
+Device code (`az login --use-device-code`) is a fallback only when a browser cannot open. Prefer plain `az login` first. Agents cannot complete Microsoft MFA inside Cursor; the human must finish the browser prompt.
+
+Ops account for this environment is often **`raphcare@yindula.com`**. Use the account that owns resource group **`raphcare_group`** / App Services **`raphcare-api`** and **`raphcare`**.
+
+Cursor agents: see **`.cursor/rules/azure-cli-signin.mdc`**.
+
+### Provision environment
+
+```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/New-RaphCareAzureTestEnvironment.ps1 `
   -Location southafricanorth `
   -SqlAdminUser raphcaresqladmin `
@@ -126,9 +160,9 @@ The script writes `artifacts/azure-test-environment.json` (gitignored) with host
 
 In the Entra tenant attached to this Azure subscription:
 
-1. **RaphCare API** — Application ID URI `api://raphcare-api`, scope `access_as_user`, app roles `Administrator`, `Clinician`, `Patient`.
-2. **RaphCare Mobile** — public client, redirect `msal{MOBILE_CLIENT_ID}://auth`, API permission to that scope, allow public client flows.
-3. **RaphCare Web** (SPA) — redirect to the static website origin from the environment JSON.
+1. **RaphCare API**: Application ID URI `api://raphcare-api`, scope `access_as_user`, app roles `Administrator`, `Clinician`, `Patient`.
+2. **RaphCare Mobile**: public client, redirect `msal{MOBILE_CLIENT_ID}://auth`, API permission to that scope, allow public client flows.
+3. **RaphCare Web** (SPA): redirect to the static website origin from the environment JSON.
 4. Assign test users to app roles.
 
 Then:
