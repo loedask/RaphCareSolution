@@ -8,10 +8,11 @@ using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Infrastructure.Services;
 
-/// <summary>AI integration: patient assistant uses Azure OpenAI when configured; other entry points remain placeholders.</summary>
+/// <summary>AI integration: Azure OpenAI when configured; safe placeholders otherwise.</summary>
 public sealed partial class AIService : IAIService
 {
     private const int MaxUserMessageLength = 8000;
+    private const int MaxClinicalDraftLength = 4000;
 
     private readonly ILogger<AIService> _logger;
     private readonly IOptionsMonitor<PatientAssistantAiOptions> _patientAssistantOptions;
@@ -28,10 +29,32 @@ public sealed partial class AIService : IAIService
     }
 
     /// <inheritdoc />
-    public Task<string> GenerateSummaryAsync(string input, CancellationToken cancellationToken = default)
+    public async Task<string> GenerateSummaryAsync(string input, CancellationToken cancellationToken = default)
     {
-        LogGenerateSummaryPlaceholder(input?.Length ?? 0);
-        return Task.FromResult("[Placeholder summary]");
+        var trimmed = (input ?? string.Empty).Trim();
+        if (trimmed.Length > MaxUserMessageLength)
+            trimmed = trimmed[..MaxUserMessageLength];
+
+        var opts = _patientAssistantOptions.CurrentValue;
+        if (!opts.IsAzureOpenAiConfigured)
+        {
+            LogGenerateSummaryPlaceholder(trimmed.Length);
+            return ClinicalDraftUnavailableMessage;
+        }
+
+        var reply = await CompleteChatAsync(
+                ClinicalDraftSystemPrompt,
+                trimmed,
+                maxTokens: Math.Clamp(opts.MaxCompletionTokens, 64, 2048),
+                temperature: 0.3,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (string.IsNullOrWhiteSpace(reply))
+            return ClinicalDraftUnavailableMessage;
+
+        reply = reply.Trim();
+        return reply.Length <= MaxClinicalDraftLength ? reply : reply[..MaxClinicalDraftLength];
     }
 
     /// <inheritdoc />
@@ -48,68 +71,19 @@ public sealed partial class AIService : IAIService
             return opts.PlaceholderReply;
         }
 
-        try
-        {
-            var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Remove("api-key");
-            client.DefaultRequestHeaders.TryAddWithoutValidation("api-key", opts.AzureOpenAiApiKey);
+        var systemPrompt = string.IsNullOrWhiteSpace(opts.SystemPrompt)
+            ? DefaultAssistantSystemPrompt
+            : opts.SystemPrompt.Trim();
 
-            var endpoint = opts.AzureOpenAiEndpoint!.TrimEnd('/');
-            var deployment = Uri.EscapeDataString(opts.AzureOpenAiDeployment!);
-            var apiVersion = Uri.EscapeDataString(opts.AzureOpenAiApiVersion);
-            var url =
-                $"{endpoint}/openai/deployments/{deployment}/chat/completions?api-version={apiVersion}";
+        var reply = await CompleteChatAsync(
+                systemPrompt,
+                trimmed,
+                maxTokens: Math.Clamp(opts.MaxCompletionTokens, 64, 4096),
+                temperature: Math.Clamp(opts.Temperature, 0, 2),
+                cancellationToken)
+            .ConfigureAwait(false);
 
-            var systemPrompt = string.IsNullOrWhiteSpace(opts.SystemPrompt)
-                ? DefaultAssistantSystemPrompt
-                : opts.SystemPrompt.Trim();
-
-            var requestBody = new AzureOpenAiChatRequest
-            {
-                Messages =
-                [
-                    new AzureOpenAiChatMessage { Role = "system", Content = systemPrompt },
-                    new AzureOpenAiChatMessage { Role = "user", Content = trimmed },
-                ],
-                MaxCompletionTokens = Math.Clamp(opts.MaxCompletionTokens, 64, 4096),
-                Temperature = Math.Clamp(opts.Temperature, 0, 2),
-            };
-
-            var json = JsonSerializer.Serialize(requestBody, AzureJsonOptions);
-            using var content = new StringContent(json, Encoding.UTF8, "application/json");
-            using var response = await client.PostAsync(new Uri(url), content, cancellationToken).ConfigureAwait(false);
-            var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                LogAzureOpenAiChatFailed((int)response.StatusCode, responseText.Length);
-                return opts.PlaceholderReply;
-            }
-
-            using var doc = JsonDocument.Parse(responseText);
-            var reply = doc.RootElement
-                .GetProperty("choices")[0]
-                .GetProperty("message")
-                .GetProperty("content")
-                .GetString();
-
-            if (string.IsNullOrWhiteSpace(reply))
-            {
-                LogAzureOpenAiEmptyReply();
-                return opts.PlaceholderReply;
-            }
-
-            return reply.Trim();
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            LogAzureOpenAiCallFailed(ex);
-            return _patientAssistantOptions.CurrentValue.PlaceholderReply;
-        }
+        return string.IsNullOrWhiteSpace(reply) ? opts.PlaceholderReply : reply.Trim();
     }
 
     /// <inheritdoc />
@@ -125,6 +99,85 @@ public sealed partial class AIService : IAIService
         LogCalculateRiskScorePlaceholder();
         return Task.FromResult(0m);
     }
+
+    private async Task<string?> CompleteChatAsync(
+        string systemPrompt,
+        string userContent,
+        int maxTokens,
+        double temperature,
+        CancellationToken cancellationToken)
+    {
+        var opts = _patientAssistantOptions.CurrentValue;
+        try
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Remove("api-key");
+            client.DefaultRequestHeaders.TryAddWithoutValidation("api-key", opts.AzureOpenAiApiKey);
+
+            var endpoint = opts.AzureOpenAiEndpoint!.TrimEnd('/');
+            var deployment = Uri.EscapeDataString(opts.AzureOpenAiDeployment!);
+            var apiVersion = Uri.EscapeDataString(opts.AzureOpenAiApiVersion);
+            var url =
+                $"{endpoint}/openai/deployments/{deployment}/chat/completions?api-version={apiVersion}";
+
+            var requestBody = new AzureOpenAiChatRequest
+            {
+                Messages =
+                [
+                    new AzureOpenAiChatMessage { Role = "system", Content = systemPrompt },
+                    new AzureOpenAiChatMessage { Role = "user", Content = userContent },
+                ],
+                MaxCompletionTokens = maxTokens,
+                Temperature = temperature,
+            };
+
+            var json = JsonSerializer.Serialize(requestBody, AzureJsonOptions);
+            using var content = new StringContent(json, Encoding.UTF8, "application/json");
+            using var response = await client.PostAsync(new Uri(url), content, cancellationToken).ConfigureAwait(false);
+            var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                LogAzureOpenAiChatFailed((int)response.StatusCode, responseText.Length);
+                return null;
+            }
+
+            using var doc = JsonDocument.Parse(responseText);
+            var reply = doc.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString();
+
+            if (string.IsNullOrWhiteSpace(reply))
+            {
+                LogAzureOpenAiEmptyReply();
+                return null;
+            }
+
+            return reply;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LogAzureOpenAiCallFailed(ex);
+            return null;
+        }
+    }
+
+    private static string ClinicalDraftUnavailableMessage =>
+        "AI drafting is not connected on this server yet. Write the discharge summary from the ward notes and stay reason.";
+
+    private static string ClinicalDraftSystemPrompt =>
+        """
+        You draft short hospital discharge summaries for clinicians. Write in plain clinical English.
+        Use only the stay facts provided. Do not invent diagnoses, medicines, or follow-up plans.
+        Keep it under 250 words. Use short paragraphs. Do not address the patient directly.
+        This is a staff draft only; a clinician will edit it before saving.
+        """;
 
     private static string DefaultAssistantSystemPrompt =>
         """

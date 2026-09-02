@@ -654,6 +654,18 @@
   <data name="Common_Inpatient" xml:space="preserve">
     <value>Inpatient</value>
   </data>
+  <data name="Common_Casualty" xml:space="preserve">
+    <value>Casualty</value>
+  </data>
+  <data name="Common_Theatre" xml:space="preserve">
+    <value>Theatre</value>
+  </data>
+  <data name="Common_Referrals" xml:space="preserve">
+    <value>Referrals</value>
+  </data>
+  <data name="Common_Roster" xml:space="preserve">
+    <value>Roster</value>
+  </data>
   <data name="Common_Overview" xml:space="preserve">
     <value>Overview</value>
   </data>
@@ -830,6 +842,15 @@
   </data>
   <data name="Common_NoEmergencyEventsPatient" xml:space="preserve">
     <value>No emergency events recorded for this patient at this hospital.</value>
+  </data>
+  <data name="Common_EmergencyHomeLead" xml:space="preserve">
+    <value>Recent SOS and fall alerts for this hospital. Full history is on Devices.</value>
+  </data>
+  <data name="Common_NoRecentEmergencyEvents" xml:space="preserve">
+    <value>No recent SOS or fall alerts.</value>
+  </data>
+  <data name="Common_Device" xml:space="preserve">
+    <value>Device</value>
   </data>
   <data name="Common_TeamEyebrow" xml:space="preserve">
     <value>Team</value>
@@ -2717,5 +2738,518 @@
   </data>
   <data name="StaffJob_Administrator" xml:space="preserve">
     <value>Administrator</value>
+  </data>
+  <data name="StaffJob_Nurse" xml:space="preserve">
+    <value>Nurse</value>
+  </data>
+  <data name="Inpatient_Occupancy" xml:space="preserve">
+    <value>Occupancy</value>
+  </data>
+  <data name="Inpatient_AdmissionsToday" xml:space="preserve">
+    <value>Admitted today</value>
+  </data>
+  <data name="Inpatient_DischargesToday" xml:space="preserve">
+    <value>Discharged today</value>
+  </data>
+  <data name="Inpatient_AverageStay" xml:space="preserve">
+    <value>Average stay</value>
+  </data>
+  <data name="Inpatient_AverageStayValue" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="Inpatient_AddWardNote" xml:space="preserve">
+    <value>Ward note</value>
+  </data>
+  <data name="Inpatient_WardNoteTitle" xml:space="preserve">
+    <value>Ward notes</value>
+  </data>
+  <data name="Inpatient_WardNoteLabel" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Inpatient_WardNotePlaceholder" xml:space="preserve">
+    <value>What you observed on the ward</value>
+  </data>
+  <data name="Inpatient_WardNoteRequired" xml:space="preserve">
+    <value>Write a short note before you save.</value>
+  </data>
+  <data name="Inpatient_NoWardNotes" xml:space="preserve">
+    <value>No ward notes yet for this stay.</value>
+  </data>
+  <data name="Inpatient_WardNoteSaved" xml:space="preserve">
+    <value>Ward note saved.</value>
+  </data>
+  <data name="Inpatient_CouldNotSaveWardNote" xml:space="preserve">
+    <value>Could not save the ward note.</value>
+  </data>
+  <data name="Inpatient_CouldNotLoadWardNotes" xml:space="preserve">
+    <value>Could not load ward notes.</value>
+  </data>
+  <data name="Inpatient_HeartRate" xml:space="preserve">
+    <value>Heart rate</value>
+  </data>
+  <data name="Inpatient_Temperature" xml:space="preserve">
+    <value>Temperature (°C)</value>
+  </data>
+  <data name="Inpatient_Oxygen" xml:space="preserve">
+    <value>Oxygen (%)</value>
+  </data>
+  <data name="Inpatient_DischargeSummaryLabel" xml:space="preserve">
+    <value>Summary for the patient</value>
+  </data>
+  <data name="Inpatient_DischargeSummaryPlaceholder" xml:space="preserve">
+    <value>Why they came, what was done, medicines, and when to come back</value>
+  </data>
+  <data name="Inpatient_DraftWithAi" xml:space="preserve">
+    <value>Draft with AI</value>
+  </data>
+  <data name="Inpatient_DraftSummaryReady" xml:space="preserve">
+    <value>Draft ready. Edit it before you discharge.</value>
+  </data>
+  <data name="Inpatient_CouldNotDraftSummary" xml:space="preserve">
+    <value>Could not draft the discharge summary.</value>
+  </data>
+  <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
+    <value>Nightly bed rate</value>
+  </data>
+  <data name="Inpatient_ExtraChargeLabel" xml:space="preserve">
+    <value>Other charges</value>
+  </data>
+  <data name="Inpatient_ExtraChargeDescription" xml:space="preserve">
+    <value>What the extra charge is for</value>
+  </data>
+  <data name="Inpatient_MarkPaidCash" xml:space="preserve">
+    <value>Mark as paid in cash</value>
+  </data>
+  <data name="Inpatient_BookReturnVisit" xml:space="preserve">
+    <value>Book a return visit</value>
+  </data>
+  <data name="Inpatient_ReturnVisitDefaultReason" xml:space="preserve">
+    <value>Return visit after discharge</value>
+  </data>
+  <data name="Inpatient_ReturnVisitReasonPlaceholder" xml:space="preserve">
+    <value>Why should they come back?</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithReturn" xml:space="preserve">
+    <value>Patient discharged. Return visit booked.</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithInvoiceAndReturn" xml:space="preserve">
+    <value>Patient discharged. Invoice {0} {1}. Return visit booked.</value>
+  </data>
+  <data name="Inpatient_CurrencyLabel" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithInvoice" xml:space="preserve">
+    <value>Patient discharged. Invoice {0} {1}.</value>
+  </data>
+  <data name="Casualty_PageTitle" xml:space="preserve">
+    <value>Casualty queue</value>
+  </data>
+  <data name="Casualty_Title" xml:space="preserve">
+    <value>Casualty</value>
+  </data>
+  <data name="Casualty_Lead" xml:space="preserve">
+    <value>Triage walk-ins and call the next patient at {0}.</value>
+  </data>
+  <data name="Casualty_Loading" xml:space="preserve">
+    <value>Loading the casualty board…</value>
+  </data>
+  <data name="Casualty_SectionsAria" xml:space="preserve">
+    <value>Casualty sections</value>
+  </data>
+  <data name="Casualty_Eyebrow" xml:space="preserve">
+    <value>Triage queue</value>
+  </data>
+  <data name="Casualty_WaitingTitle" xml:space="preserve">
+    <value>Queue</value>
+  </data>
+  <data name="Casualty_CalledTitle" xml:space="preserve">
+    <value>Called</value>
+  </data>
+  <data name="Casualty_AddWalkInTitle" xml:space="preserve">
+    <value>Add walk-in</value>
+  </data>
+  <data name="Casualty_RecentTitle" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="Casualty_WaitingOne" xml:space="preserve">
+    <value>{0} waiting</value>
+  </data>
+  <data name="Casualty_WaitingMany" xml:space="preserve">
+    <value>{0} waiting</value>
+  </data>
+  <data name="Casualty_OpenDisplay" xml:space="preserve">
+    <value>Open waiting screen</value>
+  </data>
+  <data name="Casualty_DisplayHint" xml:space="preserve">
+    <value>The waiting screen shows queue codes and triage colors only. It does not show names.</value>
+  </data>
+  <data name="Casualty_CouldNotLoad" xml:space="preserve">
+    <value>Could not load the casualty board.</value>
+  </data>
+  <data name="Casualty_CouldNotOpenDisplay" xml:space="preserve">
+    <value>Could not open the waiting screen.</value>
+  </data>
+  <data name="Casualty_CouldNotCall" xml:space="preserve">
+    <value>Could not call that ticket.</value>
+  </data>
+  <data name="Casualty_CouldNotComplete" xml:space="preserve">
+    <value>Could not complete that ticket.</value>
+  </data>
+  <data name="Casualty_CouldNotCancel" xml:space="preserve">
+    <value>Could not cancel that ticket.</value>
+  </data>
+  <data name="Casualty_CouldNotCreate" xml:space="preserve">
+    <value>Could not add the walk-in.</value>
+  </data>
+  <data name="Casualty_Called" xml:space="preserve">
+    <value>Patient called to the waiting screen.</value>
+  </data>
+  <data name="Casualty_Completed" xml:space="preserve">
+    <value>Ticket completed.</value>
+  </data>
+  <data name="Casualty_Cancelled" xml:space="preserve">
+    <value>Ticket cancelled.</value>
+  </data>
+  <data name="Casualty_Created" xml:space="preserve">
+    <value>Walk-in added to the queue.</value>
+  </data>
+  <data name="Casualty_Call" xml:space="preserve">
+    <value>Call</value>
+  </data>
+  <data name="Casualty_Complete" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="Casualty_CancelTicket" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Casualty_OnScreen" xml:space="preserve">
+    <value>On screen</value>
+  </data>
+  <data name="Casualty_NoWaiting" xml:space="preserve">
+    <value>No one is waiting.</value>
+  </data>
+  <data name="Casualty_NoCalled" xml:space="preserve">
+    <value>No one is on the waiting screen.</value>
+  </data>
+  <data name="Casualty_NoRecent" xml:space="preserve">
+    <value>No recent tickets yet.</value>
+  </data>
+  <data name="Casualty_TriageLabel" xml:space="preserve">
+    <value>Triage</value>
+  </data>
+  <data name="Casualty_TriageRed" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Casualty_TriageOrange" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="Casualty_TriageYellow" xml:space="preserve">
+    <value>Yellow</value>
+  </data>
+  <data name="Casualty_TriageGreen" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="Casualty_ChiefComplaint" xml:space="preserve">
+    <value>Chief complaint</value>
+  </data>
+  <data name="Casualty_ChiefComplaintPlaceholder" xml:space="preserve">
+    <value>Short reason for visit</value>
+  </data>
+  <data name="Casualty_QueueCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Casualty_Arrived" xml:space="preserve">
+    <value>Arrived</value>
+  </data>
+  <data name="Casualty_WalkInHint" xml:space="preserve">
+    <value>Patient is optional. You can add an anonymous walk-in with triage and a complaint.</value>
+  </data>
+  <data name="Casualty_PatientOptional" xml:space="preserve">
+    <value>Optional patient</value>
+  </data>
+  <data name="Casualty_SubmitWalkIn" xml:space="preserve">
+    <value>Add to queue</value>
+  </data>
+  <data name="Casualty_WalkInAnonymous" xml:space="preserve">
+    <value>Walk-in</value>
+  </data>
+  <data name="DisplayCasualty_PageTitle" xml:space="preserve">
+    <value>Casualty waiting</value>
+  </data>
+  <data name="DisplayCasualty_Eyebrow" xml:space="preserve">
+    <value>Casualty</value>
+  </data>
+  <data name="DisplayCasualty_NowServing" xml:space="preserve">
+    <value>Now serving</value>
+  </data>
+  <data name="DisplayCasualty_Waiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="DisplayCasualty_Idle" xml:space="preserve">
+    <value>Please wait for your code to be called.</value>
+  </data>
+  <data name="DisplayCasualty_Hint" xml:space="preserve">
+    <value>Codes only. No names are shown.</value>
+  </data>
+  <data name="DisplayCasualty_CouldNotLoad" xml:space="preserve">
+    <value>Could not load this waiting screen.</value>
+  </data>
+  <data name="Theatre_PageTitle" xml:space="preserve">
+    <value>Theatre board</value>
+  </data>
+  <data name="Theatre_Title" xml:space="preserve">
+    <value>Theatre</value>
+  </data>
+  <data name="Theatre_Lead" xml:space="preserve">
+    <value>Today's operating list for {0}.</value>
+  </data>
+  <data name="Theatre_Loading" xml:space="preserve">
+    <value>Loading the theatre board…</value>
+  </data>
+  <data name="Theatre_SectionsAria" xml:space="preserve">
+    <value>Theatre sections</value>
+  </data>
+  <data name="Theatre_Eyebrow" xml:space="preserve">
+    <value>Operating list</value>
+  </data>
+  <data name="Theatre_Scheduled" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="Theatre_InProgress" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+  <data name="Theatre_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Theatre_TodaysList" xml:space="preserve">
+    <value>Today's list</value>
+  </data>
+  <data name="Theatre_AddCase" xml:space="preserve">
+    <value>Add case</value>
+  </data>
+  <data name="Theatre_NoCases" xml:space="preserve">
+    <value>No theatre cases for today.</value>
+  </data>
+  <data name="Theatre_Procedure" xml:space="preserve">
+    <value>Procedure</value>
+  </data>
+  <data name="Theatre_ProcedurePlaceholder" xml:space="preserve">
+    <value>Procedure name</value>
+  </data>
+  <data name="Theatre_TheatreName" xml:space="preserve">
+    <value>Theatre</value>
+  </data>
+  <data name="Theatre_Surgeon" xml:space="preserve">
+    <value>Surgeon</value>
+  </data>
+  <data name="Theatre_ScheduledStart" xml:space="preserve">
+    <value>Scheduled start</value>
+  </data>
+  <data name="Theatre_Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Theatre_Complete" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="Theatre_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Theatre_SelectPatient" xml:space="preserve">
+    <value>Select patient</value>
+  </data>
+  <data name="Theatre_SubmitCase" xml:space="preserve">
+    <value>Add case</value>
+  </data>
+  <data name="Theatre_PatientRequired" xml:space="preserve">
+    <value>Select a patient.</value>
+  </data>
+  <data name="Theatre_ProcedureRequired" xml:space="preserve">
+    <value>Enter a procedure name.</value>
+  </data>
+  <data name="Theatre_Created" xml:space="preserve">
+    <value>Theatre case added.</value>
+  </data>
+  <data name="Theatre_StatusUpdated" xml:space="preserve">
+    <value>Case status updated.</value>
+  </data>
+  <data name="Theatre_CouldNotLoad" xml:space="preserve">
+    <value>Could not load the theatre board.</value>
+  </data>
+  <data name="Theatre_CouldNotCreate" xml:space="preserve">
+    <value>Could not add the theatre case.</value>
+  </data>
+  <data name="Theatre_CouldNotUpdate" xml:space="preserve">
+    <value>Could not update the case status.</value>
+  </data>
+  <data name="Theatre_DaySummary" xml:space="preserve">
+    <value>{0} scheduled, {1} in progress, {2} completed</value>
+  </data>
+  <data name="Referral_PageTitle" xml:space="preserve">
+    <value>Referral board</value>
+  </data>
+  <data name="Referral_Title" xml:space="preserve">
+    <value>Referrals</value>
+  </data>
+  <data name="Referral_Lead" xml:space="preserve">
+    <value>Outbound referrals for {0}.</value>
+  </data>
+  <data name="Referral_Loading" xml:space="preserve">
+    <value>Loading the referral board…</value>
+  </data>
+  <data name="Referral_SectionsAria" xml:space="preserve">
+    <value>Referral sections</value>
+  </data>
+  <data name="Referral_Eyebrow" xml:space="preserve">
+    <value>Referral tracking</value>
+  </data>
+  <data name="Referral_Sent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="Referral_Accepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="Referral_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Referral_OpenList" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Referral_Recent" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="Referral_LogReferral" xml:space="preserve">
+    <value>Log referral</value>
+  </data>
+  <data name="Referral_ReferredTo" xml:space="preserve">
+    <value>Referred to</value>
+  </data>
+  <data name="Referral_ReferredToPlaceholder" xml:space="preserve">
+    <value>Hospital or clinic name</value>
+  </data>
+  <data name="Referral_Specialty" xml:space="preserve">
+    <value>Specialty</value>
+  </data>
+  <data name="Referral_Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="Referral_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Referral_ReferredAt" xml:space="preserve">
+    <value>Referred at</value>
+  </data>
+  <data name="Referral_Accept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="Referral_Complete" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="Referral_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Referral_NoOpen" xml:space="preserve">
+    <value>No open referrals.</value>
+  </data>
+  <data name="Referral_NoRecent" xml:space="preserve">
+    <value>No recent referrals.</value>
+  </data>
+  <data name="Referral_PatientRequired" xml:space="preserve">
+    <value>Select a patient.</value>
+  </data>
+  <data name="Referral_ReferredToRequired" xml:space="preserve">
+    <value>Enter where the patient was referred.</value>
+  </data>
+  <data name="Referral_Created" xml:space="preserve">
+    <value>Referral logged.</value>
+  </data>
+  <data name="Referral_StatusUpdated" xml:space="preserve">
+    <value>Referral status updated.</value>
+  </data>
+  <data name="Referral_CouldNotLoad" xml:space="preserve">
+    <value>Could not load the referral board.</value>
+  </data>
+  <data name="Referral_CouldNotCreate" xml:space="preserve">
+    <value>Could not log the referral.</value>
+  </data>
+  <data name="Referral_CouldNotUpdate" xml:space="preserve">
+    <value>Could not update the referral.</value>
+  </data>
+  <data name="Referral_StatusLine" xml:space="preserve">
+    <value>{0} sent, {1} accepted, {2} completed</value>
+  </data>
+  <data name="Roster_PageTitle" xml:space="preserve">
+    <value>Who is on today</value>
+  </data>
+  <data name="Roster_Title" xml:space="preserve">
+    <value>Roster</value>
+  </data>
+  <data name="Roster_Lead" xml:space="preserve">
+    <value>See who is on duty at {0} for each shift.</value>
+  </data>
+  <data name="Roster_Loading" xml:space="preserve">
+    <value>Loading the roster…</value>
+  </data>
+  <data name="Roster_SectionsAria" xml:space="preserve">
+    <value>Roster sections</value>
+  </data>
+  <data name="Roster_Eyebrow" xml:space="preserve">
+    <value>Duty board</value>
+  </data>
+  <data name="Roster_TodaysList" xml:space="preserve">
+    <value>Who is on</value>
+  </data>
+  <data name="Roster_AddPerson" xml:space="preserve">
+    <value>Add to roster</value>
+  </data>
+  <data name="Roster_DayLabel" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="Roster_ShiftLabel" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Roster_Morning" xml:space="preserve">
+    <value>Morning</value>
+  </data>
+  <data name="Roster_Afternoon" xml:space="preserve">
+    <value>Afternoon</value>
+  </data>
+  <data name="Roster_Night" xml:space="preserve">
+    <value>Night</value>
+  </data>
+  <data name="Roster_NoteLabel" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Roster_NotePlaceholder" xml:space="preserve">
+    <value>Ward A, casualty, or leave blank</value>
+  </data>
+  <data name="Roster_SelectStaff" xml:space="preserve">
+    <value>Select staff…</value>
+  </data>
+  <data name="Roster_NoEntries" xml:space="preserve">
+    <value>Nobody is on the roster for this day yet.</value>
+  </data>
+  <data name="Roster_ShiftEmpty" xml:space="preserve">
+    <value>Nobody on this shift.</value>
+  </data>
+  <data name="Roster_DaySummary" xml:space="preserve">
+    <value>{0} morning, {1} afternoon, {2} night</value>
+  </data>
+  <data name="Roster_StaffRequired" xml:space="preserve">
+    <value>Select a staff member.</value>
+  </data>
+  <data name="Roster_Added" xml:space="preserve">
+    <value>Added to the roster.</value>
+  </data>
+  <data name="Roster_Removed" xml:space="preserve">
+    <value>Removed from the roster.</value>
+  </data>
+  <data name="Roster_CouldNotLoad" xml:space="preserve">
+    <value>Could not load the roster.</value>
+  </data>
+  <data name="Roster_CouldNotAdd" xml:space="preserve">
+    <value>Could not add to the roster.</value>
+  </data>
+  <data name="Roster_CouldNotRemove" xml:space="preserve">
+    <value>Could not remove from the roster.</value>
   </data>
 </root>

@@ -25,6 +25,7 @@
                 <HospitalDeckChip Label="@AppResources.T("Common_Available")" Value="@_board.AvailableBeds.ToString()" />
                 <HospitalDeckChip Label="@AppResources.T("Common_Occupied")" Value="@_board.OccupiedBeds.ToString()" />
                 <HospitalDeckChip Label="@AppResources.T("Common_Maintenance")" Value="@_board.MaintenanceBeds.ToString()" />
+                <HospitalDeckChip Label="@AppResources.T("Inpatient_Occupancy")" Value="@($"{_board.OccupancyPercent}%")" />
             }
         </HospitalDeckMasthead>
 
@@ -237,6 +238,9 @@
                     <HospitalIdentityFact Label="@AppResources.T("Common_Available")" Value="@_board.AvailableBeds.ToString()" />
                     <HospitalIdentityFact Label="@AppResources.T("Common_Occupied")" Value="@_board.OccupiedBeds.ToString()" />
                     <HospitalIdentityFact Label="@AppResources.T("Common_Maintenance")" Value="@_board.MaintenanceBeds.ToString()" />
+                    <HospitalIdentityFact Label="@AppResources.T("Inpatient_AdmissionsToday")" Value="@_board.AdmissionsTodayCount.ToString()" />
+                    <HospitalIdentityFact Label="@AppResources.T("Inpatient_DischargesToday")" Value="@_board.DischargesTodayCount.ToString()" />
+                    <HospitalIdentityFact Label="@AppResources.T("Inpatient_AverageStay")" Value="@AverageStayLabel" />
                 </dl>
                 <div class="hospital-occupancy-bar" style="--occupancy: @(OccupancyPercent)%;" aria-hidden="true">
                     <span></span>
@@ -258,7 +262,7 @@
                                     <th>@AppResources.T("Inpatient_LocationColumn")</th>
                                     <th>@AppResources.T("Inpatient_AdmittedColumn")</th>
                                     <th>@AppResources.T("Common_Reason")</th>
-                                    @if (_isAdministrator)
+                                    @if (_canRecordWardNotes || _isAdministrator)
                                     {
                                         <th></th>
                                     }
@@ -275,11 +279,18 @@
                                         <td>@AppResources.Format("Inpatient_LocationFormat", adm.FacilityName, adm.WardName, adm.RoomName, adm.BedLabel)</td>
                                         <td>@ClinicTimeZoneHelper.FormatClinicLocal(adm.AdmittedAt, _clinicTimeZone)</td>
                                         <td>@(string.IsNullOrWhiteSpace(adm.Reason) ? AppResources.T("Common_EmptyCell") : adm.Reason)</td>
-                                        @if (_isAdministrator)
+                                        @if (_canRecordWardNotes || _isAdministrator)
                                         {
                                             <td class="inpatient-actions">
-                                                <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginTransfer(adm.Id)">@AppResources.T("Common_Transfer")</button>
-                                                <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginDischarge(adm.Id)">@AppResources.T("Common_Discharge")</button>
+                                                @if (_canRecordWardNotes)
+                                                {
+                                                    <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginWardNote(adm.Id)">@AppResources.T("Inpatient_AddWardNote")</button>
+                                                }
+                                                @if (_isAdministrator)
+                                                {
+                                                    <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginTransfer(adm.Id)">@AppResources.T("Common_Transfer")</button>
+                                                    <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginDischarge(adm.Id)">@AppResources.T("Common_Discharge")</button>
+                                                }
                                             </td>
                                         }
                                     </tr>
@@ -289,14 +300,138 @@
                     </div>
                 }
 
+                @if (_canRecordWardNotes && _observationAdmissionId is Guid observationId)
+                {
+                    <div class="inpatient-action-panel">
+                        <h3>@AppResources.T("Inpatient_WardNoteTitle")</h3>
+                        @if (_observations.Count > 0)
+                        {
+                            <ul class="inpatient-ward-notes">
+                                @foreach (var note in _observations)
+                                {
+                                    <li>
+                                        <strong>@ClinicTimeZoneHelper.FormatClinicLocal(note.RecordedAt, _clinicTimeZone)</strong>
+                                        <span>@note.Note</span>
+                                        @if (note.HeartRate is decimal hr)
+                                        {
+                                            <span class="text-muted">HR @hr</span>
+                                        }
+                                        @if (note.TemperatureCelsius is decimal temp)
+                                        {
+                                            <span class="text-muted">@temp °C</span>
+                                        }
+                                        @if (note.OxygenSaturation is decimal spo2)
+                                        {
+                                            <span class="text-muted">SpO₂ @spo2%</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted">@AppResources.T("Inpatient_NoWardNotes")</p>
+                        }
+                        <label>
+                            @AppResources.T("Inpatient_WardNoteLabel")
+                            <textarea class="form-control" rows="2" @bind="_wardNote" placeholder="@AppResources.T("Inpatient_WardNotePlaceholder")"></textarea>
+                        </label>
+                        <div class="form-grid">
+                            <label>
+                                @AppResources.T("Inpatient_HeartRate")
+                                <input class="form-control" @bind="_wardHeartRate" inputmode="decimal" />
+                            </label>
+                            <label>
+                                @AppResources.T("Inpatient_Temperature")
+                                <input class="form-control" @bind="_wardTemp" inputmode="decimal" />
+                            </label>
+                            <label>
+                                @AppResources.T("Inpatient_Oxygen")
+                                <input class="form-control" @bind="_wardSpo2" inputmode="decimal" />
+                            </label>
+                        </div>
+                        <div class="admin-page-actions">
+                            <button type="button" class="btn btn-primary" disabled="@(_savingObservationId == observationId)" @onclick="SaveWardNoteAsync">
+                                @(_savingObservationId == observationId ? AppResources.T("Common_PleaseWait") : AppResources.T("Common_Save"))
+                            </button>
+                            <button type="button" class="btn btn-ghost" @onclick="CancelWardNote">@AppResources.T("Common_Cancel")</button>
+                        </div>
+                    </div>
+                }
+
                 @if (_isAdministrator && _dischargeAdmissionId is Guid dischargeId)
                 {
                     <div class="inpatient-action-panel">
                         <h3>@AppResources.T("Inpatient_DischargeTitle")</h3>
                         <label>
+                            @AppResources.T("Inpatient_DischargeSummaryLabel")
+                            <textarea class="form-control" rows="3" @bind="_dischargeSummary" placeholder="@AppResources.T("Inpatient_DischargeSummaryPlaceholder")"></textarea>
+                        </label>
+                        <div class="admin-page-actions" style="margin-bottom: 0.75rem;">
+                            <button type="button" class="btn btn-secondary" disabled="@_draftingSummary" @onclick="DraftDischargeSummaryAsync">
+                                @(_draftingSummary ? AppResources.T("Common_PleaseWait") : AppResources.T("Inpatient_DraftWithAi"))
+                            </button>
+                        </div>
+                        <label>
                             @AppResources.T("Inpatient_DischargeNotesLabel")
                             <textarea class="form-control" rows="2" @bind="_dischargeNotes" placeholder="@AppResources.T("Inpatient_DischargeNotesPlaceholder")"></textarea>
                         </label>
+                        <div class="form-grid">
+                            <label>
+                                @AppResources.T("Inpatient_CurrencyLabel")
+                                <input class="form-control" @bind="_invoiceCurrency" />
+                            </label>
+                            <label>
+                                @AppResources.T("Inpatient_NightlyRateLabel")
+                                <input class="form-control" @bind="_nightlyBedRate" inputmode="decimal" placeholder="0" />
+                            </label>
+                            <label>
+                                @AppResources.T("Inpatient_ExtraChargeLabel")
+                                <input class="form-control" @bind="_extraAmount" inputmode="decimal" placeholder="0" />
+                            </label>
+                            <label>
+                                @AppResources.T("Inpatient_ExtraChargeDescription")
+                                <input class="form-control" @bind="_extraDescription" placeholder="@AppResources.T("Common_Optional")" />
+                            </label>
+                        </div>
+                        <label class="inpatient-checkbox">
+                            <input type="checkbox" @bind="_markPaid" />
+                            @AppResources.T("Inpatient_MarkPaidCash")
+                        </label>
+                        <label class="inpatient-checkbox">
+                            <input type="checkbox" @bind="_bookReturnVisit" />
+                            @AppResources.T("Inpatient_BookReturnVisit")
+                        </label>
+                        @if (_bookReturnVisit)
+                        {
+                            <div class="form-grid">
+                                <label>
+                                    @AppResources.T("Common_Provider")
+                                    <SearchableSelect TValue="string"
+                                                      @bind-Value="_returnProviderId"
+                                                      Placeholder="@AppResources.T("Common_SelectProvider")"
+                                                      Options="ReturnProviderOptions" />
+                                </label>
+                                <label>
+                                    @AppResources.T("Common_Type")
+                                    <SearchableSelect TValue="string"
+                                                      @bind-Value="_returnAppointmentType"
+                                                      Options="ReturnAppointmentTypeOptions" />
+                                </label>
+                                <label>
+                                    @AppResources.Format("Common_StartLabel", _clinicTimeZone)
+                                    <input class="form-control" type="datetime-local" @bind="_returnStart" @bind:format="yyyy-MM-ddTHH:mm" />
+                                </label>
+                                <label>
+                                    @AppResources.Format("Common_EndLabel", _clinicTimeZone)
+                                    <input class="form-control" type="datetime-local" @bind="_returnEnd" @bind:format="yyyy-MM-ddTHH:mm" />
+                                </label>
+                                <label class="form-grid-span">
+                                    @AppResources.T("Common_Reason")
+                                    <input class="form-control" @bind="_returnReason" placeholder="@AppResources.T("Inpatient_ReturnVisitReasonPlaceholder")" />
+                                </label>
+                            </div>
+                        }
                         <div class="admin-page-actions">
                             <button type="button" class="btn btn-primary" disabled="@(_dischargingId == dischargeId)" @onclick="ConfirmDischargeAsync">
                                 @(_dischargingId == dischargeId ? AppResources.T("Common_PleaseWait") : AppResources.T("Common_ConfirmDischarge"))
@@ -553,7 +688,7 @@
                                         <td>@ClinicTimeZoneHelper.FormatClinicLocal(adm.AdmittedAt, _clinicTimeZone)</td>
                                         <td>@(adm.DischargedAt is null ? AppResources.T("Common_EmptyCell") : ClinicTimeZoneHelper.FormatClinicLocal(adm.DischargedAt.Value, _clinicTimeZone))</td>
                                         <td>@adm.Status</td>
-                                        <td>@(string.IsNullOrWhiteSpace(adm.Notes) ? AppResources.T("Common_EmptyCell") : adm.Notes)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(adm.DischargeSummary) ? (string.IsNullOrWhiteSpace(adm.Notes) ? AppResources.T("Common_EmptyCell") : adm.Notes) : adm.DischargeSummary)</td>
                                     </tr>
                                 }
                             </tbody>
@@ -593,10 +728,13 @@
     private bool _searchingPatients;
     private bool _loadingHistory;
     private bool _isAdministrator;
+    private bool _canRecordWardNotes;
     private string _tab = "admissions";
     private Guid? _dischargingId;
     private Guid? _transferringId;
     private Guid? _dischargeAdmissionId;
+    private Guid? _observationAdmissionId;
+    private Guid? _savingObservationId;
     private Guid? _transferAdmissionId;
     private Guid? _editWardId;
     private Guid? _editRoomId;
@@ -633,6 +771,25 @@
     private string _admitBedId = string.Empty;
     private string _admitReason = string.Empty;
     private string _dischargeNotes = string.Empty;
+    private string _dischargeSummary = string.Empty;
+    private string _nightlyBedRate = string.Empty;
+    private string _extraAmount = string.Empty;
+    private string _extraDescription = string.Empty;
+    private string _invoiceCurrency = "ZAR";
+    private bool _markPaid = true;
+    private bool _bookReturnVisit;
+    private bool _draftingSummary;
+    private string _returnProviderId = string.Empty;
+    private string _returnAppointmentType = "InPerson";
+    private string _returnReason = string.Empty;
+    private DateTime _returnStart;
+    private DateTime _returnEnd;
+    private IReadOnlyList<ClinicProviderListItem> _providers = Array.Empty<ClinicProviderListItem>();
+    private string _wardNote = string.Empty;
+    private string _wardHeartRate = string.Empty;
+    private string _wardTemp = string.Empty;
+    private string _wardSpo2 = string.Empty;
+    private IReadOnlyList<ClinicAdmissionObservation> _observations = Array.Empty<ClinicAdmissionObservation>();
     private string _transferBedId = string.Empty;
     private string _transferNotes = string.Empty;
     private string _historyStatus = string.Empty;
@@ -677,6 +834,15 @@
     private IReadOnlyList<SelectOption<string>> AvailableBedOptions =>
         _availableBeds.Select(bed => new SelectOption<string>(bed.Id.ToString(), bed.Display)).ToArray();
 
+    private IReadOnlyList<SelectOption<string>> ReturnProviderOptions =>
+        _providers.Select(provider => new SelectOption<string>(provider.ProviderId.ToString(), provider.DisplayName)).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> ReturnAppointmentTypeOptions =>
+    [
+        new("InPerson", AppResources.T("Common_InPerson")),
+        new("Telemedicine", AppResources.T("Common_Telemedicine"))
+    ];
+
     private IReadOnlyList<SelectOption<string>> HistoryStatusOptions =>
     [
         new(string.Empty, AppResources.T("Common_All")),
@@ -684,10 +850,12 @@
         new("Discharged", AppResources.T("Inpatient_StatusDischarged"))
     ];
 
-    private int OccupancyPercent =>
-        _board is null || _board.TotalBeds == 0
-            ? 0
-            : (int)Math.Round(100d * _board.OccupiedBeds / _board.TotalBeds);
+    private int OccupancyPercent => _board?.OccupancyPercent ?? 0;
+
+    private string AverageStayLabel =>
+        _board?.AverageLengthOfStayDays is decimal days
+            ? AppResources.Format("Inpatient_AverageStayValue", days)
+            : AppResources.T("Common_EmptyCell");
 
     protected override void OnInitialized() =>
         CultureService.CultureChanged += OnCultureChanged;
@@ -704,20 +872,33 @@
         {
             _clinicName = clinicResponse.Data.Name;
             _isAdministrator = clinicResponse.Data.CurrentUserIsAdministrator;
+            _canRecordWardNotes = clinicResponse.Data.CurrentUserCanRecordWardNotes;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
             _clinicCountry = clinicResponse.Data.Country;
             _facilityCountry = clinicResponse.Data.Country;
+            _invoiceCurrency = IsCongoCountry(clinicResponse.Data.Country) ? "USD" : "ZAR";
             _physicalFacilities = clinicResponse.Data.Facilities.Where(f => !f.IsVirtual).ToList();
             _showFacilityForm = _physicalFacilities.Count == 0;
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
         if (_isAdministrator)
+        {
             await SearchPatientsAsync();
+            await LoadProvidersAsync();
+        }
 
         await LoadBoardAsync();
         await LoadHistoryAsync();
         ApplyInitialTab();
+    }
+
+    private async Task LoadProvidersAsync()
+    {
+        var response = await AdminClinicService.GetProvidersAsync(ClinicId);
+        _providers = response.IsSuccess && response.Data is not null
+            ? response.Data.Where(p => p.IsActive).ToList()
+            : Array.Empty<ClinicProviderListItem>();
     }
 
     private bool IsTabAllowed(string tab) =>
@@ -747,6 +928,7 @@
         {
             CancelDischarge();
             CancelTransfer();
+            CancelWardNote();
         }
     }
 
@@ -1005,20 +1187,91 @@
     {
         _dischargeAdmissionId = admissionId;
         _transferAdmissionId = null;
+        _observationAdmissionId = null;
         _dischargeNotes = string.Empty;
+        _dischargeSummary = string.Empty;
+        _nightlyBedRate = string.Empty;
+        _extraAmount = string.Empty;
+        _extraDescription = string.Empty;
+        _markPaid = true;
+        _bookReturnVisit = false;
+        _returnProviderId = string.Empty;
+        _returnAppointmentType = "InPerson";
+        _returnReason = AppResources.T("Inpatient_ReturnVisitDefaultReason");
+        var localNow = ClinicTimeZoneHelper.ToClinicLocal(DateTime.UtcNow, _clinicTimeZone);
+        _returnStart = localNow.Date.AddDays(7).AddHours(9);
+        _returnEnd = _returnStart.AddMinutes(30);
     }
 
     private void CancelDischarge() => _dischargeAdmissionId = null;
+
+    private async Task DraftDischargeSummaryAsync()
+    {
+        if (_dischargeAdmissionId is not Guid admissionId)
+            return;
+
+        _draftingSummary = true;
+        ClearMessages();
+        var response = await AdminClinicService.DraftDischargeSummaryAsync(ClinicId, admissionId);
+        _draftingSummary = false;
+
+        if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data))
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotDraftSummary");
+            return;
+        }
+
+        _dischargeSummary = response.Data;
+        _success = AppResources.T("Inpatient_DraftSummaryReady");
+    }
 
     private async Task ConfirmDischargeAsync()
     {
         if (_dischargeAdmissionId is not Guid admissionId)
             return;
 
+        if (_bookReturnVisit)
+        {
+            if (!Guid.TryParse(_returnProviderId, out _))
+            {
+                _error = AppResources.T("Common_SelectProvider");
+                return;
+            }
+
+            if (_returnEnd <= _returnStart)
+            {
+                _error = AppResources.T("Common_EndTimeAfterStart");
+                return;
+            }
+        }
+
         _dischargingId = admissionId;
         ClearMessages();
-        var response = await AdminClinicService.DischargeAdmissionAsync(
-            ClinicId, admissionId, string.IsNullOrWhiteSpace(_dischargeNotes) ? null : _dischargeNotes.Trim());
+        var request = new DischargeAdmissionRequest
+        {
+            Notes = string.IsNullOrWhiteSpace(_dischargeNotes) ? null : _dischargeNotes.Trim(),
+            DischargeSummary = string.IsNullOrWhiteSpace(_dischargeSummary) ? null : _dischargeSummary.Trim(),
+            NightlyBedRate = ParseDecimal(_nightlyBedRate),
+            ExtraAmount = ParseDecimal(_extraAmount),
+            ExtraDescription = string.IsNullOrWhiteSpace(_extraDescription) ? null : _extraDescription.Trim(),
+            MarkPaid = _markPaid,
+            Currency = string.IsNullOrWhiteSpace(_invoiceCurrency) ? null : _invoiceCurrency.Trim(),
+            BookReturnVisit = _bookReturnVisit,
+            ReturnProviderId = _bookReturnVisit && Guid.TryParse(_returnProviderId, out var providerId)
+                ? providerId
+                : null,
+            ReturnScheduledStart = _bookReturnVisit
+                ? ClinicTimeZoneHelper.ToUtcFromClinicLocal(_returnStart, _clinicTimeZone)
+                : null,
+            ReturnScheduledEnd = _bookReturnVisit
+                ? ClinicTimeZoneHelper.ToUtcFromClinicLocal(_returnEnd, _clinicTimeZone)
+                : null,
+            ReturnAppointmentType = _bookReturnVisit ? _returnAppointmentType : null,
+            ReturnReason = _bookReturnVisit && !string.IsNullOrWhiteSpace(_returnReason)
+                ? _returnReason.Trim()
+                : null
+        };
+        var response = await AdminClinicService.DischargeAdmissionAsync(ClinicId, admissionId, request);
         _dischargingId = null;
         _dischargeAdmissionId = null;
 
@@ -1028,15 +1281,120 @@
             return;
         }
 
-        _success = AppResources.T("Inpatient_PatientDischarged");
+        if (response.Data?.ReturnAppointmentId is not null)
+        {
+            _success = response.Data.InvoiceAmount is decimal amount and > 0
+                ? AppResources.Format(
+                    "Inpatient_PatientDischargedWithInvoiceAndReturn",
+                    amount,
+                    response.Data.InvoiceCurrency ?? _invoiceCurrency)
+                : AppResources.T("Inpatient_PatientDischargedWithReturn");
+        }
+        else
+        {
+            _success = response.Data?.InvoiceAmount is decimal amount and > 0
+                ? AppResources.Format(
+                    "Inpatient_PatientDischargedWithInvoice",
+                    amount,
+                    response.Data.InvoiceCurrency ?? _invoiceCurrency)
+                : AppResources.T("Inpatient_PatientDischarged");
+        }
+
         await LoadBoardAsync();
         await LoadHistoryAsync();
+    }
+
+    private async Task BeginWardNote(Guid admissionId)
+    {
+        _observationAdmissionId = admissionId;
+        _dischargeAdmissionId = null;
+        _transferAdmissionId = null;
+        _wardNote = string.Empty;
+        _wardHeartRate = string.Empty;
+        _wardTemp = string.Empty;
+        _wardSpo2 = string.Empty;
+        await LoadObservationsAsync(admissionId);
+    }
+
+    private void CancelWardNote()
+    {
+        _observationAdmissionId = null;
+        _observations = Array.Empty<ClinicAdmissionObservation>();
+    }
+
+    private async Task LoadObservationsAsync(Guid admissionId)
+    {
+        var response = await AdminClinicService.GetAdmissionObservationsAsync(ClinicId, admissionId);
+        _observations = response.IsSuccess && response.Data is not null
+            ? response.Data
+            : Array.Empty<ClinicAdmissionObservation>();
+        if (!response.IsSuccess)
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotLoadWardNotes");
+    }
+
+    private async Task SaveWardNoteAsync()
+    {
+        if (_observationAdmissionId is not Guid admissionId)
+            return;
+
+        if (string.IsNullOrWhiteSpace(_wardNote))
+        {
+            _error = AppResources.T("Inpatient_WardNoteRequired");
+            return;
+        }
+
+        _savingObservationId = admissionId;
+        ClearMessages();
+        var response = await AdminClinicService.AddAdmissionObservationAsync(
+            ClinicId,
+            admissionId,
+            new AddAdmissionObservationRequest
+            {
+                Note = _wardNote.Trim(),
+                HeartRate = ParseDecimal(_wardHeartRate),
+                TemperatureCelsius = ParseDecimal(_wardTemp),
+                OxygenSaturation = ParseDecimal(_wardSpo2)
+            });
+        _savingObservationId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotSaveWardNote");
+            return;
+        }
+
+        _success = AppResources.T("Inpatient_WardNoteSaved");
+        _wardNote = string.Empty;
+        _wardHeartRate = string.Empty;
+        _wardTemp = string.Empty;
+        _wardSpo2 = string.Empty;
+        await LoadObservationsAsync(admissionId);
+    }
+
+    private static decimal? ParseDecimal(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return null;
+        return decimal.TryParse(raw.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var value)
+            ? value
+            : null;
+    }
+
+    private static bool IsCongoCountry(string? country)
+    {
+        if (string.IsNullOrWhiteSpace(country))
+            return false;
+        var value = country.Trim();
+        return value.Contains("Congo", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "CD", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "DRC", StringComparison.OrdinalIgnoreCase);
     }
 
     private void BeginTransfer(Guid admissionId)
     {
         _transferAdmissionId = admissionId;
         _dischargeAdmissionId = null;
+        _observationAdmissionId = null;
         _transferBedId = string.Empty;
         _transferNotes = string.Empty;
     }

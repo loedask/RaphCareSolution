@@ -31,6 +31,7 @@ public static class IdentitySeeder
         (RaphCareRoles.Doctor, "Visit documentation and clinical orders"),
         (RaphCareRoles.Pharmacist, "Pharmacy collection"),
         (RaphCareRoles.LabTechnician, "Lab collection"),
+        (RaphCareRoles.Nurse, "Ward notes and inpatient observations"),
         (RaphCareRoles.Patient, "Patient portal access")
     ];
 

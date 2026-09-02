@@ -34,6 +34,7 @@ internal static class AdminClinicDetailMapper
             RegisteredByApplicationUserId = clinic.RegisteredByApplicationUserId,
             CurrentUserIsAdministrator = RaphCareRoles.HasAdministratorRole(roles),
             CurrentUserCanDocumentVisits = RaphCareRoles.CanDocumentVisits(roles),
+            CurrentUserCanRecordWardNotes = RaphCareRoles.CanRecordWardNotes(roles),
             CurrentUserCanDispense = RaphCareRoles.CanDispensePrescriptions(roles),
             CurrentUserCanCompleteLabs = RaphCareRoles.CanCompleteLabs(roles),
             Facilities = clinic.Facilities

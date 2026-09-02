@@ -1,4 +1,3 @@
-using System.Linq;
 using MediatR;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Common.Exceptions;
@@ -8,45 +7,65 @@ using RaphCare.Domain.Clinical;
 
 namespace RaphCare.Application.Features.PatientHealthRecords.Queries.GetMyHealthRecords;
 
-public class GetMyHealthRecordsHandler : IRequestHandler<GetMyHealthRecordsQuery, PagedResult<PatientHealthRecordListItemDto>>
+public class GetMyHealthRecordsHandler(
+    IRepository<Visit> visitRepository,
+    IRepository<InpatientAdmission> admissionRepository,
+    ICurrentUserService currentUser)
+    : IRequestHandler<GetMyHealthRecordsQuery, PagedResult<PatientHealthRecordListItemDto>>
 {
-    private readonly IRepository<Visit> _repository;
-    private readonly ICurrentUserService _currentUser;
-
-    public GetMyHealthRecordsHandler(IRepository<Visit> repository, ICurrentUserService currentUser)
+    public async Task<PagedResult<PatientHealthRecordListItemDto>> Handle(
+        GetMyHealthRecordsQuery request,
+        CancellationToken cancellationToken)
     {
-        _repository = repository;
-        _currentUser = currentUser;
-    }
-
-    public async Task<PagedResult<PatientHealthRecordListItemDto>> Handle(GetMyHealthRecordsQuery request, CancellationToken cancellationToken)
-    {
-        var patientId = _currentUser.CurrentPatientId
+        var patientId = currentUser.CurrentPatientId
             ?? throw new ForbiddenAccessException("A patient profile is required to view health records.");
 
-        var paged = await _repository.SearchAsync(
-            q => q.Where(v => v.PatientId == patientId).OrderByDescending(v => v.VisitStart),
-            request.PageNumber,
-            request.PageSize,
+        var visits = await visitRepository.SearchAsync(
+            q => q.Where(v => v.PatientId == patientId),
+            1,
+            1000,
             applyDefaultIdOrdering: false,
             cancellationToken).ConfigureAwait(false);
 
-        var items = paged.Items.Select(v => new PatientHealthRecordListItemDto
+        var stays = await admissionRepository.SearchAsync(
+            q => q.Where(a => a.PatientId == patientId && a.Status == "Discharged"),
+            1,
+            1000,
+            applyDefaultIdOrdering: false,
+            cancellationToken).ConfigureAwait(false);
+
+        var items = visits.Items.Select(v => new PatientHealthRecordListItemDto
         {
             Id = v.Id,
             VisitStart = v.VisitStart,
             VisitEnd = v.VisitEnd,
             VisitType = v.VisitType,
             Status = v.Status,
-            Summary = v.Summary
-        }).ToList();
+            Summary = v.Summary,
+            RecordKind = "Visit"
+        }).Concat(stays.Items.Select(a => new PatientHealthRecordListItemDto
+        {
+            Id = a.Id,
+            VisitStart = a.AdmittedAt,
+            VisitEnd = a.DischargedAt,
+            VisitType = "Stay",
+            Status = a.Status,
+            Summary = a.DischargeSummary,
+            RecordKind = "Discharge"
+        }))
+            .OrderByDescending(i => i.VisitStart)
+            .ToList();
+
+        var pageNumber = request.PageNumber < 1 ? 1 : request.PageNumber;
+        var pageSize = request.PageSize < 1 ? 20 : request.PageSize;
+        var page = items.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
         return new PagedResult<PatientHealthRecordListItemDto>
         {
-            Items = items,
-            TotalCount = paged.TotalCount,
-            PageNumber = paged.PageNumber,
-            PageSize = paged.PageSize
+            Items = page,
+            TotalCount = items.Count,
+            PageNumber = pageNumber,
+            PageSize = pageSize
         };
     }
 }

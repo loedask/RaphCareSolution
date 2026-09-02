@@ -1,0 +1,130 @@
+@page "/display/casualty/{Token}"
+@inject ICasualtyDisplayService DisplayService
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@(_board?.ClinicName ?? AppResources.T("DisplayCasualty_PageTitle"))</PageTitle>
+
+<div class="collection-display">
+    <header class="collection-display-top">
+        <div>
+            <p class="collection-display-eyebrow">@AppResources.T("DisplayCasualty_Eyebrow")</p>
+            <h1 class="collection-display-hospital">@(_board?.ClinicName ?? AppResources.T("DisplayCasualty_PageTitle"))</h1>
+        </div>
+        <LanguagePicker />
+    </header>
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <p class="collection-display-error">@_error</p>
+    }
+    else if (_board?.NowServing is null)
+    {
+        <p class="collection-display-idle">@AppResources.T("DisplayCasualty_Idle")</p>
+    }
+    else
+    {
+        <p class="collection-display-label">@AppResources.T("DisplayCasualty_NowServing")</p>
+        <p class="collection-display-code">@_board.NowServing.QueueCode</p>
+        <p class="collection-display-kind">
+            <span class="@TriageCss(_board.NowServing.TriageLevel)">@FormatTriage(_board.NowServing.TriageLevel)</span>
+        </p>
+    }
+
+    @if (_board?.Waiting.Count > 0)
+    {
+        <section class="collection-display-waiting">
+            <p class="collection-display-label">@AppResources.T("DisplayCasualty_Waiting")</p>
+            <ul class="collection-display-queue">
+                @foreach (var ticket in _board.Waiting)
+                {
+                    <li>
+                        <span class="collection-display-queue-code">@ticket.QueueCode</span>
+                        <span class="collection-display-queue-kind @TriageCss(ticket.TriageLevel)">@FormatTriage(ticket.TriageLevel)</span>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    <p class="collection-display-hint">@AppResources.T("DisplayCasualty_Hint")</p>
+</div>
+
+@code {
+    [Parameter] public string Token { get; set; } = string.Empty;
+
+    private CasualtyDisplayBoard? _board;
+    private string? _error;
+    private PeriodicTimer? _timer;
+    private CancellationTokenSource? _pollCts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CultureService.CultureChanged += OnCultureChanged;
+        await LoadAsync();
+        _pollCts = new CancellationTokenSource();
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(4));
+        _ = PollAsync(_pollCts.Token);
+    }
+
+    private async Task PollAsync(CancellationToken cancellationToken)
+    {
+        if (_timer is null)
+            return;
+        try
+        {
+            while (await _timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
+                await InvokeAsync(LoadAsync);
+        }
+        catch (OperationCanceledException)
+        {
+            // Page is closing.
+        }
+    }
+
+    private async Task LoadAsync()
+    {
+        var response = await DisplayService.GetBoardAsync(Token);
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _board = response.Data;
+            _error = null;
+        }
+        else
+        {
+            _error = response.ErrorMessage ?? AppResources.T("DisplayCasualty_CouldNotLoad");
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private static string TriageCss(string? level) =>
+        level?.Trim().ToLowerInvariant() switch
+        {
+            "red" => "casualty-triage casualty-triage-red",
+            "orange" => "casualty-triage casualty-triage-orange",
+            "yellow" => "casualty-triage casualty-triage-yellow",
+            "green" => "casualty-triage casualty-triage-green",
+            _ => "casualty-triage"
+        };
+
+    private static string FormatTriage(string? level) =>
+        level?.Trim() switch
+        {
+            "Red" => AppResources.T("Casualty_TriageRed"),
+            "Orange" => AppResources.T("Casualty_TriageOrange"),
+            "Yellow" => AppResources.T("Casualty_TriageYellow"),
+            "Green" => AppResources.T("Casualty_TriageGreen"),
+            _ => string.IsNullOrWhiteSpace(level) ? string.Empty : level
+        };
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        CultureService.CultureChanged -= OnCultureChanged;
+        _pollCts?.Cancel();
+        _pollCts?.Dispose();
+        _timer?.Dispose();
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "stylesheet": ["raphcare-price-list.pdf.css"],
+  "document_title": "RaphCare price list (September 2026)",
+  "pdf_options": {
+    "format": "A4",
+    "margin": {
+      "top": "10mm",
+      "right": "12mm",
+      "bottom": "10mm",
+      "left": "12mm"
+    },
+    "printBackground": true
+  }
+}

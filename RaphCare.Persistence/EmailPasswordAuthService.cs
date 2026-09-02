@@ -256,7 +256,8 @@ public class EmailPasswordAuthService(
                     || name == RaphCareRoles.Clinician
                     || name == RaphCareRoles.Doctor
                     || name == RaphCareRoles.Pharmacist
-                    || name == RaphCareRoles.LabTechnician,
+                    || name == RaphCareRoles.LabTechnician
+                    || name == RaphCareRoles.Nurse,
                 cancellationToken)
             .ConfigureAwait(false);
         if (!hasStaffRole)

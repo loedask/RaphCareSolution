@@ -51,7 +51,8 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
                 VisitEnd = i.VisitEnd,
                 VisitType = i.VisitType ?? string.Empty,
                 Status = i.Status ?? string.Empty,
-                Summary = i.Summary
+                Summary = i.Summary,
+                RecordKind = string.IsNullOrWhiteSpace(i.RecordKind) ? "Visit" : i.RecordKind
             })
             .ToList();
 
@@ -84,6 +85,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
             VisitType = dto.VisitType ?? string.Empty,
             Status = dto.Status ?? string.Empty,
             Summary = dto.Summary,
+            RecordKind = string.IsNullOrWhiteSpace(dto.RecordKind) ? "Visit" : dto.RecordKind,
             VitalSigns = vitals,
             Prescriptions = MapPrescriptions(dto.Prescriptions),
             LabOrders = MapLabs(dto.LabOrders)
@@ -151,6 +153,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
         public string? VisitType { get; set; }
         public string? Status { get; set; }
         public string? Summary { get; set; }
+        public string? RecordKind { get; set; }
     }
 
     private sealed class HealthRecordDetailDto
@@ -161,6 +164,7 @@ public sealed class HealthRecordService(HttpClient httpClient) : BaseHttpService
         public string? VisitType { get; set; }
         public string? Status { get; set; }
         public string? Summary { get; set; }
+        public string? RecordKind { get; set; }
         public IReadOnlyList<VitalSignDto>? VitalSigns { get; set; }
         public IReadOnlyList<CollectionPrescriptionDto>? Prescriptions { get; set; }
         public IReadOnlyList<CollectionLabOrderDto>? LabOrders { get; set; }

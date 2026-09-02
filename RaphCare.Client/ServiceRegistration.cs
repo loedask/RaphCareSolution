@@ -82,6 +82,7 @@ public static class ServiceRegistration
         services.AddTransient<IVoiceOnboardingService, VoiceOnboardingService>();
         services.AddTransient<IAdminClinicService, AdminClinicService>();
         services.AddTransient<ICollectionDisplayService, CollectionDisplayService>();
+        services.AddTransient<ICasualtyDisplayService, CasualtyDisplayService>();
 
         return services;
     }

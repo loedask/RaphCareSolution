@@ -1,0 +1,95 @@
+@using RaphCare.Client.Models.Clinical
+@using RaphCare.Domain.Common
+@using RaphCare.Web.Helpers
+
+<AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
+               Title="@AppResources.T("Common_EmergencyEventsTitle")"
+               Lead="@AppResources.T("Common_EmergencyHomeLead")">
+    <AdminPageCardMeta>
+        @if (!string.IsNullOrWhiteSpace(ViewAllHref))
+        {
+            <a class="card-header-link" href="@ViewAllHref">@AppResources.T("Common_ViewAll")</a>
+        }
+        @if (TotalCount > 0)
+        {
+            <span class="admin-progress-pill">@EventCountLabel(TotalCount)</span>
+        }
+    </AdminPageCardMeta>
+    <div class="admin-page-card-body">
+        @if (Loading)
+        {
+            <p class="text-muted">@AppResources.T("Common_LoadingEmergencyEvents")</p>
+        }
+        else if (!string.IsNullOrEmpty(Error))
+        {
+            @if (ClinicContextMissing)
+            {
+                <ClinicContextRequiredAlert OnRetry="OnRetry" />
+            }
+            else
+            {
+                <AdminAlert Message="@Error" />
+            }
+        }
+        else if (Events.Count == 0)
+        {
+            <p class="text-muted">@AppResources.T("Common_NoRecentEmergencyEvents")</p>
+        }
+        else
+        {
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>@AppResources.T("Common_Occurred")</th>
+                            <th>@AppResources.T("Common_Patient")</th>
+                            <th>@AppResources.T("Common_Type")</th>
+                            <th>@AppResources.T("Common_Device")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ev in Events)
+                        {
+                            <tr>
+                                <td>@FormatLocal(ev.OccurredAtUtc)</td>
+                                <td>
+                                    @if (ClinicId is Guid clinicId)
+                                    {
+                                        <a href="/admin/hospitals/@clinicId/patients/@ev.PatientId">@ev.PatientName</a>
+                                    }
+                                    else
+                                    {
+                                        @ev.PatientName
+                                    }
+                                </td>
+                                <td><span class="badge badge-error">@ev.EventType</span></td>
+                                <td>@(string.IsNullOrWhiteSpace(ev.Model) ? ev.SerialNumber : $"{ev.Model} · {ev.SerialNumber}")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</AdminPageCard>
+
+@code {
+    [Parameter] public Guid? ClinicId { get; set; }
+    [Parameter] public IReadOnlyList<ClinicDeviceEmergencyEventViewModel> Events { get; set; } =
+        Array.Empty<ClinicDeviceEmergencyEventViewModel>();
+    [Parameter] public int TotalCount { get; set; }
+    [Parameter] public bool Loading { get; set; }
+    [Parameter] public string? Error { get; set; }
+    [Parameter] public bool ClinicContextMissing { get; set; }
+    [Parameter] public string TimeZone { get; set; } = "UTC";
+    [Parameter] public string? ViewAllHref { get; set; }
+    [Parameter] public EventCallback OnRetry { get; set; }
+
+    private static string EventCountLabel(int count) =>
+        count == 1
+            ? AppResources.Format("Common_EventCountLabel", count)
+            : AppResources.Format("Common_EventCountLabelPlural", count);
+
+    private string FormatLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.FormatClinicLocal(utc, TimeZone);
+}

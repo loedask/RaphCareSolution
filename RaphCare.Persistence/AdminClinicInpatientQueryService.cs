@@ -2,21 +2,24 @@ using Microsoft.EntityFrameworkCore;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Domain.Common;
 
 namespace RaphCare.Persistence;
 
-public sealed class AdminClinicInpatientQueryService(ClinicalDbContext clinicalDbContext)
+public sealed class AdminClinicInpatientQueryService(
+    ClinicalDbContext clinicalDbContext,
+    IDateTimeProvider clock)
     : IAdminClinicInpatientQueryService
 {
     public async Task<AdminClinicInpatientBoardDto?> GetBoardAsync(
         Guid clinicId,
         CancellationToken cancellationToken = default)
     {
-        var clinicExists = await clinicalDbContext.Clinics
+        var clinic = await clinicalDbContext.Clinics
             .AsNoTracking()
-            .AnyAsync(c => c.Id == clinicId && !c.IsDeleted, cancellationToken)
+            .FirstOrDefaultAsync(c => c.Id == clinicId && !c.IsDeleted, cancellationToken)
             .ConfigureAwait(false);
-        if (!clinicExists)
+        if (clinic is null)
             return null;
 
         var wards = await clinicalDbContext.Wards
@@ -49,6 +52,9 @@ public sealed class AdminClinicInpatientQueryService(ClinicalDbContext clinicalD
         var available = allBeds.Count(b => b.Status == "Available");
         var occupied = allBeds.Count(b => b.Status == "Occupied");
         var maintenance = allBeds.Count(b => b.Status == "Maintenance");
+        var (todayStartUtc, todayEndUtc) = ClinicTimeZoneHelper.GetClinicDayUtcRange(clock.UtcNow, clinic.TimeZone);
+        var stayStats = await LoadStayStatsAsync(clinicId, todayStartUtc, todayEndUtc, cancellationToken)
+            .ConfigureAwait(false);
 
         return new AdminClinicInpatientBoardDto
         {
@@ -58,6 +64,10 @@ public sealed class AdminClinicInpatientQueryService(ClinicalDbContext clinicalD
             OccupiedBeds = occupied,
             MaintenanceBeds = maintenance,
             ActiveAdmissions = activeAdmissions.Count,
+            OccupancyPercent = allBeds.Count == 0 ? 0 : (int)Math.Round(100d * occupied / allBeds.Count),
+            AdmissionsTodayCount = stayStats.AdmissionsToday,
+            DischargesTodayCount = stayStats.DischargesToday,
+            AverageLengthOfStayDays = stayStats.AverageStayDays,
             Wards = wards.Select(w => new AdminClinicWardDto
             {
                 Id = w.Id,
@@ -180,6 +190,53 @@ public sealed class AdminClinicInpatientQueryService(ClinicalDbContext clinicalD
         DischargedAt = a.DischargedAt,
         Status = a.Status,
         Reason = a.Reason,
-        Notes = a.Notes
+        Notes = a.Notes,
+        DischargeSummary = a.DischargeSummary,
+        InvoiceId = a.InvoiceId
     };
+
+    private async Task<(int AdmissionsToday, int DischargesToday, decimal? AverageStayDays)> LoadStayStatsAsync(
+        Guid clinicId,
+        DateTime todayStartUtc,
+        DateTime todayEndUtc,
+        CancellationToken cancellationToken)
+    {
+        var admissionsToday = await clinicalDbContext.InpatientAdmissions
+            .AsNoTracking()
+            .CountAsync(
+                a => a.ClinicId == clinicId
+                     && a.AdmittedAt >= todayStartUtc
+                     && a.AdmittedAt <= todayEndUtc,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        var dischargesToday = await clinicalDbContext.InpatientAdmissions
+            .AsNoTracking()
+            .CountAsync(
+                a => a.ClinicId == clinicId
+                     && a.DischargedAt != null
+                     && a.DischargedAt >= todayStartUtc
+                     && a.DischargedAt <= todayEndUtc,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        var cutoff = clock.UtcNow.AddDays(-90);
+        var discharged = await clinicalDbContext.InpatientAdmissions
+            .AsNoTracking()
+            .Where(a => a.ClinicId == clinicId
+                        && a.Status == "Discharged"
+                        && a.DischargedAt != null
+                        && a.DischargedAt >= cutoff)
+            .Select(a => new { a.AdmittedAt, a.DischargedAt })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        decimal? averageStay = discharged.Count == 0
+            ? null
+            : Math.Round(
+                (decimal)discharged.Average(a => (a.DischargedAt!.Value - a.AdmittedAt).TotalDays),
+                1);
+
+        return (admissionsToday, dischargesToday, averageStay);
+    }
 }

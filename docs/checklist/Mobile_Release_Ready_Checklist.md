@@ -79,5 +79,6 @@ Use this as a reminder list; close each item or mark **N/A** with a short ration
 |-----|---------|
 | **[`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md)** | Colors, type, radii, shadows/gradients, route map, visual parity checklist |
 | **[`../09_Mobile_App_Guide.md`](../09_Mobile_App_Guide.md)** | Where code lives, config, flags, localization, tests |
+| **[`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md)** | API, Web, and Mobile smoke phases (manual phone path until automation) |
 | **`11_Devices_BLE_E580_E585.md`** | BLE devices |
 | **`10_Agora_Twilio_Setup.md`** | Telehealth / comms setup |

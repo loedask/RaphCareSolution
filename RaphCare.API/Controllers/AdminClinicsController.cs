@@ -10,6 +10,9 @@ using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicBed;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicRoom;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicWard;
 using RaphCare.Application.Features.Organization.Commands.DischargeAdminClinicAdmission;
+using RaphCare.Application.Features.Organization.Commands.DraftAdminClinicDischargeSummary;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicAdmissionObservation;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicAdmissionObservations;
 using RaphCare.Application.Features.Organization.Commands.SetAdminClinicBedStatus;
 using RaphCare.Application.Features.Organization.Commands.TransferAdminClinicAdmission;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicBed;
@@ -21,7 +24,21 @@ using RaphCare.Application.Features.Organization.Queries.GetAdminClinicInpatient
 using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicAppointment;
 using RaphCare.Application.Features.Organization.Commands.CallAdminClinicLabOrder;
 using RaphCare.Application.Features.Organization.Commands.CallAdminClinicPrescription;
+using RaphCare.Application.Features.Organization.Commands.CallAdminClinicCasualtyTicket;
+using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicCasualtyTicket;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicCasualtyTicket;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicTheatreCase;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicReferral;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicRosterEntry;
+using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicRosterEntry;
+using RaphCare.Application.Features.Organization.Commands.EnsureCasualtyDisplayToken;
 using RaphCare.Application.Features.Organization.Commands.EnsureCollectionDisplayToken;
+using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicTheatreCaseStatus;
+using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicReferralStatus;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicCasualtyBoard;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicTheatreBoard;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicReferralBoard;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicRosterBoard;
 using RaphCare.Application.Features.Organization.Commands.SetAdminClinicProviderActive;
 using RaphCare.Application.Features.Organization.Commands.StartAdminClinicTeleSession;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicAppointment;
@@ -1010,6 +1027,266 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
         return result is null ? NotFound() : Ok(result);
     }
 
+    /// <summary>Casualty / triage queue board for this hospital.</summary>
+    [HttpGet("{id:guid}/casualty/board", Name = "GetAdminClinicCasualtyBoard")]
+    [ProducesResponseType(typeof(AdminClinicCasualtyBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetCasualtyBoard(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicCasualtyBoardQuery { ClinicId = id },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Enqueue a walk-in on the casualty board.</summary>
+    [HttpPost("{id:guid}/casualty/tickets", Name = "CreateAdminClinicCasualtyTicket")]
+    [ProducesResponseType(typeof(AdminClinicCasualtyTicketDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateCasualtyTicket(
+        Guid id,
+        [FromBody] CreateAdminClinicCasualtyTicketRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new CreateAdminClinicCasualtyTicketRequest();
+        var result = await mediator.Send(
+            new CreateAdminClinicCasualtyTicketCommand
+            {
+                ClinicId = id,
+                PatientId = body.PatientId,
+                TriageLevel = body.TriageLevel,
+                ChiefComplaint = body.ChiefComplaint
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Call a casualty queue code onto the waiting screen.</summary>
+    [HttpPost("{id:guid}/casualty/tickets/{ticketId:guid}/call", Name = "CallAdminClinicCasualtyTicket")]
+    [ProducesResponseType(typeof(AdminClinicCasualtyTicketDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CallCasualtyTicket(
+        Guid id,
+        Guid ticketId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CallAdminClinicCasualtyTicketCommand { ClinicId = id, TicketId = ticketId },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Complete or cancel a casualty ticket.</summary>
+    [HttpPost("{id:guid}/casualty/tickets/{ticketId:guid}/complete", Name = "CompleteAdminClinicCasualtyTicket")]
+    [ProducesResponseType(typeof(AdminClinicCasualtyTicketDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CompleteCasualtyTicket(
+        Guid id,
+        Guid ticketId,
+        [FromBody] CompleteAdminClinicCasualtyTicketRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new CompleteAdminClinicCasualtyTicketRequest();
+        var result = await mediator.Send(
+            new CompleteAdminClinicCasualtyTicketCommand
+            {
+                ClinicId = id,
+                TicketId = ticketId,
+                Cancel = body.Cancel
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Create or return the casualty waiting-screen token for this hospital.</summary>
+    [HttpPost("{id:guid}/casualty-display", Name = "EnsureAdminClinicCasualtyDisplay")]
+    [ProducesResponseType(typeof(CasualtyDisplayLinkDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> EnsureCasualtyDisplay(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new EnsureCasualtyDisplayTokenCommand { ClinicId = id },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Theatre board for a calendar day (UTC). Defaults to today.</summary>
+    [HttpGet("{id:guid}/theatre/board", Name = "GetAdminClinicTheatreBoard")]
+    [ProducesResponseType(typeof(AdminClinicTheatreBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetTheatreBoard(
+        Guid id,
+        [FromQuery] DateTime? dayUtc,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicTheatreBoardQuery { ClinicId = id, DayUtc = dayUtc },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Schedule a theatre case.</summary>
+    [HttpPost("{id:guid}/theatre/cases", Name = "CreateAdminClinicTheatreCase")]
+    [ProducesResponseType(typeof(AdminClinicTheatreCaseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateTheatreCase(
+        Guid id,
+        [FromBody] CreateAdminClinicTheatreCaseRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new CreateAdminClinicTheatreCaseRequest();
+        var result = await mediator.Send(
+            new CreateAdminClinicTheatreCaseCommand
+            {
+                ClinicId = id,
+                PatientId = body.PatientId,
+                ScheduledStart = body.ScheduledStart,
+                ScheduledEnd = body.ScheduledEnd,
+                ProcedureName = body.ProcedureName,
+                TheatreName = body.TheatreName,
+                SurgeonName = body.SurgeonName,
+                Notes = body.Notes
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Update theatre case status (start, complete, or cancel).</summary>
+    [HttpPost("{id:guid}/theatre/cases/{caseId:guid}/status", Name = "UpdateAdminClinicTheatreCaseStatus")]
+    [ProducesResponseType(typeof(AdminClinicTheatreCaseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateTheatreCaseStatus(
+        Guid id,
+        Guid caseId,
+        [FromBody] UpdateAdminClinicTheatreCaseStatusRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new UpdateAdminClinicTheatreCaseStatusRequest();
+        var result = await mediator.Send(
+            new UpdateAdminClinicTheatreCaseStatusCommand
+            {
+                ClinicId = id,
+                CaseId = caseId,
+                Status = body.Status
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Outbound referral board for this hospital.</summary>
+    [HttpGet("{id:guid}/referrals/board", Name = "GetAdminClinicReferralBoard")]
+    [ProducesResponseType(typeof(AdminClinicReferralBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetReferralBoard(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicReferralBoardQuery { ClinicId = id },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Log an outbound referral.</summary>
+    [HttpPost("{id:guid}/referrals", Name = "CreateAdminClinicReferral")]
+    [ProducesResponseType(typeof(AdminClinicReferralDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateReferral(
+        Guid id,
+        [FromBody] CreateAdminClinicReferralRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new CreateAdminClinicReferralRequest();
+        var result = await mediator.Send(
+            new CreateAdminClinicReferralCommand
+            {
+                ClinicId = id,
+                PatientId = body.PatientId,
+                VisitId = body.VisitId,
+                ReferredTo = body.ReferredTo,
+                Reason = body.Reason,
+                Specialty = body.Specialty,
+                Notes = body.Notes
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Update referral status (accept, complete, or cancel).</summary>
+    [HttpPost("{id:guid}/referrals/{referralId:guid}/status", Name = "UpdateAdminClinicReferralStatus")]
+    [ProducesResponseType(typeof(AdminClinicReferralDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateReferralStatus(
+        Guid id,
+        Guid referralId,
+        [FromBody] UpdateAdminClinicReferralStatusRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new UpdateAdminClinicReferralStatusRequest();
+        var result = await mediator.Send(
+            new UpdateAdminClinicReferralStatusCommand
+            {
+                ClinicId = id,
+                ReferralId = referralId,
+                Status = body.Status
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Staff roster board for a calendar day (UTC). Defaults to today.</summary>
+    [HttpGet("{id:guid}/roster/board", Name = "GetAdminClinicRosterBoard")]
+    [ProducesResponseType(typeof(AdminClinicRosterBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetRosterBoard(
+        Guid id,
+        [FromQuery] DateTime? dayUtc,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicRosterBoardQuery { ClinicId = id, DayUtc = dayUtc },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Add a staff member to the roster for a shift.</summary>
+    [HttpPost("{id:guid}/roster/entries", Name = "CreateAdminClinicRosterEntry")]
+    [ProducesResponseType(typeof(AdminClinicRosterEntryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateRosterEntry(
+        Guid id,
+        [FromBody] CreateAdminClinicRosterEntryRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new CreateAdminClinicRosterEntryRequest();
+        var result = await mediator.Send(
+            new CreateAdminClinicRosterEntryCommand
+            {
+                ClinicId = id,
+                ApplicationUserId = body.ApplicationUserId,
+                DutyDate = body.DutyDate,
+                ShiftLabel = body.ShiftLabel,
+                Note = body.Note
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Remove a roster entry.</summary>
+    [HttpDelete("{id:guid}/roster/entries/{entryId:guid}", Name = "DeleteAdminClinicRosterEntry")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteRosterEntry(
+        Guid id,
+        Guid entryId,
+        CancellationToken cancellationToken)
+    {
+        var deleted = await mediator.Send(
+            new DeleteAdminClinicRosterEntryCommand { ClinicId = id, EntryId = entryId },
+            cancellationToken);
+        return deleted ? NoContent() : NotFound();
+    }
+
     /// <summary>List monitoring devices registered to this hospital.</summary>
     [HttpGet("{id:guid}/devices", Name = "GetAdminClinicDevices")]
     [ProducesResponseType(typeof(IReadOnlyList<AdminClinicDeviceListItemDto>), StatusCodes.Status200OK)]
@@ -1134,10 +1411,92 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             {
                 ClinicId = id,
                 AdmissionId = admissionId,
-                Notes = body?.Notes
+                Notes = body?.Notes,
+                DischargeSummary = body?.DischargeSummary,
+                NightlyBedRate = body?.NightlyBedRate,
+                ExtraAmount = body?.ExtraAmount,
+                ExtraDescription = body?.ExtraDescription,
+                MarkPaid = body?.MarkPaid ?? false,
+                Currency = body?.Currency,
+                BookReturnVisit = body?.BookReturnVisit ?? false,
+                ReturnProviderId = body?.ReturnProviderId,
+                ReturnScheduledStart = body?.ReturnScheduledStart,
+                ReturnScheduledEnd = body?.ReturnScheduledEnd,
+                ReturnAppointmentType = string.IsNullOrWhiteSpace(body?.ReturnAppointmentType)
+                    ? "InPerson"
+                    : body.ReturnAppointmentType,
+                ReturnReason = body?.ReturnReason
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Draft a discharge summary with AI from ward notes (staff edits before discharge).</summary>
+    [HttpPost("{id:guid}/admissions/{admissionId:guid}/discharge-summary/draft", Name = "DraftAdminClinicDischargeSummary")]
+    [ProducesResponseType(typeof(AdminClinicDischargeSummaryDraftDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DraftDischargeSummary(
+        Guid id,
+        Guid admissionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new DraftAdminClinicDischargeSummaryCommand
+            {
+                ClinicId = id,
+                AdmissionId = admissionId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>List ward notes for an admission.</summary>
+    [HttpGet("{id:guid}/admissions/{admissionId:guid}/observations", Name = "GetAdminClinicAdmissionObservations")]
+    [ProducesResponseType(typeof(IReadOnlyList<AdminClinicAdmissionObservationDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAdmissionObservations(
+        Guid id,
+        Guid admissionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicAdmissionObservationsQuery
+            {
+                ClinicId = id,
+                AdmissionId = admissionId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Add a ward note or vitals to an active stay.</summary>
+    [HttpPost("{id:guid}/admissions/{admissionId:guid}/observations", Name = "CreateAdminClinicAdmissionObservation")]
+    [ProducesResponseType(typeof(AdminClinicAdmissionObservationDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateAdmissionObservation(
+        Guid id,
+        Guid admissionId,
+        [FromBody] CreateAdminClinicAdmissionObservationRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicAdmissionObservationCommand
+            {
+                ClinicId = id,
+                AdmissionId = admissionId,
+                Note = body.Note,
+                HeartRate = body.HeartRate,
+                TemperatureCelsius = body.TemperatureCelsius,
+                OxygenSaturation = body.OxygenSaturation,
+                SystolicBp = body.SystolicBp,
+                DiastolicBp = body.DiastolicBp
+            },
+            cancellationToken);
+        return result is null
+            ? NotFound()
+            : CreatedAtAction(nameof(GetAdmissionObservations), new { id, admissionId }, result);
     }
 
     /// <summary>Update a ward.</summary>

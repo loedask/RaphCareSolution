@@ -10,4 +10,6 @@ public class PatientHealthRecordListItemDto : BaseDto
     public string VisitType { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string? Summary { get; set; }
+    /// <summary>Visit or Discharge. Discharge items are hospital stays, not outpatient visits.</summary>
+    public string RecordKind { get; set; } = "Visit";
 }

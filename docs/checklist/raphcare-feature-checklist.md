@@ -6,8 +6,8 @@ Plain-language twin for non-technical partners: [`raphcare-feature-checklist-par
 
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
-**Overall completion (this checklist):** **80%**  
-**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **84%**
+**Overall completion (this checklist):** **78%**  
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **81%**
 
 **How to mark items and score %**
 
@@ -19,7 +19,7 @@ Track progress across **API**, **Web admin panel**, and **Mobile** (patient app)
 - `(out of scope)` and open `(optional)` / `(optional / later)` items are **excluded** from section and overall %
 - Vertical table rows (API / Client / Mobile UI) count as one item = average of the three cells
 - Section % = average of that section's scored items
-- Overall % = average of all scored items in Steps 1-4 plus Cross-cutting
+- Overall % = average of all scored items in Steps 1-5 plus Cross-cutting
 
 Each step ends with a short status note and its section %. Recalculate when you change checkboxes.
 
@@ -27,7 +27,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-08-29
+Last reviewed: 2026-09-02
 
 ---
 
@@ -126,7 +126,7 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ### Step 2 status
 
-**100%.** Lifecycle complete on API → Client → Web (capacity, maintenance, transfer, history, discharge notes, patient search). Demo seed + companion docs done. Do not start clinician Mobile for this until product asks for it.
+**100%.** Lifecycle complete on API, Client, and Web (capacity, maintenance, transfer, history, discharge notes, patient search). Demo seed and companion docs done. Do not start clinician Mobile for this until product asks for it.
 
 ---
 
@@ -264,6 +264,35 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 ---
 
+## Step 5: Hospital plan value (stay, counter, money) - 100%
+
+Work that makes the Hospital plan more than beds plus a waiting screen. Clinic stays outpatient. Network keeps multi-site index and group reporting. YC healthcare companies we adapted from: [Kaigo Health](https://www.ycombinator.com/companies/kaigo-health) (post-discharge follow-up), [Locata](https://www.ycombinator.com/companies/locata) (referral completion), [Adentris](https://www.ycombinator.com/companies/adentris) (discharge summaries), [YouShift](https://www.ycombinator.com/companies/youshift) (who is on today). We do not copy US denial-appeals products.
+
+### API + Application + Persistence
+
+- [x] Domain: `InpatientObservation`, admission `DischargeSummary` / `InvoiceId`, invoice `AdmissionId` / `PaymentMethod`, `InvoiceLineItem` mapped in billing
+- [x] `GET` / `POST {clinicId}/admissions/{id}/observations` (nurse, doctor, administrator, or general staff)
+- [x] Discharge: patient-facing summary, bed-night invoice, optional extra line, mark paid in cash
+- [x] Nurse job role (seed, map, staff invite)
+- [x] Occupancy %, admissions and discharges today, average stay on inpatient board and hospital dashboard
+- [x] Patient health records list and detail include discharged stays (`RecordKind` Discharge)
+- [x] Lab results on the visit health record, plus an in-app / push "result ready" notice when staff enter the result
+- [x] Casualty / triage queue (waiting-screen style, codes only): tickets, call, complete, public `/display/casualty/{token}`
+- [x] Theatre list (today's cases): schedule, start, complete, cancel on staff board
+- [x] Emergency events on the hospital dashboard home (not only Devices): overview + `/admin` when a hospital is selected (SOS / fall, last 72h)
+- [x] Outbound referral tracking so a sent referral is followed to completion
+- [x] Book a return visit at discharge (optional clinician, time, and reason on the discharge form)
+- [x] Who is on today (simple roster): Morning / Afternoon / Night board for a chosen day
+- [x] AI draft of the discharge summary (Hospital include; staff edits before save; uses Azure OpenAI when configured)
+
+Shipped on API, Client, and Web admin. Discharged stays also show in the patient Health records list. Casualty, theatre, referral, and roster boards are on the hospital rail. SafeCare SOS and fall alerts also sit on the hospital overview and admin home. Discharge can book the next outpatient visit and draft the summary with AI.
+
+### Step 5 status
+
+**100%.** Hospital plan stay and counter extras for this step are in: ward notes, discharge invoice, occupancy, nurse role, lab result-ready notice, casualty, theatre, emergency home alerts, outbound referrals, return visit at discharge, who-is-on-today roster, and AI discharge draft.
+
+---
+
 ## Cross-cutting - 88%
 
 - [x] Solution layers: Domain -> Application -> Persistence / Infrastructure / Identity -> API; Client -> Web / Mobile
@@ -273,11 +302,11 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 - [x] Inpatient documented in companion docs (Step 2 docs rows)
 - [x] Web UI localization (en / fr / ln / sw): `AppResources` + language picker on admin layout
 - [x] Staging demo pack: email/password accounts on `RaphCare Demo Clinic` (idempotent; does not wipe other hospitals)
-- [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API
+- [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API (plan: [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md))
 
 ### Cross-cutting status
 
-**88%.** Platform wiring includes Web UI languages and a Staging demo pack. Missing an automated E2E smoke against a running API.
+**88%.** Platform wiring includes Web UI languages and a Staging demo pack. Missing an automated E2E smoke against a running API. Plan for Web and Mobile smoke is documented; automation not started.
 
 ---
 
@@ -289,11 +318,12 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 62% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
-| Cross-cutting | 88% | Demo pack on Staging; E2E smoke open |
-| **Overall (scored items)** | **80%** | Out of scope / open optional excluded |
-| **Without wearable Phase 2+ metrics** | **84%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+| Step 5 Hospital plan value | 100% | Stay extras closed for this step |
+| Cross-cutting | 88% | Demo pack on Staging; E2E smoke plan in, script open |
+| **Overall (scored items)** | **78%** | Out of scope / open optional excluded |
+| **Without wearable Phase 2+ metrics** | **81%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
-**Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then E2E smoke script.
+**Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then Phase A API smoke from [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md).
 
 ---
 
@@ -301,10 +331,10 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 | Surface | Primary owner | Status snapshot |
 |---------|---------------|-----------------|
-| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle complete; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician |
+| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle plus ward notes and discharge invoice; casualty queue and display token; theatre board; outbound referral board; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screen; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---
@@ -314,6 +344,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 | Doc | Use for |
 |-----|---------|
 | `raphcare-feature-checklist-partner.md` | Plain-language status for non-technical partners |
+| [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md) | Planned API, Web UI, and Mobile smoke layers |
 | [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md) | Tokens, route map, screen visual parity |
 | `Mobile_Release_Ready_Checklist.md` | Flags, quality bar, release backlog |
 | [`../09_Mobile_App_Guide.md`](../09_Mobile_App_Guide.md) | Mobile structure, DI, config |

@@ -1,0 +1,493 @@
+@page "/admin/hospitals/{ClinicId:guid}/casualty"
+@layout AdminLayout
+@using RaphCare.Domain.Common
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@AppResources.T("Casualty_PageTitle")</PageTitle>
+
+<section class="admin-page hospital-deck">
+    @if (_loading && _board is null)
+    {
+        <HospitalDeckLoading Message="@AppResources.T("Casualty_Loading")" />
+    }
+    else
+    {
+        <HospitalDeckMasthead BackHref="@($"/admin/hospitals/{ClinicId}")"
+                              BackText="@AppResources.T("Common_BackToHospital")"
+                              Monogram="@HospitalDeckInitials.FromName(_clinicName)"
+                              Eyebrow="@AppResources.T("Casualty_Title")"
+                              Title="@_clinicName"
+                              Lead="@AppResources.Format("Casualty_Lead", _clinicName)"
+                              StatusText="@FormatStatusLine()">
+            <HospitalDeckChip Label="@AppResources.T("Common_Waiting")" Value="@WaitingCount.ToString()" />
+            <HospitalDeckChip Label="@AppResources.T("Casualty_CalledTitle")" Value="@CalledCount.ToString()" />
+        </HospitalDeckMasthead>
+
+        <AdminAlert Message="@_error" />
+        <AdminAlert Tone="success" Message="@_success" />
+
+        <div class="hospital-deck-workspace">
+        <HospitalDeckRail AriaLabel="@AppResources.T("Casualty_SectionsAria")"
+                          Kicker="@AppResources.T("Casualty_Title")">
+            <HospitalDeckRailItem Index="01" Icon="grid" IsActive="@(_tab == "waiting")" Count="@WaitingCount" OnSelect='() => SetTab("waiting")'>
+                @AppResources.T("Casualty_WaitingTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="02" Icon="admit" IsActive="@(_tab == "called")" Count="@CalledCount" OnSelect='() => SetTab("called")'>
+                @AppResources.T("Casualty_CalledTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="03" Icon="people" IsActive="@(_tab == "add")" OnSelect='() => SetTab("add")'>
+                @AppResources.T("Casualty_AddWalkInTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="04" Icon="history" IsActive="@(_tab == "recent")" OnSelect='() => SetTab("recent")'>
+                @AppResources.T("Casualty_RecentTitle")
+            </HospitalDeckRailItem>
+        </HospitalDeckRail>
+
+        <div class="hospital-deck-stage">
+        @if (_tab == "waiting")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")" Title="@AppResources.T("Casualty_WaitingTitle")">
+                <div class="admin-page-card-body">
+                    <div class="admin-page-actions collection-find-actions">
+                        <button type="button" class="btn btn-ghost" disabled="@_busy" @onclick="OpenWaitingScreenAsync">
+                            @AppResources.T("Casualty_OpenDisplay")
+                        </button>
+                    </div>
+                    <p class="hint">@AppResources.T("Casualty_DisplayHint")</p>
+                    @if (_board is null || _board.Waiting.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Casualty_NoWaiting")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Casualty_QueueCode")</th>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("Casualty_TriageLabel")</th>
+                                        <th>@AppResources.T("Casualty_ChiefComplaint")</th>
+                                        <th>@AppResources.T("Casualty_Arrived")</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in _board.Waiting)
+                                    {
+                                        <tr>
+                                            <td class="pickup-code">@ticket.QueueCode</td>
+                                            <td>
+                                                @if (ticket.PatientId is Guid waitingPatientId && !string.IsNullOrWhiteSpace(ticket.PatientName))
+                                                {
+                                                    <HospitalDirectoryPerson Name="@ticket.PatientName"
+                                                                             Href="@($"/admin/hospitals/{ClinicId}/patients/{waitingPatientId}")" />
+                                                }
+                                                else if (!string.IsNullOrWhiteSpace(ticket.PatientName))
+                                                {
+                                                    @ticket.PatientName
+                                                }
+                                                else
+                                                {
+                                                    @AppResources.T("Casualty_WalkInAnonymous")
+                                                }
+                                            </td>
+                                            <td><span class="@TriageCss(ticket.TriageLevel)">@FormatTriage(ticket.TriageLevel)</span></td>
+                                            <td>@(string.IsNullOrWhiteSpace(ticket.ChiefComplaint) ? AppResources.T("Common_EmptyCell") : ticket.ChiefComplaint)</td>
+                                            <td>@FormatLocal(ticket.ArrivedAt)</td>
+                                            <td>
+                                                <button type="button" class="btn btn-secondary" disabled="@(_savingId == ticket.Id)" @onclick="() => CallAsync(ticket.Id)">
+                                                    @AppResources.T("Casualty_Call")
+                                                </button>
+                                                <button type="button" class="btn btn-primary" disabled="@(_savingId == ticket.Id)" @onclick="() => CompleteTicketAsync(ticket.Id)">
+                                                    @AppResources.T("Casualty_Complete")
+                                                </button>
+                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == ticket.Id)" @onclick="() => CancelTicketAsync(ticket.Id)">
+                                                    @AppResources.T("Casualty_CancelTicket")
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "called")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")" Title="@AppResources.T("Casualty_CalledTitle")">
+                <div class="admin-page-card-body">
+                    @if (_board is null || _board.Called.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Casualty_NoCalled")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Casualty_QueueCode")</th>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("Casualty_TriageLabel")</th>
+                                        <th>@AppResources.T("Casualty_ChiefComplaint")</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in _board.Called)
+                                    {
+                                        <tr>
+                                            <td class="pickup-code">
+                                                @ticket.QueueCode
+                                                <span class="badge badge-success">@AppResources.T("Casualty_OnScreen")</span>
+                                            </td>
+                                            <td>
+                                                @if (ticket.PatientId is Guid calledPatientId && !string.IsNullOrWhiteSpace(ticket.PatientName))
+                                                {
+                                                    <HospitalDirectoryPerson Name="@ticket.PatientName"
+                                                                             Href="@($"/admin/hospitals/{ClinicId}/patients/{calledPatientId}")" />
+                                                }
+                                                else if (!string.IsNullOrWhiteSpace(ticket.PatientName))
+                                                {
+                                                    @ticket.PatientName
+                                                }
+                                                else
+                                                {
+                                                    @AppResources.T("Casualty_WalkInAnonymous")
+                                                }
+                                            </td>
+                                            <td><span class="@TriageCss(ticket.TriageLevel)">@FormatTriage(ticket.TriageLevel)</span></td>
+                                            <td>@(string.IsNullOrWhiteSpace(ticket.ChiefComplaint) ? AppResources.T("Common_EmptyCell") : ticket.ChiefComplaint)</td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary" disabled="@(_savingId == ticket.Id)" @onclick="() => CompleteTicketAsync(ticket.Id)">
+                                                    @AppResources.T("Casualty_Complete")
+                                                </button>
+                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == ticket.Id)" @onclick="() => CancelTicketAsync(ticket.Id)">
+                                                    @AppResources.T("Casualty_CancelTicket")
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "add")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")" Title="@AppResources.T("Casualty_AddWalkInTitle")">
+                <div class="admin-page-card-body">
+                    <p class="hint">@AppResources.T("Casualty_WalkInHint")</p>
+                    <div class="form-grid">
+                        <label>
+                            @AppResources.T("Inpatient_FindPatientLabel")
+                            <div class="inpatient-search-row">
+                                <input class="form-control" @bind="_patientSearch" @bind:event="oninput" placeholder="@AppResources.T("Inpatient_NameOrPhonePlaceholder")" />
+                                <button type="button" class="btn btn-secondary" disabled="@_searchingPatients" @onclick="SearchPatientsAsync">
+                                    @(_searchingPatients ? AppResources.T("Common_PleaseWait") : AppResources.T("Common_Search"))
+                                </button>
+                            </div>
+                        </label>
+                        <label>
+                            @AppResources.T("Common_Patient")
+                            <SearchableSelect TValue="string"
+                                              @bind-Value="_selectedPatientId"
+                                              Placeholder="@AppResources.T("Casualty_PatientOptional")"
+                                              Options="PatientOptions" />
+                        </label>
+                        <label>
+                            @AppResources.T("Casualty_TriageLabel")
+                            <select class="form-control" @bind="_triageLevel">
+                                <option value="Red">@AppResources.T("Casualty_TriageRed")</option>
+                                <option value="Orange">@AppResources.T("Casualty_TriageOrange")</option>
+                                <option value="Yellow">@AppResources.T("Casualty_TriageYellow")</option>
+                                <option value="Green">@AppResources.T("Casualty_TriageGreen")</option>
+                            </select>
+                        </label>
+                        <label>
+                            @AppResources.T("Casualty_ChiefComplaint")
+                            <input class="form-control" @bind="_chiefComplaint" placeholder="@AppResources.T("Casualty_ChiefComplaintPlaceholder")" />
+                        </label>
+                    </div>
+                    <div class="admin-page-actions">
+                        <button type="button" class="btn btn-primary" disabled="@_busy" @onclick="CreateWalkInAsync">
+                            @AppResources.T("Casualty_SubmitWalkIn")
+                        </button>
+                    </div>
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "recent")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")" Title="@AppResources.T("Casualty_RecentTitle")">
+                <div class="admin-page-card-body">
+                    @if (_board is null || _board.Recent.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Casualty_NoRecent")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Casualty_QueueCode")</th>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("Casualty_TriageLabel")</th>
+                                        <th>@AppResources.T("Common_Status")</th>
+                                        <th>@AppResources.T("Casualty_Arrived")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in _board.Recent)
+                                    {
+                                        <tr>
+                                            <td class="pickup-code">@ticket.QueueCode</td>
+                                            <td>
+                                                @if (ticket.PatientId is Guid recentPatientId && !string.IsNullOrWhiteSpace(ticket.PatientName))
+                                                {
+                                                    <HospitalDirectoryPerson Name="@ticket.PatientName"
+                                                                             Href="@($"/admin/hospitals/{ClinicId}/patients/{recentPatientId}")" />
+                                                }
+                                                else if (!string.IsNullOrWhiteSpace(ticket.PatientName))
+                                                {
+                                                    @ticket.PatientName
+                                                }
+                                                else
+                                                {
+                                                    @AppResources.T("Casualty_WalkInAnonymous")
+                                                }
+                                            </td>
+                                            <td><span class="@TriageCss(ticket.TriageLevel)">@FormatTriage(ticket.TriageLevel)</span></td>
+                                            <td>@FormatTicketStatus(ticket.Status)</td>
+                                            <td>@FormatLocal(ticket.ArrivedAt)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        </div>
+        </div>
+
+        <div class="hospital-deck-foot">
+            <HospitalDeckBackLink Href="@($"/admin/hospitals/{ClinicId}")" Text="@AppResources.T("Common_BackToHospital")" />
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+    [Inject] private IJSRuntime Js { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _busy;
+    private bool _searchingPatients;
+    private string _tab = "waiting";
+    private Guid? _savingId;
+    private string? _error;
+    private string? _success;
+    private string _clinicName = AppResources.T("Common_ThisHospital");
+    private string _clinicTimeZone = "UTC";
+    private string _patientSearch = string.Empty;
+    private string _selectedPatientId = string.Empty;
+    private string _triageLevel = "Green";
+    private string _chiefComplaint = string.Empty;
+    private ClinicCasualtyBoard? _board;
+    private IReadOnlyList<ClinicPatientListItem> _patients = Array.Empty<ClinicPatientListItem>();
+
+    private int WaitingCount => _board?.WaitingCount ?? _board?.Waiting.Count ?? 0;
+    private int CalledCount => _board?.CalledCount ?? _board?.Called.Count ?? 0;
+
+    private IReadOnlyList<SelectOption<string>> PatientOptions =>
+        _patients.Select(p => new SelectOption<string>(p.PatientId.ToString(), $"{p.FirstName} {p.LastName}")).ToArray();
+
+    protected override async Task OnInitializedAsync()
+    {
+        CultureService.CultureChanged += OnCultureChanged;
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
+        if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
+        {
+            _clinicName = clinicResponse.Data.Name;
+            _clinicTimeZone = clinicResponse.Data.TimeZone;
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+
+        await LoadBoardAsync();
+    }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private void SetTab(string tab) => _tab = tab;
+
+    private string FormatStatusLine()
+    {
+        var waiting = WaitingCount;
+        return waiting == 1
+            ? AppResources.Format("Casualty_WaitingOne", waiting)
+            : AppResources.Format("Casualty_WaitingMany", waiting);
+    }
+
+    private string FormatLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private static string TriageCss(string? level) =>
+        level?.Trim().ToLowerInvariant() switch
+        {
+            "red" => "casualty-triage casualty-triage-red",
+            "orange" => "casualty-triage casualty-triage-orange",
+            "yellow" => "casualty-triage casualty-triage-yellow",
+            "green" => "casualty-triage casualty-triage-green",
+            _ => "casualty-triage"
+        };
+
+    private static string FormatTriage(string? level) =>
+        level?.Trim() switch
+        {
+            "Red" => AppResources.T("Casualty_TriageRed"),
+            "Orange" => AppResources.T("Casualty_TriageOrange"),
+            "Yellow" => AppResources.T("Casualty_TriageYellow"),
+            "Green" => AppResources.T("Casualty_TriageGreen"),
+            _ => string.IsNullOrWhiteSpace(level) ? AppResources.T("Common_EmptyCell") : level
+        };
+
+    private static string FormatTicketStatus(string? status) =>
+        status switch
+        {
+            "Waiting" => AppResources.T("Common_Waiting"),
+            "Called" => AppResources.T("Casualty_CalledTitle"),
+            "Completed" => AppResources.T("Common_CompletedStatus"),
+            "Cancelled" => AppResources.T("Common_Cancelled"),
+            _ => string.IsNullOrWhiteSpace(status) ? AppResources.T("Common_EmptyCell") : status
+        };
+
+    private async Task LoadBoardAsync()
+    {
+        _busy = true;
+        if (_board is null)
+            _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetCasualtyBoardAsync(ClinicId);
+        _busy = false;
+        _loading = false;
+        if (response.IsSuccess && response.Data is not null)
+            _board = response.Data;
+        else
+            _error = response.ErrorMessage ?? AppResources.T("Casualty_CouldNotLoad");
+    }
+
+    private async Task SearchPatientsAsync()
+    {
+        _searchingPatients = true;
+        var patients = await AdminClinicService.GetPatientsAsync(
+            ClinicId, 1, 50, string.IsNullOrWhiteSpace(_patientSearch) ? null : _patientSearch.Trim());
+        _searchingPatients = false;
+
+        if (patients.IsSuccess && patients.Data is not null)
+            _patients = patients.Data.Items;
+        else
+            _error = patients.ErrorMessage ?? AppResources.T("Common_CouldNotLoadPatients");
+    }
+
+    private async Task CreateWalkInAsync()
+    {
+        _busy = true;
+        _error = null;
+        _success = null;
+        Guid? patientId = null;
+        if (Guid.TryParse(_selectedPatientId, out var parsed) && parsed != Guid.Empty)
+            patientId = parsed;
+
+        var response = await AdminClinicService.CreateCasualtyTicketAsync(ClinicId, new CreateCasualtyTicketRequest
+        {
+            PatientId = patientId,
+            TriageLevel = _triageLevel,
+            ChiefComplaint = string.IsNullOrWhiteSpace(_chiefComplaint) ? null : _chiefComplaint.Trim()
+        });
+        _busy = false;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Casualty_CouldNotCreate");
+            return;
+        }
+
+        _success = AppResources.T("Casualty_Created");
+        _chiefComplaint = string.Empty;
+        _selectedPatientId = string.Empty;
+        _triageLevel = "Green";
+        _tab = "waiting";
+        await LoadBoardAsync();
+    }
+
+    private async Task CallAsync(Guid ticketId)
+    {
+        _savingId = ticketId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CallCasualtyTicketAsync(ClinicId, ticketId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Casualty_CouldNotCall");
+            return;
+        }
+
+        _success = AppResources.T("Casualty_Called");
+        await LoadBoardAsync();
+    }
+
+    private Task CompleteTicketAsync(Guid ticketId) => FinishAsync(ticketId, cancel: false);
+
+    private Task CancelTicketAsync(Guid ticketId) => FinishAsync(ticketId, cancel: true);
+
+    private async Task FinishAsync(Guid ticketId, bool cancel)
+    {
+        _savingId = ticketId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CompleteCasualtyTicketAsync(ClinicId, ticketId, cancel);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? (cancel
+                ? AppResources.T("Casualty_CouldNotCancel")
+                : AppResources.T("Casualty_CouldNotComplete"));
+            return;
+        }
+
+        _success = cancel ? AppResources.T("Casualty_Cancelled") : AppResources.T("Casualty_Completed");
+        await LoadBoardAsync();
+    }
+
+    private async Task OpenWaitingScreenAsync()
+    {
+        _busy = true;
+        _error = null;
+        var response = await AdminClinicService.EnsureCasualtyDisplayTokenAsync(ClinicId);
+        _busy = false;
+        if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data))
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Casualty_CouldNotOpenDisplay");
+            return;
+        }
+
+        var url = Navigation.ToAbsoluteUri($"display/casualty/{response.Data}").ToString();
+        await Js.InvokeVoidAsync("raphCareClinic.openWindow", url, "raphcareCasualtyDisplay");
+    }
+}

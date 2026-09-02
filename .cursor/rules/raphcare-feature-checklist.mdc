@@ -52,6 +52,7 @@ Styles: `docs/checklist/raphcare-feature-checklist.pdf.css`. Configs: `docs/chec
 - Don't skip the checklist update because the code change was "small."
 - Don't invent Mobile admin/inpatient rows unless product scopes a clinician app.
 - Don't put class names, routes, or build commands in the **partner** doc.
+- Don't put repo paths, `.md` filenames, or "related reading" links to engineering docs in the **partner** doc. Partners get plain status and the partner PDF only. Keep builder links on the engineering checklist.
 
 ## Copy
 

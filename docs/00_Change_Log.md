@@ -2,6 +2,80 @@
 
 ## Date
 
+2026-09-02
+
+## High-level summary of changes
+
+Documented a layered smoke plan for admin web and patient mobile (shared API first, then Web UI automation, then phone manual and later Android UI tests).
+
+## Modules modified
+
+- **docs:** `checklist/Web_And_Mobile_Smoke_Plan.md`; pointers from feature checklists, mobile guide, demo launch guide, and mobile release checklist.
+
+---
+
+## Date
+
+2026-09-02
+
+## High-level summary of changes
+
+Outbound referral board: staff log a referral, then mark it accepted, completed, or cancelled until follow-through is clear.
+
+## Modules modified
+
+- **Domain / Application / Persistence / API / Client / Web:** evolved `Referral`, admin referral board and status APIs, `Referrals.razor` hospital rail page.
+- **docs:** hospital plan checklist (engineering + partner).
+
+---
+
+## Date
+
+2026-09-02
+
+## High-level summary of changes
+
+SafeCare SOS and fall alerts now appear on the hospital overview and the admin home when a hospital is selected, not only on Devices.
+
+## Modules modified
+
+- **RaphCare.Web:** `ClinicEmergencyHomeCard`, hospital Detail overview, admin Dashboard; filter helper and tests.
+- **docs:** hospital plan checklist (engineering + partner).
+
+---
+
+## Date
+
+2026-09-02
+
+## High-level summary of changes
+
+Casualty triage queue with a codes-only waiting screen, and a theatre list for today's cases, on the Hospital plan admin boards.
+
+## Modules modified
+
+- **Domain / Application / Persistence / API / Client / Web:** `CasualtyTicket`, `TheatreCase`, casualty display token, admin Casualty and Theatre pages, public `/display/casualty/{token}`.
+- **docs:** hospital plan checklist (engineering + partner), price list Hospital line.
+
+---
+
+## Date
+
+2026-09-02
+
+## High-level summary of changes
+
+Hospital plan value: ward notes on a stay, a cash invoice and patient-facing summary at discharge, occupancy numbers on the hospital dashboard, and a nurse job. Partner price list for South Africa (rand) and the Democratic Republic of the Congo (US dollars) is in `docs/partner-updates`.
+
+## Modules modified
+
+- **Domain / Application / Persistence / API / Client / Web:** inpatient observations, discharge invoice line items, nurse role, occupancy stats.
+- **docs:** hospital plan checklist (engineering + partner), `partner-updates/raphcare-price-list.md`.
+
+---
+
+## Date
+
 2026-08-29
 
 ## High-level summary of changes

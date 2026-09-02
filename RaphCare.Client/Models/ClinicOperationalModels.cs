@@ -10,6 +10,12 @@ public sealed class ClinicDashboard
     public int FacilityCount { get; set; }
     public int AppointmentsTodayCount { get; set; }
     public int UpcomingAppointmentsCount { get; set; }
+    public int TotalBeds { get; set; }
+    public int OccupiedBeds { get; set; }
+    public int OccupancyPercent { get; set; }
+    public int AdmissionsTodayCount { get; set; }
+    public int DischargesTodayCount { get; set; }
+    public decimal? AverageLengthOfStayDays { get; set; }
     public IReadOnlyList<ClinicAppointmentListItem> UpcomingAppointments { get; set; } = Array.Empty<ClinicAppointmentListItem>();
 }
 
@@ -415,6 +421,10 @@ public sealed class ClinicInpatientBoard
     public int OccupiedBeds { get; set; }
     public int MaintenanceBeds { get; set; }
     public int ActiveAdmissions { get; set; }
+    public int OccupancyPercent { get; set; }
+    public int AdmissionsTodayCount { get; set; }
+    public int DischargesTodayCount { get; set; }
+    public decimal? AverageLengthOfStayDays { get; set; }
     public IReadOnlyList<ClinicWard> Wards { get; set; } = Array.Empty<ClinicWard>();
     public IReadOnlyList<ClinicAdmission> ActiveAdmissionsList { get; set; } = Array.Empty<ClinicAdmission>();
 }
@@ -467,6 +477,56 @@ public sealed class ClinicAdmission
     public string Status { get; set; } = string.Empty;
     public string? Reason { get; set; }
     public string? Notes { get; set; }
+    public string? DischargeSummary { get; set; }
+    public Guid? InvoiceId { get; set; }
+    public decimal? InvoiceAmount { get; set; }
+    public string? InvoiceCurrency { get; set; }
+    public string? InvoiceStatus { get; set; }
+    public DateTime? InvoicePaidAt { get; set; }
+    public int? BedNights { get; set; }
+    public Guid? ReturnAppointmentId { get; set; }
+    public DateTime? ReturnAppointmentStart { get; set; }
+    public DateTime? ReturnAppointmentEnd { get; set; }
+}
+
+public sealed class ClinicAdmissionObservation
+{
+    public Guid Id { get; set; }
+    public Guid AdmissionId { get; set; }
+    public DateTime RecordedAt { get; set; }
+    public string Note { get; set; } = string.Empty;
+    public decimal? HeartRate { get; set; }
+    public decimal? TemperatureCelsius { get; set; }
+    public decimal? OxygenSaturation { get; set; }
+    public decimal? SystolicBp { get; set; }
+    public decimal? DiastolicBp { get; set; }
+}
+
+public sealed class DischargeAdmissionRequest
+{
+    public string? Notes { get; set; }
+    public string? DischargeSummary { get; set; }
+    public decimal? NightlyBedRate { get; set; }
+    public decimal? ExtraAmount { get; set; }
+    public string? ExtraDescription { get; set; }
+    public bool MarkPaid { get; set; }
+    public string? Currency { get; set; }
+    public bool BookReturnVisit { get; set; }
+    public Guid? ReturnProviderId { get; set; }
+    public DateTime? ReturnScheduledStart { get; set; }
+    public DateTime? ReturnScheduledEnd { get; set; }
+    public string? ReturnAppointmentType { get; set; }
+    public string? ReturnReason { get; set; }
+}
+
+public sealed class AddAdmissionObservationRequest
+{
+    public string Note { get; set; } = string.Empty;
+    public decimal? HeartRate { get; set; }
+    public decimal? TemperatureCelsius { get; set; }
+    public decimal? OxygenSaturation { get; set; }
+    public decimal? SystolicBp { get; set; }
+    public decimal? DiastolicBp { get; set; }
 }
 
 public sealed class CreateWardRequest
@@ -552,3 +612,143 @@ public sealed class ClinicTeleJoinInfo
     public string? PatientName { get; set; }
     public string? ProviderDisplayName { get; set; }
 }
+
+public sealed class ClinicCasualtyBoard
+{
+    public string ClinicName { get; set; } = string.Empty;
+    public int WaitingCount { get; set; }
+    public int CalledCount { get; set; }
+    public IReadOnlyList<ClinicCasualtyTicket> Waiting { get; set; } =
+        Array.Empty<ClinicCasualtyTicket>();
+    public IReadOnlyList<ClinicCasualtyTicket> Called { get; set; } =
+        Array.Empty<ClinicCasualtyTicket>();
+    public IReadOnlyList<ClinicCasualtyTicket> Recent { get; set; } =
+        Array.Empty<ClinicCasualtyTicket>();
+}
+
+public sealed class ClinicCasualtyTicket
+{
+    public Guid Id { get; set; }
+    public Guid? PatientId { get; set; }
+    public string? PatientName { get; set; }
+    public string QueueCode { get; set; } = string.Empty;
+    public string TriageLevel { get; set; } = string.Empty;
+    public string? ChiefComplaint { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime ArrivedAt { get; set; }
+    public DateTime? CalledAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+}
+
+public sealed class CreateCasualtyTicketRequest
+{
+    public Guid? PatientId { get; set; }
+    public string TriageLevel { get; set; } = "Green";
+    public string? ChiefComplaint { get; set; }
+}
+
+public sealed class ClinicTheatreBoard
+{
+    public string ClinicName { get; set; } = string.Empty;
+    public DateTime DayUtc { get; set; }
+    public int ScheduledCount { get; set; }
+    public int InProgressCount { get; set; }
+    public int CompletedCount { get; set; }
+    public IReadOnlyList<ClinicTheatreCase> Cases { get; set; } =
+        Array.Empty<ClinicTheatreCase>();
+}
+
+public sealed class ClinicTheatreCase
+{
+    public Guid Id { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public DateTime ScheduledStart { get; set; }
+    public DateTime? ScheduledEnd { get; set; }
+    public string ProcedureName { get; set; } = string.Empty;
+    public string? TheatreName { get; set; }
+    public string? SurgeonName { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+}
+
+public sealed class CreateTheatreCaseRequest
+{
+    public Guid PatientId { get; set; }
+    public DateTime ScheduledStart { get; set; }
+    public DateTime? ScheduledEnd { get; set; }
+    public string ProcedureName { get; set; } = string.Empty;
+    public string? TheatreName { get; set; }
+    public string? SurgeonName { get; set; }
+    public string? Notes { get; set; }
+}
+
+public sealed class ClinicReferralBoard
+{
+    public string ClinicName { get; set; } = string.Empty;
+    public int SentCount { get; set; }
+    public int AcceptedCount { get; set; }
+    public int CompletedCount { get; set; }
+    public IReadOnlyList<ClinicReferral> Open { get; set; } =
+        Array.Empty<ClinicReferral>();
+    public IReadOnlyList<ClinicReferral> Recent { get; set; } =
+        Array.Empty<ClinicReferral>();
+}
+
+public sealed class ClinicReferral
+{
+    public Guid Id { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public Guid? VisitId { get; set; }
+    public string ReferredTo { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+    public string? Specialty { get; set; }
+    public string? Notes { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime ReferredAt { get; set; }
+    public DateTime? AcceptedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+}
+
+public sealed class CreateReferralRequest
+{
+    public Guid PatientId { get; set; }
+    public Guid? VisitId { get; set; }
+    public string ReferredTo { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+    public string? Specialty { get; set; }
+    public string? Notes { get; set; }
+}
+
+public sealed class ClinicRosterBoard
+{
+    public string ClinicName { get; set; } = string.Empty;
+    public DateTime DayUtc { get; set; }
+    public int MorningCount { get; set; }
+    public int AfternoonCount { get; set; }
+    public int NightCount { get; set; }
+    public IReadOnlyList<ClinicRosterEntry> Entries { get; set; } =
+        Array.Empty<ClinicRosterEntry>();
+}
+
+public sealed class ClinicRosterEntry
+{
+    public Guid Id { get; set; }
+    public Guid ApplicationUserId { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+    public string? Email { get; set; }
+    public IReadOnlyList<string> Roles { get; set; } = Array.Empty<string>();
+    public DateTime DutyDate { get; set; }
+    public string ShiftLabel { get; set; } = string.Empty;
+    public string? Note { get; set; }
+}
+
+public sealed class CreateRosterEntryRequest
+{
+    public Guid ApplicationUserId { get; set; }
+    public DateTime DutyDate { get; set; }
+    public string ShiftLabel { get; set; } = "Morning";
+    public string? Note { get; set; }
+}
+
