@@ -1,11 +1,12 @@
 using System.Text.Json.Serialization;
 using MediatR;
+using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.StandaloneEmergency.DTOs;
 
 namespace RaphCare.Application.Features.StandaloneEmergency.Commands.IngestDeviceEmergencyEvent;
 
-/// <summary>Payload from cellular / OEM webhook (JSON body).</summary>
-public sealed class IngestDeviceEmergencyEventCommand : IRequest<IngestDeviceEmergencyEventResult>
+/// <summary>Payload from cellular / OEM webhook (JSON body). Public device ingest; no staff sign-in.</summary>
+public sealed class IngestDeviceEmergencyEventCommand : IRequest<IngestDeviceEmergencyEventResult>, IAllowAnonymousRequest
 {
     [JsonPropertyName("serialNumber")]
     public string SerialNumber { get; set; } = string.Empty;
