@@ -39,6 +39,8 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<Bed> Beds => Set<Bed>();
     public DbSet<InpatientAdmission> InpatientAdmissions => Set<InpatientAdmission>();
     public DbSet<InpatientObservation> InpatientObservations => Set<InpatientObservation>();
+    public DbSet<CasualtyTicket> CasualtyTickets => Set<CasualtyTicket>();
+    public DbSet<TheatreCase> TheatreCases => Set<TheatreCase>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -70,6 +72,8 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new BedConfiguration());
         modelBuilder.ApplyConfiguration(new InpatientAdmissionConfiguration());
         modelBuilder.ApplyConfiguration(new InpatientObservationConfiguration());
+        modelBuilder.ApplyConfiguration(new CasualtyTicketConfiguration());
+        modelBuilder.ApplyConfiguration(new TheatreCaseConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

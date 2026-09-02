@@ -79,3 +79,32 @@ public sealed class TransferAdminClinicAdmissionRequest
     public Guid TargetBedId { get; set; }
     public string? Notes { get; set; }
 }
+
+public sealed class CreateAdminClinicCasualtyTicketRequest
+{
+    public Guid? PatientId { get; set; }
+    public string TriageLevel { get; set; } = "Green";
+    public string? ChiefComplaint { get; set; }
+}
+
+public sealed class CompleteAdminClinicCasualtyTicketRequest
+{
+    public bool Cancel { get; set; }
+}
+
+public sealed class CreateAdminClinicTheatreCaseRequest
+{
+    public Guid PatientId { get; set; }
+    public DateTime ScheduledStart { get; set; }
+    public DateTime? ScheduledEnd { get; set; }
+    public string ProcedureName { get; set; } = string.Empty;
+    public string? TheatreName { get; set; }
+    public string? SurgeonName { get; set; }
+    public string? Notes { get; set; }
+}
+
+public sealed class UpdateAdminClinicTheatreCaseStatusRequest
+{
+    public string Status { get; set; } = string.Empty;
+}
+

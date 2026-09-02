@@ -6,6 +6,21 @@
 
 ## High-level summary of changes
 
+Casualty triage queue with a codes-only waiting screen, and a theatre list for today's cases, on the Hospital plan admin boards.
+
+## Modules modified
+
+- **Domain / Application / Persistence / API / Client / Web:** `CasualtyTicket`, `TheatreCase`, casualty display token, admin Casualty and Theatre pages, public `/display/casualty/{token}`.
+- **docs:** hospital plan checklist (engineering + partner), price list Hospital line.
+
+---
+
+## Date
+
+2026-09-02
+
+## High-level summary of changes
+
 Hospital plan value: ward notes on a stay, a cash invoice and patient-facing summary at discharge, occupancy numbers on the hospital dashboard, and a nurse job. Partner price list for South Africa (rand) and the Democratic Republic of the Congo (US dollars) is in `docs/partner-updates`.
 
 ## Modules modified

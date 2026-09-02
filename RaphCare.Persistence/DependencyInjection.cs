@@ -161,6 +161,8 @@ public static class DependencyInjection
         services.AddScoped<IClinicStaffPendingInvitationService, ClinicStaffPendingInvitationService>();
         services.AddScoped<IAdminClinicPatientQueryService, AdminClinicPatientQueryService>();
         services.AddScoped<IAdminClinicCollectionQueryService, AdminClinicCollectionQueryService>();
+        services.AddScoped<IAdminClinicCasualtyQueryService, AdminClinicCasualtyQueryService>();
+        services.AddScoped<IAdminClinicTheatreQueryService, AdminClinicTheatreQueryService>();
         services.AddScoped<IAdminClinicInpatientQueryService, AdminClinicInpatientQueryService>();
         services.AddScoped<IAdminClinicProviderQueryService, AdminClinicProviderQueryService>();
         services.AddScoped<IAdminClinicAppointmentQueryService, AdminClinicAppointmentQueryService>();
@@ -192,6 +194,8 @@ public static class DependencyInjection
         services.AddScoped<IRepository<Bed>>(sp => new EfRepository<Bed, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<InpatientAdmission>>(sp => new EfRepository<InpatientAdmission, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<InpatientObservation>>(sp => new EfRepository<InpatientObservation, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<CasualtyTicket>>(sp => new EfRepository<CasualtyTicket, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<TheatreCase>>(sp => new EfRepository<TheatreCase, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Provider>>(sp => new EfRepository<Provider, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<ProviderSchedule>>(sp => new EfRepository<ProviderSchedule, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<VoiceRecording>>(sp => new EfRepository<VoiceRecording, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));

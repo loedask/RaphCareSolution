@@ -6,8 +6,8 @@ Plain-language twin for non-technical partners: [`raphcare-feature-checklist-par
 
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
-**Overall completion (this checklist):** **72%**  
-**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **76%**
+**Overall completion (this checklist):** **73%**  
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **77%**
 
 **How to mark items and score %**
 
@@ -264,7 +264,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 ---
 
-## Step 5: Hospital plan value (stay, counter, money) - 46%
+## Step 5: Hospital plan value (stay, counter, money) - 61%
 
 Work that makes the Hospital plan more than beds plus a waiting screen. Clinic stays outpatient. Network keeps multi-site index and group reporting. YC healthcare companies we adapted from: [Kaigo Health](https://www.ycombinator.com/companies/kaigo-health) (post-discharge follow-up), [Locata](https://www.ycombinator.com/companies/locata) (referral completion), [Adentris](https://www.ycombinator.com/companies/adentris) (discharge summaries), [YouShift](https://www.ycombinator.com/companies/youshift) (who is on today). We do not copy US denial-appeals products.
 
@@ -277,19 +277,19 @@ Work that makes the Hospital plan more than beds plus a waiting screen. Clinic s
 - [x] Occupancy %, admissions and discharges today, average stay on inpatient board and hospital dashboard
 - [x] Patient health records list and detail include discharged stays (`RecordKind` Discharge)
 - [x] Lab results on the visit health record `(partial)`: already on visit detail; no separate "result ready" notice
-- [ ] Casualty / triage queue (waiting-screen style, codes only)
-- [ ] Theatre list (today's cases)
+- [x] Casualty / triage queue (waiting-screen style, codes only): tickets, call, complete, public `/display/casualty/{token}`
+- [x] Theatre list (today's cases): schedule, start, complete, cancel on staff board
 - [ ] Emergency events on the hospital dashboard home (not only Devices)
 - [ ] Outbound referral tracking so a sent referral is followed to completion
 - [ ] Book a return visit at discharge
 - [ ] Who is on today (simple roster)
 - [ ] AI draft of the discharge summary (Hospital include; Clinic keeps the paid add-on)
 
-Shipped on API, Client, and Web admin. Discharged stays also show in the patient Health records list.
+Shipped on API, Client, and Web admin. Discharged stays also show in the patient Health records list. Casualty and theatre boards are on the hospital rail.
 
 ### Step 5 status
 
-**46%.** Ward notes, discharge invoice, occupancy numbers, nurse role, and discharge summaries in the patient record are in. Queue, theatre, emergency home, referrals, return booking, roster, and AI draft are not started.
+**61%.** Ward notes, discharge invoice, occupancy, nurse role, discharge summaries, casualty queue with TV display, and theatre list for today are in. Emergency home, referrals, return booking, roster, and AI draft are not started.
 
 ---
 
@@ -318,10 +318,10 @@ Shipped on API, Client, and Web admin. Discharged stays also show in the patient
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 62% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
-| Step 5 Hospital plan value | 46% | Ward notes, discharge invoice, occupancy; queue and theatre open |
+| Step 5 Hospital plan value | 61% | Casualty and theatre boards in; emergency home and follow-up open |
 | Cross-cutting | 88% | Demo pack on Staging; E2E smoke open |
-| **Overall (scored items)** | **72%** | Out of scope / open optional excluded |
-| **Without wearable Phase 2+ metrics** | **76%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+| **Overall (scored items)** | **73%** | Out of scope / open optional excluded |
+| **Without wearable Phase 2+ metrics** | **77%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
 **Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then E2E smoke script.
 
@@ -331,10 +331,10 @@ Shipped on API, Client, and Web admin. Discharged stays also show in the patient
 
 | Surface | Primary owner | Status snapshot |
 |---------|---------------|-----------------|
-| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle plus ward notes and discharge invoice; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
+| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle plus ward notes and discharge invoice; casualty queue and display token; theatre board; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + occupancy numbers + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screen; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + occupancy numbers + casualty + theatre + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

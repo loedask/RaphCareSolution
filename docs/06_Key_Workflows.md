@@ -43,6 +43,8 @@
 
 - **Auth:** Admin uses Entra; role "Administrator" maps to RequireAdmin policy. TenantResolutionMiddleware requires X-Clinic-Id for /api/*.
 - **Inpatient:** Admin opens `/admin/hospitals/{id}/inpatient`. Board shows occupancy, admissions today, and average stay. Nurses and doctors add ward notes on an active stay. Admins discharge with an optional patient-facing summary, nightly bed rate, extra charge, and cash paid. History via `GET …/admissions`. Discharged stays appear in the patient health records list.
+- **Casualty:** Admin opens `/admin/hospitals/{id}/casualty`. Staff enqueue a walk-in (optional patient), call a queue code onto `/display/casualty/{token}`, then complete or cancel. The TV shows codes and triage colour only.
+- **Theatre:** Admin opens `/admin/hospitals/{id}/theatre`. Staff schedule today's cases, then mark InProgress, Completed, or Cancelled.
 - **Seeding:** DatabaseSeeder runs IdentitySeeder (roles/permissions), ClinicalSeeder (demo clinic, telehealth provider, demo patient + MH assessment, inpatient facility/ward/room/beds), InsuranceSeeder (sample plan), DeviceSeeder and BillingSeeder (placeholders), ReportingSeeder (demo dashboard snapshot). Invoked separately (e.g. at startup or via a one-off); not part of API request pipeline.
 - **Reporting:** GET api/reporting/dashboard (clinicId, snapshotDate) returns dashboard data; handler uses GetDashboardSnapshotQuery; data from AIDbContext (DashboardSnapshots) and related aggregates.
 - **Migrations:** In Development and Staging, ApplyMigrationsAsync runs at API startup and applies all six DbContext migrations (then seed).

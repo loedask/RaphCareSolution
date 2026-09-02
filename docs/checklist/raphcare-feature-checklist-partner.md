@@ -6,7 +6,7 @@ PDF: [`raphcare-feature-checklist-partner.pdf`](raphcare-feature-checklist-partn
 
 Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md)
 
-**Overall completion:** **72%**
+**Overall completion:** **73%**
 
 **How to read this**
 
@@ -139,9 +139,9 @@ What patients see on Android and iPhone.
 
 ---
 
-## 5. Hospital plan extras - 42%
+## 5. Hospital plan extras - 62%
 
-What a site gets when they pay for Hospital, not Clinic. Beds and the collection counter were already in. This step is the rest of the stay: ward notes, a bill at discharge, occupancy numbers, and a nurse job.
+What a site gets when they pay for Hospital, not Clinic. Beds and the collection counter were already in. This step is the rest of the stay: ward notes, a bill at discharge, occupancy numbers, a nurse job, a casualty queue, and today's theatre list.
 
 | Area | Status | What you can do |
 |------|--------|-----------------|
@@ -151,15 +151,15 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 | Occupancy numbers | Done | See occupancy %, how many people came in or left today, and average length of stay. |
 | Nurse job | Done | Invite someone as a nurse. They can write ward notes. They cannot document an outpatient visit. |
 | Lab result on the phone | Partial | A completed lab already shows on that visit's health record. There is no separate "your result is ready" notice yet. |
-| Casualty / triage queue | Not started | A second waiting screen for walk-ins, codes only. |
-| Theatre list | Not started | Today's operations on one board. |
+| Casualty / triage queue | Done | Add a walk-in with a priority colour. Call a code onto a second waiting screen. The TV shows codes only, not names. |
+| Theatre list | Done | Put today's operations on one board. Start, complete, or cancel a case. |
 | Emergency list on the hospital home | Not started | SafeCare alerts already exist on Devices and the chart. They should also sit on the hospital home. |
 | Follow a referral through | Not started | See whether a sent referral was actually completed. |
 | Book a return visit at discharge | Not started | Offer the next appointment before the person leaves. |
 | Who is on today | Not started | A simple roster for the shift. |
 | Draft discharge summary with AI | Not started | Staff still write it. A draft can come later. |
 
-**Bottom line (42%):** the stay now has notes, a cash invoice, occupancy numbers, and a nurse job. The patient can read the discharge summary in the app. Casualty, theatre, and follow-up after discharge are still open.
+**Bottom line (62%):** the stay has notes, a cash invoice, occupancy, a nurse job, a casualty queue with a TV screen, and a theatre list for today. The patient can read the discharge summary in the app. Emergency home and follow-up after discharge are still open.
 
 **Later (not in this %):** staff using the same web admin on a phone. Same note as section 1.
 
@@ -173,8 +173,8 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 59% | iPhone video, push, wearables |
 | 4. Other staff and system | 83% | Demo accounts on Staging |
-| 5. Hospital plan extras | 42% | Ward notes, bill at discharge, occupancy; queue and theatre open |
-| **Overall** | **72%** | Excludes "not for mobile, clinical, or BLE" rows |
+| 5. Hospital plan extras | 62% | Casualty queue and theatre list in; follow-up after discharge open |
+| **Overall** | **73%** | Excludes "not for mobile, clinical, or BLE" rows |
 
 ---
 
@@ -183,12 +183,13 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 1. **Admin web:** sign in as `demo.admin@raphcare.com` (password `RaphCareDemo!2026` unless you changed `Demo:Password`). Open **RaphCare Demo Clinic**.
 2. **Admin web:** the left menu should hide on a hospital. Use All hospitals in the top bar to return to the list.
 3. **Admin web:** on that hospital, open Inpatient. Add a ward, room, or bed if needed, admit someone. Add a ward note. Discharge them with a summary and a nightly rate. Confirm occupancy numbers on the hospital dashboard.
-4. **Admin web:** open a patient chart. Use the section menu for overview, clinical, coverage, devices, and care.
-5. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
-6. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
-7. **Patient app on Android:** sign in as `demo.patient@raphcare.com`. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster at the counter to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
-8. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
-9. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
+4. **Admin web:** open Casualty. Add a walk-in (with or without a patient). Call the code and open the casualty waiting screen on another tab. Open Theatre and add today's case, then start and complete it.
+5. **Admin web:** open a patient chart. Use the section menu for overview, clinical, coverage, devices, and care.
+6. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
+7. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
+8. **Patient app on Android:** sign in as `demo.patient@raphcare.com`. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster at the counter to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
+9. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
+10. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
 
 ---
 

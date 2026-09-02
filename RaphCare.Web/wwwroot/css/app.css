@@ -2907,6 +2907,25 @@ a.hospital-directory-person:hover strong {
     vertical-align: middle;
 }
 
+.casualty-triage {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.casualty-triage-red { background: #fee2e2; color: #991b1b; }
+.casualty-triage-orange { background: #ffedd5; color: #9a3412; }
+.casualty-triage-yellow { background: #fef9c3; color: #854d0e; }
+.casualty-triage-green { background: #dcfce7; color: #166534; }
+
+.collection-display .casualty-triage-red { background: #7f1d1d; color: #fecaca; }
+.collection-display .casualty-triage-orange { background: #7c2d12; color: #fed7aa; }
+.collection-display .casualty-triage-yellow { background: #713f12; color: #fef08a; }
+.collection-display .casualty-triage-green { background: #14532d; color: #bbf7d0; }
+
 .print-slip {
     display: none;
 }

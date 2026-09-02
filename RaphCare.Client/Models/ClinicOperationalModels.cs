@@ -603,3 +603,74 @@ public sealed class ClinicTeleJoinInfo
     public string? PatientName { get; set; }
     public string? ProviderDisplayName { get; set; }
 }
+
+public sealed class ClinicCasualtyBoard
+{
+    public string ClinicName { get; set; } = string.Empty;
+    public int WaitingCount { get; set; }
+    public int CalledCount { get; set; }
+    public IReadOnlyList<ClinicCasualtyTicket> Waiting { get; set; } =
+        Array.Empty<ClinicCasualtyTicket>();
+    public IReadOnlyList<ClinicCasualtyTicket> Called { get; set; } =
+        Array.Empty<ClinicCasualtyTicket>();
+    public IReadOnlyList<ClinicCasualtyTicket> Recent { get; set; } =
+        Array.Empty<ClinicCasualtyTicket>();
+}
+
+public sealed class ClinicCasualtyTicket
+{
+    public Guid Id { get; set; }
+    public Guid? PatientId { get; set; }
+    public string? PatientName { get; set; }
+    public string QueueCode { get; set; } = string.Empty;
+    public string TriageLevel { get; set; } = string.Empty;
+    public string? ChiefComplaint { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime ArrivedAt { get; set; }
+    public DateTime? CalledAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+}
+
+public sealed class CreateCasualtyTicketRequest
+{
+    public Guid? PatientId { get; set; }
+    public string TriageLevel { get; set; } = "Green";
+    public string? ChiefComplaint { get; set; }
+}
+
+public sealed class ClinicTheatreBoard
+{
+    public string ClinicName { get; set; } = string.Empty;
+    public DateTime DayUtc { get; set; }
+    public int ScheduledCount { get; set; }
+    public int InProgressCount { get; set; }
+    public int CompletedCount { get; set; }
+    public IReadOnlyList<ClinicTheatreCase> Cases { get; set; } =
+        Array.Empty<ClinicTheatreCase>();
+}
+
+public sealed class ClinicTheatreCase
+{
+    public Guid Id { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public DateTime ScheduledStart { get; set; }
+    public DateTime? ScheduledEnd { get; set; }
+    public string ProcedureName { get; set; } = string.Empty;
+    public string? TheatreName { get; set; }
+    public string? SurgeonName { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+}
+
+public sealed class CreateTheatreCaseRequest
+{
+    public Guid PatientId { get; set; }
+    public DateTime ScheduledStart { get; set; }
+    public DateTime? ScheduledEnd { get; set; }
+    public string ProcedureName { get; set; } = string.Empty;
+    public string? TheatreName { get; set; }
+    public string? SurgeonName { get; set; }
+    public string? Notes { get; set; }
+}
+

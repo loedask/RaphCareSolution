@@ -53,6 +53,14 @@ public interface IAdminClinicService
     Task<Response<ClinicVisitLabResult>> CallLabOrderAsync(Guid clinicId, Guid labRequestId, CancellationToken cancellationToken = default);
     Task<Response<string>> EnsureCollectionDisplayTokenAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicCollectionBoard>> GetCollectionOrdersAsync(Guid clinicId, string? search = null, CancellationToken cancellationToken = default);
+    Task<Response<ClinicCasualtyBoard>> GetCasualtyBoardAsync(Guid clinicId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicCasualtyTicket>> CreateCasualtyTicketAsync(Guid clinicId, CreateCasualtyTicketRequest request, CancellationToken cancellationToken = default);
+    Task<Response<ClinicCasualtyTicket>> CallCasualtyTicketAsync(Guid clinicId, Guid ticketId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicCasualtyTicket>> CompleteCasualtyTicketAsync(Guid clinicId, Guid ticketId, bool cancel = false, CancellationToken cancellationToken = default);
+    Task<Response<string>> EnsureCasualtyDisplayTokenAsync(Guid clinicId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicTheatreBoard>> GetTheatreBoardAsync(Guid clinicId, DateTime? dayUtc = null, CancellationToken cancellationToken = default);
+    Task<Response<ClinicTheatreCase>> CreateTheatreCaseAsync(Guid clinicId, CreateTheatreCaseRequest request, CancellationToken cancellationToken = default);
+    Task<Response<ClinicTheatreCase>> UpdateTheatreCaseStatusAsync(Guid clinicId, Guid caseId, string status, CancellationToken cancellationToken = default);
     Task<Response<IReadOnlyList<ClinicDeviceListItem>>> GetDevicesAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicInpatientBoard>> GetInpatientBoardAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicWard>> CreateWardAsync(Guid clinicId, CreateWardRequest request, CancellationToken cancellationToken = default);
