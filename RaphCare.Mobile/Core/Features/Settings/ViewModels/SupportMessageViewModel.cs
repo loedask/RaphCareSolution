@@ -1,6 +1,4 @@
 using System.Windows.Input;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Support;
 using RaphCare.Mobile.Core.Common.Navigation;
@@ -35,7 +33,7 @@ public sealed class SupportMessageViewModel : BaseViewModel
         set
         {
             SetProperty(ref _subject, value);
-            ((Command)SendCommand).ChangeCanExecute();
+            RaiseCanExecuteChanged(SendCommand);
         }
     }
 
@@ -45,7 +43,7 @@ public sealed class SupportMessageViewModel : BaseViewModel
         set
         {
             SetProperty(ref _message, value);
-            ((Command)SendCommand).ChangeCanExecute();
+            RaiseCanExecuteChanged(SendCommand);
         }
     }
 
@@ -59,7 +57,7 @@ public sealed class SupportMessageViewModel : BaseViewModel
     private async Task SendAsync()
     {
         IsBusy = true;
-        ((Command)SendCommand).ChangeCanExecute();
+        RaiseCanExecuteChanged(SendCommand);
         try
         {
             var response = await _support.SubmitMessageAsync(new SubmitPatientSupportMessageRequest
@@ -70,21 +68,17 @@ public sealed class SupportMessageViewModel : BaseViewModel
 
             if (!response.IsSuccess)
             {
-                await MainThread.InvokeOnMainThreadAsync(async () =>
-                    await Shell.Current.DisplayAlertAsync(Title, T("SupportMessageFailed"), T("CommonOk")));
+                await DisplayAlertSafeAsync(Title, T("SupportMessageFailed"), T("CommonOk"));
                 return;
             }
 
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-            {
-                await Shell.Current.DisplayAlertAsync(T("SupportMessageSentTitle"), T("SupportMessageSentBody"), T("CommonOk"));
-                await SafeShellNavigator.GoToAsync("..");
-            });
+            await DisplayAlertSafeAsync(T("SupportMessageSentTitle"), T("SupportMessageSentBody"), T("CommonOk"));
+            await SafeShellNavigator.GoToAsync("..");
         }
         finally
         {
             IsBusy = false;
-            ((Command)SendCommand).ChangeCanExecute();
+            RaiseCanExecuteChanged(SendCommand);
         }
     }
 }

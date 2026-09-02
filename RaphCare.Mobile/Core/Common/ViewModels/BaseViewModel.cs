@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
 using RaphCare.Mobile.Resources.Strings;
 
 namespace RaphCare.Mobile.Core.Common.ViewModels;
@@ -97,4 +99,33 @@ public abstract class BaseViewModel : INotifyPropertyChanged
     /// <inheritdoc cref="RunOnMainThreadAsync(Action)"/>
     protected static Task RunOnMainThreadAsync(Func<Task> func) =>
         MainThread.InvokeOnMainThreadAsync(func);
+
+    /// <summary>
+    /// Raises <see cref="Command.ChangeCanExecute"/> on the main thread. Calling it after
+    /// <c>ConfigureAwait(false)</c> on a worker can close the Android process when a Button updates.
+    /// </summary>
+    protected static void RaiseCanExecuteChanged(params ICommand?[] commands)
+    {
+        void Raise()
+        {
+            foreach (var command in commands)
+            {
+                if (command is Command c)
+                    c.ChangeCanExecute();
+            }
+        }
+
+        if (MainThread.IsMainThread)
+            Raise();
+        else
+            MainThread.BeginInvokeOnMainThread(Raise);
+    }
+
+    /// <summary>Shows an alert when Shell exists; no-ops safely otherwise.</summary>
+    protected static Task DisplayAlertSafeAsync(string? title, string message, string accept) =>
+        MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            if (Shell.Current is { } shell)
+                await shell.DisplayAlertAsync(title ?? string.Empty, message, accept).ConfigureAwait(true);
+        });
 }

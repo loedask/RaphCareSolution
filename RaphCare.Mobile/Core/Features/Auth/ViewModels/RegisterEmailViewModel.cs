@@ -176,7 +176,7 @@ public class RegisterEmailViewModel : BaseViewModel
             _sendingCode = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(SendCodeButtonText));
-            (SendCodeCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(SendCodeCommand);
         }
     }
 
@@ -200,51 +200,61 @@ public class RegisterEmailViewModel : BaseViewModel
             var response = await _emailAuthService
                 .GetRegistrationClinicsAsync(search, CancellationToken.None)
                 .ConfigureAwait(false);
-            Clinics.Clear();
-            Clinics.Add(new ClinicPickerItem
-            {
-                Id = null,
-                Name = T("RegisterEmailClinicNone"),
-                DisplayName = T("RegisterEmailClinicNone")
-            });
 
-            if (response.IsSuccess && response.Data is not null)
+            await RunOnMainThreadAsync(() =>
             {
-                foreach (var clinic in response.Data)
-                {
-                    var code = clinic.ReferenceCode?.Trim() ?? string.Empty;
-                    var display = string.IsNullOrEmpty(code)
-                        ? clinic.Name
-                        : $"{clinic.Name} ({code})";
-                    Clinics.Add(new ClinicPickerItem
-                    {
-                        Id = clinic.Id,
-                        Name = clinic.Name,
-                        ReferenceCode = code,
-                        DisplayName = display
-                    });
-                }
-            }
-
-            SelectedClinic = Clinics.Count > 0 ? Clinics[0] : null;
-        }
-        catch (Exception)
-        {
-            if (Clinics.Count == 0)
-            {
+                SelectedClinic = null;
+                Clinics.Clear();
                 Clinics.Add(new ClinicPickerItem
                 {
                     Id = null,
                     Name = T("RegisterEmailClinicNone"),
                     DisplayName = T("RegisterEmailClinicNone")
                 });
-                SelectedClinic = Clinics[0];
-            }
+
+                if (response.IsSuccess && response.Data is not null)
+                {
+                    foreach (var clinic in response.Data)
+                    {
+                        var code = clinic.ReferenceCode?.Trim() ?? string.Empty;
+                        var display = string.IsNullOrEmpty(code)
+                            ? clinic.Name
+                            : $"{clinic.Name} ({code})";
+                        Clinics.Add(new ClinicPickerItem
+                        {
+                            Id = clinic.Id,
+                            Name = clinic.Name,
+                            ReferenceCode = code,
+                            DisplayName = display
+                        });
+                    }
+                }
+
+                SelectedClinic = Clinics.Count > 0 ? Clinics[0] : null;
+            }).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            await RunOnMainThreadAsync(() =>
+            {
+                if (Clinics.Count == 0)
+                {
+                    SelectedClinic = null;
+                    Clinics.Clear();
+                    Clinics.Add(new ClinicPickerItem
+                    {
+                        Id = null,
+                        Name = T("RegisterEmailClinicNone"),
+                        DisplayName = T("RegisterEmailClinicNone")
+                    });
+                    SelectedClinic = Clinics[0];
+                }
+            }).ConfigureAwait(false);
         }
         finally
         {
             IsBusy = false;
-            (SearchClinicsCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(SearchClinicsCommand);
         }
     }
 

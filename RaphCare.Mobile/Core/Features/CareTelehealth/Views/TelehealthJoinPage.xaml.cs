@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls;
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
 
@@ -30,13 +31,16 @@ public partial class TelehealthJoinPage : ContentPage, IQueryAttributable
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (BindingContext is TelehealthJoinViewModel vm)
+        await SafePageLoad.RunAsync(async () =>
         {
-            await vm.LoadAsync();
-            TryBindRtcSurfaces();
-            await Task.Delay(250).ConfigureAwait(true);
-            TryBindRtcSurfaces();
-        }
+            if (BindingContext is TelehealthJoinViewModel vm)
+            {
+                await vm.LoadAsync();
+                TryBindRtcSurfaces();
+                await Task.Delay(250).ConfigureAwait(true);
+                TryBindRtcSurfaces();
+            }
+        });
     }
 
     protected override async void OnDisappearing()

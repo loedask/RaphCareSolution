@@ -2,6 +2,20 @@
 
 ## Date
 
+2026-09-03
+
+## High-level summary of changes
+
+Mobile **1.5.1** (Android versionCode **9**): harden patient app against Android process kills (Book appointment and shared Picker / main-thread / OnAppearing guards). Partner-facing `docs/mobile-updates/` notes per APK version.
+
+## Modules modified
+
+- **Mobile / Mobile.Kernel / Mobile.Tests / docs / scripts:** crash hardening; mobile update template and PDF export; APK version bump.
+
+---
+
+## Date
+
 2026-09-02
 
 ## High-level summary of changes

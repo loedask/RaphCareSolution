@@ -125,11 +125,7 @@ public sealed class AddFamilyMemberViewModel : BaseViewModel
     public ICommand SubmitCommand { get; }
     public ICommand CancelCommand { get; }
 
-    private void RefreshSubmit()
-    {
-        if (SubmitCommand is Command c)
-            c.ChangeCanExecute();
-    }
+    private void RefreshSubmit() => RaiseCanExecuteChanged(SubmitCommand);
 
     private async Task SubmitAsync()
     {

@@ -6,4 +6,6 @@ public sealed class ClinicPickerItem
     public string Name { get; init; } = string.Empty;
     public string ReferenceCode { get; init; } = string.Empty;
     public string DisplayName { get; init; } = string.Empty;
+
+    public override string ToString() => DisplayName;
 }

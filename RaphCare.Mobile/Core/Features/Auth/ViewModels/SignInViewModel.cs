@@ -121,7 +121,7 @@ public class SignInViewModel : BaseViewModel
         if (propertyName is nameof(IsBusy) or nameof(AwaitingVerification))
         {
             OnPropertyChanged(nameof(SignInButtonText));
-            (SignInCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(SignInCommand);
         }
     }
 
@@ -165,7 +165,7 @@ public class SignInViewModel : BaseViewModel
 
         IsBusy = true;
         BusyMessage = AwaitingVerification ? T("AuthVerifyingBusy") : T("AuthSigningInBusy");
-        (SignInCommand as Command)?.ChangeCanExecute();
+        RaiseCanExecuteChanged(SignInCommand);
         OnPropertyChanged(nameof(SignInButtonText));
         try
         {
@@ -198,7 +198,7 @@ public class SignInViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
-            (SignInCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(SignInCommand);
             OnPropertyChanged(nameof(SignInButtonText));
         }
     }

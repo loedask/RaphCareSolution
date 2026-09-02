@@ -145,9 +145,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
-            (SearchCommand as Command)?.ChangeCanExecute();
-            (UseCodeCommand as Command)?.ChangeCanExecute();
-            (ClearCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(SearchCommand, UseCodeCommand, ClearCommand);
         }
     }
 
@@ -184,9 +182,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
-            (SearchCommand as Command)?.ChangeCanExecute();
-            (UseCodeCommand as Command)?.ChangeCanExecute();
-            (ClearCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(SearchCommand, UseCodeCommand, ClearCommand);
         }
     }
 

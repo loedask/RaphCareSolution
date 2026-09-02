@@ -46,7 +46,7 @@
                                FontAttributes="Bold"
                                Margin="0,8,0,0" />
                         <Picker ItemsSource="{Binding PlanOptions}"
-                                ItemDisplayBinding="{Binding DisplayName}"
+                                ItemDisplayBinding="{Binding DisplayName, x:DataType=bill:PatientBillingPlanOptionViewModel}"
                                 SelectedItem="{Binding SelectedUpgradePlan}"
                                 Title="{Binding UpgradePickerTitle}" />
                         <Button Text="{Binding UpgradeButtonText}"

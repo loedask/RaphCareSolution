@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Microsoft.Extensions.Options;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Appointments;
@@ -10,6 +8,7 @@ using RaphCare.Mobile.Core.Common.Configuration;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.Services.Api;
 using RaphCare.Mobile.Core.Common.ViewModels;
+using RaphCare.Mobile.Core.Common.Collections;
 
 namespace RaphCare.Mobile.Core.Features.Appointments.ViewModels;
 
@@ -94,7 +93,7 @@ public sealed class BookAppointmentViewModel : BaseViewModel
                 return;
             _hasClinic = value;
             OnPropertyChanged();
-            (SubmitCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(SubmitCommand, RefreshCommand);
         }
     }
 
@@ -147,67 +146,80 @@ public sealed class BookAppointmentViewModel : BaseViewModel
 
     public async Task LoadAsync()
     {
-        ErrorMessage = null;
-        RefreshClinicSummary();
-
-        if (!HasClinic)
-        {
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                Providers.Clear();
-                SelectedProvider = null;
-            });
-            return;
-        }
-
-        IsBusy = true;
         try
         {
+            ErrorMessage = null;
+            RefreshClinicSummary();
+
+            if (!HasClinic)
+            {
+                await RunOnMainThreadAsync(ClearProvidersUi).ConfigureAwait(false);
+                return;
+            }
+
+            IsBusy = true;
+            RaiseCanExecuteChanged(SubmitCommand, RefreshCommand);
+
             var response = await _appointments
                 .GetBookableProvidersAsync(CancellationToken.None)
                 .ConfigureAwait(false);
 
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                Providers.Clear();
-                if (!response.IsSuccess || response.Data is null)
-                {
-                    ErrorMessage = response.ErrorMessage ?? T("AppointmentsProvidersLoadFailed");
-                    SelectedProvider = null;
-                    return;
-                }
-
-                foreach (var provider in response.Data)
-                {
-                    Providers.Add(new ProviderPickerItem
-                    {
-                        Id = provider.Id,
-                        DisplayName = string.IsNullOrWhiteSpace(provider.DisplayName)
-                            ? T("AppointmentsProviderFallback")
-                            : provider.DisplayName
-                    });
-                }
-
-                if (Providers.Count == 0)
-                {
-                    ErrorMessage = T("AppointmentsNoProviders");
-                    SelectedProvider = null;
-                    return;
-                }
-
-                SelectedProvider = PickDefaultProvider();
-            });
+            await RunOnMainThreadAsync(() => ApplyProvidersResponse(response)).ConfigureAwait(false);
         }
         catch (Exception)
         {
-            ErrorMessage = T("AppointmentsProvidersLoadFailed");
+            await RunOnMainThreadAsync(() =>
+            {
+                ErrorMessage = T("AppointmentsProvidersLoadFailed");
+                ClearProvidersUi();
+            }).ConfigureAwait(false);
         }
         finally
         {
-            IsBusy = false;
-            (SubmitCommand as Command)?.ChangeCanExecute();
-            (RefreshCommand as Command)?.ChangeCanExecute();
+            await RunOnMainThreadAsync(() =>
+            {
+                IsBusy = false;
+                RaiseCanExecuteChanged(SubmitCommand, RefreshCommand);
+            }).ConfigureAwait(false);
         }
+    }
+
+    private void ApplyProvidersResponse(Response<IReadOnlyList<BookableProviderViewModel>> response)
+    {
+        // Clear selection before Clear() — Android Picker can kill the process otherwise.
+        SelectedProvider = null;
+        Providers.Clear();
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            ErrorMessage = response.ErrorMessage ?? T("AppointmentsProvidersLoadFailed");
+            return;
+        }
+
+        foreach (var provider in response.Data)
+        {
+            Providers.Add(new ProviderPickerItem
+            {
+                Id = provider.Id,
+                DisplayName = string.IsNullOrWhiteSpace(provider.DisplayName)
+                    ? T("AppointmentsProviderFallback")
+                    : provider.DisplayName
+            });
+        }
+
+        if (Providers.Count == 0)
+        {
+            ErrorMessage = T("AppointmentsNoProviders");
+            return;
+        }
+
+        SelectedProvider = PickDefaultProvider();
+    }
+
+    private void ClearProvidersUi()
+    {
+        SelectedProvider = null;
+        Providers.Clear();
     }
 
     private void RefreshClinicSummary()
@@ -236,14 +248,17 @@ public sealed class BookAppointmentViewModel : BaseViewModel
         if (Providers.Count == 0)
             return null;
 
+        Guid? configured = null;
         if (Guid.TryParse(_defaults.DefaultProviderId, out var defaultId))
-        {
-            var match = Providers.FirstOrDefault(p => p.Id == defaultId);
-            if (match is not null)
-                return match;
-        }
+            configured = defaultId;
 
-        return Providers[0];
+        var chosenId = MauiPickerCollectionRules.PickPreferredOrFirst(
+            Providers.Select(p => p.Id).ToList(),
+            configured);
+        if (chosenId is null)
+            return null;
+
+        return Providers.FirstOrDefault(p => p.Id == chosenId.Value);
     }
 
     private async Task SubmitAsync()
@@ -274,6 +289,7 @@ public sealed class BookAppointmentViewModel : BaseViewModel
         }
 
         IsBusy = true;
+        RaiseCanExecuteChanged(SubmitCommand, RefreshCommand);
         try
         {
             var request = new BookAppointmentRequest
@@ -289,21 +305,30 @@ public sealed class BookAppointmentViewModel : BaseViewModel
             var response = await _appointments.BookAsync(request, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
             {
-                ErrorMessage = response.ErrorMessage ?? T("AppointmentsBookingFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = response.ErrorMessage ?? T("AppointmentsBookingFailed");
+                }).ConfigureAwait(false);
                 return;
             }
 
-            await MainThread.InvokeOnMainThreadAsync(async () =>
+            await DisplayAlertSafeAsync(Title, T("AppointmentsBookingOk"), T("CommonOk")).ConfigureAwait(false);
+            await SafeShellNavigator.GoToAsync("..").ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            await RunOnMainThreadAsync(() =>
             {
-                await Shell.Current.DisplayAlertAsync(Title, T("AppointmentsBookingOk"), T("CommonOk"));
-                await SafeShellNavigator.GoToAsync("..");
-            });
+                ErrorMessage = T("AppointmentsBookingFailed");
+            }).ConfigureAwait(false);
         }
         finally
         {
-            IsBusy = false;
-            (SubmitCommand as Command)?.ChangeCanExecute();
-            (RefreshCommand as Command)?.ChangeCanExecute();
+            await RunOnMainThreadAsync(() =>
+            {
+                IsBusy = false;
+                RaiseCanExecuteChanged(SubmitCommand, RefreshCommand);
+            }).ConfigureAwait(false);
         }
     }
 }
@@ -312,4 +337,6 @@ public sealed class ProviderPickerItem
 {
     public Guid Id { get; init; }
     public string DisplayName { get; init; } = string.Empty;
+
+    public override string ToString() => DisplayName;
 }

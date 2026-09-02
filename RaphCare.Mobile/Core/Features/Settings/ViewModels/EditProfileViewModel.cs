@@ -1,9 +1,8 @@
 using System.Windows.Input;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Profile;
 using RaphCare.Mobile.Core.Features.Settings.Services;
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
@@ -145,24 +144,20 @@ public sealed class EditProfileViewModel : BaseViewModel
             var response = await _profileApi.UpdateMyProfileAsync(request, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
             {
-                await MainThread.InvokeOnMainThreadAsync(async () =>
-                    await Shell.Current.DisplayAlertAsync(
-                        T("EditProfileTitle"),
-                        T("EditProfileSaveFailed"),
-                        T("CommonOk")));
+                await DisplayAlertSafeAsync(
+                    T("EditProfileTitle"),
+                    T("EditProfileSaveFailed"),
+                    T("CommonOk"));
                 return;
             }
 
             CopyToLocalStore(request);
 
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-            {
-                await Shell.Current.DisplayAlertAsync(
-                    T("EditProfileTitle"),
-                    T("EditProfileSaved"),
-                    T("CommonOk"));
-                await Shell.Current.GoToAsync("..");
-            });
+            await DisplayAlertSafeAsync(
+                T("EditProfileTitle"),
+                T("EditProfileSaved"),
+                T("CommonOk"));
+            await SafeShellNavigator.GoToAsync("..");
         }
         finally
         {
