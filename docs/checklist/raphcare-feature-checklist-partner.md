@@ -6,7 +6,7 @@ PDF: [`raphcare-feature-checklist-partner.pdf`](raphcare-feature-checklist-partn
 
 Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md)
 
-**Overall completion:** **77%**
+**Overall completion:** **72%**
 
 **How to read this**
 
@@ -16,11 +16,11 @@ Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-ch
 - **Not for mobile**, **Not for clinical v1**, and **Not for BLE** = left out of the % on purpose
 - **Later** notes (phone use of the web admin, and similar) are left out of the % until we schedule the work
 - Section % = average of that section's scored rows
-- Overall % = average of all scored rows in sections 1-4
+- Overall % = average of all scored rows in sections 1-5
 
 Each section shows its % in the heading. Numbers stay in sync with the engineering checklist when status changes.
 
-Last reviewed: 2026-08-29
+Last reviewed: 2026-09-02
 
 ---
 
@@ -139,6 +139,32 @@ What patients see on Android and iPhone.
 
 ---
 
+## 5. Hospital plan extras - 42%
+
+What a site gets when they pay for Hospital, not Clinic. Beds and the collection counter were already in. This step is the rest of the stay: ward notes, a bill at discharge, occupancy numbers, and a nurse job.
+
+| Area | Status | What you can do |
+|------|--------|-----------------|
+| Ward notes on the stay | Done | A nurse, doctor, or hospital admin can add a note (and optional heart rate, temperature, or oxygen) while the person is in a bed. |
+| Bill at discharge | Done | On discharge, enter a nightly bed rate and any extra charge. Print that as an invoice. Mark paid in cash. |
+| Discharge summary on the phone | Done | The summary the hospital writes shows in the patient's Health records as a stay. |
+| Occupancy numbers | Done | See occupancy %, how many people came in or left today, and average length of stay. |
+| Nurse job | Done | Invite someone as a nurse. They can write ward notes. They cannot document an outpatient visit. |
+| Lab result on the phone | Partial | A completed lab already shows on that visit's health record. There is no separate "your result is ready" notice yet. |
+| Casualty / triage queue | Not started | A second waiting screen for walk-ins, codes only. |
+| Theatre list | Not started | Today's operations on one board. |
+| Emergency list on the hospital home | Not started | SafeCare alerts already exist on Devices and the chart. They should also sit on the hospital home. |
+| Follow a referral through | Not started | See whether a sent referral was actually completed. |
+| Book a return visit at discharge | Not started | Offer the next appointment before the person leaves. |
+| Who is on today | Not started | A simple roster for the shift. |
+| Draft discharge summary with AI | Not started | Staff still write it. A draft can come later. |
+
+**Bottom line (42%):** the stay now has notes, a cash invoice, occupancy numbers, and a nurse job. The patient can read the discharge summary in the app. Casualty, theatre, and follow-up after discharge are still open.
+
+**Later (not in this %):** staff using the same web admin on a phone. Same note as section 1.
+
+---
+
 ## Rollup
 
 | Area | % | Notes |
@@ -147,7 +173,8 @@ What patients see on Android and iPhone.
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 59% | iPhone video, push, wearables |
 | 4. Other staff and system | 83% | Demo accounts on Staging |
-| **Overall** | **77%** | Excludes "not for mobile, clinical, or BLE" rows |
+| 5. Hospital plan extras | 42% | Ward notes, bill at discharge, occupancy; queue and theatre open |
+| **Overall** | **72%** | Excludes "not for mobile, clinical, or BLE" rows |
 
 ---
 
@@ -155,7 +182,7 @@ What patients see on Android and iPhone.
 
 1. **Admin web:** sign in as `demo.admin@raphcare.com` (password `RaphCareDemo!2026` unless you changed `Demo:Password`). Open **RaphCare Demo Clinic**.
 2. **Admin web:** the left menu should hide on a hospital. Use All hospitals in the top bar to return to the list.
-3. **Admin web:** on that hospital, open Inpatient. Add a ward, room, or bed if needed, admit someone, discharge them.
+3. **Admin web:** on that hospital, open Inpatient. Add a ward, room, or bed if needed, admit someone. Add a ward note. Discharge them with a summary and a nightly rate. Confirm occupancy numbers on the hospital dashboard.
 4. **Admin web:** open a patient chart. Use the section menu for overview, clinical, coverage, devices, and care.
 5. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
 6. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.

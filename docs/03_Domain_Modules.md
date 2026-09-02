@@ -34,8 +34,8 @@
 ## Clinical (Appointments & Visits)
 
 - **Purpose:** Appointments, clinical visits, care plans, prescriptions, notes, lab results, and inpatient admissions.
-- **Entities:** Appointment, Visit, CarePlan, Prescription, PrescriptionItem, ClinicalNote, LabResult, Diagnosis, Procedure, SOAPNote, VitalSignRecord, Referral, **InpatientAdmission**, etc.
-- **Application:** Create/Update/Get Appointment; Create/Update/Get Visit; GetVisits (paginated, optional clinicId). Admin clinic commands for ward/room/bed CRUD, admit, transfer, discharge, and admission history.
+- **Entities:** Appointment, Visit, CarePlan, Prescription, PrescriptionItem, ClinicalNote, LabResult, Diagnosis, Procedure, SOAPNote, VitalSignRecord, Referral, **InpatientAdmission**, **InpatientObservation**, etc.
+- **Application:** Create/Update/Get Appointment; Create/Update/Get Visit; GetVisits (paginated, optional clinicId). Admin clinic commands for ward/room/bed CRUD, admit, transfer, discharge (optional invoice and patient-facing summary), ward observations, and admission history.
 - **Controllers:** AppointmentsController (CRUD); ClinicalController (visits: GET by id, GET list, POST, PUT); AdminClinicsController inpatient routes under `api/admin/clinics/{id}/…`.
 - **Persistence:** ClinicalDbContext (Appointments, Visits, CarePlans, VoiceRecordings, Wards, Rooms, Beds, InpatientAdmissions, etc.).
 - **Relationships:** Appointment and Visit reference Patient and Clinic; Visit can have prescriptions, notes, lab results; VoiceRecording references Patient. InpatientAdmission links Patient + Bed until discharge.

@@ -191,6 +191,7 @@ public static class DependencyInjection
         services.AddScoped<IRepository<Room>>(sp => new EfRepository<Room, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Bed>>(sp => new EfRepository<Bed, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<InpatientAdmission>>(sp => new EfRepository<InpatientAdmission, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<InpatientObservation>>(sp => new EfRepository<InpatientObservation, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Provider>>(sp => new EfRepository<Provider, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<ProviderSchedule>>(sp => new EfRepository<ProviderSchedule, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<VoiceRecording>>(sp => new EfRepository<VoiceRecording, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
@@ -217,6 +218,7 @@ public static class DependencyInjection
         services.AddScoped<IPatientInAppNotificationBulkWriter, PatientInAppNotificationBulkWriter>();
 
         services.AddScoped<IRepository<Invoice>>(sp => new EfRepository<Invoice, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
+        services.AddScoped<IRepository<InvoiceLineItem>>(sp => new EfRepository<InvoiceLineItem, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
         services.AddScoped<IRepository<PaymentMethod>>(sp => new EfRepository<PaymentMethod, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
         services.AddScoped<IRepository<PaymentTransaction>>(sp => new EfRepository<PaymentTransaction, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
         services.AddScoped<IRepository<PatientCarePlan>>(sp => new EfRepository<PatientCarePlan, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));

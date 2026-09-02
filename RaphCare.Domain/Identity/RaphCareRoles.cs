@@ -10,6 +10,7 @@ public static class RaphCareRoles
     public const string Doctor = "Doctor";
     public const string Pharmacist = "Pharmacist";
     public const string LabTechnician = "LabTechnician";
+    public const string Nurse = "Nurse";
     public const string Patient = "Patient";
 
     public static readonly string[] All =
@@ -19,6 +20,7 @@ public static class RaphCareRoles
         Doctor,
         Pharmacist,
         LabTechnician,
+        Nurse,
         Patient
     ];
 
@@ -28,7 +30,8 @@ public static class RaphCareRoles
         Clinician,
         Doctor,
         Pharmacist,
-        LabTechnician
+        LabTechnician,
+        Nurse
     ];
 
     public static readonly string[] Provider =
@@ -37,10 +40,11 @@ public static class RaphCareRoles
         Clinician,
         Doctor,
         Pharmacist,
-        LabTechnician
+        LabTechnician,
+        Nurse
     ];
 
-    public static readonly string[] PatientPortal = [Patient, Administrator, Clinician, Doctor, Pharmacist, LabTechnician];
+    public static readonly string[] PatientPortal = [Patient, Administrator, Clinician, Doctor, Pharmacist, LabTechnician, Nurse];
 
     public static bool IsAdministrator(string roleName) =>
         string.Equals(roleName, Administrator, StringComparison.OrdinalIgnoreCase);
@@ -57,6 +61,9 @@ public static class RaphCareRoles
     public static bool IsLabTechnician(string roleName) =>
         string.Equals(roleName, LabTechnician, StringComparison.OrdinalIgnoreCase);
 
+    public static bool IsNurse(string roleName) =>
+        string.Equals(roleName, Nurse, StringComparison.OrdinalIgnoreCase);
+
     public static bool IsPatient(string roleName) =>
         string.Equals(roleName, Patient, StringComparison.OrdinalIgnoreCase);
 
@@ -65,7 +72,8 @@ public static class RaphCareRoles
         || IsClinician(roleName)
         || IsDoctor(roleName)
         || IsPharmacist(roleName)
-        || IsLabTechnician(roleName);
+        || IsLabTechnician(roleName)
+        || IsNurse(roleName);
 
     public static bool HasAdministratorRole(IEnumerable<string> roleNames) =>
         roleNames.Any(IsAdministrator);
@@ -79,8 +87,17 @@ public static class RaphCareRoles
     public static bool HasLabTechnicianRole(IEnumerable<string> roleNames) =>
         roleNames.Any(IsLabTechnician);
 
+    public static bool HasNurseRole(IEnumerable<string> roleNames) =>
+        roleNames.Any(IsNurse);
+
     public static bool HasClinicianRole(IEnumerable<string> roleNames) =>
         roleNames.Any(IsClinician);
+
+    public static bool CanRecordWardNotes(IEnumerable<string> roleNames) =>
+        HasAdministratorRole(roleNames)
+        || HasDoctorRole(roleNames)
+        || HasNurseRole(roleNames)
+        || HasClinicianRole(roleNames);
 
     public static bool HasProviderJobRole(IEnumerable<string> roleNames) =>
         roleNames.Any(name => JobRoles.Any(job => string.Equals(job, name, StringComparison.OrdinalIgnoreCase)));
@@ -114,6 +131,10 @@ public static class RaphCareRoles
             || string.Equals(value, "Lab Tech", StringComparison.OrdinalIgnoreCase)
             || string.Equals(value, "Lab Technician", StringComparison.OrdinalIgnoreCase))
             return LabTechnician;
+        if (IsNurse(value)
+            || string.Equals(value, "RN", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "Nursing", StringComparison.OrdinalIgnoreCase))
+            return Nurse;
         if (IsPatient(value))
             return Patient;
         return null;

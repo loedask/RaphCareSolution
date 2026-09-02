@@ -10,6 +10,8 @@ using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicBed;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicRoom;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicWard;
 using RaphCare.Application.Features.Organization.Commands.DischargeAdminClinicAdmission;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicAdmissionObservation;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicAdmissionObservations;
 using RaphCare.Application.Features.Organization.Commands.SetAdminClinicBedStatus;
 using RaphCare.Application.Features.Organization.Commands.TransferAdminClinicAdmission;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicBed;
@@ -1134,10 +1136,64 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             {
                 ClinicId = id,
                 AdmissionId = admissionId,
-                Notes = body?.Notes
+                Notes = body?.Notes,
+                DischargeSummary = body?.DischargeSummary,
+                NightlyBedRate = body?.NightlyBedRate,
+                ExtraAmount = body?.ExtraAmount,
+                ExtraDescription = body?.ExtraDescription,
+                MarkPaid = body?.MarkPaid ?? false,
+                Currency = body?.Currency
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>List ward notes for an admission.</summary>
+    [HttpGet("{id:guid}/admissions/{admissionId:guid}/observations", Name = "GetAdminClinicAdmissionObservations")]
+    [ProducesResponseType(typeof(IReadOnlyList<AdminClinicAdmissionObservationDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAdmissionObservations(
+        Guid id,
+        Guid admissionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicAdmissionObservationsQuery
+            {
+                ClinicId = id,
+                AdmissionId = admissionId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Add a ward note or vitals to an active stay.</summary>
+    [HttpPost("{id:guid}/admissions/{admissionId:guid}/observations", Name = "CreateAdminClinicAdmissionObservation")]
+    [ProducesResponseType(typeof(AdminClinicAdmissionObservationDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateAdmissionObservation(
+        Guid id,
+        Guid admissionId,
+        [FromBody] CreateAdminClinicAdmissionObservationRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CreateAdminClinicAdmissionObservationCommand
+            {
+                ClinicId = id,
+                AdmissionId = admissionId,
+                Note = body.Note,
+                HeartRate = body.HeartRate,
+                TemperatureCelsius = body.TemperatureCelsius,
+                OxygenSaturation = body.OxygenSaturation,
+                SystolicBp = body.SystolicBp,
+                DiastolicBp = body.DiastolicBp
+            },
+            cancellationToken);
+        return result is null
+            ? NotFound()
+            : CreatedAtAction(nameof(GetAdmissionObservations), new { id, admissionId }, result);
     }
 
     /// <summary>Update a ward.</summary>

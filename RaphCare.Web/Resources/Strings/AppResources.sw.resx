@@ -2755,4 +2755,82 @@
   <data name="StaffJob_Administrator" xml:space="preserve">
     <value>Msimamizi</value>
   </data>
+  <data name="StaffJob_Nurse" xml:space="preserve">
+    <value>Muuguzi</value>
+  </data>
+  <data name="Inpatient_Occupancy" xml:space="preserve">
+    <value>Ujazo</value>
+  </data>
+  <data name="Inpatient_AdmissionsToday" xml:space="preserve">
+    <value>Walioingia leo</value>
+  </data>
+  <data name="Inpatient_DischargesToday" xml:space="preserve">
+    <value>Walioondoka leo</value>
+  </data>
+  <data name="Inpatient_AverageStay" xml:space="preserve">
+    <value>Siku za wastani</value>
+  </data>
+  <data name="Inpatient_AverageStayValue" xml:space="preserve">
+    <value>Siku {0}</value>
+  </data>
+  <data name="Inpatient_AddWardNote" xml:space="preserve">
+    <value>Maelezo ya wodi</value>
+  </data>
+  <data name="Inpatient_WardNoteTitle" xml:space="preserve">
+    <value>Maelezo ya wodi</value>
+  </data>
+  <data name="Inpatient_WardNoteLabel" xml:space="preserve">
+    <value>Maelezo</value>
+  </data>
+  <data name="Inpatient_WardNotePlaceholder" xml:space="preserve">
+    <value>Uliyoona kwenye wodi</value>
+  </data>
+  <data name="Inpatient_WardNoteRequired" xml:space="preserve">
+    <value>Andika maelezo mafupi kabla ya kuhifadhi.</value>
+  </data>
+  <data name="Inpatient_NoWardNotes" xml:space="preserve">
+    <value>Bado hakuna maelezo ya wodi kwa kulazwa huku.</value>
+  </data>
+  <data name="Inpatient_WardNoteSaved" xml:space="preserve">
+    <value>Maelezo yamehifadhiwa.</value>
+  </data>
+  <data name="Inpatient_CouldNotSaveWardNote" xml:space="preserve">
+    <value>Imeshindwa kuhifadhi maelezo ya wodi.</value>
+  </data>
+  <data name="Inpatient_CouldNotLoadWardNotes" xml:space="preserve">
+    <value>Imeshindwa kupakia maelezo ya wodi.</value>
+  </data>
+  <data name="Inpatient_HeartRate" xml:space="preserve">
+    <value>Mapigo ya moyo</value>
+  </data>
+  <data name="Inpatient_Temperature" xml:space="preserve">
+    <value>Joto (°C)</value>
+  </data>
+  <data name="Inpatient_Oxygen" xml:space="preserve">
+    <value>Oksijeni (%)</value>
+  </data>
+  <data name="Inpatient_DischargeSummaryLabel" xml:space="preserve">
+    <value>Muhtasari kwa mgonjwa</value>
+  </data>
+  <data name="Inpatient_DischargeSummaryPlaceholder" xml:space="preserve">
+    <value>Sababu, matibabu, dawa, na tarehe ya kurudi</value>
+  </data>
+  <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
+    <value>Bei ya usiku</value>
+  </data>
+  <data name="Inpatient_ExtraChargeLabel" xml:space="preserve">
+    <value>Malipo mengine</value>
+  </data>
+  <data name="Inpatient_ExtraChargeDescription" xml:space="preserve">
+    <value>Malipo mengine ni ya nini</value>
+  </data>
+  <data name="Inpatient_MarkPaidCash" xml:space="preserve">
+    <value>Weka kama amelipa taslimu</value>
+  </data>
+  <data name="Inpatient_CurrencyLabel" xml:space="preserve">
+    <value>Sarafu</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithInvoice" xml:space="preserve">
+    <value>Mgonjwa ameachiliwa. Ankara {0} {1}.</value>
+  </data>
 </root>

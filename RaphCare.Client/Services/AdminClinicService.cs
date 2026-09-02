@@ -1899,7 +1899,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
     public async Task<Response<ClinicAdmission>> DischargeAdmissionAsync(
         Guid clinicId,
         Guid admissionId,
-        string? notes = null,
+        DischargeAdmissionRequest request,
         CancellationToken cancellationToken = default)
     {
         try
@@ -1908,7 +1908,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             using var response = await client
                 .PostAsJsonAsync(
                     $"api/admin/clinics/{clinicId}/admissions/{admissionId}/discharge",
-                    new { notes },
+                    request,
                     cancellationToken)
                 .ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
@@ -1925,6 +1925,75 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         catch (HttpRequestException)
         {
             return Response<ClinicAdmission>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<IReadOnlyList<ClinicAdmissionObservation>>> GetAdmissionObservationsAsync(
+        Guid clinicId,
+        Guid admissionId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/admissions/{admissionId}/observations", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<IReadOnlyList<ClinicAdmissionObservation>>.Failure("Admission not found.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<IReadOnlyList<ClinicAdmissionObservation>>.Failure(
+                    await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false),
+                    (int)response.StatusCode);
+
+            var items = await response.Content
+                .ReadFromJsonAsync<List<AdmissionObservationDto>>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            IReadOnlyList<ClinicAdmissionObservation> observations =
+                items?.Select(MapObservation).ToList() ?? [];
+            return Response<IReadOnlyList<ClinicAdmissionObservation>>.Success(observations);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<IReadOnlyList<ClinicAdmissionObservation>>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicAdmissionObservation>> AddAdmissionObservationAsync(
+        Guid clinicId,
+        Guid admissionId,
+        AddAdmissionObservationRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/admissions/{admissionId}/observations",
+                    request,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only a nurse, doctor, or hospital administrator can add a ward note.";
+                return Response<ClinicAdmissionObservation>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<AdmissionObservationDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicAdmissionObservation>.Failure("Could not save the ward note.");
+            return Response<ClinicAdmissionObservation>.Success(MapObservation(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicAdmissionObservation>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -2181,6 +2250,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         RegisteredByApplicationUserId = dto.RegisteredByApplicationUserId,
         CurrentUserIsAdministrator = dto.CurrentUserIsAdministrator,
         CurrentUserCanDocumentVisits = dto.CurrentUserCanDocumentVisits,
+        CurrentUserCanRecordWardNotes = dto.CurrentUserCanRecordWardNotes,
         CurrentUserCanDispense = dto.CurrentUserCanDispense,
         CurrentUserCanCompleteLabs = dto.CurrentUserCanCompleteLabs,
         Facilities = dto.Facilities?
@@ -2464,6 +2534,12 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         FacilityCount = dto.FacilityCount,
         AppointmentsTodayCount = dto.AppointmentsTodayCount,
         UpcomingAppointmentsCount = dto.UpcomingAppointmentsCount,
+        TotalBeds = dto.TotalBeds,
+        OccupiedBeds = dto.OccupiedBeds,
+        OccupancyPercent = dto.OccupancyPercent,
+        AdmissionsTodayCount = dto.AdmissionsTodayCount,
+        DischargesTodayCount = dto.DischargesTodayCount,
+        AverageLengthOfStayDays = dto.AverageLengthOfStayDays,
         UpcomingAppointments = dto.UpcomingAppointments?.Select(MapAppointment).ToList() ?? []
     };
 
@@ -2573,6 +2649,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public Guid? RegisteredByApplicationUserId { get; set; }
         public bool CurrentUserIsAdministrator { get; set; }
         public bool CurrentUserCanDocumentVisits { get; set; }
+        public bool CurrentUserCanRecordWardNotes { get; set; }
         public bool CurrentUserCanDispense { get; set; }
         public bool CurrentUserCanCompleteLabs { get; set; }
         public List<FacilityListItemDto>? Facilities { get; set; }
@@ -2736,6 +2813,12 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public int FacilityCount { get; set; }
         public int AppointmentsTodayCount { get; set; }
         public int UpcomingAppointmentsCount { get; set; }
+        public int TotalBeds { get; set; }
+        public int OccupiedBeds { get; set; }
+        public int OccupancyPercent { get; set; }
+        public int AdmissionsTodayCount { get; set; }
+        public int DischargesTodayCount { get; set; }
+        public decimal? AverageLengthOfStayDays { get; set; }
         public List<AppointmentListItemDto>? UpcomingAppointments { get; set; }
     }
 
@@ -3040,6 +3123,10 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         OccupiedBeds = dto.OccupiedBeds,
         MaintenanceBeds = dto.MaintenanceBeds,
         ActiveAdmissions = dto.ActiveAdmissions,
+        OccupancyPercent = dto.OccupancyPercent,
+        AdmissionsTodayCount = dto.AdmissionsTodayCount,
+        DischargesTodayCount = dto.DischargesTodayCount,
+        AverageLengthOfStayDays = dto.AverageLengthOfStayDays,
         Wards = dto.Wards?.Select(MapWard).ToList() ?? [],
         ActiveAdmissionsList = dto.ActiveAdmissionsList?.Select(MapAdmission).ToList() ?? []
     };
@@ -3091,7 +3178,27 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         DischargedAt = dto.DischargedAt,
         Status = dto.Status,
         Reason = dto.Reason,
-        Notes = dto.Notes
+        Notes = dto.Notes,
+        DischargeSummary = dto.DischargeSummary,
+        InvoiceId = dto.InvoiceId,
+        InvoiceAmount = dto.InvoiceAmount,
+        InvoiceCurrency = dto.InvoiceCurrency,
+        InvoiceStatus = dto.InvoiceStatus,
+        InvoicePaidAt = dto.InvoicePaidAt,
+        BedNights = dto.BedNights
+    };
+
+    private static ClinicAdmissionObservation MapObservation(AdmissionObservationDto dto) => new()
+    {
+        Id = dto.Id,
+        AdmissionId = dto.AdmissionId,
+        RecordedAt = dto.RecordedAt,
+        Note = dto.Note,
+        HeartRate = dto.HeartRate,
+        TemperatureCelsius = dto.TemperatureCelsius,
+        OxygenSaturation = dto.OxygenSaturation,
+        SystolicBp = dto.SystolicBp,
+        DiastolicBp = dto.DiastolicBp
     };
 
     private sealed class PagedAdmissionsDto
@@ -3110,6 +3217,10 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public int OccupiedBeds { get; set; }
         public int MaintenanceBeds { get; set; }
         public int ActiveAdmissions { get; set; }
+        public int OccupancyPercent { get; set; }
+        public int AdmissionsTodayCount { get; set; }
+        public int DischargesTodayCount { get; set; }
+        public decimal? AverageLengthOfStayDays { get; set; }
         public List<WardDto>? Wards { get; set; }
         public List<AdmissionDto>? ActiveAdmissionsList { get; set; }
     }
@@ -3162,5 +3273,25 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string Status { get; set; } = string.Empty;
         public string? Reason { get; set; }
         public string? Notes { get; set; }
+        public string? DischargeSummary { get; set; }
+        public Guid? InvoiceId { get; set; }
+        public decimal? InvoiceAmount { get; set; }
+        public string? InvoiceCurrency { get; set; }
+        public string? InvoiceStatus { get; set; }
+        public DateTime? InvoicePaidAt { get; set; }
+        public int? BedNights { get; set; }
+    }
+
+    private sealed class AdmissionObservationDto
+    {
+        public Guid Id { get; set; }
+        public Guid AdmissionId { get; set; }
+        public DateTime RecordedAt { get; set; }
+        public string Note { get; set; } = string.Empty;
+        public decimal? HeartRate { get; set; }
+        public decimal? TemperatureCelsius { get; set; }
+        public decimal? OxygenSaturation { get; set; }
+        public decimal? SystolicBp { get; set; }
+        public decimal? DiastolicBp { get; set; }
     }
 }

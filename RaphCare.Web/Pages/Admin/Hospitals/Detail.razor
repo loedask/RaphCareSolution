@@ -891,7 +891,8 @@
         (RaphCareRoles.Clinician, AppResources.T("StaffJob_Staff")),
         (RaphCareRoles.Doctor, AppResources.T("StaffJob_Doctor")),
         (RaphCareRoles.Pharmacist, AppResources.T("StaffJob_Pharmacist")),
-        (RaphCareRoles.LabTechnician, AppResources.T("StaffJob_LabTechnician"))
+        (RaphCareRoles.LabTechnician, AppResources.T("StaffJob_LabTechnician")),
+        (RaphCareRoles.Nurse, AppResources.T("StaffJob_Nurse"))
     ];
 
     private static string CurrentJobRole(ClinicStaffMember member) =>
@@ -908,6 +909,7 @@
             RaphCareRoles.Doctor => AppResources.T("StaffJob_Doctor"),
             RaphCareRoles.Pharmacist => AppResources.T("StaffJob_Pharmacist"),
             RaphCareRoles.LabTechnician => AppResources.T("StaffJob_LabTechnician"),
+            RaphCareRoles.Nurse => AppResources.T("StaffJob_Nurse"),
             _ => AppResources.T("StaffJob_Staff")
         });
         return string.Join(" · ", parts);

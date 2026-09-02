@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RaphCare.Application\RaphCare.Application.csproj" />
+    <ProjectReference Include="..\RaphCare.Domain\RaphCare.Domain.csproj" />
   </ItemGroup>
 
 </Project>

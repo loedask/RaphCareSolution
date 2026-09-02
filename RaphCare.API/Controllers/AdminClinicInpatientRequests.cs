@@ -56,6 +56,22 @@ public sealed class AdmitAdminClinicPatientRequest
 public sealed class DischargeAdminClinicAdmissionRequest
 {
     public string? Notes { get; set; }
+    public string? DischargeSummary { get; set; }
+    public decimal? NightlyBedRate { get; set; }
+    public decimal? ExtraAmount { get; set; }
+    public string? ExtraDescription { get; set; }
+    public bool MarkPaid { get; set; }
+    public string? Currency { get; set; }
+}
+
+public sealed class CreateAdminClinicAdmissionObservationRequest
+{
+    public string Note { get; set; } = string.Empty;
+    public decimal? HeartRate { get; set; }
+    public decimal? TemperatureCelsius { get; set; }
+    public decimal? OxygenSaturation { get; set; }
+    public decimal? SystolicBp { get; set; }
+    public decimal? DiastolicBp { get; set; }
 }
 
 public sealed class TransferAdminClinicAdmissionRequest

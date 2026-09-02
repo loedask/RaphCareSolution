@@ -50,6 +50,12 @@
             <AdminStatCard Label="@AppResources.T("Common_Facilities")" Value="@_dashboard.FacilityCount" Accent="accent" />
             <AdminStatCard Label="@AppResources.T("Common_Today")" Value="@_dashboard.AppointmentsTodayCount" Accent="success" />
             <AdminStatCard Label="@AppResources.T("Common_Next7Days")" Value="@_dashboard.UpcomingAppointmentsCount" Accent="violet" />
+            @if (_dashboard.TotalBeds > 0)
+            {
+                <AdminStatCard Label="@AppResources.T("Inpatient_Occupancy")" Value="@($"{_dashboard.OccupancyPercent}%")" Accent="accent" />
+                <AdminStatCard Label="@AppResources.T("Inpatient_AdmissionsToday")" Value="@_dashboard.AdmissionsTodayCount" Accent="success" />
+                <AdminStatCard Label="@AppResources.T("Inpatient_DischargesToday")" Value="@_dashboard.DischargesTodayCount" Accent="violet" />
+            }
         </AdminStatGrid>
 
         <AdminPageCard Title="@AppResources.T("Dashboard_UpcomingAppointmentsTitle")">

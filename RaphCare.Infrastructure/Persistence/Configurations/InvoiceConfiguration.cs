@@ -26,5 +26,7 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.HasIndex(e => e.ClinicId);
         builder.HasIndex(e => e.PatientId);
         builder.HasIndex(e => e.VisitId);
+        builder.HasIndex(e => e.AdmissionId);
+        builder.Property(e => e.PaymentMethod).HasMaxLength(50);
     }
 }

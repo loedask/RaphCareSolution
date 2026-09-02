@@ -2755,4 +2755,82 @@
   <data name="StaffJob_Administrator" xml:space="preserve">
     <value>Administrateur</value>
   </data>
+  <data name="StaffJob_Nurse" xml:space="preserve">
+    <value>Infirmier</value>
+  </data>
+  <data name="Inpatient_Occupancy" xml:space="preserve">
+    <value>Occupation</value>
+  </data>
+  <data name="Inpatient_AdmissionsToday" xml:space="preserve">
+    <value>Admis aujourd'hui</value>
+  </data>
+  <data name="Inpatient_DischargesToday" xml:space="preserve">
+    <value>Sortis aujourd'hui</value>
+  </data>
+  <data name="Inpatient_AverageStay" xml:space="preserve">
+    <value>Durée moyenne</value>
+  </data>
+  <data name="Inpatient_AverageStayValue" xml:space="preserve">
+    <value>{0} jours</value>
+  </data>
+  <data name="Inpatient_AddWardNote" xml:space="preserve">
+    <value>Note de service</value>
+  </data>
+  <data name="Inpatient_WardNoteTitle" xml:space="preserve">
+    <value>Notes de service</value>
+  </data>
+  <data name="Inpatient_WardNoteLabel" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Inpatient_WardNotePlaceholder" xml:space="preserve">
+    <value>Ce que vous avez observé au service</value>
+  </data>
+  <data name="Inpatient_WardNoteRequired" xml:space="preserve">
+    <value>Écrivez une courte note avant d'enregistrer.</value>
+  </data>
+  <data name="Inpatient_NoWardNotes" xml:space="preserve">
+    <value>Pas encore de notes pour ce séjour.</value>
+  </data>
+  <data name="Inpatient_WardNoteSaved" xml:space="preserve">
+    <value>Note enregistrée.</value>
+  </data>
+  <data name="Inpatient_CouldNotSaveWardNote" xml:space="preserve">
+    <value>Impossible d'enregistrer la note.</value>
+  </data>
+  <data name="Inpatient_CouldNotLoadWardNotes" xml:space="preserve">
+    <value>Impossible de charger les notes.</value>
+  </data>
+  <data name="Inpatient_HeartRate" xml:space="preserve">
+    <value>Pouls</value>
+  </data>
+  <data name="Inpatient_Temperature" xml:space="preserve">
+    <value>Température (°C)</value>
+  </data>
+  <data name="Inpatient_Oxygen" xml:space="preserve">
+    <value>Oxygène (%)</value>
+  </data>
+  <data name="Inpatient_DischargeSummaryLabel" xml:space="preserve">
+    <value>Résumé pour le patient</value>
+  </data>
+  <data name="Inpatient_DischargeSummaryPlaceholder" xml:space="preserve">
+    <value>Motif, soins, médicaments, et date de retour</value>
+  </data>
+  <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
+    <value>Tarif de la nuit</value>
+  </data>
+  <data name="Inpatient_ExtraChargeLabel" xml:space="preserve">
+    <value>Autres frais</value>
+  </data>
+  <data name="Inpatient_ExtraChargeDescription" xml:space="preserve">
+    <value>Objet des autres frais</value>
+  </data>
+  <data name="Inpatient_MarkPaidCash" xml:space="preserve">
+    <value>Marquer payé en espèces</value>
+  </data>
+  <data name="Inpatient_CurrencyLabel" xml:space="preserve">
+    <value>Devise</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithInvoice" xml:space="preserve">
+    <value>Patient sorti. Facture {0} {1}.</value>
+  </data>
 </root>

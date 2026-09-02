@@ -16,6 +16,6 @@ public class InvoiceLineItem : BaseEntity
 
     public string? ReferenceId { get; set; }
 
-    public Invoice Invoice { get; set; } = null!;
+    public Invoice? Invoice { get; set; }
 }
 

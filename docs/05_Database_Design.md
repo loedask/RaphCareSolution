@@ -7,10 +7,10 @@ Six bounded-context DbContexts live in RaphCare.Persistence. Each can use a dedi
 | DbContext | Connection string key | DbSets |
 |-----------|------------------------|--------|
 | IdentityDbContext | IdentityConnection (or Default) | Users (ApplicationUser), Roles, Permissions, UserRoles, RolePermissions, OtpCodes |
-| ClinicalDbContext | ClinicalConnection (or Default) | Patients, Clinics, Appointments, Visits, CarePlans, TeleSessions, Messages, VoiceRecordings, Wards, Rooms, Beds, InpatientAdmissions, MoodLogs, MentalHealthAssessments, PatientPushDevices, … |
+| ClinicalDbContext | ClinicalConnection (or Default) | Patients, Clinics, Appointments, Visits, CarePlans, TeleSessions, Messages, VoiceRecordings, Wards, Rooms, Beds, InpatientAdmissions, InpatientObservations, MoodLogs, MentalHealthAssessments, PatientPushDevices, … |
 | DeviceDbContext | DeviceConnection (or Default) | Devices, DeviceTypes, DeviceManufacturers, DeviceFirmwares, DeviceAssignments |
 | InsuranceDbContext | InsuranceConnection (or Default) | InsurancePlans, InsuranceProfiles |
-| BillingDbContext | BillingConnection (or Default) | Invoices |
+| BillingDbContext | BillingConnection (or Default) | Invoices, InvoiceLineItems |
 | AIDbContext | (Default) | WellnessInsights, RiskScores, DashboardSnapshots |
 
 All contexts use the same migrations assembly: `RaphCare.Persistence`. Interceptors registered: AuditableEntityInterceptor, SoftDeleteInterceptor, DomainEventDispatcherInterceptor. Query tracking is NoTracking by default for read-oriented usage.
@@ -18,10 +18,10 @@ All contexts use the same migrations assembly: `RaphCare.Persistence`. Intercept
 ## Key Tables (by Context)
 
 - **Identity:** ApplicationUser (e.g. Id, EntraObjectId, Email, DisplayName), Role, Permission, UserRole, RolePermission, OtpCode (PhoneNumber, CodeHash, ExpiresAt, IsUsed, CreatedAt, UsedAt).
-- **Clinical:** Patient (Id, ClinicId, etc.), Clinic, Appointment, Visit, CarePlan, TeleSession, Message, VoiceRecording (PatientId, StorageUrl, DurationSeconds, Language), Ward / Room / Bed (inpatient capacity), InpatientAdmission (patient bed stay), MoodLog, MentalHealthAssessment, PatientPushDevice.
+- **Clinical:** Patient (Id, ClinicId, etc.), Clinic, Appointment, Visit, CarePlan, TeleSession, Message, VoiceRecording (PatientId, StorageUrl, DurationSeconds, Language), Ward / Room / Bed (inpatient capacity), InpatientAdmission (patient bed stay, discharge summary), InpatientObservation (ward notes), MoodLog, MentalHealthAssessment, PatientPushDevice.
 - **Devices:** Device, DeviceType, DeviceManufacturer, DeviceFirmware, DeviceAssignment.
 - **Insurance:** InsurancePlan, InsuranceProfile.
-- **Billing:** Invoice.
+- **Billing:** Invoice (optional AdmissionId), InvoiceLineItem.
 - **AI:** WellnessInsight, RiskScore, DashboardSnapshot.
 
 Entity configurations are applied via EF Core model builder (configurations in Infrastructure.Persistence.Configurations or Persistence). Domain entities follow BaseEntity/AggregateRoot where applicable; soft delete and audit fields are applied via interceptors.

@@ -63,6 +63,56 @@ public sealed class AdminClinicDashboardQueryService(
                 cancellationToken)
             .ConfigureAwait(false);
 
+        var beds = await clinicalDbContext.Wards
+            .AsNoTracking()
+            .Where(w => w.ClinicId == clinicId)
+            .SelectMany(w => w.Rooms)
+            .SelectMany(r => r.Beds)
+            .Where(b => b.IsActive)
+            .Select(b => b.Status)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var totalBeds = beds.Count;
+        var occupiedBeds = beds.Count(status => status == "Occupied");
+        var occupancyPercent = totalBeds == 0 ? 0 : (int)Math.Round(100d * occupiedBeds / totalBeds);
+
+        var admissionsTodayCount = await clinicalDbContext.InpatientAdmissions
+            .AsNoTracking()
+            .CountAsync(
+                a => a.ClinicId == clinicId
+                     && a.AdmittedAt >= todayStartUtc
+                     && a.AdmittedAt <= todayEndUtc,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        var dischargesTodayCount = await clinicalDbContext.InpatientAdmissions
+            .AsNoTracking()
+            .CountAsync(
+                a => a.ClinicId == clinicId
+                     && a.DischargedAt != null
+                     && a.DischargedAt >= todayStartUtc
+                     && a.DischargedAt <= todayEndUtc,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        var stayCutoff = todayUtc.AddDays(-90);
+        var dischargedStays = await clinicalDbContext.InpatientAdmissions
+            .AsNoTracking()
+            .Where(a => a.ClinicId == clinicId
+                        && a.Status == "Discharged"
+                        && a.DischargedAt != null
+                        && a.DischargedAt >= stayCutoff)
+            .Select(a => new { a.AdmittedAt, a.DischargedAt })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        decimal? averageStay = dischargedStays.Count == 0
+            ? null
+            : Math.Round(
+                (decimal)dischargedStays.Average(a => (a.DischargedAt!.Value - a.AdmittedAt).TotalDays),
+                1);
+
         return new AdminClinicDashboardDto
         {
             ClinicId = clinic.Id,
@@ -73,6 +123,12 @@ public sealed class AdminClinicDashboardQueryService(
             FacilityCount = clinic.Facilities.Count,
             AppointmentsTodayCount = appointmentsTodayCount,
             UpcomingAppointmentsCount = upcomingCount,
+            TotalBeds = totalBeds,
+            OccupiedBeds = occupiedBeds,
+            OccupancyPercent = occupancyPercent,
+            AdmissionsTodayCount = admissionsTodayCount,
+            DischargesTodayCount = dischargesTodayCount,
+            AverageLengthOfStayDays = averageStay,
             UpcomingAppointments = upcomingAppointments.Items
         };
     }

@@ -10,6 +10,12 @@ public sealed class ClinicDashboard
     public int FacilityCount { get; set; }
     public int AppointmentsTodayCount { get; set; }
     public int UpcomingAppointmentsCount { get; set; }
+    public int TotalBeds { get; set; }
+    public int OccupiedBeds { get; set; }
+    public int OccupancyPercent { get; set; }
+    public int AdmissionsTodayCount { get; set; }
+    public int DischargesTodayCount { get; set; }
+    public decimal? AverageLengthOfStayDays { get; set; }
     public IReadOnlyList<ClinicAppointmentListItem> UpcomingAppointments { get; set; } = Array.Empty<ClinicAppointmentListItem>();
 }
 
@@ -415,6 +421,10 @@ public sealed class ClinicInpatientBoard
     public int OccupiedBeds { get; set; }
     public int MaintenanceBeds { get; set; }
     public int ActiveAdmissions { get; set; }
+    public int OccupancyPercent { get; set; }
+    public int AdmissionsTodayCount { get; set; }
+    public int DischargesTodayCount { get; set; }
+    public decimal? AverageLengthOfStayDays { get; set; }
     public IReadOnlyList<ClinicWard> Wards { get; set; } = Array.Empty<ClinicWard>();
     public IReadOnlyList<ClinicAdmission> ActiveAdmissionsList { get; set; } = Array.Empty<ClinicAdmission>();
 }
@@ -467,6 +477,47 @@ public sealed class ClinicAdmission
     public string Status { get; set; } = string.Empty;
     public string? Reason { get; set; }
     public string? Notes { get; set; }
+    public string? DischargeSummary { get; set; }
+    public Guid? InvoiceId { get; set; }
+    public decimal? InvoiceAmount { get; set; }
+    public string? InvoiceCurrency { get; set; }
+    public string? InvoiceStatus { get; set; }
+    public DateTime? InvoicePaidAt { get; set; }
+    public int? BedNights { get; set; }
+}
+
+public sealed class ClinicAdmissionObservation
+{
+    public Guid Id { get; set; }
+    public Guid AdmissionId { get; set; }
+    public DateTime RecordedAt { get; set; }
+    public string Note { get; set; } = string.Empty;
+    public decimal? HeartRate { get; set; }
+    public decimal? TemperatureCelsius { get; set; }
+    public decimal? OxygenSaturation { get; set; }
+    public decimal? SystolicBp { get; set; }
+    public decimal? DiastolicBp { get; set; }
+}
+
+public sealed class DischargeAdmissionRequest
+{
+    public string? Notes { get; set; }
+    public string? DischargeSummary { get; set; }
+    public decimal? NightlyBedRate { get; set; }
+    public decimal? ExtraAmount { get; set; }
+    public string? ExtraDescription { get; set; }
+    public bool MarkPaid { get; set; }
+    public string? Currency { get; set; }
+}
+
+public sealed class AddAdmissionObservationRequest
+{
+    public string Note { get; set; } = string.Empty;
+    public decimal? HeartRate { get; set; }
+    public decimal? TemperatureCelsius { get; set; }
+    public decimal? OxygenSaturation { get; set; }
+    public decimal? SystolicBp { get; set; }
+    public decimal? DiastolicBp { get; set; }
 }
 
 public sealed class CreateWardRequest

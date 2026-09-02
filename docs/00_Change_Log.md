@@ -2,6 +2,21 @@
 
 ## Date
 
+2026-09-02
+
+## High-level summary of changes
+
+Hospital plan value: ward notes on a stay, a cash invoice and patient-facing summary at discharge, occupancy numbers on the hospital dashboard, and a nurse job. Partner price list for South Africa (rand) and the Democratic Republic of the Congo (US dollars) is in `docs/partner-updates`.
+
+## Modules modified
+
+- **Domain / Application / Persistence / API / Client / Web:** inpatient observations, discharge invoice line items, nurse role, occupancy stats.
+- **docs:** hospital plan checklist (engineering + partner), `partner-updates/raphcare-price-list.md`.
+
+---
+
+## Date
+
 2026-08-29
 
 ## High-level summary of changes

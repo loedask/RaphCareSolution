@@ -2516,6 +2516,8 @@ a.hospital-directory-person:hover strong {
 .inpatient-actions { display: flex; flex-wrap: wrap; gap: 0.25rem; }
 .inpatient-action-panel { margin-top: 1rem; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 0.75rem; background: #f8fafc; }
 .inpatient-action-panel h3 { margin: 0 0 0.75rem; font-size: 1rem; }
+.inpatient-ward-notes { list-style: none; margin: 0 0 0.75rem; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.inpatient-ward-notes li { display: flex; flex-wrap: wrap; gap: 0.4rem 0.75rem; font-size: 0.9rem; }
 .inpatient-search-row { display: flex; gap: 0.5rem; align-items: center; }
 .inpatient-search-row .form-control { flex: 1; }
 .inpatient-checkbox { display: flex; align-items: center; gap: 0.5rem; margin-top: 1.6rem; }
