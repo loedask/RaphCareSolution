@@ -64,6 +64,9 @@ public interface IAdminClinicService
     Task<Response<ClinicReferralBoard>> GetReferralBoardAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicReferral>> CreateReferralAsync(Guid clinicId, CreateReferralRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicReferral>> UpdateReferralStatusAsync(Guid clinicId, Guid referralId, string status, CancellationToken cancellationToken = default);
+    Task<Response<ClinicRosterBoard>> GetRosterBoardAsync(Guid clinicId, DateTime? dayUtc = null, CancellationToken cancellationToken = default);
+    Task<Response<ClinicRosterEntry>> CreateRosterEntryAsync(Guid clinicId, CreateRosterEntryRequest request, CancellationToken cancellationToken = default);
+    Task<Response<bool>> DeleteRosterEntryAsync(Guid clinicId, Guid entryId, CancellationToken cancellationToken = default);
     Task<Response<IReadOnlyList<ClinicDeviceListItem>>> GetDevicesAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicInpatientBoard>> GetInpatientBoardAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicWard>> CreateWardAsync(Guid clinicId, CreateWardRequest request, CancellationToken cancellationToken = default);

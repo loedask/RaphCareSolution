@@ -28,6 +28,8 @@ using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicCas
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicCasualtyTicket;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicTheatreCase;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicReferral;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicRosterEntry;
+using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicRosterEntry;
 using RaphCare.Application.Features.Organization.Commands.EnsureCasualtyDisplayToken;
 using RaphCare.Application.Features.Organization.Commands.EnsureCollectionDisplayToken;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicTheatreCaseStatus;
@@ -35,6 +37,7 @@ using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicRefer
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicCasualtyBoard;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicTheatreBoard;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicReferralBoard;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicRosterBoard;
 using RaphCare.Application.Features.Organization.Commands.SetAdminClinicProviderActive;
 using RaphCare.Application.Features.Organization.Commands.StartAdminClinicTeleSession;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicAppointment;
@@ -1228,6 +1231,59 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Staff roster board for a calendar day (UTC). Defaults to today.</summary>
+    [HttpGet("{id:guid}/roster/board", Name = "GetAdminClinicRosterBoard")]
+    [ProducesResponseType(typeof(AdminClinicRosterBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetRosterBoard(
+        Guid id,
+        [FromQuery] DateTime? dayUtc,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicRosterBoardQuery { ClinicId = id, DayUtc = dayUtc },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Add a staff member to the roster for a shift.</summary>
+    [HttpPost("{id:guid}/roster/entries", Name = "CreateAdminClinicRosterEntry")]
+    [ProducesResponseType(typeof(AdminClinicRosterEntryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateRosterEntry(
+        Guid id,
+        [FromBody] CreateAdminClinicRosterEntryRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new CreateAdminClinicRosterEntryRequest();
+        var result = await mediator.Send(
+            new CreateAdminClinicRosterEntryCommand
+            {
+                ClinicId = id,
+                ApplicationUserId = body.ApplicationUserId,
+                DutyDate = body.DutyDate,
+                ShiftLabel = body.ShiftLabel,
+                Note = body.Note
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Remove a roster entry.</summary>
+    [HttpDelete("{id:guid}/roster/entries/{entryId:guid}", Name = "DeleteAdminClinicRosterEntry")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteRosterEntry(
+        Guid id,
+        Guid entryId,
+        CancellationToken cancellationToken)
+    {
+        var deleted = await mediator.Send(
+            new DeleteAdminClinicRosterEntryCommand { ClinicId = id, EntryId = entryId },
+            cancellationToken);
+        return deleted ? NoContent() : NotFound();
     }
 
     /// <summary>List monitoring devices registered to this hospital.</summary>

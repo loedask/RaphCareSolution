@@ -663,6 +663,9 @@
   <data name="Common_Referrals" xml:space="preserve">
     <value>Referrals</value>
   </data>
+  <data name="Common_Roster" xml:space="preserve">
+    <value>Roster</value>
+  </data>
   <data name="Common_Overview" xml:space="preserve">
     <value>Overview</value>
   </data>
@@ -3164,5 +3167,80 @@
   </data>
   <data name="Referral_StatusLine" xml:space="preserve">
     <value>{0} sent, {1} accepted, {2} completed</value>
+  </data>
+  <data name="Roster_PageTitle" xml:space="preserve">
+    <value>Who is on today</value>
+  </data>
+  <data name="Roster_Title" xml:space="preserve">
+    <value>Roster</value>
+  </data>
+  <data name="Roster_Lead" xml:space="preserve">
+    <value>See who is on duty at {0} for each shift.</value>
+  </data>
+  <data name="Roster_Loading" xml:space="preserve">
+    <value>Loading the roster…</value>
+  </data>
+  <data name="Roster_SectionsAria" xml:space="preserve">
+    <value>Roster sections</value>
+  </data>
+  <data name="Roster_Eyebrow" xml:space="preserve">
+    <value>Duty board</value>
+  </data>
+  <data name="Roster_TodaysList" xml:space="preserve">
+    <value>Who is on</value>
+  </data>
+  <data name="Roster_AddPerson" xml:space="preserve">
+    <value>Add to roster</value>
+  </data>
+  <data name="Roster_DayLabel" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="Roster_ShiftLabel" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Roster_Morning" xml:space="preserve">
+    <value>Morning</value>
+  </data>
+  <data name="Roster_Afternoon" xml:space="preserve">
+    <value>Afternoon</value>
+  </data>
+  <data name="Roster_Night" xml:space="preserve">
+    <value>Night</value>
+  </data>
+  <data name="Roster_NoteLabel" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Roster_NotePlaceholder" xml:space="preserve">
+    <value>Ward A, casualty, or leave blank</value>
+  </data>
+  <data name="Roster_SelectStaff" xml:space="preserve">
+    <value>Select staff…</value>
+  </data>
+  <data name="Roster_NoEntries" xml:space="preserve">
+    <value>Nobody is on the roster for this day yet.</value>
+  </data>
+  <data name="Roster_ShiftEmpty" xml:space="preserve">
+    <value>Nobody on this shift.</value>
+  </data>
+  <data name="Roster_DaySummary" xml:space="preserve">
+    <value>{0} morning, {1} afternoon, {2} night</value>
+  </data>
+  <data name="Roster_StaffRequired" xml:space="preserve">
+    <value>Select a staff member.</value>
+  </data>
+  <data name="Roster_Added" xml:space="preserve">
+    <value>Added to the roster.</value>
+  </data>
+  <data name="Roster_Removed" xml:space="preserve">
+    <value>Removed from the roster.</value>
+  </data>
+  <data name="Roster_CouldNotLoad" xml:space="preserve">
+    <value>Could not load the roster.</value>
+  </data>
+  <data name="Roster_CouldNotAdd" xml:space="preserve">
+    <value>Could not add to the roster.</value>
+  </data>
+  <data name="Roster_CouldNotRemove" xml:space="preserve">
+    <value>Could not remove from the roster.</value>
   </data>
 </root>

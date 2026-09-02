@@ -1762,6 +1762,91 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicRosterBoard>> GetRosterBoardAsync(
+        Guid clinicId,
+        DateTime? dayUtc = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var url = dayUtc is null
+                ? $"api/admin/clinics/{clinicId}/roster/board"
+                : $"api/admin/clinics/{clinicId}/roster/board?dayUtc={Uri.EscapeDataString(dayUtc.Value.ToString("O"))}";
+            using var response = await client.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicRosterBoard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicRosterBoard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<RosterBoardDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicRosterBoard>.Failure("Could not load the roster.");
+
+            return Response<ClinicRosterBoard>.Success(MapRosterBoard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicRosterBoard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicRosterEntry>> CreateRosterEntryAsync(
+        Guid clinicId,
+        CreateRosterEntryRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/roster/entries",
+                    request,
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicRosterEntry>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<RosterEntryDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicRosterEntry>.Failure("Could not add the roster entry.");
+
+            return Response<ClinicRosterEntry>.Success(MapRosterEntry(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicRosterEntry>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<bool>> DeleteRosterEntryAsync(
+        Guid clinicId,
+        Guid entryId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .DeleteAsync($"api/admin/clinics/{clinicId}/roster/entries/{entryId}", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Roster entry not found.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<bool>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            return Response<bool>.Success(true);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     private static ClinicCasualtyBoard MapCasualtyBoard(CasualtyBoardDto dto) => new()
     {
         ClinicName = dto.ClinicName ?? string.Empty,
@@ -1834,6 +1919,28 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         ReferredAt = dto.ReferredAt,
         AcceptedAt = dto.AcceptedAt,
         CompletedAt = dto.CompletedAt
+    };
+
+    private static ClinicRosterBoard MapRosterBoard(RosterBoardDto dto) => new()
+    {
+        ClinicName = dto.ClinicName ?? string.Empty,
+        DayUtc = dto.DayUtc,
+        MorningCount = dto.MorningCount,
+        AfternoonCount = dto.AfternoonCount,
+        NightCount = dto.NightCount,
+        Entries = dto.Entries?.Select(MapRosterEntry).ToList() ?? []
+    };
+
+    private static ClinicRosterEntry MapRosterEntry(RosterEntryDto dto) => new()
+    {
+        Id = dto.Id,
+        ApplicationUserId = dto.ApplicationUserId,
+        DisplayName = dto.DisplayName ?? string.Empty,
+        Email = dto.Email,
+        Roles = dto.Roles ?? [],
+        DutyDate = dto.DutyDate,
+        ShiftLabel = dto.ShiftLabel ?? string.Empty,
+        Note = dto.Note
     };
 
     private async Task<Response<ClinicVisitPrescription>> PostPrescriptionActionAsync(
@@ -3545,6 +3652,28 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public DateTime ReferredAt { get; set; }
         public DateTime? AcceptedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
+    }
+
+    private sealed class RosterBoardDto
+    {
+        public string? ClinicName { get; set; }
+        public DateTime DayUtc { get; set; }
+        public int MorningCount { get; set; }
+        public int AfternoonCount { get; set; }
+        public int NightCount { get; set; }
+        public List<RosterEntryDto>? Entries { get; set; }
+    }
+
+    private sealed class RosterEntryDto
+    {
+        public Guid Id { get; set; }
+        public Guid ApplicationUserId { get; set; }
+        public string? DisplayName { get; set; }
+        public string? Email { get; set; }
+        public List<string>? Roles { get; set; }
+        public DateTime DutyDate { get; set; }
+        public string? ShiftLabel { get; set; }
+        public string? Note { get; set; }
     }
 
     private sealed class CollectionBoardDto

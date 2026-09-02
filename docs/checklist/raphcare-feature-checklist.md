@@ -264,7 +264,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 ---
 
-## Step 5: Hospital plan value (stay, counter, money) - 82%
+## Step 5: Hospital plan value (stay, counter, money) - 89%
 
 Work that makes the Hospital plan more than beds plus a waiting screen. Clinic stays outpatient. Network keeps multi-site index and group reporting. YC healthcare companies we adapted from: [Kaigo Health](https://www.ycombinator.com/companies/kaigo-health) (post-discharge follow-up), [Locata](https://www.ycombinator.com/companies/locata) (referral completion), [Adentris](https://www.ycombinator.com/companies/adentris) (discharge summaries), [YouShift](https://www.ycombinator.com/companies/youshift) (who is on today). We do not copy US denial-appeals products.
 
@@ -282,14 +282,14 @@ Work that makes the Hospital plan more than beds plus a waiting screen. Clinic s
 - [x] Emergency events on the hospital dashboard home (not only Devices): overview + `/admin` when a hospital is selected (SOS / fall, last 72h)
 - [x] Outbound referral tracking so a sent referral is followed to completion
 - [x] Book a return visit at discharge (optional clinician, time, and reason on the discharge form)
-- [ ] Who is on today (simple roster)
+- [x] Who is on today (simple roster): Morning / Afternoon / Night board for a chosen day
 - [ ] AI draft of the discharge summary (Hospital include; Clinic keeps the paid add-on)
 
-Shipped on API, Client, and Web admin. Discharged stays also show in the patient Health records list. Casualty, theatre, and referral boards are on the hospital rail. SafeCare SOS and fall alerts also sit on the hospital overview and admin home. Discharge can also book the next outpatient visit.
+Shipped on API, Client, and Web admin. Discharged stays also show in the patient Health records list. Casualty, theatre, referral, and roster boards are on the hospital rail. SafeCare SOS and fall alerts also sit on the hospital overview and admin home. Discharge can also book the next outpatient visit.
 
 ### Step 5 status
 
-**82%.** Ward notes, discharge invoice, occupancy, nurse role, discharge summaries, casualty queue, theatre list, emergency alerts on the hospital home, outbound referral tracking, and return-visit booking at discharge are in. Roster and AI draft are not started.
+**89%.** Ward notes, discharge invoice, occupancy, nurse role, discharge summaries, casualty queue, theatre list, emergency alerts on the hospital home, outbound referral tracking, return-visit booking at discharge, and a simple who-is-on-today roster are in. AI draft is not started.
 
 ---
 
@@ -318,7 +318,7 @@ Shipped on API, Client, and Web admin. Discharged stays also show in the patient
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 62% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
-| Step 5 Hospital plan value | 82% | Return visit at discharge in; roster and AI draft open |
+| Step 5 Hospital plan value | 89% | Roster in; AI discharge draft open |
 | Cross-cutting | 88% | Demo pack on Staging; E2E smoke plan in, script open |
 | **Overall (scored items)** | **76%** | Out of scope / open optional excluded |
 | **Without wearable Phase 2+ metrics** | **80%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |

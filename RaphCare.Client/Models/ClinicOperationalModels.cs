@@ -721,3 +721,34 @@ public sealed class CreateReferralRequest
     public string? Notes { get; set; }
 }
 
+public sealed class ClinicRosterBoard
+{
+    public string ClinicName { get; set; } = string.Empty;
+    public DateTime DayUtc { get; set; }
+    public int MorningCount { get; set; }
+    public int AfternoonCount { get; set; }
+    public int NightCount { get; set; }
+    public IReadOnlyList<ClinicRosterEntry> Entries { get; set; } =
+        Array.Empty<ClinicRosterEntry>();
+}
+
+public sealed class ClinicRosterEntry
+{
+    public Guid Id { get; set; }
+    public Guid ApplicationUserId { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+    public string? Email { get; set; }
+    public IReadOnlyList<string> Roles { get; set; } = Array.Empty<string>();
+    public DateTime DutyDate { get; set; }
+    public string ShiftLabel { get; set; } = string.Empty;
+    public string? Note { get; set; }
+}
+
+public sealed class CreateRosterEntryRequest
+{
+    public Guid ApplicationUserId { get; set; }
+    public DateTime DutyDate { get; set; }
+    public string ShiftLabel { get; set; } = "Morning";
+    public string? Note { get; set; }
+}
+

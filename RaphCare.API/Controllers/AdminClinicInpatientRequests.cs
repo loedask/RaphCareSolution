@@ -129,3 +129,11 @@ public sealed class UpdateAdminClinicReferralStatusRequest
     public string Status { get; set; } = string.Empty;
 }
 
+public sealed class CreateAdminClinicRosterEntryRequest
+{
+    public Guid ApplicationUserId { get; set; }
+    public DateTime DutyDate { get; set; }
+    public string ShiftLabel { get; set; } = "Morning";
+    public string? Note { get; set; }
+}
+

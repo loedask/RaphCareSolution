@@ -700,6 +700,9 @@
   <data name="Common_Referrals" xml:space="preserve">
     <value>Ba reference</value>
   </data>
+  <data name="Common_Roster" xml:space="preserve">
+    <value>Liste ya service</value>
+  </data>
   <data name="Common_Overview" xml:space="preserve">
     <value>Botali ya mozindo</value>
   </data>
@@ -3201,5 +3204,80 @@
   </data>
   <data name="Referral_StatusLine" xml:space="preserve">
     <value>{0} etindami, {1} endimami, {2} esili</value>
+  </data>
+  <data name="Roster_PageTitle" xml:space="preserve">
+    <value>Nani azali na service lelo</value>
+  </data>
+  <data name="Roster_Title" xml:space="preserve">
+    <value>Liste ya service</value>
+  </data>
+  <data name="Roster_Lead" xml:space="preserve">
+    <value>Tala nani azali na service na {0} mpo na shift nyonso.</value>
+  </data>
+  <data name="Roster_Loading" xml:space="preserve">
+    <value>Ezali kokangisa liste...</value>
+  </data>
+  <data name="Roster_SectionsAria" xml:space="preserve">
+    <value>Ba section ya liste</value>
+  </data>
+  <data name="Roster_Eyebrow" xml:space="preserve">
+    <value>Tableau ya service</value>
+  </data>
+  <data name="Roster_TodaysList" xml:space="preserve">
+    <value>Nani azali</value>
+  </data>
+  <data name="Roster_AddPerson" xml:space="preserve">
+    <value>Bakisa na liste</value>
+  </data>
+  <data name="Roster_DayLabel" xml:space="preserve">
+    <value>Mokolo</value>
+  </data>
+  <data name="Roster_ShiftLabel" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Roster_Morning" xml:space="preserve">
+    <value>Ntongo</value>
+  </data>
+  <data name="Roster_Afternoon" xml:space="preserve">
+    <value>Mpokwa</value>
+  </data>
+  <data name="Roster_Night" xml:space="preserve">
+    <value>Butu</value>
+  </data>
+  <data name="Roster_NoteLabel" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Roster_NotePlaceholder" xml:space="preserve">
+    <value>Pavillon A, casualty, to tikala mpamba</value>
+  </data>
+  <data name="Roster_SelectStaff" xml:space="preserve">
+    <value>Pona mosali...</value>
+  </data>
+  <data name="Roster_NoEntries" xml:space="preserve">
+    <value>Moto te azali na liste mpo na mokolo oyo.</value>
+  </data>
+  <data name="Roster_ShiftEmpty" xml:space="preserve">
+    <value>Moto te na shift oyo.</value>
+  </data>
+  <data name="Roster_DaySummary" xml:space="preserve">
+    <value>{0} ntongo, {1} mpokwa, {2} butu</value>
+  </data>
+  <data name="Roster_StaffRequired" xml:space="preserve">
+    <value>Pona mosali.</value>
+  </data>
+  <data name="Roster_Added" xml:space="preserve">
+    <value>Ebakisami na liste.</value>
+  </data>
+  <data name="Roster_Removed" xml:space="preserve">
+    <value>Elongolami na liste.</value>
+  </data>
+  <data name="Roster_CouldNotLoad" xml:space="preserve">
+    <value>Ekoki te kokangisa liste.</value>
+  </data>
+  <data name="Roster_CouldNotAdd" xml:space="preserve">
+    <value>Ekoki te kobakisa na liste.</value>
+  </data>
+  <data name="Roster_CouldNotRemove" xml:space="preserve">
+    <value>Ekoki te kolongola na liste.</value>
   </data>
 </root>

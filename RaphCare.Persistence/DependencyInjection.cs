@@ -198,6 +198,7 @@ public static class DependencyInjection
         services.AddScoped<IRepository<CasualtyTicket>>(sp => new EfRepository<CasualtyTicket, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<TheatreCase>>(sp => new EfRepository<TheatreCase, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Referral>>(sp => new EfRepository<Referral, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<ClinicRosterEntry>>(sp => new EfRepository<ClinicRosterEntry, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Provider>>(sp => new EfRepository<Provider, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<ProviderSchedule>>(sp => new EfRepository<ProviderSchedule, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<VoiceRecording>>(sp => new EfRepository<VoiceRecording, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));

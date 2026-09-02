@@ -700,6 +700,9 @@
   <data name="Common_Referrals" xml:space="preserve">
     <value>References</value>
   </data>
+  <data name="Common_Roster" xml:space="preserve">
+    <value>Planning</value>
+  </data>
   <data name="Common_Overview" xml:space="preserve">
     <value>AperÃ§u</value>
   </data>
@@ -3201,5 +3204,80 @@
   </data>
   <data name="Referral_StatusLine" xml:space="preserve">
     <value>{0} envoyees, {1} acceptees, {2} terminees</value>
+  </data>
+  <data name="Roster_PageTitle" xml:space="preserve">
+    <value>Qui travaille aujourd'hui</value>
+  </data>
+  <data name="Roster_Title" xml:space="preserve">
+    <value>Planning</value>
+  </data>
+  <data name="Roster_Lead" xml:space="preserve">
+    <value>Voyez qui est de service a {0} pour chaque vacation.</value>
+  </data>
+  <data name="Roster_Loading" xml:space="preserve">
+    <value>Chargement du planning...</value>
+  </data>
+  <data name="Roster_SectionsAria" xml:space="preserve">
+    <value>Sections du planning</value>
+  </data>
+  <data name="Roster_Eyebrow" xml:space="preserve">
+    <value>Tableau de service</value>
+  </data>
+  <data name="Roster_TodaysList" xml:space="preserve">
+    <value>Qui est de service</value>
+  </data>
+  <data name="Roster_AddPerson" xml:space="preserve">
+    <value>Ajouter au planning</value>
+  </data>
+  <data name="Roster_DayLabel" xml:space="preserve">
+    <value>Jour</value>
+  </data>
+  <data name="Roster_ShiftLabel" xml:space="preserve">
+    <value>Vacation</value>
+  </data>
+  <data name="Roster_Morning" xml:space="preserve">
+    <value>Matin</value>
+  </data>
+  <data name="Roster_Afternoon" xml:space="preserve">
+    <value>Apres-midi</value>
+  </data>
+  <data name="Roster_Night" xml:space="preserve">
+    <value>Nuit</value>
+  </data>
+  <data name="Roster_NoteLabel" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Roster_NotePlaceholder" xml:space="preserve">
+    <value>Service A, urgences, ou laissez vide</value>
+  </data>
+  <data name="Roster_SelectStaff" xml:space="preserve">
+    <value>Choisir le personnel...</value>
+  </data>
+  <data name="Roster_NoEntries" xml:space="preserve">
+    <value>Personne n'est encore sur le planning pour ce jour.</value>
+  </data>
+  <data name="Roster_ShiftEmpty" xml:space="preserve">
+    <value>Personne sur cette vacation.</value>
+  </data>
+  <data name="Roster_DaySummary" xml:space="preserve">
+    <value>{0} matin, {1} apres-midi, {2} nuit</value>
+  </data>
+  <data name="Roster_StaffRequired" xml:space="preserve">
+    <value>Choisissez un membre du personnel.</value>
+  </data>
+  <data name="Roster_Added" xml:space="preserve">
+    <value>Ajoute au planning.</value>
+  </data>
+  <data name="Roster_Removed" xml:space="preserve">
+    <value>Retire du planning.</value>
+  </data>
+  <data name="Roster_CouldNotLoad" xml:space="preserve">
+    <value>Impossible de charger le planning.</value>
+  </data>
+  <data name="Roster_CouldNotAdd" xml:space="preserve">
+    <value>Impossible d'ajouter au planning.</value>
+  </data>
+  <data name="Roster_CouldNotRemove" xml:space="preserve">
+    <value>Impossible de retirer du planning.</value>
   </data>
 </root>

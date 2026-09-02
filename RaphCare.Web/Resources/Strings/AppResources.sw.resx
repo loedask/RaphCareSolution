@@ -700,6 +700,9 @@
   <data name="Common_Referrals" xml:space="preserve">
     <value>Rufaa</value>
   </data>
+  <data name="Common_Roster" xml:space="preserve">
+    <value>Orodha ya zamu</value>
+  </data>
   <data name="Common_Overview" xml:space="preserve">
     <value>Muhtasari</value>
   </data>
@@ -3201,5 +3204,80 @@
   </data>
   <data name="Referral_StatusLine" xml:space="preserve">
     <value>{0} zimetumwa, {1} zimekubaliwa, {2} zimekamilika</value>
+  </data>
+  <data name="Roster_PageTitle" xml:space="preserve">
+    <value>Nani yuko kazini leo</value>
+  </data>
+  <data name="Roster_Title" xml:space="preserve">
+    <value>Orodha ya zamu</value>
+  </data>
+  <data name="Roster_Lead" xml:space="preserve">
+    <value>Angalia nani yuko kazini katika {0} kwa kila zamu.</value>
+  </data>
+  <data name="Roster_Loading" xml:space="preserve">
+    <value>Inapakia orodha...</value>
+  </data>
+  <data name="Roster_SectionsAria" xml:space="preserve">
+    <value>Sehemu za orodha</value>
+  </data>
+  <data name="Roster_Eyebrow" xml:space="preserve">
+    <value>Bodi ya zamu</value>
+  </data>
+  <data name="Roster_TodaysList" xml:space="preserve">
+    <value>Nani yuko</value>
+  </data>
+  <data name="Roster_AddPerson" xml:space="preserve">
+    <value>Ongeza kwenye orodha</value>
+  </data>
+  <data name="Roster_DayLabel" xml:space="preserve">
+    <value>Siku</value>
+  </data>
+  <data name="Roster_ShiftLabel" xml:space="preserve">
+    <value>Zamu</value>
+  </data>
+  <data name="Roster_Morning" xml:space="preserve">
+    <value>Asubuhi</value>
+  </data>
+  <data name="Roster_Afternoon" xml:space="preserve">
+    <value>Mchana</value>
+  </data>
+  <data name="Roster_Night" xml:space="preserve">
+    <value>Usiku</value>
+  </data>
+  <data name="Roster_NoteLabel" xml:space="preserve">
+    <value>Kumbuka</value>
+  </data>
+  <data name="Roster_NotePlaceholder" xml:space="preserve">
+    <value>Wodi A, dharura, au acha tupu</value>
+  </data>
+  <data name="Roster_SelectStaff" xml:space="preserve">
+    <value>Chagua mfanyakazi...</value>
+  </data>
+  <data name="Roster_NoEntries" xml:space="preserve">
+    <value>Hakuna mtu kwenye orodha kwa siku hii bado.</value>
+  </data>
+  <data name="Roster_ShiftEmpty" xml:space="preserve">
+    <value>Hakuna mtu kwenye zamu hii.</value>
+  </data>
+  <data name="Roster_DaySummary" xml:space="preserve">
+    <value>{0} asubuhi, {1} mchana, {2} usiku</value>
+  </data>
+  <data name="Roster_StaffRequired" xml:space="preserve">
+    <value>Chagua mfanyakazi.</value>
+  </data>
+  <data name="Roster_Added" xml:space="preserve">
+    <value>Ameongezwa kwenye orodha.</value>
+  </data>
+  <data name="Roster_Removed" xml:space="preserve">
+    <value>Ameondolewa kwenye orodha.</value>
+  </data>
+  <data name="Roster_CouldNotLoad" xml:space="preserve">
+    <value>Haikuweza kupakia orodha.</value>
+  </data>
+  <data name="Roster_CouldNotAdd" xml:space="preserve">
+    <value>Haikuweza kuongeza kwenye orodha.</value>
+  </data>
+  <data name="Roster_CouldNotRemove" xml:space="preserve">
+    <value>Haikuweza kuondoa kwenye orodha.</value>
   </data>
 </root>
