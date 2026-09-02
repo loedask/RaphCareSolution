@@ -1,7 +1,6 @@
 using System.Windows.Input;
 using Microsoft.Extensions.Options;
 using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Common.Models;
 using RaphCare.Mobile.Core.Common.Services.Auth;
@@ -56,7 +55,7 @@ public sealed class ChangePasswordViewModel : BaseViewModel
                 return;
             _usesEmailPassword = value;
             OnPropertyChanged(nameof(UsesEmailPassword));
-            (UpdateCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(UpdateCommand);
         }
     }
 
@@ -89,9 +88,17 @@ public sealed class ChangePasswordViewModel : BaseViewModel
 
     public async Task LoadAsync()
     {
-        var kind = await _auth.GetAccountKindAsync(CancellationToken.None).ConfigureAwait(false);
-        UsesEmailPassword = kind == AuthAccountKind.Email;
-        UsesEntraReset = kind != AuthAccountKind.Email;
+        try
+        {
+            var kind = await _auth.GetAccountKindAsync(CancellationToken.None).ConfigureAwait(false);
+            UsesEmailPassword = kind == AuthAccountKind.Email;
+            UsesEntraReset = kind != AuthAccountKind.Email;
+        }
+        catch (Exception)
+        {
+            UsesEmailPassword = false;
+            UsesEntraReset = true;
+        }
     }
 
     private async Task UpdateAsync()
@@ -157,6 +164,5 @@ public sealed class ChangePasswordViewModel : BaseViewModel
     }
 
     private static Task AlertAsync(string message) =>
-        MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(T("ChangePasswordTitle"), message, T("CommonOk")));
+        DisplayAlertSafeAsync(T("ChangePasswordTitle"), message, T("CommonOk"));
 }

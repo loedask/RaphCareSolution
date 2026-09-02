@@ -1,5 +1,6 @@
 using RaphCare.Mobile.Core.Features.Billing.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
+using RaphCare.Mobile.Core.Common.Navigation;
 
 namespace RaphCare.Mobile.Core.Features.Billing.Views;
 
@@ -17,6 +18,6 @@ public partial class BillingPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is BillingViewModel vm)
-            await vm.LoadAsync();
+            await SafePageLoad.RunAsync(() => vm.LoadAsync());
     }
 }

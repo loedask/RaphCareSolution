@@ -1,3 +1,4 @@
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Features.Appointments.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
 
@@ -17,6 +18,6 @@ public partial class BookAppointmentPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is BookAppointmentViewModel vm)
-            await vm.LoadAsync();
+            await SafePageLoad.RunAsync(() => vm.LoadAsync());
     }
 }

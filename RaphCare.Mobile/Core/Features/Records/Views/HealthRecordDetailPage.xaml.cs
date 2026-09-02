@@ -1,6 +1,7 @@
 using Microsoft.Maui.Controls;
 using RaphCare.Mobile.Core.Features.Records.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
+using RaphCare.Mobile.Core.Common.Navigation;
 
 namespace RaphCare.Mobile.Core.Features.Records.Views;
 
@@ -24,6 +25,6 @@ public partial class HealthRecordDetailPage : ContentPage, IQueryAttributable
     {
         base.OnAppearing();
         if (BindingContext is HealthRecordDetailViewModel vm)
-            await vm.LoadAsync();
+            await SafePageLoad.RunAsync(() => vm.LoadAsync());
     }
 }

@@ -1,9 +1,8 @@
 using System.Windows.Input;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.MedicalInfo;
 using RaphCare.Mobile.Core.Features.Settings.Services;
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
@@ -146,18 +145,14 @@ public sealed class MedicalInformationViewModel : BaseViewModel
             var response = await _api.UpdateMyMedicalInfoAsync(request, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
             {
-                await MainThread.InvokeOnMainThreadAsync(async () =>
-                    await Shell.Current.DisplayAlertAsync(Title, T("MedicalInformationSaveFailed"), T("CommonOk")));
+                await DisplayAlertSafeAsync(Title, T("MedicalInformationSaveFailed"), T("CommonOk"));
                 return;
             }
 
             CopyToLocal(request);
 
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-            {
-                await Shell.Current.DisplayAlertAsync(Title, T("MedicalInformationSaved"), T("CommonOk"));
-                await Shell.Current.GoToAsync("..");
-            });
+            await DisplayAlertSafeAsync(Title, T("MedicalInformationSaved"), T("CommonOk"));
+            await SafeShellNavigator.GoToAsync("..");
         }
         finally
         {

@@ -1,6 +1,7 @@
 using Microsoft.Maui.Controls;
 using RaphCare.Mobile.Core.Features.Family.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
+using RaphCare.Mobile.Core.Common.Navigation;
 
 namespace RaphCare.Mobile.Core.Features.Family.Views;
 
@@ -24,6 +25,6 @@ public partial class FamilyMemberDetailPage : ContentPage, IQueryAttributable
     {
         base.OnAppearing();
         if (BindingContext is FamilyMemberDetailViewModel vm)
-            await vm.LoadAsync();
+            await SafePageLoad.RunAsync(() => vm.LoadAsync());
     }
 }

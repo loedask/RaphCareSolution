@@ -1,3 +1,4 @@
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Features.Auth.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
 
@@ -17,6 +18,6 @@ public partial class RegisterEmailPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is RegisterEmailViewModel vm)
-            await vm.LoadClinicsAsync();
+            await SafePageLoad.RunAsync(() => vm.LoadClinicsAsync());
     }
 }

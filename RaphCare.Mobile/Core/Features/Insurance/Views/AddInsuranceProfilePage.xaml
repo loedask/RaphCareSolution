@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Insurance.ViewModels"
+             xmlns:ins="clr-namespace:RaphCare.Mobile.Core.Features.Insurance.Models"
              x:Class="RaphCare.Mobile.Core.Features.Insurance.Views.AddInsuranceProfilePage"
              x:DataType="vm:AddInsuranceProfileViewModel"
              Title="{Binding Title}"
@@ -19,7 +20,7 @@
             <VerticalStackLayout Spacing="8" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                 <Label Text="{Binding PlanLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
                 <Picker ItemsSource="{Binding Plans}"
-                        ItemDisplayBinding="{Binding DisplayName}"
+                        ItemDisplayBinding="{Binding DisplayName, x:DataType=ins:InsurancePlanPickerItem}"
                         SelectedItem="{Binding SelectedPlan}"
                         Title="{Binding PlanLabel}" />
 

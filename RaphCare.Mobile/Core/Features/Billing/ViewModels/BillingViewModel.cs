@@ -57,11 +57,11 @@ public sealed class BillingViewModel : BaseViewModel
     private void ClearBillingLists()
     {
         CurrentPlanSummary = string.Empty;
+        SelectedUpgradePlan = null;
         PlanOptions.Clear();
         PaymentMethods.Clear();
         Invoices.Clear();
         OnPropertyChanged(nameof(HasUpgradeChoices));
-        SelectedUpgradePlan = null;
     }
 
     public string RefreshButtonText { get; }
@@ -89,7 +89,7 @@ public sealed class BillingViewModel : BaseViewModel
             if (EqualityComparer<PatientBillingPlanOptionViewModel?>.Default.Equals(_selectedUpgradePlan, value))
                 return;
             SetProperty(ref _selectedUpgradePlan, value);
-            ((Command)UpgradeCommand).ChangeCanExecute();
+            RaiseCanExecuteChanged(UpgradeCommand);
         }
     }
 
@@ -176,6 +176,7 @@ public sealed class BillingViewModel : BaseViewModel
                 _carePlan = carePlan;
                 CurrentPlanSummary = summary;
 
+                SelectedUpgradePlan = null;
                 PlanOptions.Clear();
                 foreach (var p in planOptions)
                     PlanOptions.Add(p);
@@ -211,7 +212,7 @@ public sealed class BillingViewModel : BaseViewModel
                 return;
             }
 
-            SelectedUpgradePlan = null;
+            await RunOnMainThreadAsync(() => SelectedUpgradePlan = null).ConfigureAwait(false);
             await LoadAsync().ConfigureAwait(false);
         }
         finally
