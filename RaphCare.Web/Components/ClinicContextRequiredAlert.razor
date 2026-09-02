@@ -1,0 +1,16 @@
+@using RaphCare.Web.Resources.Strings
+
+<AdminAlert>
+    <p class="admin-alert-text">@AppResources.T("Common_ClinicContextRequired")</p>
+    <p class="admin-alert-hint">@AppResources.T("Common_ClinicContextRequiredHint")</p>
+    <div class="admin-page-actions" style="margin-top: 0.75rem;">
+        <button type="button" class="btn btn-secondary btn-sm" @onclick="OnRetry">
+            @AppResources.T("Common_TryAgainForThisHospital")
+        </button>
+        <a class="btn btn-ghost btn-sm" href="/admin/hospitals">@AppResources.T("Common_BackToHospitals")</a>
+    </div>
+</AdminAlert>
+
+@code {
+    [Parameter] public EventCallback OnRetry { get; set; }
+}

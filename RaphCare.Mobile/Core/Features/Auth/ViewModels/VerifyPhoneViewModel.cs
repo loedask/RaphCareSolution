@@ -113,7 +113,7 @@ public class VerifyPhoneViewModel : BaseViewModel, IQueryAttributable
             }
             else
             {
-                await SafeShellNavigator.GoToAsync($"//{AppNavigator.AccountCreated}").ConfigureAwait(false);
+                await SafeShellNavigator.GoToAsync(AppNavigator.AccountCreated).ConfigureAwait(false);
             }
         }
         finally

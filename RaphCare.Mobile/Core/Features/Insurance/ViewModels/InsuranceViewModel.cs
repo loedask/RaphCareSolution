@@ -58,16 +58,24 @@ public sealed class InsuranceViewModel : BaseViewModel
             var response = await _insurance.GetMyProfilesAsync(1, 50, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? T("InsuranceLoadFailed");
-                Items.Clear();
-                NotifyEmptyChanged();
+                var failMessage = response.ErrorMessage ?? T("InsuranceLoadFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = failMessage;
+                    Items.Clear();
+                    NotifyEmptyChanged();
+                });
                 return;
             }
 
-            Items.Clear();
             var culture = CultureInfo.CurrentCulture;
-            foreach (var p in response.Data.Items)
-                Items.Add(MapItem(p, culture));
+            var mapped = response.Data.Items.Select(p => MapItem(p, culture)).ToList();
+            await RunOnMainThreadAsync(() =>
+            {
+                Items.Clear();
+                foreach (var item in mapped)
+                    Items.Add(item);
+            });
         }
         finally
         {

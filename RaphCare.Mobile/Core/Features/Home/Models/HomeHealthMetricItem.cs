@@ -11,6 +11,9 @@ public sealed class HomeHealthMetricItem
     public required string Status { get; init; }
     public required string TrendLabel { get; init; }
     public required string TrendGlyph { get; init; }
-    public required string IconGlyph { get; init; }
+
+    /// <summary>MAUI image resource (see <c>MonochromeIconKeys</c>), tinted in XAML.</summary>
+    public required string IconSource { get; init; }
+
     public required ObservableCollection<HomeSparklineBar> Sparkline { get; init; }
 }

@@ -31,8 +31,8 @@
         <ApplicationId>com.yindula.raphcare</ApplicationId>
 
         <!-- Versions: display = marketing (Settings / APK name); code = Android versionCode (must rise for each Play upload). -->
-        <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-        <ApplicationVersion>6</ApplicationVersion>
+        <ApplicationDisplayVersion>1.5.0</ApplicationDisplayVersion>
+        <ApplicationVersion>8</ApplicationVersion>
 
         <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
         <WindowsPackageType>None</WindowsPackageType>
@@ -83,6 +83,7 @@
         <MauiImage Update="Resources\Images\tab_records.svg" BaseSize="24,24" />
         <MauiImage Update="Resources\Images\tab_insurance.svg" BaseSize="24,24" />
         <MauiImage Update="Resources\Images\tab_profile.svg" BaseSize="24,24" />
+        <MauiImage Update="Resources\Images\icon_*.svg" BaseSize="24,24" />
 
         <!-- Custom Fonts (OFL license texts live alongside but are not MauiFont items) -->
         <MauiFont Include="Resources\Fonts\*.ttf" />

@@ -15,9 +15,10 @@ if (!apiBase.EndsWith('/'))
     apiBase += "/";
 
 builder.Services.AddScoped<IWebAuthService, WebAuthService>();
+builder.Services.AddSingleton<WebActiveClinicIdStore>();
+builder.Services.AddSingleton<IClinicIdProvider, WebClinicIdProvider>();
 builder.Services.AddScoped<IClinicContextService, ClinicContextService>();
 builder.Services.AddScoped<IAccessTokenProvider, BrowserAccessTokenProvider>();
-builder.Services.AddScoped<RaphCare.Client.Contracts.IClinicIdProvider, WebClinicIdProvider>();
 builder.Services.AddScoped<IHospitalOnboardingStorage, HospitalOnboardingStorage>();
 builder.Services.AddScoped<IUiCultureService, UiCultureService>();
 builder.Services.AddRaphCareClient(client => client.BaseAddress = new Uri(apiBase), useBearerToken: true);

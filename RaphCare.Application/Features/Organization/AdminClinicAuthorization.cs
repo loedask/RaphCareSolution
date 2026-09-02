@@ -62,6 +62,19 @@ internal static class AdminClinicAuthorization
         return RaphCareRoles.CanDocumentVisits(roles);
     }
 
+    public static async Task<bool> CanRecordWardNotesAsync(
+        ICurrentUserService currentUser,
+        IClinicStaffMembershipService membershipService,
+        IUserRoleAssignmentService roleAssignmentService,
+        Guid clinicId,
+        CancellationToken cancellationToken)
+    {
+        var roles = await GetClinicStaffRolesAsync(
+                currentUser, membershipService, roleAssignmentService, clinicId, cancellationToken)
+            .ConfigureAwait(false);
+        return RaphCareRoles.CanRecordWardNotes(roles);
+    }
+
     public static async Task EnsureClinicStaffAsync(
         ICurrentUserService currentUser,
         IClinicStaffMembershipService membershipService,

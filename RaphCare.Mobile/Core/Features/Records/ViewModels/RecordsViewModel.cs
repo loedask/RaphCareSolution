@@ -102,30 +102,43 @@ public sealed class RecordsViewModel : BaseViewModel
             await Task.WhenAll(recordsTask, pickupTask).ConfigureAwait(false);
 
             var records = recordsTask.Result;
+            var pickup = pickupTask.Result;
+            var culture = CultureInfo.CurrentCulture;
+
+            List<HealthRecordListDisplayItem>? mappedRecords = null;
+            string? loadError = null;
             if (!records.IsSuccess || records.Data is null)
             {
-                ErrorMessage = records.ErrorMessage ?? T("RecordsLoadFailed");
-                Items.Clear();
+                loadError = records.ErrorMessage ?? T("RecordsLoadFailed");
             }
             else
             {
-                Items.Clear();
-                var culture = CultureInfo.CurrentCulture;
-                foreach (var r in records.Data.Items)
-                    Items.Add(MapItem(r, culture));
+                mappedRecords = records.Data.Items.Select(r => MapItem(r, culture)).ToList();
             }
 
-            _allPickup.Clear();
-            var pickup = pickupTask.Result;
+            var mappedPickup = new List<CollectionOrderDisplayItem>();
             if (pickup.IsSuccess && pickup.Data is not null)
             {
                 foreach (var rx in pickup.Data.Prescriptions)
-                    _allPickup.Add(MapPrescription(rx));
+                    mappedPickup.Add(MapPrescription(rx));
                 foreach (var lab in pickup.Data.LabOrders)
-                    _allPickup.Add(MapLab(lab));
+                    mappedPickup.Add(MapLab(lab));
             }
 
-            ApplyCheckInFilter();
+            await RunOnMainThreadAsync(() =>
+            {
+                ErrorMessage = loadError;
+                Items.Clear();
+                if (mappedRecords is not null)
+                {
+                    foreach (var item in mappedRecords)
+                        Items.Add(item);
+                }
+
+                _allPickup.Clear();
+                _allPickup.AddRange(mappedPickup);
+                ApplyCheckInFilter();
+            });
         }
         finally
         {

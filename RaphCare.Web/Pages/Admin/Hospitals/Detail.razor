@@ -1,7 +1,9 @@
 @page "/admin/hospitals/{ClinicId:guid}"
 @layout AdminLayout
 @using RaphCare.Client.Models.Clinical
+@using RaphCare.Client.Services.Base
 @using RaphCare.Domain.Common
+@using RaphCare.Web.Helpers
 @inject IUiCultureService CultureService
 @implements IDisposable
 
@@ -60,7 +62,19 @@
             <HospitalDeckRailItem Index="08" Icon="collection" Href="@($"/admin/hospitals/{ClinicId}/collection")">
                 @AppResources.T("Collection_Title")
             </HospitalDeckRailItem>
-            <HospitalDeckRailItem Index="09" Icon="staff" IsActive="@(_tab == "staff")" Count="@(_staffLoaded ? _staff.Count : null)" OnSelect='() => SetTab("staff")'>
+            <HospitalDeckRailItem Index="09" Icon="casualty" Href="@($"/admin/hospitals/{ClinicId}/casualty")">
+                @AppResources.T("Common_Casualty")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="10" Icon="theatre" Href="@($"/admin/hospitals/{ClinicId}/theatre")">
+                @AppResources.T("Common_Theatre")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="11" Icon="referral" Href="@($"/admin/hospitals/{ClinicId}/referrals")">
+                @AppResources.T("Common_Referrals")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="12" Icon="roster" Href="@($"/admin/hospitals/{ClinicId}/roster")">
+                @AppResources.T("Common_Roster")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="13" Icon="staff" IsActive="@(_tab == "staff")" Count="@(_staffLoaded ? _staff.Count : null)" OnSelect='() => SetTab("staff")'>
                 @AppResources.T("Common_Staff")
             </HospitalDeckRailItem>
         </HospitalDeckRail>
@@ -84,6 +98,16 @@
                                           IsAdministrator="_isAdministrator"
                                           Saving="_savingClinic"
                                           OnSave="SaveClinicAsync" />
+
+                <ClinicEmergencyHomeCard ClinicId="ClinicId"
+                                         Events="_homeEmergencyEvents"
+                                         TotalCount="_homeEmergencyEvents.Count"
+                                         Loading="_loadingHomeEmergencies"
+                                         Error="_homeEmergencyError"
+                                         ClinicContextMissing="_homeEmergencyClinicContextMissing"
+                                         TimeZone="@(_detail.TimeZone)"
+                                         ViewAllHref="@($"/admin/hospitals/{ClinicId}?tab=devices")"
+                                         OnRetry="LoadHomeEmergenciesAsync" />
             </div>
         }
         else if (_tab == "facilities")
@@ -438,7 +462,14 @@
                     }
                     else if (!string.IsNullOrEmpty(_emergencyError))
                     {
-                        <AdminAlert Message="@_emergencyError" />
+                        @if (_emergencyClinicContextMissing)
+                        {
+                            <ClinicContextRequiredAlert OnRetry="RetryClinicEmergenciesAsync" />
+                        }
+                        else
+                        {
+                            <AdminAlert Message="@_emergencyError" />
+                        }
                     }
                     else if (_emergencyEvents.Count == 0)
                     {
@@ -678,6 +709,12 @@
     private string? _error;
     private string? _actionError;
     private string? _emergencyError;
+    private bool _emergencyClinicContextMissing;
+    private string? _homeEmergencyError;
+    private bool _homeEmergencyClinicContextMissing;
+    private bool _loadingHomeEmergencies;
+    private IReadOnlyList<ClinicDeviceEmergencyEventViewModel> _homeEmergencyEvents =
+        Array.Empty<ClinicDeviceEmergencyEventViewModel>();
     private string _tab = "overview";
     private string _inviteEmail = string.Empty;
     private string _inviteJobRole = RaphCareRoles.Clinician;
@@ -755,6 +792,7 @@
     {
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
         await LoadDetailAsync();
+        await LoadHomeEmergenciesAsync();
 
         if (!string.IsNullOrWhiteSpace(TabQuery) && TabQuery is "overview" or "facilities" or "patients" or "providers" or "appointments" or "devices" or "staff")
         {
@@ -882,7 +920,8 @@
         (RaphCareRoles.Clinician, AppResources.T("StaffJob_Staff")),
         (RaphCareRoles.Doctor, AppResources.T("StaffJob_Doctor")),
         (RaphCareRoles.Pharmacist, AppResources.T("StaffJob_Pharmacist")),
-        (RaphCareRoles.LabTechnician, AppResources.T("StaffJob_LabTechnician"))
+        (RaphCareRoles.LabTechnician, AppResources.T("StaffJob_LabTechnician")),
+        (RaphCareRoles.Nurse, AppResources.T("StaffJob_Nurse"))
     ];
 
     private static string CurrentJobRole(ClinicStaffMember member) =>
@@ -899,6 +938,7 @@
             RaphCareRoles.Doctor => AppResources.T("StaffJob_Doctor"),
             RaphCareRoles.Pharmacist => AppResources.T("StaffJob_Pharmacist"),
             RaphCareRoles.LabTechnician => AppResources.T("StaffJob_LabTechnician"),
+            RaphCareRoles.Nurse => AppResources.T("StaffJob_Nurse"),
             _ => AppResources.T("StaffJob_Staff")
         });
         return string.Join(" · ", parts);
@@ -981,12 +1021,14 @@
 
         _loadingEmergencies = true;
         _emergencyError = null;
+        _emergencyClinicContextMissing = false;
         var response = await DeviceReadingsService.GetClinicEmergencyEventsAsync(_emergencyPage, EmergencyPageSize);
         _loadingEmergencies = false;
 
         if (!response.IsSuccess || response.Data is null)
         {
             _emergencyError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadEmergencyEvents");
+            _emergencyClinicContextMissing = ApiErrorMessages.IsClinicSelectionRequired(_emergencyError);
             return;
         }
 
@@ -999,10 +1041,40 @@
         _emergenciesLoaded = true;
     }
 
+    private async Task RetryClinicEmergenciesAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail?.Name).ConfigureAwait(false);
+        _emergenciesLoaded = false;
+        await LoadClinicEmergenciesAsync(reset: true);
+    }
+
     private async Task LoadMoreClinicEmergenciesAsync()
     {
         _emergencyPage++;
         await LoadClinicEmergenciesAsync(reset: false);
+    }
+
+    private async Task LoadHomeEmergenciesAsync()
+    {
+        _loadingHomeEmergencies = true;
+        _homeEmergencyError = null;
+        _homeEmergencyClinicContextMissing = false;
+        var fromUtc = DateTime.UtcNow.Subtract(ClinicEmergencyHomeFilter.RecentWindow);
+        var response = await DeviceReadingsService.GetClinicEmergencyEventsAsync(
+            1,
+            40,
+            occurredFromUtc: fromUtc);
+        _loadingHomeEmergencies = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _homeEmergencyEvents = Array.Empty<ClinicDeviceEmergencyEventViewModel>();
+            _homeEmergencyError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadEmergencyEvents");
+            _homeEmergencyClinicContextMissing = ApiErrorMessages.IsClinicSelectionRequired(_homeEmergencyError);
+            return;
+        }
+
+        _homeEmergencyEvents = ClinicEmergencyHomeFilter.TakeHomePriority(response.Data.Items);
     }
 
     private string FormatEmergencyLocal(DateTime utc) =>

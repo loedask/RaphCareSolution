@@ -7,7 +7,10 @@ public sealed class ProfileMenuRowModel
 {
     public required string Title { get; init; }
     public string? Subtitle { get; init; }
-    public required string IconGlyph { get; init; }
+
+    /// <summary>MAUI image resource (see <c>MonochromeIconKeys</c>), tinted in XAML.</summary>
+    public required string IconSource { get; init; }
+
     public bool ShowSeparator { get; init; } = true;
     public required ICommand TapCommand { get; init; }
 }

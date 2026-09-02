@@ -40,6 +40,17 @@ public sealed class ApiErrorMessagesTests
     }
 
     [Fact]
+    public void IsClinicSelectionRequiredDetectsRewrittenMissingClinicMessage()
+    {
+        var rewritten = ApiErrorMessages.FromBody(
+            """{"error":"X-Clinic-Id header is required."}""",
+            HttpStatusCode.BadRequest);
+
+        Assert.True(ApiErrorMessages.IsClinicSelectionRequired(rewritten));
+        Assert.False(ApiErrorMessages.IsClinicSelectionRequired("Email already registered."));
+    }
+
+    [Fact]
     public void IsMissingClinicHeaderDetectsRequiredHeaderError()
     {
         Assert.True(ApiErrorMessages.IsMissingClinicHeader("X-Clinic-Id header is required."));

@@ -43,6 +43,17 @@ public static class ApiErrorMessages
         && message.Contains("X-Clinic-Id", StringComparison.OrdinalIgnoreCase)
         && message.Contains("valid Guid", StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>
+    /// True for missing/invalid clinic header errors, including rewritten user-facing messages.
+    /// </summary>
+    public static bool IsClinicSelectionRequired(string? message) =>
+        IsMissingClinicHeader(message)
+        || IsInvalidClinicHeader(message)
+        || (!string.IsNullOrWhiteSpace(message)
+            && message.Contains("Choose your clinic", StringComparison.OrdinalIgnoreCase))
+        || (!string.IsNullOrWhiteSpace(message)
+            && message.Contains("clinic setting is invalid", StringComparison.OrdinalIgnoreCase));
+
     private static string? ExtractMessage(string? body)
     {
         if (string.IsNullOrWhiteSpace(body))

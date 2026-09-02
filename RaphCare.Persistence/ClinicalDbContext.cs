@@ -38,6 +38,11 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<Room> Rooms => Set<Room>();
     public DbSet<Bed> Beds => Set<Bed>();
     public DbSet<InpatientAdmission> InpatientAdmissions => Set<InpatientAdmission>();
+    public DbSet<InpatientObservation> InpatientObservations => Set<InpatientObservation>();
+    public DbSet<CasualtyTicket> CasualtyTickets => Set<CasualtyTicket>();
+    public DbSet<TheatreCase> TheatreCases => Set<TheatreCase>();
+    public DbSet<Referral> Referrals => Set<Referral>();
+    public DbSet<ClinicRosterEntry> ClinicRosterEntries => Set<ClinicRosterEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,6 +73,11 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new RoomConfiguration());
         modelBuilder.ApplyConfiguration(new BedConfiguration());
         modelBuilder.ApplyConfiguration(new InpatientAdmissionConfiguration());
+        modelBuilder.ApplyConfiguration(new InpatientObservationConfiguration());
+        modelBuilder.ApplyConfiguration(new CasualtyTicketConfiguration());
+        modelBuilder.ApplyConfiguration(new TheatreCaseConfiguration());
+        modelBuilder.ApplyConfiguration(new ReferralConfiguration());
+        modelBuilder.ApplyConfiguration(new ClinicRosterEntryConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

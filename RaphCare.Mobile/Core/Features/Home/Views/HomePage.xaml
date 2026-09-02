@@ -308,8 +308,10 @@
                                                 <Setter Property="BackgroundColor" Value="{StaticResource SecondaryColor}" />
                                             </DataTrigger>
                                         </Border.Triggers>
-                                        <Label Text="{Binding IconGlyph}"
-                                               FontSize="18"
+                                        <Image Source="{Binding IconSource}"
+                                               WidthRequest="22"
+                                               HeightRequest="22"
+                                               Aspect="AspectFit"
                                                HorizontalOptions="Center"
                                                VerticalOptions="Center" />
                                     </Border>
@@ -371,7 +373,12 @@
                                             WidthRequest="36"
                                             HeightRequest="36"
                                             Padding="8">
-                                        <Label Text="{Binding IconGlyph}" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        <Image Source="{Binding IconSource}"
+                                               WidthRequest="18"
+                                               HeightRequest="18"
+                                               Aspect="AspectFit"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
                                     </Border>
                                     <Border Grid.Column="1"
                                             BackgroundColor="#1A37BE7F"
@@ -485,7 +492,12 @@
                                         WidthRequest="40"
                                         HeightRequest="40"
                                         Padding="8">
-                                    <Label Text="{Binding IconGlyph}" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Image Source="{Binding IconSource}"
+                                           WidthRequest="20"
+                                           HeightRequest="20"
+                                           Aspect="AspectFit"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
                                 </Border>
                                 <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                                     <Label Text="{Binding Name}"

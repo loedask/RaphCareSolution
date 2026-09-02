@@ -8,6 +8,10 @@ public sealed class AdminClinicInpatientBoardDto
     public int OccupiedBeds { get; set; }
     public int MaintenanceBeds { get; set; }
     public int ActiveAdmissions { get; set; }
+    public int OccupancyPercent { get; set; }
+    public int AdmissionsTodayCount { get; set; }
+    public int DischargesTodayCount { get; set; }
+    public decimal? AverageLengthOfStayDays { get; set; }
     public IReadOnlyList<AdminClinicWardDto> Wards { get; set; } = Array.Empty<AdminClinicWardDto>();
     public IReadOnlyList<AdminClinicAdmissionDto> ActiveAdmissionsList { get; set; } = Array.Empty<AdminClinicAdmissionDto>();
 }
@@ -60,4 +64,32 @@ public sealed class AdminClinicAdmissionDto
     public string Status { get; set; } = string.Empty;
     public string? Reason { get; set; }
     public string? Notes { get; set; }
+    public string? DischargeSummary { get; set; }
+    public Guid? InvoiceId { get; set; }
+    public decimal? InvoiceAmount { get; set; }
+    public string? InvoiceCurrency { get; set; }
+    public string? InvoiceStatus { get; set; }
+    public DateTime? InvoicePaidAt { get; set; }
+    public int? BedNights { get; set; }
+    public Guid? ReturnAppointmentId { get; set; }
+    public DateTime? ReturnAppointmentStart { get; set; }
+    public DateTime? ReturnAppointmentEnd { get; set; }
+}
+
+public sealed class AdminClinicDischargeSummaryDraftDto
+{
+    public string DraftText { get; set; } = string.Empty;
+}
+
+public sealed class AdminClinicAdmissionObservationDto
+{
+    public Guid Id { get; set; }
+    public Guid AdmissionId { get; set; }
+    public DateTime RecordedAt { get; set; }
+    public string Note { get; set; } = string.Empty;
+    public decimal? HeartRate { get; set; }
+    public decimal? TemperatureCelsius { get; set; }
+    public decimal? OxygenSaturation { get; set; }
+    public decimal? SystolicBp { get; set; }
+    public decimal? DiastolicBp { get; set; }
 }

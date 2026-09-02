@@ -13,6 +13,7 @@ public sealed class InpatientAdmissionConfiguration : IEntityTypeConfiguration<I
         builder.Property(e => e.Status).IsRequired().HasMaxLength(50);
         builder.Property(e => e.Reason).HasMaxLength(500);
         builder.Property(e => e.Notes).HasMaxLength(1000);
+        builder.Property(e => e.DischargeSummary).HasMaxLength(4000);
         builder.Property(e => e.AdmittedAt).IsRequired();
         builder.HasIndex(e => e.ClinicId);
         builder.HasIndex(e => e.PatientId);

@@ -85,4 +85,16 @@ public abstract class BaseViewModel : INotifyPropertyChanged
 
         return Guid.TryParse(Convert.ToString(value, CultureInfo.InvariantCulture), out id);
     }
+
+    /// <summary>
+    /// Runs <paramref name="action"/> on the UI thread. Required before mutating
+    /// <see cref="System.Collections.ObjectModel.ObservableCollection{T}"/> bound to MAUI views
+    /// after <c>ConfigureAwait(false)</c>.
+    /// </summary>
+    protected static Task RunOnMainThreadAsync(Action action) =>
+        MainThread.InvokeOnMainThreadAsync(action);
+
+    /// <inheritdoc cref="RunOnMainThreadAsync(Action)"/>
+    protected static Task RunOnMainThreadAsync(Func<Task> func) =>
+        MainThread.InvokeOnMainThreadAsync(func);
 }

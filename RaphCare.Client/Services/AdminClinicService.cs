@@ -1411,6 +1411,538 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicCasualtyBoard>> GetCasualtyBoardAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/casualty/board", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicCasualtyBoard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicCasualtyBoard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<CasualtyBoardDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicCasualtyBoard>.Failure("Could not load the casualty board.");
+
+            return Response<ClinicCasualtyBoard>.Success(MapCasualtyBoard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicCasualtyBoard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicCasualtyTicket>> CreateCasualtyTicketAsync(
+        Guid clinicId,
+        CreateCasualtyTicketRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/casualty/tickets",
+                    new
+                    {
+                        request.PatientId,
+                        request.TriageLevel,
+                        request.ChiefComplaint
+                    },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicCasualtyTicket>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<CasualtyTicketDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicCasualtyTicket>.Failure("Could not add the casualty ticket.");
+
+            return Response<ClinicCasualtyTicket>.Success(MapCasualtyTicket(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicCasualtyTicket>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicCasualtyTicket>> CallCasualtyTicketAsync(
+        Guid clinicId,
+        Guid ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/casualty/tickets/{ticketId}/call", null, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicCasualtyTicket>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<CasualtyTicketDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicCasualtyTicket>.Failure("Could not call this queue code.");
+
+            return Response<ClinicCasualtyTicket>.Success(MapCasualtyTicket(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicCasualtyTicket>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicCasualtyTicket>> CompleteCasualtyTicketAsync(
+        Guid clinicId,
+        Guid ticketId,
+        bool cancel = false,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/casualty/tickets/{ticketId}/complete",
+                    new { Cancel = cancel },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicCasualtyTicket>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<CasualtyTicketDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicCasualtyTicket>.Failure("Could not close this casualty ticket.");
+
+            return Response<ClinicCasualtyTicket>.Success(MapCasualtyTicket(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicCasualtyTicket>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<string>> EnsureCasualtyDisplayTokenAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/casualty-display", null, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<string>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<CollectionDisplayLinkDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null || string.IsNullOrWhiteSpace(dto.Token))
+                return Response<string>.Failure("Could not open the casualty waiting screen.");
+
+            return Response<string>.Success(dto.Token);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<string>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicTheatreBoard>> GetTheatreBoardAsync(
+        Guid clinicId,
+        DateTime? dayUtc = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var url = $"api/admin/clinics/{clinicId}/theatre/board";
+            if (dayUtc is not null)
+                url += $"?dayUtc={Uri.EscapeDataString(dayUtc.Value.ToUniversalTime().ToString("O"))}";
+
+            using var response = await client.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicTheatreBoard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicTheatreBoard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<TheatreBoardDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicTheatreBoard>.Failure("Could not load the theatre board.");
+
+            return Response<ClinicTheatreBoard>.Success(MapTheatreBoard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicTheatreBoard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicTheatreCase>> CreateTheatreCaseAsync(
+        Guid clinicId,
+        CreateTheatreCaseRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/theatre/cases",
+                    new
+                    {
+                        request.PatientId,
+                        request.ScheduledStart,
+                        request.ScheduledEnd,
+                        request.ProcedureName,
+                        request.TheatreName,
+                        request.SurgeonName,
+                        request.Notes
+                    },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicTheatreCase>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<TheatreCaseDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicTheatreCase>.Failure("Could not schedule the theatre case.");
+
+            return Response<ClinicTheatreCase>.Success(MapTheatreCase(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicTheatreCase>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicTheatreCase>> UpdateTheatreCaseStatusAsync(
+        Guid clinicId,
+        Guid caseId,
+        string status,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/theatre/cases/{caseId}/status",
+                    new { Status = status },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicTheatreCase>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<TheatreCaseDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicTheatreCase>.Failure("Could not update the theatre case.");
+
+            return Response<ClinicTheatreCase>.Success(MapTheatreCase(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicTheatreCase>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicReferralBoard>> GetReferralBoardAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/referrals/board", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicReferralBoard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicReferralBoard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ReferralBoardDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicReferralBoard>.Failure("Could not load the referral board.");
+
+            return Response<ClinicReferralBoard>.Success(MapReferralBoard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicReferralBoard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicReferral>> CreateReferralAsync(
+        Guid clinicId,
+        CreateReferralRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/referrals",
+                    new
+                    {
+                        request.PatientId,
+                        request.VisitId,
+                        request.ReferredTo,
+                        request.Reason,
+                        request.Specialty,
+                        request.Notes
+                    },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicReferral>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ReferralDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicReferral>.Failure("Could not log the referral.");
+
+            return Response<ClinicReferral>.Success(MapReferral(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicReferral>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicReferral>> UpdateReferralStatusAsync(
+        Guid clinicId,
+        Guid referralId,
+        string status,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/referrals/{referralId}/status",
+                    new { Status = status },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicReferral>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ReferralDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicReferral>.Failure("Could not update the referral.");
+
+            return Response<ClinicReferral>.Success(MapReferral(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicReferral>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicRosterBoard>> GetRosterBoardAsync(
+        Guid clinicId,
+        DateTime? dayUtc = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            var url = dayUtc is null
+                ? $"api/admin/clinics/{clinicId}/roster/board"
+                : $"api/admin/clinics/{clinicId}/roster/board?dayUtc={Uri.EscapeDataString(dayUtc.Value.ToString("O"))}";
+            using var response = await client.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicRosterBoard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicRosterBoard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<RosterBoardDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicRosterBoard>.Failure("Could not load the roster.");
+
+            return Response<ClinicRosterBoard>.Success(MapRosterBoard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicRosterBoard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicRosterEntry>> CreateRosterEntryAsync(
+        Guid clinicId,
+        CreateRosterEntryRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/roster/entries",
+                    request,
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicRosterEntry>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<RosterEntryDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicRosterEntry>.Failure("Could not add the roster entry.");
+
+            return Response<ClinicRosterEntry>.Success(MapRosterEntry(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicRosterEntry>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<bool>> DeleteRosterEntryAsync(
+        Guid clinicId,
+        Guid entryId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .DeleteAsync($"api/admin/clinics/{clinicId}/roster/entries/{entryId}", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<bool>.Failure("Roster entry not found.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<bool>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            return Response<bool>.Success(true);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<bool>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    private static ClinicCasualtyBoard MapCasualtyBoard(CasualtyBoardDto dto) => new()
+    {
+        ClinicName = dto.ClinicName ?? string.Empty,
+        WaitingCount = dto.WaitingCount,
+        CalledCount = dto.CalledCount,
+        Waiting = dto.Waiting?.Select(MapCasualtyTicket).ToList() ?? [],
+        Called = dto.Called?.Select(MapCasualtyTicket).ToList() ?? [],
+        Recent = dto.Recent?.Select(MapCasualtyTicket).ToList() ?? []
+    };
+
+    private static ClinicCasualtyTicket MapCasualtyTicket(CasualtyTicketDto dto) => new()
+    {
+        Id = dto.Id,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName,
+        QueueCode = dto.QueueCode ?? string.Empty,
+        TriageLevel = dto.TriageLevel ?? string.Empty,
+        ChiefComplaint = dto.ChiefComplaint,
+        Status = dto.Status ?? string.Empty,
+        ArrivedAt = dto.ArrivedAt,
+        CalledAt = dto.CalledAt,
+        CompletedAt = dto.CompletedAt
+    };
+
+    private static ClinicTheatreBoard MapTheatreBoard(TheatreBoardDto dto) => new()
+    {
+        ClinicName = dto.ClinicName ?? string.Empty,
+        DayUtc = dto.DayUtc,
+        ScheduledCount = dto.ScheduledCount,
+        InProgressCount = dto.InProgressCount,
+        CompletedCount = dto.CompletedCount,
+        Cases = dto.Cases?.Select(MapTheatreCase).ToList() ?? []
+    };
+
+    private static ClinicTheatreCase MapTheatreCase(TheatreCaseDto dto) => new()
+    {
+        Id = dto.Id,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName ?? string.Empty,
+        ScheduledStart = dto.ScheduledStart,
+        ScheduledEnd = dto.ScheduledEnd,
+        ProcedureName = dto.ProcedureName ?? string.Empty,
+        TheatreName = dto.TheatreName,
+        SurgeonName = dto.SurgeonName,
+        Status = dto.Status ?? string.Empty,
+        Notes = dto.Notes
+    };
+
+    private static ClinicReferralBoard MapReferralBoard(ReferralBoardDto dto) => new()
+    {
+        ClinicName = dto.ClinicName ?? string.Empty,
+        SentCount = dto.SentCount,
+        AcceptedCount = dto.AcceptedCount,
+        CompletedCount = dto.CompletedCount,
+        Open = dto.Open?.Select(MapReferral).ToList() ?? [],
+        Recent = dto.Recent?.Select(MapReferral).ToList() ?? []
+    };
+
+    private static ClinicReferral MapReferral(ReferralDto dto) => new()
+    {
+        Id = dto.Id,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName ?? string.Empty,
+        VisitId = dto.VisitId,
+        ReferredTo = dto.ReferredTo ?? string.Empty,
+        Reason = dto.Reason,
+        Specialty = dto.Specialty,
+        Notes = dto.Notes,
+        Status = dto.Status ?? string.Empty,
+        ReferredAt = dto.ReferredAt,
+        AcceptedAt = dto.AcceptedAt,
+        CompletedAt = dto.CompletedAt
+    };
+
+    private static ClinicRosterBoard MapRosterBoard(RosterBoardDto dto) => new()
+    {
+        ClinicName = dto.ClinicName ?? string.Empty,
+        DayUtc = dto.DayUtc,
+        MorningCount = dto.MorningCount,
+        AfternoonCount = dto.AfternoonCount,
+        NightCount = dto.NightCount,
+        Entries = dto.Entries?.Select(MapRosterEntry).ToList() ?? []
+    };
+
+    private static ClinicRosterEntry MapRosterEntry(RosterEntryDto dto) => new()
+    {
+        Id = dto.Id,
+        ApplicationUserId = dto.ApplicationUserId,
+        DisplayName = dto.DisplayName ?? string.Empty,
+        Email = dto.Email,
+        Roles = dto.Roles ?? [],
+        DutyDate = dto.DutyDate,
+        ShiftLabel = dto.ShiftLabel ?? string.Empty,
+        Note = dto.Note
+    };
+
     private async Task<Response<ClinicVisitPrescription>> PostPrescriptionActionAsync(
         Guid clinicId,
         Guid prescriptionId,
@@ -1899,7 +2431,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
     public async Task<Response<ClinicAdmission>> DischargeAdmissionAsync(
         Guid clinicId,
         Guid admissionId,
-        string? notes = null,
+        DischargeAdmissionRequest request,
         CancellationToken cancellationToken = default)
     {
         try
@@ -1908,7 +2440,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             using var response = await client
                 .PostAsJsonAsync(
                     $"api/admin/clinics/{clinicId}/admissions/{admissionId}/discharge",
-                    new { notes },
+                    request,
                     cancellationToken)
                 .ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
@@ -1925,6 +2457,111 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         catch (HttpRequestException)
         {
             return Response<ClinicAdmission>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<string>> DraftDischargeSummaryAsync(
+        Guid clinicId,
+        Guid admissionId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync(
+                    $"api/admin/clinics/{clinicId}/admissions/{admissionId}/discharge-summary/draft",
+                    null,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can draft a discharge summary.";
+                return Response<string>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<DischargeSummaryDraftDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null || string.IsNullOrWhiteSpace(dto.DraftText))
+                return Response<string>.Failure("Could not draft the discharge summary.");
+
+            return Response<string>.Success(dto.DraftText.Trim());
+        }
+        catch (HttpRequestException)
+        {
+            return Response<string>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<IReadOnlyList<ClinicAdmissionObservation>>> GetAdmissionObservationsAsync(
+        Guid clinicId,
+        Guid admissionId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/admissions/{admissionId}/observations", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<IReadOnlyList<ClinicAdmissionObservation>>.Failure("Admission not found.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<IReadOnlyList<ClinicAdmissionObservation>>.Failure(
+                    await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false),
+                    (int)response.StatusCode);
+
+            var items = await response.Content
+                .ReadFromJsonAsync<List<AdmissionObservationDto>>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            IReadOnlyList<ClinicAdmissionObservation> observations =
+                items?.Select(MapObservation).ToList() ?? [];
+            return Response<IReadOnlyList<ClinicAdmissionObservation>>.Success(observations);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<IReadOnlyList<ClinicAdmissionObservation>>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicAdmissionObservation>> AddAdmissionObservationAsync(
+        Guid clinicId,
+        Guid admissionId,
+        AddAdmissionObservationRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/admissions/{admissionId}/observations",
+                    request,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only a nurse, doctor, or hospital administrator can add a ward note.";
+                return Response<ClinicAdmissionObservation>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<AdmissionObservationDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicAdmissionObservation>.Failure("Could not save the ward note.");
+            return Response<ClinicAdmissionObservation>.Success(MapObservation(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicAdmissionObservation>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -2181,6 +2818,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         RegisteredByApplicationUserId = dto.RegisteredByApplicationUserId,
         CurrentUserIsAdministrator = dto.CurrentUserIsAdministrator,
         CurrentUserCanDocumentVisits = dto.CurrentUserCanDocumentVisits,
+        CurrentUserCanRecordWardNotes = dto.CurrentUserCanRecordWardNotes,
         CurrentUserCanDispense = dto.CurrentUserCanDispense,
         CurrentUserCanCompleteLabs = dto.CurrentUserCanCompleteLabs,
         Facilities = dto.Facilities?
@@ -2464,6 +3102,12 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         FacilityCount = dto.FacilityCount,
         AppointmentsTodayCount = dto.AppointmentsTodayCount,
         UpcomingAppointmentsCount = dto.UpcomingAppointmentsCount,
+        TotalBeds = dto.TotalBeds,
+        OccupiedBeds = dto.OccupiedBeds,
+        OccupancyPercent = dto.OccupancyPercent,
+        AdmissionsTodayCount = dto.AdmissionsTodayCount,
+        DischargesTodayCount = dto.DischargesTodayCount,
+        AverageLengthOfStayDays = dto.AverageLengthOfStayDays,
         UpcomingAppointments = dto.UpcomingAppointments?.Select(MapAppointment).ToList() ?? []
     };
 
@@ -2573,6 +3217,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public Guid? RegisteredByApplicationUserId { get; set; }
         public bool CurrentUserIsAdministrator { get; set; }
         public bool CurrentUserCanDocumentVisits { get; set; }
+        public bool CurrentUserCanRecordWardNotes { get; set; }
         public bool CurrentUserCanDispense { get; set; }
         public bool CurrentUserCanCompleteLabs { get; set; }
         public List<FacilityListItemDto>? Facilities { get; set; }
@@ -2736,6 +3381,12 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public int FacilityCount { get; set; }
         public int AppointmentsTodayCount { get; set; }
         public int UpcomingAppointmentsCount { get; set; }
+        public int TotalBeds { get; set; }
+        public int OccupiedBeds { get; set; }
+        public int OccupancyPercent { get; set; }
+        public int AdmissionsTodayCount { get; set; }
+        public int DischargesTodayCount { get; set; }
+        public decimal? AverageLengthOfStayDays { get; set; }
         public List<AppointmentListItemDto>? UpcomingAppointments { get; set; }
     }
 
@@ -2965,6 +3616,102 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string Token { get; set; } = string.Empty;
     }
 
+    private sealed class CasualtyBoardDto
+    {
+        public string? ClinicName { get; set; }
+        public int WaitingCount { get; set; }
+        public int CalledCount { get; set; }
+        public List<CasualtyTicketDto>? Waiting { get; set; }
+        public List<CasualtyTicketDto>? Called { get; set; }
+        public List<CasualtyTicketDto>? Recent { get; set; }
+    }
+
+    private sealed class CasualtyTicketDto
+    {
+        public Guid Id { get; set; }
+        public Guid? PatientId { get; set; }
+        public string? PatientName { get; set; }
+        public string? QueueCode { get; set; }
+        public string? TriageLevel { get; set; }
+        public string? ChiefComplaint { get; set; }
+        public string? Status { get; set; }
+        public DateTime ArrivedAt { get; set; }
+        public DateTime? CalledAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+    }
+
+    private sealed class TheatreBoardDto
+    {
+        public string? ClinicName { get; set; }
+        public DateTime DayUtc { get; set; }
+        public int ScheduledCount { get; set; }
+        public int InProgressCount { get; set; }
+        public int CompletedCount { get; set; }
+        public List<TheatreCaseDto>? Cases { get; set; }
+    }
+
+    private sealed class TheatreCaseDto
+    {
+        public Guid Id { get; set; }
+        public Guid PatientId { get; set; }
+        public string? PatientName { get; set; }
+        public DateTime ScheduledStart { get; set; }
+        public DateTime? ScheduledEnd { get; set; }
+        public string? ProcedureName { get; set; }
+        public string? TheatreName { get; set; }
+        public string? SurgeonName { get; set; }
+        public string? Status { get; set; }
+        public string? Notes { get; set; }
+    }
+
+    private sealed class ReferralBoardDto
+    {
+        public string? ClinicName { get; set; }
+        public int SentCount { get; set; }
+        public int AcceptedCount { get; set; }
+        public int CompletedCount { get; set; }
+        public List<ReferralDto>? Open { get; set; }
+        public List<ReferralDto>? Recent { get; set; }
+    }
+
+    private sealed class ReferralDto
+    {
+        public Guid Id { get; set; }
+        public Guid PatientId { get; set; }
+        public string? PatientName { get; set; }
+        public Guid? VisitId { get; set; }
+        public string? ReferredTo { get; set; }
+        public string? Reason { get; set; }
+        public string? Specialty { get; set; }
+        public string? Notes { get; set; }
+        public string? Status { get; set; }
+        public DateTime ReferredAt { get; set; }
+        public DateTime? AcceptedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+    }
+
+    private sealed class RosterBoardDto
+    {
+        public string? ClinicName { get; set; }
+        public DateTime DayUtc { get; set; }
+        public int MorningCount { get; set; }
+        public int AfternoonCount { get; set; }
+        public int NightCount { get; set; }
+        public List<RosterEntryDto>? Entries { get; set; }
+    }
+
+    private sealed class RosterEntryDto
+    {
+        public Guid Id { get; set; }
+        public Guid ApplicationUserId { get; set; }
+        public string? DisplayName { get; set; }
+        public string? Email { get; set; }
+        public List<string>? Roles { get; set; }
+        public DateTime DutyDate { get; set; }
+        public string? ShiftLabel { get; set; }
+        public string? Note { get; set; }
+    }
+
     private sealed class CollectionBoardDto
     {
         public List<CollectionPrescriptionDto>? Prescriptions { get; set; }
@@ -3040,6 +3787,10 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         OccupiedBeds = dto.OccupiedBeds,
         MaintenanceBeds = dto.MaintenanceBeds,
         ActiveAdmissions = dto.ActiveAdmissions,
+        OccupancyPercent = dto.OccupancyPercent,
+        AdmissionsTodayCount = dto.AdmissionsTodayCount,
+        DischargesTodayCount = dto.DischargesTodayCount,
+        AverageLengthOfStayDays = dto.AverageLengthOfStayDays,
         Wards = dto.Wards?.Select(MapWard).ToList() ?? [],
         ActiveAdmissionsList = dto.ActiveAdmissionsList?.Select(MapAdmission).ToList() ?? []
     };
@@ -3091,7 +3842,30 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         DischargedAt = dto.DischargedAt,
         Status = dto.Status,
         Reason = dto.Reason,
-        Notes = dto.Notes
+        Notes = dto.Notes,
+        DischargeSummary = dto.DischargeSummary,
+        InvoiceId = dto.InvoiceId,
+        InvoiceAmount = dto.InvoiceAmount,
+        InvoiceCurrency = dto.InvoiceCurrency,
+        InvoiceStatus = dto.InvoiceStatus,
+        InvoicePaidAt = dto.InvoicePaidAt,
+        BedNights = dto.BedNights,
+        ReturnAppointmentId = dto.ReturnAppointmentId,
+        ReturnAppointmentStart = dto.ReturnAppointmentStart,
+        ReturnAppointmentEnd = dto.ReturnAppointmentEnd
+    };
+
+    private static ClinicAdmissionObservation MapObservation(AdmissionObservationDto dto) => new()
+    {
+        Id = dto.Id,
+        AdmissionId = dto.AdmissionId,
+        RecordedAt = dto.RecordedAt,
+        Note = dto.Note,
+        HeartRate = dto.HeartRate,
+        TemperatureCelsius = dto.TemperatureCelsius,
+        OxygenSaturation = dto.OxygenSaturation,
+        SystolicBp = dto.SystolicBp,
+        DiastolicBp = dto.DiastolicBp
     };
 
     private sealed class PagedAdmissionsDto
@@ -3110,6 +3884,10 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public int OccupiedBeds { get; set; }
         public int MaintenanceBeds { get; set; }
         public int ActiveAdmissions { get; set; }
+        public int OccupancyPercent { get; set; }
+        public int AdmissionsTodayCount { get; set; }
+        public int DischargesTodayCount { get; set; }
+        public decimal? AverageLengthOfStayDays { get; set; }
         public List<WardDto>? Wards { get; set; }
         public List<AdmissionDto>? ActiveAdmissionsList { get; set; }
     }
@@ -3162,5 +3940,33 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string Status { get; set; } = string.Empty;
         public string? Reason { get; set; }
         public string? Notes { get; set; }
+        public string? DischargeSummary { get; set; }
+        public Guid? InvoiceId { get; set; }
+        public decimal? InvoiceAmount { get; set; }
+        public string? InvoiceCurrency { get; set; }
+        public string? InvoiceStatus { get; set; }
+        public DateTime? InvoicePaidAt { get; set; }
+        public int? BedNights { get; set; }
+        public Guid? ReturnAppointmentId { get; set; }
+        public DateTime? ReturnAppointmentStart { get; set; }
+        public DateTime? ReturnAppointmentEnd { get; set; }
+    }
+
+    private sealed class DischargeSummaryDraftDto
+    {
+        public string? DraftText { get; set; }
+    }
+
+    private sealed class AdmissionObservationDto
+    {
+        public Guid Id { get; set; }
+        public Guid AdmissionId { get; set; }
+        public DateTime RecordedAt { get; set; }
+        public string Note { get; set; } = string.Empty;
+        public decimal? HeartRate { get; set; }
+        public decimal? TemperatureCelsius { get; set; }
+        public decimal? OxygenSaturation { get; set; }
+        public decimal? SystolicBp { get; set; }
+        public decimal? DiastolicBp { get; set; }
     }
 }

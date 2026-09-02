@@ -103,8 +103,10 @@
                                                     <Border Grid.Column="0"
                                                             Style="{StaticResource ProfileMenuIconBorder}"
                                                             Margin="0,0,12,0">
-                                                        <Label Text="{Binding IconGlyph}"
-                                                               FontSize="16"
+                                                        <Image Source="{Binding IconSource}"
+                                                               WidthRequest="18"
+                                                               HeightRequest="18"
+                                                               Aspect="AspectFit"
                                                                HorizontalOptions="Center"
                                                                VerticalOptions="Center" />
                                                     </Border>

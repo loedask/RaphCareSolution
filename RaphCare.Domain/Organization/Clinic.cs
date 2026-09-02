@@ -33,6 +33,11 @@ public class Clinic : AggregateRoot, ISoftDelete
     /// </summary>
     public string? CollectionDisplayToken { get; set; }
 
+    /// <summary>
+    /// Unguessable token for the public casualty waiting-room URL. The display shows queue codes only.
+    /// </summary>
+    public string? CasualtyDisplayToken { get; set; }
+
     public ICollection<Facility> Facilities { get; set; } = new List<Facility>();
     public ICollection<Department> Departments { get; set; } = new List<Department>();
     public ICollection<Provider> Providers { get; set; } = new List<Provider>();

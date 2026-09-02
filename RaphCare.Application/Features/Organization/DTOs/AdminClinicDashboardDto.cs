@@ -10,5 +10,11 @@ public sealed class AdminClinicDashboardDto
     public int FacilityCount { get; set; }
     public int AppointmentsTodayCount { get; set; }
     public int UpcomingAppointmentsCount { get; set; }
+    public int TotalBeds { get; set; }
+    public int OccupiedBeds { get; set; }
+    public int OccupancyPercent { get; set; }
+    public int AdmissionsTodayCount { get; set; }
+    public int DischargesTodayCount { get; set; }
+    public decimal? AverageLengthOfStayDays { get; set; }
     public IReadOnlyList<AdminClinicAppointmentListItemDto> UpcomingAppointments { get; set; } = Array.Empty<AdminClinicAppointmentListItemDto>();
 }

@@ -12,6 +12,7 @@ namespace RaphCare.Application.Features.PatientHealthRecords.Queries.GetMyHealth
 public class GetMyHealthRecordByIdHandler : IRequestHandler<GetMyHealthRecordByIdQuery, PatientHealthRecordDetailDto>
 {
     private readonly IRepository<Visit> _visitRepository;
+    private readonly IRepository<InpatientAdmission> _admissionRepository;
     private readonly IRepository<VitalSignRecord> _vitalRepository;
     private readonly IRepository<Prescription> _prescriptionRepository;
     private readonly IRepository<LabRequest> _labRequestRepository;
@@ -20,6 +21,7 @@ public class GetMyHealthRecordByIdHandler : IRequestHandler<GetMyHealthRecordByI
 
     public GetMyHealthRecordByIdHandler(
         IRepository<Visit> visitRepository,
+        IRepository<InpatientAdmission> admissionRepository,
         IRepository<VitalSignRecord> vitalRepository,
         IRepository<Prescription> prescriptionRepository,
         IRepository<LabRequest> labRequestRepository,
@@ -27,6 +29,7 @@ public class GetMyHealthRecordByIdHandler : IRequestHandler<GetMyHealthRecordByI
         ICurrentUserService currentUser)
     {
         _visitRepository = visitRepository;
+        _admissionRepository = admissionRepository;
         _vitalRepository = vitalRepository;
         _prescriptionRepository = prescriptionRepository;
         _labRequestRepository = labRequestRepository;
@@ -40,9 +43,29 @@ public class GetMyHealthRecordByIdHandler : IRequestHandler<GetMyHealthRecordByI
             ?? throw new ForbiddenAccessException("A patient profile is required to view health records.");
 
         var visit = await _visitRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
-        if (visit is null || visit.PatientId != patientId)
-            throw new NotFoundException(nameof(Visit), request.Id);
+        if (visit is not null && visit.PatientId == patientId)
+            return await MapVisitAsync(visit, cancellationToken).ConfigureAwait(false);
 
+        var admission = await _admissionRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        if (admission is not null && admission.PatientId == patientId && admission.Status == "Discharged")
+        {
+            return new PatientHealthRecordDetailDto
+            {
+                Id = admission.Id,
+                VisitStart = admission.AdmittedAt,
+                VisitEnd = admission.DischargedAt,
+                VisitType = "Stay",
+                Status = admission.Status,
+                Summary = admission.DischargeSummary,
+                RecordKind = "Discharge"
+            };
+        }
+
+        throw new NotFoundException(nameof(Visit), request.Id);
+    }
+
+    private async Task<PatientHealthRecordDetailDto> MapVisitAsync(Visit visit, CancellationToken cancellationToken)
+    {
         var vitalsPage = await _vitalRepository.SearchAsync(
             q => q.Where(v => v.VisitId == visit.Id).OrderBy(v => v.RecordedAt),
             1,
@@ -83,6 +106,7 @@ public class GetMyHealthRecordByIdHandler : IRequestHandler<GetMyHealthRecordByI
             VisitType = visit.VisitType,
             Status = visit.Status,
             Summary = visit.Summary,
+            RecordKind = "Visit",
             VitalSigns = vitalDtos,
             Prescriptions = prescriptions.Items.Select(p => new PatientCollectionPrescriptionDto
             {
