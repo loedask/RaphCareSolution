@@ -1,10 +1,6 @@
 # RaphCare progress (partner view)
 
-This is the **simple** status board. Same topics as the engineering checklist, without code names.
-
-PDF: [`raphcare-feature-checklist-partner.pdf`](raphcare-feature-checklist-partner.pdf)
-
-Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md)
+This is the **simple** status board. Same topics as the builder checklist, without code names.
 
 **Overall completion:** **75%**
 
@@ -18,7 +14,7 @@ Engineering detail (APIs, files, checkboxes for builders): [`raphcare-feature-ch
 - Section % = average of that section's scored rows
 - Overall % = average of all scored rows in sections 1-5
 
-Each section shows its % in the heading. Numbers stay in sync with the engineering checklist when status changes.
+Each section shows its % in the heading. Numbers stay in sync when status changes.
 
 Last reviewed: 2026-09-02
 
@@ -47,7 +43,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 
 **Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Opening a hospital hides the left menu so staff can focus on that hospital.
 
-**Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan. Detail: [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
+**Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan.
 
 ---
 
@@ -118,7 +114,7 @@ What patients see on Android and iPhone.
 | **Y6 Pro** emergency 4G watch flow | Partial | Webhook, SMS, clinic patient chart, and hospital Devices emergency board; OEM mapping and push alerts still future |
 | Windows PC build of the app | Not for BLE | Bluetooth patient devices are for phones, not the Windows target |
 
-**Wearable feature list (survives changing watch models):** `docs/14_Wearable_Capability_Catalog.md`
+**Wearable feature list:** we keep a separate model-agnostic list of what a band or watch should support, even when the hardware SKU changes.
 
 **Bottom line (59%):** the patient app screens are largely there, including choosing a clinic by name or short code. Home and Profile icons are monochrome now. Catch-up work is mostly **iPhone video**, **real push**, **wearables depth** (live vitals, full sync, background), and **testing the same flows on both phone types**.
 
@@ -191,16 +187,3 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 9. **Patient app on Android:** sign in as `demo.patient@raphcare.com`. You should get a notice that something is ready to collect. Open Health records: waiting items show a pickup code and a QR code. Scan the wall poster at the counter to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
 10. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
 11. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
-
----
-
-## Related reading
-
-| Doc | Who it is for |
-|-----|----------------|
-| This file | Partners, product, demos |
-| `raphcare-feature-checklist.md` | Engineers |
-| [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md) | Later: staff using the web admin on a phone |
-| [`../14_Wearable_Capability_Catalog.md`](../14_Wearable_Capability_Catalog.md) | Watch and band features RaphCare should support (even if the model changes) |
-| `Mobile_Release_Ready_Checklist.md` | Release or pilot go-live |
-| [`../13_Patient_Device_Packages_and_Fleet.md`](../13_Patient_Device_Packages_and_Fleet.md) | Watch and band product packages |
