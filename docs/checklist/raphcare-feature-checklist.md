@@ -302,11 +302,11 @@ Shipped on API, Client, and Web admin. Discharged stays also show in the patient
 - [x] Inpatient documented in companion docs (Step 2 docs rows)
 - [x] Web UI localization (en / fr / ln / sw): `AppResources` + language picker on admin layout
 - [x] Staging demo pack: email/password accounts on `RaphCare Demo Clinic` (idempotent; does not wipe other hospitals)
-- [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API
+- [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API (plan: [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md))
 
 ### Cross-cutting status
 
-**88%.** Platform wiring includes Web UI languages and a Staging demo pack. Missing an automated E2E smoke against a running API.
+**88%.** Platform wiring includes Web UI languages and a Staging demo pack. Missing an automated E2E smoke against a running API. Plan for Web and Mobile smoke is documented; automation not started.
 
 ---
 
@@ -319,11 +319,11 @@ Shipped on API, Client, and Web admin. Discharged stays also show in the patient
 | Step 3 Patient Mobile | 62% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
 | Step 5 Hospital plan value | 75% | Referral board in; return booking and roster open |
-| Cross-cutting | 88% | Demo pack on Staging; E2E smoke open |
+| Cross-cutting | 88% | Demo pack on Staging; E2E smoke plan in, script open |
 | **Overall (scored items)** | **75%** | Out of scope / open optional excluded |
 | **Without wearable Phase 2+ metrics** | **79%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
-**Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then E2E smoke script.
+**Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then Phase A API smoke from [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md).
 
 ---
 
@@ -344,6 +344,7 @@ Shipped on API, Client, and Web admin. Discharged stays also show in the patient
 | Doc | Use for |
 |-----|---------|
 | `raphcare-feature-checklist-partner.md` | Plain-language status for non-technical partners |
+| [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md) | Planned API, Web UI, and Mobile smoke layers |
 | [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md) | Tokens, route map, screen visual parity |
 | `Mobile_Release_Ready_Checklist.md` | Flags, quality bar, release backlog |
 | [`../09_Mobile_App_Guide.md`](../09_Mobile_App_Guide.md) | Mobile structure, DI, config |

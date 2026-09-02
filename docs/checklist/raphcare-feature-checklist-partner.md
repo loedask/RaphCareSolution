@@ -176,6 +176,8 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 
 ## What to try this week (partner)
 
+This list is the current manual smoke for admin web and the patient phone app. Builders also keep a longer layered plan (API first, then web automation, then phone) for when scripted smoke is added.
+
 1. **Admin web:** sign in as `demo.admin@raphcare.com` (password `RaphCareDemo!2026` unless you changed `Demo:Password`). Open **RaphCare Demo Clinic**.
 2. **Admin web:** the left menu should hide on a hospital. Use All hospitals in the top bar to return to the list.
 3. **Admin web:** on that hospital, open Inpatient. Add a ward, room, or bed if needed, admit someone. Add a ward note. Discharge them with a summary and a nightly rate. Confirm occupancy numbers on the hospital dashboard.

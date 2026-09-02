@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Documented a layered smoke plan for admin web and patient mobile (shared API first, then Web UI automation, then phone manual and later Android UI tests).
+
+## Modules modified
+
+- **docs:** `checklist/Web_And_Mobile_Smoke_Plan.md`; pointers from feature checklists, mobile guide, demo launch guide, and mobile release checklist.
+
+---
+
+## Date
+
+2026-09-02
+
+## High-level summary of changes
+
 Outbound referral board: staff log a referral, then mark it accepted, completed, or cancelled until follow-through is clear.
 
 ## Modules modified
