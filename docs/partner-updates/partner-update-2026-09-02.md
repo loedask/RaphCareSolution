@@ -50,7 +50,7 @@ A one-page sheet with the same logins is here: [`raphcare-demo-accounts.pdf`](ra
 
 ## 3. Patient Android APK (staging)
 
-I built a new Release APK for release **1.5.0** (file name like `RaphCare-v1.5.0+8.apk`). It talks to the staging API, not localhost. I will send you the install file. Copy it to the phone (USB, Drive, or email). Allow install from that source if Android asks. If an older RaphCare install blocks it, uninstall the old copy first. This build is for sideload testing, not the Play Store.
+I built a new Release APK for release **1.5.0** (file name like `RaphCare-v1.5.0+8.apk`). It talks to the staging API, not localhost. I have sent you the install file. Copy it to the phone (USB, Drive, or email). Allow install from that source if Android asks. If an older RaphCare install blocks it, uninstall the old copy first. This build is for sideload testing, not the Play Store.
 
 ## 4. What was already ready (quick reminder)
 
