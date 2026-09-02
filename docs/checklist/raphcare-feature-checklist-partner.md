@@ -13,10 +13,11 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 - **Later** notes (phone use of the web admin, and similar) are left out of the % until we schedule the work
 - Section % = average of that section's scored rows
 - Overall % = average of all scored rows in sections 1-5
+- **Section 6** is a later product list. Those rows stay out of overall % until we schedule them and change the status to Partial or Done
 
 Each section shows its % in the heading. Numbers stay in sync when status changes.
 
-Last reviewed: 2026-09-02
+Last reviewed: 2026-09-03
 
 ---
 
@@ -161,6 +162,35 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 
 ---
 
+## 6. Next ideas (AI and clinic ops) - later (not in overall %)
+
+Ideas for after the Hospital plan board. AI still only drafts or suggests. A person always checks before anything is saved. A hospital can turn AI drafting off. We are not building US insurance form-fighting or an AI that acts as the patient’s only doctor.
+
+| Area | Status | What you could do later |
+|------|--------|-------------------------|
+| Open work board | Later | One place for overdue referrals, missed return visits, medicines not yet collected, and labs still waiting |
+| Smart suggestions on that board | Later | Soft prompts for what staff might do next. Staff confirm. |
+| Visit or ward note draft with AI | Later | Same idea as the discharge draft: start text from vitals and stay facts. Staff edit. |
+| Reminders for visits and pickup | Later | In-app first. Text or call reminders when the site is set up for that. |
+| Plain-language help on labs and vitals | Later | The phone chat explains results and band readings in simple words, and tells people to ask their clinician when unsure |
+| Lab wording help | Later | Suggest how to phrase a lab result and flag a big change from the last one. Staff edit values. |
+| Casualty priority hint | Later | Suggest a colour priority from the complaint and vitals. Staff confirm before the queue. |
+| Theatre and who-is-on checks | Later | Warn when cases or shifts clash. Light suggestions only. |
+| Referral from a photo or paper | Later | Snap or upload a letter. Get a draft referral to edit and save. |
+| Busy counter hints | Later | Suggest when the collection counter may be busy. |
+| Discharge checklist on the phone | Later | After leaving: medicines, return visit, and warning signs in plain language |
+| Band and stay trend alerts | Later | Alert staff if heart rate or oxygen drifts from the last ward check. No automatic orders. |
+| Invoice line suggestions | Later | At discharge, suggest bed nights and extras from the stay. Cash invoice only. |
+| Staff license reminders | Later | Remind when a doctor or nurse license date is near. |
+| Imaging report draft (partner) | Later | Optional link for X-ray style draft reports. Radiologist edits. Not built in-house first. |
+| Pull records from other systems | Later | Only if a site needs outside charts. |
+| Deeper mental-health note help | Later | Only if staff mental-health storage grows. |
+| US insurance prior auth and claims | Not for this product | Out of scope for RaphCare. |
+
+**Bottom line (later):** a backlog for the next product wave. Prefer order when you schedule: visit or ward note draft, open work board, plain-language labs help, reminders, then casualty priority hint.
+
+---
+
 ## Rollup
 
 | Area | % | Notes |
@@ -170,7 +200,8 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 | 3. Patient phone app | 59% | iPhone video, push, wearables |
 | 4. Other staff and system | 83% | Demo accounts on Staging |
 | 5. Hospital plan extras | 100% | Stay extras closed for this board |
-| **Overall** | **81%** | Excludes "not for mobile, clinical, or BLE" rows |
+| 6. Next ideas (AI and ops) | n/a | Later list; not in overall % |
+| **Overall** | **81%** | Sections 1-5. Excludes "not for mobile, clinical, or BLE" and section 6 later rows |
 
 ---
 

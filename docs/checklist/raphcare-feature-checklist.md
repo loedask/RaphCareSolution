@@ -20,6 +20,7 @@ Track progress across **API**, **Web admin panel**, and **Mobile** (patient app)
 - Vertical table rows (API / Client / Mobile UI) count as one item = average of the three cells
 - Section % = average of that section's scored items
 - Overall % = average of all scored items in Steps 1-5 plus Cross-cutting
+- **Step 6** (next wave) is roadmap. Items stay `(optional / later)` or `(out of scope)` until you schedule them; they stay **out of overall %** until you drop that marker and start scoring them
 
 Each step ends with a short status note and its section %. Recalculate when you change checkboxes.
 
@@ -27,7 +28,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-09-02
+Last reviewed: 2026-09-03
 
 ---
 
@@ -293,6 +294,49 @@ Shipped on API, Client, and Web admin. Discharged stays also show in the patient
 
 ---
 
+## Step 6: Next wave (clinic AI and ops) - roadmap (not in overall %)
+
+Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/companies?industry=Healthcare) that fit RaphCare after Step 5. Same product rule as AI discharge: drafts and suggestions only, staff confirm, hospital AI toggle where PHI is involved, prefer redacted prompts. Do **not** copy US prior-auth, denial, or full AI-as-PCP practice models. Themes inspired by [Care GP](https://www.ycombinator.com/companies/care-gp), [Plena](https://www.ycombinator.com/companies/plena-health), [Beacon Health](https://www.ycombinator.com/companies/beacon-health), [Evergrove](https://www.ycombinator.com/companies/evergrove), [Avoca](https://www.ycombinator.com/companies/avoca-systems), [Illume](https://www.ycombinator.com/companies/illume-labs), [Juno](https://www.ycombinator.com/companies/juno), [Clara](https://www.ycombinator.com/companies/clara-2) (companion only), [Voquill](https://www.ycombinator.com/companies/voquill), [Scheduling Wizard](https://www.ycombinator.com/companies/scheduling-wizard), [Framewise](https://www.ycombinator.com/companies/framewise-health), [Taiga](https://www.ycombinator.com/companies/taiga) (cash invoice assist only), [Arctic Health](https://www.ycombinator.com/companies/arctic-health) (license reminders only), [Mecha](https://www.ycombinator.com/companies/mecha-health) / [Radley](https://www.ycombinator.com/companies/radley) (imaging later), [Hubble](https://www.ycombinator.com/companies/hubble) (records API later), [Klarify](https://www.ycombinator.com/companies/klarify) (mental-health notes later).
+
+### Care loops and clinic ops
+
+- [ ] Open-loop / care-gap board on hospital home `(optional / later)`: overdue referrals, missed return visits, uncollected medicines, open labs waiting on results
+- [ ] AI ops suggestions on that board `(optional / later)`: propose next staff actions; human confirms (Care GP / Plena / Beacon style)
+- [ ] Appointment and pickup reminder agent `(optional / later)`: in-app notice first; SMS or voice when configured (Evergrove / Avoca style)
+- [ ] Paper or photo referral intake to structured referral draft `(optional / later)`: staff edit before save (Plena fax-intake idea, camera/PDF)
+- [ ] Collection busy-window suggestions `(optional / later)`: hint when the counter is likely busy; no US imaging scheduler clone
+- [ ] Staff license / credential expiry reminders on roster `(optional / later)`: dates and alerts only (Arctic slimmed; not payer contracting)
+
+### Clinical AI drafts (staff edit)
+
+- [ ] AI draft of visit or ward note `(optional / later)`: same privacy pattern as discharge (structured vitals preferred; hospital AI toggle; staff edits)
+- [ ] Lab result draft wording and prior comparison flag `(optional / later)`: staff edits values and text; then existing result-ready notice (Voquill-shaped)
+- [ ] Casualty triage suggestion `(optional / later)`: suggest priority from chief complaint and vitals; staff confirms before queue
+- [ ] Theatre list and roster conflict checks `(optional / later)`: overlap and “who is on” warnings; light AI suggestions only
+- [ ] AI-assisted cash invoice line suggestions at discharge `(optional / later)`: suggest bed nights and extras from stay data; no US claim submit (Taiga slimmed)
+
+### Patient app and engagement
+
+- [ ] Patient companion explains labs, vitals, and wearables in plain language `(optional / later)`: deepen existing AI chat; hospital AI toggle; “ask your clinician” boundaries (Illume / Juno / Clara-as-companion)
+- [ ] Plain-language discharge checklist in Health records `(optional / later)`: meds, return visit, warning signs from stay data (Framewise-shaped, text first)
+- [ ] Wearable and EHR trend alerts for staff review `(optional / later)`: flag HR/SpO₂ drift vs last ward vitals; no auto clinical orders
+
+### Later integrations (keep optional)
+
+- [ ] Imaging draft report partner plug-in `(optional / later)`: X-ray or similar draft for radiologist edit (Mecha / Radley); do not build foundation models in-house first
+- [ ] External medical-records retrieval API `(optional / later)`: only if sites need other-EHR pull (Hubble-shaped)
+- [ ] Mental-health AI notes workspace `(optional / later)`: only if staff assessment persistence deepens (Klarify-shaped)
+
+### Out of scope for RaphCare product
+
+- [ ] US prior authorization, denial appeals, infusion specialty billing, full AI primary-care practice `(out of scope)`
+
+### Step 6 status
+
+**Roadmap only (not in overall %).** Prefer ship order when you schedule: (1) visit/ward note draft, (2) care-gap board, (3) patient companion on labs and vitals, (4) reminder agent, (5) casualty triage suggestion, then optional imaging plug-in.
+
+---
+
 ## Cross-cutting - 88%
 
 - [x] Solution layers: Domain -> Application -> Persistence / Infrastructure / Identity -> API; Client -> Web / Mobile
@@ -319,11 +363,12 @@ Shipped on API, Client, and Web admin. Discharged stays also show in the patient
 | Step 3 Patient Mobile | 62% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
 | Step 5 Hospital plan value | 100% | Stay extras closed for this step |
+| Step 6 Next wave (AI / ops) | n/a | Roadmap; optional/later excluded from overall |
 | Cross-cutting | 88% | Demo pack on Staging; E2E smoke plan in, script open |
-| **Overall (scored items)** | **78%** | Out of scope / open optional excluded |
+| **Overall (scored items)** | **78%** | Steps 1-5 + Cross-cutting; out of scope / open optional excluded |
 | **Without wearable Phase 2+ metrics** | **81%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
-**Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then Phase A API smoke from [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md).
+**Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, Phase A API smoke from [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md). Pull Step 6 items off `(optional / later)` when you schedule the next product wave.
 
 ---
 
