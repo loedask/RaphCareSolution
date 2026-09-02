@@ -6,4 +6,5 @@ public sealed class UpdateAdminClinicRequest
     public string Country { get; set; } = string.Empty;
     public string TimeZone { get; set; } = string.Empty;
     public bool IsActive { get; set; }
+    public bool AllowAiDischargeDraft { get; set; } = true;
 }

@@ -19,7 +19,7 @@ Clinic stays the lighter outpatient product. Network stays multi-site. **Hospita
 - **Outbound referrals:** log a referral out of the hospital, then mark it accepted, completed, or cancelled.
 - **Return visit at discharge:** on discharge, optionally pick a clinician and time for the next outpatient visit before the person leaves.
 - **Who is on today:** pick a day and see who is on Morning, Afternoon, or Night. Add or remove staff for a shift.
-- **AI discharge draft:** on discharge, tap Draft with AI, edit the text, then save. Needs cloud AI keys on the server; otherwise the button explains that drafting is unavailable. Clinical text goes only to Azure OpenAI you configure, not to public ChatGPT.
+- **AI discharge draft:** on discharge, tap Draft with AI when the hospital allows it (Organization details has the toggle). Staff edit the text, then save. The draft uses stay reason and ward vitals only, not free-text ward notes. Needs cloud AI keys on the server; otherwise drafting is unavailable. Clinical text goes only to Azure OpenAI you configure, not to public ChatGPT.
 - **Lab result ready:** when staff enter a lab result on Collection, the patient gets an in-app notice (and push when configured) that the result is ready. The notice does not include the values. Values stay on the visit health record.
 
 The commercial one-pager matches this. Hospital is billed per site each month and lists these extras: [`raphcare-price-list.pdf`](raphcare-price-list.pdf).

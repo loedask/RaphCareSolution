@@ -30,6 +30,7 @@ internal static class AdminClinicDetailMapper
             Country = clinic.Country,
             TimeZone = clinic.TimeZone,
             IsActive = clinic.IsActive,
+            AllowAiDischargeDraft = clinic.AllowAiDischargeDraft,
             CreatedAt = clinic.CreatedAt,
             RegisteredByApplicationUserId = clinic.RegisteredByApplicationUserId,
             CurrentUserIsAdministrator = RaphCareRoles.HasAdministratorRole(roles),

@@ -368,9 +368,16 @@
                             <textarea class="form-control" rows="3" @bind="_dischargeSummary" placeholder="@AppResources.T("Inpatient_DischargeSummaryPlaceholder")"></textarea>
                         </label>
                         <div class="admin-page-actions" style="margin-bottom: 0.75rem;">
-                            <button type="button" class="btn btn-secondary" disabled="@_draftingSummary" @onclick="DraftDischargeSummaryAsync">
-                                @(_draftingSummary ? AppResources.T("Common_PleaseWait") : AppResources.T("Inpatient_DraftWithAi"))
-                            </button>
+                            @if (_allowAiDischargeDraft)
+                            {
+                                <button type="button" class="btn btn-secondary" disabled="@_draftingSummary" @onclick="DraftDischargeSummaryAsync">
+                                    @(_draftingSummary ? AppResources.T("Common_PleaseWait") : AppResources.T("Inpatient_DraftWithAi"))
+                                </button>
+                            }
+                            else
+                            {
+                                <p class="admin-muted">@AppResources.T("Inpatient_AiDraftDisabled")</p>
+                            }
                         </div>
                         <label>
                             @AppResources.T("Inpatient_DischargeNotesLabel")
@@ -729,6 +736,7 @@
     private bool _loadingHistory;
     private bool _isAdministrator;
     private bool _canRecordWardNotes;
+    private bool _allowAiDischargeDraft = true;
     private string _tab = "admissions";
     private Guid? _dischargingId;
     private Guid? _transferringId;
@@ -875,6 +883,7 @@
             _canRecordWardNotes = clinicResponse.Data.CurrentUserCanRecordWardNotes;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
             _clinicCountry = clinicResponse.Data.Country;
+            _allowAiDischargeDraft = clinicResponse.Data.AllowAiDischargeDraft;
             _facilityCountry = clinicResponse.Data.Country;
             _invoiceCurrency = IsCongoCountry(clinicResponse.Data.Country) ? "USD" : "ZAR";
             _physicalFacilities = clinicResponse.Data.Facilities.Where(f => !f.IsVirtual).ToList();
