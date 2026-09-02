@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Release **1.5.0**: Hospital plan stay-and-counter extras (ward notes, discharge invoice, occupancy, nurse role, casualty, theatre, referrals, roster, return visit at discharge, AI discharge draft, lab result-ready notice). Partner update and checklists marked Step 5 complete. Mobile display version **1.5.0**, Android versionCode **8**.
+
+## Modules modified
+
+- **Domain / Application / Persistence / API / Client / Web / Mobile / docs:** hospital plan closeout; partner update 2 Sep 2026; `ApplicationDisplayVersion` / `ApplicationVersion` bump.
+
+---
+
+## Date
+
+2026-09-02
+
+## High-level summary of changes
+
 Documented a layered smoke plan for admin web and patient mobile (shared API first, then Web UI automation, then phone manual and later Android UI tests).
 
 ## Modules modified
