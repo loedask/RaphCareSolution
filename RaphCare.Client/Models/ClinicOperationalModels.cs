@@ -484,6 +484,9 @@ public sealed class ClinicAdmission
     public string? InvoiceStatus { get; set; }
     public DateTime? InvoicePaidAt { get; set; }
     public int? BedNights { get; set; }
+    public Guid? ReturnAppointmentId { get; set; }
+    public DateTime? ReturnAppointmentStart { get; set; }
+    public DateTime? ReturnAppointmentEnd { get; set; }
 }
 
 public sealed class ClinicAdmissionObservation
@@ -508,6 +511,12 @@ public sealed class DischargeAdmissionRequest
     public string? ExtraDescription { get; set; }
     public bool MarkPaid { get; set; }
     public string? Currency { get; set; }
+    public bool BookReturnVisit { get; set; }
+    public Guid? ReturnProviderId { get; set; }
+    public DateTime? ReturnScheduledStart { get; set; }
+    public DateTime? ReturnScheduledEnd { get; set; }
+    public string? ReturnAppointmentType { get; set; }
+    public string? ReturnReason { get; set; }
 }
 
 public sealed class AddAdmissionObservationRequest

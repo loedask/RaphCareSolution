@@ -13,6 +13,7 @@ public sealed class DischargeAdminClinicAdmissionHandler(
     ICurrentUserService currentUserService,
     IClinicStaffMembershipService clinicStaffMembershipService,
     IUserRoleAssignmentService roleAssignmentService,
+    IPatientClinicAccessService patientClinicAccessService,
     IRepository<InpatientAdmission> admissionRepository,
     IRepository<Bed> bedRepository,
     IRepository<Room> roomRepository,
@@ -21,6 +22,10 @@ public sealed class DischargeAdminClinicAdmissionHandler(
     IRepository<Patient> patientRepository,
     IRepository<Invoice> invoiceRepository,
     IRepository<InvoiceLineItem> invoiceLineItemRepository,
+    IRepository<Appointment> appointmentRepository,
+    IRepository<Provider> providerRepository,
+    IRepository<ProviderSchedule> providerScheduleRepository,
+    IRepository<Clinic> clinicRepository,
     IDateTimeProvider clock,
     IUnitOfWork unitOfWork)
     : IRequestHandler<DischargeAdminClinicAdmissionCommand, AdminClinicAdmissionDto?>
@@ -40,6 +45,13 @@ public sealed class DischargeAdminClinicAdmissionHandler(
 
         if (admission.Status != "Admitted")
             throw new BusinessRuleException("Admission is already closed.");
+
+        Appointment? returnAppointment = null;
+        if (request.BookReturnVisit)
+        {
+            returnAppointment = await BuildReturnAppointmentAsync(request, admission.PatientId, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         var dischargedAt = clock.UtcNow;
         var bed = await bedRepository.GetByIdAsync(admission.BedId, cancellationToken).ConfigureAwait(false);
@@ -108,6 +120,14 @@ public sealed class DischargeAdminClinicAdmissionHandler(
             admission.InvoiceId = invoice.Id;
         }
 
+        if (returnAppointment is not null)
+        {
+            await appointmentRepository.AddAsync(returnAppointment, cancellationToken).ConfigureAwait(false);
+            await patientClinicAccessService
+                .GrantEncounterAccessAsync(admission.PatientId, request.ClinicId, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var patient = await patientRepository.GetByIdAsync(admission.PatientId, cancellationToken).ConfigureAwait(false);
@@ -136,7 +156,76 @@ public sealed class DischargeAdminClinicAdmissionHandler(
             InvoiceCurrency = invoice?.Currency,
             InvoiceStatus = invoice?.Status,
             InvoicePaidAt = invoice?.PaidAt,
-            BedNights = invoice is null ? null : bedNights
+            BedNights = invoice is null ? null : bedNights,
+            ReturnAppointmentId = returnAppointment?.Id,
+            ReturnAppointmentStart = returnAppointment?.ScheduledStart,
+            ReturnAppointmentEnd = returnAppointment?.ScheduledEnd
+        };
+    }
+
+    private async Task<Appointment> BuildReturnAppointmentAsync(
+        DischargeAdminClinicAdmissionCommand request,
+        Guid patientId,
+        CancellationToken cancellationToken)
+    {
+        if (request.ReturnProviderId is not Guid providerId
+            || request.ReturnScheduledStart is not DateTime scheduledStart
+            || request.ReturnScheduledEnd is not DateTime scheduledEnd)
+            throw new BusinessRuleException("Return visit requires a clinician and a start and end time.");
+
+        if (!await patientClinicAccessService
+                .HasClinicAccessAsync(patientId, request.ClinicId, cancellationToken)
+                .ConfigureAwait(false))
+            throw new BusinessRuleException("Patient does not have access to this hospital.");
+
+        var patient = await patientRepository.GetByIdAsync(patientId, cancellationToken).ConfigureAwait(false);
+        if (patient is null || patient.IsDeleted)
+            throw new BusinessRuleException("Patient not found.");
+
+        var provider = await providerRepository.GetByIdAsync(providerId, cancellationToken).ConfigureAwait(false);
+        if (provider is null || provider.IsDeleted || provider.ClinicId != request.ClinicId || !provider.IsActive)
+            throw new BusinessRuleException("Provider not found for this hospital.");
+
+        await AppointmentSchedulingGuard.EnsureNoProviderConflictAsync(
+                appointmentRepository,
+                request.ClinicId,
+                providerId,
+                scheduledStart,
+                scheduledEnd,
+                excludeAppointmentId: null,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        var schedulesPage = await providerScheduleRepository.SearchAsync(
+            q => q.Where(s => s.ProviderId == providerId),
+            1,
+            50,
+            applyDefaultIdOrdering: false,
+            cancellationToken).ConfigureAwait(false);
+        var clinic = await clinicRepository.GetByIdAsync(request.ClinicId, cancellationToken).ConfigureAwait(false);
+        AppointmentSchedulingGuard.EnsureFitsWeeklySchedule(
+            schedulesPage.Items,
+            scheduledStart,
+            scheduledEnd,
+            clinic?.TimeZone);
+
+        var type = string.IsNullOrWhiteSpace(request.ReturnAppointmentType)
+            ? "InPerson"
+            : request.ReturnAppointmentType.Trim();
+        var reason = string.IsNullOrWhiteSpace(request.ReturnReason)
+            ? "Return visit after discharge"
+            : request.ReturnReason.Trim();
+
+        return new Appointment
+        {
+            ClinicId = request.ClinicId,
+            PatientId = patientId,
+            ProviderId = providerId,
+            ScheduledStart = scheduledStart,
+            ScheduledEnd = scheduledEnd,
+            Type = type,
+            Status = "Scheduled",
+            Reason = reason
         };
     }
 }

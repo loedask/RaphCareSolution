@@ -393,6 +393,40 @@
                             <input type="checkbox" @bind="_markPaid" />
                             @AppResources.T("Inpatient_MarkPaidCash")
                         </label>
+                        <label class="inpatient-checkbox">
+                            <input type="checkbox" @bind="_bookReturnVisit" />
+                            @AppResources.T("Inpatient_BookReturnVisit")
+                        </label>
+                        @if (_bookReturnVisit)
+                        {
+                            <div class="form-grid">
+                                <label>
+                                    @AppResources.T("Common_Provider")
+                                    <SearchableSelect TValue="string"
+                                                      @bind-Value="_returnProviderId"
+                                                      Placeholder="@AppResources.T("Common_SelectProvider")"
+                                                      Options="ReturnProviderOptions" />
+                                </label>
+                                <label>
+                                    @AppResources.T("Common_Type")
+                                    <SearchableSelect TValue="string"
+                                                      @bind-Value="_returnAppointmentType"
+                                                      Options="ReturnAppointmentTypeOptions" />
+                                </label>
+                                <label>
+                                    @AppResources.Format("Common_StartLabel", _clinicTimeZone)
+                                    <input class="form-control" type="datetime-local" @bind="_returnStart" @bind:format="yyyy-MM-ddTHH:mm" />
+                                </label>
+                                <label>
+                                    @AppResources.Format("Common_EndLabel", _clinicTimeZone)
+                                    <input class="form-control" type="datetime-local" @bind="_returnEnd" @bind:format="yyyy-MM-ddTHH:mm" />
+                                </label>
+                                <label class="form-grid-span">
+                                    @AppResources.T("Common_Reason")
+                                    <input class="form-control" @bind="_returnReason" placeholder="@AppResources.T("Inpatient_ReturnVisitReasonPlaceholder")" />
+                                </label>
+                            </div>
+                        }
                         <div class="admin-page-actions">
                             <button type="button" class="btn btn-primary" disabled="@(_dischargingId == dischargeId)" @onclick="ConfirmDischargeAsync">
                                 @(_dischargingId == dischargeId ? AppResources.T("Common_PleaseWait") : AppResources.T("Common_ConfirmDischarge"))
@@ -738,6 +772,13 @@
     private string _extraDescription = string.Empty;
     private string _invoiceCurrency = "ZAR";
     private bool _markPaid = true;
+    private bool _bookReturnVisit;
+    private string _returnProviderId = string.Empty;
+    private string _returnAppointmentType = "InPerson";
+    private string _returnReason = string.Empty;
+    private DateTime _returnStart;
+    private DateTime _returnEnd;
+    private IReadOnlyList<ClinicProviderListItem> _providers = Array.Empty<ClinicProviderListItem>();
     private string _wardNote = string.Empty;
     private string _wardHeartRate = string.Empty;
     private string _wardTemp = string.Empty;
@@ -787,6 +828,15 @@
     private IReadOnlyList<SelectOption<string>> AvailableBedOptions =>
         _availableBeds.Select(bed => new SelectOption<string>(bed.Id.ToString(), bed.Display)).ToArray();
 
+    private IReadOnlyList<SelectOption<string>> ReturnProviderOptions =>
+        _providers.Select(provider => new SelectOption<string>(provider.ProviderId.ToString(), provider.DisplayName)).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> ReturnAppointmentTypeOptions =>
+    [
+        new("InPerson", AppResources.T("Common_InPerson")),
+        new("Telemedicine", AppResources.T("Common_Telemedicine"))
+    ];
+
     private IReadOnlyList<SelectOption<string>> HistoryStatusOptions =>
     [
         new(string.Empty, AppResources.T("Common_All")),
@@ -827,11 +877,22 @@
         }
 
         if (_isAdministrator)
+        {
             await SearchPatientsAsync();
+            await LoadProvidersAsync();
+        }
 
         await LoadBoardAsync();
         await LoadHistoryAsync();
         ApplyInitialTab();
+    }
+
+    private async Task LoadProvidersAsync()
+    {
+        var response = await AdminClinicService.GetProvidersAsync(ClinicId);
+        _providers = response.IsSuccess && response.Data is not null
+            ? response.Data.Where(p => p.IsActive).ToList()
+            : Array.Empty<ClinicProviderListItem>();
     }
 
     private bool IsTabAllowed(string tab) =>
@@ -1127,6 +1188,13 @@
         _extraAmount = string.Empty;
         _extraDescription = string.Empty;
         _markPaid = true;
+        _bookReturnVisit = false;
+        _returnProviderId = string.Empty;
+        _returnAppointmentType = "InPerson";
+        _returnReason = AppResources.T("Inpatient_ReturnVisitDefaultReason");
+        var localNow = ClinicTimeZoneHelper.ToClinicLocal(DateTime.UtcNow, _clinicTimeZone);
+        _returnStart = localNow.Date.AddDays(7).AddHours(9);
+        _returnEnd = _returnStart.AddMinutes(30);
     }
 
     private void CancelDischarge() => _dischargeAdmissionId = null;
@@ -1135,6 +1203,21 @@
     {
         if (_dischargeAdmissionId is not Guid admissionId)
             return;
+
+        if (_bookReturnVisit)
+        {
+            if (!Guid.TryParse(_returnProviderId, out _))
+            {
+                _error = AppResources.T("Common_SelectProvider");
+                return;
+            }
+
+            if (_returnEnd <= _returnStart)
+            {
+                _error = AppResources.T("Common_EndTimeAfterStart");
+                return;
+            }
+        }
 
         _dischargingId = admissionId;
         ClearMessages();
@@ -1146,7 +1229,21 @@
             ExtraAmount = ParseDecimal(_extraAmount),
             ExtraDescription = string.IsNullOrWhiteSpace(_extraDescription) ? null : _extraDescription.Trim(),
             MarkPaid = _markPaid,
-            Currency = string.IsNullOrWhiteSpace(_invoiceCurrency) ? null : _invoiceCurrency.Trim()
+            Currency = string.IsNullOrWhiteSpace(_invoiceCurrency) ? null : _invoiceCurrency.Trim(),
+            BookReturnVisit = _bookReturnVisit,
+            ReturnProviderId = _bookReturnVisit && Guid.TryParse(_returnProviderId, out var providerId)
+                ? providerId
+                : null,
+            ReturnScheduledStart = _bookReturnVisit
+                ? ClinicTimeZoneHelper.ToUtcFromClinicLocal(_returnStart, _clinicTimeZone)
+                : null,
+            ReturnScheduledEnd = _bookReturnVisit
+                ? ClinicTimeZoneHelper.ToUtcFromClinicLocal(_returnEnd, _clinicTimeZone)
+                : null,
+            ReturnAppointmentType = _bookReturnVisit ? _returnAppointmentType : null,
+            ReturnReason = _bookReturnVisit && !string.IsNullOrWhiteSpace(_returnReason)
+                ? _returnReason.Trim()
+                : null
         };
         var response = await AdminClinicService.DischargeAdmissionAsync(ClinicId, admissionId, request);
         _dischargingId = null;
@@ -1158,12 +1255,25 @@
             return;
         }
 
-        _success = response.Data?.InvoiceAmount is decimal amount and > 0
-            ? AppResources.Format(
-                "Inpatient_PatientDischargedWithInvoice",
-                amount,
-                response.Data.InvoiceCurrency ?? _invoiceCurrency)
-            : AppResources.T("Inpatient_PatientDischarged");
+        if (response.Data?.ReturnAppointmentId is not null)
+        {
+            _success = response.Data.InvoiceAmount is decimal amount and > 0
+                ? AppResources.Format(
+                    "Inpatient_PatientDischargedWithInvoiceAndReturn",
+                    amount,
+                    response.Data.InvoiceCurrency ?? _invoiceCurrency)
+                : AppResources.T("Inpatient_PatientDischargedWithReturn");
+        }
+        else
+        {
+            _success = response.Data?.InvoiceAmount is decimal amount and > 0
+                ? AppResources.Format(
+                    "Inpatient_PatientDischargedWithInvoice",
+                    amount,
+                    response.Data.InvoiceCurrency ?? _invoiceCurrency)
+                : AppResources.T("Inpatient_PatientDischarged");
+        }
+
         await LoadBoardAsync();
         await LoadHistoryAsync();
     }

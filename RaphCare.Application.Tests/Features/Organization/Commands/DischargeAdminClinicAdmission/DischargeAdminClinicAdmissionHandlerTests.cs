@@ -43,6 +43,7 @@ public sealed class DischargeAdminClinicAdmissionHandlerTests
             new FakeCurrentUser(userId),
             new FakeMembership(true),
             new FakeRoles([RaphCareRoles.Administrator]),
+            new FakePatientAccess(true),
             admissions,
             beds,
             new FakeRepository<Room>(),
@@ -51,6 +52,10 @@ public sealed class DischargeAdminClinicAdmissionHandlerTests
             new FakeRepository<Patient>([patient]),
             invoices,
             lines,
+            new FakeRepository<Appointment>(),
+            new FakeRepository<Provider>(),
+            new FakeRepository<ProviderSchedule>(),
+            new FakeRepository<Clinic>(),
             new FakeClock(now),
             new FakeUnitOfWork());
 
@@ -84,6 +89,7 @@ public sealed class DischargeAdminClinicAdmissionHandlerTests
         Assert.Equal(250, result!.InvoiceAmount);
         Assert.Equal("Paid", result.InvoiceStatus);
         Assert.Equal(2, result.BedNights);
+        Assert.Null(result.ReturnAppointmentId);
     }
 
     [Fact]
@@ -107,6 +113,7 @@ public sealed class DischargeAdminClinicAdmissionHandlerTests
             new FakeCurrentUser(Guid.NewGuid()),
             new FakeMembership(true),
             new FakeRoles([RaphCareRoles.Administrator]),
+            new FakePatientAccess(true),
             new FakeRepository<InpatientAdmission>([admission]),
             new FakeRepository<Bed>([bed]),
             new FakeRepository<Room>(),
@@ -115,6 +122,10 @@ public sealed class DischargeAdminClinicAdmissionHandlerTests
             new FakeRepository<Patient>(),
             invoices,
             new FakeRepository<InvoiceLineItem>(),
+            new FakeRepository<Appointment>(),
+            new FakeRepository<Provider>(),
+            new FakeRepository<ProviderSchedule>(),
+            new FakeRepository<Clinic>(),
             new FakeClock(now),
             new FakeUnitOfWork());
 
@@ -125,6 +136,163 @@ public sealed class DischargeAdminClinicAdmissionHandlerTests
         Assert.NotNull(result);
         Assert.Null(admission.InvoiceId);
         Assert.Empty(invoices.Items);
+    }
+
+    [Fact]
+    public async Task HandleBooksReturnVisitWhenRequestedAtDischarge()
+    {
+        var clinicId = Guid.Parse("11111111-1111-1111-1111-111111111101");
+        var now = new DateTime(2026, 9, 2, 12, 0, 0, DateTimeKind.Utc);
+        var patientId = Guid.Parse("33333333-3333-3333-3333-333333333301");
+        var providerId = Guid.Parse("66666666-6666-6666-6666-666666666601");
+        var admission = new InpatientAdmission
+        {
+            ClinicId = clinicId,
+            PatientId = patientId,
+            BedId = Guid.Parse("44444444-4444-4444-4444-444444444401"),
+            AdmittedAt = now.AddDays(-2),
+            Status = "Admitted"
+        };
+        var bed = new Bed { Status = "Occupied" };
+        EntityId.SetId(bed, admission.BedId);
+        var patient = new Patient { FirstName = "Amina", LastName = "K." };
+        EntityId.SetId(patient, patientId);
+        var provider = new Provider
+        {
+            ClinicId = clinicId,
+            ApplicationUserId = Guid.NewGuid(),
+            IsActive = true,
+            LicenseNumber = "MD-1"
+        };
+        EntityId.SetId(provider, providerId);
+
+        var appointments = new FakeRepository<Appointment>();
+        var start = now.AddDays(7);
+        var end = start.AddMinutes(30);
+
+        var handler = new DischargeAdminClinicAdmissionHandler(
+            new FakeCurrentUser(Guid.NewGuid()),
+            new FakeMembership(true),
+            new FakeRoles([RaphCareRoles.Administrator]),
+            new FakePatientAccess(true),
+            new FakeRepository<InpatientAdmission>([admission]),
+            new FakeRepository<Bed>([bed]),
+            new FakeRepository<Room>(),
+            new FakeRepository<Ward>(),
+            new FakeRepository<Facility>(),
+            new FakeRepository<Patient>([patient]),
+            new FakeRepository<Invoice>(),
+            new FakeRepository<InvoiceLineItem>(),
+            appointments,
+            new FakeRepository<Provider>([provider]),
+            new FakeRepository<ProviderSchedule>(),
+            new FakeRepository<Clinic>(),
+            new FakeClock(now),
+            new FakeUnitOfWork());
+
+        var result = await handler.Handle(
+            new DischargeAdminClinicAdmissionCommand
+            {
+                ClinicId = clinicId,
+                AdmissionId = admission.Id,
+                BookReturnVisit = true,
+                ReturnProviderId = providerId,
+                ReturnScheduledStart = start,
+                ReturnScheduledEnd = end,
+                ReturnAppointmentType = "InPerson",
+                ReturnReason = "Wound check"
+            },
+            CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.Equal("Discharged", admission.Status);
+        Assert.Equal("Available", bed.Status);
+        var booked = Assert.Single(appointments.Items);
+        Assert.Equal(patientId, booked.PatientId);
+        Assert.Equal(providerId, booked.ProviderId);
+        Assert.Equal("Scheduled", booked.Status);
+        Assert.Equal("Wound check", booked.Reason);
+        Assert.Equal(booked.Id, result!.ReturnAppointmentId);
+        Assert.Equal(start, result.ReturnAppointmentStart);
+        Assert.Equal(end, result.ReturnAppointmentEnd);
+    }
+
+    [Fact]
+    public async Task HandleRejectsReturnVisitWhenProviderConflicts()
+    {
+        var clinicId = Guid.Parse("11111111-1111-1111-1111-111111111101");
+        var now = new DateTime(2026, 9, 2, 12, 0, 0, DateTimeKind.Utc);
+        var patientId = Guid.Parse("33333333-3333-3333-3333-333333333302");
+        var providerId = Guid.Parse("66666666-6666-6666-6666-666666666602");
+        var admission = new InpatientAdmission
+        {
+            ClinicId = clinicId,
+            PatientId = patientId,
+            BedId = Guid.Parse("44444444-4444-4444-4444-444444444402"),
+            AdmittedAt = now.AddDays(-1),
+            Status = "Admitted"
+        };
+        var bed = new Bed { Status = "Occupied" };
+        EntityId.SetId(bed, admission.BedId);
+        var patient = new Patient { FirstName = "Jean", LastName = "M." };
+        EntityId.SetId(patient, patientId);
+        var provider = new Provider
+        {
+            ClinicId = clinicId,
+            ApplicationUserId = Guid.NewGuid(),
+            IsActive = true,
+            LicenseNumber = "MD-2"
+        };
+        EntityId.SetId(provider, providerId);
+
+        var start = now.AddDays(3);
+        var end = start.AddMinutes(30);
+        var existing = new Appointment
+        {
+            ClinicId = clinicId,
+            PatientId = Guid.NewGuid(),
+            ProviderId = providerId,
+            ScheduledStart = start.AddMinutes(-10),
+            ScheduledEnd = end.AddMinutes(10),
+            Type = "InPerson",
+            Status = "Scheduled"
+        };
+
+        var handler = new DischargeAdminClinicAdmissionHandler(
+            new FakeCurrentUser(Guid.NewGuid()),
+            new FakeMembership(true),
+            new FakeRoles([RaphCareRoles.Administrator]),
+            new FakePatientAccess(true),
+            new FakeRepository<InpatientAdmission>([admission]),
+            new FakeRepository<Bed>([bed]),
+            new FakeRepository<Room>(),
+            new FakeRepository<Ward>(),
+            new FakeRepository<Facility>(),
+            new FakeRepository<Patient>([patient]),
+            new FakeRepository<Invoice>(),
+            new FakeRepository<InvoiceLineItem>(),
+            new FakeRepository<Appointment>([existing]),
+            new FakeRepository<Provider>([provider]),
+            new FakeRepository<ProviderSchedule>(),
+            new FakeRepository<Clinic>(),
+            new FakeClock(now),
+            new FakeUnitOfWork());
+
+        await Assert.ThrowsAsync<BusinessRuleException>(() =>
+            handler.Handle(
+                new DischargeAdminClinicAdmissionCommand
+                {
+                    ClinicId = clinicId,
+                    AdmissionId = admission.Id,
+                    BookReturnVisit = true,
+                    ReturnProviderId = providerId,
+                    ReturnScheduledStart = start,
+                    ReturnScheduledEnd = end
+                },
+                CancellationToken.None));
+
+        Assert.Equal("Admitted", admission.Status);
+        Assert.Equal("Occupied", bed.Status);
     }
 }
 
@@ -298,6 +466,27 @@ file sealed class FakeRoles(IReadOnlyList<string> roles) : IUserRoleAssignmentSe
         Task.CompletedTask;
 
     public Task SetStaffJobRoleAsync(Guid userId, string jobRole, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
+}
+
+file sealed class FakePatientAccess(bool hasAccess) : IPatientClinicAccessService
+{
+    public Task<bool> HasClinicAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct) =>
+        Task.FromResult(hasAccess);
+
+    public Task EnsureClinicAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct) =>
+        hasAccess ? Task.CompletedTask : throw new ForbiddenAccessException("No access.");
+
+    public Task GrantEncounterAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct) =>
+        Task.CompletedTask;
+
+    public Task<Guid[]> GetAccessibleClinicIdsAsync(Guid patientId, CancellationToken ct) =>
+        Task.FromResult(Array.Empty<Guid>());
+
+    public Task GrantManualAccessAsync(Guid patientId, Guid clinicId, string? notes, CancellationToken ct) =>
+        Task.CompletedTask;
+
+    public Task RevokeClinicAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct) =>
         Task.CompletedTask;
 }
 

@@ -71,6 +71,9 @@ public sealed class AdminClinicAdmissionDto
     public string? InvoiceStatus { get; set; }
     public DateTime? InvoicePaidAt { get; set; }
     public int? BedNights { get; set; }
+    public Guid? ReturnAppointmentId { get; set; }
+    public DateTime? ReturnAppointmentStart { get; set; }
+    public DateTime? ReturnAppointmentEnd { get; set; }
 }
 
 public sealed class AdminClinicAdmissionObservationDto

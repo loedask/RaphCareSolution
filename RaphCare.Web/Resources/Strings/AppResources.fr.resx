@@ -2843,7 +2843,22 @@
     <value>Objet des autres frais</value>
   </data>
   <data name="Inpatient_MarkPaidCash" xml:space="preserve">
-    <value>Marquer payÃ© en espÃ¨ces</value>
+    <value>Marquer payé en espèces</value>
+  </data>
+  <data name="Inpatient_BookReturnVisit" xml:space="preserve">
+    <value>Réserver une visite de retour</value>
+  </data>
+  <data name="Inpatient_ReturnVisitDefaultReason" xml:space="preserve">
+    <value>Visite de retour après sortie</value>
+  </data>
+  <data name="Inpatient_ReturnVisitReasonPlaceholder" xml:space="preserve">
+    <value>Pourquoi doit-il revenir ?</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithReturn" xml:space="preserve">
+    <value>Patient sorti. Visite de retour réservée.</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithInvoiceAndReturn" xml:space="preserve">
+    <value>Patient sorti. Facture {0} {1}. Visite de retour réservée.</value>
   </data>
   <data name="Inpatient_CurrencyLabel" xml:space="preserve">
     <value>Devise</value>

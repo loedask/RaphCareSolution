@@ -62,6 +62,12 @@ public sealed class DischargeAdminClinicAdmissionRequest
     public string? ExtraDescription { get; set; }
     public bool MarkPaid { get; set; }
     public string? Currency { get; set; }
+    public bool BookReturnVisit { get; set; }
+    public Guid? ReturnProviderId { get; set; }
+    public DateTime? ReturnScheduledStart { get; set; }
+    public DateTime? ReturnScheduledEnd { get; set; }
+    public string? ReturnAppointmentType { get; set; }
+    public string? ReturnReason { get; set; }
 }
 
 public sealed class CreateAdminClinicAdmissionObservationRequest

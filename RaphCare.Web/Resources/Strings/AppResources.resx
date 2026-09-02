@@ -2808,6 +2808,21 @@
   <data name="Inpatient_MarkPaidCash" xml:space="preserve">
     <value>Mark as paid in cash</value>
   </data>
+  <data name="Inpatient_BookReturnVisit" xml:space="preserve">
+    <value>Book a return visit</value>
+  </data>
+  <data name="Inpatient_ReturnVisitDefaultReason" xml:space="preserve">
+    <value>Return visit after discharge</value>
+  </data>
+  <data name="Inpatient_ReturnVisitReasonPlaceholder" xml:space="preserve">
+    <value>Why should they come back?</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithReturn" xml:space="preserve">
+    <value>Patient discharged. Return visit booked.</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithInvoiceAndReturn" xml:space="preserve">
+    <value>Patient discharged. Invoice {0} {1}. Return visit booked.</value>
+  </data>
   <data name="Inpatient_CurrencyLabel" xml:space="preserve">
     <value>Currency</value>
   </data>

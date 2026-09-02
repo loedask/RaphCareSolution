@@ -3684,7 +3684,10 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         InvoiceCurrency = dto.InvoiceCurrency,
         InvoiceStatus = dto.InvoiceStatus,
         InvoicePaidAt = dto.InvoicePaidAt,
-        BedNights = dto.BedNights
+        BedNights = dto.BedNights,
+        ReturnAppointmentId = dto.ReturnAppointmentId,
+        ReturnAppointmentStart = dto.ReturnAppointmentStart,
+        ReturnAppointmentEnd = dto.ReturnAppointmentEnd
     };
 
     private static ClinicAdmissionObservation MapObservation(AdmissionObservationDto dto) => new()
@@ -3779,6 +3782,9 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string? InvoiceStatus { get; set; }
         public DateTime? InvoicePaidAt { get; set; }
         public int? BedNights { get; set; }
+        public Guid? ReturnAppointmentId { get; set; }
+        public DateTime? ReturnAppointmentStart { get; set; }
+        public DateTime? ReturnAppointmentEnd { get; set; }
     }
 
     private sealed class AdmissionObservationDto

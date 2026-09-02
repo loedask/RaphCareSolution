@@ -2845,6 +2845,21 @@
   <data name="Inpatient_MarkPaidCash" xml:space="preserve">
     <value>Futa na mbongo ya maboko</value>
   </data>
+  <data name="Inpatient_BookReturnVisit" xml:space="preserve">
+    <value>Bokisa visit ya kozonga</value>
+  </data>
+  <data name="Inpatient_ReturnVisitDefaultReason" xml:space="preserve">
+    <value>Visit ya kozonga nsima ya kobima</value>
+  </data>
+  <data name="Inpatient_ReturnVisitReasonPlaceholder" xml:space="preserve">
+    <value>Mpo na nini asengeli kozonga?</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithReturn" xml:space="preserve">
+    <value>Mokili abimi. Visit ya kozonga eza bokisi.</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithInvoiceAndReturn" xml:space="preserve">
+    <value>Mokili abimi. Facture {0} {1}. Visit ya kozonga eza bokisi.</value>
+  </data>
   <data name="Inpatient_CurrencyLabel" xml:space="preserve">
     <value>Mbongo</value>
   </data>

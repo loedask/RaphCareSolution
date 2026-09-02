@@ -6,8 +6,8 @@ Plain-language twin for non-technical partners: [`raphcare-feature-checklist-par
 
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
-**Overall completion (this checklist):** **75%**  
-**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **79%**
+**Overall completion (this checklist):** **76%**  
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **80%**
 
 **How to mark items and score %**
 
@@ -264,7 +264,7 @@ Broader API surface used by staff tools or integrations (not the patient app pri
 
 ---
 
-## Step 5: Hospital plan value (stay, counter, money) - 75%
+## Step 5: Hospital plan value (stay, counter, money) - 82%
 
 Work that makes the Hospital plan more than beds plus a waiting screen. Clinic stays outpatient. Network keeps multi-site index and group reporting. YC healthcare companies we adapted from: [Kaigo Health](https://www.ycombinator.com/companies/kaigo-health) (post-discharge follow-up), [Locata](https://www.ycombinator.com/companies/locata) (referral completion), [Adentris](https://www.ycombinator.com/companies/adentris) (discharge summaries), [YouShift](https://www.ycombinator.com/companies/youshift) (who is on today). We do not copy US denial-appeals products.
 
@@ -281,15 +281,15 @@ Work that makes the Hospital plan more than beds plus a waiting screen. Clinic s
 - [x] Theatre list (today's cases): schedule, start, complete, cancel on staff board
 - [x] Emergency events on the hospital dashboard home (not only Devices): overview + `/admin` when a hospital is selected (SOS / fall, last 72h)
 - [x] Outbound referral tracking so a sent referral is followed to completion
-- [ ] Book a return visit at discharge
+- [x] Book a return visit at discharge (optional clinician, time, and reason on the discharge form)
 - [ ] Who is on today (simple roster)
 - [ ] AI draft of the discharge summary (Hospital include; Clinic keeps the paid add-on)
 
-Shipped on API, Client, and Web admin. Discharged stays also show in the patient Health records list. Casualty, theatre, and referral boards are on the hospital rail. SafeCare SOS and fall alerts also sit on the hospital overview and admin home.
+Shipped on API, Client, and Web admin. Discharged stays also show in the patient Health records list. Casualty, theatre, and referral boards are on the hospital rail. SafeCare SOS and fall alerts also sit on the hospital overview and admin home. Discharge can also book the next outpatient visit.
 
 ### Step 5 status
 
-**75%.** Ward notes, discharge invoice, occupancy, nurse role, discharge summaries, casualty queue, theatre list, emergency alerts on the hospital home, and outbound referral tracking are in. Return booking, roster, and AI draft are not started.
+**82%.** Ward notes, discharge invoice, occupancy, nurse role, discharge summaries, casualty queue, theatre list, emergency alerts on the hospital home, outbound referral tracking, and return-visit booking at discharge are in. Roster and AI draft are not started.
 
 ---
 
@@ -318,10 +318,10 @@ Shipped on API, Client, and Web admin. Discharged stays also show in the patient
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 62% | iOS video, push, wearables depth |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
-| Step 5 Hospital plan value | 75% | Referral board in; return booking and roster open |
+| Step 5 Hospital plan value | 82% | Return visit at discharge in; roster and AI draft open |
 | Cross-cutting | 88% | Demo pack on Staging; E2E smoke plan in, script open |
-| **Overall (scored items)** | **75%** | Out of scope / open optional excluded |
-| **Without wearable Phase 2+ metrics** | **79%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+| **Overall (scored items)** | **76%** | Out of scope / open optional excluded |
+| **Without wearable Phase 2+ metrics** | **80%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
 **Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, then Phase A API smoke from [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md).
 

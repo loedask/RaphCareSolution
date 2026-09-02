@@ -1360,7 +1360,15 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
                 ExtraAmount = body?.ExtraAmount,
                 ExtraDescription = body?.ExtraDescription,
                 MarkPaid = body?.MarkPaid ?? false,
-                Currency = body?.Currency
+                Currency = body?.Currency,
+                BookReturnVisit = body?.BookReturnVisit ?? false,
+                ReturnProviderId = body?.ReturnProviderId,
+                ReturnScheduledStart = body?.ReturnScheduledStart,
+                ReturnScheduledEnd = body?.ReturnScheduledEnd,
+                ReturnAppointmentType = string.IsNullOrWhiteSpace(body?.ReturnAppointmentType)
+                    ? "InPerson"
+                    : body.ReturnAppointmentType,
+                ReturnReason = body?.ReturnReason
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);

@@ -2845,6 +2845,21 @@
   <data name="Inpatient_MarkPaidCash" xml:space="preserve">
     <value>Weka kama amelipa taslimu</value>
   </data>
+  <data name="Inpatient_BookReturnVisit" xml:space="preserve">
+    <value>Panga ziara ya kurudi</value>
+  </data>
+  <data name="Inpatient_ReturnVisitDefaultReason" xml:space="preserve">
+    <value>Ziara ya kurudi baada ya kutoka</value>
+  </data>
+  <data name="Inpatient_ReturnVisitReasonPlaceholder" xml:space="preserve">
+    <value>Kwa nini arudi?</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithReturn" xml:space="preserve">
+    <value>Mgonjwa ametoka. Ziara ya kurudi imepangwa.</value>
+  </data>
+  <data name="Inpatient_PatientDischargedWithInvoiceAndReturn" xml:space="preserve">
+    <value>Mgonjwa ametoka. Ankara {0} {1}. Ziara ya kurudi imepangwa.</value>
+  </data>
   <data name="Inpatient_CurrencyLabel" xml:space="preserve">
     <value>Sarafu</value>
   </data>
