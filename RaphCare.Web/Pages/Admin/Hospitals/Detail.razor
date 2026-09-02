@@ -3,6 +3,7 @@
 @using RaphCare.Client.Models.Clinical
 @using RaphCare.Client.Services.Base
 @using RaphCare.Domain.Common
+@using RaphCare.Web.Helpers
 @inject IUiCultureService CultureService
 @implements IDisposable
 
@@ -91,6 +92,16 @@
                                           IsAdministrator="_isAdministrator"
                                           Saving="_savingClinic"
                                           OnSave="SaveClinicAsync" />
+
+                <ClinicEmergencyHomeCard ClinicId="ClinicId"
+                                         Events="_homeEmergencyEvents"
+                                         TotalCount="_homeEmergencyEvents.Count"
+                                         Loading="_loadingHomeEmergencies"
+                                         Error="_homeEmergencyError"
+                                         ClinicContextMissing="_homeEmergencyClinicContextMissing"
+                                         TimeZone="@(_detail.TimeZone)"
+                                         ViewAllHref="@($"/admin/hospitals/{ClinicId}?tab=devices")"
+                                         OnRetry="LoadHomeEmergenciesAsync" />
             </div>
         }
         else if (_tab == "facilities")
@@ -693,6 +704,11 @@
     private string? _actionError;
     private string? _emergencyError;
     private bool _emergencyClinicContextMissing;
+    private string? _homeEmergencyError;
+    private bool _homeEmergencyClinicContextMissing;
+    private bool _loadingHomeEmergencies;
+    private IReadOnlyList<ClinicDeviceEmergencyEventViewModel> _homeEmergencyEvents =
+        Array.Empty<ClinicDeviceEmergencyEventViewModel>();
     private string _tab = "overview";
     private string _inviteEmail = string.Empty;
     private string _inviteJobRole = RaphCareRoles.Clinician;
@@ -770,6 +786,7 @@
     {
         await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
         await LoadDetailAsync();
+        await LoadHomeEmergenciesAsync();
 
         if (!string.IsNullOrWhiteSpace(TabQuery) && TabQuery is "overview" or "facilities" or "patients" or "providers" or "appointments" or "devices" or "staff")
         {
@@ -1029,6 +1046,29 @@
     {
         _emergencyPage++;
         await LoadClinicEmergenciesAsync(reset: false);
+    }
+
+    private async Task LoadHomeEmergenciesAsync()
+    {
+        _loadingHomeEmergencies = true;
+        _homeEmergencyError = null;
+        _homeEmergencyClinicContextMissing = false;
+        var fromUtc = DateTime.UtcNow.Subtract(ClinicEmergencyHomeFilter.RecentWindow);
+        var response = await DeviceReadingsService.GetClinicEmergencyEventsAsync(
+            1,
+            40,
+            occurredFromUtc: fromUtc);
+        _loadingHomeEmergencies = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _homeEmergencyEvents = Array.Empty<ClinicDeviceEmergencyEventViewModel>();
+            _homeEmergencyError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadEmergencyEvents");
+            _homeEmergencyClinicContextMissing = ApiErrorMessages.IsClinicSelectionRequired(_homeEmergencyError);
+            return;
+        }
+
+        _homeEmergencyEvents = ClinicEmergencyHomeFilter.TakeHomePriority(response.Data.Items);
     }
 
     private string FormatEmergencyLocal(DateTime utc) =>

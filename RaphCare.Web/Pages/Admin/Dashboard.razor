@@ -1,6 +1,9 @@
 @page "/admin"
 @layout AdminLayout
+@using RaphCare.Client.Models.Clinical
+@using RaphCare.Client.Services.Base
 @using RaphCare.Domain.Common
+@using RaphCare.Web.Helpers
 @inject IUiCultureService CultureService
 @implements IDisposable
 
@@ -99,6 +102,16 @@
                 </div>
             }
         </AdminPageCard>
+
+        <ClinicEmergencyHomeCard ClinicId="_dashboard.ClinicId"
+                                 Events="_homeEmergencyEvents"
+                                 TotalCount="_homeEmergencyEvents.Count"
+                                 Loading="_loadingHomeEmergencies"
+                                 Error="_homeEmergencyError"
+                                 ClinicContextMissing="_homeEmergencyClinicContextMissing"
+                                 TimeZone="@_clinicTimeZone"
+                                 ViewAllHref="@($"/admin/hospitals/{_dashboard.ClinicId}?tab=devices")"
+                                 OnRetry="LoadHomeEmergenciesAsync" />
     }
     else
     {
@@ -160,6 +173,7 @@
     private const string AdminPath = "/admin";
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicalPatientDeviceReadingsService DeviceReadingsService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private bool _loading = true;
@@ -168,6 +182,11 @@
     private ClinicDashboard? _dashboard;
     private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
     private string _clinicTimeZone = "UTC";
+    private bool _loadingHomeEmergencies;
+    private string? _homeEmergencyError;
+    private bool _homeEmergencyClinicContextMissing;
+    private IReadOnlyList<ClinicDeviceEmergencyEventViewModel> _homeEmergencyEvents =
+        Array.Empty<ClinicDeviceEmergencyEventViewModel>();
 
     private string _signInReturnUrl =>
         $"/professional/signin?returnUrl={Uri.EscapeDataString(AdminPath)}";
@@ -201,6 +220,9 @@
         _loading = true;
         _error = null;
         _dashboard = null;
+        _homeEmergencyEvents = Array.Empty<ClinicDeviceEmergencyEventViewModel>();
+        _homeEmergencyError = null;
+        _homeEmergencyClinicContextMissing = false;
 
         var clinicsResponse = await AdminClinicService.GetClinicsAsync();
         if (!clinicsResponse.IsSuccess || clinicsResponse.Data is null)
@@ -217,7 +239,8 @@
         {
             var clinicTask = AdminClinicService.GetClinicAsync(clinicId);
             var dashboardTask = AdminClinicService.GetDashboardAsync(clinicId);
-            await Task.WhenAll(clinicTask, dashboardTask).ConfigureAwait(false);
+            var emergenciesTask = LoadHomeEmergenciesCoreAsync();
+            await Task.WhenAll(clinicTask, dashboardTask, emergenciesTask).ConfigureAwait(false);
 
             if (clinicTask.Result.IsSuccess && clinicTask.Result.Data is not null)
                 _clinicTimeZone = clinicTask.Result.Data.TimeZone;
@@ -234,6 +257,35 @@
         }
 
         _loading = false;
+    }
+
+    private async Task LoadHomeEmergenciesAsync()
+    {
+        await LoadHomeEmergenciesCoreAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadHomeEmergenciesCoreAsync()
+    {
+        _loadingHomeEmergencies = true;
+        _homeEmergencyError = null;
+        _homeEmergencyClinicContextMissing = false;
+        var fromUtc = DateTime.UtcNow.Subtract(ClinicEmergencyHomeFilter.RecentWindow);
+        var response = await DeviceReadingsService.GetClinicEmergencyEventsAsync(
+            1,
+            40,
+            occurredFromUtc: fromUtc);
+        _loadingHomeEmergencies = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _homeEmergencyEvents = Array.Empty<ClinicDeviceEmergencyEventViewModel>();
+            _homeEmergencyError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadEmergencyEvents");
+            _homeEmergencyClinicContextMissing = ApiErrorMessages.IsClinicSelectionRequired(_homeEmergencyError);
+            return;
+        }
+
+        _homeEmergencyEvents = ClinicEmergencyHomeFilter.TakeHomePriority(response.Data.Items);
     }
 
     public void Dispose()

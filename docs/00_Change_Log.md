@@ -6,6 +6,21 @@
 
 ## High-level summary of changes
 
+SafeCare SOS and fall alerts now appear on the hospital overview and the admin home when a hospital is selected, not only on Devices.
+
+## Modules modified
+
+- **RaphCare.Web:** `ClinicEmergencyHomeCard`, hospital Detail overview, admin Dashboard; filter helper and tests.
+- **docs:** hospital plan checklist (engineering + partner).
+
+---
+
+## Date
+
+2026-09-02
+
+## High-level summary of changes
+
 Casualty triage queue with a codes-only waiting screen, and a theatre list for today's cases, on the Hospital plan admin boards.
 
 ## Modules modified

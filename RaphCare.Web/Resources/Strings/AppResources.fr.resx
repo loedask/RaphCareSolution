@@ -874,6 +874,15 @@
   <data name="Common_NoEmergencyEventsPatient" xml:space="preserve">
     <value>Aucun Ã©vÃ©nement d&apos;urgence enregistrÃ© pour ce patient dans cet hÃ´pital.</value>
   </data>
+  <data name="Common_EmergencyHomeLead" xml:space="preserve">
+    <value>Alertes SOS et chutes rÃ©centes pour cet hÃ´pital. L&apos;historique complet est dans Appareils.</value>
+  </data>
+  <data name="Common_NoRecentEmergencyEvents" xml:space="preserve">
+    <value>Aucune alerte SOS ou chute rÃ©cente.</value>
+  </data>
+  <data name="Common_Device" xml:space="preserve">
+    <value>Appareil</value>
+  </data>
   <data name="Common_TeamEyebrow" xml:space="preserve">
     <value>Ã‰quipe</value>
   </data>

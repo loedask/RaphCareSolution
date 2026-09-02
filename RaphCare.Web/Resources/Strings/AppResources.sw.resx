@@ -874,6 +874,15 @@
   <data name="Common_NoEmergencyEventsPatient" xml:space="preserve">
     <value>Hakuna matukio ya dharura yaliyorekodiwa kwa mgonjwa huyu katika hospitali hii.</value>
   </data>
+  <data name="Common_EmergencyHomeLead" xml:space="preserve">
+    <value>Arifa za SOS na kuanguka za hivi karibuni kwa hospitali hii. Historia kamili iko kwenye Vifaa.</value>
+  </data>
+  <data name="Common_NoRecentEmergencyEvents" xml:space="preserve">
+    <value>Hakuna arifa za SOS au kuanguka za hivi karibuni.</value>
+  </data>
+  <data name="Common_Device" xml:space="preserve">
+    <value>Kifaa</value>
+  </data>
   <data name="Common_TeamEyebrow" xml:space="preserve">
     <value>Timu</value>
   </data>

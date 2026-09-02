@@ -874,6 +874,15 @@
   <data name="Common_NoEmergencyEventsPatient" xml:space="preserve">
     <value>Makambo ya mbalakaka moko te ekomamaki mpo na mobÉ›li oyo na lopitalo oyo.</value>
   </data>
+  <data name="Common_EmergencyHomeLead" xml:space="preserve">
+    <value>Ba alerte SOS mpe ba chute ya sika mpo na lopitalo oyo. Lisolo mobimba ezali na Ba appareils.</value>
+  </data>
+  <data name="Common_NoRecentEmergencyEvents" xml:space="preserve">
+    <value>Alerte SOS to chute ya sika ezali te.</value>
+  </data>
+  <data name="Common_Device" xml:space="preserve">
+    <value>Appareil</value>
+  </data>
   <data name="Common_TeamEyebrow" xml:space="preserve">
     <value>Ekipe</value>
   </data>
