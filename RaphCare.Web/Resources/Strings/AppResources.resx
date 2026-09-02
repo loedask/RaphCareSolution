@@ -2799,6 +2799,15 @@
   <data name="Inpatient_DischargeSummaryPlaceholder" xml:space="preserve">
     <value>Why they came, what was done, medicines, and when to come back</value>
   </data>
+  <data name="Inpatient_DraftWithAi" xml:space="preserve">
+    <value>Draft with AI</value>
+  </data>
+  <data name="Inpatient_DraftSummaryReady" xml:space="preserve">
+    <value>Draft ready. Edit it before you discharge.</value>
+  </data>
+  <data name="Inpatient_CouldNotDraftSummary" xml:space="preserve">
+    <value>Could not draft the discharge summary.</value>
+  </data>
   <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
     <value>Nightly bed rate</value>
   </data>

@@ -2836,6 +2836,15 @@
   <data name="Inpatient_DischargeSummaryPlaceholder" xml:space="preserve">
     <value>Motif, soins, mÃ©dicaments, et date de retour</value>
   </data>
+  <data name="Inpatient_DraftWithAi" xml:space="preserve">
+    <value>Brouillon IA</value>
+  </data>
+  <data name="Inpatient_DraftSummaryReady" xml:space="preserve">
+    <value>Brouillon pret. Modifiez-le avant la sortie.</value>
+  </data>
+  <data name="Inpatient_CouldNotDraftSummary" xml:space="preserve">
+    <value>Impossible de rediger le resume de sortie.</value>
+  </data>
   <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
     <value>Tarif de la nuit</value>
   </data>

@@ -76,6 +76,11 @@ public sealed class AdminClinicAdmissionDto
     public DateTime? ReturnAppointmentEnd { get; set; }
 }
 
+public sealed class AdminClinicDischargeSummaryDraftDto
+{
+    public string DraftText { get; set; } = string.Empty;
+}
+
 public sealed class AdminClinicAdmissionObservationDto
 {
     public Guid Id { get; set; }

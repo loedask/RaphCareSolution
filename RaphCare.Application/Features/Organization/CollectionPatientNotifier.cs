@@ -69,4 +69,35 @@ internal static class CollectionPatientNotifier
             // The call is already saved. A failed notice must not fail the write.
         }
     }
+
+    public static async Task NotifyLabResultReadyAsync(
+        IMediator mediator,
+        Guid patientId,
+        string clinicName,
+        string testName,
+        CancellationToken cancellationToken)
+    {
+        var place = string.IsNullOrWhiteSpace(clinicName) ? "the hospital" : clinicName.Trim();
+        var test = string.IsNullOrWhiteSpace(testName) ? "Your lab test" : testName.Trim();
+        var title = "Your lab result is ready";
+        var body = $"{test} is ready to view in Health records at {place}.";
+        try
+        {
+            await mediator.Send(
+                    new CreatePatientInAppNotificationCommand
+                    {
+                        PatientId = patientId,
+                        Title = title,
+                        Body = body,
+                        Type = "lab",
+                        SendPush = true
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            // The result is already saved. A failed notice must not fail the write.
+        }
+    }
 }

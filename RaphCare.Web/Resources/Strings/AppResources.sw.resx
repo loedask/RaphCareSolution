@@ -2836,6 +2836,15 @@
   <data name="Inpatient_DischargeSummaryPlaceholder" xml:space="preserve">
     <value>Sababu, matibabu, dawa, na tarehe ya kurudi</value>
   </data>
+  <data name="Inpatient_DraftWithAi" xml:space="preserve">
+    <value>Andika rasimu kwa AI</value>
+  </data>
+  <data name="Inpatient_DraftSummaryReady" xml:space="preserve">
+    <value>Rasimu iko tayari. Hariri kabla ya kumwachilia.</value>
+  </data>
+  <data name="Inpatient_CouldNotDraftSummary" xml:space="preserve">
+    <value>Haikuweza kuandika muhtasari wa kutoka.</value>
+  </data>
   <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
     <value>Bei ya usiku</value>
   </data>

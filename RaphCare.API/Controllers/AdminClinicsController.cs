@@ -10,6 +10,7 @@ using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicBed;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicRoom;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicWard;
 using RaphCare.Application.Features.Organization.Commands.DischargeAdminClinicAdmission;
+using RaphCare.Application.Features.Organization.Commands.DraftAdminClinicDischargeSummary;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicAdmissionObservation;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicAdmissionObservations;
 using RaphCare.Application.Features.Organization.Commands.SetAdminClinicBedStatus;
@@ -1425,6 +1426,26 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
                     ? "InPerson"
                     : body.ReturnAppointmentType,
                 ReturnReason = body?.ReturnReason
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Draft a discharge summary with AI from ward notes (staff edits before discharge).</summary>
+    [HttpPost("{id:guid}/admissions/{admissionId:guid}/discharge-summary/draft", Name = "DraftAdminClinicDischargeSummary")]
+    [ProducesResponseType(typeof(AdminClinicDischargeSummaryDraftDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DraftDischargeSummary(
+        Guid id,
+        Guid admissionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new DraftAdminClinicDischargeSummaryCommand
+            {
+                ClinicId = id,
+                AdmissionId = admissionId
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);

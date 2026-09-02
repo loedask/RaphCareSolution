@@ -2460,6 +2460,42 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<string>> DraftDischargeSummaryAsync(
+        Guid clinicId,
+        Guid admissionId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync(
+                    $"api/admin/clinics/{clinicId}/admissions/{admissionId}/discharge-summary/draft",
+                    null,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can draft a discharge summary.";
+                return Response<string>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<DischargeSummaryDraftDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null || string.IsNullOrWhiteSpace(dto.DraftText))
+                return Response<string>.Failure("Could not draft the discharge summary.");
+
+            return Response<string>.Success(dto.DraftText.Trim());
+        }
+        catch (HttpRequestException)
+        {
+            return Response<string>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<IReadOnlyList<ClinicAdmissionObservation>>> GetAdmissionObservationsAsync(
         Guid clinicId,
         Guid admissionId,
@@ -3914,6 +3950,11 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public Guid? ReturnAppointmentId { get; set; }
         public DateTime? ReturnAppointmentStart { get; set; }
         public DateTime? ReturnAppointmentEnd { get; set; }
+    }
+
+    private sealed class DischargeSummaryDraftDto
+    {
+        public string? DraftText { get; set; }
     }
 
     private sealed class AdmissionObservationDto

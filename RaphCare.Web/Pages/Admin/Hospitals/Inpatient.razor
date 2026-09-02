@@ -367,6 +367,11 @@
                             @AppResources.T("Inpatient_DischargeSummaryLabel")
                             <textarea class="form-control" rows="3" @bind="_dischargeSummary" placeholder="@AppResources.T("Inpatient_DischargeSummaryPlaceholder")"></textarea>
                         </label>
+                        <div class="admin-page-actions" style="margin-bottom: 0.75rem;">
+                            <button type="button" class="btn btn-secondary" disabled="@_draftingSummary" @onclick="DraftDischargeSummaryAsync">
+                                @(_draftingSummary ? AppResources.T("Common_PleaseWait") : AppResources.T("Inpatient_DraftWithAi"))
+                            </button>
+                        </div>
                         <label>
                             @AppResources.T("Inpatient_DischargeNotesLabel")
                             <textarea class="form-control" rows="2" @bind="_dischargeNotes" placeholder="@AppResources.T("Inpatient_DischargeNotesPlaceholder")"></textarea>
@@ -773,6 +778,7 @@
     private string _invoiceCurrency = "ZAR";
     private bool _markPaid = true;
     private bool _bookReturnVisit;
+    private bool _draftingSummary;
     private string _returnProviderId = string.Empty;
     private string _returnAppointmentType = "InPerson";
     private string _returnReason = string.Empty;
@@ -1198,6 +1204,26 @@
     }
 
     private void CancelDischarge() => _dischargeAdmissionId = null;
+
+    private async Task DraftDischargeSummaryAsync()
+    {
+        if (_dischargeAdmissionId is not Guid admissionId)
+            return;
+
+        _draftingSummary = true;
+        ClearMessages();
+        var response = await AdminClinicService.DraftDischargeSummaryAsync(ClinicId, admissionId);
+        _draftingSummary = false;
+
+        if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data))
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Inpatient_CouldNotDraftSummary");
+            return;
+        }
+
+        _dischargeSummary = response.Data;
+        _success = AppResources.T("Inpatient_DraftSummaryReady");
+    }
 
     private async Task ConfirmDischargeAsync()
     {

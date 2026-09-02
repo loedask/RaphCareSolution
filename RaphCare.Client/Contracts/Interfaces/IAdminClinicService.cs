@@ -81,6 +81,7 @@ public interface IAdminClinicService
     Task<Response<bool>> DeleteBedAsync(Guid clinicId, Guid bedId, CancellationToken cancellationToken = default);
     Task<Response<ClinicAdmission>> AdmitPatientAsync(Guid clinicId, AdmitPatientRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicAdmission>> DischargeAdmissionAsync(Guid clinicId, Guid admissionId, DischargeAdmissionRequest request, CancellationToken cancellationToken = default);
+    Task<Response<string>> DraftDischargeSummaryAsync(Guid clinicId, Guid admissionId, CancellationToken cancellationToken = default);
     Task<Response<IReadOnlyList<ClinicAdmissionObservation>>> GetAdmissionObservationsAsync(Guid clinicId, Guid admissionId, CancellationToken cancellationToken = default);
     Task<Response<ClinicAdmissionObservation>> AddAdmissionObservationAsync(Guid clinicId, Guid admissionId, AddAdmissionObservationRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicAdmission>> TransferAdmissionAsync(Guid clinicId, Guid admissionId, TransferAdmissionRequest request, CancellationToken cancellationToken = default);
