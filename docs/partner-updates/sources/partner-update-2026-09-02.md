@@ -46,7 +46,7 @@ For these demo accounts there is no Microsoft sign-in step, and no second email 
 
 There is still a chart named **Demo Inpatient** already in a bed, so inpatient and ward notes are easy to try without admitting someone first.
 
-A one-page sheet with the same logins is here: [`raphcare-demo-accounts.pdf`](../raphcare-demo-accounts.pdf). Keep that sheet private. It has the password.
+A one-page sheet with the same logins is here: [`raphcare-demo-accounts-v2.pdf`](../raphcare-demo-accounts-v2.pdf). Keep that sheet private. It has the password.
 
 ## 3. Patient Android APK (staging)
 

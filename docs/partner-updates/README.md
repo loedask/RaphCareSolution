@@ -4,7 +4,7 @@ Partner PDFs for product and web updates (separate from phone APK notes under [`
 
 | Path | What is here |
 |------|----------------|
-| `*.pdf` | Current PDFs to send (dated partner update, price list, demo accounts) |
+| `*.pdf` | Current PDFs to send (dated partner update, price list, demo accounts v2) |
 | [`archives/`](archives/) | Older dated partner-update PDFs (and older demo-accounts versions) |
 | [`sources/`](sources/) | Markdown, PDF config, CSS (edit here) |
 | [`brand/`](brand/) | Logo used in the PDFs |

@@ -4,7 +4,7 @@ Plan for proving RaphCare still works after a deploy or a large change. Covers *
 
 Status today: plan only. No automated E2E suite yet. The engineering feature checklist row **E2E smoke script** stays open until Phase A lands.
 
-**Related:** [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md) (Cross-cutting), [`raphcare-feature-checklist-partner.md`](raphcare-feature-checklist-partner.md) (What to try this week), [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md), [`../../09_Mobile_App_Guide.md`](../../09_Mobile_App_Guide.md), [`../../Mobile_Demo_Launch_Guide.md`](../../Mobile_Demo_Launch_Guide.md), [`../../partner-updates/raphcare-demo-accounts.pdf`](../../partner-updates/raphcare-demo-accounts.pdf) (sources under [`../../partner-updates/sources/`](../../partner-updates/sources/)).
+**Related:** [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md) (Cross-cutting), [`raphcare-feature-checklist-partner.md`](raphcare-feature-checklist-partner.md) (What to try this week), [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md), [`../../09_Mobile_App_Guide.md`](../../09_Mobile_App_Guide.md), [`../../Mobile_Demo_Launch_Guide.md`](../../Mobile_Demo_Launch_Guide.md), [`../../partner-updates/raphcare-demo-accounts-v2.pdf`](../../partner-updates/raphcare-demo-accounts-v2.pdf) (sources under [`../../partner-updates/sources/`](../../partner-updates/sources/)).
 
 Last updated: 2026-09-03
 
