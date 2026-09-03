@@ -3053,6 +3053,52 @@ a.hospital-directory-person:hover strong {
     flex: 1;
 }
 
+.fleet-model-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 12rem;
+}
+
+.fleet-model-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.fleet-model-radios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+}
+
+.fleet-model-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid var(--rc-border);
+    border-radius: 0.55rem;
+    background: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--rc-text);
+    cursor: pointer;
+}
+
+.fleet-model-radio input {
+    margin: 0;
+    accent-color: var(--rc-admin-accent);
+}
+
+.fleet-model-radio.selected {
+    border-color: var(--rc-admin-accent);
+    background: rgba(13, 148, 136, 0.08);
+    color: #0f766e;
+}
+
 .form-grid > label .searchable-select {
     margin-top: 0.35rem;
 }

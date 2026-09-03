@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Ops fleet **Add to stock** uses model radio buttons (E585, E580, Y6 Pro) instead of a dropdown.
+
+## Modules modified
+
+- **Ops / Ui:** Fleet page model radios; admin CSS.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
 Searchable select closes on outside click (not only Escape). Document pointerdown dismiss plus higher backdrop z-index.
 
 ## Modules modified

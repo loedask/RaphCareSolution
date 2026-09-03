@@ -46,14 +46,22 @@
                             @AppResources.T("Fleet_SerialLabel")
                             <input class="form-control" @bind="_newSerial" @bind:event="oninput" placeholder="@AppResources.T("Fleet_SerialPlaceholder")" />
                         </label>
-                        <label>
-                            @AppResources.T("Fleet_ModelLabel")
-                            <select class="form-control" @bind="_newModel">
-                                <option value="E585">E585</option>
-                                <option value="E580">E580</option>
-                                <option value="Y6 Pro">Y6 Pro</option>
-                            </select>
-                        </label>
+                        <div class="fleet-model-field">
+                            <span class="fleet-model-label">@AppResources.T("Fleet_ModelLabel")</span>
+                            <div class="fleet-model-radios" role="radiogroup" aria-label="@AppResources.T("Fleet_ModelLabel")">
+                                @foreach (var model in FleetModels)
+                                {
+                                    <label class="fleet-model-radio @(_newModel == model ? "selected" : null)">
+                                        <input type="radio"
+                                               name="fleet-add-model"
+                                               value="@model"
+                                               checked="@(_newModel == model)"
+                                               @onchange="() => _newModel = model" />
+                                        <span>@model</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
                         <button type="button"
                                 class="btn btn-primary"
                                 disabled="@(_saving || string.IsNullOrWhiteSpace(_newClinicId) || string.IsNullOrWhiteSpace(_newSerial))"
@@ -167,6 +175,8 @@
 
 @code {
     private const string FleetPath = "/fleet";
+
+    private static readonly string[] FleetModels = ["E585", "E580", "Y6 Pro"];
 
     [Inject] private IPlatformFleetDevicesService FleetService { get; set; } = default!;
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
