@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Searchable select closes on outside click (not only Escape). Document pointerdown dismiss plus higher backdrop z-index.
+
+## Modules modified
+
+- **Portal:** `SearchableSelect`, `locale.js`, admin CSS.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
 Azure hosting for **RaphCare.Ops** (`raphcare-ops` App Service, publish and CORS scripts). Staging demo account `demo.ops@raphcare.com`. Partner demo-accounts sheet **v2**. Documented Azure MFA login helper (`Login-RaphCareAzure.ps1`) for AADSTS50076 / Cursor login failures.
 
 ## Modules modified

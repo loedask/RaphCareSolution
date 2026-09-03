@@ -16,5 +16,26 @@ window.raphCareLocale = {
         e.preventDefault();
       }
     });
+  },
+  // Closes searchable selects when the user clicks/taps outside. A fixed CSS backdrop
+  // often misses those clicks when ancestors create stacking contexts (sticky top bar, cards).
+  bindSelectDismissOutside: function (rootEl, dotNetRef) {
+    if (!rootEl || !dotNetRef) return;
+    this.unbindSelectDismissOutside(rootEl);
+    const handler = function (e) {
+      if (rootEl.contains(e.target)) return;
+      dotNetRef.invokeMethodAsync("CloseFromOutside");
+    };
+    rootEl._rcSelectDismiss = handler;
+    // Defer so the same gesture that opened the select does not immediately close it.
+    setTimeout(function () {
+      if (rootEl._rcSelectDismiss === handler)
+        document.addEventListener("pointerdown", handler, true);
+    }, 0);
+  },
+  unbindSelectDismissOutside: function (rootEl) {
+    if (!rootEl || !rootEl._rcSelectDismiss) return;
+    document.removeEventListener("pointerdown", rootEl._rcSelectDismiss, true);
+    rootEl._rcSelectDismiss = null;
   }
 };
