@@ -17,6 +17,7 @@
         @if (ClinicContext.CurrentClinicId is Guid clinicId)
         {
             <a class="btn btn-secondary" href="/admin/hospitals/@clinicId">@AppResources.T("Common_HospitalDetails")</a>
+            <a class="btn btn-primary" href="/admin/hospitals/@clinicId/appointments">@AppResources.T("Common_Appointments")</a>
         }
         else
         {
@@ -115,57 +116,12 @@
     }
     else
     {
-        <AdminStatGrid>
-            <AdminStatCard Label="@AppResources.T("Common_MyHospitals")" Value="@_clinics.Count" Accent="accent" />
-            <AdminStatCard Label="@AppResources.T("Dashboard_StatActiveHospitals")" Value="@_clinics.Count(c => c.IsActive)" Accent="success" />
-            <AdminStatCard Label="@AppResources.T("Dashboard_StatTotalFacilities")" Value="@_clinics.Sum(c => c.FacilityCount)" Accent="violet" />
-        </AdminStatGrid>
-
-        @if (_clinics.Count == 0)
-        {
-            <AdminEmptyState Icon="⌂"
-                             Title="@AppResources.T("Dashboard_EmptyNoHospitalsTitle")"
-                             Lead="@AppResources.T("Dashboard_EmptyNoHospitalsLead")">
-                <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Dashboard_StartOnboarding")</a>
-            </AdminEmptyState>
-        }
-        else
-        {
-            <AdminPageCard Title="@AppResources.T("Common_YourHospitals")">
-                <AdminPageCardMeta>
-                    <a class="card-header-link" href="/admin/hospitals">@AppResources.T("Common_ViewAll")</a>
-                </AdminPageCardMeta>
-                <div class="admin-page-card-body">
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>@AppResources.T("Common_Name")</th>
-                                    <th>@AppResources.T("Common_Country")</th>
-                                    <th>@AppResources.T("Common_Facilities")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var clinic in _clinics.Take(5))
-                                {
-                                    <tr>
-                                        <td><a class="card-header-link" href="/admin/hospitals/@clinic.Id"><strong>@clinic.Name</strong></a></td>
-                                        <td>@clinic.Country</td>
-                                        <td>@clinic.FacilityCount</td>
-                                        <td>
-                                            <span class="badge @(clinic.IsActive ? "badge-success" : "badge-muted")">
-                                                @(clinic.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
-                                            </span>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </AdminPageCard>
-        }
+        <AdminEmptyState Icon="⌂"
+                         Title="@AppResources.T("Dashboard_EmptyNoHospitalsTitle")"
+                         Lead="@AppResources.T("Dashboard_EmptyNoHospitalsLead")">
+            <a class="btn btn-primary" href="/admin/hospitals/register">@AppResources.T("Dashboard_StartOnboarding")</a>
+            <a class="btn btn-secondary" href="/admin/hospitals">@AppResources.T("AdminLayout_AllHospitals")</a>
+        </AdminEmptyState>
     }
 </section>
 
@@ -175,6 +131,7 @@
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicalPatientDeviceReadingsService DeviceReadingsService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private bool _loading = true;
     private bool _authRequired;
@@ -194,9 +151,7 @@
     private string DashboardLead =>
         _dashboard is not null
             ? AppResources.T("Dashboard_HospitalDashboardLead")
-            : ClinicContext.CurrentClinicId is null && _clinics.Count > 1
-                ? AppResources.T("Dashboard_SelectHospitalLead")
-                : AppResources.T("Dashboard_ManageOnboardingLead");
+            : AppResources.T("Dashboard_ManageOnboardingLead");
 
     protected override async Task OnInitializedAsync()
     {
@@ -235,28 +190,47 @@
 
         _clinics = clinicsResponse.Data;
 
-        if (ClinicContext.CurrentClinicId is Guid clinicId)
+        if (ClinicContext.CurrentClinicId is null)
         {
-            var clinicTask = AdminClinicService.GetClinicAsync(clinicId);
-            var dashboardTask = AdminClinicService.GetDashboardAsync(clinicId);
-            var emergenciesTask = LoadHomeEmergenciesCoreAsync();
-            await Task.WhenAll(clinicTask, dashboardTask, emergenciesTask).ConfigureAwait(false);
-
-            if (clinicTask.Result.IsSuccess && clinicTask.Result.Data is not null)
-                _clinicTimeZone = clinicTask.Result.Data.TimeZone;
-
-            _loading = false;
-            if (dashboardTask.Result.IsSuccess && dashboardTask.Result.Data is not null)
+            if (_clinics.Count == 1)
             {
-                _dashboard = dashboardTask.Result.Data;
+                await ClinicContext.SetCurrentClinicAsync(_clinics[0].Id, _clinics[0].Name).ConfigureAwait(false);
+            }
+            else if (_clinics.Count > 1)
+            {
+                _loading = false;
+                Navigation.NavigateTo("/admin/hospitals", replace: true);
                 return;
             }
+            else
+            {
+                _loading = false;
+                return;
+            }
+        }
 
-            _error = dashboardTask.Result.ErrorMessage ?? AppResources.T("Common_CouldNotLoadHospitalDashboard");
+        if (ClinicContext.CurrentClinicId is not Guid clinicId)
+        {
+            _loading = false;
             return;
         }
 
+        var clinicTask = AdminClinicService.GetClinicAsync(clinicId);
+        var dashboardTask = AdminClinicService.GetDashboardAsync(clinicId);
+        var emergenciesTask = LoadHomeEmergenciesCoreAsync();
+        await Task.WhenAll(clinicTask, dashboardTask, emergenciesTask).ConfigureAwait(false);
+
+        if (clinicTask.Result.IsSuccess && clinicTask.Result.Data is not null)
+            _clinicTimeZone = clinicTask.Result.Data.TimeZone;
+
         _loading = false;
+        if (dashboardTask.Result.IsSuccess && dashboardTask.Result.Data is not null)
+        {
+            _dashboard = dashboardTask.Result.Data;
+            return;
+        }
+
+        _error = dashboardTask.Result.ErrorMessage ?? AppResources.T("Common_CouldNotLoadHospitalDashboard");
     }
 
     private async Task LoadHomeEmergenciesAsync()

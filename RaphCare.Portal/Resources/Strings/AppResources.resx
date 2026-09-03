@@ -1543,7 +1543,7 @@
     <value>Hospital dashboard for your active context.</value>
   </data>
   <data name="Dashboard_SelectHospitalLead" xml:space="preserve">
-    <value>Select a hospital from the top bar to see scoped metrics.</value>
+    <value>Open a hospital from All hospitals to see its dashboard.</value>
   </data>
   <data name="Dashboard_ManageOnboardingLead" xml:space="preserve">
     <value>Manage hospital onboarding and your linked organizations.</value>
