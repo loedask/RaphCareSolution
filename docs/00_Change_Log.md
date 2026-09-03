@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Azure hosting for **RaphCare.Ops** (`raphcare-ops` App Service, publish and CORS scripts). Staging demo account `demo.ops@raphcare.com`. Partner demo-accounts sheet **v2**.
+
+## Modules modified
+
+- **Persistence / Domain / scripts / docs / partner-updates:** Ops Azure scripts; DemoPack ops user; demo-accounts-v2 PDF sources.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
 Split platform fleet ops into **RaphCare.Ops** (separate Blazor app + Host, own token storage). Renamed **RaphCare.Web** to **RaphCare.Portal**. Shared admin chrome in **RaphCare.Ui**.
 
 ## Modules modified

@@ -8,7 +8,8 @@ Runbook to put the **patient Android app** and **hosted API / admin Web** online
 |-------|-------------------------|
 | Patient Android app | Google Play **Internal testing** track |
 | API | App Service `raphcare-api` |
-| Admin Web (Blazor WASM) | Linux App Service `raphcare` via **`RaphCare.Portal.Host`** |
+| Admin Web / Portal (Blazor WASM) | Linux App Service `raphcare` via **`RaphCare.Portal.Host`** |
+| Platform Ops (Blazor WASM) | Linux App Service `raphcare-ops` via **`RaphCare.Ops.Host`** |
 | Database | Azure SQL database |
 | Sign-in | Entra app registrations in your tenant (optional for phone OTP) |
 | Ops mailbox | `raphcare@yindula.com` |
@@ -27,6 +28,9 @@ Default resource group: **`raphcare_group`** (or `rg-raphcare-test` from scripts
 | [`scripts/Update-RaphCareAzureSqlMigrations.ps1`](../scripts/Update-RaphCareAzureSqlMigrations.ps1) | Apply all EF contexts to Azure SQL |
 | [`scripts/Publish-RaphCareApiToAzure.ps1`](../scripts/Publish-RaphCareApiToAzure.ps1) | `dotnet publish` + zip deploy API |
 | [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish **`RaphCare.Portal.Host`** (linux-x64) to App Service `raphcare` |
+| [`scripts/New-RaphCareOpsAzureApp.ps1`](../scripts/New-RaphCareOpsAzureApp.ps1) | Create Linux App Service `raphcare-ops` on the Portal plan |
+| [`scripts/Set-RaphCareAzureOpsCors.ps1`](../scripts/Set-RaphCareAzureOpsCors.ps1) | Set `RaphCare__OpsBaseUrl` / `Cors__OpsOrigins__0` on the API |
+| [`scripts/Publish-RaphCareOpsToAzure.ps1`](../scripts/Publish-RaphCareOpsToAzure.ps1) | Publish **`RaphCare.Ops.Host`** (linux-x64) to App Service `raphcare-ops` |
 | [`scripts/New-RaphCareAndroidUploadKeystore.ps1`](../scripts/New-RaphCareAndroidUploadKeystore.ps1) | Create upload keystore (gitignored path) |
 | [`scripts/Publish-RaphCareAndroidPlay.ps1`](../scripts/Publish-RaphCareAndroidPlay.ps1) | Signed Release AAB for Play Internal |
 
@@ -69,8 +73,16 @@ After first API deploy, set App Service **Configuration** on **raphcare-api** (S
 
 - `RaphCare__WebPortalBaseUrl` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
 - `Cors__WebAdminOrigins__0` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
+- `RaphCare__OpsBaseUrl` = `https://<raphcare-ops-host>`
+- `Cors__OpsOrigins__0` = `https://<raphcare-ops-host>`
 
-On App Service **raphcare** (the admin web host, not the API), set:
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/New-RaphCareOpsAzureApp.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Set-RaphCareAzureOpsCors.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareOpsToAzure.ps1
+```
+
+On App Service **raphcare** (the Portal host, not the API), set:
 
 - `ASPNETCORE_ENVIRONMENT` = `Staging`
 - `ApiBaseUrl` = `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net`
@@ -85,7 +97,8 @@ You still need a **RaphCare.Portal.Host** deploy that includes the host forwardi
 
 | App | URL |
 |-----|-----|
-| Web (`raphcare`) | `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net` |
+| Portal (`raphcare`) | `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net` |
+| Ops (`raphcare-ops`) | after create: `https://<raphcare-ops default hostname>` |
 | API (`raphcare-api`) | `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net` |
 
 ---
@@ -189,6 +202,7 @@ Staging also fills **RaphCare Demo Clinic** and these email/password accounts (n
 | Doctor | `demo.doctor@raphcare.com` |
 | Pharmacist | `demo.pharmacy@raphcare.com` |
 | Lab | `demo.lab@raphcare.com` |
+| Platform Ops (fleet) | `demo.ops@raphcare.com` |
 | Patient (mobile) | `demo.patient@raphcare.com` |
 
 Password: App Service setting **`Demo:Password`**. If that is empty, the seeder uses `RaphCareDemo!2026`. Rotate it on the App Service when you want a new password. The pack is additive. It does not delete Daskana or other hospitals.

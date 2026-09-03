@@ -80,7 +80,8 @@ public static class DemoPackSeeder
             DemoPackAccounts.DoctorEmail,
             DemoPackAccounts.PharmacistEmail,
             DemoPackAccounts.LabEmail,
-            DemoPackAccounts.PatientEmail
+            DemoPackAccounts.PatientEmail,
+            DemoPackAccounts.OpsEmail
         ];
 
         foreach (var canonical in pairs)
@@ -261,6 +262,19 @@ public static class DemoPackSeeder
             "local-demo-patient",
             password,
             RaphCareRoles.Patient,
+            jobRole: null,
+            cancellationToken).ConfigureAwait(false);
+
+        // Platform Ops only. No clinic membership (see EnsureMembershipsAsync).
+        await EnsureStaffAsync(
+            identity,
+            roles,
+            ClinicalSeedIds.DemoOpsUserId,
+            DemoPackAccounts.OpsEmail,
+            "Demo Ops",
+            "local-demo-ops",
+            password,
+            RaphCareRoles.Administrator,
             jobRole: null,
             cancellationToken).ConfigureAwait(false);
     }

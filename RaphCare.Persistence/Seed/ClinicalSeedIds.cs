@@ -17,6 +17,7 @@ public static class ClinicalSeedIds
     public static readonly Guid DemoPharmacistUserId = Guid.Parse("11111111-1111-1111-1111-11111111110c");
     public static readonly Guid DemoLabUserId = Guid.Parse("11111111-1111-1111-1111-11111111110d");
     public static readonly Guid DemoPatientUserId = Guid.Parse("11111111-1111-1111-1111-11111111110e");
+    public static readonly Guid DemoOpsUserId = Guid.Parse("11111111-1111-1111-1111-111111111116");
     public static readonly Guid DemoAppointmentId = Guid.Parse("11111111-1111-1111-1111-11111111110f");
     public static readonly Guid DemoVisitId = Guid.Parse("11111111-1111-1111-1111-111111111110");
     public static readonly Guid DemoPrescriptionId = Guid.Parse("11111111-1111-1111-1111-111111111111");

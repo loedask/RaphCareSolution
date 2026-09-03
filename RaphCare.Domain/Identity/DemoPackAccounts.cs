@@ -12,6 +12,9 @@ public static class DemoPackAccounts
     public const string LabEmail = "demo.lab@raphcare.com";
     public const string PatientEmail = "demo.patient@raphcare.com";
 
+    /// <summary>Platform Ops (fleet). Same Administrator role as hospital demo admin, no clinic membership.</summary>
+    public const string OpsEmail = "demo.ops@raphcare.com";
+
     /// <summary>Earlier staging seeds used this domain. Still accepted for sign-in skip and seeder migration.</summary>
     public const string LegacyDemoDomain = "@raphcare.demo";
 
@@ -21,7 +24,8 @@ public static class DemoPackAccounts
         DoctorEmail,
         PharmacistEmail,
         LabEmail,
-        PatientEmail
+        PatientEmail,
+        OpsEmail
     ];
 
     public static bool IsDemoEmail(string? email)
