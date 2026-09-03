@@ -27,6 +27,7 @@ Default resource group: **`raphcare_group`** (or `rg-raphcare-test` from scripts
 | [`scripts/Set-RaphCareAzureTestAppSettings.ps1`](../scripts/Set-RaphCareAzureTestAppSettings.ps1) | Push connection string, Entra, JWT, CORS, SMTP into App Service |
 | [`scripts/Update-RaphCareAzureSqlMigrations.ps1`](../scripts/Update-RaphCareAzureSqlMigrations.ps1) | Apply all EF contexts to Azure SQL |
 | [`scripts/Publish-RaphCareApiToAzure.ps1`](../scripts/Publish-RaphCareApiToAzure.ps1) | `dotnet publish` + zip deploy API |
+| [`scripts/Login-RaphCareAzure.ps1`](../scripts/Login-RaphCareAzure.ps1) | Browser `az login --tenant` when MFA / Cursor login fails |
 | [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish **`RaphCare.Portal.Host`** (linux-x64) to App Service `raphcare` |
 | [`scripts/New-RaphCareOpsAzureApp.ps1`](../scripts/New-RaphCareOpsAzureApp.ps1) | Create Linux App Service `raphcare-ops` on the Portal plan |
 | [`scripts/Set-RaphCareAzureOpsCors.ps1`](../scripts/Set-RaphCareAzureOpsCors.ps1) | Set `RaphCare__OpsBaseUrl` / `Cors__OpsOrigins__0` on the API |
@@ -73,8 +74,8 @@ After first API deploy, set App Service **Configuration** on **raphcare-api** (S
 
 - `RaphCare__WebPortalBaseUrl` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
 - `Cors__WebAdminOrigins__0` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
-- `RaphCare__OpsBaseUrl` = `https://<raphcare-ops-host>`
-- `Cors__OpsOrigins__0` = `https://<raphcare-ops-host>`
+- `RaphCare__OpsBaseUrl` = `https://raphcare-ops.azurewebsites.net`
+- `Cors__OpsOrigins__0` = `https://raphcare-ops.azurewebsites.net`
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/New-RaphCareOpsAzureApp.ps1
@@ -98,7 +99,7 @@ You still need a **RaphCare.Portal.Host** deploy that includes the host forwardi
 | App | URL |
 |-----|-----|
 | Portal (`raphcare`) | `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net` |
-| Ops (`raphcare-ops`) | after create: `https://<raphcare-ops default hostname>` |
+| Ops (`raphcare-ops`) | `https://raphcare-ops.azurewebsites.net` |
 | API (`raphcare-api`) | `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net` |
 
 ---
@@ -131,7 +132,37 @@ az account show
 az account list -o table
 ```
 
-You need a listed **subscription**. If the list is empty, that Microsoft account is not on the Azure subscription yet (grant Owner or Contributor in the portal), or security defaults blocked the tenant.
+You need a listed **subscription**. If the list is empty, that Microsoft account is not on the Azure subscription yet (grant Owner or Contributor in the portal), or MFA never completed for Azure resource manager.
+
+Staging tenant (Default Directory): `6069ef19-5a1b-48ca-94ae-5b814804a78b`. Subscription name is often **Azure subscription 1**.
+
+#### If Cursor or a .bat cannot open a login window (3 Sep 2026)
+
+Agents cannot complete Microsoft MFA inside Cursor. Hidden `az login` jobs also do not show a browser.
+
+1. Open **Windows Terminal** or **Command Prompt** on the desktop (not a Cursor terminal).
+2. Run the helper (or the same `az login --tenant` line):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Login-RaphCareAzure.ps1
+```
+
+3. Finish MFA in the browser. Pick **Azure subscription 1** if asked.
+4. Confirm `az account show` lists a subscription, then run publish scripts from Cursor.
+
+Do not launch login with `cmd /c start RaphCare ...`. Windows treats `RaphCare` as a program name and shows "Windows cannot find 'RaphCare'".
+
+If you wrap `az login` in a `.bat`, use `call` and the full path to `az.cmd`. `az` is `az.cmd`; without `call` the window closes as soon as CLI returns, which looks like a crash. Keep the window open with `cmd /k` or `pause`.
+
+#### If `az login` returns AADSTS50076 and no subscriptions
+
+`AADSTS50076` means Azure needs MFA for resource manager. Plain `az login` can authenticate the mailbox and still fail to list subscriptions (`raphcare@yindula.com` looked like it had no subscription). Retry **without** device code and **without** a management `--scope`:
+
+```powershell
+az login --tenant 6069ef19-5a1b-48ca-94ae-5b814804a78b
+```
+
+That is what `Login-RaphCareAzure.ps1` runs. After MFA, the same mailbox can see **Azure subscription 1**.
 
 **Avoid this pattern** (it caused real failures on 2 Sep 2026):
 
@@ -146,13 +177,14 @@ That often ends as:
 |---------|----------------|
 | Sign-in succeeded but **You don't have access to this** | Forced tenant + management scope on device code; wrong consent path |
 | `AADSTS530035` (security defaults) | Tenant blocks the auth method until MFA / security defaults are sorted |
+| `AADSTS50076` / MFA / `Status_InteractionRequired` | Need browser MFA; use `az login --tenant <tenant-id>` (see helper script) |
 | `AADSTS50132` on `az webapp deploy` while `az account show` still works | Stale CLI session; run `az login` again (browser), then republish |
 | `AADSTS70020` / device code expired | Code timed out; start a new `az login` |
-| No subscriptions found for `raphcare@yindula.com` | Mailbox can authenticate but has no subscription role |
+| No subscriptions found for `raphcare@yindula.com` | Often MFA never completed for Azure (AADSTS50076). Retry `--tenant` as above. If that still lists nothing, the mailbox has no subscription role. |
 
-Device code (`az login --use-device-code`) is a fallback only when a browser cannot open. Prefer plain `az login` first. Agents cannot complete Microsoft MFA inside Cursor; the human must finish the browser prompt.
+Device code (`az login --use-device-code`) is a fallback only when a browser cannot open. Prefer plain `az login` first, then `az login --tenant` if MFA/subscription listing fails.
 
-Ops account for this environment is often **`raphcare@yindula.com`**. Use the account that owns resource group **`raphcare_group`** / App Services **`raphcare-api`** and **`raphcare`**.
+Ops mailbox is **`raphcare@yindula.com`**. After MFA it can own **`raphcare_group`**. If a different account owns the subscription, use that one instead.
 
 Cursor agents: see **`.cursor/rules/azure-cli-signin.mdc`**.
 
