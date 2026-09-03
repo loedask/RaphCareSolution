@@ -1,5 +1,5 @@
 {
-  "stylesheet": ["raphcare-demo-accounts.pdf.css"],
+  "stylesheet": ["raphcare-demo-accounts-v1.pdf.css"],
   "document_title": "RaphCare demo accounts (29 Aug 2026)",
   "pdf_options": {
     "format": "A4",

@@ -35,7 +35,7 @@ Pickup codes already in that clinic:
 
 There is also a chart named **Demo Inpatient** already in a bed, so inpatient occupancy shows without admitting someone first.
 
-A one-page sheet with the same logins is here: [`raphcare-demo-accounts.pdf`](../../raphcare-demo-accounts.pdf). Keep that sheet private. It has the password.
+A one-page sheet with the same logins is here: [`raphcare-demo-accounts-v1.pdf`](../../archives/raphcare-demo-accounts-v1.pdf). Keep that sheet private. It has the password.
 
 ## 2. Hospital admin on the web
 
