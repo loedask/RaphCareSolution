@@ -17,10 +17,10 @@ public static class ApiErrorMessages
     {
         var extracted = ExtractMessage(body);
         if (IsMissingClinicHeader(extracted) || IsMissingClinicHeader(body))
-            return "Choose your clinic in Profile (My clinic), then try again.";
+            return "This action needs a hospital selected. Open the hospital in Portal, or pick a hospital on this page if you are in Ops.";
 
         if (IsInvalidClinicHeader(extracted) || IsInvalidClinicHeader(body))
-            return "Your clinic setting is invalid. Choose your clinic again in Profile.";
+            return "The hospital setting is invalid. Pick the hospital again and try again.";
 
         if (!string.IsNullOrWhiteSpace(extracted))
             return extracted!;
@@ -52,7 +52,11 @@ public static class ApiErrorMessages
         || (!string.IsNullOrWhiteSpace(message)
             && message.Contains("Choose your clinic", StringComparison.OrdinalIgnoreCase))
         || (!string.IsNullOrWhiteSpace(message)
-            && message.Contains("clinic setting is invalid", StringComparison.OrdinalIgnoreCase));
+            && message.Contains("clinic setting is invalid", StringComparison.OrdinalIgnoreCase))
+        || (!string.IsNullOrWhiteSpace(message)
+            && message.Contains("needs a hospital selected", StringComparison.OrdinalIgnoreCase))
+        || (!string.IsNullOrWhiteSpace(message)
+            && message.Contains("hospital setting is invalid", StringComparison.OrdinalIgnoreCase));
 
     private static string? ExtractMessage(string? body)
     {
