@@ -1,6 +1,6 @@
 <div class="doc-header">
-<img src="../partner-updates/brand/raphcare-logo.png" alt="RaphCare" />
-<h1>RaphCare mobile update (v1.5.1)</h1>
+<img src="../../brand/raphcare-logo.png" alt="RaphCare" />
+<h1>RaphCare mobile update (v1.5.1+9)</h1>
 </div>
 
 Android patient app build **1.5.1** (install code **9**). File name: `RaphCare-v1.5.1+9.apk`. This build talks to the staging API, not a phone on localhost.

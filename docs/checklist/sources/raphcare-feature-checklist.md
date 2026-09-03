@@ -1,10 +1,10 @@
 # RaphCare feature checklist
 
-PDF companion: [`raphcare-feature-checklist.pdf`](raphcare-feature-checklist.pdf) (regenerate with `scripts/Export-RaphCareFeatureChecklistPdf.ps1` whenever this file changes).
+PDF companion: [`raphcare-feature-checklist.pdf`](../raphcare-feature-checklist.pdf) (regenerate with `scripts/Export-RaphCareFeatureChecklistPdf.ps1` whenever this file changes).
 
 Plain-language twin for non-technical partners: [`raphcare-feature-checklist-partner.md`](raphcare-feature-checklist-partner.md) (and its PDF). Keep both in sync when status changes.
 
-Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
+Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
 **Overall completion (this checklist):** **78%**  
 **Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **81%**
@@ -65,7 +65,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Tele join page (hospital-deck)
 - [x] Admin dashboard
 - [x] Web UI language switcher (en / fr / ln / sw)
-- [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md)
+- [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 
 ### Mobile
 
@@ -73,7 +73,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -194,7 +194,7 @@ Push notifications on device:
 - [ ] iOS push delivery (APNs / FCM path) verified on a physical iPhone `(partial)`
 - [ ] Push off / no-op when Firebase is not configured (expected today)
 
-Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`, **`docs/14_Wearable_Capability_Catalog.md`**):
+Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`, **`docs/14_Wearable_Capability_Catalog.md`**, desk steps in [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md)):
 
 - [x] Devices screen: BLE scan, connect, disconnect
 - [x] E580 / E585 name filter (`E585E580DeviceFilter`, includes `ET580` / `ET585`) + "show all BLE" fallback
@@ -204,10 +204,10 @@ Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_P
 - [x] SpO₂ GATT read when the band exposes standard PLX (`0x2A5F` / `0x2A60`)
 - [x] Vitals sync to API + offline outbox retry (`FileVitalsSyncOutbox`): HR / SpO₂ batches only
 - [x] SKU-agnostic wearable capability catalog documented (`docs/14_Wearable_Capability_Catalog.md`)
-- [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: needs physical ET580/ET585 verification; iOS not wired
+- [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: sideload 1.5.2 packages current `jar_core` AARs; physical ET580/ET585 verification still open; iOS not wired
 - [ ] Reliable full band data (HBand-class parity for in-scope metrics) `(partial)`: Phase 1 HR/SpO₂ hooks in; activity/sleep/history still open. See `docs/14`
 - [ ] Full typed HBand SDK C# binding project `(out of scope for Phase 1)`: JNI bridge used instead; optional later. See `docs/12_HBand_SDK_Integration.md`
-- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: wired; awaiting device test
+- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: wired in 1.5.2; awaiting [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md) on a real band
 - [ ] Auto sync / background monitoring of band readings `(partial)`: manual sync + outbox exist; background unproven; OS limits in `docs/14`
 - [ ] Activity (steps / kcal / distance / goals) domain + sync + mobile `(not started)`
 - [ ] Sleep domain + sync + mobile `(not started)`
@@ -390,14 +390,15 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 |-----|---------|
 | `raphcare-feature-checklist-partner.md` | Plain-language status for non-technical partners |
 | [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md) | Planned API, Web UI, and Mobile smoke layers |
-| [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md) | Tokens, route map, screen visual parity |
+| [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md) | Tokens, route map, screen visual parity |
 | `Mobile_Release_Ready_Checklist.md` | Flags, quality bar, release backlog |
-| [`../09_Mobile_App_Guide.md`](../09_Mobile_App_Guide.md) | Mobile structure, DI, config |
-| [`../11_Devices_BLE_E580_E585.md`](../11_Devices_BLE_E580_E585.md) | BLE bands (E580 / E585) |
-| [`../12_HBand_SDK_Integration.md`](../12_HBand_SDK_Integration.md) | HBand SDK binding path |
-| [`../13_Patient_Device_Packages_and_Fleet.md`](../13_Patient_Device_Packages_and_Fleet.md) | Y6 / E580 / E585 fleet SKUs |
-| [`../14_Wearable_Capability_Catalog.md`](../14_Wearable_Capability_Catalog.md) | SKU-agnostic band features + delivery phases |
-| [`../10_Agora_Twilio_Setup.md`](../10_Agora_Twilio_Setup.md) | Telehealth RTC setup |
-| [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md) | Staff phone use of web admin: responsive UI, then thin install; not a full PWA |
-| [`../02_Solution_Structure.md`](../02_Solution_Structure.md) | Project layout |
-| [`../06_Key_Workflows.md`](../06_Key_Workflows.md) | Workflow narratives (update when inpatient ships docs) |
+| [`../../09_Mobile_App_Guide.md`](../../09_Mobile_App_Guide.md) | Mobile structure, DI, config |
+| [`../../11_Devices_BLE_E580_E585.md`](../../11_Devices_BLE_E580_E585.md) | BLE bands (E580 / E585) |
+| [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md) | Desk test for E580 / E585 pairing and live vitals |
+| [`../../12_HBand_SDK_Integration.md`](../../12_HBand_SDK_Integration.md) | HBand SDK binding path |
+| [`../../13_Patient_Device_Packages_and_Fleet.md`](../../13_Patient_Device_Packages_and_Fleet.md) | Y6 / E580 / E585 fleet SKUs |
+| [`../../14_Wearable_Capability_Catalog.md`](../../14_Wearable_Capability_Catalog.md) | SKU-agnostic band features + delivery phases |
+| [`../../10_Agora_Twilio_Setup.md`](../../10_Agora_Twilio_Setup.md) | Telehealth RTC setup |
+| [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md) | Staff phone use of web admin: responsive UI, then thin install; not a full PWA |
+| [`../../02_Solution_Structure.md`](../../02_Solution_Structure.md) | Project layout |
+| [`../../06_Key_Workflows.md`](../../06_Key_Workflows.md) | Workflow narratives (update when inpatient ships docs) |

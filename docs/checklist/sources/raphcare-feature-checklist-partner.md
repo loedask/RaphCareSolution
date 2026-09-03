@@ -110,7 +110,7 @@ What patients see on Android and iPhone.
 | Activity (steps, calories, distance), sleep, stress | Not started | On the watches; not in RaphCare yet |
 | Body temp, ECG, glucose-style screens from the band | Not started | Documented; clinical use of optical glucose stays gated |
 | Weather and lifestyle pushes to the watch | Not for clinical v1 | Watch needs an app for weather; not a patient vital |
-| Full vendor band SDK (HBand) on Android | Partial | Download libs and app bridge in place; hardware prove-out next |
+| Full vendor band SDK (HBand) on Android | Partial | The current Android test build includes the vendor libraries. Next is a live test on an ET580 or ET585 |
 | Full vendor band SDK on iPhone | Not started | Android first |
 | **Y6 Pro** emergency 4G watch flow | Partial | Webhook, SMS, clinic patient chart, and hospital Devices emergency board; OEM mapping and push alerts still future |
 | Windows PC build of the app | Not for BLE | Bluetooth patient devices are for phones, not the Windows target |

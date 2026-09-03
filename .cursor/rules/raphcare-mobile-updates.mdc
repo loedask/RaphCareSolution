@@ -9,13 +9,15 @@ Whenever you bump `ApplicationDisplayVersion` / `ApplicationVersion` on `RaphCar
 
 ## Where
 
-- Folder: `docs/mobile-updates/`
-- Per build: `mobile-update-v{DisplayVersion}.md` (example: `mobile-update-v1.5.1.md`)
-- Matching PDF: same stem `.pdf`, plus `.config.json` for `md-to-pdf`
+- Partner PDFs: `docs/mobile-updates/mobile-update-v{DisplayVersion}+{versionCode}.pdf` (example: `mobile-update-v1.5.2+10.pdf`)
+- Sources (markdown, `.config.json`, CSS): `docs/mobile-updates/sources/`
+- Older PDFs: `docs/mobile-updates/archives/`
+- Older sources: `docs/mobile-updates/sources/archives/`
 - Index: `docs/mobile-updates/README.md`
-- Export: `scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.5.1`
+- Export: `scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.5.2+10`
+- Archive re-export: add `-Archive`
 
-Reuse styles from `docs/partner-updates/partner-update.pdf.css` and the logo under `docs/partner-updates/brand/`.
+Reuse styles from `docs/mobile-updates/sources/mobile-update.pdf.css` and the logo under `docs/mobile-updates/brand/` (same asset as partner-updates; keep a copy here so PDF export can resolve `../brand/raphcare-logo.png`).
 
 ## What to write (plain partner language)
 
@@ -23,14 +25,14 @@ Follow **human-sounding-copy**. No em dashes. No class names, routes, or build c
 
 Include:
 
-1. Version line: display version and Android build number (versionCode), APK file stem like `RaphCare-v1.5.1+9.apk`
+1. Version line: display version and Android build number (versionCode), APK file stem like `RaphCare-v1.5.2+10.apk`
 2. Short why this build exists (new feature, bug fix, polish)
 3. **Fixed** / **Added** / **Updated** sections (omit empty ones)
 4. What to try on the phone
 5. Install reminder (staging API, uninstall older RaphCare if install fails)
 
-Do **not** replace the dated `docs/partner-updates/partner-update-*.md` notes. Those stay for broader product/web/API updates. Mobile updates are the APK changelog you send with the install file.
+Do **not** replace the dated `docs/partner-updates/` notes (PDF at folder root; edit under `sources/`). Those stay for broader product/web/API updates. Mobile updates are the APK changelog you send with the install file.
 
 ## Same change set
 
-Commit the `.md`, `.config.json`, regenerated `.pdf`, csproj version bump, and APK publish only when the user asked for the APK or a commit that includes it. Do not leave the PDF stale after editing the markdown.
+Commit the sources under `sources/`, regenerated PDF at the folder root (or `archives/`), csproj version bump, and APK publish only when the user asked for the APK or a commit that includes it. Do not leave the PDF stale after editing the markdown. When replacing the current note, archive the previous PDF under `archives/` and its markdown/config under `sources/archives/`.

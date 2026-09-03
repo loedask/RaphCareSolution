@@ -1,4 +1,5 @@
-# Regenerates feature checklist PDFs from markdown sources under docs/checklist.
+# Regenerates feature checklist PDFs from markdown sources under docs/checklist/sources.
+# Output PDFs are written to docs/checklist/ (partner-facing).
 # Requires Node.js (npx) and network on first run for md-to-pdf.
 param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path,
@@ -9,17 +10,18 @@ param(
 $ErrorActionPreference = "Stop"
 
 $docsChecklist = Join-Path $RepoRoot "docs\checklist"
+$sources = Join-Path $docsChecklist "sources"
 
 function Export-ChecklistPdf {
     param(
         [Parameter(Mandatory = $true)][string]$BaseName
     )
 
-    $md = Join-Path $docsChecklist "$BaseName.md"
+    $md = Join-Path $sources "$BaseName.md"
     $pdf = Join-Path $docsChecklist "$BaseName.pdf"
-    $config = Join-Path $docsChecklist "$BaseName.pdf.json"
-    $tempMd = Join-Path $docsChecklist "$BaseName.__export__.md"
-    $tempPdf = Join-Path $docsChecklist "$BaseName.__export__.pdf"
+    $config = Join-Path $sources "$BaseName.pdf.json"
+    $tempMd = Join-Path $sources "$BaseName.__export__.md"
+    $tempPdf = Join-Path $sources "$BaseName.__export__.pdf"
 
     if (-not (Test-Path $md)) {
         throw "Checklist markdown not found: $md"
@@ -30,7 +32,7 @@ function Export-ChecklistPdf {
 
     Copy-Item -Path $md -Destination $tempMd -Force
 
-    Push-Location $docsChecklist
+    Push-Location $sources
     try {
         npx --yes md-to-pdf "$BaseName.__export__.md" --config-file "$BaseName.pdf.json"
         if ($LASTEXITCODE -ne 0) {
@@ -54,7 +56,6 @@ function Export-ChecklistPdf {
     finally {
         Pop-Location
         Remove-Item -Path $tempMd -Force -ErrorAction SilentlyContinue
-        # leave tempPdf only if move failed
     }
 }
 

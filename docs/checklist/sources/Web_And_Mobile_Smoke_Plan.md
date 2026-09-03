@@ -4,9 +4,9 @@ Plan for proving RaphCare still works after a deploy or a large change. Covers *
 
 Status today: plan only. No automated E2E suite yet. The engineering feature checklist row **E2E smoke script** stays open until Phase A lands.
 
-**Related:** [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md) (Cross-cutting), [`raphcare-feature-checklist-partner.md`](raphcare-feature-checklist-partner.md) (What to try this week), [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md), [`../09_Mobile_App_Guide.md`](../09_Mobile_App_Guide.md), [`../Mobile_Demo_Launch_Guide.md`](../Mobile_Demo_Launch_Guide.md), [`../partner-updates/raphcare-demo-accounts.md`](../partner-updates/raphcare-demo-accounts.md).
+**Related:** [`raphcare-feature-checklist.md`](raphcare-feature-checklist.md) (Cross-cutting), [`raphcare-feature-checklist-partner.md`](raphcare-feature-checklist-partner.md) (What to try this week), [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md), [`../../09_Mobile_App_Guide.md`](../../09_Mobile_App_Guide.md), [`../../Mobile_Demo_Launch_Guide.md`](../../Mobile_Demo_Launch_Guide.md), [`../../partner-updates/raphcare-demo-accounts.pdf`](../../partner-updates/raphcare-demo-accounts.pdf) (sources under [`../../partner-updates/sources/`](../../partner-updates/sources/)).
 
-Last updated: 2026-09-02
+Last updated: 2026-09-03
 
 ---
 
@@ -45,7 +45,7 @@ Existing unit tests stay as they are. This plan does not replace `dotnet test` o
 
 Prefer Staging demo accounts when not running against a private local DB. See demo accounts doc. Default demo password is whatever `Demo:Password` is on the API (default `RaphCareDemo!2026` unless changed).
 
-Phone OTP in Development: read the code from the API console (`[Development] SMS not sent`). See [`../06_Key_Workflows.md`](../06_Key_Workflows.md) and the mobile demo launch guide.
+Phone OTP in Development: read the code from the API console (`[Development] SMS not sent`). See [`../../06_Key_Workflows.md`](../../06_Key_Workflows.md) and the mobile demo launch guide.
 
 ---
 
@@ -121,7 +121,7 @@ Use this as the phone half of partner "What to try," plus a few builder checks.
 4. Health records: waiting collection items show a pickup code when Staging has one.
 5. Appointments list or empty state loads.
 6. Settings or profile: My clinic search or code entry loads.
-7. Devices screen opens (band connect is optional hardware).
+7. Devices screen opens (band connect is a separate hardware gate: [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md)).
 
 **iPhone (when a device or Mac build is available):**
 
@@ -150,7 +150,7 @@ Use this as the phone half of partner "What to try," plus a few builder checks.
 |------|----------------|
 | **Telehealth video** | Agora keys, Android vs iOS kit wiring |
 | **Push** | Firebase or APNs config |
-| **Wearables live vitals** | Hardware on desk |
+| **Wearables live vitals** | Hardware on desk. Walk [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md) on a real E580 or E585. |
 | **Play or App Store upload** | Store consoles, not API health |
 
 Document pass or fail in release notes. Do not block Phase A on these.
@@ -183,7 +183,7 @@ When Phase A ships, update both feature checklists (status, %, Last reviewed) an
 
 ## Out of scope for v1 smoke
 
-- Full visual parity vs the React concept (see [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md))
+- Full visual parity vs the React concept (see [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md))
 - Clinician mobile app (out of product scope)
 - Load or performance testing
 - Chaos or multi-tenant isolation suites

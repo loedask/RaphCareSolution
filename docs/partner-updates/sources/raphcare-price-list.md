@@ -1,8 +1,8 @@
-<div class="doc-header">
-<img src="brand/raphcare-logo.png" alt="RaphCare" />
+﻿<div class="doc-header">
+<img src="../brand/raphcare-logo.png" alt="RaphCare" />
 <div>
 <h1>RaphCare price list</h1>
-<p class="subtitle">South Africa first · Democratic Republic of the Congo next · September 2026</p>
+<p class="subtitle">South Africa first Â· Democratic Republic of the Congo next Â· September 2026</p>
 </div>
 </div>
 

@@ -1,11 +1,10 @@
-# Regenerates a mobile-update PDF.
-# Markdown and config live under docs/mobile-updates/sources/.
-# Output PDF is written next to the partner-facing PDFs (folder root, or archives/).
-# Version must match the APK label: display + Android versionCode, e.g. 1.5.2+10
+# Regenerates a partner-facing PDF under docs/partner-updates/.
+# Markdown and config live under docs/partner-updates/sources/.
+# Output PDF is written to the folder root (or archives/ when -Archive is set).
 # Requires Node.js (npx) and network on first run for md-to-pdf.
 param(
     [Parameter(Mandatory = $true)]
-    [string] $Version,
+    [string] $Stem,
     [switch] $Archive,
     [string] $RepoRoot = ""
 )
@@ -16,26 +15,25 @@ if (-not $RepoRoot) {
     $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 }
 
-$Version = $Version.Trim()
-if ($Version -notmatch '^\d+\.\d+\.\d+\+\d+$') {
-    throw "Version must look like 1.5.2+10 (display version + Android versionCode). Got: $Version"
+$Stem = $Stem.Trim()
+if ($Stem -match '\.(md|pdf|config\.json)$') {
+    throw "Pass the document stem only (example: partner-update-2026-09-02 or raphcare-price-list). Got: $Stem"
 }
 
-$docsRoot = Join-Path $RepoRoot "docs\mobile-updates"
+$docsRoot = Join-Path $RepoRoot "docs\partner-updates"
 $sourcesRoot = Join-Path $docsRoot "sources"
 $sourceDir = if ($Archive) { Join-Path $sourcesRoot "archives" } else { $sourcesRoot }
 $pdfDir = if ($Archive) { Join-Path $docsRoot "archives" } else { $docsRoot }
 
-$stem = "mobile-update-v$Version"
-$md = Join-Path $sourceDir "$stem.md"
-$config = Join-Path $sourceDir "$stem.config.json"
-$pdf = Join-Path $pdfDir "$stem.pdf"
-$tempMd = Join-Path $sourceDir "$stem.__export__.md"
-$tempPdf = Join-Path $sourceDir "$stem.__export__.pdf"
+$md = Join-Path $sourceDir "$Stem.md"
+$config = Join-Path $sourceDir "$Stem.config.json"
+$pdf = Join-Path $pdfDir "$Stem.pdf"
+$tempMd = Join-Path $sourceDir "$Stem.__export__.md"
+$tempPdf = Join-Path $sourceDir "$Stem.__export__.pdf"
 
 if (-not (Test-Path $md)) {
     $hint = if ($Archive) { "" } else { " If the note was archived, pass -Archive." }
-    throw "Mobile update markdown not found: $md.$hint"
+    throw "Partner update markdown not found: $md.$hint"
 }
 if (-not (Test-Path $config)) {
     throw "PDF config not found: $config"
@@ -46,9 +44,9 @@ Copy-Item -Path $md -Destination $tempMd -Force
 
 Push-Location $sourceDir
 try {
-    npx --yes md-to-pdf "$stem.__export__.md" --config-file "$stem.config.json"
+    npx --yes md-to-pdf "$Stem.__export__.md" --config-file "$Stem.config.json"
     if ($LASTEXITCODE -ne 0) {
-        throw "md-to-pdf failed for $stem (exit $LASTEXITCODE)"
+        throw "md-to-pdf failed for $Stem (exit $LASTEXITCODE)"
     }
     if (-not (Test-Path $tempPdf)) {
         throw "PDF was not created at $tempPdf"
@@ -58,7 +56,7 @@ try {
         Move-Item -Path $tempPdf -Destination $pdf -Force
     }
     catch {
-        $fallback = Join-Path $pdfDir "$stem.pdf.new"
+        $fallback = Join-Path $pdfDir "$Stem.pdf.new"
         Move-Item -Path $tempPdf -Destination $fallback -Force
         throw "Could not overwrite $pdf (file may be open). Fresh PDF saved as $fallback."
     }

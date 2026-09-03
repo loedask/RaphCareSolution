@@ -31,8 +31,8 @@
         <ApplicationId>com.yindula.raphcare</ApplicationId>
 
         <!-- Versions: display = marketing (Settings / APK name); code = Android versionCode (must rise for each Play upload). -->
-        <ApplicationDisplayVersion>1.5.1</ApplicationDisplayVersion>
-        <ApplicationVersion>9</ApplicationVersion>
+        <ApplicationDisplayVersion>1.5.2</ApplicationDisplayVersion>
+        <ApplicationVersion>10</ApplicationVersion>
 
         <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
         <WindowsPackageType>None</WindowsPackageType>
@@ -109,7 +109,7 @@
         <PackageReference Include="Microsoft.Identity.Client" Version="4.66.0" />
     </ItemGroup>
 
-    <!-- Native Agora RTC (Java); Bind=false â€” we call RtcEngine via JNI from Platforms/Android. -->
+    <!-- Native Agora RTC (Java); Bind=false. We call RtcEngine via JNI from Platforms/Android. -->
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <AndroidMavenLibrary Include="io.agora.rtc:full-sdk" Version="4.5.2" Bind="false" VerifyDependencies="false" />
     </ItemGroup>
@@ -119,11 +119,17 @@
         <NativeReference Include="Platforms\iOS\AgoraRtcKit\AgoraRtcKit.xcframework" Kind="Framework" />
     </ItemGroup>
 
-    <!-- HBand / Veepoo vendor SDK (optional). Run tools/download-hband-android-libs.ps1. Bind=false â€” C# uses Platforms/Android/HBand JNI bridge. See docs/12.
+    <!-- HBand / Veepoo vendor SDK (optional). Run tools/download-hband-android-libs.ps1.
+         Default Android items auto-include **/*.aar with Bind=true (breaks jl_rcsp binding).
+         Remove those, then re-add with Bind=false for JNI-only use. See docs/12.
          Do not embed gson-*.jar: GoogleGson is already pulled in and duplicates break D8. -->
-    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' AND Exists('Platforms\Android\libs\vpbluetooth-1.20.aar') AND Exists('Platforms\Android\libs\vpprotocol-2.3.71.15.aar')">
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <AndroidLibrary Remove="Platforms\Android\libs\**\*.aar" />
+        <AndroidLibrary Remove="Platforms\Android\libs\**\*.jar" />
+    </ItemGroup>
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' AND Exists('Platforms\Android\libs\vpbluetooth-1.20.aar')">
         <AndroidLibrary Include="Platforms\Android\libs\vpbluetooth-1.20.aar" Bind="false" />
-        <AndroidLibrary Include="Platforms\Android\libs\vpprotocol-2.3.71.15.aar" Bind="false" />
+        <AndroidLibrary Include="Platforms\Android\libs\vpprotocol-2.3.81.15.aar" Bind="false" Condition="Exists('Platforms\Android\libs\vpprotocol-2.3.81.15.aar')" />
         <AndroidLibrary Include="Platforms\Android\libs\JL_Watch_V1.13.1_11214-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\JL_Watch_V1.13.1_11214-release.aar')" />
         <AndroidLibrary Include="Platforms\Android\libs\jl_rcsp_V0.7.2_527-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\jl_rcsp_V0.7.2_527-release.aar')" />
         <AndroidLibrary Include="Platforms\Android\libs\jl_bt_ota_V1.10.0_10931-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\jl_bt_ota_V1.10.0_10931-release.aar')" />
