@@ -31,7 +31,7 @@ if (Test-Path $EnvironmentJsonPath) {
 }
 
 if (-not $OpsBaseUrl) {
-    $opsJson = az webapp show --resource-group $ResourceGroup --name $OpsAppName -o json 2>$null
+    $opsJson = cmd /c "az webapp show --resource-group `"$ResourceGroup`" --name `"$OpsAppName`" -o json 2>nul"
     if ($LASTEXITCODE -ne 0 -or -not $opsJson) {
         throw "Ops app '$OpsAppName' not found. Pass -OpsBaseUrl or run New-RaphCareOpsAzureApp.ps1 first."
     }

@@ -14,6 +14,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+# Windows PowerShell treats az stderr as a terminating error. Probe existence via cmd.
 $repoRoot = Split-Path -Parent $PSScriptRoot
 if (-not $EnvironmentJsonPath) {
     $EnvironmentJsonPath = Join-Path $repoRoot "artifacts\azure-test-environment.json"
@@ -31,9 +32,9 @@ if (Test-Path $EnvironmentJsonPath) {
     if ($envInfo.opsAppName) { $OpsAppName = [string]$envInfo.opsAppName }
 }
 
-$existing = az webapp show --resource-group $ResourceGroup --name $OpsAppName -o json 2>$null
-if ($LASTEXITCODE -eq 0 -and $existing) {
-    $app = $existing | ConvertFrom-Json
+$existingJson = cmd /c "az webapp show --resource-group `"$ResourceGroup`" --name `"$OpsAppName`" -o json 2>nul"
+if ($LASTEXITCODE -eq 0 -and $existingJson) {
+    $app = $existingJson | ConvertFrom-Json
     Write-Host "Ops App Service already exists: $($app.defaultHostName)"
     exit 0
 }
@@ -78,8 +79,8 @@ az webapp config set `
     --resource-group $ResourceGroup `
     --name $OpsAppName `
     --always-on true `
-    --linux-fx-version "DOTNETCORE|10.0" `
     -o none
+if ($LASTEXITCODE -ne 0) { throw "az webapp config set failed for $OpsAppName" }
 
 $created = az webapp show --resource-group $ResourceGroup --name $OpsAppName -o json | ConvertFrom-Json
 $opsUrl = "https://$($created.defaultHostName)"

@@ -20,7 +20,7 @@ These logins are for the staging site. They are fake people, not real patients. 
 
 **Platform Ops** (wearable fleet inventory): open Ops, then Professional sign-in.
 
-[https://OPS_HOST/signin](https://OPS_HOST/signin)
+[https://raphcare-ops.azurewebsites.net/signin](https://raphcare-ops.azurewebsites.net/signin)
 
 **Patient:** use the Android app with the patient account below. You can also try [patient sign-in on the Portal](https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net/patient/signin).
 
