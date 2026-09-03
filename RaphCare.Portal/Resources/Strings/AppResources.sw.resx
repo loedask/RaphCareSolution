@@ -2462,7 +2462,7 @@
     <value>Hifadhi dokezo la SOAP au ongeza dokezo la maandishi wakati ziara inaendelea.</value>
   </data>
   <data name="Visit_OpenVisitDocumentLead" xml:space="preserve">
-    <value>Wasimamizi wa hospitali wanaweza kuongeza hii wakati ziara inaendelea.</value>
+    <value>Madaktari na wasimamizi wa hospitali wanaweza kuongeza agizo la dawa wakati ziara inaendelea. Wafanyakazi wa famasia wanachukua katika Ukusanyaji, hata baada ya ziara kufungwa.</value>
   </data>
   <data name="Common_MedicationName" xml:space="preserve">
     <value>Jina la dawa</value>

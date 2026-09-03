@@ -2462,7 +2462,7 @@
     <value>Bomba note SOAP to bakisa note ya maloba ntango visite ezali kokende.</value>
   </data>
   <data name="Visit_OpenVisitDocumentLead" xml:space="preserve">
-    <value>Ba administrateurs ya lopitalo bakoki kobakisa oyo ntango visite ezali kokende.</value>
+    <value>Ba monganga mpe ba administrateurs ya lopitalo bakoki kobakisa ordonnance ntango visite ezali kokende. Ba staff ya pharmacie bazwa yango na Kozwa, ata nsima visite esili.</value>
   </data>
   <data name="Common_MedicationName" xml:space="preserve">
     <value>Kombo ya nkisi</value>

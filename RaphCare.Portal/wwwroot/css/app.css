@@ -853,6 +853,12 @@ a:hover { text-decoration: underline; }
     overflow: hidden;
 }
 
+.admin-page-card:has(.searchable-select.open) {
+    overflow: visible;
+    position: relative;
+    z-index: 6;
+}
+
 .admin-page-card-head {
     display: flex;
     justify-content: space-between;
@@ -903,6 +909,8 @@ a:hover { text-decoration: underline; }
     padding: 1rem 1.75rem 1.5rem;
     border-top: 1px solid var(--rc-border);
     background: #fafbfc;
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
 }
 
 .admin-page-actions {
@@ -1131,6 +1139,12 @@ a:hover { text-decoration: underline; }
     border-radius: 1rem;
     box-shadow: var(--rc-shadow);
     overflow: hidden;
+}
+
+.card:has(.searchable-select.open) {
+    overflow: visible;
+    position: relative;
+    z-index: 6;
 }
 
 .card-header {

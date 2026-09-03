@@ -2425,7 +2425,7 @@
     <value>Save a SOAP note or add a free-text note while the visit is in progress.</value>
   </data>
   <data name="Visit_OpenVisitDocumentLead" xml:space="preserve">
-    <value>Hospital administrators can add this while the visit is in progress.</value>
+    <value>Doctors and hospital administrators can add a prescription while the visit is in progress. Pharmacy staff collect it on Collection, including after the visit is closed.</value>
   </data>
   <data name="Common_MedicationName" xml:space="preserve">
     <value>Medication name</value>
