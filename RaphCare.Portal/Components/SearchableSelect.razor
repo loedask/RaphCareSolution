@@ -1,9 +1,10 @@
 @typeparam TValue
 @inject IUiCultureService CultureService
 @inject IJSRuntime Js
-@implements IDisposable
+@implements IAsyncDisposable
 
-<div class="searchable-select @CssClass @(Disabled ? "disabled" : null) @(_open ? "open" : null)">
+<div @ref="_root"
+     class="searchable-select @CssClass @(Disabled ? "disabled" : null) @(_open ? "open" : null)">
     <button type="button"
             id="@Id"
             class="searchable-select-trigger"
@@ -18,7 +19,7 @@
 
     @if (_open)
     {
-        <div class="searchable-select-backdrop" @onclick="Close"></div>
+        <div class="searchable-select-backdrop" @onclick="CloseAsync"></div>
         <div class="searchable-select-panel" @onclick:stopPropagation="true">
             <input @ref="_searchInput"
                    class="searchable-select-search"
@@ -60,9 +61,12 @@
 
 @code {
     private readonly string _listId = $"sel-list-{Guid.NewGuid():N}";
+    private ElementReference _root;
     private ElementReference _searchInput;
+    private DotNetObjectReference<SearchableSelect<TValue>>? _dotNetRef;
     private bool _open;
     private bool _focusSearch;
+    private bool _bindDismiss;
     private string _query = string.Empty;
     private int _activeIndex;
     private IReadOnlyList<SelectOption<TValue>> _filtered = Array.Empty<SelectOption<TValue>>();
@@ -110,14 +114,20 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         _ = firstRender;
+        if (_bindDismiss)
+        {
+            _bindDismiss = false;
+            await BindDismissOutsideAsync().ConfigureAwait(false);
+        }
+
         if (!_focusSearch)
             return;
 
         _focusSearch = false;
         try
         {
-            await _searchInput.FocusAsync();
-            await Js.InvokeVoidAsync("raphCareLocale.guardSelectKeys", _searchInput);
+            await _searchInput.FocusAsync().ConfigureAwait(false);
+            await Js.InvokeVoidAsync("raphCareLocale.guardSelectKeys", _searchInput).ConfigureAwait(false);
         }
         catch (JSException)
         {
@@ -143,7 +153,7 @@
 
         if (_open)
         {
-            Close();
+            await CloseAsync().ConfigureAwait(false);
             return;
         }
 
@@ -152,7 +162,7 @@
         _activeIndex = Math.Max(0, IndexOfSelected());
         _open = true;
         _focusSearch = true;
-        await Task.CompletedTask;
+        _bindDismiss = true;
     }
 
     private async Task OnSearchKeyDown(KeyboardEventArgs e)
@@ -160,7 +170,7 @@
         switch (e.Key)
         {
             case "Escape":
-                Close();
+                await CloseAsync().ConfigureAwait(false);
                 break;
             case "ArrowDown":
                 if (Filtered.Count > 0)
@@ -172,22 +182,68 @@
                 break;
             case "Enter":
                 if (_activeIndex >= 0 && _activeIndex < Filtered.Count)
-                    await SelectAsync(Filtered[_activeIndex]);
+                    await SelectAsync(Filtered[_activeIndex]).ConfigureAwait(false);
                 break;
         }
     }
 
     private async Task SelectAsync(SelectOption<TValue> option)
     {
-        await ValueChanged.InvokeAsync(option.Value);
-        Close();
+        await ValueChanged.InvokeAsync(option.Value).ConfigureAwait(false);
+        await CloseAsync().ConfigureAwait(false);
     }
 
-    internal void Close()
+    /// <summary>Called from JS when the user presses outside the select.</summary>
+    [JSInvokable]
+    public Task CloseFromOutside() => CloseAsync();
+
+    /// <summary>Closes the panel. Used by Inpatient capacity when starting "Add facility".</summary>
+    internal Task CloseAsync() => CloseCoreAsync();
+
+    /// <summary>Backward-compatible sync close for existing call sites.</summary>
+    internal void Close() => _ = CloseAsync();
+
+    private async Task CloseCoreAsync()
     {
+        if (!_open)
+            return;
+
         _open = false;
         _query = string.Empty;
         RefreshFilter();
+        await UnbindDismissOutsideAsync().ConfigureAwait(false);
+        await InvokeAsync(StateHasChanged).ConfigureAwait(false);
+    }
+
+    private async Task BindDismissOutsideAsync()
+    {
+        try
+        {
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+            await Js.InvokeVoidAsync("raphCareLocale.bindSelectDismissOutside", _root, _dotNetRef)
+                .ConfigureAwait(false);
+        }
+        catch (JSException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+    }
+
+    private async Task UnbindDismissOutsideAsync()
+    {
+        try
+        {
+            await Js.InvokeVoidAsync("raphCareLocale.unbindSelectDismissOutside", _root)
+                .ConfigureAwait(false);
+        }
+        catch (JSException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
     }
 
     private void RefreshFilter()
@@ -222,5 +278,11 @@
         return 0;
     }
 
-    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+    public async ValueTask DisposeAsync()
+    {
+        CultureService.CultureChanged -= OnCultureChanged;
+        await UnbindDismissOutsideAsync().ConfigureAwait(false);
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
+    }
 }
