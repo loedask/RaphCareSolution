@@ -2462,7 +2462,7 @@
     <value>Enregistrez une note SOAP ou ajoutez une note libre pendant que la visite est en cours.</value>
   </data>
   <data name="Visit_OpenVisitDocumentLead" xml:space="preserve">
-    <value>Les administrateurs de l'hÃ´pital peuvent ajouter ceci pendant que la visite est en cours.</value>
+    <value>Les médecins et les administrateurs de l'hôpital peuvent ajouter une ordonnance pendant que la visite est en cours. Le personnel de pharmacie la retire dans Collecte, y compris après la clôture de la visite.</value>
   </data>
   <data name="Common_MedicationName" xml:space="preserve">
     <value>Nom du mÃ©dicament</value>

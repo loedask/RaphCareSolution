@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Searchable dropdowns on admin cards (Schedule filter, book forms, and the rest) can open past the card edge instead of being clipped by rounded overflow.
+
+## Modules modified
+
+- **Portal / Ui:** admin card overflow when a searchable select is open.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
 Portal admin is hospital-first: no platform left sidebar. Top bar always shows All hospitals, Register hospital, search, and account controls. Dashboard is hospital-scoped (multi-hospital accounts go to the list first; a single hospital auto-selects).
 
 ## Modules modified
