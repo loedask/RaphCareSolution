@@ -245,7 +245,7 @@
                                         <tr>
                                             <td>
                                                 <HospitalDirectoryPerson Name="@($"{patient.FirstName} {patient.LastName}")"
-                                                                         Href="@($"/admin/hospitals/{ClinicId}/patients/{patient.PatientId}")" />
+                                                                         Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, patient.PatientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "patients"))" />
                                             </td>
                                             <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
                                             <td>@patient.AccessType</td>
@@ -428,7 +428,7 @@
                                             <td>
                                                 @if (device.AssignedPatientId is Guid patientId)
                                                 {
-                                                    <a href="/admin/hospitals/@ClinicId/patients/@patientId">@(device.AssignedPatientName ?? AppResources.T("Common_Patient"))</a>
+                                                    <a href="@HospitalDeckReturnUrl.PatientHref(ClinicId, patientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "devices"))">@(device.AssignedPatientName ?? AppResources.T("Common_Patient"))</a>
                                                 }
                                                 else
                                                 {
@@ -495,7 +495,7 @@
                                         <tr>
                                             <td>@FormatEmergencyLocal(ev.OccurredAtUtc)</td>
                                             <td>
-                                                <a href="/admin/hospitals/@ClinicId/patients/@ev.PatientId">@ev.PatientName</a>
+                                                <a href="@HospitalDeckReturnUrl.PatientHref(ClinicId, ev.PatientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "devices"))">@ev.PatientName</a>
                                             </td>
                                             <td><span class="badge badge-error">@ev.EventType</span></td>
                                             <td>@(string.IsNullOrWhiteSpace(ev.Model) ? ev.SerialNumber : $"{ev.Model} · {ev.SerialNumber}")</td>
@@ -687,6 +687,7 @@
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
     [Inject] private IClinicalPatientDeviceReadingsService DeviceReadingsService { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private bool _loading = true;
     private bool _loadingStaff;
@@ -977,6 +978,7 @@
     {
         _tab = tab;
         _actionError = null;
+        Navigation.NavigateTo(HospitalDeckReturnUrl.ForClinicTab(ClinicId, tab), replace: true);
         if (tab == "staff" && !_staffLoaded)
             await LoadStaffAsync();
         else if (tab == "patients" && !_patientsLoaded)

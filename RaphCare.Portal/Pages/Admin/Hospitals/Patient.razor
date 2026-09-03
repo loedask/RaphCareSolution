@@ -18,12 +18,12 @@
     {
         <HospitalDeckMissing Message="@(_error ?? AppResources.T("Common_PatientNotFound"))"
                              BackHref="@BackUrl"
-                             BackText="@AppResources.T("Common_BackToHospital")" />
+                             BackText="@BackLinkText" />
     }
     else
     {
         <HospitalDeckMasthead BackHref="@BackUrl"
-                              BackText="@AppResources.T("Common_BackToHospital")"
+                              BackText="@BackLinkText"
                               Monogram="@HospitalDeckInitials.FromName($"{_patient.FirstName} {_patient.LastName}")"
                               Eyebrow="@AppResources.T("PatientDetail_ChartEyebrow")"
                               Title="@($"{_patient.FirstName} {_patient.LastName}")"
@@ -856,7 +856,7 @@
         </div>
 
         <div class="hospital-deck-foot">
-            <HospitalDeckBackLink Href="@BackUrl" Text="@AppResources.T("Common_BackToHospital")" />
+            <HospitalDeckBackLink Href="@BackUrl" Text="@BackLinkText" />
         </div>
     }
 </section>
@@ -864,6 +864,7 @@
 @code {
     [Parameter] public Guid ClinicId { get; set; }
     [Parameter] public Guid PatientId { get; set; }
+    [SupplyParameterFromQuery(Name = "return")] public string? ReturnQuery { get; set; }
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicalPatientDeviceReadingsService DeviceReadingsService { get; set; } = default!;
@@ -886,7 +887,24 @@
     private int _emergencyPage = 1;
     private const int EmergencyPageSize = 20;
 
-    private string BackUrl => $"/admin/hospitals/{ClinicId}?tab=patients";
+    private string BackUrl => HospitalDeckReturnUrl.Resolve(
+        ClinicId,
+        ReturnQuery,
+        HospitalDeckReturnUrl.ForClinicTab(ClinicId, "patients"));
+
+    private string BackLinkText =>
+        BackUrl.Contains("/inpatient", StringComparison.OrdinalIgnoreCase)
+            ? AppResources.T("Common_BackToInpatient")
+            : BackUrl.Contains("/collection", StringComparison.OrdinalIgnoreCase)
+                ? AppResources.T("Common_BackToCollection")
+                : BackUrl.Contains("/casualty", StringComparison.OrdinalIgnoreCase)
+                    ? AppResources.T("Common_BackToCasualty")
+                    : BackUrl.Contains("/theatre", StringComparison.OrdinalIgnoreCase)
+                        ? AppResources.T("Common_BackToTheatre")
+                        : BackUrl.Contains("/referrals", StringComparison.OrdinalIgnoreCase)
+                            ? AppResources.T("Common_BackToReferrals")
+                            : AppResources.T("Common_BackToHospital");
+
 
     private string ClinicDisplayName => _clinicName ?? AppResources.T("Common_ThisHospital");
 

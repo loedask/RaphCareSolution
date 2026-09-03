@@ -42,6 +42,21 @@
   <data name="Common_BackToHospital" xml:space="preserve">
     <value>Back to hospital</value>
   </data>
+  <data name="Common_BackToInpatient" xml:space="preserve">
+    <value>Back to inpatient</value>
+  </data>
+  <data name="Common_BackToCollection" xml:space="preserve">
+    <value>Back to collection</value>
+  </data>
+  <data name="Common_BackToCasualty" xml:space="preserve">
+    <value>Back to casualty</value>
+  </data>
+  <data name="Common_BackToTheatre" xml:space="preserve">
+    <value>Back to theatre</value>
+  </data>
+  <data name="Common_BackToReferrals" xml:space="preserve">
+    <value>Back to referrals</value>
+  </data>
   <data name="Common_BackToAppointments" xml:space="preserve">
     <value>← Back to appointments</value>
   </data>

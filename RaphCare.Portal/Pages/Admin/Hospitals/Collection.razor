@@ -119,7 +119,7 @@
                                         </td>
                                         <td>
                                             <HospitalDirectoryPerson Name="@rx.PatientName"
-                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{rx.PatientId}")" />
+                                                                     Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, rx.PatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "collection", _tab))" />
                                             @if (!string.IsNullOrWhiteSpace(rx.NationalHealthId))
                                             {
                                                 <span class="hint">@rx.NationalHealthId</span>
@@ -201,7 +201,7 @@
                                         </td>
                                         <td>
                                             <HospitalDirectoryPerson Name="@lab.PatientName"
-                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{lab.PatientId}")" />
+                                                                     Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, lab.PatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "collection", _tab))" />
                                             @if (!string.IsNullOrWhiteSpace(lab.NationalHealthId))
                                             {
                                                 <span class="hint">@lab.NationalHealthId</span>
@@ -290,7 +290,7 @@
                                         <td class="pickup-code">@rx.PickupCode</td>
                                         <td>
                                             <HospitalDirectoryPerson Name="@rx.PatientName"
-                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{rx.PatientId}")" />
+                                                                     Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, rx.PatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "collection", _tab))" />
                                         </td>
                                         <td>
                                             @if (rx.Items.Count == 0)
@@ -348,7 +348,7 @@
                                         <td class="pickup-code">@lab.PickupCode</td>
                                         <td>
                                             <HospitalDirectoryPerson Name="@lab.PatientName"
-                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{lab.PatientId}")" />
+                                                                     Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, lab.PatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "collection", _tab))" />
                                         </td>
                                         <td>@lab.TestName</td>
                                         <td>@FormatOrderStatus(lab.Status)</td>

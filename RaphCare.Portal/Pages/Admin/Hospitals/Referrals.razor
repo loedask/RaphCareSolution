@@ -73,7 +73,7 @@
                                             <td>@FormatLocal(referral.ReferredAt)</td>
                                             <td>
                                                 <HospitalDirectoryPerson Name="@referral.PatientName"
-                                                                         Href="@($"/admin/hospitals/{ClinicId}/patients/{referral.PatientId}")" />
+                                                                         Href="@(referral.PatientId is Guid referralPatientId ? HospitalDeckReturnUrl.PatientHref(ClinicId, referralPatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "referrals")) : null)" />
                                             </td>
                                             <td>@referral.ReferredTo</td>
                                             <td>@(string.IsNullOrWhiteSpace(referral.Specialty) ? AppResources.T("Common_EmptyCell") : referral.Specialty)</td>
@@ -135,7 +135,7 @@
                                             <td>@FormatLocal(referral.ReferredAt)</td>
                                             <td>
                                                 <HospitalDirectoryPerson Name="@referral.PatientName"
-                                                                         Href="@($"/admin/hospitals/{ClinicId}/patients/{referral.PatientId}")" />
+                                                                         Href="@(referral.PatientId is Guid referralPatientId ? HospitalDeckReturnUrl.PatientHref(ClinicId, referralPatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "referrals")) : null)" />
                                             </td>
                                             <td>@referral.ReferredTo</td>
                                             <td>@(string.IsNullOrWhiteSpace(referral.Specialty) ? AppResources.T("Common_EmptyCell") : referral.Specialty)</td>
