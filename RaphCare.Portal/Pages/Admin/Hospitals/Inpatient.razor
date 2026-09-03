@@ -274,7 +274,7 @@
                                     <tr>
                                         <td>
                                             <HospitalDirectoryPerson Name="@adm.PatientName"
-                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{adm.PatientId}")" />
+                                                                     Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, adm.PatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "inpatient", "admissions"))" />
                                         </td>
                                         <td>@AppResources.Format("Inpatient_LocationFormat", adm.FacilityName, adm.WardName, adm.RoomName, adm.BedLabel)</td>
                                         <td>@ClinicTimeZoneHelper.FormatClinicLocal(adm.AdmittedAt, _clinicTimeZone)</td>
@@ -689,7 +689,7 @@
                                     <tr>
                                         <td>
                                             <HospitalDirectoryPerson Name="@adm.PatientName"
-                                                                     Href="@($"/admin/hospitals/{ClinicId}/patients/{adm.PatientId}")" />
+                                                                     Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, adm.PatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "inpatient", "admissions"))" />
                                         </td>
                                         <td>@AppResources.Format("Inpatient_LocationFormat", adm.FacilityName, adm.WardName, adm.RoomName, adm.BedLabel)</td>
                                         <td>@ClinicTimeZoneHelper.FormatClinicLocal(adm.AdmittedAt, _clinicTimeZone)</td>
@@ -729,6 +729,7 @@
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private bool _loading = true;
     private bool _saving;
@@ -933,6 +934,7 @@
             return;
 
         _tab = tab;
+        Navigation.NavigateTo(HospitalDeckReturnUrl.ForClinicPage(ClinicId, "inpatient", tab), replace: true);
         if (tab != "admissions")
         {
             CancelDischarge();

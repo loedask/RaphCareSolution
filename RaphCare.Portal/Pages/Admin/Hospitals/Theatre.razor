@@ -70,7 +70,7 @@
                                             <td>@FormatLocal(theatreCase.ScheduledStart)</td>
                                             <td>
                                                 <HospitalDirectoryPerson Name="@theatreCase.PatientName"
-                                                                         Href="@($"/admin/hospitals/{ClinicId}/patients/{theatreCase.PatientId}")" />
+                                                                         Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, theatreCase.PatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "theatre"))" />
                                             </td>
                                             <td>@theatreCase.ProcedureName</td>
                                             <td>@(string.IsNullOrWhiteSpace(theatreCase.TheatreName) ? AppResources.T("Common_EmptyCell") : theatreCase.TheatreName)</td>

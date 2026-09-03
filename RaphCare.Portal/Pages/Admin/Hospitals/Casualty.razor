@@ -82,7 +82,7 @@
                                                 @if (ticket.PatientId is Guid waitingPatientId && !string.IsNullOrWhiteSpace(ticket.PatientName))
                                                 {
                                                     <HospitalDirectoryPerson Name="@ticket.PatientName"
-                                                                             Href="@($"/admin/hospitals/{ClinicId}/patients/{waitingPatientId}")" />
+                                                                         Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, waitingPatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "casualty", _tab))" />
                                                 }
                                                 else if (!string.IsNullOrWhiteSpace(ticket.PatientName))
                                                 {
@@ -149,7 +149,7 @@
                                                 @if (ticket.PatientId is Guid calledPatientId && !string.IsNullOrWhiteSpace(ticket.PatientName))
                                                 {
                                                     <HospitalDirectoryPerson Name="@ticket.PatientName"
-                                                                             Href="@($"/admin/hospitals/{ClinicId}/patients/{calledPatientId}")" />
+                                                                             Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, calledPatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "casualty", _tab))" />
                                                 }
                                                 else if (!string.IsNullOrWhiteSpace(ticket.PatientName))
                                                 {
@@ -253,7 +253,7 @@
                                                 @if (ticket.PatientId is Guid recentPatientId && !string.IsNullOrWhiteSpace(ticket.PatientName))
                                                 {
                                                     <HospitalDirectoryPerson Name="@ticket.PatientName"
-                                                                             Href="@($"/admin/hospitals/{ClinicId}/patients/{recentPatientId}")" />
+                                                                             Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, recentPatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "casualty", _tab))" />
                                                 }
                                                 else if (!string.IsNullOrWhiteSpace(ticket.PatientName))
                                                 {

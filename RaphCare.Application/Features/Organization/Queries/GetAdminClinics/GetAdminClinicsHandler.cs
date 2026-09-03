@@ -27,10 +27,15 @@ public sealed class GetAdminClinicsHandler(
             .IsPlatformAdministratorAsync(currentUserService, roleAssignmentService, cancellationToken)
             .ConfigureAwait(false);
 
+        var membershipClinicIds = await clinicStaffMembershipService
+            .GetClinicIdsForUserAsync(userId, cancellationToken)
+            .ConfigureAwait(false);
+
+        // Platform admins with no clinic membership (Ops) see every active hospital for fleet work.
+        // Hospital admins who also have the Administrator role still only see membership hospitals.
         PagedResult<Clinic> paged;
-        if (isPlatformAdmin)
+        if (isPlatformAdmin && membershipClinicIds.Count == 0)
         {
-            // Ops and other platform administrators need every active hospital for fleet ownership.
             paged = await clinicRepository.SearchAsync(
                 queryShaper: q => q
                     .Include(c => c.Facilities)
@@ -42,17 +47,13 @@ public sealed class GetAdminClinicsHandler(
         }
         else
         {
-            var clinicIds = await clinicStaffMembershipService
-                .GetClinicIdsForUserAsync(userId, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (clinicIds.Count == 0)
+            if (membershipClinicIds.Count == 0)
                 return EmptyPage(request);
 
             paged = await clinicRepository.SearchAsync(
                 queryShaper: q => q
                     .Include(c => c.Facilities)
-                    .Where(c => clinicIds.Contains(c.Id))
+                    .Where(c => membershipClinicIds.Contains(c.Id))
                     .OrderByDescending(c => c.CreatedAt),
                 pageNumber: request.PageNumber,
                 pageSize: request.PageSize,
