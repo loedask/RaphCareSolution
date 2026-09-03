@@ -81,4 +81,12 @@ if ($LASTEXITCODE -ne 0) { throw "az webapp deploy failed for $WebAppName" }
     -ApiBaseUrl $ApiBaseUrl `
     -EnvironmentName "Staging"
 
+Write-Host "Ensuring startup command for Ops Host ..."
+az webapp config set `
+    --resource-group $ResourceGroup `
+    --name $WebAppName `
+    --startup-file "dotnet RaphCare.Ops.Host.dll" `
+    -o none
+if ($LASTEXITCODE -ne 0) { throw "Failed to set startup-file for $WebAppName" }
+
 Write-Host "Ops host published to App Service $WebAppName"
