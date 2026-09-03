@@ -1,5 +1,5 @@
-<div class="doc-header">
-<img src="brand/raphcare-logo.png" alt="RaphCare" />
+﻿<div class="doc-header">
+<img src="../../brand/raphcare-logo.png" alt="RaphCare" />
 <h1>RaphCare partner update (28 Aug 2026)</h1>
 </div>
 

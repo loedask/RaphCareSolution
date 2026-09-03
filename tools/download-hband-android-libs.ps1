@@ -6,32 +6,60 @@
   Run from the repository root:
     .\tools\download-hband-android-libs.ps1
 
-  Filenames track the repo's current jar_base / jar_core layout (versions change).
+  Filenames track the repo's jar_core layout (versions change).
   See docs/12_HBand_SDK_Integration.md.
 #>
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
-$base = 'https://raw.githubusercontent.com/HBandSDK/Android_Ble_SDK/master/android_sdk_source'
 $dest = Join-Path $repoRoot 'RaphCare.Mobile\Platforms\Android\libs'
 
-# Minimal set for connect + password + person sync + HR / SpO2 (not OTA / Goodix DFU).
+# Prefer raw GitHub (no REST API, avoids unauthenticated rate limits). jsDelivr is the fallback.
 # gson is provided by the GoogleGson NuGet package in RaphCare.Mobile.csproj (do not embed the jar).
 $files = @(
-    @{ Path = 'jar_core/vpbluetooth-1.20.aar'; Out = 'vpbluetooth-1.20.aar' },
-    @{ Path = 'jar_core/vpprotocol-2.3.71.15.aar'; Out = 'vpprotocol-2.3.71.15.aar' },
-    @{ Path = 'jar_core/JL_Watch_V1.13.1_11214-release.aar'; Out = 'JL_Watch_V1.13.1_11214-release.aar' },
-    @{ Path = 'jar_core/jl_rcsp_V0.7.2_527-release.aar'; Out = 'jl_rcsp_V0.7.2_527-release.aar' },
-    @{ Path = 'jar_core/jl_bt_ota_V1.10.0_10931-release.aar'; Out = 'jl_bt_ota_V1.10.0_10931-release.aar' },
-    @{ Path = 'jar_core/BmpConvert_V1.6.0_10604-release.aar'; Out = 'BmpConvert_V1.6.0_10604-release.aar' },
-    @{ Path = 'jar_core/abpartool-release.aar'; Out = 'abpartool-release.aar' }
+    'vpbluetooth-1.20.aar',
+    'vpprotocol-2.3.81.15.aar',
+    'JL_Watch_V1.13.1_11214-release.aar',
+    'jl_rcsp_V0.7.2_527-release.aar',
+    'jl_bt_ota_V1.10.0_10931-release.aar',
+    'BmpConvert_V1.6.0_10604-release.aar',
+    'abpartool-release.aar'
 )
 
+$bases = @(
+    'https://raw.githubusercontent.com/HBandSDK/Android_Ble_SDK/master/android_sdk_source/jar_core',
+    'https://cdn.jsdelivr.net/gh/HBandSDK/Android_Ble_SDK@master/android_sdk_source/jar_core'
+)
+
+function Download-HbandFile {
+    param(
+        [string] $Name,
+        [string] $OutPath
+    )
+
+    $headers = @{ 'User-Agent' = 'RaphCare-HBand-download' }
+    foreach ($base in $bases) {
+        $uri = "$base/$Name"
+        Write-Host "Downloading $Name from $base ..."
+        try {
+            Invoke-WebRequest -Uri $uri -OutFile $OutPath -UseBasicParsing -Headers $headers
+            if ((Get-Item $OutPath).Length -ge 1024) {
+                return
+            }
+        }
+        catch {
+            Write-Host "  failed: $($_.Exception.Message)"
+        }
+    }
+
+    throw "Could not download $Name. Update the filename in tools/download-hband-android-libs.ps1 to match https://github.com/HBandSDK/Android_Ble_SDK/tree/master/android_sdk_source/jar_core"
+}
+
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
-foreach ($f in $files) {
-    $uri = "$base/$($f.Path)"
-    $out = Join-Path $dest $f.Out
-    Write-Host "Downloading $($f.Out) ..."
-    Invoke-WebRequest -Uri $uri -OutFile $out -UseBasicParsing
+Get-ChildItem -Path $dest -Filter 'vpprotocol-*.aar' -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -ne 'vpprotocol-2.3.81.15.aar' } |
+    Remove-Item -Force
+foreach ($name in $files) {
+    Download-HbandFile -Name $name -OutPath (Join-Path $dest $name)
 }
 Write-Host "Done. Files in: $dest"
 Write-Host "Next: rebuild Android; C# calls VPOperateManager via Platforms/Android/HBand (JNI). See docs/12."

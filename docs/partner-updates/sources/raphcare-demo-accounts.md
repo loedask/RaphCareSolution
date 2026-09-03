@@ -1,8 +1,8 @@
-<div class="doc-header">
-<img src="brand/raphcare-logo.png" alt="RaphCare" />
+﻿<div class="doc-header">
+<img src="../brand/raphcare-logo.png" alt="RaphCare" />
 <div>
 <h1>Demo accounts for testing</h1>
-<p class="subtitle">RaphCare Demo Clinic · staging · 29 August 2026</p>
+<p class="subtitle">RaphCare Demo Clinic Â· staging Â· 29 August 2026</p>
 </div>
 </div>
 

@@ -88,7 +88,7 @@ Shell `DataTemplate` pages require a parameterless constructor. Those constructo
 
 - **`RaphCare.Mobile.Tests`** targets **net10.0** and references **`RaphCare.Mobile.Kernel` only** (avoids MAUI Resizetizer when running `dotnet test`).
 - Run: `dotnet test RaphCare.Mobile.Tests/RaphCare.Mobile.Tests.csproj`
-- **Smoke (Web + Mobile):** planned layers and manual phone path in [`checklist/Web_And_Mobile_Smoke_Plan.md`](./checklist/Web_And_Mobile_Smoke_Plan.md). Kernel unit tests are not a substitute for that pass.
+- **Smoke (Web + Mobile):** planned layers and manual phone path in [`checklist/sources/Web_And_Mobile_Smoke_Plan.md`](./checklist/sources/Web_And_Mobile_Smoke_Plan.md). Kernel unit tests are not a substitute for that pass.
 
 ## Build quality
 

@@ -1,5 +1,5 @@
-<div class="doc-header">
-<img src="brand/raphcare-logo.png" alt="RaphCare" />
+﻿<div class="doc-header">
+<img src="../brand/raphcare-logo.png" alt="RaphCare" />
 <h1>RaphCare partner update (2 Sep 2026)</h1>
 </div>
 
@@ -22,7 +22,7 @@ Clinic stays the lighter outpatient product. Network stays multi-site. **Hospita
 - **AI discharge draft:** on discharge, tap Draft with AI when the hospital allows it (Organization details has the toggle). Staff edit the text, then save. The draft uses stay reason and ward vitals only, not free-text ward notes. Needs cloud AI keys on the server; otherwise drafting is unavailable. Clinical text goes only to Azure OpenAI you configure, not to public ChatGPT.
 - **Lab result ready:** when staff enter a lab result on Collection, the patient gets an in-app notice (and push when configured) that the result is ready. The notice does not include the values. Values stay on the visit health record.
 
-The commercial one-pager matches this. Hospital is billed per site each month and lists these extras: [`raphcare-price-list.pdf`](raphcare-price-list.pdf).
+The commercial one-pager matches this. Hospital is billed per site each month and lists these extras: [`raphcare-price-list.pdf`](../raphcare-price-list.pdf).
 
 ## 2. Demo clinic and accounts (staging)
 
@@ -46,7 +46,7 @@ For these demo accounts there is no Microsoft sign-in step, and no second email 
 
 There is still a chart named **Demo Inpatient** already in a bed, so inpatient and ward notes are easy to try without admitting someone first.
 
-A one-page sheet with the same logins is here: [`raphcare-demo-accounts.pdf`](raphcare-demo-accounts.pdf). Keep that sheet private. It has the password.
+A one-page sheet with the same logins is here: [`raphcare-demo-accounts.pdf`](../raphcare-demo-accounts.pdf). Keep that sheet private. It has the password.
 
 ## 3. Patient Android APK (staging)
 

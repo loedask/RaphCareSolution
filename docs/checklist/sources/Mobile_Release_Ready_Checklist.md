@@ -1,14 +1,14 @@
-# RaphCare.Mobile — release readiness checklist
+# RaphCare.Mobile: release readiness checklist
 
-**Design tokens, typography, and concept ↔ MAUI route mapping** stay in **[`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md)**. Use this doc for **product completeness**, **rollout**, and **quality bar** before calling the patient app "ready."
+**Design tokens, typography, and concept to MAUI route mapping** stay in **[`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md)**. Use this doc for **product completeness**, **rollout**, and **quality bar** before calling the patient app "ready."
 
-**Structure, DI, configuration, and feature flags:** **[`../09_Mobile_App_Guide.md`](../09_Mobile_App_Guide.md)**.
+**Structure, DI, configuration, and feature flags:** **[`../../09_Mobile_App_Guide.md`](../../09_Mobile_App_Guide.md)**.
 
 ---
 
 ## What “ready” means here
 
-**Ready** = planned patient capabilities are **implemented end-to-end** (real APIs where they exist), verified on **Android and iOS** unless a capability is explicitly scoped to one platform, with acceptable **loading / empty / error** behavior—not only visual parity with the React concept.
+**Ready** = planned patient capabilities are **implemented end-to-end** (real APIs where they exist), verified on **Android and iOS** unless a capability is explicitly scoped to one platform, with acceptable **loading / empty / error** behavior, not only visual parity with the React concept.
 
 ---
 
@@ -25,14 +25,14 @@ Copy the table for each major screen (e.g. list vs detail vs “add”).
 | No raw exception strings in UI | | |
 | Offline / degraded network (per product policy) | | |
 | Accessibility spot-check (labels, contrast, key flows) | | |
-| Visual parity vs concept | | See **[`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md)**; note intentional deltas. |
+| Visual parity vs concept | | See **[`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md)**; note intentional deltas. |
 | iOS + Android | | N/A only if documented platform scope. |
 
 ---
 
 ## Feature flags (prod vs pilot)
 
-Flags are defined in **`RaphCare.Mobile.Kernel`** (`FeatureFlags`, `FeatureFlagOptions`) and configured under **`FeatureFlags`** in **`RaphCare.Mobile/appsettings.json`** (overridden by **`appsettings.Development.json`** or User Secrets in DEBUG—see **[`../09_Mobile_App_Guide.md`](../09_Mobile_App_Guide.md)**).
+Flags are defined in **`RaphCare.Mobile.Kernel`** (`FeatureFlags`, `FeatureFlagOptions`) and configured under **`FeatureFlags`** in **`RaphCare.Mobile/appsettings.json`** (overridden by **`appsettings.Development.json`** or User Secrets in DEBUG; see **[`../../09_Mobile_App_Guide.md`](../../09_Mobile_App_Guide.md)**).
 
 **`appsettings.Development.json`** is set so **every flag is `true`** for DEBUG builds (local parity). **`appsettings.json`** (tracked defaults) keeps most verticals off until you choose prod/pilot rollout.
 
@@ -56,7 +56,7 @@ Fill in your rollout targets:
 
 ## Screen inventory (parity + completeness)
 
-Use the **route ↔ MAUI** table in **[`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md)** as the spine. Extend that doc’s parity checklist with **list / book / detail / add** rows per vertical as you lock each flow.
+Use the **route to MAUI** table in **[`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md)** as the spine. Extend that doc’s parity checklist with **list / book / detail / add** rows per vertical as you lock each flow.
 
 ---
 
@@ -64,11 +64,11 @@ Use the **route ↔ MAUI** table in **[`../Mobile_Concept_Port.md`](../Mobile_Co
 
 Use this as a reminder list; close each item or mark **N/A** with a short rationale in your release notes.
 
-- **Telehealth RTC:** Android Agora vs **iOS / other platforms** (`ITelehealthRtcSession` registration in **`MobileServiceCollectionExtensions`**). API token path verified via **`tools/verify-agora-rtc-config.ps1`**. iOS still needs **AgoraRtcKit** (xcframework) wiring—see **[`../10_Agora_Twilio_Setup.md`](../10_Agora_Twilio_Setup.md)**.
+- **Telehealth RTC:** Android Agora vs **iOS / other platforms** (`ITelehealthRtcSession` registration in **`MobileServiceCollectionExtensions`**). API token path verified via **`tools/verify-agora-rtc-config.ps1`**. iOS still needs **AgoraRtcKit** (xcframework) wiring; see **[`../../10_Agora_Twilio_Setup.md`](../../10_Agora_Twilio_Setup.md)**.
 - **AI assistant:** When **`PatientAssistant`** (`AzureOpenAiEndpoint`, `AzureOpenAiApiKey`, `AzureOpenAiDeployment`) is set in API config, **`AIService`** calls Azure OpenAI chat; otherwise **`PlaceholderReply`** is used.
 - **Push:** When **`FirebasePush:ServiceAccountJsonPath`** points to a valid Firebase service-account JSON file, **`FirebasePatientPushNotificationSender`** sends FCM to tokens from **`PatientPushDevices`**; otherwise **`NoOpPatientPushNotificationSender`** runs.
-- **Devices:** Vitals sync to API; **offline queue** — **`IVitalsSyncOutbox`** / **`FileVitalsSyncOutbox`** (JSON under app data, max 50 batches) retries on next Devices visit or after a successful sync.
-- **Dark mode:** second resource dictionary vs explicit **not in v1** decision (**[`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md)** `.dark` tokens).
+- **Devices:** Vitals sync to API; **offline queue** . **`IVitalsSyncOutbox`** / **`FileVitalsSyncOutbox`** (JSON under app data, max 50 batches) retries on next Devices visit or after a successful sync.
+- **Dark mode:** second resource dictionary vs explicit **not in v1** decision (**[`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md)** `.dark` tokens).
 - **Deep links:** optional global **NotFound** / bad-route UX (`AppNavigator`).
 
 ---
@@ -77,8 +77,8 @@ Use this as a reminder list; close each item or mark **N/A** with a short ration
 
 | Doc | Use for |
 |-----|---------|
-| **[`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md)** | Colors, type, radii, shadows/gradients, route map, visual parity checklist |
-| **[`../09_Mobile_App_Guide.md`](../09_Mobile_App_Guide.md)** | Where code lives, config, flags, localization, tests |
+| **[`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md)** | Colors, type, radii, shadows/gradients, route map, visual parity checklist |
+| **[`../../09_Mobile_App_Guide.md`](../../09_Mobile_App_Guide.md)** | Where code lives, config, flags, localization, tests |
 | **[`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md)** | API, Web, and Mobile smoke phases (manual phone path until automation) |
 | **`11_Devices_BLE_E580_E585.md`** | BLE devices |
 | **`10_Agora_Twilio_Setup.md`** | Telehealth / comms setup |

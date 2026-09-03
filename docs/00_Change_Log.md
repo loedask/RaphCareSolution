@@ -38,7 +38,7 @@ Documented a layered smoke plan for admin web and patient mobile (shared API fir
 
 ## Modules modified
 
-- **docs:** `checklist/Web_And_Mobile_Smoke_Plan.md`; pointers from feature checklists, mobile guide, demo launch guide, and mobile release checklist.
+- **docs:** `checklist/sources/Web_And_Mobile_Smoke_Plan.md`; pointers from feature checklists, mobile guide, demo launch guide, and mobile release checklist.
 
 ---
 
@@ -98,7 +98,7 @@ Hospital plan value: ward notes on a stay, a cash invoice and patient-facing sum
 ## Modules modified
 
 - **Domain / Application / Persistence / API / Client / Web:** inpatient observations, discharge invoice line items, nurse role, occupancy stats.
-- **docs:** hospital plan checklist (engineering + partner), `partner-updates/raphcare-price-list.md`.
+- **docs:** hospital plan checklist (engineering + partner), `partner-updates/sources/raphcare-price-list.md`.
 
 ---
 
