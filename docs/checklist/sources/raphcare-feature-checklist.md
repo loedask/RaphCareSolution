@@ -50,6 +50,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Collection board: search pending prescriptions/labs, camera QR scan, call a code onto the waiting screen, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR, public waiting-screen token (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs
 - [x] Clinic devices list
+- [x] Platform fleet inventory API (CreateDevice, AssignDeviceToPatient, filtered GetDevices) + claim-only patient register
 - [x] Tele-session start (Agora join info for admin)
 
 ### Admin panel (Web)
@@ -64,6 +65,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page (hospital-deck)
 - [x] Admin dashboard
+- [x] Platform Fleet page (/admin/fleet): stock-in serials, assign to patient
 - [x] Web UI language switcher (en / fr / ln / sw)
 - [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 
@@ -73,7 +75,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, a waiting screen that shows pickup codes only, and platform Fleet stock-in / assign for wearables. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -157,7 +159,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 | Appointments | [x] | [x] | [x] | List, book (clinic from My clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
-| Devices / BLE vitals | [x] | [x] | [x] | Offline outbox retries |
+| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial; offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
@@ -197,6 +199,7 @@ Push notifications on device:
 Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`, **`docs/14_Wearable_Capability_Catalog.md`**, desk steps in [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md)):
 
 - [x] Devices screen: BLE scan, connect, disconnect
+- [x] Patient claim of assigned fleet serial (no invent-serial register)
 - [x] E580 / E585 name filter (`E585E580DeviceFilter`, includes `ET580` / `ET585`) + "show all BLE" fallback
 - [x] Android Bluetooth / Nearby devices permission flow
 - [x] iOS Bluetooth usage string (`Info.plist`)
@@ -250,7 +253,7 @@ Permissions / hardware UX:
 Broader API surface used by staff tools or integrations (not the patient app primary path).
 
 - [x] `PatientsController`, `ClinicalController`, `AppointmentsController` (staff-shaped)
-- [x] `DevicesController`, `TelemedicineController`, `BillingController`, `InsuranceController`
+- [x] `DevicesController` (platform fleet create/assign/list), `TelemedicineController`, `BillingController`, `InsuranceController`
 - [x] `MentalHealthController` (staff assessments: placeholder data until persistence)
 - [x] `AIController`, `ReportingController`
 - [x] FHIR export (`api/fhir`)

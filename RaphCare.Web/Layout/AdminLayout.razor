@@ -23,6 +23,10 @@
                 <span class="admin-nav-icon" aria-hidden="true">⌂</span>
                 @AppResources.T("Common_Hospitals")
             </NavLink>
+            <NavLink class="admin-nav-link" href="/admin/fleet" Match="NavLinkMatch.Prefix">
+                <span class="admin-nav-icon" aria-hidden="true">⌚</span>
+                @AppResources.T("Fleet_Nav")
+            </NavLink>
             @if (ClinicContext.CurrentClinicId is Guid clinicId)
             {
                 <NavLink class="admin-nav-link" href="@($"/admin/hospitals/{clinicId}/appointments")">

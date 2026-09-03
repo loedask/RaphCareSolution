@@ -17,14 +17,31 @@ public class GetDevicesHandler : IRequestHandler<GetDevicesQuery, PagedResult<De
 
     public async Task<PagedResult<DeviceDto>> Handle(GetDevicesQuery request, CancellationToken cancellationToken)
     {
-        var devices = await _repository.ListAsync(cancellationToken);
+        var pageNumber = request.PageNumber < 1 ? 1 : request.PageNumber;
+        var pageSize = request.PageSize < 1 ? 20 : Math.Min(request.PageSize, 100);
+        var serialFilter = string.IsNullOrWhiteSpace(request.SerialContains)
+            ? null
+            : request.SerialContains.Trim();
 
-        var totalCount = devices.Count;
+        var page = await _repository.SearchAsync(
+            q =>
+            {
+                if (request.ClinicId is Guid clinicId)
+                    q = q.Where(d => d.ClinicId == clinicId);
+                if (request.UnassignedOnly == true)
+                    q = q.Where(d => !d.IsAssigned);
+                if (serialFilter is not null)
+                    q = q.Where(d => d.SerialNumber.Contains(serialFilter));
+                return q.OrderByDescending(d => d.CreatedAt);
+            },
+            pageNumber,
+            pageSize,
+            applyDefaultIdOrdering: false,
+            cancellationToken).ConfigureAwait(false);
 
-        var items = devices
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .Select(d => new DeviceDto
+        return new PagedResult<DeviceDto>
+        {
+            Items = page.Items.Select(d => new DeviceDto
             {
                 Id = d.Id,
                 ClinicId = d.ClinicId,
@@ -33,16 +50,10 @@ public class GetDevicesHandler : IRequestHandler<GetDevicesQuery, PagedResult<De
                 IsActive = d.IsActive,
                 IsAssigned = d.IsAssigned,
                 Status = d.Status
-            })
-            .ToList();
-
-        return new PagedResult<DeviceDto>
-        {
-            Items = items,
-            TotalCount = totalCount,
-            PageNumber = request.PageNumber,
-            PageSize = request.PageSize
+            }).ToList(),
+            TotalCount = page.TotalCount,
+            PageNumber = page.PageNumber,
+            PageSize = page.PageSize
         };
     }
 }
-
