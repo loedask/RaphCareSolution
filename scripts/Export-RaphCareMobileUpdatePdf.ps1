@@ -41,8 +41,22 @@ if (-not (Test-Path $config)) {
     throw "PDF config not found: $config"
 }
 
+$logoPath = Join-Path $docsRoot "brand\raphcare-logo.png"
+if (-not (Test-Path $logoPath)) {
+    throw "Logo not found: $logoPath"
+}
+
 New-Item -ItemType Directory -Force -Path $pdfDir | Out-Null
-Copy-Item -Path $md -Destination $tempMd -Force
+
+# Chromium blocks ../ and absolute file:// images under md-to-pdf. Copy into the export
+# folder and point at a same-directory relative path.
+$exportBrandDir = Join-Path $sourceDir "brand"
+New-Item -ItemType Directory -Force -Path $exportBrandDir | Out-Null
+Copy-Item -Path $logoPath -Destination (Join-Path $exportBrandDir "raphcare-logo.png") -Force
+$content = Get-Content -LiteralPath $md -Raw -Encoding utf8
+$exportContent = [regex]::Replace($content, 'src="[^"]*raphcare-logo\.png"', 'src="brand/raphcare-logo.png"')
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($tempMd, $exportContent, $utf8NoBom)
 
 Push-Location $sourceDir
 try {

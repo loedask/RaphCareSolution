@@ -2,7 +2,7 @@
 
 Markdown and PDF config for older dated partner notes. Matching PDFs live in `docs/partner-updates/archives/`.
 
-Stylesheet path: `../partner-update.pdf.css`. Logo: `../../brand/raphcare-logo.png`.
+Stylesheet path: `../partner-update.pdf.css`. Logo in markdown: `../../brand/raphcare-logo.png`. Export copies it into this folder as `brand/` for Chromium.
 
 ## Re-export
 

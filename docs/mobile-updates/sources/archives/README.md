@@ -11,7 +11,7 @@ Same as the APK stem: `mobile-update-v{DisplayVersion}+{versionCode}` (example: 
 | `mobile-update-v1.5.1+9.md` | Note for `RaphCare-v1.5.1+9.apk` |
 | `mobile-update-v1.5.1+9.config.json` | PDF export config (stylesheet: `../mobile-update.pdf.css`) |
 
-Stylesheet path: `../mobile-update.pdf.css`. Logo: `../../brand/raphcare-logo.png`.
+Stylesheet path: `../mobile-update.pdf.css`. Logo in markdown: `../../brand/raphcare-logo.png`. Export copies it into this folder as `brand/` for Chromium.
 
 PDF output: `../../archives/mobile-update-v1.5.1+9.pdf`
 

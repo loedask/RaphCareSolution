@@ -17,7 +17,7 @@ Whenever you bump `ApplicationDisplayVersion` / `ApplicationVersion` on `RaphCar
 - Export: `scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.5.2+10`
 - Archive re-export: add `-Archive`
 
-Reuse styles from `docs/mobile-updates/sources/mobile-update.pdf.css` and the logo under `docs/mobile-updates/brand/` (same asset as partner-updates; keep a copy here so PDF export can resolve `../brand/raphcare-logo.png`).
+Reuse styles from `docs/mobile-updates/sources/mobile-update.pdf.css` and the logo under `docs/mobile-updates/brand/`. The export script copies the logo into the markdown folder for Chromium (parent-folder images do not embed).
 
 ## What to write (plain partner language)
 
