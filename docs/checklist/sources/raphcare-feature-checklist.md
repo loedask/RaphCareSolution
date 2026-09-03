@@ -65,7 +65,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page (hospital-deck)
 - [x] Admin dashboard
-- [x] Platform Fleet page (/admin/fleet): stock-in serials, assign to patient
+- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): stock-in serials, assign to patient (separate app from Portal)
 - [x] Web UI language switcher (en / fr / ln / sw)
 - [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 
@@ -75,7 +75,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, a waiting screen that shows pickup codes only, and platform Fleet stock-in / assign for wearables. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Platform wearable fleet stock lives in the separate **RaphCare.Ops** app. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -236,7 +236,7 @@ Permissions / hardware UX:
 - [ ] Deep links / NotFound route UX
 - [ ] Prod feature-flag rollout plan filled in `Mobile_Release_Ready_Checklist.md`
 - [ ] Accessibility spot-check on phone (labels, contrast, key flows)
-- [x] Store packaging: icons, splash, package ids, privacy strings for Play / App Store `(partial)`: Android package id `com.yindula.raphcare`; Azure + Play Internal runbook; **`RaphCare.Web.Host`** for Linux App Service (Staging `ApiBaseUrl` on app **raphcare**); Play Console upload and iOS store still manual
+- [x] Store packaging: icons, splash, package ids, privacy strings for Play / App Store `(partial)`: Android package id `com.yindula.raphcare`; Azure + Play Internal runbook; **`RaphCare.Portal.Host`** for Linux App Service (Staging `ApiBaseUrl` on app **raphcare**); Play Console upload and iOS store still manual
 
 ### Admin panel
 

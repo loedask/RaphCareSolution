@@ -2,7 +2,7 @@
 .SYNOPSIS
   Sets App Service settings on the admin web host (raphcare) so Blazor WASM calls the hosted API.
 .NOTES
-  Azure app settings apply to RaphCare.Web.Host, not to the browser by themselves.
+  Azure app settings apply to RaphCare.Portal.Host, not to the browser by themselves.
   The host forwards ASPNETCORE_ENVIRONMENT (Blazor-Environment) and ApiBaseUrl.
   SMTP belongs on raphcare-api, not on this web app.
 #>
