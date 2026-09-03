@@ -6,11 +6,11 @@
 
 ## High-level summary of changes
 
-Azure hosting for **RaphCare.Ops** (`raphcare-ops` App Service, publish and CORS scripts). Staging demo account `demo.ops@raphcare.com`. Partner demo-accounts sheet **v2**.
+Azure hosting for **RaphCare.Ops** (`raphcare-ops` App Service, publish and CORS scripts). Staging demo account `demo.ops@raphcare.com`. Partner demo-accounts sheet **v2**. Documented Azure MFA login helper (`Login-RaphCareAzure.ps1`) for AADSTS50076 / Cursor login failures.
 
 ## Modules modified
 
-- **Persistence / Domain / scripts / docs / partner-updates:** Ops Azure scripts; DemoPack ops user; demo-accounts-v2 PDF sources.
+- **Persistence / Domain / scripts / docs / partner-updates / .cursor/rules:** Ops Azure scripts; DemoPack ops user; demo-accounts-v2; Azure login runbook.
 
 ---
 
