@@ -4,32 +4,31 @@ using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.PatientDevices.DTOs;
 using RaphCare.Domain.Devices;
+using ValidationException = RaphCare.Application.Common.Exceptions.ValidationException;
 
 namespace RaphCare.Application.Features.PatientDevices.Commands.RegisterMyDevice;
 
+/// <summary>
+/// Confirms a fleet wearable already assigned to the current patient (claim / activate in the app).
+/// Does not create inventory or assignments; platform ops must register and assign first.
+/// </summary>
 public sealed class RegisterMyDeviceHandler : IRequestHandler<RegisterMyDeviceCommand, RegisterMyDeviceResponseDto>
 {
     private readonly IRepository<Device> _devices;
     private readonly IRepository<DeviceAssignment> _assignments;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUser;
     private readonly IPatientClinicAccessService _patientClinics;
-    private readonly IDateTimeProvider _clock;
 
     public RegisterMyDeviceHandler(
         IRepository<Device> devices,
         IRepository<DeviceAssignment> assignments,
-        IUnitOfWork unitOfWork,
         ICurrentUserService currentUser,
-        IPatientClinicAccessService patientClinics,
-        IDateTimeProvider clock)
+        IPatientClinicAccessService patientClinics)
     {
         _devices = devices;
         _assignments = assignments;
-        _unitOfWork = unitOfWork;
         _currentUser = currentUser;
         _patientClinics = patientClinics;
-        _clock = clock;
     }
 
     public async Task<RegisterMyDeviceResponseDto> Handle(RegisterMyDeviceCommand request, CancellationToken cancellationToken)
@@ -38,18 +37,15 @@ public sealed class RegisterMyDeviceHandler : IRequestHandler<RegisterMyDeviceCo
             ?? throw new ForbiddenAccessException("A patient profile is required.");
 
         var serial = request.SerialNumber.Trim();
-        var model = request.ModelSku.Trim();
 
         var clinicIds = await _patientClinics.GetAccessibleClinicIdsAsync(patientId, cancellationToken).ConfigureAwait(false);
         if (clinicIds.Length == 0)
         {
-            throw new ValidationException(new[]
-            {
-                new ValidationFailure(nameof(RegisterMyDeviceCommand), "Register your care with a clinic (visit or enrollment) before adding a device.")
-            });
+            throw new ValidationException(
+            [
+                new ValidationFailure(nameof(RegisterMyDeviceCommand), "Register your care with a clinic before claiming a device.")
+            ]);
         }
-
-        var clinicId = clinicIds.OrderBy(x => x).First();
 
         var existingPaged = await _devices.SearchAsync(
             q => q.Where(d => d.SerialNumber == serial),
@@ -59,74 +55,64 @@ public sealed class RegisterMyDeviceHandler : IRequestHandler<RegisterMyDeviceCo
             cancellationToken).ConfigureAwait(false);
 
         var existing = existingPaged.Items.Count > 0 ? existingPaged.Items[0] : null;
-        if (existing != null)
+        if (existing is null)
         {
-            var myAssignment = await _assignments.SearchAsync(
-                q => q.Where(a => a.DeviceId == existing.Id && a.PatientId == patientId && a.IsActive),
-                1,
-                1,
-                true,
-                cancellationToken).ConfigureAwait(false);
-
-            if (myAssignment.Items.Count > 0)
-                return new RegisterMyDeviceResponseDto { DeviceId = existing.Id };
-
-            var otherActive = await _assignments.SearchAsync(
-                q => q.Where(a => a.DeviceId == existing.Id && a.PatientId != patientId && a.IsActive),
-                1,
-                1,
-                true,
-                cancellationToken).ConfigureAwait(false);
-
-            if (otherActive.Items.Count > 0)
-            {
-                throw new ValidationException(new[]
-                {
-                    new ValidationFailure(nameof(RegisterMyDeviceCommand.SerialNumber), "This device serial is already assigned to another patient.")
-                });
-            }
-
-            var assignment = new DeviceAssignment
-            {
-                DeviceId = existing.Id,
-                PatientId = patientId,
-                AssignedAt = _clock.UtcNow,
-                IsActive = true
-            };
-            existing.IsAssigned = true;
-            await _assignments.AddAsync(assignment, cancellationToken).ConfigureAwait(false);
-            await _devices.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
-            await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return new RegisterMyDeviceResponseDto { DeviceId = existing.Id };
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    nameof(RegisterMyDeviceCommand.SerialNumber),
+                    "This serial is not in the RaphCare fleet. Ask your care programme to assign a watch first.")
+            ]);
         }
 
-        var device = new Device
+        if (!existing.IsActive)
         {
-            ClinicId = clinicId,
-            SerialNumber = serial,
-            Model = model,
-            DeviceTypeId = KnownDeviceCatalogIds.WearableBleDeviceTypeId,
-            DeviceManufacturerId = KnownDeviceCatalogIds.GenericOemManufacturerId,
-            IsActive = true,
-            IsAssigned = true,
-            Status = "Active",
-            ActivatedAt = _clock.UtcNow
-        };
+            throw new ValidationException(
+            [
+                new ValidationFailure(nameof(RegisterMyDeviceCommand.SerialNumber), "This device is not active.")
+            ]);
+        }
 
-        await _devices.AddAsync(device, cancellationToken).ConfigureAwait(false);
+        if (!clinicIds.Contains(existing.ClinicId))
+        {
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    nameof(RegisterMyDeviceCommand.SerialNumber),
+                    "This device belongs to another clinic programme.")
+            ]);
+        }
 
-        await _assignments.AddAsync(
-            new DeviceAssignment
-            {
-                DeviceId = device.Id,
-                PatientId = patientId,
-                AssignedAt = _clock.UtcNow,
-                IsActive = true
-            },
+        var myAssignment = await _assignments.SearchAsync(
+            q => q.Where(a => a.DeviceId == existing.Id && a.PatientId == patientId && a.IsActive),
+            1,
+            1,
+            true,
             cancellationToken).ConfigureAwait(false);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        if (myAssignment.Items.Count > 0)
+            return new RegisterMyDeviceResponseDto { DeviceId = existing.Id };
 
-        return new RegisterMyDeviceResponseDto { DeviceId = device.Id };
+        var otherActive = await _assignments.SearchAsync(
+            q => q.Where(a => a.DeviceId == existing.Id && a.PatientId != patientId && a.IsActive),
+            1,
+            1,
+            true,
+            cancellationToken).ConfigureAwait(false);
+
+        if (otherActive.Items.Count > 0)
+        {
+            throw new ValidationException(
+            [
+                new ValidationFailure(nameof(RegisterMyDeviceCommand.SerialNumber), "This device serial is already assigned to another patient.")
+            ]);
+        }
+
+        throw new ValidationException(
+        [
+            new ValidationFailure(
+                nameof(RegisterMyDeviceCommand.SerialNumber),
+                "This watch is not assigned to you yet. Ask RaphCare or your clinic to assign it first.")
+        ]);
     }
 }

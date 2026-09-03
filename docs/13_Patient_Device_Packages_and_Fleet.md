@@ -94,7 +94,7 @@ Sensor reading on device
 | Area | Status |
 |------|--------|
 | **Mobile** | **In progress.** `DevicesPage`, `WearableBleCoordinator` (Plugin.BLE scan), Android **HBand** JNI bridge for connect and live HR/SpO₂ when AARs present (`docs/12`). |
-| **API** | **Patient vitals upload.** **`api/patient/devices`** (register and **`POST …/readings`**). Regenerate **NSwag**, then extend **Client** and MAUI sync. Staff **`api/Devices`** registry remains separate. |
+| **API** | **Patient vitals upload.** **`api/patient/devices`** (claim assigned serial + **`POST …/readings`**). Hand-written **Client** + MAUI sync. Staff / platform **`api/Devices`** fleet registry is separate (stock-in and assign). |
 
 ---
 
@@ -118,7 +118,7 @@ Same as **E585** for app and API; filter and docs treat **E580** and **E585** as
 
 ## Cross-cutting requirements (all three)
 
-1. **Provisioning / inventory.** Staff or operations may register **which patient received which SKU** (future: domain + API + admin UI).  
+1. **Provisioning / inventory.** Platform admins register serials into fleet stock (`CreateDevice`) and assign a device to a patient (`AssignDeviceToPatient`) in **Web admin → Fleet**. Patients **claim** that serial in the app; they cannot invent one.  
 2. **Support and docs.** Patient-facing setup guides per SKU (Y6: SIM / emergency testing; E580/E585: app pairing. See **`docs/11`**).  
 3. **Compliance.** Emergency and location features may require regional **telecare / medical device** review; out of scope for code comments but tracked at program level.
 

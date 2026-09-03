@@ -39,10 +39,11 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
+| Fleet watches (platform) | Done | Add serials to stock and assign a watch to a patient. Patients claim that serial in the app. They cannot invent one. |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Opening a hospital hides the left menu so staff can focus on that hospital.
+**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, a waiting screen that shows pickup codes (not names), and platform Fleet tools to stock and assign RaphCare watches. Opening a hospital hides the left menu so staff can focus on that hospital.
 
 **Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan.
 
@@ -103,6 +104,7 @@ What patients see on Android and iPhone.
 | Video visit on a real iPhone | Not started | Needs iOS video kit wiring |
 | Push alerts on Android | Partial | Needs Firebase configured on the server |
 | Push alerts on iPhone | Partial | Needs store and push setup, then a real device test |
+| Claim an assigned watch serial in the app | Done | After RaphCare or the clinic assigns the watch, the patient enters that serial. Unknown serials are rejected. |
 | Connect **E580** or **E585** style Bluetooth bands | Partial | Scan includes ET580 and ET585 labels; heart rate or oxygen only when the band speaks standard Bluetooth health profiles |
 | Live heart rate and blood oxygen in the app | Partial | Android vendor path wired; confirm on your ET580 or ET585 samples |
 | Auto sync and background monitoring | Not started | Manual sync exists; background sync not finished |

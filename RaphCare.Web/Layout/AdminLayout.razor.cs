@@ -209,6 +209,7 @@ public partial class AdminLayout
         {
             "/admin" => [(app, "/admin", false), (AppResources.T("Common_Dashboard", CultureInfo.CurrentUICulture), "/admin", true)],
             "/admin/hospitals" => [(app, "/admin", false), (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", true)],
+            "/admin/fleet" => [(app, "/admin", false), (AppResources.T("Fleet_Nav", CultureInfo.CurrentUICulture), "/admin/fleet", true)],
             "/admin/hospitals/register" =>
             [
                 (app, "/admin", false),
