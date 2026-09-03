@@ -10,7 +10,7 @@ Azure hosting for **RaphCare.Ops** (`raphcare-ops` App Service, publish and CORS
 
 ## Modules modified
 
-- **Persistence / Domain / scripts / docs / partner-updates / .cursor/rules:** Ops Azure scripts; DemoPack ops user; demo-accounts-v2; Azure login runbook.
+- **Persistence / Domain / scripts / docs / partner-updates / .cursor/rules / API / Application / Client:** Ops Azure scripts; DemoPack ops user; demo-accounts-v2; Azure login runbook; Ops fleet without clinic profile (devices tenant-exempt, platform admin hospital list).
 
 ---
 

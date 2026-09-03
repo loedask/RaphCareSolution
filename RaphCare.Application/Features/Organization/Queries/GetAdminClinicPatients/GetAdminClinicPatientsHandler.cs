@@ -8,6 +8,7 @@ namespace RaphCare.Application.Features.Organization.Queries.GetAdminClinicPatie
 public sealed class GetAdminClinicPatientsHandler(
     ICurrentUserService currentUserService,
     IClinicStaffMembershipService clinicStaffMembershipService,
+    IUserRoleAssignmentService roleAssignmentService,
     IAdminClinicPatientQueryService adminClinicPatientQueryService)
     : IRequestHandler<GetAdminClinicPatientsQuery, PagedResult<AdminClinicPatientListItemDto>?>
 {
@@ -15,8 +16,12 @@ public sealed class GetAdminClinicPatientsHandler(
         GetAdminClinicPatientsQuery request,
         CancellationToken cancellationToken)
     {
-        if (!await AdminClinicAuthorization.HasClinicAccessAsync(
-                currentUserService, clinicStaffMembershipService, request.ClinicId, cancellationToken)
+        if (!await AdminClinicAuthorization.HasClinicAccessOrPlatformAdminAsync(
+                currentUserService,
+                clinicStaffMembershipService,
+                roleAssignmentService,
+                request.ClinicId,
+                cancellationToken)
             .ConfigureAwait(false))
             return null;
 
