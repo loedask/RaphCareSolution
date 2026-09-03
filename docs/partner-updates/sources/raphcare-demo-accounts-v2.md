@@ -74,7 +74,7 @@ The waiting screen shows pickup codes only. It does not show names or medicines.
 
 ## A path that covers most of it
 
-1. Sign in as **hospital admin** on the Portal. Confirm you land in **RaphCare Demo Clinic**. The left menu should hide. Use **All hospitals** in the top bar to go back to the list.
+1. Sign in as **hospital admin** on the Portal. Confirm you land in **RaphCare Demo Clinic**. There is no platform left menu. Use **All hospitals** in the top bar to go back to the list. **Register hospital** is also in the top bar.
 2. Open **Collection**. Search `2DEM2A`. Tap **Call**. Open the waiting screen in another tab. You should see the code on the TV view.
 3. Sign in as **pharmacist** (or stay as admin). Mark that prescription collected. Print a slip if you want. Try the wall poster for the counter.
 4. Sign in as **lab**. Find `2DEM2B` and enter a result.

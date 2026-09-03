@@ -338,6 +338,15 @@ a:hover { text-decoration: underline; }
     background: #f1f5f9;
 }
 
+.admin-topbar-register {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.admin-shell-hospital .admin-main {
+    width: 100%;
+}
+
 .admin-breadcrumb {
     display: flex;
     align-items: center;
@@ -1533,9 +1542,9 @@ a:hover { text-decoration: underline; }
     position: relative;
     overflow: hidden;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 1.35rem 1.75rem;
-    align-items: center;
+    align-items: start;
     padding: 1.65rem 1.7rem 1.55rem;
     border-radius: 1.6rem;
     color: #f8fafc;
@@ -1574,6 +1583,20 @@ a:hover { text-decoration: underline; }
 .hospital-deck-masthead > * {
     position: relative;
     z-index: 1;
+}
+
+.hospital-deck-brand {
+    display: grid;
+    gap: 0.9rem;
+    min-width: 0;
+    justify-items: start;
+}
+
+.hospital-deck-brand-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1.75rem;
+    align-items: center;
 }
 
 .hospital-deck-monogram {
@@ -1751,7 +1774,6 @@ a:hover { text-decoration: underline; }
 }
 
 .hospital-deck-masthead .hospital-deck-back {
-    grid-column: 1 / -1;
     justify-self: start;
 }
 
@@ -2122,7 +2144,7 @@ a.hospital-directory-person:hover strong {
 
 @media (max-width: 1080px) {
     .hospital-deck-masthead {
-        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .hospital-deck-meta {

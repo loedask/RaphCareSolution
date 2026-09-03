@@ -28,7 +28,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Area | Status | What you can do |
 |------|--------|-----------------|
 | Hospital list, register, claim | Done | Find or register a hospital. Each hospital gets a short RaphCare reference staff can share. |
-| Opening a hospital | Done | The left menu hides so the hospital tools have more room. Use All hospitals in the top bar to go back. Language and sign out are there too. |
+| Opening a hospital | Done | No platform left menu. Top bar has All hospitals, Register hospital, search, language, and sign out. Open a hospital for its tools, or use the hospital dashboard when one is selected. |
 | Hospital profile and facilities | Done | Edit details; add physical or virtual locations. The hospital page opens with a large header and a section menu on the side. |
 | Staff invites and roles | Done | Invite people. Set staff, doctor, pharmacist, or lab technician. Admins can still do hospital setup. |
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |
@@ -43,7 +43,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Platform watch stock and assignment live in a separate Ops web app. Opening a hospital hides the left menu so staff can focus on that hospital.
+**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Platform watch stock and assignment live in a separate Ops web app. Portal admin has no platform left menu; the top bar carries All hospitals and Register hospital.
 
 **Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan.
 
@@ -212,7 +212,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 This list is the current manual smoke for admin web and the patient phone app. Builders also keep a longer layered plan (API first, then web automation, then phone) for when scripted smoke is added.
 
 1. **Admin web:** sign in as `demo.admin@raphcare.com` (password `RaphCareDemo!2026` unless you changed `Demo:Password`). Open **RaphCare Demo Clinic**.
-2. **Admin web:** the left menu should hide on a hospital. Use All hospitals in the top bar to return to the list.
+2. **Admin web:** there is no platform left menu. Use All hospitals and Register hospital in the top bar. Open a hospital for its tools.
 3. **Admin web:** on that hospital, open Inpatient. Add a ward, room, or bed if needed, admit someone. Add a ward note. On discharge, try Draft with AI, edit the text, then finish with a nightly rate and (optional) a return visit for next week. Confirm occupancy numbers on the hospital dashboard.
 4. **Admin web:** open Casualty. Add a walk-in (with or without a patient). Call the code and open the casualty waiting screen on another tab. Open Theatre and add today's case, then start and complete it. Open Referrals, log a referral, then accept or complete it. Open Roster, add someone to Morning or Afternoon, then remove them if you want.
 5. **Admin web:** on the hospital overview (and the admin home when that hospital is selected), confirm recent SOS or fall alerts show if any exist. Open Devices for the full list.

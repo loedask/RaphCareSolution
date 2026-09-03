@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
@@ -18,7 +17,6 @@ public partial class AdminLayout
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IUiCultureService CultureService { get; set; } = default!;
 
-    private IReadOnlyList<(string Label, string Href, bool IsLast)> _breadcrumbs = [];
     private bool _clinicSwitcherOpen;
     private string _searchQuery = string.Empty;
     private bool _searchOpen;
@@ -27,8 +25,10 @@ public partial class AdminLayout
     private IReadOnlyList<ClinicListItem> _hospitalResults = Array.Empty<ClinicListItem>();
     private IReadOnlyList<ClinicPatientListItem> _patientResults = Array.Empty<ClinicPatientListItem>();
 
-    private bool IsHospitalWorkspace =>
-        IsHospitalWorkspacePath(GetAbsolutePath(Navigation.Uri));
+    private string DashboardHref =>
+        ClinicContext.CurrentClinicId is not null
+            ? "/admin"
+            : "/admin/hospitals";
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,14 +50,9 @@ public partial class AdminLayout
         await ClinicContext.InitializeAsync().ConfigureAwait(true);
 
         Navigation.LocationChanged += OnLocationChanged;
-        UpdateBreadcrumbs(Navigation.Uri);
     }
 
-    private void OnCultureChanged()
-    {
-        UpdateBreadcrumbs(Navigation.Uri);
-        _ = InvokeAsync(StateHasChanged);
-    }
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
 
     private void OnClinicContextChanged() => _ = InvokeAsync(StateHasChanged);
 
@@ -170,71 +165,14 @@ public partial class AdminLayout
     {
         _clinicSwitcherOpen = false;
         await ClinicContext.SetCurrentClinicAsync(clinicId, name).ConfigureAwait(true);
-
-        if (IsHospitalWorkspacePath(GetAbsolutePath(Navigation.Uri)))
-            Navigation.NavigateTo($"/admin/hospitals/{clinicId}");
+        Navigation.NavigateTo($"/admin/hospitals/{clinicId}");
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         _searchOpen = false;
         _clinicSwitcherOpen = false;
-        UpdateBreadcrumbs(e.Location);
         InvokeAsync(StateHasChanged);
-    }
-
-    private static string GetAbsolutePath(string uri)
-    {
-        var path = new Uri(uri).AbsolutePath.TrimEnd('/');
-        return string.IsNullOrEmpty(path) ? "/" : path;
-    }
-
-    private static bool IsHospitalWorkspacePath(string path)
-    {
-        const string prefix = "/admin/hospitals/";
-        if (!path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-            return false;
-
-        var rest = path[prefix.Length..];
-        var slash = rest.IndexOf('/');
-        var idPart = slash < 0 ? rest : rest[..slash];
-        return Guid.TryParse(idPart, out _);
-    }
-
-    private void UpdateBreadcrumbs(string uri)
-    {
-        var path = GetAbsolutePath(uri);
-        var app = AppResources.T("Common_AppName", CultureInfo.CurrentUICulture);
-        _breadcrumbs = path switch
-        {
-            "/admin" => [(app, "/admin", false), (AppResources.T("Common_Dashboard", CultureInfo.CurrentUICulture), "/admin", true)],
-            "/admin/hospitals" => [(app, "/admin", false), (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", true)],
-            "/admin/hospitals/register" =>
-            [
-                (app, "/admin", false),
-                (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", false),
-                (AppResources.T("AdminLayout_BreadcrumbRegisterHospital", CultureInfo.CurrentUICulture), "/admin/hospitals/register", true)
-            ],
-            _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path.EndsWith("/appointments", StringComparison.Ordinal) =>
-            [
-                (app, "/admin", false),
-                (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", false),
-                (AppResources.T("Common_Appointments", CultureInfo.CurrentUICulture), path, true)
-            ],
-            _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path.Contains("/providers/", StringComparison.Ordinal) =>
-            [
-                (app, "/admin", false),
-                (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", false),
-                (AppResources.T("AdminLayout_BreadcrumbProvider", CultureInfo.CurrentUICulture), path, true)
-            ],
-            _ when path.StartsWith("/admin/hospitals/", StringComparison.Ordinal) && path != "/admin/hospitals/register" =>
-            [
-                (app, "/admin", false),
-                (AppResources.T("Common_Hospitals", CultureInfo.CurrentUICulture), "/admin/hospitals", false),
-                (AppResources.T("AdminLayout_BreadcrumbHospitalDetails", CultureInfo.CurrentUICulture), path, true)
-            ],
-            _ => [(app, "/admin", false), (AppResources.T("AdminLayout_BreadcrumbClinicPortal", CultureInfo.CurrentUICulture), "/admin", true)]
-        };
     }
 
     private async Task SignOutAsync()

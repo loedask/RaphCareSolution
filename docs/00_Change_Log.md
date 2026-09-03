@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Portal admin is hospital-first: no platform left sidebar. Top bar always shows All hospitals, Register hospital, search, and account controls. Dashboard is hospital-scoped (multi-hospital accounts go to the list first; a single hospital auto-selects).
+
+## Modules modified
+
+- **Portal / Ui / docs:** AdminLayout, Dashboard, admin CSS, feature checklists, demo-accounts-v2 path note.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
 Ops fleet **Add to stock** uses model radio buttons (E585, E580, Y6 Pro) instead of a dropdown.
 
 ## Modules modified
