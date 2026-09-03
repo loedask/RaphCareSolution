@@ -33,4 +33,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartn
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartnerUpdatePdf.ps1 -Stem partner-update-2026-08-29 -Archive
 ```
 
-Logo path from these files is `../brand/raphcare-logo.png` (from archives: `../../brand/raphcare-logo.png`).
+Logo for editors: `../brand/raphcare-logo.png` (archives: `../../brand/raphcare-logo.png`). The export script copies that PNG into `sources/brand/` (or `sources/archives/brand/`) for PDF generation, because Chromium will not load parent-folder images.

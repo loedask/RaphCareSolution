@@ -15,7 +15,7 @@ Example: `RaphCare-v1.5.2+10.apk` uses `mobile-update-v1.5.2+10.md` and `.config
 | `mobile-update.pdf.css` | Shared styles |
 | [`archives/`](archives/) | Markdown and config for older builds |
 
-Logo path from these files is `../brand/raphcare-logo.png` (from archives: `../../brand/raphcare-logo.png`). The PNG lives under `docs/mobile-updates/brand/` so PDF export can load it without leaving the mobile-updates tree.
+Logo path from these files is `../brand/raphcare-logo.png` (from archives: `../../brand/raphcare-logo.png`). The export script copies the PNG into the export folder as `brand/raphcare-logo.png` so Chromium can embed it.
 
 Do not use display-only names like `mobile-update-v1.5.2.md`.
 
