@@ -8,7 +8,7 @@ Runbook to put the **patient Android app** and **hosted API / admin Web** online
 |-------|-------------------------|
 | Patient Android app | Google Play **Internal testing** track |
 | API | App Service `raphcare-api` |
-| Admin Web (Blazor WASM) | Linux App Service `raphcare` via **`RaphCare.Web.Host`** |
+| Admin Web (Blazor WASM) | Linux App Service `raphcare` via **`RaphCare.Portal.Host`** |
 | Database | Azure SQL database |
 | Sign-in | Entra app registrations in your tenant (optional for phone OTP) |
 | Ops mailbox | `raphcare@yindula.com` |
@@ -26,7 +26,7 @@ Default resource group: **`raphcare_group`** (or `rg-raphcare-test` from scripts
 | [`scripts/Set-RaphCareAzureTestAppSettings.ps1`](../scripts/Set-RaphCareAzureTestAppSettings.ps1) | Push connection string, Entra, JWT, CORS, SMTP into App Service |
 | [`scripts/Update-RaphCareAzureSqlMigrations.ps1`](../scripts/Update-RaphCareAzureSqlMigrations.ps1) | Apply all EF contexts to Azure SQL |
 | [`scripts/Publish-RaphCareApiToAzure.ps1`](../scripts/Publish-RaphCareApiToAzure.ps1) | `dotnet publish` + zip deploy API |
-| [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish **`RaphCare.Web.Host`** (linux-x64) to App Service `raphcare` |
+| [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish **`RaphCare.Portal.Host`** (linux-x64) to App Service `raphcare` |
 | [`scripts/New-RaphCareAndroidUploadKeystore.ps1`](../scripts/New-RaphCareAndroidUploadKeystore.ps1) | Create upload keystore (gitignored path) |
 | [`scripts/Publish-RaphCareAndroidPlay.ps1`](../scripts/Publish-RaphCareAndroidPlay.ps1) | Signed Release AAB for Play Internal |
 
@@ -39,7 +39,7 @@ App Service names in this setup:
 | Azure App Service | Project | Workflow |
 |-------------------|---------|----------|
 | **`raphcare-api`** | `RaphCare.API` | [`.github/workflows/develop_raphcare-api.yml`](../.github/workflows/develop_raphcare-api.yml) |
-| **`raphcare`** | `RaphCare.Web.Host` (serves WASM) | [`.github/workflows/develop_raphcare.yml`](../.github/workflows/develop_raphcare.yml) |
+| **`raphcare`** | `RaphCare.Portal.Host` (serves WASM) | [`.github/workflows/develop_raphcare.yml`](../.github/workflows/develop_raphcare.yml) |
 
 Both deploy from **`develop`**. Path filters skip Mobile. Use **Run workflow** on either job if you need a deploy without a matching path change.
 
@@ -81,7 +81,7 @@ Those two web settings are how the browser finds the API. SMTP stays on **raphca
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Set-RaphCareAzureWebAppSettings.ps1
 ```
 
-You still need a **RaphCare.Web.Host** deploy that includes the host forwarding code. Visual Studio Zip Deploy does not rewrite `wwwroot/appsettings.json` in source; the host reads `ApiBaseUrl` from App Service at runtime.
+You still need a **RaphCare.Portal.Host** deploy that includes the host forwarding code. Visual Studio Zip Deploy does not rewrite `wwwroot/appsettings.json` in source; the host reads `ApiBaseUrl` from App Service at runtime.
 
 | App | URL |
 |-----|-----|
@@ -221,7 +221,7 @@ Smoke:
 - API CORS reads `Cors:WebAdminOrigins` and `RaphCare:WebPortalBaseUrl` ([`Program.cs`](../RaphCare.API/Program.cs)).
 - Mobile package id: **`com.yindula.raphcare`**.
 - Release builds load [`appsettings.TestHosting.json`](../RaphCare.Mobile/appsettings.TestHosting.json) (API base URL). Publish scripts rewrite that URL to match your App Service hostname.
-- **Linux Web publish:** use **`RaphCare.Web.Host`** (Zip Deploy / GitHub Actions), not standalone `RaphCare.Web`. Local admin UI can still `dotnet run` on `RaphCare.Web`.
+- **Linux Web publish:** use **`RaphCare.Portal.Host`** (Zip Deploy / GitHub Actions), not standalone `RaphCare.Web`. Local admin UI can still `dotnet run` on `RaphCare.Web`.
 - Hosted admin WASM: `ASPNETCORE_ENVIRONMENT=Staging` plus `ApiBaseUrl` on App Service **raphcare**. [`RaphCare.Web/wwwroot/appsettings.json`](../RaphCare.Web/wwwroot/appsettings.json) stays `localhost` for local runs. Staging overlay: [`appsettings.Staging.json`](../RaphCare.Web/wwwroot/appsettings.Staging.json).
 
 ---

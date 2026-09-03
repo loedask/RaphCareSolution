@@ -10,9 +10,12 @@
 | RaphCare.Infrastructure | Implementations of application interfaces (e.g. AIService, persistence interceptors) |
 | RaphCare.Persistence | DbContexts, EF configurations, repositories, migrations, seeders |
 | RaphCare.Identity | Entra ID JWT validation, user provisioning, role mapping |
-| RaphCare.Client | Shared API client (generated client, base HTTP service, feature services, AutoMapper) |
-| RaphCare.Web | Blazor WebAssembly admin UI (run locally with `dotnet run`) |
-| RaphCare.Web.Host | Thin ASP.NET host that serves `RaphCare.Web` for Linux App Service (SPA fallback) |
+| RaphCare.Client | Shared API client (feature services, base HTTP service) |
+| RaphCare.Ui | Shared Blazor admin chrome and CSS (Portal + Ops) |
+| RaphCare.Portal | Blazor WebAssembly hospital/clinic portal UI |
+| RaphCare.Portal.Host | Thin ASP.NET host that serves `RaphCare.Portal` for Linux App Service (SPA fallback) |
+| RaphCare.Ops | Blazor WebAssembly platform ops UI (fleet inventory) |
+| RaphCare.Ops.Host | Thin ASP.NET host that serves `RaphCare.Ops` |
 | RaphCare.Mobile | .NET MAUI mobile app |
 
 ## Folder Breakdown by Project
@@ -76,7 +79,7 @@
 - Local development: `dotnet run --project RaphCare.Web`
 - Staff portal today is desktop-first. Future: same admin on a phone via responsive UI, then a thin install, not a full PWA. See **docs/15_Web_Admin_On_Phone.md**.
 
-### RaphCare.Web.Host
+### RaphCare.Portal.Host
 - Thin ASP.NET Core host (`UseBlazorFrameworkFiles`, static files, `MapFallbackToFile("index.html")`)
 - Project reference to **RaphCare.Web**; publish this project (not WASM alone) to **Linux** App Service
 - Same approach as Bobeta `Bobeta.Web.Host`

@@ -118,7 +118,7 @@ Same as **E585** for app and API; filter and docs treat **E580** and **E585** as
 
 ## Cross-cutting requirements (all three)
 
-1. **Provisioning / inventory.** Platform admins register serials into fleet stock (`CreateDevice`) and assign a device to a patient (`AssignDeviceToPatient`) in **Web admin → Fleet**. Patients **claim** that serial in the app; they cannot invent one.  
+1. **Provisioning / inventory.** Platform admins register serials into fleet stock (`CreateDevice`) and assign a device to a patient (`AssignDeviceToPatient`) in the **RaphCare.Ops** web app (`/fleet`). Patients **claim** that serial in the mobile app; they cannot invent one. Hospital Portal no longer hosts platform fleet stock UI.  
 2. **Support and docs.** Patient-facing setup guides per SKU (Y6: SIM / emergency testing; E580/E585: app pairing. See **`docs/11`**).  
 3. **Compliance.** Emergency and location features may require regional **telecare / medical device** review; out of scope for code comments but tracked at program level.
 

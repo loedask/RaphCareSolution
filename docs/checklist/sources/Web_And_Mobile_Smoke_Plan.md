@@ -29,7 +29,7 @@ Smoke is a **thin path**. It does not replace unit tests, release checklists, or
 | **A. API smoke** | Auth and main HTTP contracts against a running API | Shared | Shared |
 | **B. Web UI smoke** | Admin pages load and one write or read-back works | Playwright (planned) | N/A |
 | **C. Mobile smoke** | Patient app critical path on device or emulator | N/A | Manual now; Appium or MAUI UI Test later |
-| **Unit / kernel** | Fast logic without a host | `RaphCare.Web.Tests` | `RaphCare.Mobile.Tests` (Kernel only) |
+| **Unit / kernel** | Fast logic without a host | `RaphCare.Portal.Tests` | `RaphCare.Mobile.Tests` (Kernel only) |
 
 Existing unit tests stay as they are. This plan does not replace `dotnet test` on Application, Client, Web, or Mobile.Kernel.
 

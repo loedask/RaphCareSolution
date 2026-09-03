@@ -39,11 +39,11 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
-| Fleet watches (platform) | Done | Add serials to stock and assign a watch to a patient. Patients claim that serial in the app. They cannot invent one. |
+| Fleet watches (platform) | Done | Done in a separate Ops web app (not the hospital Portal). Add serials to stock and assign a watch to a patient. Patients claim that serial in the phone app. They cannot invent one. |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the web, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, a waiting screen that shows pickup codes (not names), and platform Fleet tools to stock and assign RaphCare watches. Opening a hospital hides the left menu so staff can focus on that hospital.
+**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Platform watch stock and assignment live in a separate Ops web app. Opening a hospital hides the left menu so staff can focus on that hospital.
 
 **Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan.
 

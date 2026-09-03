@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Split platform fleet ops into **RaphCare.Ops** (separate Blazor app + Host, own token storage). Renamed **RaphCare.Web** to **RaphCare.Portal**. Shared admin chrome in **RaphCare.Ui**.
+
+## Modules modified
+
+- **RaphCare.Ops / Ops.Host / Ui / Portal / Portal.Host / Portal.Tests / API / Client / docs:** Ops fleet UI; Portal rename; CORS for Ops origins; checklists.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
 Mobile **1.5.1** (Android versionCode **9**): harden patient app against Android process kills (Book appointment and shared Picker / main-thread / OnAppearing guards). Partner-facing `docs/mobile-updates/` notes per APK version.
 
 ## Modules modified

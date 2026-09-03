@@ -1,0 +1,67 @@
+@inherits LayoutComponentBase
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            <div class="admin-brand-icon">+</div>
+            <div>
+                <div class="admin-brand-title">@AppResources.T("Common_AppName")</div>
+                <div class="admin-brand-sub">@AppResources.T("OpsLayout_BrandSub")</div>
+            </div>
+        </div>
+
+        <nav class="admin-nav">
+            <div class="admin-nav-section">@AppResources.T("OpsLayout_NavSection")</div>
+            <NavLink class="admin-nav-link" href="/" Match="NavLinkMatch.All">
+                <span class="admin-nav-icon" aria-hidden="true">▦</span>
+                @AppResources.T("Common_Home")
+            </NavLink>
+            <NavLink class="admin-nav-link" href="/fleet" Match="NavLinkMatch.Prefix">
+                <span class="admin-nav-icon" aria-hidden="true">⌚</span>
+                @AppResources.T("Fleet_Nav")
+            </NavLink>
+        </nav>
+
+        <div class="admin-sidebar-footer">
+            <div class="admin-user-card">
+                <div class="admin-user-avatar">OP</div>
+                <div class="admin-user-meta">
+                    <div class="admin-user-name">@AppResources.T("OpsLayout_UserName")</div>
+                    <div class="admin-user-role">@AppResources.T("OpsLayout_UserRole")</div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-ghost admin-signout" @onclick="SignOutAsync">@AppResources.T("Common_SignOut")</button>
+        </div>
+    </aside>
+
+    <div class="admin-main">
+        <main class="admin-content">
+            @Body
+        </main>
+    </div>
+</div>
+
+@code {
+    [Inject] private IOpsAuthService Auth { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Navigation.ToBaseRelativePath(Navigation.Uri).StartsWith("signin", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        if (!await Auth.IsSessionValidAsync().ConfigureAwait(true))
+        {
+            var returnUrl = "/" + Navigation.ToBaseRelativePath(Navigation.Uri);
+            if (string.IsNullOrWhiteSpace(returnUrl) || returnUrl == "/")
+                returnUrl = "/fleet";
+            Navigation.NavigateTo($"/signin?returnUrl={Uri.EscapeDataString(returnUrl)}", replace: true);
+        }
+    }
+
+    private async Task SignOutAsync()
+    {
+        await Auth.SignOutAsync().ConfigureAwait(true);
+        Navigation.NavigateTo("/signin", replace: true);
+    }
+}
