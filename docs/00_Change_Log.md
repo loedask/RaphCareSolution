@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Partner update for 3 Sep 2026 (Ops live, hospital-first Portal, demo hospital-list fix). Prior 2 Sep note archived.
+
+## Modules modified
+
+- **docs/partner-updates:** partner-update-2026-09-03 sources and PDF; archive 2026-09-02.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
 Searchable dropdowns on admin cards (Schedule filter, book forms, and the rest) can open past the card edge instead of being clipped by rounded overflow.
 
 ## Modules modified
