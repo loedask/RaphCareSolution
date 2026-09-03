@@ -130,7 +130,7 @@ What patients see on Android and iPhone.
 | Core clinical and patient APIs | Done | Power the app and admin |
 | FHIR export | Done | For interoperability |
 | Emergency webhook | Done | Integration hook |
-| Staging demo sign-in accounts | Done | Staging only. Sign in with demo.admin, demo.doctor, demo.pharmacy, demo.lab, or demo.patient at raphcare.com. Password is on the API as Demo:Password (default RaphCareDemo!2026). Does not wipe other hospitals. |
+| Staging demo sign-in accounts | Done | Staging only. Sign in with demo.admin, demo.doctor, demo.pharmacy, demo.lab, or demo.patient on the hospital Portal. Use demo.ops on the Ops site for fleet. Password is on the API as Demo:Password (default RaphCareDemo!2026). Does not wipe other hospitals. |
 | Staff mental-health assessment store | Partial | List exists; deeper storage later |
 | Reporting and big dashboards | Partial | Grows with product needs |
 

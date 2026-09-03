@@ -348,7 +348,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 - [x] MPI / patient merge pipeline (see audit docs)
 - [x] Inpatient documented in companion docs (Step 2 docs rows)
 - [x] Web UI localization (en / fr / ln / sw): `AppResources` + language picker on admin layout
-- [x] Staging demo pack: email/password accounts on `RaphCare Demo Clinic` (idempotent; does not wipe other hospitals)
+- [x] Staging demo pack: email/password accounts on `RaphCare Demo Clinic` plus `demo.ops@raphcare.com` for platform Ops (idempotent; does not wipe other hospitals)
 - [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API (plan: [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md))
 
 ### Cross-cutting status

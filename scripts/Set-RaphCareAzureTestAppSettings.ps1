@@ -13,6 +13,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $JwtSecret,
     [string] $WebPortalBaseUrl = "",
+    [string] $OpsBaseUrl = "",
     [string] $SmtpPassword = "",
     [string] $SmtpHost = "mail.yindula.com",
     [string] $SmtpUsername = "raphcare@yindula.com",
@@ -33,6 +34,7 @@ if ($LASTEXITCODE -ne 0) { throw "Azure CLI is not logged in. Run: az login" }
 
 $envInfo = Get-Content $EnvironmentJsonPath -Raw | ConvertFrom-Json
 if (-not $WebPortalBaseUrl) { $WebPortalBaseUrl = $envInfo.webPortalBaseUrl }
+if (-not $OpsBaseUrl -and $envInfo.opsBaseUrl) { $OpsBaseUrl = [string]$envInfo.opsBaseUrl }
 
 $authority = "https://login.microsoftonline.com/$TenantId/v2.0"
 $settings = @(
@@ -55,6 +57,12 @@ $settings = @(
     "Smtp__FromDisplayName=RaphCare"
 )
 
+if ($OpsBaseUrl) {
+    $OpsBaseUrl = $OpsBaseUrl.Trim().TrimEnd('/')
+    $settings += "RaphCare__OpsBaseUrl=$OpsBaseUrl"
+    $settings += "Cors__OpsOrigins__0=$OpsBaseUrl"
+}
+
 if ($SmtpPassword) {
     $settings += "Smtp__Password=$SmtpPassword"
 }
@@ -72,6 +80,9 @@ if ($LASTEXITCODE -ne 0) { throw "Failed to set App Service settings" }
 $envInfo | Add-Member -NotePropertyName entraTenantId -NotePropertyValue $TenantId -Force
 $envInfo | Add-Member -NotePropertyName apiAppClientId -NotePropertyValue $ApiAppClientId -Force
 $envInfo | Add-Member -NotePropertyName webPortalBaseUrl -NotePropertyValue $WebPortalBaseUrl -Force
+if ($OpsBaseUrl) {
+    $envInfo | Add-Member -NotePropertyName opsBaseUrl -NotePropertyValue $OpsBaseUrl -Force
+}
 $envInfo | ConvertTo-Json -Depth 5 | Set-Content $EnvironmentJsonPath -Encoding UTF8
 
 $webAppName = "raphcare"
@@ -81,5 +92,13 @@ if ($envInfo.webAppName) { $webAppName = [string]$envInfo.webAppName }
     -ResourceGroup $envInfo.resourceGroup `
     -ApiBaseUrl $envInfo.apiBaseUrl `
     -EnvironmentName "Staging"
+
+if ($OpsBaseUrl -and $envInfo.opsAppName) {
+    & (Join-Path $PSScriptRoot "Set-RaphCareAzureWebAppSettings.ps1") `
+        -WebAppName ([string]$envInfo.opsAppName) `
+        -ResourceGroup $envInfo.resourceGroup `
+        -ApiBaseUrl $envInfo.apiBaseUrl `
+        -EnvironmentName "Staging"
+}
 
 Write-Host "App settings applied. Run Update-RaphCareAzureSqlMigrations.ps1 next."

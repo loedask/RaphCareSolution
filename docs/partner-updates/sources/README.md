@@ -8,7 +8,8 @@ Edit notes here. Partner-facing PDFs are written one level up in `docs/partner-u
 |------|---------|
 | `partner-update-YYYY-MM-DD` | Dated product / web / API partner note |
 | `raphcare-price-list` | Price list PDF |
-| `raphcare-demo-accounts` | Staging demo logins sheet (keep private) |
+| `raphcare-demo-accounts-v2` | Staging demo logins sheet (current; keep private) |
+| `archives/raphcare-demo-accounts-v1` | Prior demo accounts sheet (Aug 2026) |
 
 Each stem has `.md`, `.config.json`, and often its own `.pdf.css` (dated notes share `partner-update.pdf.css`).
 
