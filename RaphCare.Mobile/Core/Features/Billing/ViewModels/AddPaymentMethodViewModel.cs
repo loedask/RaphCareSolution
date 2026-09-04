@@ -43,7 +43,7 @@ public sealed class AddPaymentMethodViewModel : BaseViewModel
             if (EqualityComparer<string>.Default.Equals(_providerName, value))
                 return;
             SetProperty(ref _providerName, value);
-            ((Command)SubmitCommand).ChangeCanExecute();
+            RaiseCanExecuteChanged(SubmitCommand);
         }
     }
 
@@ -55,7 +55,7 @@ public sealed class AddPaymentMethodViewModel : BaseViewModel
             if (EqualityComparer<string>.Default.Equals(_maskedDetails, value))
                 return;
             SetProperty(ref _maskedDetails, value);
-            ((Command)SubmitCommand).ChangeCanExecute();
+            RaiseCanExecuteChanged(SubmitCommand);
         }
     }
 
@@ -86,7 +86,7 @@ public sealed class AddPaymentMethodViewModel : BaseViewModel
         if (IsBusy) return;
         ErrorMessage = null;
         IsBusy = true;
-        ((Command)SubmitCommand).ChangeCanExecute();
+        RaiseCanExecuteChanged(SubmitCommand);
         try
         {
             var res = await _billing.AddPaymentMethodAsync(
@@ -106,7 +106,7 @@ public sealed class AddPaymentMethodViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
-            ((Command)SubmitCommand).ChangeCanExecute();
+            RaiseCanExecuteChanged(SubmitCommand);
         }
     }
 }

@@ -134,11 +134,7 @@ public sealed class FamilyMemberDetailViewModel : BaseViewModel
             _memberId = id;
     }
 
-    private void RefreshSave()
-    {
-        if (SaveCommand is Command c)
-            c.ChangeCanExecute();
-    }
+    private void RefreshSave() => RaiseCanExecuteChanged(SaveCommand);
 
     public async Task LoadAsync()
     {

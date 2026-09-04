@@ -1,6 +1,7 @@
 using Microsoft.Maui.Controls;
 using RaphCare.Mobile.Core.Features.Insurance.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
+using RaphCare.Mobile.Core.Common.Navigation;
 
 namespace RaphCare.Mobile.Core.Features.Insurance.Views;
 
@@ -24,6 +25,6 @@ public partial class InsuranceProfileDetailPage : ContentPage, IQueryAttributabl
     {
         base.OnAppearing();
         if (BindingContext is InsuranceProfileDetailViewModel vm)
-            await vm.LoadAsync();
+            await SafePageLoad.RunAsync(() => vm.LoadAsync());
     }
 }

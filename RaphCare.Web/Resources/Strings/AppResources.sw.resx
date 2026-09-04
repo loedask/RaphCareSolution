@@ -763,11 +763,14 @@
   <data name="Common_HospitalIsActive" xml:space="preserve">
     <value>Hospitali iko hai</value>
   </data>
+  <data name="Common_AllowAiDischargeDraft" xml:space="preserve">
+    <value>Ruhusu rasimu ya kutoka kwa AI</value>
+  </data>
   <data name="Common_OrganizationDetails" xml:space="preserve">
     <value>Maelezo ya shirika</value>
   </data>
   <data name="Common_UpdateHospitalLead" xml:space="preserve">
-    <value>Sasisha jina la hospitali yako, nchi na saa za eneo.</value>
+    <value>Sasisha jina, nchi, saa za eneo, na kama AI inaweza kuandika rasimu ya kutoka.</value>
   </data>
   <data name="Common_HospitalProfileEyebrow" xml:space="preserve">
     <value>Wasifu wa hospitali</value>
@@ -2844,6 +2847,9 @@
   </data>
   <data name="Inpatient_CouldNotDraftSummary" xml:space="preserve">
     <value>Haikuweza kuandika muhtasari wa kutoka.</value>
+  </data>
+  <data name="Inpatient_AiDraftDisabled" xml:space="preserve">
+    <value>Rasimu ya AI imezimwa kwa hospitali hii. Iwashe chini ya maelezo ya shirika, au andika muhtasari mwenyewe.</value>
   </data>
   <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
     <value>Bei ya usiku</value>

@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Common.Controls"
+             xmlns:auth="clr-namespace:RaphCare.Mobile.Core.Features.Auth.Models"
              x:Class="RaphCare.Mobile.Core.Features.Auth.Views.RegisterPhonePage"
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="False"
@@ -36,7 +37,7 @@
                 <Picker Grid.Column="0"
                         WidthRequest="160"
                         ItemsSource="{Binding Countries}"
-                        ItemDisplayBinding="{Binding Display}"
+                        ItemDisplayBinding="{Binding Display, x:DataType=auth:CountryDialOption}"
                         SelectedItem="{Binding SelectedCountry}"
                         TextColor="{StaticResource ForegroundColor}"
                         BackgroundColor="{StaticResource CardColor}" />

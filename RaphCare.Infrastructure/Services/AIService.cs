@@ -11,6 +11,9 @@ namespace RaphCare.Infrastructure.Services;
 /// <summary>AI integration: Azure OpenAI when configured; safe placeholders otherwise.</summary>
 public sealed partial class AIService : IAIService
 {
+    /// <summary>Named <see cref="IHttpClientFactory"/> client used for Azure OpenAI chat completions.</summary>
+    public const string HttpClientName = "AzureOpenAi";
+
     private const int MaxUserMessageLength = 8000;
     private const int MaxClinicalDraftLength = 4000;
 
@@ -110,9 +113,7 @@ public sealed partial class AIService : IAIService
         var opts = _patientAssistantOptions.CurrentValue;
         try
         {
-            var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Remove("api-key");
-            client.DefaultRequestHeaders.TryAddWithoutValidation("api-key", opts.AzureOpenAiApiKey);
+            var client = _httpClientFactory.CreateClient(HttpClientName);
 
             var endpoint = opts.AzureOpenAiEndpoint!.TrimEnd('/');
             var deployment = Uri.EscapeDataString(opts.AzureOpenAiDeployment!);
@@ -127,18 +128,21 @@ public sealed partial class AIService : IAIService
                     new AzureOpenAiChatMessage { Role = "system", Content = systemPrompt },
                     new AzureOpenAiChatMessage { Role = "user", Content = userContent },
                 ],
-                MaxCompletionTokens = maxTokens,
+                MaxTokens = maxTokens,
                 Temperature = temperature,
             };
 
             var json = JsonSerializer.Serialize(requestBody, AzureJsonOptions);
-            using var content = new StringContent(json, Encoding.UTF8, "application/json");
-            using var response = await client.PostAsync(new Uri(url), content, cancellationToken).ConfigureAwait(false);
+            using var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Headers.TryAddWithoutValidation("api-key", opts.AzureOpenAiApiKey);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
             var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
-                LogAzureOpenAiChatFailed((int)response.StatusCode, responseText.Length);
+                LogAzureOpenAiChatFailed((int)response.StatusCode, TryGetAzureErrorCode(responseText), responseText.Length);
                 return null;
             }
 
@@ -174,7 +178,8 @@ public sealed partial class AIService : IAIService
     private static string ClinicalDraftSystemPrompt =>
         """
         You draft short hospital discharge summaries for clinicians. Write in plain clinical English.
-        Use only the stay facts provided. Do not invent diagnoses, medicines, or follow-up plans.
+        The input is intentionally limited: admission reason and ward vitals only (no free-text ward notes).
+        Use only those facts. Do not invent diagnoses, medicines, or follow-up plans.
         Keep it under 250 words. Use short paragraphs. Do not address the patient directly.
         This is a staff draft only; a clinician will edit it before saving.
         """;
@@ -193,11 +198,31 @@ public sealed partial class AIService : IAIService
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
+    private static string? TryGetAzureErrorCode(string responseText)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(responseText);
+            if (doc.RootElement.TryGetProperty("error", out var error)
+                && error.TryGetProperty("code", out var code))
+            {
+                return code.GetString();
+            }
+        }
+        catch (JsonException)
+        {
+            // Response is not JSON; log status and length only.
+        }
+
+        return null;
+    }
+
     private sealed class AzureOpenAiChatRequest
     {
         public List<AzureOpenAiChatMessage> Messages { get; set; } = [];
 
-        public int MaxCompletionTokens { get; set; }
+        [JsonPropertyName("max_tokens")]
+        public int MaxTokens { get; set; }
 
         public double Temperature { get; set; }
     }
@@ -214,8 +239,8 @@ public sealed partial class AIService : IAIService
     [LoggerMessage(Level = LogLevel.Information, Message = "AI patient assistant (placeholder): message length {Length}")]
     private partial void LogPatientAssistantPlaceholder(int length);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Azure OpenAI chat failed: {Status} body length {Length}")]
-    private partial void LogAzureOpenAiChatFailed(int status, int length);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Azure OpenAI chat failed: {Status} code {ErrorCode} body length {Length}")]
+    private partial void LogAzureOpenAiChatFailed(int status, string? errorCode, int length);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Azure OpenAI returned an empty assistant message.")]
     private partial void LogAzureOpenAiEmptyReply();

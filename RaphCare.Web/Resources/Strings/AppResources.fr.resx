@@ -763,11 +763,14 @@
   <data name="Common_HospitalIsActive" xml:space="preserve">
     <value>L&apos;hÃ´pital est actif</value>
   </data>
+  <data name="Common_AllowAiDischargeDraft" xml:space="preserve">
+    <value>Autoriser le brouillon de sortie par IA</value>
+  </data>
   <data name="Common_OrganizationDetails" xml:space="preserve">
     <value>DÃ©tails de l&apos;organisation</value>
   </data>
   <data name="Common_UpdateHospitalLead" xml:space="preserve">
-    <value>Mettez Ã  jour le nom de votre hÃ´pital, votre pays et votre fuseau horaire.</value>
+    <value>Mettez Ã  jour le nom, le pays, le fuseau horaire, et si l&apos;IA peut rÃ©diger un brouillon de sortie.</value>
   </data>
   <data name="Common_HospitalProfileEyebrow" xml:space="preserve">
     <value>Profil de l&apos;hÃ´pital</value>
@@ -2844,6 +2847,9 @@
   </data>
   <data name="Inpatient_CouldNotDraftSummary" xml:space="preserve">
     <value>Impossible de rediger le resume de sortie.</value>
+  </data>
+  <data name="Inpatient_AiDraftDisabled" xml:space="preserve">
+    <value>Le brouillon IA est desactive pour cet hopital. Activez-le dans les details de l&apos;organisation, ou redigez le resume a la main.</value>
   </data>
   <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
     <value>Tarif de la nuit</value>

@@ -27,7 +27,7 @@
                 <Label Text="{Binding ProviderLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
                 <Picker Title="{Binding ProviderLabel}"
                         ItemsSource="{Binding Providers}"
-                        ItemDisplayBinding="{Binding DisplayName}"
+                        ItemDisplayBinding="{Binding DisplayName, x:DataType=vm:ProviderPickerItem}"
                         SelectedItem="{Binding SelectedProvider}"
                         TextColor="{StaticResource ForegroundColor}"
                         BackgroundColor="{StaticResource CardColor}" />

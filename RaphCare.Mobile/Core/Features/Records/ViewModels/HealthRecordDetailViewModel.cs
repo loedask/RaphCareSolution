@@ -98,11 +98,15 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
 
         ErrorMessage = null;
         IsBusy = true;
-        VitalSigns.Clear();
-        Prescriptions.Clear();
-        LabOrders.Clear();
         try
         {
+            await RunOnMainThreadAsync(() =>
+            {
+                VitalSigns.Clear();
+                Prescriptions.Clear();
+                LabOrders.Clear();
+            }).ConfigureAwait(false);
+
             var response = await _healthRecords.GetMyHealthRecordAsync(_visitId, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
@@ -114,29 +118,31 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
             var culture = CultureInfo.CurrentCulture;
             var start = r.VisitStart.ToLocalTime();
             var end = r.VisitEnd?.ToLocalTime();
-            WhenText = end is null
+            var whenText = end is null
                 ? start.ToString("F", culture)
                 : $"{start.ToString("F", culture)} to {end.Value.ToString("t", culture)}";
-            StatusText = r.Status;
-            VisitTypeText = r.VisitType;
-            SummaryText = string.IsNullOrWhiteSpace(r.Summary) ? "—" : r.Summary!;
+            var statusText = r.Status;
+            var visitTypeText = r.VisitType;
+            var summaryText = string.IsNullOrWhiteSpace(r.Summary) ? "—" : r.Summary!;
 
+            var vitals = new List<VitalSignDisplayItem>();
             foreach (var v in r.VitalSigns)
             {
                 var unit = string.IsNullOrWhiteSpace(v.Unit) ? string.Empty : $" {v.Unit}";
-                VitalSigns.Add(new VitalSignDisplayItem
+                vitals.Add(new VitalSignDisplayItem
                 {
                     MainLine = $"{v.Type} {v.Value}{unit}".Trim(),
                     RecordedLine = v.RecordedAt.ToLocalTime().ToString("g", culture)
                 });
             }
 
+            var prescriptions = new List<CollectionOrderDisplayItem>();
             foreach (var rx in r.Prescriptions)
             {
                 var meds = rx.Items.Count == 0
                     ? T("RecordsPickupPrescription")
                     : string.Join(", ", rx.Items.Select(i => i.MedicationName));
-                Prescriptions.Add(new CollectionOrderDisplayItem
+                prescriptions.Add(new CollectionOrderDisplayItem
                 {
                     VisitId = rx.VisitId,
                     ClinicId = rx.ClinicId,
@@ -150,9 +156,10 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
                 });
             }
 
+            var labOrders = new List<CollectionOrderDisplayItem>();
             foreach (var lab in r.LabOrders)
             {
-                LabOrders.Add(new CollectionOrderDisplayItem
+                labOrders.Add(new CollectionOrderDisplayItem
                 {
                     VisitId = lab.VisitId,
                     ClinicId = lab.ClinicId,
@@ -165,6 +172,26 @@ public sealed class HealthRecordDetailViewModel : BaseViewModel
                     QrImage = QrImage(lab.PickupCode)
                 });
             }
+
+            await RunOnMainThreadAsync(() =>
+            {
+                WhenText = whenText;
+                StatusText = statusText;
+                VisitTypeText = visitTypeText;
+                SummaryText = summaryText;
+
+                VitalSigns.Clear();
+                foreach (var item in vitals)
+                    VitalSigns.Add(item);
+
+                Prescriptions.Clear();
+                foreach (var item in prescriptions)
+                    Prescriptions.Add(item);
+
+                LabOrders.Clear();
+                foreach (var item in labOrders)
+                    LabOrders.Add(item);
+            }).ConfigureAwait(false);
         }
         finally
         {

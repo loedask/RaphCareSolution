@@ -14,6 +14,8 @@ public sealed class CountryDialOption
 
     public string Display => $"{Name} ({DialCode})";
 
+    public override string ToString() => Display;
+
     public static IReadOnlyList<CountryDialOption> DefaultList { get; } =
     [
         new("+234", "Nigeria"),

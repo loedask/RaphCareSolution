@@ -1,0 +1,38 @@
+---
+description: Correct Azure CLI sign-in for publish/deploy; avoid device-code + forced scope mistakes
+alwaysApply: true
+---
+
+# Azure CLI sign-in (RaphCare staging)
+
+Human runbook: **`docs/Mobile_Android_Test_Hosting.md`** (Phase 1: Azure login and environment).
+
+## Do this first
+
+1. Prefer **`az login`** (interactive browser). It works with MFA and Entra **security defaults**.
+2. Confirm before deploy: `az account show` and that a **subscription** is listed (`az account list -o table`).
+3. Then run publish scripts (`Publish-RaphCareApiToAzure.ps1`, `Publish-RaphCareWebToAzure.ps1`, etc.).
+
+## Do not do this (known failure modes)
+
+- Do **not** start with:
+  ```text
+  az login --tenant <id> --scope https://management.core.windows.net//.default --use-device-code
+  ```
+  That combination often shows **“You don't have access to this”** after a successful password, or fails under security defaults.
+- Do **not** treat `az account show` succeeding as proof that **`az webapp deploy`** will work. A stale token can pass `account show` and still fail deploy with `AADSTS50132` (expired / interaction required). Re-run **`az login`** (browser) and retry.
+- Do **not** assume the agent can complete Microsoft sign-in inside Cursor. Open the system browser; the human must finish MFA / consent.
+- Do **not** keep polling an expired device code. Start a fresh **`az login`**.
+
+## Ops account notes
+
+- Ops mailbox **`raphcare@yindula.com`** may sign in to Microsoft and still hit:
+  - **`AADSTS530035`**: blocked by **security defaults** (finish MFA registration, or an admin adjusts security defaults).
+  - **“No subscriptions found”**: account is not assigned to the Azure subscription (needs Owner/Contributor or equivalent).
+- Prefer the account that **owns** subscription / resource group **`raphcare_group`** when publishing.
+
+## When deploy fails
+
+1. Read the Azure error code (`AADSTS…`).
+2. Fix login per this rule and the Phase 1 doc.
+3. Only then re-run publish. Do not invent alternate deploy paths unless the user asks.
