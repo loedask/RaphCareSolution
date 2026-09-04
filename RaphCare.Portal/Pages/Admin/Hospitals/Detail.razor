@@ -27,7 +27,10 @@
                               Eyebrow="@AppResources.T("Common_HospitalProfileEyebrow")"
                               Title="@_detail.Name"
                               Lead="@AppResources.T("HospitalDetail_Lead")"
-                              IsActive="@_detail.IsActive">
+                              IsActive="@_detail.IsActive"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_detail.Name"
+                              CurrentCrumb="@CurrentCrumbLabel">
             <HospitalDeckChip Label="@AppResources.T("Common_Country")" Value="@_detail.Country" />
             <HospitalDeckChip Label="@AppResources.T("Common_TimeZone")" Value="@_detail.TimeZone" />
             <HospitalDeckChip Label="@AppResources.T("Common_HospitalReference")">
@@ -781,6 +784,23 @@
 
     private string PageTitleText =>
         $"{_detail?.Name ?? AppResources.T("HospitalDetail_PageTitleFallback")}{AppResources.T("Common_PageTitleAdminSuffix")}";
+
+    private string CurrentCrumbLabel => _tab switch
+    {
+        "facilities" => AppResources.T("Common_Facilities"),
+        "patients" => AppResources.T("Common_PatientsStat"),
+        "providers" => AppResources.T("Common_ProvidersStat"),
+        "appointments" => AppResources.T("Common_Appointments"),
+        "devices" => AppResources.T("Common_Devices"),
+        "inpatient" => AppResources.T("Common_Inpatient"),
+        "collection" => AppResources.T("Collection_Title"),
+        "casualty" => AppResources.T("Common_Casualty"),
+        "theatre" => AppResources.T("Common_Theatre"),
+        "referrals" => AppResources.T("Common_Referrals"),
+        "roster" => AppResources.T("Common_Roster"),
+        "staff" => AppResources.T("Common_Staff"),
+        _ => AppResources.T("Common_Overview")
+    };
 
     protected override void OnInitialized() =>
         CultureService.CultureChanged += OnCultureChanged;

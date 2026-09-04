@@ -28,7 +28,12 @@
                               Eyebrow="@AppResources.T("PatientDetail_ChartEyebrow")"
                               Title="@($"{_patient.FirstName} {_patient.LastName}")"
                               Lead="@AppResources.Format("Common_PatientChartLead", ClinicDisplayName, TimeZoneLabel)"
-                              StatusText="@_patient.AccessType">
+                              StatusText="@_patient.AccessType"
+                              ClinicId="@ClinicId"
+                              ClinicName="@ClinicDisplayName"
+                              MidCrumb="@AppResources.T("Common_PatientsStat")"
+                              MidCrumbHref="@HospitalDeckReturnUrl.ForClinicTab(ClinicId, "patients")"
+                              CurrentCrumb="@($"{_patient.FirstName} {_patient.LastName}")">
             <HospitalDeckChip Label="@AppResources.T("Common_DateOfBirth")" Value="@_patient.DateOfBirth.ToString("dd MMM yyyy")" />
             <HospitalDeckChip Label="@AppResources.T("PatientDetail_Gender")"
                               Value="@(string.IsNullOrWhiteSpace(_patient.Gender) ? AppResources.T("Common_EmptyCell") : _patient.Gender)" />

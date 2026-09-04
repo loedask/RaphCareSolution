@@ -26,7 +26,12 @@
                               Eyebrow="@AppResources.T("Common_TelehealthSession")"
                               Title="@AppResources.T("Common_TelehealthSession")"
                               Lead="@TeleJoinLead"
-                              StatusText="@_join.Status">
+                              StatusText="@_join.Status"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_clinicName"
+                              MidCrumb="@AppResources.T("Common_Appointments")"
+                              MidCrumbHref="@AppointmentsUrl"
+                              CurrentCrumb="@AppResources.T("Common_TelehealthSession")">
             <HospitalDeckChip Label="@AppResources.T("Common_Patient")" Value="@_join.PatientName" />
             <HospitalDeckChip Label="@AppResources.T("Common_Provider")" Value="@_join.ProviderDisplayName" />
         </HospitalDeckMasthead>

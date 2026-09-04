@@ -19,7 +19,10 @@
                               Eyebrow="@AppResources.T("Referral_Title")"
                               Title="@_clinicName"
                               Lead="@AppResources.Format("Referral_Lead", _clinicName)"
-                              StatusText="@FormatStatusLine()">
+                              StatusText="@FormatStatusLine()"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_clinicName"
+                              CurrentCrumb="@AppResources.T("Referral_Title")">
             <HospitalDeckChip Label="@AppResources.T("Referral_Sent")" Value="@SentCount.ToString()" />
             <HospitalDeckChip Label="@AppResources.T("Referral_Accepted")" Value="@AcceptedCount.ToString()" />
             <HospitalDeckChip Label="@AppResources.T("Referral_Completed")" Value="@CompletedCount.ToString()" />

@@ -19,7 +19,10 @@
                               Eyebrow="@AppResources.T("Common_Inpatient")"
                               Title="@_clinicName"
                               Lead="@AppResources.Format("Inpatient_Lead", _clinicName)"
-                              StatusText="@(_board is null ? null : AppResources.Format("Inpatient_OccupiedPill", _board.OccupiedBeds, _board.TotalBeds))">
+                              StatusText="@(_board is null ? null : AppResources.Format("Inpatient_OccupiedPill", _board.OccupiedBeds, _board.TotalBeds))"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_clinicName"
+                              CurrentCrumb="@AppResources.T("Common_Inpatient")">
             @if (_board is not null)
             {
                 <HospitalDeckChip Label="@AppResources.T("Common_Available")" Value="@_board.AvailableBeds.ToString()" />

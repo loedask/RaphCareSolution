@@ -26,7 +26,12 @@
                               Eyebrow="@AppResources.T("Common_EncounterEyebrow")"
                               Title="@AppResources.Format("Common_VisitHeader", _visit.PatientName)"
                               Lead="@AppResources.Format("Visit_DetailLead", _visit.VisitType, _visit.ProviderName, TimeZoneLabel)"
-                              StatusText="@_visit.Status">
+                              StatusText="@_visit.Status"
+                              ClinicId="@ClinicId"
+                              ClinicName="@ClinicDisplayName"
+                              MidCrumb="@AppResources.T("Common_Appointments")"
+                              MidCrumbHref="@AppointmentsUrl"
+                              CurrentCrumb="@_visit.PatientName">
             <HospitalDeckChip Label="@AppResources.T("Common_Type")" Value="@_visit.VisitType" />
             <HospitalDeckChip Label="@AppResources.T("Common_Provider")" Value="@_visit.ProviderName" />
             <HospitalDeckChip Label="@AppResources.T("Common_TimeZone")" Value="@TimeZoneLabel" />

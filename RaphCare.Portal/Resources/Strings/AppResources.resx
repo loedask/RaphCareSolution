@@ -1551,6 +1551,9 @@
   <data name="AdminLayout_AllHospitals" xml:space="preserve">
     <value>All hospitals</value>
   </data>
+  <data name="HospitalDeck_PathAria" xml:space="preserve">
+    <value>Hospital path</value>
+  </data>
   <data name="Dashboard_PageTitle" xml:space="preserve">
     <value>RaphCare Admin</value>
   </data>

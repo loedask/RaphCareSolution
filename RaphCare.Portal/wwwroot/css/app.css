@@ -1569,6 +1569,123 @@ a:hover { text-decoration: underline; }
     box-shadow: 0 28px 70px rgba(7, 17, 31, 0.2);
 }
 
+.hospital-deck-hero {
+    display: grid;
+    gap: 0;
+}
+
+.hospital-deck-crumbtrail {
+    position: relative;
+    z-index: 2;
+    margin: -0.95rem 1.15rem 0;
+    padding: 0.45rem 0.55rem;
+    border-radius: 999px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow:
+        0 16px 36px rgba(7, 17, 31, 0.14),
+        0 0 0 1px rgba(94, 234, 212, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    animation: hospital-deck-crumb-in 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hospital-deck-crumbtrail-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2rem 0.15rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.hospital-deck-crumb-item {
+    display: inline-flex;
+    min-width: 0;
+}
+
+.hospital-deck-crumb-sep {
+    display: inline-grid;
+    place-items: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    color: #94a3b8;
+    flex: 0 0 auto;
+}
+
+.hospital-deck-crumb-sep svg {
+    width: 0.72rem;
+    height: 0.72rem;
+}
+
+.hospital-deck-crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    max-width: 16rem;
+    min-height: 2rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-family: "Space Grotesk", "DM Sans", sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    color: #334155;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition:
+        color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+a.hospital-deck-crumb:hover {
+    color: #0f766e;
+    background: rgba(45, 212, 191, 0.14);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+a.hospital-deck-crumb:focus-visible {
+    outline: 2px solid #14b8a6;
+    outline-offset: 2px;
+}
+
+.hospital-deck-crumb.is-current {
+    color: #042f2e;
+    background: linear-gradient(135deg, #5eead4, #14b8a6);
+    box-shadow: 0 8px 18px rgba(20, 184, 166, 0.28);
+    max-width: 20rem;
+}
+
+.hospital-deck-crumb-home {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex: 0 0 auto;
+    opacity: 0.75;
+}
+
+a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
+    opacity: 1;
+}
+
+@keyframes hospital-deck-crumb-in {
+    from {
+        opacity: 0;
+        transform: translateY(-0.55rem) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 .hospital-deck-masthead::before {
     content: "";
     position: absolute;
@@ -2157,7 +2274,8 @@ a.hospital-directory-person:hover strong {
 
 @media (prefers-reduced-motion: reduce) {
     .hospital-deck-loading-mark,
-    .hospital-deck-status-dot {
+    .hospital-deck-status-dot,
+    .hospital-deck-crumbtrail {
         animation: none;
     }
 }
@@ -2165,6 +2283,12 @@ a.hospital-directory-person:hover strong {
 @media (max-width: 1080px) {
     .hospital-deck-masthead {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hospital-deck-crumbtrail {
+        margin-left: 0.65rem;
+        margin-right: 0.65rem;
+        border-radius: 1.15rem;
     }
 
     .hospital-deck-meta {

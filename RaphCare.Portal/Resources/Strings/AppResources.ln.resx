@@ -1573,6 +1573,9 @@
   <data name="AdminLayout_AllHospitals" xml:space="preserve">
     <value>Ba lopitalo nyonso</value>
   </data>
+  <data name="HospitalDeck_PathAria" xml:space="preserve">
+    <value>Nzela ya lopitalo</value>
+  </data>
   <data name="Dashboard_PageTitle" xml:space="preserve">
     <value>RaphCare Mokambi ya mosala</value>
   </data>
