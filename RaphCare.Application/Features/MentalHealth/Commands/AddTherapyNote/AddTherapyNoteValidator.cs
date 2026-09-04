@@ -8,7 +8,7 @@ public sealed class AddTherapyNoteValidator : AbstractValidator<AddTherapyNoteCo
     {
         RuleFor(x => x.ClinicId).NotEmpty();
         RuleFor(x => x.SessionId).NotEmpty();
-        RuleFor(x => x.Notes).NotEmpty().MaximumLength(8000);
+        RuleFor(x => x.Notes).NotEmpty().MaximumLength(4000);
         RuleFor(x => x.Category).NotEmpty().MaximumLength(100);
         RuleFor(x => x.CrisisRiskLevel).MaximumLength(50);
         RuleFor(x => x.CrisisDescription).MaximumLength(2000);
