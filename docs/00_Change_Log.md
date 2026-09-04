@@ -1,4 +1,4 @@
-# RaphCare Dev Companion - Change Log
+﻿# RaphCare Dev Companion - Change Log
 
 ## Date
 
@@ -6,10 +6,14 @@
 
 ## High-level summary of changes
 
+Release **1.6.0**: Azure OpenAI gpt-4.1-mini (pay-as-you-go) for patient assistant chat and AI discharge drafts on staging. Private Azure Blob (local Development folder if no connection string) for patient profile photos and voice onboarding audio; staff hospital charts can show the photo. Includes Android crash hardening from unreleased 1.5.1. Mobile display version **1.6.0**, Android versionCode **10**.
+
 Ops Home shows a platform snapshot (hospitals, patients, doctors, staff, facilities, fleet, appointments today, admissions, pending invites, SafeCare alerts). Fleet hospital and patient pickers use the shared searchable select. SearchableSelect moved into RaphCare.Ui for Portal and Ops.
 
 ## Modules modified
 
+- **Mobile / docs:** `ApplicationDisplayVersion` / `ApplicationVersion` bump; partner update 4 Sep 2026; mobile update v1.6.0.
+- **Application / Infrastructure / API / Client / Portal / tests / docs / scripts:** object store, staff photo endpoint, voice recording keys, hospital chart photo; default `gpt-4.1-mini` deployment; named HttpClient; `scripts/New-RaphCareAzureOpenAi.ps1`; `scripts/New-RaphCareAzureBlobStorage.ps1`; `docs/16_Azure_OpenAI_Setup.md`; `docs/17_Azure_Blob_Storage.md`.
 - **Application / API / Client / Ops / Ui / Portal:** GetPlatformOpsStats; OpsController; AdminStat* and SearchableSelect in Ui; Ops Home and Fleet.
 
 ---

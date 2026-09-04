@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using RaphCare.Application.Common.Configuration;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Infrastructure.Configuration;
@@ -22,7 +23,8 @@ public static class DependencyInjection
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IHostEnvironment? environment = null)
     {
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped<AuditableEntityInterceptor>();
@@ -72,10 +74,33 @@ public static class DependencyInjection
         services.AddSingleton<IPatientSupportContentProvider, OptionsPatientSupportContentProvider>();
 
         services.Configure<PatientProfilePhotoOptions>(configuration.GetSection(PatientProfilePhotoOptions.SectionName));
-        services.AddScoped<IPatientProfilePhotoStorage, LocalPatientProfilePhotoStorage>();
+        services.Configure<AzureStorageOptions>(configuration.GetSection(AzureStorageOptions.SectionName));
+        services.Configure<VoiceRecordingStorageOptions>(configuration.GetSection(VoiceRecordingStorageOptions.SectionName));
+
+        var storageConnection = configuration.GetSection(AzureStorageOptions.SectionName)[
+            nameof(AzureStorageOptions.ConnectionString)];
+        var isDevelopment = environment?.IsDevelopment() == true
+            || string.Equals(
+                configuration["ASPNETCORE_ENVIRONMENT"],
+                Environments.Development,
+                StringComparison.OrdinalIgnoreCase);
+        if (!string.IsNullOrWhiteSpace(storageConnection))
+            services.AddSingleton<IObjectStorage, AzureBlobObjectStorage>();
+        else if (isDevelopment)
+            services.AddSingleton<IObjectStorage, LocalFileObjectStorage>();
+        else
+            throw new InvalidOperationException(
+                "AzureStorage:ConnectionString is required outside Development. Run scripts/New-RaphCareAzureBlobStorage.ps1.");
+
+        services.AddScoped<IPatientProfilePhotoStorage, PatientProfilePhotoStorage>();
+        services.AddScoped<IVoiceRecordingStorage, VoiceRecordingStorage>();
 
         services.Configure<PatientAssistantAiOptions>(configuration.GetSection(PatientAssistantAiOptions.SectionName));
 
+        services.AddHttpClient(AIService.HttpClientName, client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(45);
+        });
         services.AddHttpClient();
 
         services.Configure<FirebasePushOptions>(configuration.GetSection(FirebasePushOptions.SectionName));

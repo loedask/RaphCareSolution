@@ -1,4 +1,4 @@
-# RaphCare patient mobile — demo launch (settings checklist)
+# RaphCare patient mobile: demo launch (settings checklist)
 
 This doc is the **single runbook** to get **RaphCare.API** and **RaphCare.Mobile** running together for a **local demo**. Deeper topics stay in the linked guides.
 
@@ -20,7 +20,7 @@ This doc is the **single runbook** to get **RaphCare.API** and **RaphCare.Mobile
 
 - **.NET SDK** matching the repo (solution targets **.NET 10**).
 - **MAUI workload** (for `RaphCare.Mobile`): `dotnet workload install maui` (or install via Visual Studio installer).
-- **SQL Server** reachable from the API — sample `appsettings` use **LocalDB** (`(localdb)\mssqllocaldb`). Adjust connection strings if you use another instance.
+- **SQL Server** reachable from the API. Sample `appsettings` use **LocalDB** (`(localdb)\mssqllocaldb`). Adjust connection strings if you use another instance.
 - **Android SDK / emulator or device** (or **iOS** on a Mac with Xcode) if you are not only building **Windows** targets.
 
 ---
@@ -32,15 +32,15 @@ The API’s URLs come from **`RaphCare.API/Properties/launchSettings.json`** (de
 | Profile | HTTPS | HTTP |
 |--------|-------|------|
 | **https** (typical F5) | `https://localhost:7146` | `http://localhost:5281` |
-| **http** | — | `http://localhost:5281` |
+| **http** | - | `http://localhost:5281` |
 
 **RaphCare.Mobile** must use the **same scheme, host, and port** you actually run, with a **trailing slash**, in **`Api:BaseAddress`** (see §5).
 
-> Tracked **`RaphCare.Mobile/appsettings.json`** may still say `https://localhost:7001/` — that is only valid if your API is configured to listen on **7001**. For the stock **launchSettings** profile, override with User Secrets or edit locally (do not commit secrets).
+> Tracked **`RaphCare.Mobile/appsettings.json`** may still say `https://localhost:7001/`. That is only valid if your API is configured to listen on **7001**. For the stock **launchSettings** profile, override with User Secrets or edit locally (do not commit secrets).
 
 ---
 
-## 3. API — required settings for a demo
+## 3. API: required settings for a demo
 
 ### 3.1 Environment
 
@@ -91,9 +91,9 @@ Note the listening URL in the console and set **`Api:BaseAddress`** on the mobil
 
 ---
 
-## 4. Mobile — required settings for a demo
+## 4. Mobile: required settings for a demo
 
-Configuration load order in **`MauiProgram`**: **`appsettings.json`** → **`appsettings.Development.json`** (DEBUG only) → **User Secrets**.
+Configuration load order in **`MauiProgram`**: **`appsettings.json`** , then  **`appsettings.Development.json`** (DEBUG only) , then  **User Secrets**.
 
 ### 4.1 API address (required)
 
@@ -150,18 +150,18 @@ Using **`http://10.0.2.2:5281/`** with the API **`http`** profile is often the s
 
 | Goal | Setting / doc |
 |------|----------------|
-| **Voice registration** after seed | **`Onboarding:VoiceRegistrationClinicId`** (clinic `Id` from DB) — [09_Mobile_App_Guide.md](./09_Mobile_App_Guide.md) |
-| **Telehealth / Agora** (Android in-app video) | **`AgoraRtc`** on API — [10_Agora_Twilio_Setup.md](./10_Agora_Twilio_Setup.md) |
+| **Voice registration** after seed | **`Onboarding:VoiceRegistrationClinicId`** (clinic `Id` from DB). See [09_Mobile_App_Guide.md](./09_Mobile_App_Guide.md) |
+| **Telehealth / Agora** (Android in-app video) | **`AgoraRtc`** on API. See [10_Agora_Twilio_Setup.md](./10_Agora_Twilio_Setup.md) |
 | **Real SMS** | **`Twilio`** on API when not using Development log OTP |
-| **AI assistant (real model)** | **`PatientAssistant`** Azure OpenAI keys on API — see API **`appsettings.json`** / checklist |
+| **AI assistant (real model)** | **`PatientAssistant`** Azure OpenAI keys on the API. See [16_Azure_OpenAI_Setup.md](./16_Azure_OpenAI_Setup.md) |
 | **Push notifications** | **`FirebasePush:ServiceAccountJsonPath`** on API. See [Mobile_Release_Ready_Checklist.md](./checklist/sources/Mobile_Release_Ready_Checklist.md) |
-| **Appointments demo defaults** | **`Appointments:DefaultClinicId`** / **`DefaultProviderId`** in mobile **`appsettings.Development.json`** — seeded demo IDs: `11111111-1111-1111-1111-111111111101` (clinic) and `11111111-1111-1111-1111-111111111102` (provider) |
+| **Appointments demo defaults** | **`Appointments:DefaultClinicId`** / **`DefaultProviderId`** in mobile **`appsettings.Development.json`**. Seeded demo IDs: `11111111-1111-1111-1111-111111111101` (clinic) and `11111111-1111-1111-1111-111111111102` (provider) |
 
 None of these are required to **open the app**, sign in (Entra or phone OTP), and browse **Settings** and other enabled areas.
 
 ---
 
-## 6. Android telehealth E2E (Request Call → Agora)
+## 6. Android telehealth E2E (Request Call , then  Agora)
 
 Use this path to verify **on-demand video** end-to-end on an **Android** emulator or device.
 
@@ -178,7 +178,7 @@ Use this path to verify **on-demand video** end-to-end on an **Android** emulato
    - **`Appointments:DefaultClinicId`** / **`DefaultProviderId`**: demo GUIDs (see table in §5).
    - **`FeatureFlags:CareTelehealthEnabled`**: `true`.
 2. Sign in as a **Patient** user.
-3. **Care** tab → **Request a call** → choose **Video** → **Start**.
+3. **Care** tab , then  **Request a call** , then  choose **Video** , then  **Start**.
 4. App calls **`POST api/patient/telehealth/sessions/request`**, then navigates to **Telehealth join**.
 5. On **Android**, in-call UI uses the **Agora** native session; use **chat** overlay (polls **`/chat`**).
 
@@ -210,9 +210,9 @@ Use this path to verify **on-demand video** end-to-end on an **Android** emulato
 |--------|--------|
 | **401 / 403** from API | Entra **Audience** / **scope**; user **app role** assignment; token forwarded from mobile (`IAccessTokenProvider`). |
 | **Cannot reach API from emulator** | Use **`10.0.2.2`** and correct port; or run API bound to `0.0.0.0` and use machine LAN IP (advanced). |
-| **Most tabs show “under construction”** | Feature flags off — use **DEBUG** or set **`FeatureFlags:*`** User Secrets. |
+| **Most tabs show “under construction”** | Feature flags off. Use **DEBUG** or set **`FeatureFlags:*`** User Secrets. |
 | **SSL errors** to `https://localhost` | Trust dev cert, use **HTTP** profile for local demo, or HTTP cleartext only in dev builds (platform-specific). |
-| **Phone OTP never arrives** | Expected in Development — read **API console** for logged code. |
+| **Phone OTP never arrives** | Expected in Development. Read **API console** for logged code. |
 
 ---
 

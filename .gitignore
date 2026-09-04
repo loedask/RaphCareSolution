@@ -1,17 +1,30 @@
 # Visual Studio / .NET
 .vs/
+concepts/
+_agoraProbe/AgoraProbe/bin/
+_agoraProbe/AgoraProbe/obj/
+
+# Build output (covers every project, including leftover local trees)
 bin/
 obj/
+
+# Visual Studio user-local settings (machine paths, debug profile, publish history)
 *.user
-*.suo
-*.userosscache
-*.sln.docstates
+
+# Local API file store used in Development
+**/App_Data/
+
+# Temporary files from checklist PDF export
+docs/checklist/*.__export__.md
+docs/checklist/*.__export__.pdf
+
+# Local PDF brand copies (canonical logo is docs/partner-updates/brand/)
+docs/partner-updates/sources/
+docs/mobile-updates/sources/
 
 # HBand Android SDK binaries (download with tools/download-hband-android-libs.ps1; see Platforms/Android/libs/README.md)
 RaphCare.Mobile/Platforms/Android/libs/*.aar
 RaphCare.Mobile/Platforms/Android/libs/*.jar
-
-concepts/
 
 # Local Azure / Play publish outputs and signing material (never commit)
 artifacts/

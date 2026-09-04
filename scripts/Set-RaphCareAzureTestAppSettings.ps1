@@ -67,6 +67,16 @@ if ($SmtpPassword) {
     $settings += "Smtp__Password=$SmtpPassword"
 }
 
+if ($envInfo.storageConnectionString) {
+    $settings += "AzureStorage__ConnectionString=$($envInfo.storageConnectionString)"
+    $photosContainer = "patient-photos"
+    $voiceContainer = "voice-recordings"
+    if ($envInfo.storagePhotosContainer) { $photosContainer = [string]$envInfo.storagePhotosContainer }
+    if ($envInfo.storageVoiceContainer) { $voiceContainer = [string]$envInfo.storageVoiceContainer }
+    $settings += "AzureStorage__PhotosContainer=$photosContainer"
+    $settings += "AzureStorage__VoiceRecordingsContainer=$voiceContainer"
+}
+
 Write-Host "Updating App Service settings for $($envInfo.apiAppName) ..."
 $azArgs = @(
     "webapp", "config", "appsettings", "set",
