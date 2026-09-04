@@ -8,8 +8,10 @@ Runbook to put the **patient Android app** and **hosted API / admin Web** online
 |-------|-------------------------|
 | Patient Android app | Google Play **Internal testing** track |
 | API | App Service `raphcare-api` |
-| Admin Web (Blazor WASM) | Linux App Service `raphcare` via **`RaphCare.Web.Host`** |
+| Admin Web / Portal (Blazor WASM) | Linux App Service `raphcare` via **`RaphCare.Portal.Host`** |
+| Platform Ops (Blazor WASM) | Linux App Service `raphcare-ops` via **`RaphCare.Ops.Host`** |
 | Database | Azure SQL database |
+| Private files | Azure Blob (`patient-photos`, `voice-recordings`) |
 | Sign-in | Entra app registrations in your tenant (optional for phone OTP) |
 | Ops mailbox | `raphcare@yindula.com` |
 | Store mailbox | `apps@yindula.com` (Play Console / later App Store) |
@@ -26,7 +28,12 @@ Default resource group: **`raphcare_group`** (or `rg-raphcare-test` from scripts
 | [`scripts/Set-RaphCareAzureTestAppSettings.ps1`](../scripts/Set-RaphCareAzureTestAppSettings.ps1) | Push connection string, Entra, JWT, CORS, SMTP into App Service |
 | [`scripts/Update-RaphCareAzureSqlMigrations.ps1`](../scripts/Update-RaphCareAzureSqlMigrations.ps1) | Apply all EF contexts to Azure SQL |
 | [`scripts/Publish-RaphCareApiToAzure.ps1`](../scripts/Publish-RaphCareApiToAzure.ps1) | `dotnet publish` + zip deploy API |
-| [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish **`RaphCare.Web.Host`** (linux-x64) to App Service `raphcare` |
+| [`scripts/Login-RaphCareAzure.ps1`](../scripts/Login-RaphCareAzure.ps1) | Browser `az login --tenant` when MFA / Cursor login fails |
+| [`scripts/New-RaphCareAzureBlobStorage.ps1`](../scripts/New-RaphCareAzureBlobStorage.ps1) | Private Blob account for photos and voice files; sets `AzureStorage` on `raphcare-api` |
+| [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish **`RaphCare.Portal.Host`** (linux-x64) to App Service `raphcare` |
+| [`scripts/New-RaphCareOpsAzureApp.ps1`](../scripts/New-RaphCareOpsAzureApp.ps1) | Create Linux App Service `raphcare-ops` on the Portal plan |
+| [`scripts/Set-RaphCareAzureOpsCors.ps1`](../scripts/Set-RaphCareAzureOpsCors.ps1) | Set `RaphCare__OpsBaseUrl` / `Cors__OpsOrigins__0` on the API |
+| [`scripts/Publish-RaphCareOpsToAzure.ps1`](../scripts/Publish-RaphCareOpsToAzure.ps1) | Publish **`RaphCare.Ops.Host`** (linux-x64) to App Service `raphcare-ops` |
 | [`scripts/New-RaphCareAndroidUploadKeystore.ps1`](../scripts/New-RaphCareAndroidUploadKeystore.ps1) | Create upload keystore (gitignored path) |
 | [`scripts/Publish-RaphCareAndroidPlay.ps1`](../scripts/Publish-RaphCareAndroidPlay.ps1) | Signed Release AAB for Play Internal |
 
@@ -39,7 +46,7 @@ App Service names in this setup:
 | Azure App Service | Project | Workflow |
 |-------------------|---------|----------|
 | **`raphcare-api`** | `RaphCare.API` | [`.github/workflows/develop_raphcare-api.yml`](../.github/workflows/develop_raphcare-api.yml) |
-| **`raphcare`** | `RaphCare.Web.Host` (serves WASM) | [`.github/workflows/develop_raphcare.yml`](../.github/workflows/develop_raphcare.yml) |
+| **`raphcare`** | `RaphCare.Portal.Host` (serves WASM) | [`.github/workflows/develop_raphcare.yml`](../.github/workflows/develop_raphcare.yml) |
 
 Both deploy from **`develop`**. Path filters skip Mobile. Use **Run workflow** on either job if you need a deploy without a matching path change.
 
@@ -69,8 +76,16 @@ After first API deploy, set App Service **Configuration** on **raphcare-api** (S
 
 - `RaphCare__WebPortalBaseUrl` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
 - `Cors__WebAdminOrigins__0` = `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net`
+- `RaphCare__OpsBaseUrl` = `https://raphcare-ops.azurewebsites.net`
+- `Cors__OpsOrigins__0` = `https://raphcare-ops.azurewebsites.net`
 
-On App Service **raphcare** (the admin web host, not the API), set:
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/New-RaphCareOpsAzureApp.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Set-RaphCareAzureOpsCors.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareOpsToAzure.ps1
+```
+
+On App Service **raphcare** (the Portal host, not the API), set:
 
 - `ASPNETCORE_ENVIRONMENT` = `Staging`
 - `ApiBaseUrl` = `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net`
@@ -81,11 +96,12 @@ Those two web settings are how the browser finds the API. SMTP stays on **raphca
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Set-RaphCareAzureWebAppSettings.ps1
 ```
 
-You still need a **RaphCare.Web.Host** deploy that includes the host forwarding code. Visual Studio Zip Deploy does not rewrite `wwwroot/appsettings.json` in source; the host reads `ApiBaseUrl` from App Service at runtime.
+You still need a **RaphCare.Portal.Host** deploy that includes the host forwarding code. Visual Studio Zip Deploy does not rewrite `wwwroot/appsettings.json` in source; the host reads `ApiBaseUrl` from App Service at runtime.
 
 | App | URL |
 |-----|-----|
-| Web (`raphcare`) | `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net` |
+| Portal (`raphcare`) | `https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net` |
+| Ops (`raphcare-ops`) | `https://raphcare-ops.azurewebsites.net` |
 | API (`raphcare-api`) | `https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net` |
 
 ---
@@ -118,7 +134,37 @@ az account show
 az account list -o table
 ```
 
-You need a listed **subscription**. If the list is empty, that Microsoft account is not on the Azure subscription yet (grant Owner or Contributor in the portal), or security defaults blocked the tenant.
+You need a listed **subscription**. If the list is empty, that Microsoft account is not on the Azure subscription yet (grant Owner or Contributor in the portal), or MFA never completed for Azure resource manager.
+
+Staging tenant (Default Directory): `6069ef19-5a1b-48ca-94ae-5b814804a78b`. Subscription name is often **Azure subscription 1**.
+
+#### If Cursor or a .bat cannot open a login window (3 Sep 2026)
+
+Agents cannot complete Microsoft MFA inside Cursor. Hidden `az login` jobs also do not show a browser.
+
+1. Open **Windows Terminal** or **Command Prompt** on the desktop (not a Cursor terminal).
+2. Run the helper (or the same `az login --tenant` line):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Login-RaphCareAzure.ps1
+```
+
+3. Finish MFA in the browser. Pick **Azure subscription 1** if asked.
+4. Confirm `az account show` lists a subscription, then run publish scripts from Cursor.
+
+Do not launch login with `cmd /c start RaphCare ...`. Windows treats `RaphCare` as a program name and shows "Windows cannot find 'RaphCare'".
+
+If you wrap `az login` in a `.bat`, use `call` and the full path to `az.cmd`. `az` is `az.cmd`; without `call` the window closes as soon as CLI returns, which looks like a crash. Keep the window open with `cmd /k` or `pause`.
+
+#### If `az login` returns AADSTS50076 and no subscriptions
+
+`AADSTS50076` means Azure needs MFA for resource manager. Plain `az login` can authenticate the mailbox and still fail to list subscriptions (`raphcare@yindula.com` looked like it had no subscription). Retry **without** device code and **without** a management `--scope`:
+
+```powershell
+az login --tenant 6069ef19-5a1b-48ca-94ae-5b814804a78b
+```
+
+That is what `Login-RaphCareAzure.ps1` runs. After MFA, the same mailbox can see **Azure subscription 1**.
 
 **Avoid this pattern** (it caused real failures on 2 Sep 2026):
 
@@ -133,13 +179,14 @@ That often ends as:
 |---------|----------------|
 | Sign-in succeeded but **You don't have access to this** | Forced tenant + management scope on device code; wrong consent path |
 | `AADSTS530035` (security defaults) | Tenant blocks the auth method until MFA / security defaults are sorted |
+| `AADSTS50076` / MFA / `Status_InteractionRequired` | Need browser MFA; use `az login --tenant <tenant-id>` (see helper script) |
 | `AADSTS50132` on `az webapp deploy` while `az account show` still works | Stale CLI session; run `az login` again (browser), then republish |
 | `AADSTS70020` / device code expired | Code timed out; start a new `az login` |
-| No subscriptions found for `raphcare@yindula.com` | Mailbox can authenticate but has no subscription role |
+| No subscriptions found for `raphcare@yindula.com` | Often MFA never completed for Azure (AADSTS50076). Retry `--tenant` as above. If that still lists nothing, the mailbox has no subscription role. |
 
-Device code (`az login --use-device-code`) is a fallback only when a browser cannot open. Prefer plain `az login` first. Agents cannot complete Microsoft MFA inside Cursor; the human must finish the browser prompt.
+Device code (`az login --use-device-code`) is a fallback only when a browser cannot open. Prefer plain `az login` first, then `az login --tenant` if MFA/subscription listing fails.
 
-Ops account for this environment is often **`raphcare@yindula.com`**. Use the account that owns resource group **`raphcare_group`** / App Services **`raphcare-api`** and **`raphcare`**.
+Ops mailbox is **`raphcare@yindula.com`**. After MFA it can own **`raphcare_group`**. If a different account owns the subscription, use that one instead.
 
 Cursor agents: see **`.cursor/rules/azure-cli-signin.mdc`**.
 
@@ -189,6 +236,7 @@ Staging also fills **RaphCare Demo Clinic** and these email/password accounts (n
 | Doctor | `demo.doctor@raphcare.com` |
 | Pharmacist | `demo.pharmacy@raphcare.com` |
 | Lab | `demo.lab@raphcare.com` |
+| Platform Ops (fleet) | `demo.ops@raphcare.com` |
 | Patient (mobile) | `demo.patient@raphcare.com` |
 
 Password: App Service setting **`Demo:Password`**. If that is empty, the seeder uses `RaphCareDemo!2026`. Rotate it on the App Service when you want a new password. The pack is additive. It does not delete Daskana or other hospitals.
@@ -221,7 +269,7 @@ Smoke:
 - API CORS reads `Cors:WebAdminOrigins` and `RaphCare:WebPortalBaseUrl` ([`Program.cs`](../RaphCare.API/Program.cs)).
 - Mobile package id: **`com.yindula.raphcare`**.
 - Release builds load [`appsettings.TestHosting.json`](../RaphCare.Mobile/appsettings.TestHosting.json) (API base URL). Publish scripts rewrite that URL to match your App Service hostname.
-- **Linux Web publish:** use **`RaphCare.Web.Host`** (Zip Deploy / GitHub Actions), not standalone `RaphCare.Web`. Local admin UI can still `dotnet run` on `RaphCare.Web`.
+- **Linux Web publish:** use **`RaphCare.Portal.Host`** (Zip Deploy / GitHub Actions), not standalone `RaphCare.Web`. Local admin UI can still `dotnet run` on `RaphCare.Web`.
 - Hosted admin WASM: `ASPNETCORE_ENVIRONMENT=Staging` plus `ApiBaseUrl` on App Service **raphcare**. [`RaphCare.Web/wwwroot/appsettings.json`](../RaphCare.Web/wwwroot/appsettings.json) stays `localhost` for local runs. Staging overlay: [`appsettings.Staging.json`](../RaphCare.Web/wwwroot/appsettings.Staging.json).
 
 ---

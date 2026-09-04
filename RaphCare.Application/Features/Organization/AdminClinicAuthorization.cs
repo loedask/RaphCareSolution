@@ -20,6 +20,38 @@ internal static class AdminClinicAuthorization
             .ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Membership access, or platform Administrator (Ops fleet and cross-hospital admin reads).
+    /// </summary>
+    public static async Task<bool> HasClinicAccessOrPlatformAdminAsync(
+        ICurrentUserService currentUser,
+        IClinicStaffMembershipService membershipService,
+        IUserRoleAssignmentService roleAssignmentService,
+        Guid clinicId,
+        CancellationToken cancellationToken)
+    {
+        if (await HasClinicAccessAsync(currentUser, membershipService, clinicId, cancellationToken)
+            .ConfigureAwait(false))
+            return true;
+
+        return await IsPlatformAdministratorAsync(currentUser, roleAssignmentService, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public static async Task<bool> IsPlatformAdministratorAsync(
+        ICurrentUserService currentUser,
+        IUserRoleAssignmentService roleAssignmentService,
+        CancellationToken cancellationToken)
+    {
+        if (currentUser.CurrentUserId is not { } userId)
+            return false;
+
+        var roles = await roleAssignmentService
+            .GetRoleNamesAsync(userId, cancellationToken)
+            .ConfigureAwait(false);
+        return RaphCareRoles.HasAdministratorRole(roles);
+    }
+
     public static async Task<IReadOnlyList<string>> GetClinicStaffRolesAsync(
         ICurrentUserService currentUser,
         IClinicStaffMembershipService membershipService,

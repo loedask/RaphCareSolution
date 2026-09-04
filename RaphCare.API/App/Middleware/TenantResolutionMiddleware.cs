@@ -1,3 +1,5 @@
+using RaphCare.Application.Common;
+
 namespace RaphCare.API.App.Middleware;
 
 /// <summary>
@@ -18,7 +20,7 @@ public partial class TenantResolutionMiddleware(RequestDelegate next, ILogger<Te
         var path = context.Request.Path.Value ?? "";
         if (path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase)
             || !path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase)
-            || IsTenantExemptPath(path))
+            || TenantExemptApiPaths.IsExempt(path))
         {
             await _next(context).ConfigureAwait(false);
             return;
@@ -44,12 +46,6 @@ public partial class TenantResolutionMiddleware(RequestDelegate next, ILogger<Te
         context.Items[ClinicIdItemKey] = clinicId;
         await _next(context).ConfigureAwait(false);
     }
-
-    /// <summary>Paths that operate above tenant scope or before a clinic exists.</summary>
-    private static bool IsTenantExemptPath(string path) =>
-        path.StartsWith("/api/auth/email", StringComparison.OrdinalIgnoreCase)
-        || path.StartsWith("/api/admin/", StringComparison.OrdinalIgnoreCase)
-        || path.StartsWith("/api/display/", StringComparison.OrdinalIgnoreCase);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Request rejected: missing or empty {Header} header")]
     private partial void LogMissingClinicHeader(string header);

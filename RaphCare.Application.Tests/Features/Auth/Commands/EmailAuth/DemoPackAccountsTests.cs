@@ -8,9 +8,11 @@ public sealed class DemoPackAccountsTests
     [Theory]
     [InlineData("demo.patient@raphcare.com")]
     [InlineData("demo.admin@raphcare.com")]
+    [InlineData("demo.ops@raphcare.com")]
     [InlineData("  Demo.Patient@RaphCare.com  ")]
     [InlineData("demo.patient@raphcare.demo")]
     [InlineData("demo.admin@raphcare.demo")]
+    [InlineData("demo.ops@raphcare.demo")]
     public void IsDemoEmailRecognizesCanonicalAndLegacyAddresses(string email) =>
         Assert.True(DemoPackAccounts.IsDemoEmail(email));
 

@@ -1,8 +1,8 @@
 <#
 .SYNOPSIS
-  Publishes RaphCare.Web.Host (Linux) and zip-deploys it to App Service "raphcare".
+  Publishes RaphCare.Portal.Host (Linux) and zip-deploys it to App Service "raphcare".
 .NOTES
-  Do not publish RaphCare.Web alone to Linux App Service. Standalone Blazor WASM is static files;
+  Do not publish RaphCare.Portal alone to Linux App Service. Standalone Blazor WASM is static files;
   the thin host provides SPA fallback and correct framework MIME types (same pattern as Bobeta.Web.Host).
 #>
 [CmdletBinding()]
@@ -44,8 +44,8 @@ $zipPath = Join-Path $repoRoot "artifacts\raphcare-web-host.zip"
 Remove-Item -Recurse -Force $publishDir -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $publishDir | Out-Null
 
-Write-Host "dotnet publish RaphCare.Web.Host (linux-x64) ..."
-dotnet publish (Join-Path $repoRoot "RaphCare.Web.Host\RaphCare.Web.Host.csproj") `
+Write-Host "dotnet publish RaphCare.Portal.Host (linux-x64) ..."
+dotnet publish (Join-Path $repoRoot "RaphCare.Portal.Host\RaphCare.Portal.Host.csproj") `
     -c Release `
     -r linux-x64 `
     --self-contained false `
@@ -81,4 +81,12 @@ if ($LASTEXITCODE -ne 0) { throw "az webapp deploy failed for $WebAppName" }
     -ApiBaseUrl $ApiBaseUrl `
     -EnvironmentName "Staging"
 
-Write-Host "Web host published to App Service $WebAppName"
+Write-Host "Ensuring startup command for Portal Host ..."
+az webapp config set `
+    --resource-group $ResourceGroup `
+    --name $WebAppName `
+    --startup-file "dotnet RaphCare.Portal.Host.dll" `
+    -o none
+if ($LASTEXITCODE -ne 0) { throw "Failed to set startup-file for $WebAppName" }
+
+Write-Host "Portal host published to App Service $WebAppName"

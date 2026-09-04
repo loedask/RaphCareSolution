@@ -5,28 +5,35 @@ alwaysApply: true
 
 # Bug Fix Regression Tests
 
-When fixing a bug (user report, production issue, or a defect found while coding), do not finish until a regression test locks the correct behavior.
+When fixing a bug (user report, production issue, staging leak, or a defect found while coding), do not finish until a regression test locks the correct behavior.
 
 ## Required
 
-- Search for an existing xUnit test that already fails on the buggy behavior.
-- If none exists, add one in the test project for the layer that owns the bug. If that project does not exist yet, create the smallest xUnit `net10.0` project, add it to `RaphCareSolution.slnx`, and put the test there.
-- The new test must fail against the buggy code and pass after the fix. Assert the real failure mode, not only a nearby happy path.
-- Name the test so the bug is obvious (what broke, what must not happen again).
-- Run the new or updated tests with `dotnet test <project> --filter ...` and report that they passed before claiming the bug is fixed.
+1. Search for an existing xUnit test that already fails on the buggy behavior.
+2. If none exists, add one in the test project for the layer that owns the bug. If that project does not exist yet, create the smallest xUnit `net10.0` project, add it to `RaphCareSolution.slnx`, and put the test there.
+3. The new test must fail against the buggy code and pass after the fix. Assert the real failure mode, not only a nearby happy path.
+4. Name the test so the bug is obvious (what broke, what must not happen again).
+5. Run the new or updated tests with `dotnet test <project> --filter ...` and report that they passed before claiming the bug is fixed.
+
+## Test quality (do not cheat the regression)
+
+- Fakes and stubs must exercise the production filter or branch under test. Do not hard-code the *correct* outcome in the fake in a way that would still pass with the buggy code.
+- Prefer asserting the forbidden result explicitly (for example "demo admin must not see Daskana Hospital") over only checking counts on a happy path.
+- If the bug is authorization or tenancy, the test must use the same role and membership shape as the real account (Administrator with clinic membership is not the same as Ops with no membership).
 
 ## Where tests go
 
-- **Domain / Application** (handlers, validators, domain rules): `RaphCare.Application.Tests` (create if missing). Mirror `Features/{Feature}/Commands|Queries` and name `*HandlerTests` / `*ValidatorTests`. See `.cursor/rules/raphcare-application.mdc`.
+- **Domain / Application** (handlers, validators, domain rules): `RaphCare.Application.Tests`. Mirror `Features/{Feature}/Commands|Queries` and name `*HandlerTests` / `*ValidatorTests`.
+- **Portal helpers / UI-adjacent pure logic**: `RaphCare.Portal.Tests`.
 - **Mobile.Kernel** (`AuthResult`, feature flags): `RaphCare.Mobile.Tests`. Do **not** reference `RaphCare.Mobile` (MAUI Resizetizer breaks `dotnet test`).
-- **Client** mapping or HTTP-shape logic that is hand-written: a `RaphCare.Client.Tests` project if needed. Do not test NSwag-generated files.
-- Prefer tests against Application handlers over API controllers when both would cover the same rule.
+- **Client** hand-written mapping or HTTP-shape logic: `RaphCare.Client.Tests` if needed. Do not test NSwag-generated files.
+- Prefer Application handlers over API controllers when both would cover the same rule.
 
-## Coverage expectations
+## Do not skip
 
 - Do not treat manual reproduction or a warning-free `dotnet build` as done.
 - Do not skip the test because the fix looks obvious or is a one-liner.
 
 ## Exceptions
 
-- Only skip a regression test when the user explicitly says not to add one, or when there is no meaningful automated seam. State that blocker (for example MAUI/XAML-only layout, platform JNI, or generated NSwag output with no hand-written logic to assert).
+Only skip a regression test when the user explicitly says not to add one, or when there is no meaningful automated seam. State that blocker (for example MAUI/XAML-only layout, platform JNI, or generated NSwag output with no hand-written logic to assert).

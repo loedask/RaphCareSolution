@@ -19,16 +19,22 @@
   </Folder>
   <Folder Name="/UI/Core/">
     <Project Path="RaphCare.Client/RaphCare.Client.csproj" Id="1f3e627f-90cd-42d0-a220-20f4fdf42455" />
+    <Project Path="RaphCare.Ui/RaphCare.Ui.csproj" />
   </Folder>
-  <Folder Name="/UI/Web/">
-    <Project Path="RaphCare.Web.Host/RaphCare.Web.Host.csproj" />
-    <Project Path="RaphCare.Web/RaphCare.Web.csproj" />
+  <Folder Name="/UI/Portal/">
+    <Project Path="RaphCare.Portal.Host/RaphCare.Portal.Host.csproj" />
+    <Project Path="RaphCare.Portal/RaphCare.Portal.csproj" />
+  </Folder>
+  <Folder Name="/UI/Ops/">
+    <Project Path="RaphCare.Ops.Host/RaphCare.Ops.Host.csproj" />
+    <Project Path="RaphCare.Ops/RaphCare.Ops.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="RaphCare.Application.Tests/RaphCare.Application.Tests.csproj" />
     <Project Path="RaphCare.Infrastructure.Tests/RaphCare.Infrastructure.Tests.csproj" />
     <Project Path="RaphCare.Client.Tests/RaphCare.Client.Tests.csproj" />
     <Project Path="RaphCare.Mobile.Tests/RaphCare.Mobile.Tests.csproj" />
-    <Project Path="RaphCare.Web.Tests/RaphCare.Web.Tests.csproj" />
+    <Project Path="RaphCare.Portal.Tests/RaphCare.Portal.Tests.csproj" />
+    <Project Path="RaphCare.Persistence.Tests/RaphCare.Persistence.Tests.csproj" />
   </Folder>
 </Solution>

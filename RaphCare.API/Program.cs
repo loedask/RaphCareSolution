@@ -13,7 +13,7 @@ using RaphCare.Domain.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddIdentity(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
@@ -52,7 +52,11 @@ builder.Services.AddCors(options =>
         var origins = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "http://localhost:5177",
-            "https://localhost:7092"
+            "https://localhost:7092",
+            "http://localhost:5179",
+            "https://localhost:7094",
+            "http://localhost:5190",
+            "https://localhost:7195"
         };
 
         foreach (var origin in builder.Configuration.GetSection("Cors:WebAdminOrigins").Get<string[]>() ?? [])
@@ -61,9 +65,19 @@ builder.Services.AddCors(options =>
                 origins.Add(origin.Trim().TrimEnd('/'));
         }
 
+        foreach (var origin in builder.Configuration.GetSection("Cors:OpsOrigins").Get<string[]>() ?? [])
+        {
+            if (!string.IsNullOrWhiteSpace(origin))
+                origins.Add(origin.Trim().TrimEnd('/'));
+        }
+
         var portalBaseUrl = builder.Configuration["RaphCare:WebPortalBaseUrl"];
         if (!string.IsNullOrWhiteSpace(portalBaseUrl))
             origins.Add(portalBaseUrl.Trim().TrimEnd('/'));
+
+        var opsBaseUrl = builder.Configuration["RaphCare:OpsBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(opsBaseUrl))
+            origins.Add(opsBaseUrl.Trim().TrimEnd('/'));
 
         policy.WithOrigins(origins.ToArray())
             .AllowAnyHeader()

@@ -1,0 +1,289 @@
+@typeparam TValue
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
+<div @ref="_root"
+     class="searchable-select @CssClass @(Disabled ? "disabled" : null) @(_open ? "open" : null)">
+    <button type="button"
+            id="@Id"
+            class="searchable-select-trigger"
+            aria-haspopup="listbox"
+            aria-expanded="@_open"
+            aria-controls="@_listId"
+            disabled="@Disabled"
+            @onclick="ToggleAsync">
+        <span class="searchable-select-value @(HasValue ? null : "placeholder")">@DisplayLabel</span>
+        <span class="searchable-select-caret" aria-hidden="true">▾</span>
+    </button>
+
+    @if (_open)
+    {
+        <div class="searchable-select-backdrop" @onclick="CloseAsync"></div>
+        <div class="searchable-select-panel" @onclick:stopPropagation="true">
+            <input @ref="_searchInput"
+                   class="searchable-select-search"
+                   value="@_query"
+                   placeholder="@SearchLabel"
+                   aria-label="@SearchLabel"
+                   autocomplete="off"
+                   @oninput="OnQueryInput"
+                   @onkeydown="OnSearchKeyDown" />
+            <ul id="@_listId" class="searchable-select-list" role="listbox">
+                @if (Filtered.Count == 0)
+                {
+                    <li class="searchable-select-empty">@EmptyLabel</li>
+                }
+                else
+                {
+                    @for (var i = 0; i < Filtered.Count; i++)
+                    {
+                        var option = Filtered[i];
+                        var index = i;
+                        <li role="option"
+                            class="searchable-select-option @(IsSelected(option) ? "selected" : null) @(index == _activeIndex ? "active" : null)"
+                            aria-selected="@IsSelected(option)"
+                            @onclick="() => SelectAsync(option)">
+                            @option.Label
+                        </li>
+                    }
+                }
+            </ul>
+            @if (Footer is not null)
+            {
+                <div class="searchable-select-footer">
+                    @Footer
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private readonly string _listId = $"sel-list-{Guid.NewGuid():N}";
+    private ElementReference _root;
+    private ElementReference _searchInput;
+    private DotNetObjectReference<SearchableSelect<TValue>>? _dotNetRef;
+    private bool _open;
+    private bool _focusSearch;
+    private bool _bindDismiss;
+    private string _query = string.Empty;
+    private int _activeIndex;
+    private IReadOnlyList<SelectOption<TValue>> _filtered = Array.Empty<SelectOption<TValue>>();
+
+    [CascadingParameter] public SearchableSelectLabels? Labels { get; set; }
+
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? SearchPlaceholder { get; set; }
+    [Parameter] public string? EmptyText { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public TValue? Value { get; set; }
+    [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
+    [Parameter] public IReadOnlyList<SelectOption<TValue>> Options { get; set; } = Array.Empty<SelectOption<TValue>>();
+    [Parameter] public RenderFragment? Footer { get; set; }
+
+    private IReadOnlyList<SelectOption<TValue>> Filtered => _filtered;
+
+    private bool HasValue => SelectedOption is not null;
+
+    private string SearchLabel =>
+        SearchPlaceholder
+        ?? Labels?.Search
+        ?? "Search";
+
+    private string EmptyLabel =>
+        EmptyText
+        ?? Labels?.NoMatchingOptions
+        ?? "No matching options";
+
+    private SelectOption<TValue>? SelectedOption
+    {
+        get
+        {
+            foreach (var option in Options)
+            {
+                if (IsSelected(option))
+                    return option;
+            }
+
+            return null;
+        }
+    }
+
+    private string DisplayLabel =>
+        SelectedOption?.Label
+        ?? Placeholder
+        ?? string.Empty;
+
+    protected override void OnParametersSet() => RefreshFilter();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _ = firstRender;
+        if (_bindDismiss)
+        {
+            _bindDismiss = false;
+            await BindDismissOutsideAsync().ConfigureAwait(false);
+        }
+
+        if (!_focusSearch)
+            return;
+
+        _focusSearch = false;
+        try
+        {
+            await _searchInput.FocusAsync().ConfigureAwait(false);
+            await Js.InvokeVoidAsync("raphCareUi.guardSelectKeys", _searchInput).ConfigureAwait(false);
+        }
+        catch (JSException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+    }
+
+    private void OnQueryInput(ChangeEventArgs e)
+    {
+        _query = e.Value?.ToString() ?? string.Empty;
+        _activeIndex = 0;
+        RefreshFilter();
+    }
+
+    private async Task ToggleAsync()
+    {
+        if (Disabled)
+            return;
+
+        if (_open)
+        {
+            await CloseAsync().ConfigureAwait(false);
+            return;
+        }
+
+        _query = string.Empty;
+        RefreshFilter();
+        _activeIndex = Math.Max(0, IndexOfSelected());
+        _open = true;
+        _focusSearch = true;
+        _bindDismiss = true;
+    }
+
+    private async Task OnSearchKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "Escape":
+                await CloseAsync().ConfigureAwait(false);
+                break;
+            case "ArrowDown":
+                if (Filtered.Count > 0)
+                    _activeIndex = Math.Min(_activeIndex + 1, Filtered.Count - 1);
+                break;
+            case "ArrowUp":
+                if (Filtered.Count > 0)
+                    _activeIndex = Math.Max(_activeIndex - 1, 0);
+                break;
+            case "Enter":
+                if (_activeIndex >= 0 && _activeIndex < Filtered.Count)
+                    await SelectAsync(Filtered[_activeIndex]).ConfigureAwait(false);
+                break;
+        }
+    }
+
+    private async Task SelectAsync(SelectOption<TValue> option)
+    {
+        await ValueChanged.InvokeAsync(option.Value).ConfigureAwait(false);
+        await CloseAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>Called from JS when the user presses outside the select.</summary>
+    [JSInvokable]
+    public Task CloseFromOutside() => CloseAsync();
+
+    /// <summary>Closes the panel (for example when starting a nested "Add" flow).</summary>
+    public Task CloseAsync() => CloseCoreAsync();
+
+    private async Task CloseCoreAsync()
+    {
+        if (!_open)
+            return;
+
+        _open = false;
+        _query = string.Empty;
+        RefreshFilter();
+        await UnbindDismissOutsideAsync().ConfigureAwait(false);
+        await InvokeAsync(StateHasChanged).ConfigureAwait(false);
+    }
+
+    private async Task BindDismissOutsideAsync()
+    {
+        try
+        {
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+            await Js.InvokeVoidAsync("raphCareUi.bindSelectDismissOutside", _root, _dotNetRef)
+                .ConfigureAwait(false);
+        }
+        catch (JSException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+    }
+
+    private async Task UnbindDismissOutsideAsync()
+    {
+        try
+        {
+            await Js.InvokeVoidAsync("raphCareUi.unbindSelectDismissOutside", _root)
+                .ConfigureAwait(false);
+        }
+        catch (JSException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+    }
+
+    private void RefreshFilter()
+    {
+        if (string.IsNullOrWhiteSpace(_query))
+        {
+            _filtered = Options;
+            return;
+        }
+
+        _filtered = Options
+            .Where(o => o.Label.Contains(_query.Trim(), StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+    }
+
+    private bool IsSelected(SelectOption<TValue> option)
+    {
+        if (Value is null)
+            return option.Value is null;
+
+        return EqualityComparer<TValue>.Default.Equals(option.Value, Value);
+    }
+
+    private int IndexOfSelected()
+    {
+        for (var i = 0; i < Filtered.Count; i++)
+        {
+            if (IsSelected(Filtered[i]))
+                return i;
+        }
+
+        return 0;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await UnbindDismissOutsideAsync().ConfigureAwait(false);
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
+    }
+}

@@ -1,0 +1,1398 @@
+@page "/admin/hospitals/{ClinicId:guid}"
+@layout AdminLayout
+@using RaphCare.Client.Models.Clinical
+@using RaphCare.Client.Services.Base
+@using RaphCare.Domain.Common
+@using RaphCare.Portal.Helpers
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@PageTitleText</PageTitle>
+
+<section class="admin-page hospital-deck">
+    @if (_loading)
+    {
+        <HospitalDeckLoading Message="@AppResources.T("Common_LoadingHospital")" />
+    }
+    else if (_detail is null)
+    {
+        <HospitalDeckMissing Message="@(_error ?? AppResources.T("Common_HospitalNotFound"))"
+                             BackText="@AppResources.T("Common_BackToHospitals")" />
+    }
+    else
+    {
+        <HospitalDeckMasthead BackHref="/admin/hospitals"
+                              BackText="@AppResources.T("Common_BackToHospitals")"
+                              Monogram="@HospitalDeckInitials.FromName(_detail.Name)"
+                              Eyebrow="@AppResources.T("Common_HospitalProfileEyebrow")"
+                              Title="@_detail.Name"
+                              Lead="@AppResources.T("HospitalDetail_Lead")"
+                              IsActive="@_detail.IsActive"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_detail.Name"
+                              CurrentCrumb="@CurrentCrumbLabel">
+            <HospitalDeckChip Label="@AppResources.T("Common_Country")" Value="@_detail.Country" />
+            <HospitalDeckChip Label="@AppResources.T("Common_TimeZone")" Value="@_detail.TimeZone" />
+            <HospitalDeckChip Label="@AppResources.T("Common_HospitalReference")">
+                <code>@_detail.ReferenceCode</code>
+            </HospitalDeckChip>
+        </HospitalDeckMasthead>
+
+        <div class="hospital-deck-workspace">
+        <HospitalDeckRail AriaLabel="@AppResources.T("Common_HospitalSectionsAria")"
+                          Kicker="@AppResources.T("Common_HospitalSectionsAria")">
+            <HospitalDeckRailItem Index="01" Icon="grid" IsActive="@(_tab == "overview")" OnSelect='() => SetTab("overview")'>
+                @AppResources.T("Common_Overview")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="02" Icon="campus" IsActive="@(_tab == "facilities")" Count="@_detail.Facilities.Count" OnSelect='() => SetTab("facilities")'>
+                @AppResources.T("Common_Facilities")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="03" Icon="people" IsActive="@(_tab == "patients")" Count="@(_patientsLoaded ? _patientTotalCount : null)" OnSelect='() => SetTab("patients")'>
+                @AppResources.T("Common_PatientsStat")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="04" Icon="provider" IsActive="@(_tab == "providers")" Count="@(_providersLoaded ? _providers.Count : null)" OnSelect='() => SetTab("providers")'>
+                @AppResources.T("Common_ProvidersStat")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="05" Icon="calendar" IsActive="@(_tab == "appointments")" OnSelect='() => SetTab("appointments")'>
+                @AppResources.T("Common_Appointments")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="06" Icon="device" IsActive="@(_tab == "devices")" Count="@(_devicesLoaded ? _devices.Count : null)" OnSelect='() => SetTab("devices")'>
+                @AppResources.T("Common_Devices")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="07" Icon="inpatient" IsActive="@(_tab == "inpatient")" Href="@($"/admin/hospitals/{ClinicId}/inpatient")">
+                @AppResources.T("Common_Inpatient")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="08" Icon="collection" IsActive="@(_tab == "collection")" Href="@($"/admin/hospitals/{ClinicId}/collection")">
+                @AppResources.T("Collection_Title")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="09" Icon="casualty" IsActive="@(_tab == "casualty")" Href="@($"/admin/hospitals/{ClinicId}/casualty")">
+                @AppResources.T("Common_Casualty")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="10" Icon="theatre" IsActive="@(_tab == "theatre")" Href="@($"/admin/hospitals/{ClinicId}/theatre")">
+                @AppResources.T("Common_Theatre")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="11" Icon="referral" IsActive="@(_tab == "referrals")" Href="@($"/admin/hospitals/{ClinicId}/referrals")">
+                @AppResources.T("Common_Referrals")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="12" Icon="roster" IsActive="@(_tab == "roster")" Href="@($"/admin/hospitals/{ClinicId}/roster")">
+                @AppResources.T("Common_Roster")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="13" Icon="staff" IsActive="@(_tab == "staff")" Count="@(_staffLoaded ? _staff.Count : null)" OnSelect='() => SetTab("staff")'>
+                @AppResources.T("Common_Staff")
+            </HospitalDeckRailItem>
+        </HospitalDeckRail>
+
+        <div class="hospital-deck-stage">
+        <AdminAlert Message="@_actionError" />
+
+        @if (_tab == "overview" || HospitalDeckReturnUrl.IsLinkedSectionTab(_tab))
+        {
+            <div class="hospital-overview">
+                <HospitalIdentityPlate Kicker="@AppResources.T("Common_HospitalReference")"
+                                       Serial="@_detail.ReferenceCode">
+                    <dl class="hospital-identity-facts">
+                        <HospitalIdentityFact Label="@AppResources.T("Common_RegistrationNumberShort")" Value="@_detail.RegistrationNumber" />
+                        <HospitalIdentityFact Label="@AppResources.T("Common_Registered")" Value="@_detail.CreatedAt.ToString("dd MMM yyyy")" />
+                        <HospitalIdentityFact Label="@AppResources.T("Common_Facilities")" Value="@FacilityCountLabel(_detail.Facilities.Count)" />
+                    </dl>
+                </HospitalIdentityPlate>
+
+                <HospitalOrganizationForm Model="_clinicForm"
+                                          IsAdministrator="_isAdministrator"
+                                          Saving="_savingClinic"
+                                          OnSave="SaveClinicAsync" />
+
+                <ClinicEmergencyHomeCard ClinicId="@ClinicId"
+                                         Events="@_homeEmergencyEvents"
+                                         TotalCount="@_homeEmergencyEvents.Count"
+                                         Loading="@_loadingHomeEmergencies"
+                                         Error="@_homeEmergencyError"
+                                         ClinicContextMissing="@_homeEmergencyClinicContextMissing"
+                                         TimeZone="@(_detail.TimeZone)"
+                                         ViewAllHref="@($"/admin/hospitals/{ClinicId}?tab=devices")"
+                                         OnRetry="LoadHomeEmergenciesAsync" />
+            </div>
+        }
+        else if (_tab == "facilities")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Common_LocationsEyebrow")"
+                           Title="@AppResources.T("Common_Facilities")"
+                           Lead="@AppResources.T("Common_PhysicalCampusesLead")">
+                <AdminPageCardMeta>
+                    <span class="admin-progress-pill">@FacilityCountLabel(_detail.Facilities.Count)</span>
+                </AdminPageCardMeta>
+                <div class="admin-page-card-body">
+                    <div class="admin-inline-form">
+                        <h3>@(_editingFacilityId is null ? AppResources.T("Common_AddFacility") : AppResources.T("Common_EditFacility"))</h3>
+                        <div class="form-grid">
+                            <label>
+                                @AppResources.T("Common_Name")
+                                <input class="form-control" @bind="_facilityForm.Name" placeholder="@AppResources.T("Common_MainCampusPlaceholder")" />
+                            </label>
+                            <label>
+                                @AppResources.T("Common_City")
+                                <input class="form-control" @bind="_facilityForm.City" placeholder="@AppResources.T("Common_JohannesburgPlaceholder")" />
+                            </label>
+                            <label>
+                                @AppResources.T("Common_Address")
+                                <input class="form-control" @bind="_facilityForm.Address" placeholder="@AppResources.T("Common_StreetAddress")" />
+                            </label>
+                            <label>
+                                @AppResources.T("Common_Country")
+                                <input class="form-control" @bind="_facilityForm.Country" placeholder="@_detail.Country" />
+                            </label>
+                            <label class="form-check">
+                                <input type="checkbox" @bind="_facilityForm.IsVirtual" />
+                                @AppResources.T("Common_VirtualSiteCheckbox")
+                            </label>
+                        </div>
+                        <div class="admin-form-actions">
+                            @if (_editingFacilityId is null)
+                            {
+                                <button type="button" class="btn btn-primary" disabled="@_savingFacility" @onclick="CreateFacilityAsync">
+                                    @(_savingFacility ? AppResources.T("Common_Adding") : AppResources.T("Common_AddFacilityButton"))
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-primary" disabled="@_savingFacility" @onclick="UpdateFacilityAsync">
+                                    @(_savingFacility ? AppResources.T("Common_Saving") : AppResources.T("Common_SaveChanges"))
+                                </button>
+                                <button type="button" class="btn btn-secondary" @onclick="CancelEditFacility">@AppResources.T("Common_Cancel")</button>
+                            }
+                        </div>
+                    </div>
+
+                    @if (_detail.Facilities.Count == 0)
+                    {
+                        <p class="hospital-deck-empty">@AppResources.T("Common_NoFacilitiesYet")</p>
+                    }
+                    else
+                    {
+                        <div class="hospital-campus-grid">
+                            @foreach (var facility in _detail.Facilities)
+                            {
+                                <HospitalCampusCard Facility="facility"
+                                                    IsEditing="@(_editingFacilityId == facility.Id)"
+                                                    IsAdministrator="_isAdministrator"
+                                                    IsDeleting="@(_deletingFacilityId == facility.Id)"
+                                                    OnEdit="StartEditFacility"
+                                                    OnDelete="DeleteFacilityAsync" />
+                            }
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "patients")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Common_CareRecipientsEyebrow")"
+                           Title="@AppResources.T("Common_PatientsStat")"
+                           Lead="@AppResources.T("Common_PatientsLead")">
+                <AdminPageCardMeta>
+                    <span class="admin-progress-pill">@PatientCountLabel(_patientTotalCount)</span>
+                </AdminPageCardMeta>
+                <div class="admin-page-card-body">
+                    @if (_isAdministrator)
+                    {
+                        <div class="admin-inline-form">
+                            <h3>@AppResources.T("Common_GrantPatientAccessTitle")</h3>
+                            <p class="text-muted">@AppResources.T("Common_GrantPatientAccessLead")</p>
+                            <div class="claim-form-row">
+                                <input class="form-control" @bind="_grantPatientEmail" placeholder="@AppResources.T("Common_PatientEmailPlaceholder")" />
+                                <button type="button" class="btn btn-primary" disabled="@_grantingPatient" @onclick="GrantPatientAccessAsync">
+                                    @(_grantingPatient ? AppResources.T("Common_Granting") : AppResources.T("Common_GrantAccess"))
+                                </button>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="admin-table-toolbar">
+                        <div class="claim-form-row">
+                            <input class="form-control"
+                                   @bind="_patientSearch"
+                                   @bind:event="oninput"
+                                   placeholder="@AppResources.T("Common_SearchByNameEmailPhone")"
+                                   @onkeydown="OnPatientSearchKeyDown" />
+                            <button type="button" class="btn btn-secondary" @onclick="SearchPatientsAsync">@AppResources.T("Common_Search")</button>
+                        </div>
+                    </div>
+
+                    @if (_loadingPatients)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_LoadingPatients")</p>
+                    }
+                    else if (_patientTotalCount == 0 && string.IsNullOrWhiteSpace(_patientSearchApplied))
+                    {
+                        <p class="text-muted">@AppResources.T("Common_NoPatientsLinked")</p>
+                    }
+                    else if (_patients.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_NoPatientsMatchSearch")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Common_Name")</th>
+                                        <th>@AppResources.T("Common_DateOfBirth")</th>
+                                        <th>@AppResources.T("Common_Access")</th>
+                                        <th>@AppResources.T("Common_Granted")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var patient in _patients)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <HospitalDirectoryPerson Name="@($"{patient.FirstName} {patient.LastName}")"
+                                                                         Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, patient.PatientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "patients"))" />
+                                            </td>
+                                            <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
+                                            <td>@patient.AccessType</td>
+                                            <td>@patient.GrantedAt.ToString("dd MMM yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="admin-pagination">
+                            <span class="admin-pagination-meta">
+                                @AppResources.Format("Common_PageOf", _patientPageNumber, _patientPageCount, PatientCountLabel(_patientTotalCount))
+                            </span>
+                            <div class="admin-pagination-actions">
+                                <button type="button" class="btn btn-secondary btn-sm" disabled="@(_patientPageNumber <= 1 || _loadingPatients)" @onclick="PreviousPatientsPageAsync">@AppResources.T("Common_Previous")</button>
+                                <button type="button" class="btn btn-secondary btn-sm" disabled="@(_patientPageNumber >= _patientPageCount || _loadingPatients)" @onclick="NextPatientsPageAsync">@AppResources.T("Common_Next")</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "providers")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Common_ClinicalTeamEyebrow")"
+                           Title="@AppResources.T("Common_ProvidersStat")"
+                           Lead="@AppResources.T("Common_ProvidersLead")">
+                <AdminPageCardMeta>
+                    <span class="admin-progress-pill">@ProviderCountLabel(_providers.Count)</span>
+                </AdminPageCardMeta>
+                <div class="admin-page-card-body">
+                    @if (_isAdministrator)
+                    {
+                        <div class="admin-inline-form">
+                            <h3>@AppResources.T("Common_AddProviderTitle")</h3>
+                            <p class="text-muted">@AppResources.T("Common_AddProviderLead")</p>
+                            <div class="claim-form-row">
+                                <SearchableSelect TValue="string"
+                                                  @bind-Value="_selectedStaffUserId"
+                                                  Placeholder="@AppResources.T("Common_SelectStaffMemberOption")"
+                                                  Options="StaffCandidateOptions" />
+                                <input class="form-control" @bind="_providerLicense" placeholder="@AppResources.T("Common_LicenseOptionalPlaceholder")" />
+                                <button type="button" class="btn btn-primary" disabled="@_addingProvider" @onclick="AddProviderAsync">
+                                    @(_addingProvider ? AppResources.T("Common_Adding") : AppResources.T("Common_AddProvider"))
+                                </button>
+                            </div>
+                        </div>
+                    }
+
+                    @if (_loadingProviders)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_LoadingProviders")</p>
+                    }
+                    else if (_providers.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_NoProvidersYet")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Common_Name")</th>
+                                        <th>@AppResources.T("Common_Email")</th>
+                                        <th>@AppResources.T("Common_License")</th>
+                                        <th>@AppResources.T("Common_Schedule")</th>
+                                        <th>@AppResources.T("Common_Status")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var provider in _providers)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <HospitalDirectoryPerson Name="@provider.DisplayName"
+                                                                         Href="@($"/admin/hospitals/{ClinicId}/providers/{provider.ProviderId}")" />
+                                            </td>
+                                            <td>@provider.Email</td>
+                                            <td>@(string.IsNullOrWhiteSpace(provider.LicenseNumber) ? AppResources.T("Common_EmptyCell") : provider.LicenseNumber)</td>
+                                            <td>@ScheduleSlotLabel(provider.ScheduleSlotCount)</td>
+                                            <td>
+                                                <span class="badge @(provider.IsActive ? "badge-success" : "badge-muted")">
+                                                    @(provider.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "appointments")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")"
+                           Title="@AppResources.T("Common_Appointments")"
+                           Lead="@AppResources.T("Common_AppointmentsLead")">
+                <AdminPageCardMeta>
+                    <a class="btn btn-secondary btn-sm" href="/admin/hospitals/@ClinicId/appointments">@AppResources.T("Common_FullList")</a>
+                </AdminPageCardMeta>
+                <div class="admin-page-card-body">
+                    @if (_loadingAppointments)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_LoadingAppointments")</p>
+                    }
+                    else if (_appointmentPreview.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_NoUpcomingAppointments30Days")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Common_When")</th>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("Common_Provider")</th>
+                                        <th>@AppResources.T("Common_Status")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appt in _appointmentPreview)
+                                    {
+                                        <tr>
+                                            <td>@appt.ScheduledStart.ToString("dd MMM yyyy HH:mm")</td>
+                                            <td>@appt.PatientName</td>
+                                            <td>@appt.ProviderName</td>
+                                            <td>@appt.Status</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "devices")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Common_FleetEyebrow")"
+                           Title="@AppResources.T("Common_Devices")"
+                           Lead="@AppResources.T("Common_DevicesLead")">
+                <AdminPageCardMeta>
+                    <span class="admin-progress-pill">@DeviceCountLabel(_devices.Count)</span>
+                </AdminPageCardMeta>
+                <div class="admin-page-card-body">
+                    @if (_loadingDevices)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_LoadingDevices")</p>
+                    }
+                    else if (_devices.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_NoDevicesYet")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Common_Serial")</th>
+                                        <th>@AppResources.T("Common_Model")</th>
+                                        <th>@AppResources.T("Common_Status")</th>
+                                        <th>@AppResources.T("Common_AssignedTo")</th>
+                                        <th>@AppResources.T("Common_Active")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var device in _devices)
+                                    {
+                                        <tr>
+                                            <td><code>@device.SerialNumber</code></td>
+                                            <td>@(string.IsNullOrWhiteSpace(device.Model) ? AppResources.T("Common_EmptyCell") : device.Model)</td>
+                                            <td>@(string.IsNullOrWhiteSpace(device.Status) ? AppResources.T("Common_EmptyCell") : device.Status)</td>
+                                            <td>
+                                                @if (device.AssignedPatientId is Guid patientId)
+                                                {
+                                                    <a href="@HospitalDeckReturnUrl.PatientHref(ClinicId, patientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "devices"))">@(device.AssignedPatientName ?? AppResources.T("Common_Patient"))</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">@AppResources.T("Common_Unassigned")</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge @(device.IsActive ? "badge-success" : "badge-muted")">
+                                                    @(device.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+
+            <AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
+                           Title="@AppResources.T("Common_EmergencyEventsTitle")"
+                           Lead="@AppResources.T("Common_EmergencyEventsLeadClinic")">
+                <AdminPageCardMeta>
+                    <span class="admin-progress-pill">@EventCountLabel(_emergencyTotal)</span>
+                </AdminPageCardMeta>
+                <div class="admin-page-card-body">
+                    @if (_loadingEmergencies)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_LoadingEmergencyEvents")</p>
+                    }
+                    else if (!string.IsNullOrEmpty(_emergencyError))
+                    {
+                        @if (_emergencyClinicContextMissing)
+                        {
+                            <ClinicContextRequiredAlert OnRetry="RetryClinicEmergenciesAsync" />
+                        }
+                        else
+                        {
+                            <AdminAlert Message="@_emergencyError" />
+                        }
+                    }
+                    else if (_emergencyEvents.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_NoEmergencyEventsClinic")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Common_Occurred")</th>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("Common_Type")</th>
+                                        <th>Device</th>
+                                        <th>@AppResources.T("Common_Location")</th>
+                                        <th>@AppResources.T("Common_Caregivers")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ev in _emergencyEvents)
+                                    {
+                                        <tr>
+                                            <td>@FormatEmergencyLocal(ev.OccurredAtUtc)</td>
+                                            <td>
+                                                <a href="@HospitalDeckReturnUrl.PatientHref(ClinicId, ev.PatientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "devices"))">@ev.PatientName</a>
+                                            </td>
+                                            <td><span class="badge badge-error">@ev.EventType</span></td>
+                                            <td>@(string.IsNullOrWhiteSpace(ev.Model) ? ev.SerialNumber : $"{ev.Model} · {ev.SerialNumber}")</td>
+                                            <td>@FormatEmergencyLocation(ev)</td>
+                                            <td>
+                                                @if (ev.CaregiversNotified)
+                                                {
+                                                    <span title="@(ev.CaregiverNotificationSummary ?? "")">@AppResources.T("Common_Notified")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">@AppResources.T("Common_EmptyCell")</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (_emergencyTotal > _emergencyEvents.Count)
+                        {
+                            <div class="admin-page-actions">
+                                <button type="button" class="btn btn-secondary" disabled="@_loadingEmergencies" @onclick="LoadMoreClinicEmergenciesAsync">
+                                    @AppResources.Format("Common_LoadMore", _emergencyEvents.Count, _emergencyTotal)
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "staff")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Common_TeamEyebrow")"
+                           Title="@AppResources.T("Common_Staff")"
+                           Lead="@AppResources.T("Common_StaffLead")">
+                <AdminPageCardMeta>
+                    <span class="admin-progress-pill">@MemberCountLabel(_staff.Count)</span>
+                </AdminPageCardMeta>
+                <div class="admin-page-card-body">
+                    @if (_isAdministrator)
+                    {
+                        <div class="admin-inline-form">
+                            <h3>@AppResources.T("Common_InviteStaffTitle")</h3>
+                            <div class="claim-form-row">
+                                <input class="form-control" @bind="_inviteEmail" placeholder="@AppResources.T("Common_ColleagueEmailPlaceholder")" />
+                                <select class="form-control" @bind="_inviteJobRole">
+                                    @foreach (var job in JobRoleChoices)
+                                    {
+                                        <option value="@job.Value">@job.Label</option>
+                                    }
+                                </select>
+                                <button type="button" class="btn btn-primary" disabled="@_inviting" @onclick="InviteStaffAsync">
+                                    @(_inviting ? AppResources.T("Common_Inviting") : AppResources.T("Common_Invite"))
+                                </button>
+                            </div>
+                            <p class="hint">@AppResources.T("Common_InviteStaffHint")</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="hint">@AppResources.T("Common_OnlyAdminsInviteStaff")</p>
+                    }
+
+                    @if (_loadingStaff)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_LoadingStaff")</p>
+                    }
+                    else if (_staff.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Common_NoStaffYet")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Common_Name")</th>
+                                        <th>@AppResources.T("Common_Email")</th>
+                                        <th>@AppResources.T("Common_Roles")</th>
+                                        <th>@AppResources.T("Common_Status")</th>
+                                        <th>@AppResources.T("Common_Joined")</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var member in _staff)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <HospitalDirectoryPerson Name="@member.DisplayName" />
+                                            </td>
+                                            <td>@member.Email</td>
+                                            <td>@FormatStaffRoles(member.Roles)</td>
+                                            <td>
+                                                @if (member.IsPendingInvitation)
+                                                {
+                                                    <span class="badge badge-muted">@AppResources.T("Common_PendingRegistration")</span>
+                                                }
+                                                else if (member.HasLoggedIn)
+                                                {
+                                                    <span class="badge badge-success">@AppResources.T("Common_Active")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-muted">@AppResources.T("Common_PendingSignIn")</span>
+                                                }
+                                            </td>
+                                            <td>@member.JoinedAt.ToString("dd MMM yyyy")</td>
+                                            <td class="admin-row-actions">
+                                                @if (_isAdministrator)
+                                                {
+                                                    @if (member.IsPendingInvitation && member.InvitationId is { } invitationId)
+                                                    {
+                                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingInvitationId == invitationId" @onclick="() => ResendPendingInvitationAsync(invitationId)">
+                                                            @(_resendingInvitationId == invitationId ? AppResources.T("Common_Sending") : AppResources.T("Common_ResendInvite"))
+                                                        </button>
+                                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_cancellingInvitationId == invitationId" @onclick="() => CancelPendingInvitationAsync(invitationId)">
+                                                            @(_cancellingInvitationId == invitationId ? AppResources.T("Common_Cancelling") : AppResources.T("Common_Cancel"))
+                                                        </button>
+                                                    }
+                                                    else if (!member.HasLoggedIn && member.UserId is { } userId)
+                                                    {
+                                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_resendingUserId == userId" @onclick="() => ResendInvitationAsync(userId)">
+                                                            @(_resendingUserId == userId ? AppResources.T("Common_Sending") : AppResources.T("Common_ResendInvite"))
+                                                        </button>
+                                                        @if (CanRemoveStaff(member))
+                                                        {
+                                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == userId" @onclick="() => RemoveStaffAsync(userId)">
+                                                                @(_removingUserId == userId ? AppResources.T("Common_Removing") : AppResources.T("Common_Remove"))
+                                                            </button>
+                                                        }
+                                                    }
+                                                    else if (member.UserId is { } activeUserId)
+                                                    {
+                                                        <select class="form-control" style="min-width: 10rem;"
+                                                                value="@CurrentJobRole(member)"
+                                                                @onchange="e => SetStaffJobAsync(activeUserId, e.Value?.ToString())">
+                                                            @foreach (var job in JobRoleChoices)
+                                                            {
+                                                                <option value="@job.Value">@job.Label</option>
+                                                            }
+                                                        </select>
+                                                        if (IsStaffAdministrator(member))
+                                                        {
+                                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@_updatingRoleUserId == activeUserId" @onclick="() => UpdateStaffRoleAsync(activeUserId, false)">
+                                                                @(_updatingRoleUserId == activeUserId ? AppResources.T("Common_Saving") : AppResources.T("Common_RemoveAdmin"))
+                                                            </button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@_updatingRoleUserId == activeUserId" @onclick="() => UpdateStaffRoleAsync(activeUserId, true)">
+                                                                @(_updatingRoleUserId == activeUserId ? AppResources.T("Common_Saving") : AppResources.T("Common_MakeAdmin"))
+                                                            </button>
+                                                        }
+
+                                                        @if (CanRemoveStaff(member))
+                                                        {
+                                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@_removingUserId == activeUserId" @onclick="() => RemoveStaffAsync(activeUserId)">
+                                                                @(_removingUserId == activeUserId ? AppResources.T("Common_Removing") : AppResources.T("Common_Remove"))
+                                                            </button>
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+
+        <div class="hospital-deck-foot">
+            <HospitalDeckBackLink Href="/admin/hospitals" Text="@AppResources.T("Common_BackToHospitals")" />
+        </div>
+        </div>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+    [SupplyParameterFromQuery(Name = "tab")] public string? TabQuery { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+    [Inject] private IClinicalPatientDeviceReadingsService DeviceReadingsService { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _loadingStaff;
+    private bool _loadingDevices;
+    private bool _loadingEmergencies;
+    private bool _loadingPatients;
+    private bool _loadingProviders;
+    private bool _loadingAppointments;
+    private bool _addingProvider;
+    private bool _savingFacility;
+    private bool _savingClinic;
+    private bool _inviting;
+    private bool _grantingPatient;
+    private Guid? _deletingFacilityId;
+    private Guid? _removingUserId;
+    private Guid? _resendingUserId;
+    private Guid? _resendingInvitationId;
+    private Guid? _cancellingInvitationId;
+    private Guid? _updatingRoleUserId;
+    private string? _error;
+    private string? _actionError;
+    private string? _emergencyError;
+    private bool _emergencyClinicContextMissing;
+    private string? _homeEmergencyError;
+    private bool _homeEmergencyClinicContextMissing;
+    private bool _loadingHomeEmergencies;
+    private IReadOnlyList<ClinicDeviceEmergencyEventViewModel> _homeEmergencyEvents =
+        Array.Empty<ClinicDeviceEmergencyEventViewModel>();
+    private string _tab = "overview";
+    private string _inviteEmail = string.Empty;
+    private string _inviteJobRole = RaphCareRoles.Clinician;
+    private string _grantPatientEmail = string.Empty;
+    private string _providerLicense = string.Empty;
+    private string _selectedStaffUserId = string.Empty;
+    private string _patientSearch = string.Empty;
+    private string _patientSearchApplied = string.Empty;
+    private int _patientPageNumber = 1;
+    private const int PatientPageSize = 20;
+    private const int EmergencyPageSize = 20;
+    private int _patientPageCount = 1;
+    private bool _isAdministrator;
+    private Guid? _editingFacilityId;
+    private ClinicDetail? _detail;
+    private IReadOnlyList<ClinicStaffMember> _staff = Array.Empty<ClinicStaffMember>();
+    private IReadOnlyList<ClinicPatientListItem> _patients = Array.Empty<ClinicPatientListItem>();
+    private IReadOnlyList<ClinicProviderListItem> _providers = Array.Empty<ClinicProviderListItem>();
+    private IReadOnlyList<ClinicAppointmentListItem> _appointmentPreview = Array.Empty<ClinicAppointmentListItem>();
+    private IReadOnlyList<ClinicDeviceListItem> _devices = Array.Empty<ClinicDeviceListItem>();
+    private List<ClinicDeviceEmergencyEventViewModel> _emergencyEvents = [];
+    private int _emergencyTotal;
+    private int _emergencyPage = 1;
+    private IReadOnlyList<ClinicStaffMember> _staffCandidates = Array.Empty<ClinicStaffMember>();
+
+    private IReadOnlyList<SelectOption<string>> StaffCandidateOptions =>
+        _staffCandidates
+            .Where(member => member.UserId is Guid)
+            .Select(member => new SelectOption<string>(
+                member.UserId!.Value.ToString(),
+                $"{member.DisplayName} ({member.Email})"))
+            .ToArray();
+    private int _patientTotalCount;
+    private bool _staffLoaded;
+    private bool _patientsLoaded;
+    private bool _providersLoaded;
+    private bool _devicesLoaded;
+    private bool _emergenciesLoaded;
+    private SaveFacilityRequest _facilityForm = new();
+    private UpdateClinicRequest _clinicForm = new();
+
+
+    private static string FacilityCountLabel(int count) =>
+        count == 1 ? AppResources.Format("Common_FacilityCountLabel", count) : AppResources.Format("Common_FacilityCountLabelPlural", count);
+
+    private static string PatientCountLabel(int count) =>
+        count == 1 ? AppResources.Format("Common_PatientCountLabel", count) : AppResources.Format("Common_PatientCountLabelPlural", count);
+
+    private static string ProviderCountLabel(int count) =>
+        count == 1 ? AppResources.Format("Common_ProviderCountLabel", count) : AppResources.Format("Common_ProviderCountLabelPlural", count);
+
+    private static string DeviceCountLabel(int count) =>
+        count == 1 ? AppResources.Format("Common_DeviceCountLabel", count) : AppResources.Format("Common_DeviceCountLabelPlural", count);
+
+    private static string EventCountLabel(int count) =>
+        count == 1 ? AppResources.Format("Common_EventCountLabel", count) : AppResources.Format("Common_EventCountLabelPlural", count);
+
+    private static string MemberCountLabel(int count) =>
+        count == 1 ? AppResources.Format("Common_MemberCountLabel", count) : AppResources.Format("Common_MemberCountLabelPlural", count);
+
+    private static string ScheduleSlotLabel(int count) =>
+        count == 1 ? AppResources.Format("Common_ScheduleSlotCount", count) : AppResources.Format("Common_ScheduleSlotCountPlural", count);
+
+    private string PageTitleText =>
+        $"{_detail?.Name ?? AppResources.T("HospitalDetail_PageTitleFallback")}{AppResources.T("Common_PageTitleAdminSuffix")}";
+
+    private string CurrentCrumbLabel => _tab switch
+    {
+        "facilities" => AppResources.T("Common_Facilities"),
+        "patients" => AppResources.T("Common_PatientsStat"),
+        "providers" => AppResources.T("Common_ProvidersStat"),
+        "appointments" => AppResources.T("Common_Appointments"),
+        "devices" => AppResources.T("Common_Devices"),
+        "inpatient" => AppResources.T("Common_Inpatient"),
+        "collection" => AppResources.T("Collection_Title"),
+        "casualty" => AppResources.T("Common_Casualty"),
+        "theatre" => AppResources.T("Common_Theatre"),
+        "referrals" => AppResources.T("Common_Referrals"),
+        "roster" => AppResources.T("Common_Roster"),
+        "staff" => AppResources.T("Common_Staff"),
+        _ => AppResources.T("Common_Overview")
+    };
+
+    protected override void OnInitialized() =>
+        CultureService.CultureChanged += OnCultureChanged;
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        await LoadDetailAsync();
+        await LoadHomeEmergenciesAsync();
+
+        if (!string.IsNullOrWhiteSpace(TabQuery)
+            && (TabQuery is "overview" or "facilities" or "patients" or "providers" or "appointments" or "devices" or "staff"
+                || HospitalDeckReturnUrl.IsLinkedSectionTab(TabQuery)))
+        {
+            _tab = TabQuery;
+            if (_tab == "staff" && !_staffLoaded)
+                await LoadStaffAsync();
+            else if (_tab == "patients" && !_patientsLoaded)
+                await LoadPatientsAsync();
+            else if (_tab == "providers" && !_providersLoaded)
+                await LoadProvidersAsync();
+            else if (_tab == "appointments")
+                await LoadAppointmentsPreviewAsync();
+            else if (_tab == "devices")
+            {
+                if (!_devicesLoaded)
+                    await LoadDevicesAsync();
+                if (!_emergenciesLoaded)
+                    await LoadClinicEmergenciesAsync(reset: true);
+            }
+        }
+    }
+
+    private async Task LoadDetailAsync()
+    {
+        _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetClinicAsync(ClinicId);
+        _loading = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _detail = response.Data;
+            _isAdministrator = _detail.CurrentUserIsAdministrator;
+            ResetFacilityForm(_detail.Country);
+            ResetClinicForm(_detail);
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail.Name).ConfigureAwait(false);
+            return;
+        }
+
+        _error = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadHospital");
+    }
+
+    private async Task LoadStaffAsync()
+    {
+        _loadingStaff = true;
+        _actionError = null;
+        var response = await AdminClinicService.GetStaffAsync(ClinicId);
+        _loadingStaff = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _staff = response.Data;
+            _staffLoaded = true;
+        }
+        else
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadStaff");
+    }
+
+    private async Task LoadPatientsAsync()
+    {
+        _loadingPatients = true;
+        _actionError = null;
+        var response = await AdminClinicService.GetPatientsAsync(
+            ClinicId,
+            _patientPageNumber,
+            PatientPageSize,
+            string.IsNullOrWhiteSpace(_patientSearchApplied) ? null : _patientSearchApplied);
+        _loadingPatients = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _patients = response.Data.Items;
+            _patientTotalCount = response.Data.TotalCount;
+            _patientPageCount = Math.Max(1, (int)Math.Ceiling(_patientTotalCount / (double)PatientPageSize));
+            if (_patientPageNumber > _patientPageCount)
+            {
+                _patientPageNumber = _patientPageCount;
+                await LoadPatientsAsync();
+                return;
+            }
+
+            _patientsLoaded = true;
+        }
+        else
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadPatients");
+    }
+
+    private async Task SearchPatientsAsync()
+    {
+        _patientSearchApplied = _patientSearch.Trim();
+        _patientPageNumber = 1;
+        _patientsLoaded = false;
+        await LoadPatientsAsync();
+    }
+
+    private async Task OnPatientSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+            await SearchPatientsAsync();
+    }
+
+    private async Task PreviousPatientsPageAsync()
+    {
+        if (_patientPageNumber <= 1)
+            return;
+
+        _patientPageNumber--;
+        await LoadPatientsAsync();
+    }
+
+    private async Task NextPatientsPageAsync()
+    {
+        if (_patientPageNumber >= _patientPageCount)
+            return;
+
+        _patientPageNumber++;
+        await LoadPatientsAsync();
+    }
+
+    private static bool IsStaffAdministrator(ClinicStaffMember member) =>
+        RaphCareRoles.HasAdministratorRole(member.Roles);
+
+    private IReadOnlyList<(string Value, string Label)> JobRoleChoices =>
+    [
+        (RaphCareRoles.Clinician, AppResources.T("StaffJob_Staff")),
+        (RaphCareRoles.Doctor, AppResources.T("StaffJob_Doctor")),
+        (RaphCareRoles.Pharmacist, AppResources.T("StaffJob_Pharmacist")),
+        (RaphCareRoles.LabTechnician, AppResources.T("StaffJob_LabTechnician")),
+        (RaphCareRoles.Nurse, AppResources.T("StaffJob_Nurse"))
+    ];
+
+    private static string CurrentJobRole(ClinicStaffMember member) =>
+        RaphCareRoles.NormalizeJobRole(member.Roles.FirstOrDefault(r => RaphCareRoles.JobRoles.Contains(r)));
+
+    private string FormatStaffRoles(IReadOnlyList<string> roles)
+    {
+        var parts = new List<string>();
+        if (RaphCareRoles.HasAdministratorRole(roles))
+            parts.Add(AppResources.T("StaffJob_Administrator"));
+        var job = RaphCareRoles.NormalizeJobRole(roles.FirstOrDefault(r => RaphCareRoles.JobRoles.Contains(r)));
+        parts.Add(job switch
+        {
+            RaphCareRoles.Doctor => AppResources.T("StaffJob_Doctor"),
+            RaphCareRoles.Pharmacist => AppResources.T("StaffJob_Pharmacist"),
+            RaphCareRoles.LabTechnician => AppResources.T("StaffJob_LabTechnician"),
+            RaphCareRoles.Nurse => AppResources.T("StaffJob_Nurse"),
+            _ => AppResources.T("StaffJob_Staff")
+        });
+        return string.Join(" · ", parts);
+    }
+
+    private async Task UpdateStaffRoleAsync(Guid userId, bool isAdministrator)
+    {
+        var member = _staff.FirstOrDefault(m => m.UserId == userId);
+        await SaveStaffRoleAsync(userId, isAdministrator, member is null ? null : CurrentJobRole(member));
+    }
+
+    private async Task SetStaffJobAsync(Guid userId, string? jobRole)
+    {
+        var member = _staff.FirstOrDefault(m => m.UserId == userId);
+        var isAdmin = member is not null && IsStaffAdministrator(member);
+        await SaveStaffRoleAsync(userId, isAdmin, jobRole);
+    }
+
+    private async Task SaveStaffRoleAsync(Guid userId, bool isAdministrator, string? jobRole)
+    {
+        _updatingRoleUserId = userId;
+        _actionError = null;
+        var response = await AdminClinicService.UpdateStaffRoleAsync(ClinicId, userId, isAdministrator, jobRole);
+        _updatingRoleUserId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotUpdateStaffRole");
+            return;
+        }
+
+        await LoadStaffAsync();
+    }
+
+    private async Task SetTab(string tab)
+    {
+        _tab = tab;
+        _actionError = null;
+        Navigation.NavigateTo(HospitalDeckReturnUrl.ForClinicTab(ClinicId, tab), replace: true);
+        if (tab == "staff" && !_staffLoaded)
+            await LoadStaffAsync();
+        else if (tab == "patients" && !_patientsLoaded)
+            await LoadPatientsAsync();
+        else if (tab == "providers" && !_providersLoaded)
+            await LoadProvidersAsync();
+        else if (tab == "appointments")
+            await LoadAppointmentsPreviewAsync();
+        else if (tab == "devices")
+        {
+            if (!_devicesLoaded)
+                await LoadDevicesAsync();
+            if (!_emergenciesLoaded)
+                await LoadClinicEmergenciesAsync(reset: true);
+        }
+    }
+
+    private async Task LoadDevicesAsync()
+    {
+        _loadingDevices = true;
+        _actionError = null;
+        var response = await AdminClinicService.GetDevicesAsync(ClinicId);
+        _loadingDevices = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _devices = response.Data;
+            _devicesLoaded = true;
+        }
+        else
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadDevices");
+    }
+
+    private async Task LoadClinicEmergenciesAsync(bool reset)
+    {
+        if (reset)
+        {
+            _emergencyPage = 1;
+            _emergencyEvents = [];
+            _emergencyTotal = 0;
+        }
+
+        _loadingEmergencies = true;
+        _emergencyError = null;
+        _emergencyClinicContextMissing = false;
+        var response = await DeviceReadingsService.GetClinicEmergencyEventsAsync(_emergencyPage, EmergencyPageSize);
+        _loadingEmergencies = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _emergencyError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadEmergencyEvents");
+            _emergencyClinicContextMissing = ApiErrorMessages.IsClinicSelectionRequired(_emergencyError);
+            return;
+        }
+
+        if (reset)
+            _emergencyEvents = response.Data.Items.ToList();
+        else
+            _emergencyEvents.AddRange(response.Data.Items);
+
+        _emergencyTotal = response.Data.TotalCount;
+        _emergenciesLoaded = true;
+    }
+
+    private async Task RetryClinicEmergenciesAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail?.Name).ConfigureAwait(false);
+        _emergenciesLoaded = false;
+        await LoadClinicEmergenciesAsync(reset: true);
+    }
+
+    private async Task LoadMoreClinicEmergenciesAsync()
+    {
+        _emergencyPage++;
+        await LoadClinicEmergenciesAsync(reset: false);
+    }
+
+    private async Task LoadHomeEmergenciesAsync()
+    {
+        _loadingHomeEmergencies = true;
+        _homeEmergencyError = null;
+        _homeEmergencyClinicContextMissing = false;
+        var fromUtc = DateTime.UtcNow.Subtract(ClinicEmergencyHomeFilter.RecentWindow);
+        var response = await DeviceReadingsService.GetClinicEmergencyEventsAsync(
+            1,
+            40,
+            occurredFromUtc: fromUtc);
+        _loadingHomeEmergencies = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _homeEmergencyEvents = Array.Empty<ClinicDeviceEmergencyEventViewModel>();
+            _homeEmergencyError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadEmergencyEvents");
+            _homeEmergencyClinicContextMissing = ApiErrorMessages.IsClinicSelectionRequired(_homeEmergencyError);
+            return;
+        }
+
+        _homeEmergencyEvents = ClinicEmergencyHomeFilter.TakeHomePriority(response.Data.Items);
+    }
+
+    private string FormatEmergencyLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.FormatClinicLocal(utc, _detail?.TimeZone ?? "UTC");
+
+    private string FormatEmergencyLocation(ClinicDeviceEmergencyEventViewModel ev)
+    {
+        if (ev.Latitude is null || ev.Longitude is null)
+            return AppResources.T("Common_EmptyCell");
+        var coords = $"{ev.Latitude:0.#####}, {ev.Longitude:0.#####}";
+        if (ev.HorizontalAccuracyMeters is { } acc)
+            return $"{coords} (±{acc:0} m)";
+        return coords;
+    }
+
+    private async Task LoadProvidersAsync()
+    {
+        _loadingProviders = true;
+        _actionError = null;
+
+        if (!_staffLoaded)
+            await LoadStaffAsync();
+
+        var response = await AdminClinicService.GetProvidersAsync(ClinicId);
+        _loadingProviders = false;
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            _providers = response.Data;
+            _providersLoaded = true;
+            var existingUserIds = _providers.Select(p => p.ApplicationUserId).ToHashSet();
+            _staffCandidates = _staff
+                .Where(m => m.UserId is not null && !m.IsPendingInvitation && !existingUserIds.Contains(m.UserId.Value))
+                .ToList();
+        }
+        else
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadProviders");
+    }
+
+    private async Task LoadAppointmentsPreviewAsync()
+    {
+        _loadingAppointments = true;
+        _actionError = null;
+        var from = DateTime.UtcNow.Date;
+        var response = await AdminClinicService.GetAppointmentsAsync(ClinicId, 1, 10, from, from.AddDays(30));
+        _loadingAppointments = false;
+
+        if (response.IsSuccess && response.Data is not null)
+            _appointmentPreview = response.Data.Items;
+        else
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotLoadAppointments");
+    }
+
+    private async Task AddProviderAsync()
+    {
+        if (!Guid.TryParse(_selectedStaffUserId, out var userId))
+        {
+            _actionError = AppResources.T("Common_SelectStaffMember");
+            return;
+        }
+
+        _addingProvider = true;
+        _actionError = null;
+        var response = await AdminClinicService.CreateProviderAsync(
+            ClinicId,
+            userId,
+            string.IsNullOrWhiteSpace(_providerLicense) ? null : _providerLicense.Trim());
+        _addingProvider = false;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotAddProvider");
+            return;
+        }
+
+        _selectedStaffUserId = string.Empty;
+        _providerLicense = string.Empty;
+        _providersLoaded = false;
+        await LoadProvidersAsync();
+    }
+
+    private void ResetClinicForm(ClinicDetail detail)
+    {
+        _clinicForm = new UpdateClinicRequest
+        {
+            Name = detail.Name,
+            Country = detail.Country,
+            TimeZone = detail.TimeZone,
+            IsActive = detail.IsActive,
+            AllowAiDischargeDraft = detail.AllowAiDischargeDraft
+        };
+    }
+
+    private bool CanRemoveStaff(ClinicStaffMember member) =>
+        member.UserId is not null
+        && _detail?.RegisteredByApplicationUserId != member.UserId;
+
+    private async Task DeleteFacilityAsync(Guid facilityId)
+    {
+        _deletingFacilityId = facilityId;
+        _actionError = null;
+        var response = await AdminClinicService.DeleteFacilityAsync(ClinicId, facilityId);
+        _deletingFacilityId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotDeleteFacility");
+            return;
+        }
+
+        if (_editingFacilityId == facilityId)
+            ResetFacilityForm(_detail?.Country ?? string.Empty);
+
+        await LoadDetailAsync();
+    }
+
+    private async Task SaveClinicAsync()
+    {
+        _savingClinic = true;
+        _actionError = null;
+        var response = await AdminClinicService.UpdateClinicAsync(ClinicId, _clinicForm);
+        _savingClinic = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotUpdateHospital");
+            return;
+        }
+
+        _detail = response.Data;
+        _isAdministrator = _detail.CurrentUserIsAdministrator;
+        ResetClinicForm(_detail);
+        await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail.Name).ConfigureAwait(false);
+    }
+
+    private void ResetFacilityForm(string defaultCountry)
+    {
+        _facilityForm = new SaveFacilityRequest { Country = defaultCountry };
+        _editingFacilityId = null;
+    }
+
+    private void StartEditFacility(FacilityListItem facility)
+    {
+        _editingFacilityId = facility.Id;
+        _facilityForm = new SaveFacilityRequest
+        {
+            Name = facility.Name,
+            Address = facility.Address,
+            City = facility.City,
+            Country = facility.Country,
+            IsVirtual = facility.IsVirtual
+        };
+        _actionError = null;
+    }
+
+    private void CancelEditFacility()
+    {
+        ResetFacilityForm(_detail?.Country ?? string.Empty);
+        _actionError = null;
+    }
+
+    private async Task CreateFacilityAsync()
+    {
+        _savingFacility = true;
+        _actionError = null;
+        var response = await AdminClinicService.CreateFacilityAsync(ClinicId, _facilityForm);
+        _savingFacility = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotAddFacility");
+            return;
+        }
+
+        await LoadDetailAsync();
+        ResetFacilityForm(_detail?.Country ?? string.Empty);
+    }
+
+    private async Task UpdateFacilityAsync()
+    {
+        if (_editingFacilityId is null)
+            return;
+
+        _savingFacility = true;
+        _actionError = null;
+        var response = await AdminClinicService.UpdateFacilityAsync(ClinicId, _editingFacilityId.Value, _facilityForm);
+        _savingFacility = false;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotUpdateFacility");
+            return;
+        }
+
+        await LoadDetailAsync();
+        ResetFacilityForm(_detail?.Country ?? string.Empty);
+    }
+
+    private async Task InviteStaffAsync()
+    {
+        _inviting = true;
+        _actionError = null;
+        var response = await AdminClinicService.InviteStaffAsync(ClinicId, _inviteEmail.Trim(), _inviteJobRole);
+        _inviting = false;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotInviteStaff");
+            return;
+        }
+
+        _inviteEmail = string.Empty;
+        await LoadStaffAsync();
+    }
+
+    private async Task GrantPatientAccessAsync()
+    {
+        _grantingPatient = true;
+        _actionError = null;
+        var response = await AdminClinicService.GrantPatientAccessAsync(ClinicId, _grantPatientEmail.Trim());
+        _grantingPatient = false;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotGrantPatientAccess");
+            return;
+        }
+
+        _grantPatientEmail = string.Empty;
+        _patientsLoaded = false;
+        await LoadPatientsAsync();
+    }
+
+    private async Task ResendInvitationAsync(Guid userId)
+    {
+        _resendingUserId = userId;
+        _actionError = null;
+        var response = await AdminClinicService.ResendStaffInvitationAsync(ClinicId, userId);
+        _resendingUserId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotResendInvitation");
+            return;
+        }
+
+        await LoadStaffAsync();
+    }
+
+    private async Task ResendPendingInvitationAsync(Guid invitationId)
+    {
+        _resendingInvitationId = invitationId;
+        _actionError = null;
+        var response = await AdminClinicService.ResendPendingInvitationAsync(ClinicId, invitationId);
+        _resendingInvitationId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotResendInvitation");
+            return;
+        }
+
+        await LoadStaffAsync();
+    }
+
+    private async Task CancelPendingInvitationAsync(Guid invitationId)
+    {
+        _cancellingInvitationId = invitationId;
+        _actionError = null;
+        var response = await AdminClinicService.CancelPendingInvitationAsync(ClinicId, invitationId);
+        _cancellingInvitationId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotCancelInvitation");
+            return;
+        }
+
+        await LoadStaffAsync();
+    }
+
+    private async Task RemoveStaffAsync(Guid userId)
+    {
+        _removingUserId = userId;
+        _actionError = null;
+        var response = await AdminClinicService.RemoveStaffAsync(ClinicId, userId);
+        _removingUserId = null;
+
+        if (!response.IsSuccess)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("HospitalDetail_CouldNotRemoveStaff");
+            return;
+        }
+
+        await LoadStaffAsync();
+    }
+}

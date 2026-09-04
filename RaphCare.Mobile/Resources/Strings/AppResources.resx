@@ -1316,6 +1316,39 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesRawHexFormat" xml:space="preserve">
     <value>Raw: {0}</value>
   </data>
+  <data name="DevicesClaimHint" xml:space="preserve">
+    <value>Enter the serial from packaging after RaphCare or your clinic has assigned the watch to you. Then you can sync readings.</value>
+  </data>
+  <data name="DevicesClaimButton" xml:space="preserve">
+    <value>Claim watch</value>
+  </data>
+  <data name="DevicesSerialPlaceholder" xml:space="preserve">
+    <value>Serial number</value>
+  </data>
+  <data name="DevicesSkuTitle" xml:space="preserve">
+    <value>SKU</value>
+  </data>
+  <data name="DevicesClaimedIdFormat" xml:space="preserve">
+    <value>Claimed device id: {0}</value>
+  </data>
+  <data name="DevicesClaimSerialRequired" xml:space="preserve">
+    <value>Enter the device serial number first.</value>
+  </data>
+  <data name="DevicesClaimSkuRequired" xml:space="preserve">
+    <value>Select a model (E580 or E585).</value>
+  </data>
+  <data name="DevicesClaimFailed" xml:space="preserve">
+    <value>Could not claim this device.</value>
+  </data>
+  <data name="DevicesClaimSuccessFormat" xml:space="preserve">
+    <value>Claimed: {0}</value>
+  </data>
+  <data name="DevicesClaimSuccess" xml:space="preserve">
+    <value>Claimed.</value>
+  </data>
+  <data name="DevicesClaimBeforeSync" xml:space="preserve">
+    <value>Claim the device first.</value>
+  </data>
   <data name="MentalHealthTitle" xml:space="preserve">
     <value>Mental health</value>
   </data>
