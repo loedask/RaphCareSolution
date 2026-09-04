@@ -1,4 +1,18 @@
-﻿# RaphCare Dev Companion - Change Log
+# RaphCare Dev Companion - Change Log
+
+## Date
+
+2026-09-04
+
+## High-level summary of changes
+
+Release **1.7.0**: mobile display version **1.7.0**, Android versionCode **11**. Release cut for the patient APK against the current Ops and Portal staging stack. HBand vendor libraries stay in the package. Ops, Portal hospital-first shell, breadcrumbs, Azure Blob photos, and the demo hospital-list fix were already merged earlier this week.
+
+## Modules modified
+
+- **Mobile / docs:** `ApplicationDisplayVersion` / `ApplicationVersion` bump; mobile update v1.7.0+11; partner evening note 2026-09-04b; change log.
+
+---
 
 ## Date
 

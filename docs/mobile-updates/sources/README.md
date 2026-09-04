@@ -6,12 +6,12 @@ Edit notes here. Partner-facing PDFs are written one level up in `docs/mobile-up
 
 Same label as the APK: `mobile-update-v{DisplayVersion}+{versionCode}`
 
-Example: `RaphCare-v1.5.2+10.apk` uses `mobile-update-v1.5.2+10.md` and `.config.json` here, and outputs `../mobile-update-v1.5.2+10.pdf`.
+Example: `RaphCare-v1.7.0+11.apk` uses `mobile-update-v1.7.0+11.md` and `.config.json` here, and outputs `../mobile-update-v1.7.0+11.pdf`.
 
 | File | Purpose |
 |------|---------|
-| `mobile-update-v1.5.2+10.md` | Plain-language changelog (current) |
-| `mobile-update-v1.5.2+10.config.json` | PDF export config |
+| `mobile-update-v1.7.0+11.md` | Plain-language changelog (current) |
+| `mobile-update-v1.7.0+11.config.json` | PDF export config |
 | `mobile-update.pdf.css` | Shared styles |
 | [`archives/`](archives/) | Markdown and config for older builds |
 
@@ -36,7 +36,7 @@ See [`archives/README.md`](archives/README.md).
 ## Export PDF
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.5.2+10
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.7.0+11
 ```
 
 ```powershell
