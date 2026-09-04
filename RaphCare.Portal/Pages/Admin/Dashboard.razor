@@ -104,12 +104,12 @@
             }
         </AdminPageCard>
 
-        <ClinicEmergencyHomeCard ClinicId="_dashboard.ClinicId"
-                                 Events="_homeEmergencyEvents"
-                                 TotalCount="_homeEmergencyEvents.Count"
-                                 Loading="_loadingHomeEmergencies"
-                                 Error="_homeEmergencyError"
-                                 ClinicContextMissing="_homeEmergencyClinicContextMissing"
+        <ClinicEmergencyHomeCard ClinicId="@_dashboard.ClinicId"
+                                 Events="@_homeEmergencyEvents"
+                                 TotalCount="@_homeEmergencyEvents.Count"
+                                 Loading="@_loadingHomeEmergencies"
+                                 Error="@_homeEmergencyError"
+                                 ClinicContextMissing="@_homeEmergencyClinicContextMissing"
                                  TimeZone="@_clinicTimeZone"
                                  ViewAllHref="@($"/admin/hospitals/{_dashboard.ClinicId}?tab=devices")"
                                  OnRetry="LoadHomeEmergenciesAsync" />
