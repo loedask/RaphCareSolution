@@ -807,6 +807,349 @@ namespace RaphCare.Persistence.Migrations
                     b.ToTable("MoodLogs", (string)null);
                 });
 
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.MentalHealthAssessment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AssessmentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ConductedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAIEnhanced")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SeverityLevel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("TotalScore")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("ClinicId", "ConductedAt");
+
+                    b.ToTable("MentalHealthAssessments", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.AssessmentQuestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("MentalHealthAssessmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MentalHealthAssessmentId");
+
+                    b.HasIndex("MentalHealthAssessmentId", "Order")
+                        .IsUnique();
+
+                    b.ToTable("AssessmentQuestions", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.AssessmentResponse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AssessmentQuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("MentalHealthAssessmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("NumericScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResponseValue")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssessmentQuestionId");
+
+                    b.HasIndex("MentalHealthAssessmentId");
+
+                    b.HasIndex("MentalHealthAssessmentId", "AssessmentQuestionId")
+                        .IsUnique();
+
+                    b.ToTable("AssessmentResponses", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.BehavioralCarePlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("BehavioralCarePlans", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.TherapyGoal", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BehavioralCarePlanId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GoalDescription")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("TargetDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BehavioralCarePlanId");
+
+                    b.ToTable("TherapyGoals", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.TherapySession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsConfidential")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("SessionEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("SessionStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SessionType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Summary")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<Guid?>("TeleSessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TherapistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("ClinicId", "SessionStart");
+
+                    b.ToTable("TherapySessions", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.TherapyNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(8000)
+                        .HasColumnType("nvarchar(8000)");
+
+                    b.Property<DateTime>("RecordedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("TherapySessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TherapySessionId");
+
+                    b.ToTable("TherapyNotes", (string)null);
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.CrisisFlag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("FlaggedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RiskLevel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("TherapySessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("TherapySessionId");
+
+                    b.ToTable("CrisisFlags", (string)null);
+                });
+
             modelBuilder.Entity("RaphCare.Domain.Patients.PatientInAppNotification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -941,6 +1284,12 @@ namespace RaphCare.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AllowAiDischargeDraft")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AllowAiMentalHealthNotes")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
@@ -2727,6 +3076,114 @@ namespace RaphCare.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.MentalHealthAssessment", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Organization.Clinic", null)
+                        .WithMany()
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RaphCare.Domain.Patients.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.AssessmentQuestion", b =>
+                {
+                    b.HasOne("RaphCare.Domain.MentalHealth.MentalHealthAssessment", "Assessment")
+                        .WithMany("Questions")
+                        .HasForeignKey("MentalHealthAssessmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assessment");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.AssessmentResponse", b =>
+                {
+                    b.HasOne("RaphCare.Domain.MentalHealth.MentalHealthAssessment", "Assessment")
+                        .WithMany("Responses")
+                        .HasForeignKey("MentalHealthAssessmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RaphCare.Domain.MentalHealth.AssessmentQuestion", "Question")
+                        .WithMany("Responses")
+                        .HasForeignKey("AssessmentQuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Assessment");
+
+                    b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.BehavioralCarePlan", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Organization.Clinic", null)
+                        .WithMany()
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RaphCare.Domain.Patients.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.TherapyGoal", b =>
+                {
+                    b.HasOne("RaphCare.Domain.MentalHealth.BehavioralCarePlan", "BehavioralCarePlan")
+                        .WithMany("Goals")
+                        .HasForeignKey("BehavioralCarePlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BehavioralCarePlan");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.TherapySession", b =>
+                {
+                    b.HasOne("RaphCare.Domain.Organization.Clinic", null)
+                        .WithMany()
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RaphCare.Domain.Patients.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.TherapyNote", b =>
+                {
+                    b.HasOne("RaphCare.Domain.MentalHealth.TherapySession", "TherapySession")
+                        .WithMany("TherapyNotes")
+                        .HasForeignKey("TherapySessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TherapySession");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.CrisisFlag", b =>
+                {
+                    b.HasOne("RaphCare.Domain.MentalHealth.TherapySession", "TherapySession")
+                        .WithMany("CrisisFlags")
+                        .HasForeignKey("TherapySessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TherapySession");
+                });
+
             modelBuilder.Entity("RaphCare.Domain.Patients.PatientInAppNotification", b =>
                 {
                     b.HasOne("RaphCare.Domain.Patients.Patient", null)
@@ -3192,6 +3649,30 @@ namespace RaphCare.Persistence.Migrations
                     b.Navigation("VisitStatusHistories");
 
                     b.Navigation("VitalSignRecords");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.AssessmentQuestion", b =>
+                {
+                    b.Navigation("Responses");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.BehavioralCarePlan", b =>
+                {
+                    b.Navigation("Goals");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.MentalHealthAssessment", b =>
+                {
+                    b.Navigation("Questions");
+
+                    b.Navigation("Responses");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.MentalHealth.TherapySession", b =>
+                {
+                    b.Navigation("CrisisFlags");
+
+                    b.Navigation("TherapyNotes");
                 });
 
             modelBuilder.Entity("RaphCare.Domain.Organization.Clinic", b =>

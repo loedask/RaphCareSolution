@@ -1,6 +1,6 @@
 ---
 description: Mental health vertical — patient hub (/mental-health), API routes, and configurable content
-globs: RaphCare.API/Controllers/*MentalHealth*.cs,RaphCare.Application/Features/PatientMentalHealth/**/*,RaphCare.Application/Features/MentalHealth/**/*,RaphCare.Client/**/MentalHealth/**/*,RaphCare.Client/**/PatientMentalHealth*.cs,RaphCare.Mobile/**/MentalHealth/**/*,RaphCare.Infrastructure/**/PatientMentalHealth*.cs,RaphCare.Infrastructure/**/MoodLog*.cs,RaphCare.Persistence/**/MoodLog*.cs,docs/Mobile_Concept_Port.md
+globs: RaphCare.API/Controllers/*MentalHealth*.cs,RaphCare.Application/Features/PatientMentalHealth/**/*,RaphCare.Application/Features/MentalHealth/**/*,RaphCare.Client/**/MentalHealth/**/*,RaphCare.Client/**/PatientMentalHealth*.cs,RaphCare.Client/**/MentalHealthService.cs,RaphCare.Mobile/**/MentalHealth/**/*,RaphCare.Infrastructure/**/PatientMentalHealth*.cs,RaphCare.Infrastructure/**/MoodLog*.cs,RaphCare.Infrastructure/**/Assessment*.cs,RaphCare.Infrastructure/**/MentalHealthAssessment*.cs,RaphCare.Persistence/**/MoodLog*.cs,docs/Mobile_Concept_Port.md
 alwaysApply: false
 ---
 
@@ -12,15 +12,25 @@ Human mirror: **`docs/Mobile_Concept_Port.md`** (route `/mental-health` ↔ `Men
 
 | Audience | Base route | Purpose |
 |----------|------------|---------|
-| **Patient app** | `api/patient/mental-health` | Hub: **GET** `content` (config-driven copy, no PHI), **POST** `mood-checkin` (persists `MoodLog` in Clinical). **Policy:** `RequirePatient`. |
-| **Staff** | `api/MentalHealth` | **GET** `assessments` (paginated; placeholder data until persistence). **Policy:** `RequireProvider`. Operation name: `GetMentalHealthAssessments`. |
+| **Patient app** | `api/patient/mental-health` | Hub: **GET** `content` (config-driven copy, no PHI), **POST** `mood-checkin` (persists `MoodLog` in Clinical), **GET** `instruments/{type}`, **GET** `assessments`, **POST** `assessments` (self PHQ-9 / GAD-7). **Policy:** `RequirePatient`. |
+| **Staff** | `api/MentalHealth` | **GET/POST** `assessments` (PHQ-9 / GAD-7), **GET** `assessments/{id}`, **GET** `instruments/{type}`, **GET/POST** `therapy-sessions`, **POST** `therapy-sessions/{id}/notes`, crisis resolve, **GET/POST** `care-plans`, goal complete, **POST** `notes/draft` (AI). **Policy:** `RequireProvider`. |
 
 Do not move patient mood or hub copy onto the staff controller. New patient features stay under **`PatientMentalHealthController`**.
+
+## Staff assessments and therapy
+
+- Instrument text and severity bands live in **`Phq9Instrument`** / **`Gad7Instrument`** (Application). Handlers compute total score and severity; do not trust the client for severity.
+- Persist **`MentalHealthAssessment`** plus **`AssessmentQuestion`** / **`AssessmentResponse`** rows (not ignored by EF).
+- Therapy: **`TherapySession`**, **`TherapyNote`**, optional **`CrisisFlag`**. Behavioral plans: **`BehavioralCarePlan`** + **`TherapyGoal`**.
+- AI draft: **`DraftMentalHealthNote`** builds a redacted prompt (assessment type/score/severity + mood scores only; no free-text mood notes). Gated by clinic **`AllowAiMentalHealthNotes`**. Audit clinic, patient, user, prompt length (never prompt body).
+- Portal patient chart **Care** tab: list assessments, record PHQ-9 / GAD-7, therapy sessions + notes, behavioral care plans, AI draft textarea.
+- Client: hand-written **`IMentalHealthService`** / **`MentalHealthService`** and patient **`IPatientMentalHealthService`** / **`PatientMentalHealthService`** (not NSwag).
+- MPI merge: reassign **`MentalHealthAssessments.PatientId`** (and therapy/care-plan patient ids when present) with mood logs.
 
 ## Content rules (patient hub)
 
 - **Insight title/body** and **medical / crisis disclaimer** come from **`PatientMentalHealth:Content`** in the **API host** (`appsettings` / environment). Implemented via **`IPatientMentalHealthContentProvider`** (Infrastructure: **`OptionsPatientMentalHealthContentProvider`**).
-- **Do not** embed clinical PHI in this DTO. Marketing or AI-style copy belongs in configuration, not hard-coded only in Mobile (MAUI still localizes **labels** for mood buttons and CTAs via **`AppResources`**).
+- **Do not** embed clinical PHI in this DTO. Marketing or AI-style copy belongs in configuration, not hard-coded only in Mobile (MAUI still localizes **labels** for mood buttons, self-assessment, and CTAs via **`AppResources`**).
 - When changing default copy, update **API** `appsettings.json` defaults and keep **`docs/Mobile_Concept_Port.md`** aligned if the concept’s `translations.ts` changes.
 
 ## Mood check-in
@@ -31,11 +41,12 @@ Do not move patient mood or hub copy onto the staff controller. New patient feat
 
 ## Client / NSwag
 
-- **`PatientMentalHealthService`** wraps generated **`IClient`** (**`GetMyPatientMentalHealthContentAsync`**, **`LogMyPatientMoodCheckInAsync`**) like other patient feature services.
-- After adding or renaming endpoints, **regenerate NSwag**; **do not** hand-edit **`ClientService.cs`** / **`clientsettings.nswag`**.
+- **`PatientMentalHealthService`** wraps patient routes (content, mood, instrument, list/submit assessments) via hand-written HTTP; staff therapy/care-plan/draft use **`MentalHealthService`**.
+- After adding or renaming NSwag-bound endpoints, **regenerate NSwag**; **do not** hand-edit **`ClientService.cs`** / **`clientsettings.nswag`**.
 
 ## MAUI
 
 - **Feature flag:** **`FeatureFlags.MentalHealthEnabled`** (`appsettings`: `FeatureFlags:MentalHealthEnabled`). **DEBUG** dev file may set `true` for parity work.
 - **Navigation:** **`AppNavigator.MentalHealth`** → **`MentalHealthPage`** (not **`UnderConstructionPage`** when the vertical is on).
-- **Design:** Match concept **`MentalHealth.tsx`**: calm card (mood row), insight card, gradient CTA to book, secondary card to appointments.
+- **Design:** Match concept **`MentalHealth.tsx`**: calm card (mood row), insight card, self-assessment (PHQ-9 / GAD-7 with clinic from **`IClinicIdProvider`**), gradient CTA to book, secondary card to appointments.
+- Self-assessment submit requires a selected clinic (`X-Clinic-Id` / My clinic). Prompt the user if none is set.

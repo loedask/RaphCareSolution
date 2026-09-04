@@ -766,11 +766,14 @@
   <data name="Common_AllowAiDischargeDraft" xml:space="preserve">
     <value>Autoriser le brouillon de sortie par IA</value>
   </data>
+  <data name="Common_AllowAiMentalHealthNotes" xml:space="preserve">
+    <value>Autoriser les notes de santé mentale par IA</value>
+  </data>
   <data name="Common_OrganizationDetails" xml:space="preserve">
     <value>DÃ©tails de l&apos;organisation</value>
   </data>
   <data name="Common_UpdateHospitalLead" xml:space="preserve">
-    <value>Mettez Ã  jour le nom, le pays, le fuseau horaire, et si l&apos;IA peut rÃ©diger un brouillon de sortie.</value>
+    <value>Mettez à jour le nom, le pays, le fuseau horaire, et si l'IA peut rédiger un brouillon de sortie ou une note de santé mentale.</value>
   </data>
   <data name="Common_HospitalProfileEyebrow" xml:space="preserve">
     <value>Profil de l&apos;hÃ´pital</value>
@@ -2454,6 +2457,159 @@
   </data>
   <data name="Common_MoodCountLabelPlural" xml:space="preserve">
     <value>{0} suivis</value>
+  </data>
+  <data name="PatientDetail_AssessmentsTitle" xml:space="preserve">
+    <value>Évaluations de santé mentale</value>
+  </data>
+  <data name="PatientDetail_AssessmentsLead" xml:space="preserve">
+    <value>Scores PHQ-9 et GAD-7 enregistrés par le personnel pour ce patient.</value>
+  </data>
+  <data name="PatientDetail_NoAssessments" xml:space="preserve">
+    <value>Aucune évaluation enregistrée pour le moment.</value>
+  </data>
+  <data name="PatientDetail_RecordPhq9" xml:space="preserve">
+    <value>Enregistrer PHQ-9</value>
+  </data>
+  <data name="PatientDetail_RecordGad7" xml:space="preserve">
+    <value>Enregistrer GAD-7</value>
+  </data>
+  <data name="PatientDetail_SaveAssessment" xml:space="preserve">
+    <value>Enregistrer l'évaluation</value>
+  </data>
+  <data name="PatientDetail_SavePhq9" xml:space="preserve">
+    <value>Enregistrer le PHQ-9</value>
+  </data>
+  <data name="PatientDetail_SelectAnswer" xml:space="preserve">
+    <value>Choisir une réponse</value>
+  </data>
+  <data name="PatientDetail_Severity" xml:space="preserve">
+    <value>Sévérité</value>
+  </data>
+  <data name="PatientDetail_Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="PatientDetail_Question" xml:space="preserve">
+    <value>Question</value>
+  </data>
+  <data name="PatientDetail_Answer" xml:space="preserve">
+    <value>Réponse</value>
+  </data>
+  <data name="PatientDetail_HideAnswers" xml:space="preserve">
+    <value>Masquer les réponses</value>
+  </data>
+  <data name="PatientDetail_AssessmentCountLabel" xml:space="preserve">
+    <value>{0} évaluation</value>
+  </data>
+  <data name="PatientDetail_AssessmentCountLabelPlural" xml:space="preserve">
+    <value>{0} évaluations</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadAssessments" xml:space="preserve">
+    <value>Impossible de charger les évaluations.</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadAssessment" xml:space="preserve">
+    <value>Impossible de charger cette évaluation.</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadInstrument" xml:space="preserve">
+    <value>Impossible de charger le formulaire d'évaluation.</value>
+  </data>
+  <data name="PatientDetail_CouldNotSaveAssessment" xml:space="preserve">
+    <value>Impossible d'enregistrer l'évaluation.</value>
+  </data>
+  <data name="PatientDetail_TherapySessionsTitle" xml:space="preserve">
+    <value>Séances de thérapie</value>
+  </data>
+  <data name="PatientDetail_TherapySessionsLead" xml:space="preserve">
+    <value>Enregistrez les séances, ajoutez des notes et signalez un risque de crise si besoin.</value>
+  </data>
+  <data name="PatientDetail_NoTherapySessions" xml:space="preserve">
+    <value>Aucune séance de thérapie pour le moment.</value>
+  </data>
+  <data name="PatientDetail_LogTherapySession" xml:space="preserve">
+    <value>Enregistrer une séance</value>
+  </data>
+  <data name="PatientDetail_SessionSummary" xml:space="preserve">
+    <value>Résumé de séance (optionnel)</value>
+  </data>
+  <data name="PatientDetail_SessionType" xml:space="preserve">
+    <value>Type de séance</value>
+  </data>
+  <data name="PatientDetail_AddTherapyNote" xml:space="preserve">
+    <value>Ajouter une note</value>
+  </data>
+  <data name="PatientDetail_TherapyNote" xml:space="preserve">
+    <value>Note de thérapie</value>
+  </data>
+  <data name="PatientDetail_CrisisRiskOptional" xml:space="preserve">
+    <value>Risque de crise (optionnel)</value>
+  </data>
+  <data name="PatientDetail_CrisisDescription" xml:space="preserve">
+    <value>Description de la crise</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadTherapySessions" xml:space="preserve">
+    <value>Impossible de charger les séances de thérapie.</value>
+  </data>
+  <data name="PatientDetail_CouldNotSaveTherapySession" xml:space="preserve">
+    <value>Impossible d'enregistrer la séance.</value>
+  </data>
+  <data name="PatientDetail_CouldNotSaveTherapyNote" xml:space="preserve">
+    <value>Impossible d'ajouter la note de thérapie.</value>
+  </data>
+  <data name="PatientDetail_BehavioralCarePlansTitle" xml:space="preserve">
+    <value>Plans de soins comportementaux</value>
+  </data>
+  <data name="PatientDetail_BehavioralCarePlansLead" xml:space="preserve">
+    <value>Créez un plan avec au moins un objectif de thérapie.</value>
+  </data>
+  <data name="PatientDetail_NoBehavioralCarePlans" xml:space="preserve">
+    <value>Aucun plan de soins comportemental pour le moment.</value>
+  </data>
+  <data name="PatientDetail_CreateCarePlan" xml:space="preserve">
+    <value>Créer un plan de soins</value>
+  </data>
+  <data name="PatientDetail_CarePlanTitle" xml:space="preserve">
+    <value>Titre du plan</value>
+  </data>
+  <data name="PatientDetail_CarePlanDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="PatientDetail_TherapyGoal" xml:space="preserve">
+    <value>Objectif</value>
+  </data>
+  <data name="PatientDetail_GoalTargetDate" xml:space="preserve">
+    <value>Date cible</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadCarePlans" xml:space="preserve">
+    <value>Impossible de charger les plans de soins.</value>
+  </data>
+  <data name="PatientDetail_CouldNotSaveCarePlan" xml:space="preserve">
+    <value>Impossible de créer le plan de soins.</value>
+  </data>
+  <data name="PatientDetail_AiNoteDraftTitle" xml:space="preserve">
+    <value>Brouillon de note IA</value>
+  </data>
+  <data name="PatientDetail_AiNoteDraftLead" xml:space="preserve">
+    <value>Brouillon à partir des scores d'évaluation et d'humeur récents. Modifiez avant d'enregistrer ailleurs.</value>
+  </data>
+  <data name="PatientDetail_DraftAiNote" xml:space="preserve">
+    <value>Rédiger une note IA</value>
+  </data>
+  <data name="PatientDetail_AiNoteTextarea" xml:space="preserve">
+    <value>Brouillon de note</value>
+  </data>
+  <data name="PatientDetail_CouldNotDraftAiNote" xml:space="preserve">
+    <value>Impossible de rédiger la note.</value>
+  </data>
+  <data name="PatientDetail_TherapySessionCountLabel" xml:space="preserve">
+    <value>{0} séance</value>
+  </data>
+  <data name="PatientDetail_TherapySessionCountLabelPlural" xml:space="preserve">
+    <value>{0} séances</value>
+  </data>
+  <data name="PatientDetail_BehavioralPlanCountLabel" xml:space="preserve">
+    <value>{0} plan</value>
+  </data>
+  <data name="PatientDetail_BehavioralPlanCountLabelPlural" xml:space="preserve">
+    <value>{0} plans</value>
   </data>
   <data name="Common_CarePlanCountLabel" xml:space="preserve">
     <value>{0} plan</value>

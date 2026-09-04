@@ -2,7 +2,7 @@
 
 This is the **simple** status board. Same topics as the builder checklist, without code names.
 
-**Overall completion:** **82%**
+**Overall completion:** **83%**
 
 **How to read this**
 
@@ -85,7 +85,7 @@ What patients see on Android and iPhone.
 | Insurance | Done | |
 | Billing and payment methods | Done | |
 | Family members | Done | |
-| Mental health (mood check-in) | Done | |
+| Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone |
 | Chat assistant | Done | Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
 | Notifications list | Done | Real push alerts need Firebase and store setup |
 | Settings and profile | Done | Includes My clinic: search by name or enter a short clinic code. A photo you add on the phone is stored with your record. |
@@ -123,7 +123,7 @@ What patients see on Android and iPhone.
 
 ---
 
-## 4. Other staff and system pieces - 86%
+## 4. Other staff and system pieces - 93%
 
 | Area | Status | Notes |
 |------|--------|-------|
@@ -132,10 +132,10 @@ What patients see on Android and iPhone.
 | Emergency webhook | Done | Integration hook |
 | Staging demo sign-in accounts | Done | Staging only. Sign in with demo.admin, demo.doctor, demo.pharmacy, demo.lab, or demo.patient on the hospital Portal. Use demo.ops on the Ops site for fleet. Password is on the API as Demo:Password (default RaphCareDemo!2026). Does not wipe other hospitals. |
 | Patient photos and voice files | Done | Photos from the phone and voice sign-up audio are stored privately. They stay after the website restarts. |
-| Staff mental-health assessment store | Partial | List exists; deeper storage later |
+| Staff mental-health assessment store | Done | Staff can record PHQ-9 and GAD-7, log therapy sessions, create behavioral care plans, and draft an AI note when the hospital allows it |
 | Reporting and big dashboards | Partial | Grows with product needs |
 
-**Bottom line (86%):** core APIs, hooks, Staging demo accounts, and private file storage are in; deeper mental-health storage and reporting grow with product needs.
+**Bottom line (93%):** core APIs, hooks, Staging demo accounts, private file storage, and deeper staff mental-health tools are in; reporting grows with product needs.
 
 ---
 
@@ -187,7 +187,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 | Staff license reminders | Later | Remind when a doctor or nurse license date is near. |
 | Imaging report draft (partner) | Later | Optional link for X-ray style draft reports. Radiologist edits. Not built in-house first. |
 | Pull records from other systems | Later | Only if a site needs outside charts. |
-| Deeper mental-health note help | Later | Only if staff mental-health storage grows. |
+| Deeper mental-health note help | Done | Staff can draft an AI therapy note from scores on the patient chart when the hospital turns that on. |
 | US insurance prior auth and claims | Not for this product | Out of scope for RaphCare. |
 
 **Bottom line (later):** a backlog for the next product wave. Prefer order when you schedule: visit or ward note draft, open work board, plain-language labs help, reminders, then casualty priority hint.
@@ -201,10 +201,10 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 | 1. Hospital admin (outpatient) | 100% | Ready on web |
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 61% | Chat assistant uses cloud AI; iPhone video, push, wearables still catch-up |
-| 4. Other staff and system | 86% | Demo accounts on Staging; private photos and voice files |
+| 4. Other staff and system | 93% | Demo accounts on Staging; private photos and voice files; staff mental-health therapy and AI notes |
 | 5. Hospital plan extras | 100% | Stay extras closed for this board |
 | 6. Next ideas (AI and ops) | n/a | Later list; not in overall % |
-| **Overall** | **82%** | Sections 1-5. Excludes "not for mobile, clinical, or BLE" and section 6 later rows |
+| **Overall** | **83%** | Sections 1-5. Excludes "not for mobile, clinical, or BLE" and section 6 later rows |
 
 ---
 
