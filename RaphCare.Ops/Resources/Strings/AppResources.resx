@@ -73,7 +73,7 @@
   <data name="Fleet_AuthTitle" xml:space="preserve"><value>Sign in as platform admin</value></data>
   <data name="Fleet_AuthLead" xml:space="preserve"><value>Fleet inventory needs a RaphCare platform administrator account.</value></data>
   <data name="Fleet_AddTitle" xml:space="preserve"><value>Add to stock</value></data>
-  <data name="Fleet_AddLead" xml:space="preserve"><value>Pick the hospital programme that will own the device, then enter the serial from packaging.</value></data>
+  <data name="Fleet_AddLead" xml:space="preserve"><value>Pick the hospital programme that will own the device, then enter the serial from packaging. You can also scan a packaging barcode or extract text from a photo. Photos stay on this device and are not uploaded.</value></data>
   <data name="Fleet_SelectHospital" xml:space="preserve"><value>Select hospital</value></data>
   <data name="Fleet_SerialLabel" xml:space="preserve"><value>Serial</value></data>
   <data name="Fleet_SerialPlaceholder" xml:space="preserve"><value>Serial on packaging</value></data>
@@ -96,4 +96,19 @@
   <data name="Fleet_CouldNotAssign" xml:space="preserve"><value>Could not assign the device.</value></data>
   <data name="Fleet_StatusAssigned" xml:space="preserve"><value>Assigned</value></data>
   <data name="Fleet_StatusInStock" xml:space="preserve"><value>In stock</value></data>
+  <data name="Fleet_ScanBarcode" xml:space="preserve"><value>Scan barcode</value></data>
+  <data name="Fleet_StopScan" xml:space="preserve"><value>Stop scan</value></data>
+  <data name="Fleet_ExtractPhoto" xml:space="preserve"><value>Extract text from photo</value></data>
+  <data name="Fleet_ScanPrivacy" xml:space="preserve"><value>Camera frames and photos are processed in this browser only. Nothing is saved or sent as an image.</value></data>
+  <data name="Fleet_ScanUnsupported" xml:space="preserve"><value>This browser cannot scan barcodes with the camera. Try Chrome or Edge, or use Extract text from photo.</value></data>
+  <data name="Fleet_ScanBusy" xml:space="preserve"><value>Still reading the last photo. Wait a moment, then try again.</value></data>
+  <data name="Fleet_ScanNoFile" xml:space="preserve"><value>Choose a photo to continue.</value></data>
+  <data name="Fleet_ScanFailed" xml:space="preserve"><value>Could not read that photo. Try again with a clearer shot of the packaging or Device Info screen.</value></data>
+  <data name="Fleet_ScanNothingFound" xml:space="preserve"><value>No serial, barcode, or MAC found. Type the packaging serial, or take a clearer photo.</value></data>
+  <data name="Fleet_ScanFound" xml:space="preserve"><value>Filled from scan. Check the serial before you add the device.</value></data>
+  <data name="Fleet_ScanMacHint" xml:space="preserve"><value>This looks like a Bluetooth MAC from Device Info, not the packaging serial. Prefer the serial on the box when you have it. Patients claim the packaging serial in the app.</value></data>
+  <data name="Fleet_ScanCandidates" xml:space="preserve"><value>Use a value from the photo:</value></data>
+  <data name="Fleet_ScanExtracting" xml:space="preserve"><value>Reading photo…</value></data>
+  <data name="Fleet_CandidateMac" xml:space="preserve"><value>MAC</value></data>
+  <data name="Fleet_CandidateSerial" xml:space="preserve"><value>Serial</value></data>
 </root>

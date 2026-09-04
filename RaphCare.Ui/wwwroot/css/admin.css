@@ -3146,6 +3146,62 @@ a.hospital-directory-person:hover strong {
     color: #0f766e;
 }
 
+.fleet-scan-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.65rem;
+}
+
+.fleet-scan-hint {
+    margin: 0.55rem 0 0;
+    font-size: 0.82rem;
+    color: var(--rc-muted);
+    max-width: 42rem;
+}
+
+.fleet-scan-candidates {
+    margin-top: 0.75rem;
+}
+
+.fleet-scan-candidates-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.fleet-scan-candidate-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.fleet-scan-candidate {
+    border: 1px solid var(--rc-border);
+    background: #fff;
+    color: var(--rc-text);
+    border-radius: 0.55rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.fleet-scan-candidate:hover,
+.fleet-scan-candidate:focus-visible {
+    border-color: var(--rc-admin-accent);
+    color: #0f766e;
+}
+
+.fleet-scan-candidate-kind {
+    font-weight: 500;
+    color: var(--rc-muted);
+    margin-right: 0.35rem;
+}
+
 .form-grid > label .searchable-select {
     margin-top: 0.35rem;
 }

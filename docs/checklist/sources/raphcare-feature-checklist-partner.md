@@ -39,7 +39,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
-| Fleet watches (platform) | Done | Done in a separate Ops web app (not the hospital Portal). Add serials to stock and assign a watch to a patient. Patients claim that serial in the phone app. They cannot invent one. |
+| Fleet watches (platform) | Done | Done in a separate Ops web app (not the hospital Portal). Add serials to stock by typing, scanning a packaging barcode, or extracting text from a photo (the photo is not uploaded). Assign a watch to a patient. Patients claim that serial in the phone app. They cannot invent one. |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
