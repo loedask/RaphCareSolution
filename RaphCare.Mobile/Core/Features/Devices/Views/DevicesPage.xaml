@@ -109,24 +109,24 @@
                            Style="{StaticResource SectionTitle}"
                            TextColor="{StaticResource ForegroundColor}" />
 
-                    <Label Text="Enter the bracelet serial (from packaging) and register once. Then you can sync readings."
+                    <Label Text="{Binding ClaimHint}"
                            Style="{StaticResource BodySmall}"
                            TextColor="{StaticResource MutedForegroundColor}" />
 
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                         <Entry Grid.Column="0"
-                               Placeholder="Serial number"
+                               Placeholder="{Binding SerialPlaceholder}"
                                Text="{Binding SerialNumber}"
                                Style="{StaticResource TextEntry}" />
                         <Picker Grid.Column="1"
                                 WidthRequest="110"
-                                Title="SKU"
+                                Title="{Binding SkuPickerTitle}"
                                 ItemsSource="{Binding ModelSkuOptions}"
                                 SelectedItem="{Binding ModelSku}" />
                     </Grid>
 
                     <HorizontalStackLayout Spacing="12">
-                        <Button Text="Register"
+                        <Button Text="{Binding ClaimButtonText}"
                                 Style="{StaticResource PrimaryButton}"
                                 Command="{Binding RegisterCommand}" />
                         <Button Text="{Binding SyncReadingsButtonText}"
@@ -134,10 +134,10 @@
                                 Command="{Binding SyncLastReadingCommand}" />
                     </HorizontalStackLayout>
 
-                    <Label Text="{Binding RegisteredDeviceId, StringFormat='Registered device id: {0}'}"
+                    <Label Text="{Binding ClaimedDeviceIdLabel}"
                            Style="{StaticResource BodySmall}"
                            TextColor="{StaticResource MutedForegroundColor}"
-                           IsVisible="{Binding RegisteredDeviceId, Converter={StaticResource NotNullConverter}}" />
+                           IsVisible="{Binding ClaimedDeviceIdLabel, Converter={StaticResource StringNotEmptyConverter}}" />
 
                     <Label Text="{Binding SyncResultText}"
                            Style="{StaticResource BodySmall}"

@@ -1,8 +1,13 @@
 # RaphCare mobile updates
 
-Partner-facing notes for each patient Android APK (and later iOS builds). Separate from the dated [`../partner-updates/`](../partner-updates/) notes, which cover the wider product.
+Partner PDFs for each patient Android APK. Match the APK stem: `mobile-update-v1.7.0+11.pdf` goes with `RaphCare-v1.7.0+11.apk`.
 
-## When to add a note
+| Path | What is here |
+|------|----------------|
+| `mobile-update-v*.pdf` | Current build PDF (send this with the APK) |
+| [`archives/`](archives/) | Older PDFs |
+| [`sources/`](sources/) | Markdown, PDF config, CSS (edit here; do not send to partners) |
+| [`brand/`](brand/) | Logo used in the PDF header |
 
 Every time `RaphCare.Mobile` gets a new `ApplicationDisplayVersion` and/or Android `ApplicationVersion` (versionCode), or you publish a sideload APK for the partner.
 
@@ -10,21 +15,21 @@ Every time `RaphCare.Mobile` gets a new `ApplicationDisplayVersion` and/or Andro
 
 | File | Purpose |
 |------|---------|
-| `mobile-update-v1.6.0.md` | Plain-language changelog for that APK |
-| `mobile-update-v1.6.0.config.json` | PDF export config |
-| `mobile-update-v1.6.0.pdf` | PDF to send with the APK |
-| `mobile-update.pdf.css` | Shared styles (or reuse partner-update CSS) |
+| `mobile-update-v1.7.0+11.md` | Plain-language changelog for that APK |
+| `mobile-update-v1.7.0+11.config.json` | PDF export config |
+| `mobile-update-v1.7.0+11.pdf` | PDF to send with the APK |
+| `mobile-update.pdf.css` | Shared styles (under `sources/`) |
 
-## Export PDF
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.6.0
-```
-
-## Sideload APK
+## Export after editing sources
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-RaphCareAndroidSideload.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.7.0+11
 ```
 
-Output lands under `artifacts/android/` as `RaphCare-v{version}+{build}.apk`.
+Archived note:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.6.0 -Archive
+```
+
+Details for builders: [`sources/README.md`](sources/README.md).

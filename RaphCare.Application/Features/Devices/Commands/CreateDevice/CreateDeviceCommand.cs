@@ -1,8 +1,10 @@
 using MediatR;
+using RaphCare.Application.Common.Interfaces;
 
 namespace RaphCare.Application.Features.Devices.Commands.CreateDevice;
 
-public class CreateDeviceCommand : IRequest<Guid>
+/// <summary>Adds a wearable to RaphCare fleet inventory (unassigned stock).</summary>
+public class CreateDeviceCommand : IRequest<Guid>, IPlatformAdminRequest
 {
     public Guid ClinicId { get; set; }
     public string SerialNumber { get; set; } = string.Empty;
@@ -10,4 +12,3 @@ public class CreateDeviceCommand : IRequest<Guid>
     public Guid DeviceTypeId { get; set; }
     public Guid DeviceManufacturerId { get; set; }
 }
-

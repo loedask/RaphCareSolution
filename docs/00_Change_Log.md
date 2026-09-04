@@ -6,11 +6,11 @@
 
 ## High-level summary of changes
 
-Release **1.6.0**: Azure OpenAI gpt-4.1-mini (pay-as-you-go) for patient assistant chat and AI discharge drafts on staging. Includes Android crash hardening from unreleased 1.5.1. Mobile display version **1.6.0**, Android versionCode **10**.
+Release **1.7.0**: mobile display version **1.7.0**, Android versionCode **11**. Release cut for the patient APK against the current Ops and Portal staging stack. HBand vendor libraries stay in the package. Ops, Portal hospital-first shell, breadcrumbs, Azure Blob photos, and the demo hospital-list fix were already merged earlier this week.
 
 ## Modules modified
 
-- **Mobile / docs:** `ApplicationDisplayVersion` / `ApplicationVersion` bump; partner update 4 Sep 2026; mobile update v1.6.0.
+- **Mobile / docs:** `ApplicationDisplayVersion` / `ApplicationVersion` bump; mobile update v1.7.0+11; partner evening note 2026-09-04b; change log.
 
 ---
 
@@ -20,11 +20,113 @@ Release **1.6.0**: Azure OpenAI gpt-4.1-mini (pay-as-you-go) for patient assista
 
 ## High-level summary of changes
 
-Wired the cheap Azure OpenAI path (gpt-4.1-mini, pay-as-you-go Global Standard) for patient assistant chat and AI discharge drafts, with a provision script and staging App Service settings.
+Release **1.6.0**: Azure OpenAI gpt-4.1-mini (pay-as-you-go) for patient assistant chat and AI discharge drafts on staging. Private Azure Blob (local Development folder if no connection string) for patient profile photos and voice onboarding audio; staff hospital charts can show the photo. Includes Android crash hardening from unreleased 1.5.1. Mobile display version **1.6.0**, Android versionCode **10**.
+
+Ops Home shows a platform snapshot (hospitals, patients, doctors, staff, facilities, fleet, appointments today, admissions, pending invites, SafeCare alerts). Fleet hospital and patient pickers use the shared searchable select. SearchableSelect moved into RaphCare.Ui for Portal and Ops.
 
 ## Modules modified
 
-- **Application / Infrastructure / API / tests / docs / scripts:** default `gpt-4.1-mini` deployment; named HttpClient; `scripts/New-RaphCareAzureOpenAi.ps1`; `docs/16_Azure_OpenAI_Setup.md`.
+- **Mobile / docs:** `ApplicationDisplayVersion` / `ApplicationVersion` bump; partner update 4 Sep 2026; mobile update v1.6.0.
+- **Application / Infrastructure / API / Client / Portal / tests / docs / scripts:** object store, staff photo endpoint, voice recording keys, hospital chart photo; default `gpt-4.1-mini` deployment; named HttpClient; `scripts/New-RaphCareAzureOpenAi.ps1`; `scripts/New-RaphCareAzureBlobStorage.ps1`; `docs/16_Azure_OpenAI_Setup.md`; `docs/17_Azure_Blob_Storage.md`.
+- **Application / API / Client / Ops / Ui / Portal:** GetPlatformOpsStats; OpsController; AdminStat* and SearchableSelect in Ui; Ops Home and Fleet.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
+Partner update for 3 Sep 2026 (Ops live, hospital-first Portal, demo hospital-list fix). Prior 2 Sep note archived.
+
+## Modules modified
+
+- **docs/partner-updates:** partner-update-2026-09-03 sources and PDF; archive 2026-09-02.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
+Searchable dropdowns on admin cards (Schedule filter, book forms, and the rest) can open past the card edge instead of being clipped by rounded overflow.
+
+## Modules modified
+
+- **Portal / Ui:** admin card overflow when a searchable select is open.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
+Portal admin is hospital-first: no platform left sidebar. Top bar always shows All hospitals, Register hospital, search, and account controls. Dashboard is hospital-scoped (multi-hospital accounts go to the list first; a single hospital auto-selects).
+
+## Modules modified
+
+- **Portal / Ui / docs:** AdminLayout, Dashboard, admin CSS, feature checklists, demo-accounts-v2 path note.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
+Ops fleet **Add to stock** uses model radio buttons (E585, E580, Y6 Pro) instead of a dropdown.
+
+## Modules modified
+
+- **Ops / Ui:** Fleet page model radios; admin CSS.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
+Searchable select closes on outside click (not only Escape). Document pointerdown dismiss plus higher backdrop z-index.
+
+## Modules modified
+
+- **Portal:** `SearchableSelect`, `locale.js`, admin CSS.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
+Azure hosting for **RaphCare.Ops** (`raphcare-ops` App Service, publish and CORS scripts). Staging demo account `demo.ops@raphcare.com`. Partner demo-accounts sheet **v2**. Documented Azure MFA login helper (`Login-RaphCareAzure.ps1`) for AADSTS50076 / Cursor login failures.
+
+## Modules modified
+
+- **Persistence / Domain / scripts / docs / partner-updates / .cursor/rules / API / Application / Client:** Ops Azure scripts; DemoPack ops user; demo-accounts-v2; Azure login runbook; Ops fleet without clinic profile (devices tenant-exempt, platform admin hospital list).
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
+Split platform fleet ops into **RaphCare.Ops** (separate Blazor app + Host, own token storage). Renamed **RaphCare.Web** to **RaphCare.Portal**. Shared admin chrome in **RaphCare.Ui**.
+
+## Modules modified
+
+- **RaphCare.Ops / Ops.Host / Ui / Portal / Portal.Host / Portal.Tests / API / Client / docs:** Ops fleet UI; Portal rename; CORS for Ops origins; checklists.
 
 ---
 
@@ -66,7 +168,7 @@ Documented a layered smoke plan for admin web and patient mobile (shared API fir
 
 ## Modules modified
 
-- **docs:** `checklist/Web_And_Mobile_Smoke_Plan.md`; pointers from feature checklists, mobile guide, demo launch guide, and mobile release checklist.
+- **docs:** `checklist/sources/Web_And_Mobile_Smoke_Plan.md`; pointers from feature checklists, mobile guide, demo launch guide, and mobile release checklist.
 
 ---
 
@@ -126,7 +228,7 @@ Hospital plan value: ward notes on a stay, a cash invoice and patient-facing sum
 ## Modules modified
 
 - **Domain / Application / Persistence / API / Client / Web:** inpatient observations, discharge invoice line items, nurse role, occupancy stats.
-- **docs:** hospital plan checklist (engineering + partner), `partner-updates/raphcare-price-list.md`.
+- **docs:** hospital plan checklist (engineering + partner), `partner-updates/sources/raphcare-price-list.md`.
 
 ---
 
