@@ -24,7 +24,12 @@
                               Eyebrow="@AppResources.T("Common_ProvidersStat")"
                               Title="@_provider.DisplayName"
                               Lead="@AppResources.Format("Common_WeeklyScheduleLead", ClinicDisplayName)"
-                              IsActive="@_provider.IsActive">
+                              IsActive="@_provider.IsActive"
+                              ClinicId="@ClinicId"
+                              ClinicName="@ClinicDisplayName"
+                              MidCrumb="@AppResources.T("Common_ProvidersStat")"
+                              MidCrumbHref="@HospitalDeckReturnUrl.ForClinicTab(ClinicId, "providers")"
+                              CurrentCrumb="@_provider.DisplayName">
             <HospitalDeckChip Label="@AppResources.T("Common_Email")" Value="@_provider.Email" />
             <HospitalDeckChip Label="@AppResources.T("Common_License")"
                               Value="@(string.IsNullOrWhiteSpace(_provider.LicenseNumber) ? AppResources.T("Common_EmptyCell") : _provider.LicenseNumber)" />

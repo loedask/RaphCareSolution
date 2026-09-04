@@ -19,7 +19,10 @@
                               Eyebrow="@AppResources.T("Casualty_Title")"
                               Title="@_clinicName"
                               Lead="@AppResources.Format("Casualty_Lead", _clinicName)"
-                              StatusText="@FormatStatusLine()">
+                              StatusText="@FormatStatusLine()"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_clinicName"
+                              CurrentCrumb="@AppResources.T("Casualty_Title")">
             <HospitalDeckChip Label="@AppResources.T("Common_Waiting")" Value="@WaitingCount.ToString()" />
             <HospitalDeckChip Label="@AppResources.T("Casualty_CalledTitle")" Value="@CalledCount.ToString()" />
         </HospitalDeckMasthead>

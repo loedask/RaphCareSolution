@@ -20,7 +20,10 @@
                               Eyebrow="@AppResources.T("Collection_Title")"
                               Title="@_clinicName"
                               Lead="@AppResources.Format("Collection_Lead", _clinicName)"
-                              StatusText="@FormatPendingCount()">
+                              StatusText="@FormatPendingCount()"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_clinicName"
+                              CurrentCrumb="@AppResources.T("Collection_Title")">
             <HospitalDeckChip Label="@AppResources.T("Collection_PrescriptionsTitle")" Value="@PendingPrescriptions.ToString()" />
             <HospitalDeckChip Label="@AppResources.T("Collection_LabsTitle")" Value="@PendingLabs.ToString()" />
         </HospitalDeckMasthead>

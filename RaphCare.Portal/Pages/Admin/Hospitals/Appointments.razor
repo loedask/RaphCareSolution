@@ -14,7 +14,10 @@
                           Eyebrow="@AppResources.T("Common_Appointments")"
                           Title="@_clinicName"
                           Lead="@AppResources.Format("Common_ScheduledVisitsLead", _clinicName, _timeZoneLabel)"
-                          StatusText="@FormatAppointmentCount(_totalCount)">
+                          StatusText="@FormatAppointmentCount(_totalCount)"
+                          ClinicId="@ClinicId"
+                          ClinicName="@_clinicName"
+                          CurrentCrumb="@AppResources.T("Common_Appointments")">
         <HospitalDeckChip Label="@AppResources.T("Common_TimeZone")" Value="@_timeZoneLabel" />
     </HospitalDeckMasthead>
 

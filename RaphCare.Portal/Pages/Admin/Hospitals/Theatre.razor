@@ -19,7 +19,10 @@
                               Eyebrow="@AppResources.T("Theatre_Title")"
                               Title="@_clinicName"
                               Lead="@AppResources.Format("Theatre_Lead", _clinicName)"
-                              StatusText="@FormatStatusLine()">
+                              StatusText="@FormatStatusLine()"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_clinicName"
+                              CurrentCrumb="@AppResources.T("Theatre_Title")">
             <HospitalDeckChip Label="@AppResources.T("Theatre_Scheduled")" Value="@ScheduledCount.ToString()" />
             <HospitalDeckChip Label="@AppResources.T("Theatre_InProgress")" Value="@InProgressCount.ToString()" />
             <HospitalDeckChip Label="@AppResources.T("Theatre_Completed")" Value="@CompletedCount.ToString()" />

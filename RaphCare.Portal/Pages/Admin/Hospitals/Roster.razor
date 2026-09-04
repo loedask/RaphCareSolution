@@ -19,7 +19,10 @@
                               Eyebrow="@AppResources.T("Roster_Title")"
                               Title="@_clinicName"
                               Lead="@AppResources.Format("Roster_Lead", _clinicName)"
-                              StatusText="@FormatStatusLine()">
+                              StatusText="@FormatStatusLine()"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_clinicName"
+                              CurrentCrumb="@AppResources.T("Roster_Title")">
             <HospitalDeckChip Label="@AppResources.T("Roster_Morning")" Value="@MorningCount.ToString()" />
             <HospitalDeckChip Label="@AppResources.T("Roster_Afternoon")" Value="@AfternoonCount.ToString()" />
             <HospitalDeckChip Label="@AppResources.T("Roster_Night")" Value="@NightCount.ToString()" />

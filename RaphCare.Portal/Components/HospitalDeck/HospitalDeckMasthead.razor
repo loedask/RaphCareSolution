@@ -1,44 +1,86 @@
-<header class="hospital-deck-masthead">
-    <div class="hospital-deck-brand">
-        <div class="hospital-deck-brand-row">
-            <div class="hospital-deck-monogram" aria-hidden="true">@Monogram</div>
-            <div class="hospital-deck-identity">
-                <div class="hospital-deck-kicker">
-                    @if (!string.IsNullOrEmpty(Eyebrow))
+@using RaphCare.Portal.Helpers
+
+<div class="hospital-deck-hero">
+    <header class="hospital-deck-masthead">
+        <div class="hospital-deck-brand">
+            <div class="hospital-deck-brand-row">
+                <div class="hospital-deck-monogram" aria-hidden="true">@Monogram</div>
+                <div class="hospital-deck-identity">
+                    <div class="hospital-deck-kicker">
+                        @if (!string.IsNullOrEmpty(Eyebrow))
+                        {
+                            <p class="admin-page-eyebrow">@Eyebrow</p>
+                        }
+                        @if (IsActive is bool active)
+                        {
+                            <span class="hospital-deck-status @(active ? null : "is-inactive")">
+                                <span class="hospital-deck-status-dot" aria-hidden="true"></span>
+                                @(active ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
+                            </span>
+                        }
+                        else if (!string.IsNullOrEmpty(StatusText))
+                        {
+                            <span class="hospital-deck-status">
+                                <span class="hospital-deck-status-dot" aria-hidden="true"></span>
+                                @StatusText
+                            </span>
+                        }
+                    </div>
+                    <h1 class="hospital-deck-name">@Title</h1>
+                    @if (!string.IsNullOrEmpty(Lead))
                     {
-                        <p class="admin-page-eyebrow">@Eyebrow</p>
-                    }
-                    @if (IsActive is bool active)
-                    {
-                        <span class="hospital-deck-status @(active ? null : "is-inactive")">
-                            <span class="hospital-deck-status-dot" aria-hidden="true"></span>
-                            @(active ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
-                        </span>
-                    }
-                    else if (!string.IsNullOrEmpty(StatusText))
-                    {
-                        <span class="hospital-deck-status">
-                            <span class="hospital-deck-status-dot" aria-hidden="true"></span>
-                            @StatusText
-                        </span>
+                        <p class="hospital-deck-lead">@Lead</p>
                     }
                 </div>
-                <h1 class="hospital-deck-name">@Title</h1>
-                @if (!string.IsNullOrEmpty(Lead))
-                {
-                    <p class="hospital-deck-lead">@Lead</p>
-                }
             </div>
+            <HospitalDeckBackLink Href="@BackHref" Text="@BackText" />
         </div>
-        <HospitalDeckBackLink Href="@BackHref" Text="@BackText" />
-    </div>
-    @if (ChildContent is not null)
+        @if (ChildContent is not null)
+        {
+            <div class="hospital-deck-meta">
+                @ChildContent
+            </div>
+        }
+    </header>
+
+    @if (ClinicId is Guid clinicId && !string.IsNullOrWhiteSpace(ClinicName))
     {
-        <div class="hospital-deck-meta">
-            @ChildContent
-        </div>
+        <nav class="hospital-deck-crumbtrail" aria-label="@AppResources.T("HospitalDeck_PathAria")">
+            <ol class="hospital-deck-crumbtrail-list">
+                @foreach (var (crumb, index) in Crumbs.Select((c, i) => (c, i)))
+                {
+                    @if (index > 0)
+                    {
+                        <li class="hospital-deck-crumb-sep" aria-hidden="true">
+                            <svg viewBox="0 0 16 16" focusable="false">
+                                <path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </li>
+                    }
+                    <li class="hospital-deck-crumb-item">
+                        @if (!string.IsNullOrEmpty(crumb.Href))
+                        {
+                            <a class="hospital-deck-crumb" href="@crumb.Href">
+                                @if (index == 0)
+                                {
+                                    <svg class="hospital-deck-crumb-home" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                                        <path d="M3.5 8.75 10 3.5l6.5 5.25V16a1 1 0 0 1-1 1h-3.25v-4.25H7.75V17H4.5a1 1 0 0 1-1-1V8.75Z"
+                                              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                                    </svg>
+                                }
+                                <span>@crumb.Label</span>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="hospital-deck-crumb is-current" aria-current="page">@crumb.Label</span>
+                        }
+                    </li>
+                }
+            </ol>
+        </nav>
     }
-</header>
+</div>
 
 @code {
     [Parameter] public string BackHref { get; set; } = "/admin/hospitals";
@@ -50,4 +92,22 @@
     [Parameter] public bool? IsActive { get; set; }
     [Parameter] public string? StatusText { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>When set with <see cref="ClinicName"/>, renders the path under the banner.</summary>
+    [Parameter] public Guid? ClinicId { get; set; }
+
+    [Parameter] public string? ClinicName { get; set; }
+
+    /// <summary>Current leaf label (section or entity name).</summary>
+    [Parameter] public string? CurrentCrumb { get; set; }
+
+    /// <summary>Optional middle step (for example Patients before a chart).</summary>
+    [Parameter] public string? MidCrumb { get; set; }
+
+    [Parameter] public string? MidCrumbHref { get; set; }
+
+    private IReadOnlyList<HospitalDeckCrumb> Crumbs =>
+        ClinicId is Guid id && !string.IsNullOrWhiteSpace(ClinicName)
+            ? HospitalDeckBreadcrumbTrail.Build(id, ClinicName, CurrentCrumb, MidCrumb, MidCrumbHref)
+            : Array.Empty<HospitalDeckCrumb>();
 }
