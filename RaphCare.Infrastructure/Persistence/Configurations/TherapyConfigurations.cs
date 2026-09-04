@@ -43,7 +43,7 @@ public sealed class TherapyNoteConfiguration : IEntityTypeConfiguration<TherapyN
     {
         builder.ToTable("TherapyNotes");
         builder.HasKey(e => e.Id);
-        builder.Property(e => e.Notes).IsRequired().HasMaxLength(8000);
+        builder.Property(e => e.Notes).IsRequired().HasMaxLength(4000);
         builder.Property(e => e.Category).IsRequired().HasMaxLength(100);
         builder.HasIndex(e => e.TherapySessionId);
     }
