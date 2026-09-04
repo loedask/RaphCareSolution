@@ -99,12 +99,12 @@
                                           Saving="_savingClinic"
                                           OnSave="SaveClinicAsync" />
 
-                <ClinicEmergencyHomeCard ClinicId="ClinicId"
-                                         Events="_homeEmergencyEvents"
-                                         TotalCount="_homeEmergencyEvents.Count"
-                                         Loading="_loadingHomeEmergencies"
-                                         Error="_homeEmergencyError"
-                                         ClinicContextMissing="_homeEmergencyClinicContextMissing"
+                <ClinicEmergencyHomeCard ClinicId="@ClinicId"
+                                         Events="@_homeEmergencyEvents"
+                                         TotalCount="@_homeEmergencyEvents.Count"
+                                         Loading="@_loadingHomeEmergencies"
+                                         Error="@_homeEmergencyError"
+                                         ClinicContextMissing="@_homeEmergencyClinicContextMissing"
                                          TimeZone="@(_detail.TimeZone)"
                                          ViewAllHref="@($"/admin/hospitals/{ClinicId}?tab=devices")"
                                          OnRetry="LoadHomeEmergenciesAsync" />
