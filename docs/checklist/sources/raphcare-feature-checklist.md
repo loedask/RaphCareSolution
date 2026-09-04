@@ -65,7 +65,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page (hospital-deck)
 - [x] Admin dashboard (hospital-scoped; multi-hospital accounts use All hospitals first; single hospital auto-selects)
-- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): stock-in serials, assign to patient (separate app from Portal)
+- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): stock-in serials (type, packaging barcode/QR scan, or ephemeral photo text extract; images stay in-browser), assign to patient (separate app from Portal)
 - [x] Web UI language switcher (en / fr / ln / sw)
 - [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 

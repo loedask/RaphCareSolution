@@ -1,4 +1,6 @@
 @page "/fleet"
+@implements IAsyncDisposable
+@using System.Text.Json
 <PageTitle>@AppResources.T("Fleet_PageTitle")</PageTitle>
 
 <section class="admin-page admin-brand-page">
@@ -67,6 +69,47 @@
                             @(_saving ? AppResources.T("Common_Saving") : AppResources.T("Fleet_AddButton"))
                         </button>
                     </div>
+
+                    <div class="fleet-scan-actions">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                disabled="@(_scanning || _extracting)"
+                                @onclick="StartBarcodeScanAsync">
+                            @AppResources.T("Fleet_ScanBarcode")
+                        </button>
+                        <button type="button"
+                                class="btn btn-secondary"
+                                disabled="@(_scanning || _extracting)"
+                                @onclick="TriggerPhotoPick">
+                            @(_extracting ? AppResources.T("Fleet_ScanExtracting") : AppResources.T("Fleet_ExtractPhoto"))
+                        </button>
+                        <input id="@PhotoInputId"
+                               type="file"
+                               accept="image/*"
+                               capture="environment"
+                               hidden
+                               @onchange="OnPhotoSelectedAsync" />
+                    </div>
+                    <p class="fleet-scan-hint">@AppResources.T("Fleet_ScanPrivacy")</p>
+
+                    @if (_scanCandidates.Count > 0)
+                    {
+                        <div class="fleet-scan-candidates">
+                            <span class="fleet-scan-candidates-label">@AppResources.T("Fleet_ScanCandidates")</span>
+                            <div class="fleet-scan-candidate-list">
+                                @foreach (var candidate in _scanCandidates)
+                                {
+                                    <button type="button"
+                                            class="fleet-scan-candidate"
+                                            @onclick="() => ApplyCandidate(candidate)">
+                                        <span class="fleet-scan-candidate-kind">@CandidateKindLabel(candidate.Kind)</span>
+                                        @candidate.Value
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+
                     @if (!string.IsNullOrEmpty(_addError))
                     {
                         <p class="claim-error">@_addError</p>
@@ -75,16 +118,18 @@
                     {
                         <p class="text-muted">@_addSuccess</p>
                     }
+                    @if (!string.IsNullOrEmpty(_scanMacHint))
+                    {
+                        <p class="text-muted">@_scanMacHint</p>
+                    }
                 </div>
             </div>
         </AdminPageCard>
 
         <AdminPageCard Title="@AppResources.T("Fleet_StockTitle")">
-            <AdminPageCardMeta>
-                <span class="admin-progress-pill">@AppResources.Format("Fleet_TotalMeta", _totalCount)</span>
-            </AdminPageCardMeta>
             <div class="admin-page-card-body">
-                <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+                <span class="admin-progress-pill">@AppResources.Format("Fleet_TotalMeta", _totalCount)</span>
+                <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.75rem; margin: 1rem 0;">
                     <label class="fleet-select-field">
                         @AppResources.T("Common_Hospitals")
                         <SearchableSelect TValue="string"
@@ -109,14 +154,14 @@
                 }
                 else
                 {
-                    <div class="table-wrap">
-                        <table class="data-table">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
                             <thead>
                                 <tr>
+                                    <th>@AppResources.T("Common_Hospitals")</th>
                                     <th>@AppResources.T("Fleet_SerialLabel")</th>
                                     <th>@AppResources.T("Fleet_ModelLabel")</th>
-                                    <th>@AppResources.T("Common_Hospitals")</th>
-                                    <th>@AppResources.T("Common_Status")</th>
+                                    <th>Status</th>
                                     <th>@AppResources.T("Fleet_AssignColumn")</th>
                                 </tr>
                             </thead>
@@ -124,13 +169,11 @@
                                 @foreach (var device in _devices)
                                 {
                                     <tr>
-                                        <td><code>@device.SerialNumber</code></td>
-                                        <td>@device.Model</td>
                                         <td>@ClinicName(device.ClinicId)</td>
+                                        <td>@device.SerialNumber</td>
+                                        <td>@device.Model</td>
                                         <td>
-                                            <span class="badge @(device.IsAssigned ? "badge-success" : "badge-muted")">
-                                                @(string.IsNullOrWhiteSpace(device.Status) ? (device.IsAssigned ? AppResources.T("Fleet_StatusAssigned") : AppResources.T("Fleet_StatusInStock")) : device.Status)
-                                            </span>
+                                            @(string.IsNullOrWhiteSpace(device.Status) ? (device.IsAssigned ? AppResources.T("Fleet_StatusAssigned") : AppResources.T("Fleet_StatusInStock")) : device.Status)
                                         </td>
                                         <td>
                                             @if (device.IsAssigned)
@@ -139,7 +182,7 @@
                                             }
                                             else
                                             {
-                                                <div class="claim-form-row" style="gap: 0.5rem; flex-wrap: wrap;">
+                                                <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.5rem; align-items: center;">
                                                     <SearchableSelect TValue="string"
                                                                       CssClass="fleet-assign-select"
                                                                       Placeholder="@AppResources.T("Fleet_SelectPatient")"
@@ -147,7 +190,7 @@
                                                                       ValueChanged="v => SetAssignPatient(device.Id, v)"
                                                                       Options="PatientSelectOptions(device.ClinicId)" />
                                                     <button type="button"
-                                                            class="btn btn-secondary btn-sm"
+                                                            class="btn btn-secondary"
                                                             disabled="@(_assigningDeviceId == device.Id || string.IsNullOrWhiteSpace(GetAssignPatient(device.Id)))"
                                                             @onclick="() => AssignAsync(device)">
                                                         @(_assigningDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_AssignButton"))
@@ -166,22 +209,42 @@
     }
 </section>
 
+@if (_scanning)
+{
+    <div class="qr-scan-overlay">
+        <video id="fleet-scan-video" autoplay playsinline muted></video>
+        <button type="button" class="btn btn-secondary" @onclick="StopBarcodeScanAsync">
+            @AppResources.T("Fleet_StopScan")
+        </button>
+    </div>
+}
+
 @code {
     private const string FleetPath = "/fleet";
+    private const string PhotoInputId = "fleet-scan-file";
 
     private static readonly string[] FleetModels = ["E585", "E580", "Y6 Pro"];
 
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     [Inject] private IPlatformFleetDevicesService FleetService { get; set; } = default!;
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IJSRuntime Js { get; set; } = default!;
 
     private bool _loading = true;
     private bool _saving;
+    private bool _scanning;
+    private bool _extracting;
     private bool _authRequired;
     private bool _unassignedOnly = true;
     private Guid? _assigningDeviceId;
     private string? _error;
     private string? _addError;
     private string? _addSuccess;
+    private string? _scanMacHint;
     private string _newClinicId = string.Empty;
     private string _newSerial = string.Empty;
     private string _newModel = "E585";
@@ -190,8 +253,10 @@
     private int _totalCount;
     private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
     private IReadOnlyList<FleetDeviceListItem> _devices = Array.Empty<FleetDeviceListItem>();
+    private IReadOnlyList<FleetDeviceScanParser.Candidate> _scanCandidates = Array.Empty<FleetDeviceScanParser.Candidate>();
     private readonly Dictionary<Guid, IReadOnlyList<ClinicPatientListItem>> _patientsByClinic = new();
     private readonly Dictionary<Guid, string> _assignPatientByDevice = new();
+    private DotNetObjectReference<Index>? _jsSelf;
 
     private string _signInReturnUrl =>
         $"/signin?returnUrl={Uri.EscapeDataString(FleetPath)}";
@@ -222,7 +287,6 @@
     {
         await LoadAsync();
     }
-
 
     private async Task LoadAsync()
     {
@@ -299,6 +363,7 @@
     {
         _addError = null;
         _addSuccess = null;
+        _scanMacHint = null;
         if (!Guid.TryParse(_newClinicId, out var clinicId) || string.IsNullOrWhiteSpace(_newSerial))
         {
             _addError = AppResources.T("Fleet_AddValidation");
@@ -318,6 +383,7 @@
 
         _addSuccess = AppResources.Format("Fleet_AddedFormat", _newSerial.Trim());
         _newSerial = string.Empty;
+        _scanCandidates = Array.Empty<FleetDeviceScanParser.Candidate>();
         await ReloadListAsync();
     }
 
@@ -341,4 +407,171 @@
         await ReloadListAsync();
     }
 
+    private async Task StartBarcodeScanAsync()
+    {
+        _addError = null;
+        _addSuccess = null;
+        _scanMacHint = null;
+        _scanning = true;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(100);
+        _jsSelf ??= DotNetObjectReference.Create(this);
+        var started = false;
+        try
+        {
+            started = await Js.InvokeAsync<bool>("raphCareOpsFleet.startBarcodeScan", _jsSelf);
+        }
+        catch
+        {
+            started = false;
+        }
+
+        if (!started)
+        {
+            _scanning = false;
+            _addError = AppResources.T("Fleet_ScanUnsupported");
+        }
+    }
+
+    private async Task StopBarcodeScanAsync()
+    {
+        _scanning = false;
+        try
+        {
+            await Js.InvokeVoidAsync("raphCareOpsFleet.stopBarcodeScan");
+        }
+        catch
+        {
+            // Overlay is already closing.
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnFleetBarcodeDetected(string value)
+    {
+        await StopBarcodeScanAsync();
+        ApplyParseResult(FleetDeviceScanParser.ParseBarcode(value), fromBarcode: true);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task TriggerPhotoPick()
+    {
+        _addError = null;
+        _addSuccess = null;
+        _scanMacHint = null;
+        try
+        {
+            var opened = await Js.InvokeAsync<bool>("raphCareOpsFleet.clickFileInput", PhotoInputId);
+            if (!opened)
+                _addError = AppResources.T("Fleet_ScanFailed");
+        }
+        catch
+        {
+            _addError = AppResources.T("Fleet_ScanFailed");
+        }
+    }
+
+    private async Task OnPhotoSelectedAsync(ChangeEventArgs _)
+    {
+        _addError = null;
+        _addSuccess = null;
+        _scanMacHint = null;
+        _extracting = true;
+        await InvokeAsync(StateHasChanged);
+
+        FleetPhotoExtractDto? dto = null;
+        try
+        {
+            var json = await Js.InvokeAsync<JsonElement>("raphCareOpsFleet.extractFromFileInput", PhotoInputId);
+            dto = JsonSerializer.Deserialize<FleetPhotoExtractDto>(json.GetRawText(), JsonOptions);
+        }
+        catch
+        {
+            dto = null;
+        }
+
+        _extracting = false;
+
+        if (dto is null || !dto.Ok)
+        {
+            _addError = dto?.Error switch
+            {
+                "nofile" => AppResources.T("Fleet_ScanNoFile"),
+                "busy" => AppResources.T("Fleet_ScanBusy"),
+                _ => AppResources.T("Fleet_ScanFailed")
+            };
+            return;
+        }
+
+        if (dto.Barcodes is { Count: > 0 })
+        {
+            ApplyParseResult(FleetDeviceScanParser.ParseBarcode(dto.Barcodes[0]), fromBarcode: true);
+            return;
+        }
+
+        ApplyParseResult(FleetDeviceScanParser.Parse(dto.Text), fromBarcode: false);
+    }
+
+    private void ApplyParseResult(FleetDeviceScanParser.Result result, bool fromBarcode)
+    {
+        _scanCandidates = result.Candidates;
+        if (!string.IsNullOrWhiteSpace(result.SuggestedModel)
+            && FleetModels.Contains(result.SuggestedModel, StringComparer.Ordinal))
+        {
+            _newModel = result.SuggestedModel;
+        }
+
+        if (string.IsNullOrWhiteSpace(result.PreferredValue))
+        {
+            _addError = AppResources.T("Fleet_ScanNothingFound");
+            _scanMacHint = null;
+            return;
+        }
+
+        _newSerial = result.PreferredValue;
+        _addSuccess = AppResources.T("Fleet_ScanFound");
+        _scanMacHint = result.PreferredLooksLikeMac && !fromBarcode
+            ? AppResources.T("Fleet_ScanMacHint")
+            : null;
+    }
+
+    private void ApplyCandidate(FleetDeviceScanParser.Candidate candidate)
+    {
+        _newSerial = candidate.Value;
+        _addSuccess = AppResources.T("Fleet_ScanFound");
+        _scanMacHint = string.Equals(candidate.Kind, "Mac", StringComparison.OrdinalIgnoreCase)
+            ? AppResources.T("Fleet_ScanMacHint")
+            : null;
+        _addError = null;
+    }
+
+    private static string CandidateKindLabel(string kind) =>
+        string.Equals(kind, "Mac", StringComparison.OrdinalIgnoreCase)
+            ? AppResources.T("Fleet_CandidateMac")
+            : AppResources.T("Fleet_CandidateSerial");
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_scanning)
+        {
+            try
+            {
+                await Js.InvokeVoidAsync("raphCareOpsFleet.stopBarcodeScan");
+            }
+            catch
+            {
+                // Page is leaving.
+            }
+        }
+
+        _jsSelf?.Dispose();
+    }
+
+    private sealed class FleetPhotoExtractDto
+    {
+        public bool Ok { get; set; }
+        public string? Error { get; set; }
+        public string? Text { get; set; }
+        public List<string>? Barcodes { get; set; }
+    }
 }
