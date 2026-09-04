@@ -83,6 +83,7 @@ using RaphCare.Application.Features.Organization.Queries.GetAdminClinicDashboard
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicProviderById;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicProviders;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicPatientById;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicPatientPhoto;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicPatients;
 
 namespace RaphCare.API.Controllers;
@@ -170,6 +171,21 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             new GetAdminClinicPatientByIdQuery { ClinicId = id, PatientId = patientId },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Private profile photo for a patient linked to this hospital.</summary>
+    [HttpGet("{id:guid}/patients/{patientId:guid}/photo", Name = "GetAdminClinicPatientPhoto")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPatientPhoto(
+        Guid id,
+        Guid patientId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicPatientPhotoQuery { ClinicId = id, PatientId = patientId },
+            cancellationToken);
+        return result is null ? NotFound() : File(result.Content, result.ContentType);
     }
 
     /// <summary>Grant an existing patient access to this hospital by email.</summary>

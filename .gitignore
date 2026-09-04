@@ -25,6 +25,8 @@ RaphCare.Mobile.Tests/obj/
 RaphCare.Mobile.Tests/bin/
 RaphCare.Application.Tests/obj/
 RaphCare.Application.Tests/bin/
+RaphCare.Infrastructure.Tests/obj/
+RaphCare.Infrastructure.Tests/bin/
 RaphCare.Client.Tests/obj/
 RaphCare.Client.Tests/bin/
 RaphCare.Web.Tests/obj/
@@ -32,6 +34,9 @@ RaphCare.Web.Tests/bin/
 concepts/
 _agoraProbe/AgoraProbe/bin/
 _agoraProbe/AgoraProbe/obj/
+
+# Local API object store (Development fallback for photos and voice files)
+RaphCare.API/App_Data/
 
 # HBand Android SDK binaries (download with tools/download-hband-android-libs.ps1; see Platforms/Android/libs/README.md)
 RaphCare.Mobile/Platforms/Android/libs/*.aar

@@ -17,7 +17,7 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 
 Each section shows its % in the heading. Numbers stay in sync when status changes.
 
-Last reviewed: 2026-09-03
+Last reviewed: 2026-09-04
 
 ---
 
@@ -32,7 +32,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Hospital profile and facilities | Done | Edit details; add physical or virtual locations. The hospital page opens with a large header and a section menu on the side. |
 | Staff invites and roles | Done | Invite people. Set staff, doctor, pharmacist, or lab technician. Admins can still do hospital setup. |
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |
-| Patient chart (view) | Done | Same large header and section menu as other hospital pages. Sections: overview, clinical, coverage, devices, and care. Staff view this; they do not edit it here. |
+| Patient chart (view) | Done | Same large header and section menu as other hospital pages. Sections: overview, clinical, coverage, devices, and care. If the patient uploaded a photo on the phone, it shows in that header. Staff view this; they do not edit it here. |
 | Clinical team and schedules | Done | Add clinicians; manage schedules. Clinician detail uses the same large header and section menu. |
 | Appointments | Done | Book, cancel, reschedule. The appointments page uses the same large header and section menu. |
 | Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete. Visit and tele join pages match the hospital page layout. |
@@ -121,7 +121,7 @@ What patients see on Android and iPhone.
 
 ---
 
-## 4. Other staff and system pieces - 83%
+## 4. Other staff and system pieces - 86%
 
 | Area | Status | Notes |
 |------|--------|-------|
@@ -129,10 +129,11 @@ What patients see on Android and iPhone.
 | FHIR export | Done | For interoperability |
 | Emergency webhook | Done | Integration hook |
 | Staging demo sign-in accounts | Done | Staging only. Sign in with demo.admin, demo.doctor, demo.pharmacy, demo.lab, or demo.patient at raphcare.com. Password is on the API as Demo:Password (default RaphCareDemo!2026). Does not wipe other hospitals. |
+| Patient photos and voice files | Done | Photos from the phone and voice sign-up audio are stored privately. They stay after the website restarts. |
 | Staff mental-health assessment store | Partial | List exists; deeper storage later |
 | Reporting and big dashboards | Partial | Grows with product needs |
 
-**Bottom line (83%):** core APIs, hooks, and Staging demo accounts are in; deeper mental-health storage and reporting grow with product needs.
+**Bottom line (86%):** core APIs, hooks, Staging demo accounts, and private file storage are in; deeper mental-health storage and reporting grow with product needs.
 
 ---
 
@@ -198,7 +199,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 | 1. Hospital admin (outpatient) | 100% | Ready on web |
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 59% | iPhone video, push, wearables |
-| 4. Other staff and system | 83% | Demo accounts on Staging |
+| 4. Other staff and system | 86% | Demo accounts on Staging; private photos and voice files |
 | 5. Hospital plan extras | 100% | Stay extras closed for this board |
 | 6. Next ideas (AI and ops) | n/a | Later list; not in overall % |
 | **Overall** | **81%** | Sections 1-5. Excludes "not for mobile, clinical, or BLE" and section 6 later rows |
@@ -214,7 +215,7 @@ This list is the current manual smoke for admin web and the patient phone app. B
 3. **Admin web:** on that hospital, open Inpatient. Add a ward, room, or bed if needed, admit someone. Add a ward note. On discharge, try Draft with AI, edit the text, then finish with a nightly rate and (optional) a return visit for next week. Confirm occupancy numbers on the hospital dashboard.
 4. **Admin web:** open Casualty. Add a walk-in (with or without a patient). Call the code and open the casualty waiting screen on another tab. Open Theatre and add today's case, then start and complete it. Open Referrals, log a referral, then accept or complete it. Open Roster, add someone to Morning or Afternoon, then remove them if you want.
 5. **Admin web:** on the hospital overview (and the admin home when that hospital is selected), confirm recent SOS or fall alerts show if any exist. Open Devices for the full list.
-6. **Admin web:** open a patient chart. Use the section menu for overview, clinical, coverage, devices, and care.
+6. **Admin web:** open a patient chart. Use the section menu for overview, clinical, coverage, devices, and care. If that patient uploaded a photo on the phone, it should show in the header.
 7. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
 8. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
 9. **Patient app on Android:** sign in as `demo.patient@raphcare.com`. You should get a notice that something is ready to collect. After staff enter a lab result, you should also get a separate notice that the result is ready (open Health records for the values). Waiting items show a pickup code and a QR code. Scan the wall poster at the counter to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.

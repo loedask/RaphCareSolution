@@ -1,6 +1,6 @@
 namespace RaphCare.Application.Common.Interfaces;
 
-/// <summary>Stores patient profile photos on the API host filesystem.</summary>
+/// <summary>Stores patient profile photos in private object storage.</summary>
 public interface IPatientProfilePhotoStorage
 {
     /// <summary>Persists or replaces the photo for <paramref name="patientId"/>.</summary>
