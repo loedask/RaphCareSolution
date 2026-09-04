@@ -1,6 +1,6 @@
 {
-  "stylesheet": ["./mobile-update.pdf.css"],
-  "document_title": "RaphCare mobile update (v1.6.0)",
+  "stylesheet": ["./partner-update.pdf.css"],
+  "document_title": "RaphCare partner update (4 Sep 2026, evening)",
   "pdf_options": {
     "format": "A4",
     "margin": {

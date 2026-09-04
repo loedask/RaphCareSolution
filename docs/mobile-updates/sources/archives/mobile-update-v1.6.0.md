@@ -1,5 +1,5 @@
 <div class="doc-header">
-<img src="../partner-updates/brand/raphcare-logo.png" alt="RaphCare" />
+<img src="../../brand/raphcare-logo.png" alt="RaphCare" />
 <h1>RaphCare mobile update (v1.6.0)</h1>
 </div>
 
