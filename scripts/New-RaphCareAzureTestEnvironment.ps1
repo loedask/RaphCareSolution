@@ -171,8 +171,8 @@ $envInfo | ConvertTo-Json -Depth 5 | Set-Content -Path $outPath -Encoding UTF8
 
 # Point TestHosting placeholders at this environment (hostnames only; commit only after review).
 $mobileTestHosting = Join-Path $repoRoot "RaphCare.Mobile\appsettings.TestHosting.json"
-$webTestHosting = Join-Path $repoRoot "RaphCare.Web\wwwroot\appsettings.TestHosting.json"
-$webStaging = Join-Path $repoRoot "RaphCare.Web\wwwroot\appsettings.Staging.json"
+$webTestHosting = Join-Path $repoRoot "RaphCare.Portal\wwwroot\appsettings.TestHosting.json"
+$webStaging = Join-Path $repoRoot "RaphCare.Portal\wwwroot\appsettings.Staging.json"
 $mobileJson = Get-Content $mobileTestHosting -Raw | ConvertFrom-Json
 $mobileJson.Api.BaseAddress = "$apiBase/"
 $mobileJson | ConvertTo-Json -Depth 5 | Set-Content $mobileTestHosting -Encoding UTF8

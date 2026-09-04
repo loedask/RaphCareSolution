@@ -1,0 +1,127 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+
+<CascadingValue Value="SelectLabels">
+<div class="admin-shell admin-shell-hospital">
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <div class="admin-topbar-left">
+                <a class="admin-topbar-brand" href="@DashboardHref" title="@AppResources.T("Common_Dashboard")">
+                    <div class="admin-brand-icon admin-topbar-brand-icon">+</div>
+                    <span class="admin-topbar-brand-title">@AppResources.T("Common_AppName")</span>
+                </a>
+                <nav class="admin-workspace-nav" aria-label="@AppResources.T("AdminLayout_BreadcrumbAria")">
+                    <a class="admin-all-hospitals" href="/admin/hospitals">
+                        <span aria-hidden="true">←</span>
+                        @AppResources.T("AdminLayout_AllHospitals")
+                    </a>
+                    @if (ClinicContext.CurrentClinicId is Guid workspaceClinicId
+                         && !string.IsNullOrWhiteSpace(ClinicContext.CurrentClinicName))
+                    {
+                        <span class="admin-breadcrumb-sep" aria-hidden="true">/</span>
+                        <a class="admin-topbar-hospital"
+                           href="@($"/admin/hospitals/{workspaceClinicId}")"
+                           title="@AppResources.T("AdminLayout_ActiveHospitalTitle")">
+                            @ClinicContext.CurrentClinicName
+                        </a>
+                    }
+                </nav>
+            </div>
+            <div class="admin-topbar-right">
+                <a class="btn btn-secondary btn-sm admin-topbar-register" href="/admin/hospitals/register">
+                    @AppResources.T("Common_RegisterHospital")
+                </a>
+                <div class="admin-search-wrap">
+                    <label class="admin-search">
+                        <span class="admin-search-icon" aria-hidden="true">⌕</span>
+                        <input type="search"
+                               placeholder="@AppResources.T("AdminLayout_SearchPlaceholder")"
+                               value="@_searchQuery"
+                               @oninput="OnSearchInputAsync"
+                               @onfocus="() => _searchOpen = !string.IsNullOrWhiteSpace(_searchQuery)"
+                               @onkeydown="OnSearchKeyDown"
+                               autocomplete="off" />
+                    </label>
+                    @if (_searchOpen && (!string.IsNullOrWhiteSpace(_searchQuery) || _patientResults.Count > 0))
+                    {
+                        <div class="admin-search-menu" role="listbox" aria-label="@AppResources.T("AdminLayout_SearchResultsAria")">
+                            @if (_hospitalResults.Count > 0)
+                            {
+                                <div class="admin-search-group">@AppResources.T("AdminLayout_SearchGroupHospitals")</div>
+                                @foreach (var clinic in _hospitalResults)
+                                {
+                                    <button type="button"
+                                            class="admin-search-item"
+                                            role="option"
+                                            @onclick="() => NavigateToHospitalAsync(clinic.Id, clinic.Name)">
+                                        <span class="admin-search-item-name">@clinic.Name</span>
+                                        <span class="admin-search-item-meta">@clinic.ReferenceCode</span>
+                                    </button>
+                                }
+                            }
+                            @if (ClinicContext.CurrentClinicId is not null)
+                            {
+                                <div class="admin-search-group">@AppResources.T("AdminLayout_SearchGroupPatients") @(_searchingPatients ? AppResources.T("AdminLayout_SearchingPatients") : "")</div>
+                                @if (_patientResults.Count == 0 && !_searchingPatients && _searchQuery.Trim().Length >= 2)
+                                {
+                                    <div class="admin-search-empty">@AppResources.Format("AdminLayout_NoPatientsMatch", _searchQuery.Trim())</div>
+                                }
+                                @foreach (var patient in _patientResults)
+                                {
+                                    <button type="button"
+                                            class="admin-search-item"
+                                            role="option"
+                                            @onclick="() => NavigateToPatient(patient.PatientId)">
+                                        <span class="admin-search-item-name">@patient.FirstName @patient.LastName</span>
+                                        <span class="admin-search-item-meta">@AppResources.T("AdminLayout_SearchResultPatientMeta")</span>
+                                    </button>
+                                }
+                            }
+                            else if (_hospitalResults.Count == 0 && _searchQuery.Trim().Length >= 1)
+                            {
+                                <div class="admin-search-empty">@AppResources.T("AdminLayout_NoHospitalsMatch")</div>
+                            }
+                        </div>
+                    }
+                </div>
+                @if (ClinicContext.MyClinics.Count > 1)
+                {
+                    <div class="admin-clinic-switcher">
+                        <button type="button"
+                                class="admin-clinic-switcher-trigger @(_clinicSwitcherOpen ? "open" : "")"
+                                aria-haspopup="listbox"
+                                aria-expanded="@_clinicSwitcherOpen"
+                                @onclick="ToggleClinicSwitcher">
+                            <span class="admin-clinic-switcher-icon" aria-hidden="true">⌂</span>
+                            <span class="admin-clinic-switcher-label">@(ClinicContext.CurrentClinicName ?? AppResources.T("Common_SelectHospital"))</span>
+                            <span class="admin-clinic-switcher-caret" aria-hidden="true">▾</span>
+                        </button>
+                        @if (_clinicSwitcherOpen)
+                        {
+                            <div class="admin-clinic-switcher-menu" role="listbox" aria-label="@AppResources.T("AdminLayout_ClinicSwitcherAria")">
+                                @foreach (var clinic in ClinicContext.MyClinics)
+                                {
+                                    <button type="button"
+                                            class="admin-clinic-switcher-item @(ClinicContext.CurrentClinicId == clinic.Id ? "active" : "")"
+                                            role="option"
+                                            aria-selected="@(ClinicContext.CurrentClinicId == clinic.Id)"
+                                            @onclick="() => SwitchClinicAsync(clinic.Id, clinic.Name)">
+                                        <span class="admin-clinic-switcher-item-name">@clinic.Name</span>
+                                        <span class="admin-clinic-switcher-item-meta">@clinic.ReferenceCode</span>
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                <LanguagePicker />
+                <button type="button" class="btn btn-ghost admin-topbar-signout" @onclick="SignOutAsync">@AppResources.T("Common_SignOut")</button>
+                <span class="admin-pill">@AppResources.T("Common_Professional")</span>
+            </div>
+        </header>
+        <main class="admin-content">
+            @Body
+        </main>
+    </div>
+</div>
+</CascadingValue>

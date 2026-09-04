@@ -10,8 +10,15 @@ Human runbook: **`docs/Mobile_Android_Test_Hosting.md`** (Phase 1: Azure login a
 ## Do this first
 
 1. Prefer **`az login`** (interactive browser). It works with MFA and Entra **security defaults**.
-2. Confirm before deploy: `az account show` and that a **subscription** is listed (`az account list -o table`).
-3. Then run publish scripts (`Publish-RaphCareApiToAzure.ps1`, `Publish-RaphCareWebToAzure.ps1`, etc.).
+2. If that returns **`AADSTS50076`** (MFA / interaction required) or **no subscriptions** for `raphcare@yindula.com`, retry in a **visible** desktop terminal:
+
+   ```text
+   powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Login-RaphCareAzure.ps1
+   ```
+
+   That runs `az login --tenant 6069ef19-5a1b-48ca-94ae-5b814804a78b` (no device code, no management `--scope`).
+3. Confirm before deploy: `az account show` and that a **subscription** is listed (`az account list -o table`).
+4. Then run publish scripts (`Publish-RaphCareApiToAzure.ps1`, `Publish-RaphCareWebToAzure.ps1`, `Publish-RaphCareOpsToAzure.ps1`, etc.).
 
 ## Do not do this (known failure modes)
 
@@ -21,14 +28,17 @@ Human runbook: **`docs/Mobile_Android_Test_Hosting.md`** (Phase 1: Azure login a
   ```
   That combination often shows **“You don't have access to this”** after a successful password, or fails under security defaults.
 - Do **not** treat `az account show` succeeding as proof that **`az webapp deploy`** will work. A stale token can pass `account show` and still fail deploy with `AADSTS50132` (expired / interaction required). Re-run **`az login`** (browser) and retry.
-- Do **not** assume the agent can complete Microsoft sign-in inside Cursor. Open the system browser; the human must finish MFA / consent.
+- Do **not** assume the agent can complete Microsoft sign-in inside Cursor. Hidden `az login` jobs do not show a browser. Ask the human to run `scripts/Login-RaphCareAzure.ps1` in Windows Terminal.
+- Do **not** launch login with `cmd /c start RaphCare ...`. Windows looks for a program named `RaphCare`.
+- Do **not** call `az` from a `.bat` without `call` (`az` is `az.cmd`; the window then closes and looks like a crash).
 - Do **not** keep polling an expired device code. Start a fresh **`az login`**.
 
 ## Ops account notes
 
 - Ops mailbox **`raphcare@yindula.com`** may sign in to Microsoft and still hit:
   - **`AADSTS530035`**: blocked by **security defaults** (finish MFA registration, or an admin adjusts security defaults).
-  - **“No subscriptions found”**: account is not assigned to the Azure subscription (needs Owner/Contributor or equivalent).
+  - **`AADSTS50076`**: MFA required for Azure resource manager. Use `--tenant` as in the helper script. After MFA, this mailbox can see **Azure subscription 1**.
+  - **“No subscriptions found”**: often the same MFA miss; retry `--tenant`. If it still lists nothing, the account is not assigned to the subscription (needs Owner/Contributor or equivalent).
 - Prefer the account that **owns** subscription / resource group **`raphcare_group`** when publishing.
 
 ## When deploy fails

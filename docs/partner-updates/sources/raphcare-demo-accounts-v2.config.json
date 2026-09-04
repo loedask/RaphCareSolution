@@ -1,0 +1,14 @@
+{
+  "stylesheet": ["raphcare-demo-accounts-v2.pdf.css"],
+  "document_title": "RaphCare demo accounts v2 (3 Sep 2026)",
+  "pdf_options": {
+    "format": "A4",
+    "margin": {
+      "top": "16mm",
+      "right": "15mm",
+      "bottom": "16mm",
+      "left": "15mm"
+    },
+    "printBackground": true
+  }
+}

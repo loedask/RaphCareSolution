@@ -48,6 +48,10 @@ public sealed class DevicesViewModel : BaseViewModel
     DevicesConnectLabel = T("DevicesConnectButton");
 
     SyncReadingsButtonText = T("DevicesSyncReadings");
+        ClaimHint = T("DevicesClaimHint");
+        ClaimButtonText = T("DevicesClaimButton");
+        SerialPlaceholder = T("DevicesSerialPlaceholder");
+        SkuPickerTitle = T("DevicesSkuTitle");
 
         ScanCommand = new Command(async () => await ScanAsync().ConfigureAwait(false), () => !IsBusy && _ble.IsBleSupported);
         StopScanCommand = new Command(async () => await StopScanAsync().ConfigureAwait(false), () => _ble.IsScanning);
@@ -78,6 +82,13 @@ public sealed class DevicesViewModel : BaseViewModel
     public string DevicesConnectLabel { get; }
 
     public string SyncReadingsButtonText { get; }
+    public string ClaimHint { get; }
+    public string ClaimButtonText { get; }
+    public string SerialPlaceholder { get; }
+    public string SkuPickerTitle { get; }
+
+    public string ClaimedDeviceIdLabel =>
+        RegisteredDeviceId is Guid id ? Format(T("DevicesClaimedIdFormat"), id) : string.Empty;
 
     public string ShowAllToggleText => ShowAllDevices ? ShowAllLabel : E580E585FilterLabel;
 
@@ -391,26 +402,29 @@ public sealed class DevicesViewModel : BaseViewModel
             var serial = (SerialNumber ?? "").Trim();
             if (string.IsNullOrWhiteSpace(serial))
             {
-                ErrorMessage = "Enter the device serial number first.";
+                ErrorMessage = T("DevicesClaimSerialRequired");
                 return;
             }
 
             var sku = (ModelSku ?? "").Trim();
             if (string.IsNullOrWhiteSpace(sku))
             {
-                ErrorMessage = "Select a model SKU (E580 / E585).";
+                ErrorMessage = T("DevicesClaimSkuRequired");
                 return;
             }
 
             var resp = await _patientDevices.RegisterMyDeviceAsync(serial, sku).ConfigureAwait(false);
             if (!resp.IsSuccess)
             {
-                ErrorMessage = resp.ErrorMessage ?? "Device registration failed.";
+                ErrorMessage = resp.ErrorMessage ?? T("DevicesClaimFailed");
                 return;
             }
 
             RegisteredDeviceId = resp.Data?.DeviceId;
-            SyncResultText = RegisteredDeviceId is { } id ? $"Registered: {id}" : "Registered.";
+            OnPropertyChanged(nameof(ClaimedDeviceIdLabel));
+            SyncResultText = RegisteredDeviceId is { } id
+                ? Format(T("DevicesClaimSuccessFormat"), id)
+                : T("DevicesClaimSuccess");
         }
         finally
         {
@@ -427,7 +441,7 @@ public sealed class DevicesViewModel : BaseViewModel
         {
             if (RegisteredDeviceId is not { } deviceId)
             {
-                ErrorMessage = "Register the device first.";
+                ErrorMessage = T("DevicesClaimBeforeSync");
                 return;
             }
 

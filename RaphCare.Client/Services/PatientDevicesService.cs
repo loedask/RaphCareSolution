@@ -38,7 +38,7 @@ public sealed class PatientDevicesService(HttpClient httpClient) : BaseHttpServi
             .ConfigureAwait(false);
 
         if (!result.IsSuccess || result.Data is null)
-            return Response<RegisterMyDeviceResultViewModel>.Failure(result.ErrorMessage ?? "Register failed.", result.StatusCode);
+            return Response<RegisterMyDeviceResultViewModel>.Failure(result.ErrorMessage ?? "Could not claim this device.", result.StatusCode);
 
         return Response<RegisterMyDeviceResultViewModel>.Success(
             new RegisterMyDeviceResultViewModel { DeviceId = result.Data.DeviceId });

@@ -45,6 +45,8 @@ public static class DependencyInjection
         if (!string.IsNullOrWhiteSpace(localJwt.Audience))
             validAudiences.Add(localJwt.Audience);
         validAudiences.Add("RaphCare.Web");
+        validAudiences.Add("RaphCare.Portal");
+        validAudiences.Add("RaphCare.Ops");
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
