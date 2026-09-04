@@ -220,6 +220,45 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicPatientPhoto?>> GetPatientPhotoAsync(
+        Guid clinicId,
+        Guid patientId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/patients/{patientId}/photo", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicPatientPhoto?>.Success(null);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                return Response<ClinicPatientPhoto?>.Failure(error, (int)response.StatusCode);
+            }
+
+            var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+            if (bytes.Length == 0)
+                return Response<ClinicPatientPhoto?>.Success(null);
+
+            var contentType = response.Content.Headers.ContentType?.MediaType;
+            return Response<ClinicPatientPhoto?>.Success(new ClinicPatientPhoto
+            {
+                Bytes = bytes,
+                ContentType = string.IsNullOrWhiteSpace(contentType) ? "image/jpeg" : contentType
+            });
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicPatientPhoto?>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<ClinicPatientListItem>> GrantPatientAccessAsync(
         Guid clinicId,
         string email,

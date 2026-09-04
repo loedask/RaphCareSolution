@@ -111,10 +111,10 @@
 
 - **Purpose:** AI-generated summaries and insights; risk and wellness data for dashboards.
 - **Entities (domain):** WellnessInsight, RiskScore, TrendAnalysis, AIRecommendation, etc.
-- **Application:** IAIService (GenerateSummary); GenerateSummary command/handler; placeholder implementation in Infrastructure.
-- **Controllers:** AIController — POST api/ai/summary (GenerateSummary).
+- **Application:** IAIService (GenerateSummary, patient assistant chat); GenerateSummary command/handler. Infrastructure `AIService` calls Azure OpenAI chat completions when `PatientAssistant` endpoint, key, and deployment are set; otherwise safe placeholders. Default deployment is gpt-4.1-mini. Setup: **docs/16_Azure_OpenAI_Setup.md**.
+- **Controllers:** AIController — POST api/ai/summary (GenerateSummary). Patient assistant chat is on the patient API.
 - **Persistence:** AIDbContext (WellnessInsights, RiskScores, DashboardSnapshots).
-- **Relationships:** Consumes clinical/visit context; no external AI SDK in repo (placeholder only).
+- **Relationships:** Consumes clinical/visit context; uses Azure OpenAI REST (no Azure.AI.* SDK package).
 
 ---
 

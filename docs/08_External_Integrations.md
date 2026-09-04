@@ -24,13 +24,20 @@
 
 ## AI Services
 
-- **Application:** `IAIService` with summary generation; command `GenerateSummary` and handler. **Infrastructure:** AIService implements IAIService; implementation is a placeholder (TODO: integrate with Azure OpenAI / GPT). No Azure.AI.*, OpenAI, or other AI SDK packages in the solution.
-- **Persistence:** AIDbContext stores WellnessInsight, RiskScore, DashboardSnapshot. AI-related domain entities exist; no external AI call is implemented.
+- **Application:** `IAIService` with summary generation, discharge drafts, and patient assistant chat. **Infrastructure:** `AIService` calls Azure OpenAI chat completions (`gpt-4.1-mini` Global Standard) when `PatientAssistant` endpoint, key, and deployment are set; otherwise placeholders. No Azure.AI.* or OpenAI SDK packages. See **docs/16_Azure_OpenAI_Setup.md**.
+- **Persistence:** AIDbContext stores WellnessInsight, RiskScore, DashboardSnapshot. Those stores are separate from the chat call.
 
 ## Speech-to-Text (Voice Onboarding)
 
 - **Application:** `ISpeechToTextService` (TranscribeAsync returns TranscriptionResult: FullText, ExtractedFields). Used by CreatePatientFromVoiceCommand for voice onboarding.
 - **Infrastructure:** AzureSpeechToTextService implements ISpeechToTextService; placeholder implementation (returns sample text and extracted fields). No Azure Speech SDK or other STT packages wired in the solution.
+
+## File storage (photos and voice)
+
+- **Application:** `IObjectStorage`, `IPatientProfilePhotoStorage`, `IVoiceRecordingStorage`.
+- **Infrastructure:** Azure Blob when `AzureStorage:ConnectionString` is set (`AzureBlobObjectStorage`). Development without that setting uses `App_Data/object-store` (`LocalFileObjectStorage`). Staging and Production require the connection string.
+- **API:** patient photo at `api/patient/profile/photo`. Staff photo at `GET api/admin/clinics/{id}/patients/{patientId}/photo` after clinic membership and patient-in-clinic checks. Voice onboarding stores a private key on `VoiceRecording.StorageUrl`.
+- **Setup:** `docs/17_Azure_Blob_Storage.md` and `scripts/New-RaphCareAzureBlobStorage.ps1`.
 
 ## Authentication (External and API-Issued)
 

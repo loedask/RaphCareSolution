@@ -1,0 +1,14 @@
+{
+  "stylesheet": ["raphcare-feature-catalog.pdf.css"],
+  "document_title": "RaphCare feature catalog (September 2026)",
+  "pdf_options": {
+    "format": "A4",
+    "margin": {
+      "top": "12mm",
+      "right": "12mm",
+      "bottom": "12mm",
+      "left": "12mm"
+    },
+    "printBackground": true
+  }
+}

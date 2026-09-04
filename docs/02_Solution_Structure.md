@@ -27,7 +27,7 @@
 - **App/Contracts/** — CreatePatientResponse (OpenAPI response type for POST patients)
 
 ### RaphCare.Application
-- **Common/** — Interfaces (IRepository, IUnitOfWork, ICurrentUserService, IAIService, IApplicationUserStore, IUserProvisioningService, IDomainEventDispatcher, IDateTimeProvider, IPaymentGatewayService, IEmailService, ISmsService, INotificationService, IOtpService, ITokenService, ISpeechToTextService), DTOs (PagedResult, BaseDto), Behaviors (Logging, Performance, Authorization, Validation, Transaction), Exceptions
+- **Common/** — Interfaces (IRepository, IUnitOfWork, ICurrentUserService, IAIService, IApplicationUserStore, IUserProvisioningService, IDomainEventDispatcher, IDateTimeProvider, IPaymentGatewayService, IEmailService, ISmsService, INotificationService, IOtpService, ITokenService, ISpeechToTextService, IObjectStorage, IPatientProfilePhotoStorage, IVoiceRecordingStorage), DTOs (PagedResult, BaseDto), Behaviors (Logging, Performance, Authorization, Validation, Transaction), Exceptions
 - **Features/** — Vertical slices per feature (e.g. Patients, Appointments, Clinical, Devices, Insurance, Billing, Telemedicine, Communication, MentalHealth, AI, Reporting, Auth, Onboarding); each contains Commands, Queries, DTOs, Validators, Handlers
 
 ### RaphCare.Domain
@@ -51,6 +51,7 @@
 - **Persistence/Interceptors/** — AuditableEntityInterceptor, SoftDeleteInterceptor, DomainEventDispatcherInterceptor
 - **Persistence/Configurations/** — EF configurations for entities (in Infrastructure; e.g. OtpCodeConfiguration, VoiceRecordingConfiguration)
 - **Services/** — Implementations (e.g. AIService, OtpService, TokenService, AzureSpeechToTextService placeholder)
+- **Storage/** — Azure Blob or local Development object store for patient photos and voice recordings (`docs/17_Azure_Blob_Storage.md`)
 - **Identity/** — (IApplicationUserStore is implemented in Persistence.ApplicationUserStore)
 
 ### RaphCare.Persistence
@@ -103,7 +104,7 @@
 - **MauiProgram** — Configuration: `appsettings.json`, optional `appsettings.Development.json` (DEBUG), User Secrets; `AddRaphCareMobile`; `FeatureFlags.Initialize` after build; `AddRaphCareClient(..., useBearerToken: true)`; `AddMauiBlazorWebView`.
 - References **RaphCare.Mobile.Kernel**, **RaphCare.Client**; bearer-token auth via `IAccessTokenProvider`.
 
-See **docs/09_Mobile_App_Guide.md** for configuration, secrets, flags, and testing. For **hosted Azure test + Play Internal (Android)**, see **docs/Mobile_Android_Test_Hosting.md**. For **Agora** (telehealth RTC) and **Twilio** (SMS) setup on the API, see **docs/10_Agora_Twilio_Setup.md**. For **BLE wearables** (E580/E585-class) on the mobile app, see **docs/11_Devices_BLE_E580_E585.md**. For the optional **HBand** vendor SDK (GitHub **HBandSDK**), see **docs/12_HBand_SDK_Integration.md**. For **patient-provided device packages** (Y6 Pro, E585, E580), see **docs/13_Patient_Device_Packages_and_Fleet.md**. For the **SKU-agnostic wearable feature catalog** (HR, SpO₂, activity, sleep, and related goals), see **docs/14_Wearable_Capability_Catalog.md**.
+See **docs/09_Mobile_App_Guide.md** for configuration, secrets, flags, and testing. For **hosted Azure test + Play Internal (Android)**, see **docs/Mobile_Android_Test_Hosting.md**. For **Agora** (telehealth RTC) and **Twilio** (SMS) setup on the API, see **docs/10_Agora_Twilio_Setup.md**. For **Azure OpenAI** (patient assistant and discharge drafts), see **docs/16_Azure_OpenAI_Setup.md**. For **BLE wearables** (E580/E585-class) on the mobile app, see **docs/11_Devices_BLE_E580_E585.md**. For the optional **HBand** vendor SDK (GitHub **HBandSDK**), see **docs/12_HBand_SDK_Integration.md**. For **patient-provided device packages** (Y6 Pro, E585, E580), see **docs/13_Patient_Device_Packages_and_Fleet.md**. For the **SKU-agnostic wearable feature catalog** (HR, SpO₂, activity, sleep, and related goals), see **docs/14_Wearable_Capability_Catalog.md**.
 
 ## Responsibilities Summary
 

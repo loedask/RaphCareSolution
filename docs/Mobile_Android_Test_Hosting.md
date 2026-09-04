@@ -11,6 +11,7 @@ Runbook to put the **patient Android app** and **hosted API / admin Web** online
 | Admin Web / Portal (Blazor WASM) | Linux App Service `raphcare` via **`RaphCare.Portal.Host`** |
 | Platform Ops (Blazor WASM) | Linux App Service `raphcare-ops` via **`RaphCare.Ops.Host`** |
 | Database | Azure SQL database |
+| Private files | Azure Blob (`patient-photos`, `voice-recordings`) |
 | Sign-in | Entra app registrations in your tenant (optional for phone OTP) |
 | Ops mailbox | `raphcare@yindula.com` |
 | Store mailbox | `apps@yindula.com` (Play Console / later App Store) |
@@ -28,6 +29,7 @@ Default resource group: **`raphcare_group`** (or `rg-raphcare-test` from scripts
 | [`scripts/Update-RaphCareAzureSqlMigrations.ps1`](../scripts/Update-RaphCareAzureSqlMigrations.ps1) | Apply all EF contexts to Azure SQL |
 | [`scripts/Publish-RaphCareApiToAzure.ps1`](../scripts/Publish-RaphCareApiToAzure.ps1) | `dotnet publish` + zip deploy API |
 | [`scripts/Login-RaphCareAzure.ps1`](../scripts/Login-RaphCareAzure.ps1) | Browser `az login --tenant` when MFA / Cursor login fails |
+| [`scripts/New-RaphCareAzureBlobStorage.ps1`](../scripts/New-RaphCareAzureBlobStorage.ps1) | Private Blob account for photos and voice files; sets `AzureStorage` on `raphcare-api` |
 | [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish **`RaphCare.Portal.Host`** (linux-x64) to App Service `raphcare` |
 | [`scripts/New-RaphCareOpsAzureApp.ps1`](../scripts/New-RaphCareOpsAzureApp.ps1) | Create Linux App Service `raphcare-ops` on the Portal plan |
 | [`scripts/Set-RaphCareAzureOpsCors.ps1`](../scripts/Set-RaphCareAzureOpsCors.ps1) | Set `RaphCare__OpsBaseUrl` / `Cors__OpsOrigins__0` on the API |
@@ -400,6 +402,7 @@ Send testers:
 - Play Internal opt-in link
 - What to try (sign-in, appointments, care, devices)
 - Known gaps (iOS not in this wave; push needs Firebase later; SMS OTP needs Twilio)
+- AI assistant and AI discharge drafts need Azure OpenAI keys on **raphcare-api** (see [16_Azure_OpenAI_Setup.md](./16_Azure_OpenAI_Setup.md))
 - Bug reports to **raphcare@yindula.com**
 
 ---
@@ -410,3 +413,4 @@ Send testers:
 - Do not commit D-U-N-S numbers, Play Console credentials, government IDs, or payment details. Keep those with the company.
 - Replace sample `Jwt:Secret` values before any real patient data.
 - Prefer App Service configuration (or Key Vault) over checking secrets into `appsettings.json`.
+- Azure OpenAI keys belong in App Service settings or local User Secrets, not in git.

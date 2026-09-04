@@ -12,7 +12,8 @@ public class CreatePatientFromVoiceHandler(
     IRepository<VoiceRecording> voiceRecordingRepository,
     IRepository<Patient> patientRepository,
     IUnitOfWork unitOfWork,
-    IPatientIdentityTimelineService patientIdentityTimelineService) : IRequestHandler<CreatePatientFromVoiceCommand, CreatePatientFromVoiceResult>
+    IPatientIdentityTimelineService patientIdentityTimelineService,
+    IVoiceRecordingStorage voiceRecordingStorage) : IRequestHandler<CreatePatientFromVoiceCommand, CreatePatientFromVoiceResult>
 {
     private readonly ISpeechToTextService _speechToTextService = speechToTextService;
     private readonly IMediator _mediator = mediator;
@@ -20,13 +21,19 @@ public class CreatePatientFromVoiceHandler(
     private readonly IRepository<Patient> _patientRepository = patientRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IPatientIdentityTimelineService _patientIdentityTimelineService = patientIdentityTimelineService;
+    private readonly IVoiceRecordingStorage _voiceRecordingStorage = voiceRecordingStorage;
 
     public async Task<CreatePatientFromVoiceResult> Handle(CreatePatientFromVoiceCommand request, CancellationToken cancellationToken)
     {
+        await using var audioBuffer = new MemoryStream();
+        await request.AudioStream.CopyToAsync(audioBuffer, cancellationToken).ConfigureAwait(false);
+        audioBuffer.Position = 0;
+
         var transcription = await _speechToTextService.TranscribeAsync(
-            request.AudioStream,
+            audioBuffer,
             request.Language,
             cancellationToken);
+        audioBuffer.Position = 0;
 
         var fields = transcription.ExtractedFields;
         var firstName = GetField(fields, "FirstName") ?? "Unknown";
@@ -71,10 +78,14 @@ public class CreatePatientFromVoiceHandler(
         var recording = new VoiceRecording
         {
             PatientId = patientId,
-            StorageUrl = "placeholder", // TODO: upload to blob and set URL
-            DurationSeconds = 0,
             Language = request.Language
         };
+        var contentType = string.IsNullOrWhiteSpace(request.ContentType) ? "audio/wav" : request.ContentType;
+        var saved = await _voiceRecordingStorage
+            .SaveAsync(patientId, recording.Id, audioBuffer, contentType, cancellationToken)
+            .ConfigureAwait(false);
+        recording.StorageUrl = saved.StorageKey;
+        recording.DurationSeconds = saved.DurationSeconds;
         await _voiceRecordingRepository.AddAsync(recording, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
