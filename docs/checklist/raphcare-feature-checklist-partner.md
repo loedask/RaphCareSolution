@@ -121,7 +121,7 @@ What patients see on Android and iPhone.
 
 ---
 
-## 4. Other staff and system pieces - 83%
+## 4. Other staff and system pieces - 86%
 
 | Area | Status | Notes |
 |------|--------|-------|
@@ -129,10 +129,11 @@ What patients see on Android and iPhone.
 | FHIR export | Done | For interoperability |
 | Emergency webhook | Done | Integration hook |
 | Staging demo sign-in accounts | Done | Staging only. Sign in with demo.admin, demo.doctor, demo.pharmacy, demo.lab, or demo.patient at raphcare.com. Password is on the API as Demo:Password (default RaphCareDemo!2026). Does not wipe other hospitals. |
+| Patient photos and voice files | Done | Photos from the phone and voice sign-up audio are stored privately. They stay after the website restarts. |
 | Staff mental-health assessment store | Partial | List exists; deeper storage later |
 | Reporting and big dashboards | Partial | Grows with product needs |
 
-**Bottom line (83%):** core APIs, hooks, and Staging demo accounts are in; deeper mental-health storage and reporting grow with product needs.
+**Bottom line (86%):** core APIs, hooks, Staging demo accounts, and private file storage are in; deeper mental-health storage and reporting grow with product needs.
 
 ---
 
@@ -198,7 +199,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 | 1. Hospital admin (outpatient) | 100% | Ready on web |
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 61% | Chat assistant uses cloud AI; iPhone video, push, wearables still catch-up |
-| 4. Other staff and system | 83% | Demo accounts on Staging |
+| 4. Other staff and system | 86% | Demo accounts on Staging; private photos and voice files |
 | 5. Hospital plan extras | 100% | Stay extras closed for this board |
 | 6. Next ideas (AI and ops) | n/a | Later list; not in overall % |
 | **Overall** | **82%** | Sections 1-5. Excludes "not for mobile, clinical, or BLE" and section 6 later rows |

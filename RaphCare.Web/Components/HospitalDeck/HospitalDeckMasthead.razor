@@ -1,6 +1,15 @@
 <header class="hospital-deck-masthead">
     <HospitalDeckBackLink Href="@BackHref" Text="@BackText" />
-    <div class="hospital-deck-monogram" aria-hidden="true">@Monogram</div>
+    @if (!string.IsNullOrEmpty(PhotoSrc))
+    {
+        <div class="hospital-deck-monogram has-photo">
+            <img src="@PhotoSrc" alt="@PhotoAlt" />
+        </div>
+    }
+    else
+    {
+        <div class="hospital-deck-monogram" aria-hidden="true">@Monogram</div>
+    }
     <div class="hospital-deck-identity">
         <div class="hospital-deck-kicker">
             @if (!string.IsNullOrEmpty(Eyebrow))
@@ -40,6 +49,8 @@
     [Parameter] public string BackHref { get; set; } = "/admin/hospitals";
     [Parameter] public string BackText { get; set; } = string.Empty;
     [Parameter] public string Monogram { get; set; } = "?";
+    [Parameter] public string? PhotoSrc { get; set; }
+    [Parameter] public string PhotoAlt { get; set; } = string.Empty;
     [Parameter] public string? Eyebrow { get; set; }
     [Parameter] public string Title { get; set; } = string.Empty;
     [Parameter] public string? Lead { get; set; }

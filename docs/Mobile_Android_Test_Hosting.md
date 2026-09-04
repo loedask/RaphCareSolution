@@ -10,6 +10,7 @@ Runbook to put the **patient Android app** and **hosted API / admin Web** online
 | API | App Service `raphcare-api` |
 | Admin Web (Blazor WASM) | Linux App Service `raphcare` via **`RaphCare.Web.Host`** |
 | Database | Azure SQL database |
+| Private files | Azure Blob (`patient-photos`, `voice-recordings`) |
 | Sign-in | Entra app registrations in your tenant (optional for phone OTP) |
 | Ops mailbox | `raphcare@yindula.com` |
 | Store mailbox | `apps@yindula.com` (Play Console / later App Store) |
@@ -26,6 +27,7 @@ Default resource group: **`raphcare_group`** (or `rg-raphcare-test` from scripts
 | [`scripts/Set-RaphCareAzureTestAppSettings.ps1`](../scripts/Set-RaphCareAzureTestAppSettings.ps1) | Push connection string, Entra, JWT, CORS, SMTP into App Service |
 | [`scripts/Update-RaphCareAzureSqlMigrations.ps1`](../scripts/Update-RaphCareAzureSqlMigrations.ps1) | Apply all EF contexts to Azure SQL |
 | [`scripts/Publish-RaphCareApiToAzure.ps1`](../scripts/Publish-RaphCareApiToAzure.ps1) | `dotnet publish` + zip deploy API |
+| [`scripts/New-RaphCareAzureBlobStorage.ps1`](../scripts/New-RaphCareAzureBlobStorage.ps1) | Private Blob account for photos and voice files; sets `AzureStorage` on `raphcare-api` |
 | [`scripts/Publish-RaphCareWebToAzure.ps1`](../scripts/Publish-RaphCareWebToAzure.ps1) | Publish **`RaphCare.Web.Host`** (linux-x64) to App Service `raphcare` |
 | [`scripts/New-RaphCareAndroidUploadKeystore.ps1`](../scripts/New-RaphCareAndroidUploadKeystore.ps1) | Create upload keystore (gitignored path) |
 | [`scripts/Publish-RaphCareAndroidPlay.ps1`](../scripts/Publish-RaphCareAndroidPlay.ps1) | Signed Release AAB for Play Internal |

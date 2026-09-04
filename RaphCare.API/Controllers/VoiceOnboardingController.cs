@@ -49,7 +49,8 @@ public class VoiceOnboardingController(IMediator mediator) : ControllerBase
             AudioStream = stream,
             Language = language.Trim(),
             PhoneNumber = phoneNumber.Trim(),
-            ClinicId = clinicId
+            ClinicId = clinicId,
+            ContentType = string.IsNullOrWhiteSpace(audioFile.ContentType) ? "audio/wav" : audioFile.ContentType
         };
 
         var result = await mediator.Send(command, cancellationToken);

@@ -32,6 +32,13 @@
 - **Application:** `ISpeechToTextService` (TranscribeAsync returns TranscriptionResult: FullText, ExtractedFields). Used by CreatePatientFromVoiceCommand for voice onboarding.
 - **Infrastructure:** AzureSpeechToTextService implements ISpeechToTextService; placeholder implementation (returns sample text and extracted fields). No Azure Speech SDK or other STT packages wired in the solution.
 
+## File storage (photos and voice)
+
+- **Application:** `IObjectStorage`, `IPatientProfilePhotoStorage`, `IVoiceRecordingStorage`.
+- **Infrastructure:** Azure Blob when `AzureStorage:ConnectionString` is set (`AzureBlobObjectStorage`). Development without that setting uses `App_Data/object-store` (`LocalFileObjectStorage`). Staging and Production require the connection string.
+- **API:** patient photo at `api/patient/profile/photo`. Staff photo at `GET api/admin/clinics/{id}/patients/{patientId}/photo` after clinic membership and patient-in-clinic checks. Voice onboarding stores a private key on `VoiceRecording.StorageUrl`.
+- **Setup:** `docs/17_Azure_Blob_Storage.md` and `scripts/New-RaphCareAzureBlobStorage.ps1`.
+
 ## Authentication (External and API-Issued)
 
 - **Microsoft Entra ID:** JWT Bearer tokens issued by Entra are validated by the API for staff. Configuration via EntraOptions (Authority, Audience, etc.). EntraTokenValidator, EntraUserProvisioningService, EntraRoleMapper in RaphCare.Identity. Packages: Microsoft.AspNetCore.Authentication.JwtBearer, Microsoft.IdentityModel.Protocols.OpenIdConnect, Microsoft.IdentityModel.Tokens, System.IdentityModel.Tokens.Jwt.
