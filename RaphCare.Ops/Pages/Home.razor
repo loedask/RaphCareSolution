@@ -1,0 +1,83 @@
+﻿@page "/"
+
+<PageTitle>@AppResources.T("Home_PageTitle")</PageTitle>
+
+<section class="admin-page admin-brand-page">
+    <AdminPageHeader CssClass="brand-hero"
+                     Eyebrow="@AppResources.T("OpsLayout_NavSection")"
+                     Title="@AppResources.T("Home_Title")"
+                     Lead="@AppResources.T("Home_Lead")">
+        <a class="btn btn-primary" href="/fleet">@AppResources.T("Fleet_Nav")</a>
+    </AdminPageHeader>
+
+    @if (_loading)
+    {
+        <p class="admin-loading-copy">@AppResources.T("Common_Loading")</p>
+    }
+    else if (_authRequired)
+    {
+        <AdminEmptyState CssClass="admin-guidance-state"
+                         Title="@AppResources.T("Home_AuthTitle")"
+                         Lead="@AppResources.T("Home_AuthLead")">
+            <div class="admin-guidance-actions">
+                <a class="btn btn-primary" href="@_signInReturnUrl">@AppResources.T("Common_SignInAgain")</a>
+            </div>
+        </AdminEmptyState>
+    }
+    else if (!string.IsNullOrEmpty(_error))
+    {
+        <AdminAlert Message="@_error" />
+    }
+    else if (_stats is not null)
+    {
+        <AdminPageCard Title="@AppResources.T("Home_StatsTitle")" Lead="@AppResources.T("Home_StatsLead")">
+            <div class="admin-page-card-body">
+                <AdminStatGrid>
+                    <AdminStatCard Label="@AppResources.T("Common_Hospitals")" Value="@_stats.HospitalCount" Accent="accent" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatPatients")" Value="@_stats.PatientCount" Accent="success" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatDoctors")" Value="@_stats.DoctorCount" Accent="violet" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatStaff")" Value="@_stats.StaffCount" Accent="accent" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatFacilities")" Value="@_stats.FacilityCount" Accent="success" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatDevices")" Value="@_stats.DeviceCount" Accent="violet" Hint="@AppResources.Format("Home_StatDevicesHint", _stats.UnassignedDeviceCount, _stats.AssignedDeviceCount)" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatAppointmentsToday")" Value="@_stats.AppointmentsTodayCount" Accent="accent" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatAdmissions")" Value="@_stats.ActiveAdmissionsCount" Accent="success" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatPendingInvites")" Value="@_stats.PendingStaffInvitationCount" Accent="violet" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatEmergencies")" Value="@_stats.EmergencyEventsLast72HoursCount" Accent="accent" Hint="@AppResources.T("Home_StatEmergenciesHint")" />
+                </AdminStatGrid>
+            </div>
+        </AdminPageCard>
+    }
+</section>
+
+@code {
+    private const string HomePath = "/";
+
+    [Inject] private IPlatformOpsStatsService StatsService { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _authRequired;
+    private string? _error;
+    private PlatformOpsStats? _stats;
+
+    private string _signInReturnUrl =>
+        $"/signin?returnUrl={Uri.EscapeDataString(HomePath)}";
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        _error = null;
+        var response = await StatsService.GetStatsAsync();
+        _loading = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Home_CouldNotLoadStats");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        _stats = response.Data;
+    }
+}

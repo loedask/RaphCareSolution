@@ -1,5 +1,5 @@
 # Docs: https://github.com/Azure/webapps-deploy
-# Deploys RaphCare.Web.Host (serves Blazor WASM) to Azure App Service raphcare on push to develop.
+# Deploys RaphCare.Portal.Host (serves Blazor WASM) to Azure App Service raphcare on push to develop.
 
 name: Build and deploy Web - raphcare
 
@@ -8,8 +8,8 @@ on:
     branches:
       - develop
     paths:
-      - 'RaphCare.Web/**'
-      - 'RaphCare.Web.Host/**'
+      - 'RaphCare.Portal/**'
+      - 'RaphCare.Portal.Host/**'
       - 'RaphCare.Client/**'
       - 'RaphCare.Domain/**'
       - 'Directory.Build.props'
@@ -42,13 +42,13 @@ jobs:
             api_base="https://raphcare-api-eydjcnefhae2dpa2.southafricanorth-01.azurewebsites.net"
           fi
           api_base="${api_base%/}"
-          printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Web/wwwroot/appsettings.json
-          printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Web/wwwroot/appsettings.Staging.json
-          cat RaphCare.Web/wwwroot/appsettings.json
+          printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Portal/wwwroot/appsettings.json
+          printf '%s\n' "{ \"ApiBaseUrl\": \"$api_base\" }" > RaphCare.Portal/wwwroot/appsettings.Staging.json
+          cat RaphCare.Portal/wwwroot/appsettings.json
 
       - name: Publish Web Host (linux-x64)
         run: >
-          dotnet publish RaphCare.Web.Host/RaphCare.Web.Host.csproj
+          dotnet publish RaphCare.Portal.Host/RaphCare.Portal.Host.csproj
           -c Release
           -r linux-x64
           --self-contained false

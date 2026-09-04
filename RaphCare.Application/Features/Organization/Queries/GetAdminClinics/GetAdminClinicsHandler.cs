@@ -10,7 +10,8 @@ namespace RaphCare.Application.Features.Organization.Queries.GetAdminClinics;
 public sealed class GetAdminClinicsHandler(
     IRepository<Clinic> clinicRepository,
     ICurrentUserService currentUserService,
-    IClinicStaffMembershipService clinicStaffMembershipService)
+    IClinicStaffMembershipService clinicStaffMembershipService,
+    IUserRoleAssignmentService roleAssignmentService)
     : IRequestHandler<GetAdminClinicsQuery, PagedResult<ClinicListItemDto>>
 {
     public async Task<PagedResult<ClinicListItemDto>> Handle(
@@ -19,38 +20,45 @@ public sealed class GetAdminClinicsHandler(
     {
         if (currentUserService.CurrentUserId is not { } userId)
         {
-            return new PagedResult<ClinicListItemDto>
-            {
-                Items = [],
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                TotalCount = 0
-            };
+            return EmptyPage(request);
         }
 
-        var clinicIds = await clinicStaffMembershipService
+        var isPlatformAdmin = await AdminClinicAuthorization
+            .IsPlatformAdministratorAsync(currentUserService, roleAssignmentService, cancellationToken)
+            .ConfigureAwait(false);
+
+        var membershipClinicIds = await clinicStaffMembershipService
             .GetClinicIdsForUserAsync(userId, cancellationToken)
             .ConfigureAwait(false);
 
-        if (clinicIds.Count == 0)
+        // Platform admins with no clinic membership (Ops) see every active hospital for fleet work.
+        // Hospital admins who also have the Administrator role still only see membership hospitals.
+        PagedResult<Clinic> paged;
+        if (isPlatformAdmin && membershipClinicIds.Count == 0)
         {
-            return new PagedResult<ClinicListItemDto>
-            {
-                Items = [],
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                TotalCount = 0
-            };
+            paged = await clinicRepository.SearchAsync(
+                queryShaper: q => q
+                    .Include(c => c.Facilities)
+                    .Where(c => c.IsActive)
+                    .OrderByDescending(c => c.CreatedAt),
+                pageNumber: request.PageNumber,
+                pageSize: request.PageSize,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
         }
+        else
+        {
+            if (membershipClinicIds.Count == 0)
+                return EmptyPage(request);
 
-        var paged = await clinicRepository.SearchAsync(
-            queryShaper: q => q
-                .Include(c => c.Facilities)
-                .Where(c => clinicIds.Contains(c.Id))
-                .OrderByDescending(c => c.CreatedAt),
-            pageNumber: request.PageNumber,
-            pageSize: request.PageSize,
-            cancellationToken: cancellationToken).ConfigureAwait(false);
+            paged = await clinicRepository.SearchAsync(
+                queryShaper: q => q
+                    .Include(c => c.Facilities)
+                    .Where(c => membershipClinicIds.Contains(c.Id))
+                    .OrderByDescending(c => c.CreatedAt),
+                pageNumber: request.PageNumber,
+                pageSize: request.PageSize,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
 
         var items = paged.Items
             .Select(c => new ClinicListItemDto
@@ -75,4 +83,13 @@ public sealed class GetAdminClinicsHandler(
             TotalCount = paged.TotalCount
         };
     }
+
+    private static PagedResult<ClinicListItemDto> EmptyPage(GetAdminClinicsQuery request) =>
+        new()
+        {
+            Items = [],
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalCount = 0
+        };
 }

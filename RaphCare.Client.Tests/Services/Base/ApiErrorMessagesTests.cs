@@ -14,8 +14,7 @@ public sealed class ApiErrorMessagesTests
             HttpStatusCode.BadRequest);
 
         Assert.DoesNotContain("X-Clinic-Id", message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Profile", message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("clinic", message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hospital", message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -26,7 +25,7 @@ public sealed class ApiErrorMessagesTests
             HttpStatusCode.BadRequest);
 
         Assert.DoesNotContain("valid Guid", message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("clinic", message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hospital", message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

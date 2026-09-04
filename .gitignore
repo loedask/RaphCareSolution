@@ -1,3 +1,4 @@
+# Visual Studio / .NET
 .vs/
 concepts/
 _agoraProbe/AgoraProbe/bin/
@@ -30,3 +31,10 @@ artifacts/
 *.keystore
 *.jks
 raphcare-upload.keystore
+
+# md-to-pdf export copies of the logo (scripts copy from docs/*/brand/)
+docs/partner-updates/sources/brand/
+docs/partner-updates/sources/archives/brand/
+docs/mobile-updates/sources/brand/
+docs/mobile-updates/sources/archives/brand/
+docs/**/*.__export__.*

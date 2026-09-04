@@ -1,8 +1,3 @@
----
-description: RaphCare solution — all projects, layer boundaries, and dependency direction
-alwaysApply: true
----
-
 # RaphCare — solution layers (easy map)
 
 Use this as the **north star** for where code belongs. Deeper rules: **`.cursor/rules/raphcare-api.mdc`**, **`.cursor/rules/raphcare-application.mdc`**, **`.cursor/rules/raphcare-client.mdc`**, **`.cursor/rules/raphcare-comments.mdc`** (comments / XML docs), **`.cursor/rules/raphcare-identity.mdc`**, **`.cursor/rules/raphcare-infrastructure.mdc`**, **`.cursor/rules/raphcare-persistence.mdc`**, **`.cursor/rules/raphcare-mobile.mdc`**, **`.cursor/rules/raphcare-mobile-concept-template.mdc`**, **`docs/Mobile_Concept_Port.md`** (React concept — design parity for MAUI), **docs/02_Solution_Structure.md**, **docs/07_Coding_Conventions.md**, **docs/09_Mobile_App_Guide.md**.
@@ -13,15 +8,16 @@ For **new or changed HTTP contracts**, follow this sequence:
 
 1. **Backend first** — **API**, **Application**, **Persistence**, **Identity**, **Infrastructure** as needed (controllers, MediatR, validators, EF, etc.). Server-side OpenAPI/Swagger (**`SwaggerExtensions`**, **`ProducesResponseType`**, action names) remains useful for docs and external consumers.
 2. **RaphCare.Client** — Implement or extend **`Contracts/Interfaces`**, **`Services/`** (typically **`BaseHttpService`** + named **`HttpClient`**), **`Models/`**, and **`ServiceRegistration`**. Wire DTOs live in **Client** (private nested types or **`Models/Api/`**)—do not reference **Application** DTOs from **Client**.
-3. **RaphCare.Mobile** and **Web** — Consume **Client** only; no duplicate HTTP contracts in Mobile.
+3. **RaphCare.Mobile**, **Portal**, and **Ops** — Consume **Client** only; no duplicate HTTP contracts in Mobile.
 
 ## Dependency direction (who may reference whom)
 
 ```
 Domain  ←  Application  ←  Infrastructure, Persistence, Identity
                 ↑
-           API, Web, Mobile  (hosts; orchestrate use cases)
-Client  ←  referenced by Web / Mobile (HTTP + DTOs only; not a vertical “layer” above Domain)
+           API, Portal, Ops, Mobile  (hosts; orchestrate use cases)
+Client  ←  referenced by Portal / Ops / Mobile (HTTP + DTOs only; not a vertical “layer” above Domain)
+Ui      ←  shared Blazor chrome (RCL) referenced by Portal and Ops
 ```
 
 - **Domain** sits at the bottom: **no** references to Application, Infrastructure, Persistence, Identity, or API.
@@ -30,8 +26,10 @@ Client  ←  referenced by Web / Mobile (HTTP + DTOs only; not a vertical “lay
 - **Infrastructure** implements **Application** interfaces (e.g. AI, OTP, speech, interceptors). References **Application** (and **Domain** when needed). **`IApplicationUserStore`** is **not** here—it is in **Persistence**.
 - **Identity** — Entra JWT validation, provisioning, role mapping. References **Application + Domain**. Does **not** reference **Persistence** (store implementation lives in Persistence).
 - **API** — Controllers, middleware, Swagger, startup. References **Application, Infrastructure, Persistence, Identity**. **No business rules** in controllers—**`IMediator`** only.
-- **Client** — Shared HTTP client layer (**`I*Service`** facades, **`BaseHttpService`**, **`IAccessTokenProvider`** hook for Bearer). Used by **Web** and **Mobile**; do **not** duplicate API contracts inside Mobile beyond UI state.
-- **Web** — Blazor WASM UI (`RaphCare.Web`); Linux App Service hosting uses thin **`RaphCare.Web.Host`** (SPA fallback). Uses **Client**.
+- **Client** — Shared HTTP client layer (**`I*Service`** facades, **`BaseHttpService`**, **`IAccessTokenProvider`** hook for Bearer). Used by **Portal**, **Ops**, and **Mobile**; do **not** duplicate API contracts inside Mobile beyond UI state.
+- **Ui** — Shared Razor Class Library for admin chrome/CSS used by **Portal** and **Ops**.
+- **Portal** — Blazor WASM hospital/clinic admin (and related web surfaces); Linux App Service hosting uses thin **`RaphCare.Portal.Host`**. Uses **Client** + **Ui**.
+- **Ops** — Blazor WASM platform operations (fleet inventory first); **`RaphCare.Ops.Host`**. Separate origin and token storage from Portal. Uses **Client** + **Ui**.
 - **Mobile** — MAUI app; **Kernel** (flags, `AuthResult`) + **Client** for API; see **raphcare-mobile** rule and **docs/09_Mobile_App_Guide.md**.
 
 ## One-line responsibilities
@@ -45,7 +43,9 @@ Client  ←  referenced by Web / Mobile (HTTP + DTOs only; not a vertical “lay
 | **Identity** | Entra/JWT options, token validation, provisioning pipeline | EF mappings for clinical data |
 | **API** | REST surface, middleware, DI composition entry for the host | MediatR handler bodies; domain rules |
 | **Client** | Hand-written **`I*Service`** + **`HttpClient`**, **`AddRaphCareClient`** | Domain entities; app use cases |
-| **Web** | Blazor UI (`RaphCare.Web`); Linux host (`RaphCare.Web.Host`) | Duplicating Application handlers |
+| **Ui** | Shared admin Blazor components and admin CSS | Feature pages, auth token storage |
+| **Portal** | Hospital/clinic Blazor UI (`RaphCare.Portal`); Linux host (`RaphCare.Portal.Host`) | Platform fleet stock UI (that is Ops) |
+| **Ops** | Platform ops Blazor UI (`RaphCare.Ops`); host (`RaphCare.Ops.Host`) | Day-to-day hospital workspace |
 | **Mobile** | Shell, pages, VMs, platform auth bridge to **`IAccessTokenProvider`** | Hand-rolled duplicate of **Client** API types |
 | **Mobile.Kernel** | Small **net10.0** types shared with tests (flags, auth result) | MAUI or HTTP |
 
@@ -58,6 +58,6 @@ Roughly: **AddApplication** → **AddInfrastructure** → **AddPersistence** →
 1. Is it a **business rule** about a domain concept? → **Domain**.  
 2. Is it a **use case** (command/query) or **port** (interface)? → **Application**.  
 3. Is it **EF/SQL/migrations**? → **Persistence**.  
-4. Is it **external system / cross-cutting tech**? → **Infrastructure** (or **Identity** for auth).  
+4. Is it **external system / cross-cutting tech** → **Infrastructure** (or **Identity** for auth).  
 5. Is it **HTTP entry**? → **API**.  
-6. Is it **calling the API from UI**? → **Client** + host (**Web** / **Mobile**).
+6. Is it **calling the API from UI**? → **Client** + host (**Portal** / **Ops** / **Mobile**).
