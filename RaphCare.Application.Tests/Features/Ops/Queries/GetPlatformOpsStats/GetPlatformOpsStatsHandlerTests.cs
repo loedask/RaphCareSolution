@@ -12,11 +12,12 @@ namespace RaphCare.Application.Tests.Features.Ops.Queries.GetPlatformOpsStats;
 
 /// <summary>
 /// Platform Ops home needs real totals. Non-admins must not receive the payload.
+/// Counts must not overlap: production repositories share a scoped DbContext.
 /// </summary>
 public sealed class GetPlatformOpsStatsHandlerTests
 {
     [Fact]
-    public async Task NonAdministrator_ReturnsNull()
+    public async Task NonAdministratorReturnsNull()
     {
         var userId = Guid.Parse("aaaaaaaa-1111-1111-1111-111111111101");
         var handler = CreateHandler(userId, roles: [RaphCareRoles.Doctor], clinicCount: 3);
@@ -27,7 +28,7 @@ public sealed class GetPlatformOpsStatsHandlerTests
     }
 
     [Fact]
-    public async Task PlatformAdministrator_ReturnsHospitalAndPatientCounts()
+    public async Task PlatformAdministratorReturnsHospitalAndPatientCounts()
     {
         var userId = Guid.Parse("aaaaaaaa-1111-1111-1111-111111111102");
         var handler = CreateHandler(
@@ -50,6 +51,28 @@ public sealed class GetPlatformOpsStatsHandlerTests
         Assert.Equal(3, result.AssignedDeviceCount);
     }
 
+    [Fact]
+    public async Task PlatformAdministratorDoesNotQueryRepositoriesConcurrently()
+    {
+        var userId = Guid.Parse("aaaaaaaa-1111-1111-1111-111111111103");
+        var handler = CreateHandler(
+            userId,
+            roles: [RaphCareRoles.Administrator],
+            clinicCount: 1,
+            patientCount: 1,
+            doctorCount: 1,
+            deviceCount: 2,
+            unassignedDeviceCount: 1);
+
+        var result = await handler.Handle(new GetPlatformOpsStatsQuery(), CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result!.HospitalCount);
+        Assert.Equal(2, result.DeviceCount);
+        Assert.Equal(1, result.UnassignedDeviceCount);
+        Assert.Equal(1, result.AssignedDeviceCount);
+    }
+
     private static GetPlatformOpsStatsHandler CreateHandler(
         Guid userId,
         IReadOnlyList<string> roles,
@@ -60,19 +83,48 @@ public sealed class GetPlatformOpsStatsHandlerTests
         int unassignedDeviceCount = 0)
     {
         var assigned = Math.Max(0, deviceCount - unassignedDeviceCount);
+        var gate = new ExclusiveSearchGate();
         return new GetPlatformOpsStatsHandler(
             new FakeCurrentUser(userId),
             new FakeRoles(userId, roles),
-            new CountingRepository<Clinic>(clinicCount),
-            new CountingRepository<Patient>(patientCount),
-            new CountingRepository<Provider>(doctorCount),
-            new CountingRepository<ClinicStaffMembership>(0),
-            new CountingRepository<Facility>(0),
-            new DeviceCountingRepository(deviceCount, unassignedDeviceCount, assigned),
-            new CountingRepository<Appointment>(0),
-            new CountingRepository<InpatientAdmission>(0),
-            new CountingRepository<ClinicStaffInvitation>(0),
-            new CountingRepository<DeviceEmergencyEvent>(0));
+            new CountingRepository<Clinic>(clinicCount, gate),
+            new CountingRepository<Patient>(patientCount, gate),
+            new CountingRepository<Provider>(doctorCount, gate),
+            new CountingRepository<ClinicStaffMembership>(0, gate),
+            new CountingRepository<Facility>(0, gate),
+            new DeviceCountingRepository(deviceCount, unassignedDeviceCount, assigned, gate),
+            new CountingRepository<Appointment>(0, gate),
+            new CountingRepository<InpatientAdmission>(0, gate),
+            new CountingRepository<ClinicStaffInvitation>(0, gate),
+            new CountingRepository<DeviceEmergencyEvent>(0, gate));
+    }
+}
+
+/// <summary>
+/// Mimics EF Core: a second SearchAsync on the same request must not start until the first finishes.
+/// </summary>
+file sealed class ExclusiveSearchGate
+{
+    private int _inFlight;
+
+    public async Task<T> EnterAsync<T>(Func<T> work)
+    {
+        if (Interlocked.Increment(ref _inFlight) != 1)
+        {
+            Interlocked.Decrement(ref _inFlight);
+            throw new InvalidOperationException(
+                "A second operation was started on this context instance before a previous operation completed.");
+        }
+
+        try
+        {
+            await Task.Yield();
+            return work();
+        }
+        finally
+        {
+            Interlocked.Decrement(ref _inFlight);
+        }
     }
 }
 
@@ -102,7 +154,7 @@ file sealed class FakeRoles(Guid userId, IReadOnlyList<string> roles) : IUserRol
         Task.CompletedTask;
 }
 
-file sealed class CountingRepository<T>(int totalCount) : IRepository<T>
+file sealed class CountingRepository<T>(int totalCount, ExclusiveSearchGate gate) : IRepository<T>
     where T : class
 {
     public Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
@@ -117,7 +169,7 @@ file sealed class CountingRepository<T>(int totalCount) : IRepository<T>
         int pageSize,
         bool applyDefaultIdOrdering = true,
         CancellationToken cancellationToken = default) =>
-        Task.FromResult(new PagedResult<T>
+        gate.EnterAsync(() => new PagedResult<T>
         {
             Items = [],
             TotalCount = totalCount,
@@ -133,7 +185,8 @@ file sealed class CountingRepository<T>(int totalCount) : IRepository<T>
 /// <summary>
 /// Returns different totals depending on whether the shaper filtered to assigned/unassigned devices.
 /// </summary>
-file sealed class DeviceCountingRepository(int total, int unassigned, int assigned) : IRepository<Device>
+file sealed class DeviceCountingRepository(int total, int unassigned, int assigned, ExclusiveSearchGate gate)
+    : IRepository<Device>
 {
     public Task<Device?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         Task.FromResult<Device?>(null);
@@ -146,32 +199,33 @@ file sealed class DeviceCountingRepository(int total, int unassigned, int assign
         int pageNumber,
         int pageSize,
         bool applyDefaultIdOrdering = true,
-        CancellationToken cancellationToken = default)
-    {
-        var probe = new[]
+        CancellationToken cancellationToken = default) =>
+        gate.EnterAsync(() =>
         {
-            new Device { IsAssigned = false },
-            new Device { IsAssigned = true }
-        }.AsQueryable();
+            var probe = new[]
+            {
+                new Device { IsAssigned = false },
+                new Device { IsAssigned = true }
+            }.AsQueryable();
 
-        var shaped = queryShaper?.Invoke(probe) ?? probe;
-        var list = shaped.ToList();
-        var count = list.Count switch
-        {
-            0 => 0,
-            1 when list[0].IsAssigned => assigned,
-            1 when !list[0].IsAssigned => unassigned,
-            _ => total
-        };
+            var shaped = queryShaper?.Invoke(probe) ?? probe;
+            var list = shaped.ToList();
+            var count = list.Count switch
+            {
+                0 => 0,
+                1 when list[0].IsAssigned => assigned,
+                1 when !list[0].IsAssigned => unassigned,
+                _ => total
+            };
 
-        return Task.FromResult(new PagedResult<Device>
-        {
-            Items = [],
-            TotalCount = count,
-            PageNumber = pageNumber,
-            PageSize = pageSize
+            return new PagedResult<Device>
+            {
+                Items = [],
+                TotalCount = count,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         });
-    }
 
     public Task AddAsync(Device entity, CancellationToken cancellationToken = default) => Task.CompletedTask;
     public Task UpdateAsync(Device entity, CancellationToken cancellationToken = default) => Task.CompletedTask;

@@ -37,65 +37,58 @@ public sealed class GetPlatformOpsStatsHandler(
         var tomorrowStart = todayStart.AddDays(1);
         var emergencyFrom = DateTime.UtcNow.AddHours(-72);
 
-        var hospitalsTask = CountAsync(clinicRepository, q => q.Where(c => c.IsActive), cancellationToken);
-        var patientsTask = CountAsync(patientRepository, q => q.Where(p => p.IsActive), cancellationToken);
-        var doctorsTask = CountAsync(
-            providerRepository,
-            q => q.Where(p => p.IsActive && !p.IsDeleted),
-            cancellationToken);
-        var staffTask = CountAsync(
-            staffMembershipRepository,
-            q => q.Where(m => m.IsActive),
-            cancellationToken);
-        var facilitiesTask = CountAsync(facilityRepository, q => q, cancellationToken);
-        var devicesTask = CountAsync(deviceRepository, q => q, cancellationToken);
-        var unassignedTask = CountAsync(deviceRepository, q => q.Where(d => !d.IsAssigned), cancellationToken);
-        var assignedTask = CountAsync(deviceRepository, q => q.Where(d => d.IsAssigned), cancellationToken);
-        var appointmentsTask = CountAsync(
-            appointmentRepository,
-            q => q.Where(a => a.ScheduledStart >= todayStart && a.ScheduledStart < tomorrowStart),
-            cancellationToken);
-        var admissionsTask = CountAsync(
-            admissionRepository,
-            q => q.Where(a => a.DischargedAt == null),
-            cancellationToken);
-        var invitationsTask = CountAsync(
-            invitationRepository,
-            q => q.Where(i => i.AcceptedAt == null && !i.IsCancelled),
-            cancellationToken);
-        var emergenciesTask = CountAsync(
-            emergencyRepository,
-            q => q.Where(e => e.OccurredAtUtc >= emergencyFrom),
-            cancellationToken);
-
-        await Task.WhenAll(
-            hospitalsTask,
-            patientsTask,
-            doctorsTask,
-            staffTask,
-            facilitiesTask,
-            devicesTask,
-            unassignedTask,
-            assignedTask,
-            appointmentsTask,
-            admissionsTask,
-            invitationsTask,
-            emergenciesTask).ConfigureAwait(false);
-
+        // Counts must run one after another. Several repositories share a scoped DbContext,
+        // and EF Core rejects overlapping operations on the same instance.
         return new PlatformOpsStatsDto
         {
-            HospitalCount = hospitalsTask.Result,
-            PatientCount = patientsTask.Result,
-            DoctorCount = doctorsTask.Result,
-            StaffCount = staffTask.Result,
-            FacilityCount = facilitiesTask.Result,
-            DeviceCount = devicesTask.Result,
-            UnassignedDeviceCount = unassignedTask.Result,
-            AssignedDeviceCount = assignedTask.Result,
-            AppointmentsTodayCount = appointmentsTask.Result,
-            ActiveAdmissionsCount = admissionsTask.Result,
-            PendingStaffInvitationCount = invitationsTask.Result,
-            EmergencyEventsLast72HoursCount = emergenciesTask.Result
+            HospitalCount = await CountAsync(clinicRepository, q => q.Where(c => c.IsActive), cancellationToken)
+                .ConfigureAwait(false),
+            PatientCount = await CountAsync(patientRepository, q => q.Where(p => p.IsActive), cancellationToken)
+                .ConfigureAwait(false),
+            DoctorCount = await CountAsync(
+                    providerRepository,
+                    q => q.Where(p => p.IsActive && !p.IsDeleted),
+                    cancellationToken)
+                .ConfigureAwait(false),
+            StaffCount = await CountAsync(
+                    staffMembershipRepository,
+                    q => q.Where(m => m.IsActive),
+                    cancellationToken)
+                .ConfigureAwait(false),
+            FacilityCount = await CountAsync(facilityRepository, q => q, cancellationToken)
+                .ConfigureAwait(false),
+            DeviceCount = await CountAsync(deviceRepository, q => q, cancellationToken)
+                .ConfigureAwait(false),
+            UnassignedDeviceCount = await CountAsync(
+                    deviceRepository,
+                    q => q.Where(d => !d.IsAssigned),
+                    cancellationToken)
+                .ConfigureAwait(false),
+            AssignedDeviceCount = await CountAsync(
+                    deviceRepository,
+                    q => q.Where(d => d.IsAssigned),
+                    cancellationToken)
+                .ConfigureAwait(false),
+            AppointmentsTodayCount = await CountAsync(
+                    appointmentRepository,
+                    q => q.Where(a => a.ScheduledStart >= todayStart && a.ScheduledStart < tomorrowStart),
+                    cancellationToken)
+                .ConfigureAwait(false),
+            ActiveAdmissionsCount = await CountAsync(
+                    admissionRepository,
+                    q => q.Where(a => a.DischargedAt == null),
+                    cancellationToken)
+                .ConfigureAwait(false),
+            PendingStaffInvitationCount = await CountAsync(
+                    invitationRepository,
+                    q => q.Where(i => i.AcceptedAt == null && !i.IsCancelled),
+                    cancellationToken)
+                .ConfigureAwait(false),
+            EmergencyEventsLast72HoursCount = await CountAsync(
+                    emergencyRepository,
+                    q => q.Where(e => e.OccurredAtUtc >= emergencyFrom),
+                    cancellationToken)
+                .ConfigureAwait(false)
         };
     }
 
