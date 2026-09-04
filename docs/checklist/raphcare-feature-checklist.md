@@ -337,7 +337,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 ---
 
-## Cross-cutting - 88%
+## Cross-cutting - 89%
 
 - [x] Solution layers: Domain -> Application -> Persistence / Infrastructure / Identity -> API; Client -> Web / Mobile
 - [x] `RaphCare.Client` + `AddRaphCareClient` for Web and Mobile
@@ -346,11 +346,12 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 - [x] Inpatient documented in companion docs (Step 2 docs rows)
 - [x] Web UI localization (en / fr / ln / sw): `AppResources` + language picker on admin layout
 - [x] Staging demo pack: email/password accounts on `RaphCare Demo Clinic` (idempotent; does not wipe other hospitals)
+- [x] Private Azure Blob (or local Development folder) for patient profile photos and voice recordings
 - [ ] E2E smoke script covering admin inpatient + one patient mobile vertical against a running API (plan: [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md))
 
 ### Cross-cutting status
 
-**88%.** Platform wiring includes Web UI languages and a Staging demo pack. Missing an automated E2E smoke against a running API. Plan for Web and Mobile smoke is documented; automation not started.
+**89%.** Platform wiring includes Web UI languages, a Staging demo pack, and private file storage for photos and voice recordings. Missing an automated E2E smoke against a running API. Plan for Web and Mobile smoke is documented; automation not started.
 
 ---
 
@@ -364,7 +365,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
 | Step 5 Hospital plan value | 100% | Stay extras closed for this step |
 | Step 6 Next wave (AI / ops) | n/a | Roadmap; optional/later excluded from overall |
-| Cross-cutting | 88% | Demo pack on Staging; E2E smoke plan in, script open |
+| Cross-cutting | 89% | Demo pack on Staging; private blob files; E2E smoke plan in, script open |
 | **Overall (scored items)** | **79%** | Steps 1-5 + Cross-cutting; out of scope / open optional excluded |
 | **Without wearable Phase 2+ metrics** | **82%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
@@ -400,5 +401,6 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 | [`../10_Agora_Twilio_Setup.md`](../10_Agora_Twilio_Setup.md) | Telehealth RTC setup |
 | [`../16_Azure_OpenAI_Setup.md`](../16_Azure_OpenAI_Setup.md) | Patient assistant and AI discharge drafts |
 | [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md) | Staff phone use of web admin: responsive UI, then thin install; not a full PWA |
+| [`../17_Azure_Blob_Storage.md`](../17_Azure_Blob_Storage.md) | Private photos and voice files |
 | [`../02_Solution_Structure.md`](../02_Solution_Structure.md) | Project layout |
 | [`../06_Key_Workflows.md`](../06_Key_Workflows.md) | Workflow narratives (update when inpatient ships docs) |

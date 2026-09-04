@@ -25,6 +25,8 @@
         <HospitalDeckMasthead BackHref="@BackUrl"
                               BackText="@AppResources.T("Common_BackToHospital")"
                               Monogram="@HospitalDeckInitials.FromName($"{_patient.FirstName} {_patient.LastName}")"
+                              PhotoSrc="@_photoDataUrl"
+                              PhotoAlt="@($"{_patient.FirstName} {_patient.LastName}")"
                               Eyebrow="@AppResources.T("PatientDetail_ChartEyebrow")"
                               Title="@($"{_patient.FirstName} {_patient.LastName}")"
                               Lead="@AppResources.Format("Common_PatientChartLead", ClinicDisplayName, TimeZoneLabel)"
@@ -881,6 +883,7 @@
     private string? _clinicName;
     private string _clinicTimeZone = "UTC";
     private ClinicPatientDetail? _patient;
+    private string? _photoDataUrl;
     private List<PatientDeviceEmergencyEventViewModel> _emergencyEvents = [];
     private int _emergencyTotal;
     private int _emergencyPage = 1;
@@ -936,7 +939,10 @@
 
         await LoadPatientAsync();
         if (_patient is not null)
+        {
+            await LoadPhotoAsync();
             await LoadEmergenciesAsync(reset: true);
+        }
     }
 
     private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
@@ -956,6 +962,15 @@
             _patient = response.Data;
         else
             _error = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotLoadPatient");
+    }
+
+    private async Task LoadPhotoAsync()
+    {
+        var response = await AdminClinicService.GetPatientPhotoAsync(ClinicId, PatientId);
+        if (response.IsSuccess && response.Data is { Bytes.Length: > 0 } photo)
+            _photoDataUrl = $"data:{photo.ContentType};base64,{Convert.ToBase64String(photo.Bytes)}";
+        else
+            _photoDataUrl = null;
     }
 
     private async Task LoadEmergenciesAsync(bool reset)
