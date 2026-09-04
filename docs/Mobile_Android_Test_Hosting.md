@@ -356,6 +356,7 @@ Send testers:
 - Play Internal opt-in link
 - What to try (sign-in, appointments, care, devices)
 - Known gaps (iOS not in this wave; push needs Firebase later; SMS OTP needs Twilio)
+- AI assistant and AI discharge drafts need Azure OpenAI keys on **raphcare-api** (see [16_Azure_OpenAI_Setup.md](./16_Azure_OpenAI_Setup.md))
 - Bug reports to **raphcare@yindula.com**
 
 ---
@@ -366,3 +367,4 @@ Send testers:
 - Do not commit D-U-N-S numbers, Play Console credentials, government IDs, or payment details. Keep those with the company.
 - Replace sample `Jwt:Secret` values before any real patient data.
 - Prefer App Service configuration (or Key Vault) over checking secrets into `appsettings.json`.
+- Azure OpenAI keys belong in App Service settings or local User Secrets, not in git.

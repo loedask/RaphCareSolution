@@ -11,7 +11,13 @@ public sealed class PatientAssistantAiOptions
 
     /// <summary>Placeholder reply when no LLM is configured; must stay non-diagnostic.</summary>
     public string PlaceholderReply { get; set; } =
-        "Thanks for your message. A full AI assistant is not connected in this environment yet. Use this space for general wellness questions only—never for emergencies—and always follow your care team's guidance.";
+        "Thanks for your message. A full AI assistant is not connected in this environment yet. Use this space for general wellness questions only, never for emergencies, and always follow your care team's guidance.";
+
+    /// <summary>Default chat deployment: cheapest pay-as-you-go GPT-4.1 mini on Azure OpenAI.</summary>
+    public const string DefaultDeploymentName = "gpt-4.1-mini";
+
+    /// <summary>REST api-version that gpt-4.1-mini chat completions accept.</summary>
+    public const string DefaultApiVersion = "2024-08-01-preview";
 
     /// <summary>Azure OpenAI resource endpoint, e.g. <c>https://your-resource.openai.azure.com/</c>.</summary>
     public string? AzureOpenAiEndpoint { get; set; }
@@ -19,11 +25,11 @@ public sealed class PatientAssistantAiOptions
     /// <summary>Azure OpenAI API key (prefer Key Vault / environment in production).</summary>
     public string? AzureOpenAiApiKey { get; set; }
 
-    /// <summary>Deployment name for the chat model.</summary>
-    public string? AzureOpenAiDeployment { get; set; }
+    /// <summary>Deployment name for the chat model. Defaults to <see cref="DefaultDeploymentName"/>.</summary>
+    public string? AzureOpenAiDeployment { get; set; } = DefaultDeploymentName;
 
     /// <summary>API version query string, e.g. <c>2024-08-01-preview</c>.</summary>
-    public string AzureOpenAiApiVersion { get; set; } = "2024-08-01-preview";
+    public string AzureOpenAiApiVersion { get; set; } = DefaultApiVersion;
 
     /// <summary>Optional override for the system prompt; otherwise a safe default is used.</summary>
     public string? SystemPrompt { get; set; }

@@ -24,8 +24,8 @@
 
 ## AI Services
 
-- **Application:** `IAIService` with summary generation; command `GenerateSummary` and handler. **Infrastructure:** AIService implements IAIService; implementation is a placeholder (TODO: integrate with Azure OpenAI / GPT). No Azure.AI.*, OpenAI, or other AI SDK packages in the solution.
-- **Persistence:** AIDbContext stores WellnessInsight, RiskScore, DashboardSnapshot. AI-related domain entities exist; no external AI call is implemented.
+- **Application:** `IAIService` with summary generation, discharge drafts, and patient assistant chat. **Infrastructure:** `AIService` calls Azure OpenAI chat completions (`gpt-4.1-mini` Global Standard) when `PatientAssistant` endpoint, key, and deployment are set; otherwise placeholders. No Azure.AI.* or OpenAI SDK packages. See **docs/16_Azure_OpenAI_Setup.md**.
+- **Persistence:** AIDbContext stores WellnessInsight, RiskScore, DashboardSnapshot. Those stores are separate from the chat call.
 
 ## Speech-to-Text (Voice Onboarding)
 
