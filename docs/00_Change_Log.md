@@ -6,6 +6,20 @@
 
 ## High-level summary of changes
 
+Release **1.8.0**: staff and patient mental health. PHQ-9 and GAD-7 with persisted answers, therapy sessions and behavioral care plans on the hospital chart, patient self-assessments in the mobile Mental health screen, and hospital-toggled AI therapy note drafts. Mobile display version **1.8.0**, Android versionCode **12**.
+
+## Modules modified
+
+- **API / Application / Persistence / Client / Portal / Mobile / tests / docs:** mental health assessments, therapy, care plans, AI note draft, clinic `AllowAiMentalHealthNotes`, migrations, checklists, mobile update v1.8.0+12.
+
+---
+
+## Date
+
+2026-09-04
+
+## High-level summary of changes
+
 Release **1.7.0**: mobile display version **1.7.0**, Android versionCode **11**. Release cut for the patient APK against the current Ops and Portal staging stack. HBand vendor libraries stay in the package. Ops, Portal hospital-first shell, breadcrumbs, Azure Blob photos, and the demo hospital-list fix were already merged earlier this week.
 
 ## Modules modified
