@@ -1,6 +1,6 @@
 {
   "stylesheet": ["./mobile-update.pdf.css"],
-  "document_title": "RaphCare mobile update (v1.5.2+10)",
+  "document_title": "RaphCare mobile update (v1.7.0+11)",
   "pdf_options": {
     "format": "A4",
     "margin": {
