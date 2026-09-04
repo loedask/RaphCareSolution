@@ -20,6 +20,11 @@
                    TextColor="{StaticResource ErrorColor}"
                    IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
 
+            <Label Text="{Binding AssessmentMessage}"
+                   Style="{StaticResource BodyMedium}"
+                   TextColor="{StaticResource PrimaryColor}"
+                   IsVisible="{Binding AssessmentMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
             <Border Style="{StaticResource CardBorder}"
                     BackgroundColor="{StaticResource CalmColor}"
                     Margin="0"
@@ -73,6 +78,62 @@
                            Style="{StaticResource Caption}"
                            TextColor="{StaticResource MutedForegroundColor}"
                            Margin="0,8,0,0" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorder}"
+                    Padding="20"
+                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{Binding SelfAssessmentTitle}"
+                           Style="{StaticResource BodyLarge}"
+                           FontAttributes="Bold" />
+                    <Label Text="{Binding SelfAssessmentHint}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}" />
+
+                    <HorizontalStackLayout Spacing="10"
+                                           IsVisible="{Binding ShowAssessmentForm, Converter={StaticResource InvertedBoolConverter}}">
+                        <Button Text="{Binding StartPhq9Label}"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding StartPhq9Command}" />
+                        <Button Text="{Binding StartGad7Label}"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding StartGad7Command}" />
+                    </HorizontalStackLayout>
+
+                    <VerticalStackLayout Spacing="12"
+                                         IsVisible="{Binding ShowAssessmentForm}">
+                        <Label Text="{Binding AssessmentTitle}"
+                               Style="{StaticResource BodyMedium}"
+                               FontAttributes="Bold" />
+                        <Label Text="{Binding AssessmentInstructions}"
+                               Style="{StaticResource Caption}"
+                               TextColor="{StaticResource MutedForegroundColor}" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding AssessmentQuestions}" Spacing="12">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:MentalHealthAssessmentQuestionItem">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="{Binding QuestionText}"
+                                               Style="{StaticResource BodySmall}" />
+                                        <Picker ItemsSource="{Binding OptionLabels}"
+                                                SelectedIndex="{Binding SelectedOptionIndex}"
+                                                FontFamily="DMSans" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <Button Text="{Binding SubmitAssessmentLabel}"
+                                Style="{StaticResource PrimaryButton}"
+                                Command="{Binding SubmitAssessmentCommand}"
+                                IsEnabled="{Binding SubmittingAssessment, Converter={StaticResource InvertedBoolConverter}}" />
+                        <Button Text="{Binding CancelAssessmentLabel}"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding CancelAssessmentCommand}" />
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
 

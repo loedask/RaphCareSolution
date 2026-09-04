@@ -31,6 +31,12 @@ public class Clinic : AggregateRoot, ISoftDelete
     /// </summary>
     public bool AllowAiDischargeDraft { get; set; } = true;
 
+    /// <summary>
+    /// When true, hospital staff may request an AI draft of a mental health therapy note.
+    /// Only structured assessment and mood scores are sent (no free-text notes).
+    /// </summary>
+    public bool AllowAiMentalHealthNotes { get; set; } = true;
+
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
     public Guid? RegisteredByApplicationUserId { get; set; }

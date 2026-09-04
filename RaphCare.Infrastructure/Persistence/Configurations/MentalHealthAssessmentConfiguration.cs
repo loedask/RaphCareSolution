@@ -19,8 +19,6 @@ public sealed class MentalHealthAssessmentConfiguration : IEntityTypeConfigurati
         builder.HasIndex(e => e.ClinicId);
         builder.HasIndex(e => e.PatientId);
         builder.HasIndex(e => new { e.ClinicId, e.ConductedAt });
-        builder.Ignore(e => e.Questions);
-        builder.Ignore(e => e.Responses);
         builder.HasOne<Clinic>()
             .WithMany()
             .HasForeignKey(e => e.ClinicId)
@@ -29,5 +27,13 @@ public sealed class MentalHealthAssessmentConfiguration : IEntityTypeConfigurati
             .WithMany()
             .HasForeignKey(e => e.PatientId)
             .OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(e => e.Questions)
+            .WithOne(q => q.Assessment)
+            .HasForeignKey(q => q.MentalHealthAssessmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(e => e.Responses)
+            .WithOne(r => r.Assessment)
+            .HasForeignKey(r => r.MentalHealthAssessmentId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

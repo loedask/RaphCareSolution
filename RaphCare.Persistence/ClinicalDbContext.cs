@@ -29,6 +29,13 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<PatientFamilyMember> PatientFamilyMembers => Set<PatientFamilyMember>();
     public DbSet<MoodLog> MoodLogs => Set<MoodLog>();
     public DbSet<MentalHealthAssessment> MentalHealthAssessments => Set<MentalHealthAssessment>();
+    public DbSet<AssessmentQuestion> AssessmentQuestions => Set<AssessmentQuestion>();
+    public DbSet<AssessmentResponse> AssessmentResponses => Set<AssessmentResponse>();
+    public DbSet<TherapySession> TherapySessions => Set<TherapySession>();
+    public DbSet<TherapyNote> TherapyNotes => Set<TherapyNote>();
+    public DbSet<CrisisFlag> CrisisFlags => Set<CrisisFlag>();
+    public DbSet<BehavioralCarePlan> BehavioralCarePlans => Set<BehavioralCarePlan>();
+    public DbSet<TherapyGoal> TherapyGoals => Set<TherapyGoal>();
     public DbSet<PatientInAppNotification> PatientInAppNotifications => Set<PatientInAppNotification>();
     public DbSet<PatientPushDevice> PatientPushDevices => Set<PatientPushDevice>();
     public DbSet<PatientSupportMessage> PatientSupportMessages => Set<PatientSupportMessage>();
@@ -59,6 +66,13 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new PatientFamilyMemberConfiguration());
         modelBuilder.ApplyConfiguration(new MoodLogConfiguration());
         modelBuilder.ApplyConfiguration(new MentalHealthAssessmentConfiguration());
+        modelBuilder.ApplyConfiguration(new AssessmentQuestionConfiguration());
+        modelBuilder.ApplyConfiguration(new AssessmentResponseConfiguration());
+        modelBuilder.ApplyConfiguration(new TherapySessionConfiguration());
+        modelBuilder.ApplyConfiguration(new TherapyNoteConfiguration());
+        modelBuilder.ApplyConfiguration(new CrisisFlagConfiguration());
+        modelBuilder.ApplyConfiguration(new BehavioralCarePlanConfiguration());
+        modelBuilder.ApplyConfiguration(new TherapyGoalConfiguration());
         modelBuilder.ApplyConfiguration(new PatientInAppNotificationConfiguration());
         modelBuilder.ApplyConfiguration(new PatientPushDeviceConfiguration());
         modelBuilder.ApplyConfiguration(new ClinicStaffMembershipConfiguration());

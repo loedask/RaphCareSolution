@@ -26,7 +26,9 @@ public sealed class UpdateAdminClinicHandler(
         if (clinic is null || clinic.IsDeleted)
             return null;
 
-        if ((clinic.IsActive != request.IsActive || clinic.AllowAiDischargeDraft != request.AllowAiDischargeDraft)
+        if ((clinic.IsActive != request.IsActive
+                || clinic.AllowAiDischargeDraft != request.AllowAiDischargeDraft
+                || clinic.AllowAiMentalHealthNotes != request.AllowAiMentalHealthNotes)
             && !await AdminClinicAuthorization.IsClinicAdministratorAsync(
                 currentUserService,
                 clinicStaffMembershipService,
@@ -35,7 +37,7 @@ public sealed class UpdateAdminClinicHandler(
                 cancellationToken)
                 .ConfigureAwait(false))
         {
-            throw new ForbiddenAccessException("Only hospital administrators can change hospital status or AI discharge settings.");
+            throw new ForbiddenAccessException("Only hospital administrators can change hospital status or AI draft settings.");
         }
 
         clinic.Name = request.Name.Trim();
@@ -43,6 +45,7 @@ public sealed class UpdateAdminClinicHandler(
         clinic.TimeZone = request.TimeZone.Trim();
         clinic.IsActive = request.IsActive;
         clinic.AllowAiDischargeDraft = request.AllowAiDischargeDraft;
+        clinic.AllowAiMentalHealthNotes = request.AllowAiMentalHealthNotes;
 
         await clinicRepository.UpdateAsync(clinic, cancellationToken).ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

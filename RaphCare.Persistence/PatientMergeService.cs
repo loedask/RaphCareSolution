@@ -81,6 +81,22 @@ public class PatientMergeService(
             .Where(m => m.PatientId == duplicatePatientId)
             .ExecuteUpdateAsync(s => s.SetProperty(m => m.PatientId, primaryPatientId), ct).ConfigureAwait(false);
 
+        await _clinical.MentalHealthAssessments
+            .Where(a => a.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(a => a.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        await _clinical.TherapySessions
+            .Where(s => s.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(s => s.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        await _clinical.CrisisFlags
+            .Where(c => c.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(c => c.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
+        await _clinical.BehavioralCarePlans
+            .Where(p => p.PatientId == duplicatePatientId)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.PatientId, primaryPatientId), ct).ConfigureAwait(false);
+
         await _clinical.Set<EmergencyContact>()
             .Where(c => c.PatientId == duplicatePatientId)
             .ExecuteUpdateAsync(s => s.SetProperty(c => c.PatientId, primaryPatientId), ct).ConfigureAwait(false);
