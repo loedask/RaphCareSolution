@@ -76,6 +76,10 @@ public static class DependencyInjection
 
         services.Configure<PatientAssistantAiOptions>(configuration.GetSection(PatientAssistantAiOptions.SectionName));
 
+        services.AddHttpClient(AIService.HttpClientName, client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(45);
+        });
         services.AddHttpClient();
 
         services.Configure<FirebasePushOptions>(configuration.GetSection(FirebasePushOptions.SectionName));

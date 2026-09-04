@@ -2,7 +2,7 @@
 
 This is the **simple** status board. Same topics as the builder checklist, without code names.
 
-**Overall completion:** **81%**
+**Overall completion:** **82%**
 
 **How to read this**
 
@@ -17,7 +17,7 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 
 Each section shows its % in the heading. Numbers stay in sync when status changes.
 
-Last reviewed: 2026-09-03
+Last reviewed: 2026-09-04
 
 ---
 
@@ -32,7 +32,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Hospital profile and facilities | Done | Edit details; add physical or virtual locations. The hospital page opens with a large header and a section menu on the side. |
 | Staff invites and roles | Done | Invite people. Set staff, doctor, pharmacist, or lab technician. Admins can still do hospital setup. |
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |
-| Patient chart (view) | Done | Same large header and section menu as other hospital pages. Sections: overview, clinical, coverage, devices, and care. Staff view this; they do not edit it here. |
+| Patient chart (view) | Done | Same large header and section menu as other hospital pages. Sections: overview, clinical, coverage, devices, and care. If the patient uploaded a photo on the phone, it shows in that header. Staff view this; they do not edit it here. |
 | Clinical team and schedules | Done | Add clinicians; manage schedules. Clinician detail uses the same large header and section menu. |
 | Appointments | Done | Book, cancel, reschedule. The appointments page uses the same large header and section menu. |
 | Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete. Visit and tele join pages match the hospital page layout. |
@@ -68,7 +68,7 @@ Overnight stays: set up rooms and beds, put a patient in a bed, discharge them.
 
 ---
 
-## 3. Patient phone app - 59%
+## 3. Patient phone app - 61%
 
 What patients see on Android and iPhone.
 
@@ -85,9 +85,9 @@ What patients see on Android and iPhone.
 | Billing and payment methods | Done | |
 | Family members | Done | |
 | Mental health (mood check-in) | Done | |
-| Chat assistant | Partial | Works; real smart replies need cloud AI keys in production |
+| Chat assistant | Done | Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
 | Notifications list | Done | Real push alerts need Firebase and store setup |
-| Settings and profile | Done | Includes My clinic: search by name or enter a short clinic code |
+| Settings and profile | Done | Includes My clinic: search by name or enter a short clinic code. A photo you add on the phone is stored with your record. |
 | Choose my clinic | Done | Patients do not need Guids; use clinic name or an RC- code from the hospital |
 
 ### Phones and devices (broader coverage)
@@ -117,7 +117,7 @@ What patients see on Android and iPhone.
 
 **Wearable feature list:** we keep a separate model-agnostic list of what a band or watch should support, even when the hardware SKU changes.
 
-**Bottom line (59%):** the patient app screens are largely there, including choosing a clinic by name or short code. Home and Profile icons are monochrome now. Catch-up work is mostly **iPhone video**, **real push**, **wearables depth** (live vitals, full sync, background), and **testing the same flows on both phone types**.
+**Bottom line (61%):** the patient app screens are largely there, including choosing a clinic by name or short code, and the chat assistant uses the hospital's cloud AI. Home and Profile icons are monochrome now. Catch-up work is mostly **iPhone video**, **real push**, **wearables depth** (live vitals, full sync, background), and **testing the same flows on both phone types**.
 
 ---
 
@@ -154,7 +154,7 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 | Follow a referral through | Done | Log an outbound referral, then mark it accepted, completed, or cancelled. |
 | Book a return visit at discharge | Done | On discharge, optionally pick a clinician and time for the next visit before the person leaves. |
 | Who is on today | Done | Pick a day and see who is on Morning, Afternoon, or Night. Add or remove staff for a shift. |
-| Draft discharge summary with AI | Done | On discharge, tap Draft with AI when the hospital allows it (toggle under Organization details). Staff edit the text, then save. The draft uses stay reason and ward vitals only, not free-text ward notes. Needs cloud AI keys on the server; otherwise drafting is unavailable. |
+| Draft discharge summary with AI | Done | On discharge, tap Draft with AI when the hospital allows it (toggle under Organization details). Staff edit the text, then save. The draft uses stay reason and ward vitals only, not free-text ward notes. Staging has the low-cost cloud AI connected. A hospital can still turn drafting off. |
 
 **Bottom line (100%):** Hospital plan stay extras for this board are in. Ward notes, cash invoice, occupancy, nurse job, lab result-ready notice, casualty, theatre, referrals, SafeCare on the hospital home, return visit at discharge, who-is-on-today, and AI discharge draft.
 
@@ -197,11 +197,11 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 |------|--:|-------|
 | 1. Hospital admin (outpatient) | 100% | Ready on web |
 | 2. Inpatient | 100% | Ready on web |
-| 3. Patient phone app | 59% | iPhone video, push, wearables |
+| 3. Patient phone app | 61% | Chat assistant uses cloud AI; iPhone video, push, wearables still catch-up |
 | 4. Other staff and system | 83% | Demo accounts on Staging |
 | 5. Hospital plan extras | 100% | Stay extras closed for this board |
 | 6. Next ideas (AI and ops) | n/a | Later list; not in overall % |
-| **Overall** | **81%** | Sections 1-5. Excludes "not for mobile, clinical, or BLE" and section 6 later rows |
+| **Overall** | **82%** | Sections 1-5. Excludes "not for mobile, clinical, or BLE" and section 6 later rows |
 
 ---
 
@@ -214,9 +214,9 @@ This list is the current manual smoke for admin web and the patient phone app. B
 3. **Admin web:** on that hospital, open Inpatient. Add a ward, room, or bed if needed, admit someone. Add a ward note. On discharge, try Draft with AI, edit the text, then finish with a nightly rate and (optional) a return visit for next week. Confirm occupancy numbers on the hospital dashboard.
 4. **Admin web:** open Casualty. Add a walk-in (with or without a patient). Call the code and open the casualty waiting screen on another tab. Open Theatre and add today's case, then start and complete it. Open Referrals, log a referral, then accept or complete it. Open Roster, add someone to Morning or Afternoon, then remove them if you want.
 5. **Admin web:** on the hospital overview (and the admin home when that hospital is selected), confirm recent SOS or fall alerts show if any exist. Open Devices for the full list.
-6. **Admin web:** open a patient chart. Use the section menu for overview, clinical, coverage, devices, and care.
+6. **Admin web:** open a patient chart. Use the section menu for overview, clinical, coverage, devices, and care. If that patient uploaded a photo on the phone, it should show in the header.
 7. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).
 8. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
 9. **Patient app on Android:** sign in as `demo.patient@raphcare.com`. You should get a notice that something is ready to collect. After staff enter a lab result, you should also get a separate notice that the result is ready (open Health records for the values). Waiting items show a pickup code and a QR code. Scan the wall poster at the counter to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
-10. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one).
+10. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one). Open the chat assistant and send a short wellness question. You should get a real reply. This is not a doctor.
 11. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
