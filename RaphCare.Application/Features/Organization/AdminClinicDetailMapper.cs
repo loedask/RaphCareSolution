@@ -31,6 +31,7 @@ internal static class AdminClinicDetailMapper
             TimeZone = clinic.TimeZone,
             IsActive = clinic.IsActive,
             AllowAiDischargeDraft = clinic.AllowAiDischargeDraft,
+            AllowAiMentalHealthNotes = clinic.AllowAiMentalHealthNotes,
             CreatedAt = clinic.CreatedAt,
             RegisteredByApplicationUserId = clinic.RegisteredByApplicationUserId,
             CurrentUserIsAdministrator = RaphCareRoles.HasAdministratorRole(roles),

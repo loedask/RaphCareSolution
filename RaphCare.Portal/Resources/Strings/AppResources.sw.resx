@@ -766,11 +766,14 @@
   <data name="Common_AllowAiDischargeDraft" xml:space="preserve">
     <value>Ruhusu rasimu ya kutoka kwa AI</value>
   </data>
+  <data name="Common_AllowAiMentalHealthNotes" xml:space="preserve">
+    <value>Allow AI mental health notes</value>
+  </data>
   <data name="Common_OrganizationDetails" xml:space="preserve">
     <value>Maelezo ya shirika</value>
   </data>
   <data name="Common_UpdateHospitalLead" xml:space="preserve">
-    <value>Sasisha jina, nchi, saa za eneo, na kama AI inaweza kuandika rasimu ya kutoka.</value>
+    <value>Update your hospital name, country, time zone, and whether AI may draft discharge summaries or mental health notes.</value>
   </data>
   <data name="Common_HospitalProfileEyebrow" xml:space="preserve">
     <value>Wasifu wa hospitali</value>
@@ -2454,6 +2457,159 @@
   </data>
   <data name="Common_MoodCountLabelPlural" xml:space="preserve">
     <value>rekodi {0}</value>
+  </data>
+  <data name="PatientDetail_AssessmentsTitle" xml:space="preserve">
+    <value>Mental health assessments</value>
+  </data>
+  <data name="PatientDetail_AssessmentsLead" xml:space="preserve">
+    <value>Staff-recorded PHQ-9 and GAD-7 scores for this patient.</value>
+  </data>
+  <data name="PatientDetail_NoAssessments" xml:space="preserve">
+    <value>No assessments recorded yet.</value>
+  </data>
+  <data name="PatientDetail_RecordPhq9" xml:space="preserve">
+    <value>Record PHQ-9</value>
+  </data>
+  <data name="PatientDetail_RecordGad7" xml:space="preserve">
+    <value>Record GAD-7</value>
+  </data>
+  <data name="PatientDetail_SaveAssessment" xml:space="preserve">
+    <value>Save assessment</value>
+  </data>
+  <data name="PatientDetail_SavePhq9" xml:space="preserve">
+    <value>Save PHQ-9</value>
+  </data>
+  <data name="PatientDetail_SelectAnswer" xml:space="preserve">
+    <value>Select an answer</value>
+  </data>
+  <data name="PatientDetail_Severity" xml:space="preserve">
+    <value>Severity</value>
+  </data>
+  <data name="PatientDetail_Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="PatientDetail_Question" xml:space="preserve">
+    <value>Question</value>
+  </data>
+  <data name="PatientDetail_Answer" xml:space="preserve">
+    <value>Answer</value>
+  </data>
+  <data name="PatientDetail_HideAnswers" xml:space="preserve">
+    <value>Hide answers</value>
+  </data>
+  <data name="PatientDetail_AssessmentCountLabel" xml:space="preserve">
+    <value>{0} assessment</value>
+  </data>
+  <data name="PatientDetail_AssessmentCountLabelPlural" xml:space="preserve">
+    <value>{0} assessments</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadAssessments" xml:space="preserve">
+    <value>Could not load assessments.</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadAssessment" xml:space="preserve">
+    <value>Could not load that assessment.</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadInstrument" xml:space="preserve">
+    <value>Could not load the assessment form.</value>
+  </data>
+  <data name="PatientDetail_CouldNotSaveAssessment" xml:space="preserve">
+    <value>Could not save the assessment.</value>
+  </data>
+  <data name="PatientDetail_TherapySessionsTitle" xml:space="preserve">
+    <value>Therapy sessions</value>
+  </data>
+  <data name="PatientDetail_TherapySessionsLead" xml:space="preserve">
+    <value>Log sessions, add notes, and flag crisis concerns when needed.</value>
+  </data>
+  <data name="PatientDetail_NoTherapySessions" xml:space="preserve">
+    <value>No therapy sessions logged yet.</value>
+  </data>
+  <data name="PatientDetail_LogTherapySession" xml:space="preserve">
+    <value>Log session</value>
+  </data>
+  <data name="PatientDetail_SessionSummary" xml:space="preserve">
+    <value>Session summary (optional)</value>
+  </data>
+  <data name="PatientDetail_SessionType" xml:space="preserve">
+    <value>Session type</value>
+  </data>
+  <data name="PatientDetail_AddTherapyNote" xml:space="preserve">
+    <value>Add note</value>
+  </data>
+  <data name="PatientDetail_TherapyNote" xml:space="preserve">
+    <value>Therapy note</value>
+  </data>
+  <data name="PatientDetail_CrisisRiskOptional" xml:space="preserve">
+    <value>Crisis risk (optional)</value>
+  </data>
+  <data name="PatientDetail_CrisisDescription" xml:space="preserve">
+    <value>Crisis description</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadTherapySessions" xml:space="preserve">
+    <value>Could not load therapy sessions.</value>
+  </data>
+  <data name="PatientDetail_CouldNotSaveTherapySession" xml:space="preserve">
+    <value>Could not log the therapy session.</value>
+  </data>
+  <data name="PatientDetail_CouldNotSaveTherapyNote" xml:space="preserve">
+    <value>Could not add the therapy note.</value>
+  </data>
+  <data name="PatientDetail_BehavioralCarePlansTitle" xml:space="preserve">
+    <value>Behavioral care plans</value>
+  </data>
+  <data name="PatientDetail_BehavioralCarePlansLead" xml:space="preserve">
+    <value>Create a plan with at least one therapy goal.</value>
+  </data>
+  <data name="PatientDetail_NoBehavioralCarePlans" xml:space="preserve">
+    <value>No behavioral care plans yet.</value>
+  </data>
+  <data name="PatientDetail_CreateCarePlan" xml:space="preserve">
+    <value>Create care plan</value>
+  </data>
+  <data name="PatientDetail_CarePlanTitle" xml:space="preserve">
+    <value>Plan title</value>
+  </data>
+  <data name="PatientDetail_CarePlanDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="PatientDetail_TherapyGoal" xml:space="preserve">
+    <value>Goal</value>
+  </data>
+  <data name="PatientDetail_GoalTargetDate" xml:space="preserve">
+    <value>Target date</value>
+  </data>
+  <data name="PatientDetail_CouldNotLoadCarePlans" xml:space="preserve">
+    <value>Could not load care plans.</value>
+  </data>
+  <data name="PatientDetail_CouldNotSaveCarePlan" xml:space="preserve">
+    <value>Could not create the care plan.</value>
+  </data>
+  <data name="PatientDetail_AiNoteDraftTitle" xml:space="preserve">
+    <value>AI note draft</value>
+  </data>
+  <data name="PatientDetail_AiNoteDraftLead" xml:space="preserve">
+    <value>Draft from recent assessment and mood scores. Edit before you save elsewhere.</value>
+  </data>
+  <data name="PatientDetail_DraftAiNote" xml:space="preserve">
+    <value>Draft AI note</value>
+  </data>
+  <data name="PatientDetail_AiNoteTextarea" xml:space="preserve">
+    <value>Draft note</value>
+  </data>
+  <data name="PatientDetail_CouldNotDraftAiNote" xml:space="preserve">
+    <value>Could not draft the note.</value>
+  </data>
+  <data name="PatientDetail_TherapySessionCountLabel" xml:space="preserve">
+    <value>{0} session</value>
+  </data>
+  <data name="PatientDetail_TherapySessionCountLabelPlural" xml:space="preserve">
+    <value>{0} sessions</value>
+  </data>
+  <data name="PatientDetail_BehavioralPlanCountLabel" xml:space="preserve">
+    <value>{0} plan</value>
+  </data>
+  <data name="PatientDetail_BehavioralPlanCountLabelPlural" xml:space="preserve">
+    <value>{0} plans</value>
   </data>
   <data name="Common_CarePlanCountLabel" xml:space="preserve">
     <value>mpango {0}</value>

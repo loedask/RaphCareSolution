@@ -21,6 +21,7 @@ public sealed class UpdateClinicRequest
     public string TimeZone { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
     public bool AllowAiDischargeDraft { get; set; } = true;
+    public bool AllowAiMentalHealthNotes { get; set; } = true;
 }
 
 public sealed class ClinicPatientListItem

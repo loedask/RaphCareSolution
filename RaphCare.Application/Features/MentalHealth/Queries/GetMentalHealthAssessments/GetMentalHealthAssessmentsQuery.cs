@@ -8,6 +8,7 @@ namespace RaphCare.Application.Features.MentalHealth.Queries.GetMentalHealthAsse
 public class GetMentalHealthAssessmentsQuery : IRequest<PagedResult<MentalHealthAssessmentDto>>
 {
     public Guid ClinicId { get; set; }
+    public Guid? PatientId { get; set; }
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 20;
 }

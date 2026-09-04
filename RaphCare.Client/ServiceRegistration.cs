@@ -55,6 +55,8 @@ public static class ServiceRegistration
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
         services.AddTransient<IPatientMentalHealthService>(sp => new PatientMentalHealthService(
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
+        services.AddTransient<IMentalHealthService>(sp => new MentalHealthService(
+            sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
         services.AddTransient<IPatientProfileService>(sp => new PatientProfileService(
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
         services.AddTransient<IPatientSupportService>(sp => new PatientSupportService(

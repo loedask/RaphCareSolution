@@ -219,8 +219,10 @@ public static class DependencyInjection
         services.AddScoped<IRepository<EmergencyContact>>(sp => new EfRepository<EmergencyContact, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Domain.Patients.PatientProfile>>(sp => new EfRepository<Domain.Patients.PatientProfile, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<PatientSupportMessage>>(sp => new EfRepository<PatientSupportMessage, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
-        services.AddScoped<IRepository<MoodLog>>(sp => new EfRepository<MoodLog, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<MentalHealthAssessment>>(sp => new EfRepository<MentalHealthAssessment, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<TherapySession>>(sp => new EfRepository<TherapySession, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<BehavioralCarePlan>>(sp => new EfRepository<BehavioralCarePlan, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<MoodLog>>(sp => new EfRepository<MoodLog, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<PatientInAppNotification>>(sp => new EfRepository<PatientInAppNotification, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<PatientPushDevice>>(sp => new EfRepository<PatientPushDevice, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IPatientPushDeviceTokenReader, PatientPushDeviceTokenReader>();
