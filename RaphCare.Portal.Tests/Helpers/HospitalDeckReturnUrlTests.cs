@@ -8,7 +8,7 @@ public sealed class HospitalDeckReturnUrlTests
     private static readonly Guid ClinicId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
 
     [Fact]
-    public void Resolve_UsesSafeSameClinicReturn_WhenValid()
+    public void ResolveUsesSafeSameClinicReturnWhenValid()
     {
         var inbound = $"/admin/hospitals/{ClinicId}/inpatient?tab=admissions";
         var result = HospitalDeckReturnUrl.Resolve(
@@ -20,7 +20,7 @@ public sealed class HospitalDeckReturnUrlTests
     }
 
     [Fact]
-    public void Resolve_FallsBack_WhenReturnPointsAtAnotherClinic()
+    public void ResolveFallsBackWhenReturnPointsAtAnotherClinic()
     {
         var other = Guid.Parse("11111111-2222-3333-4444-555555555555");
         var fallback = HospitalDeckReturnUrl.ForClinicTab(ClinicId, "patients");
@@ -33,7 +33,7 @@ public sealed class HospitalDeckReturnUrlTests
     }
 
     [Fact]
-    public void Resolve_FallsBack_WhenReturnIsAbsoluteUrl()
+    public void ResolveFallsBackWhenReturnIsAbsoluteUrl()
     {
         var fallback = HospitalDeckReturnUrl.ForClinicTab(ClinicId, "patients");
         var result = HospitalDeckReturnUrl.Resolve(
@@ -45,7 +45,7 @@ public sealed class HospitalDeckReturnUrlTests
     }
 
     [Fact]
-    public void PatientHref_EmbedsEscapedReturn()
+    public void PatientHrefEmbedsEscapedReturn()
     {
         var href = HospitalDeckReturnUrl.PatientHref(
             ClinicId,

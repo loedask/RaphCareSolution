@@ -83,6 +83,8 @@ public static class ServiceRegistration
         services.AddTransient<IAdminClinicService, AdminClinicService>();
         services.AddTransient<IPlatformFleetDevicesService>(sp => new PlatformFleetDevicesService(
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
+        services.AddTransient<IPlatformOpsStatsService>(sp => new PlatformOpsStatsService(
+            sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
         services.AddTransient<ICollectionDisplayService, CollectionDisplayService>();
         services.AddTransient<ICasualtyDisplayService, CasualtyDisplayService>();
 

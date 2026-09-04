@@ -2,6 +2,20 @@
 
 ## Date
 
+2026-09-04
+
+## High-level summary of changes
+
+Ops Home shows a platform snapshot (hospitals, patients, doctors, staff, facilities, fleet, appointments today, admissions, pending invites, SafeCare alerts). Fleet hospital and patient pickers use the shared searchable select. SearchableSelect moved into RaphCare.Ui for Portal and Ops.
+
+## Modules modified
+
+- **Application / API / Client / Ops / Ui / Portal:** GetPlatformOpsStats; OpsController; AdminStat* and SearchableSelect in Ui; Ops Home and Fleet.
+
+---
+
+## Date
+
 2026-09-03
 
 ## High-level summary of changes

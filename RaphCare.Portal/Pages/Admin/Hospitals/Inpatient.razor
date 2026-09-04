@@ -1007,7 +1007,7 @@
 
     private void BeginAddFacility()
     {
-        _facilitySelect?.Close();
+        _ = _facilitySelect?.CloseAsync();
         if (string.IsNullOrWhiteSpace(_facilityCountry))
             _facilityCountry = _clinicCountry;
         _showFacilityForm = true;
