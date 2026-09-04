@@ -55,4 +55,26 @@ public sealed class HospitalDeckReturnUrlTests
         Assert.Contains("return=", href, StringComparison.Ordinal);
         Assert.Contains("inpatient", href, StringComparison.Ordinal);
     }
+
+    [Theory]
+    [InlineData("casualty")]
+    [InlineData("theatre")]
+    [InlineData("inpatient")]
+    [InlineData("collection")]
+    [InlineData("referrals")]
+    [InlineData("roster")]
+    public void LinkedSectionBackReturnKeepsSectionTabOnHospitalProfile(string section)
+    {
+        var back = HospitalDeckReturnUrl.ForLinkedSectionReturn(ClinicId, section);
+
+        Assert.Equal($"/admin/hospitals/{ClinicId}?tab={section}", back);
+        Assert.True(HospitalDeckReturnUrl.IsLinkedSectionTab(section));
+    }
+
+    [Fact]
+    public void OverviewIsNotALinkedSectionTab()
+    {
+        Assert.False(HospitalDeckReturnUrl.IsLinkedSectionTab("overview"));
+        Assert.False(HospitalDeckReturnUrl.IsLinkedSectionTab(null));
+    }
 }

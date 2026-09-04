@@ -56,22 +56,22 @@
             <HospitalDeckRailItem Index="06" Icon="device" IsActive="@(_tab == "devices")" Count="@(_devicesLoaded ? _devices.Count : null)" OnSelect='() => SetTab("devices")'>
                 @AppResources.T("Common_Devices")
             </HospitalDeckRailItem>
-            <HospitalDeckRailItem Index="07" Icon="inpatient" Href="@($"/admin/hospitals/{ClinicId}/inpatient")">
+            <HospitalDeckRailItem Index="07" Icon="inpatient" IsActive="@(_tab == "inpatient")" Href="@($"/admin/hospitals/{ClinicId}/inpatient")">
                 @AppResources.T("Common_Inpatient")
             </HospitalDeckRailItem>
-            <HospitalDeckRailItem Index="08" Icon="collection" Href="@($"/admin/hospitals/{ClinicId}/collection")">
+            <HospitalDeckRailItem Index="08" Icon="collection" IsActive="@(_tab == "collection")" Href="@($"/admin/hospitals/{ClinicId}/collection")">
                 @AppResources.T("Collection_Title")
             </HospitalDeckRailItem>
-            <HospitalDeckRailItem Index="09" Icon="casualty" Href="@($"/admin/hospitals/{ClinicId}/casualty")">
+            <HospitalDeckRailItem Index="09" Icon="casualty" IsActive="@(_tab == "casualty")" Href="@($"/admin/hospitals/{ClinicId}/casualty")">
                 @AppResources.T("Common_Casualty")
             </HospitalDeckRailItem>
-            <HospitalDeckRailItem Index="10" Icon="theatre" Href="@($"/admin/hospitals/{ClinicId}/theatre")">
+            <HospitalDeckRailItem Index="10" Icon="theatre" IsActive="@(_tab == "theatre")" Href="@($"/admin/hospitals/{ClinicId}/theatre")">
                 @AppResources.T("Common_Theatre")
             </HospitalDeckRailItem>
-            <HospitalDeckRailItem Index="11" Icon="referral" Href="@($"/admin/hospitals/{ClinicId}/referrals")">
+            <HospitalDeckRailItem Index="11" Icon="referral" IsActive="@(_tab == "referrals")" Href="@($"/admin/hospitals/{ClinicId}/referrals")">
                 @AppResources.T("Common_Referrals")
             </HospitalDeckRailItem>
-            <HospitalDeckRailItem Index="12" Icon="roster" Href="@($"/admin/hospitals/{ClinicId}/roster")">
+            <HospitalDeckRailItem Index="12" Icon="roster" IsActive="@(_tab == "roster")" Href="@($"/admin/hospitals/{ClinicId}/roster")">
                 @AppResources.T("Common_Roster")
             </HospitalDeckRailItem>
             <HospitalDeckRailItem Index="13" Icon="staff" IsActive="@(_tab == "staff")" Count="@(_staffLoaded ? _staff.Count : null)" OnSelect='() => SetTab("staff")'>
@@ -82,7 +82,7 @@
         <div class="hospital-deck-stage">
         <AdminAlert Message="@_actionError" />
 
-        @if (_tab == "overview")
+        @if (_tab == "overview" || HospitalDeckReturnUrl.IsLinkedSectionTab(_tab))
         {
             <div class="hospital-overview">
                 <HospitalIdentityPlate Kicker="@AppResources.T("Common_HospitalReference")"
@@ -795,7 +795,9 @@
         await LoadDetailAsync();
         await LoadHomeEmergenciesAsync();
 
-        if (!string.IsNullOrWhiteSpace(TabQuery) && TabQuery is "overview" or "facilities" or "patients" or "providers" or "appointments" or "devices" or "staff")
+        if (!string.IsNullOrWhiteSpace(TabQuery)
+            && (TabQuery is "overview" or "facilities" or "patients" or "providers" or "appointments" or "devices" or "staff"
+                || HospitalDeckReturnUrl.IsLinkedSectionTab(TabQuery)))
         {
             _tab = TabQuery;
             if (_tab == "staff" && !_staffLoaded)

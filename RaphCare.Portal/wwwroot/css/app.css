@@ -1877,6 +1877,12 @@ a:hover { text-decoration: underline; }
     color: #cbd5e1;
 }
 
+.hospital-deck-rail-item.is-link.is-active {
+    color: #042f2e;
+    background: linear-gradient(135deg, #5eead4, #14b8a6);
+    box-shadow: 0 8px 20px rgba(20, 184, 166, 0.28);
+}
+
 .hospital-deck-rail-index {
     font-family: "Space Grotesk", "DM Sans", sans-serif;
     font-size: 0.62rem;

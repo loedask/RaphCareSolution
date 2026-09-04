@@ -5,8 +5,18 @@ namespace RaphCare.Portal.Helpers;
 /// </summary>
 public static class HospitalDeckReturnUrl
 {
+    /// <summary>
+    /// Hospital profile tabs that live on their own routes. Back links return to the
+    /// hospital page with this tab so the matching rail item stays highlighted.
+    /// </summary>
+    public static bool IsLinkedSectionTab(string? tab) =>
+        tab is "inpatient" or "collection" or "casualty" or "theatre" or "referrals" or "roster";
+
     public static string ForClinicTab(Guid clinicId, string tab) =>
         $"/admin/hospitals/{clinicId}?tab={Uri.EscapeDataString(tab)}";
+
+    public static string ForLinkedSectionReturn(Guid clinicId, string section) =>
+        ForClinicTab(clinicId, section);
 
     public static string ForClinicPage(Guid clinicId, string page, string? tab = null)
     {

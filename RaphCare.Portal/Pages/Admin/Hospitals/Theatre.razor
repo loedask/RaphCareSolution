@@ -13,7 +13,7 @@
     }
     else
     {
-        <HospitalDeckMasthead BackHref="@($"/admin/hospitals/{ClinicId}")"
+        <HospitalDeckMasthead BackHref="@HospitalDeckReturnUrl.ForLinkedSectionReturn(ClinicId, "theatre")"
                               BackText="@AppResources.T("Common_BackToHospital")"
                               Monogram="@HospitalDeckInitials.FromName(_clinicName)"
                               Eyebrow="@AppResources.T("Theatre_Title")"
@@ -157,7 +157,7 @@
         </div>
 
         <div class="hospital-deck-foot">
-            <HospitalDeckBackLink Href="@($"/admin/hospitals/{ClinicId}")" Text="@AppResources.T("Common_BackToHospital")" />
+            <HospitalDeckBackLink Href="@HospitalDeckReturnUrl.ForLinkedSectionReturn(ClinicId, "theatre")" Text="@AppResources.T("Common_BackToHospital")" />
         </div>
     }
 </section>

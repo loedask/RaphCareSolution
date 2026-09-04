@@ -13,7 +13,7 @@
     }
     else
     {
-        <HospitalDeckMasthead BackHref="@($"/admin/hospitals/{ClinicId}")"
+        <HospitalDeckMasthead BackHref="@HospitalDeckReturnUrl.ForLinkedSectionReturn(ClinicId, "roster")"
                               BackText="@AppResources.T("Common_BackToHospital")"
                               Monogram="@HospitalDeckInitials.FromName(_clinicName)"
                               Eyebrow="@AppResources.T("Roster_Title")"
