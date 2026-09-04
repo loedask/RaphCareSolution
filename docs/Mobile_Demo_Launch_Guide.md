@@ -153,7 +153,7 @@ Using **`http://10.0.2.2:5281/`** with the API **`http`** profile is often the s
 | **Voice registration** after seed | **`Onboarding:VoiceRegistrationClinicId`** (clinic `Id` from DB) — [09_Mobile_App_Guide.md](./09_Mobile_App_Guide.md) |
 | **Telehealth / Agora** (Android in-app video) | **`AgoraRtc`** on API — [10_Agora_Twilio_Setup.md](./10_Agora_Twilio_Setup.md) |
 | **Real SMS** | **`Twilio`** on API when not using Development log OTP |
-| **AI assistant (real model)** | **`PatientAssistant`** Azure OpenAI keys on API — see API **`appsettings.json`** / checklist |
+| **AI assistant (real model)** | **`PatientAssistant`** Azure OpenAI keys on the API — [16_Azure_OpenAI_Setup.md](./16_Azure_OpenAI_Setup.md) |
 | **Push notifications** | **`FirebasePush:ServiceAccountJsonPath`** on API — [Mobile_Release_Ready_Checklist.md](./checklist/Mobile_Release_Ready_Checklist.md) |
 | **Appointments demo defaults** | **`Appointments:DefaultClinicId`** / **`DefaultProviderId`** in mobile **`appsettings.Development.json`** — seeded demo IDs: `11111111-1111-1111-1111-111111111101` (clinic) and `11111111-1111-1111-1111-111111111102` (provider) |
 

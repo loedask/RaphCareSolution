@@ -2,6 +2,20 @@
 
 ## Date
 
+2026-09-04
+
+## High-level summary of changes
+
+Wired the cheap Azure OpenAI path (gpt-4.1-mini, pay-as-you-go Global Standard) for patient assistant chat and AI discharge drafts, with a provision script and staging App Service settings.
+
+## Modules modified
+
+- **Application / Infrastructure / API / tests / docs / scripts:** default `gpt-4.1-mini` deployment; named HttpClient; `scripts/New-RaphCareAzureOpenAi.ps1`; `docs/16_Azure_OpenAI_Setup.md`.
+
+---
+
+## Date
+
 2026-09-02
 
 ## High-level summary of changes

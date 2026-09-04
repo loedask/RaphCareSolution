@@ -25,6 +25,8 @@ RaphCare.Mobile.Tests/obj/
 RaphCare.Mobile.Tests/bin/
 RaphCare.Application.Tests/obj/
 RaphCare.Application.Tests/bin/
+RaphCare.Infrastructure.Tests/obj/
+RaphCare.Infrastructure.Tests/bin/
 RaphCare.Client.Tests/obj/
 RaphCare.Client.Tests/bin/
 RaphCare.Web.Tests/obj/
