@@ -1,6 +1,8 @@
 @if (!string.IsNullOrEmpty(Href))
 {
-    <a class="hospital-deck-rail-item is-link" href="@Href">
+    <a class="hospital-deck-rail-item is-link @(IsActive ? "is-active" : null)"
+       href="@Href"
+       aria-current="@(IsActive ? "page" : null)">
         <span class="hospital-deck-rail-index" aria-hidden="true">@Index</span>
         <HospitalDeckIcon Name="@Icon" />
         @ChildContent
