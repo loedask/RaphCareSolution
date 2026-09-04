@@ -40,7 +40,7 @@ public sealed class AiAssistantViewModel : BaseViewModel
         set
         {
             SetProperty(ref _draftMessage, value);
-            ((Command)SendCommand).ChangeCanExecute();
+            RaiseCanExecuteChanged(SendCommand);
         }
     }
 
@@ -74,7 +74,7 @@ public sealed class AiAssistantViewModel : BaseViewModel
 
         ErrorMessage = null;
         IsBusy = true;
-        ((Command)SendCommand).ChangeCanExecute();
+        RaiseCanExecuteChanged(SendCommand);
         try
         {
             var response = await _assistant.SendMessageAsync(
@@ -94,7 +94,7 @@ public sealed class AiAssistantViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
-            ((Command)SendCommand).ChangeCanExecute();
+            RaiseCanExecuteChanged(SendCommand);
         }
     }
 }

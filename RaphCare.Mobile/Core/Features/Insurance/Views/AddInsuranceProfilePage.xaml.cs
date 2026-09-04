@@ -1,3 +1,4 @@
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Features.Insurance.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
 
@@ -17,6 +18,6 @@ public partial class AddInsuranceProfilePage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is AddInsuranceProfileViewModel vm)
-            await vm.LoadPlansAsync();
+            await SafePageLoad.RunAsync(() => vm.LoadPlansAsync());
     }
 }

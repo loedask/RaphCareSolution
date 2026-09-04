@@ -85,3 +85,7 @@ Write-Host "Sideload this file (uninstall any older RaphCare build first if inst
 Write-Host "  $(Join-Path $artifactsDir ($version.FileStem + '.apk'))"
 Write-Host "Package id: com.yindula.raphcare"
 Write-Host "Display version $($version.DisplayVersion), build $($version.VersionCode)"
+Write-Host ""
+Write-Host "Partner note (create/update if this is a new version for the partner):"
+Write-Host "  docs/mobile-updates/mobile-update-v$($version.DisplayVersion).md"
+Write-Host "  scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version $($version.DisplayVersion)"

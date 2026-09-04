@@ -726,11 +726,14 @@
   <data name="Common_HospitalIsActive" xml:space="preserve">
     <value>Hospital is active</value>
   </data>
+  <data name="Common_AllowAiDischargeDraft" xml:space="preserve">
+    <value>Allow AI discharge draft</value>
+  </data>
   <data name="Common_OrganizationDetails" xml:space="preserve">
     <value>Organization details</value>
   </data>
   <data name="Common_UpdateHospitalLead" xml:space="preserve">
-    <value>Update your hospital name, country, and time zone.</value>
+    <value>Update your hospital name, country, time zone, and whether AI may draft discharge summaries.</value>
   </data>
   <data name="Common_HospitalProfileEyebrow" xml:space="preserve">
     <value>Hospital profile</value>
@@ -2807,6 +2810,9 @@
   </data>
   <data name="Inpatient_CouldNotDraftSummary" xml:space="preserve">
     <value>Could not draft the discharge summary.</value>
+  </data>
+  <data name="Inpatient_AiDraftDisabled" xml:space="preserve">
+    <value>AI drafting is turned off for this hospital. Turn it on under Organization details, or write the summary by hand.</value>
   </data>
   <data name="Inpatient_NightlyRateLabel" xml:space="preserve">
     <value>Nightly bed rate</value>

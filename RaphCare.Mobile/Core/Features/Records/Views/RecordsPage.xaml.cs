@@ -1,3 +1,4 @@
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Features.Records.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
 
@@ -18,8 +19,11 @@ public partial class RecordsPage : ContentPage
         base.OnAppearing();
         if (BindingContext is RecordsViewModel vm)
         {
-            vm.Attach();
-            await vm.LoadAsync();
+            await SafePageLoad.RunAsync(async () =>
+            {
+                vm.Attach();
+                await vm.LoadAsync();
+            });
         }
     }
 

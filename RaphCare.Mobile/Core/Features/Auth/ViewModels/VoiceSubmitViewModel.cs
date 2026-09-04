@@ -129,7 +129,7 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
             OnPropertyChanged(nameof(SuccessTranscription));
             OnPropertyChanged(nameof(ShowSuccess));
             OnPropertyChanged(nameof(ShowIntroChrome));
-            (StartRecordingCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(StartRecordingCommand);
         }
     }
 
@@ -145,9 +145,9 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
             _isRecording = value;
             OnPropertyChanged(nameof(IsRecording));
             OnPropertyChanged(nameof(ShowIntroChrome));
-            (StartRecordingCommand as Command)?.ChangeCanExecute();
-            (StopRecordingCommand as Command)?.ChangeCanExecute();
-            (HearExampleCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(StartRecordingCommand);
+            RaiseCanExecuteChanged(StopRecordingCommand);
+            RaiseCanExecuteChanged(HearExampleCommand);
         }
     }
 
@@ -161,8 +161,8 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
             _isProcessing = value;
             OnPropertyChanged(nameof(IsProcessing));
             OnPropertyChanged(nameof(ShowIntroChrome));
-            (StartRecordingCommand as Command)?.ChangeCanExecute();
-            (HearExampleCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(StartRecordingCommand);
+            RaiseCanExecuteChanged(HearExampleCommand);
         }
     }
 
@@ -175,8 +175,8 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
                 return;
             _isSpeaking = value;
             OnPropertyChanged(nameof(IsSpeaking));
-            (StartRecordingCommand as Command)?.ChangeCanExecute();
-            (HearExampleCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(StartRecordingCommand);
+            RaiseCanExecuteChanged(HearExampleCommand);
         }
     }
 
@@ -361,7 +361,7 @@ public sealed class VoiceSubmitViewModel : BaseViewModel, IQueryAttributable, ID
             IsBusy = false;
             TryDeleteFile(_recordingPath);
             _recordingPath = null;
-            (StartRecordingCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(StartRecordingCommand);
         }
     }
 

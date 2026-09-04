@@ -1,5 +1,6 @@
 using RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
+using RaphCare.Mobile.Core.Common.Navigation;
 
 namespace RaphCare.Mobile.Core.Features.CareTelehealth.Views;
 
@@ -17,6 +18,6 @@ public partial class CareTelehealthPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is CareTelehealthViewModel vm)
-            await vm.LoadAsync();
+            await SafePageLoad.RunAsync(() => vm.LoadAsync());
     }
 }

@@ -1,4 +1,5 @@
 using RaphCare.Client;
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Features.Records;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
 using RaphCare.Mobile.Resources.Strings;
@@ -25,16 +26,6 @@ public partial class App : Application
             return;
 
         MobileServiceHub.GetRequiredService<CollectionCheckInStore>().SetClinic(clinicId);
-        MainThread.BeginInvokeOnMainThread(async () =>
-        {
-            try
-            {
-                await Shell.Current.GoToAsync("//RecordsPage");
-            }
-            catch
-            {
-                // User may still be on the sign-in screen.
-            }
-        });
+        _ = SafeShellNavigator.GoToAsync("//RecordsPage");
     }
 }

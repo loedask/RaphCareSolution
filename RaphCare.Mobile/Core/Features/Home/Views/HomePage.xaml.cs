@@ -1,3 +1,4 @@
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Features.Home.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
 
@@ -19,6 +20,6 @@ public partial class HomePage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.RefreshAsync();
+        await SafePageLoad.RunAsync(() => _viewModel.RefreshAsync());
     }
 }

@@ -2,6 +2,48 @@
 
 ## Date
 
+2026-09-04
+
+## High-level summary of changes
+
+Release **1.6.0**: Azure OpenAI gpt-4.1-mini (pay-as-you-go) for patient assistant chat and AI discharge drafts on staging. Includes Android crash hardening from unreleased 1.5.1. Mobile display version **1.6.0**, Android versionCode **10**.
+
+## Modules modified
+
+- **Mobile / docs:** `ApplicationDisplayVersion` / `ApplicationVersion` bump; partner update 4 Sep 2026; mobile update v1.6.0.
+
+---
+
+## Date
+
+2026-09-04
+
+## High-level summary of changes
+
+Wired the cheap Azure OpenAI path (gpt-4.1-mini, pay-as-you-go Global Standard) for patient assistant chat and AI discharge drafts, with a provision script and staging App Service settings.
+
+## Modules modified
+
+- **Application / Infrastructure / API / tests / docs / scripts:** default `gpt-4.1-mini` deployment; named HttpClient; `scripts/New-RaphCareAzureOpenAi.ps1`; `docs/16_Azure_OpenAI_Setup.md`.
+
+---
+
+## Date
+
+2026-09-03
+
+## High-level summary of changes
+
+Mobile **1.5.1** (Android versionCode **9**): harden patient app against Android process kills (Book appointment and shared Picker / main-thread / OnAppearing guards). Partner-facing `docs/mobile-updates/` notes per APK version.
+
+## Modules modified
+
+- **Mobile / Mobile.Kernel / Mobile.Tests / docs / scripts:** crash hardening; mobile update template and PDF export; APK version bump.
+
+---
+
+## Date
+
 2026-09-02
 
 ## High-level summary of changes

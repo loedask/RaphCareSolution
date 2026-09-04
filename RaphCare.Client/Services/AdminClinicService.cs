@@ -2814,6 +2814,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         Country = dto.Country,
         TimeZone = dto.TimeZone,
         IsActive = dto.IsActive,
+        AllowAiDischargeDraft = dto.AllowAiDischargeDraft,
         CreatedAt = dto.CreatedAt,
         RegisteredByApplicationUserId = dto.RegisteredByApplicationUserId,
         CurrentUserIsAdministrator = dto.CurrentUserIsAdministrator,
@@ -3213,6 +3214,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string Country { get; set; } = string.Empty;
         public string TimeZone { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+        public bool AllowAiDischargeDraft { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid? RegisteredByApplicationUserId { get; set; }
         public bool CurrentUserIsAdministrator { get; set; }

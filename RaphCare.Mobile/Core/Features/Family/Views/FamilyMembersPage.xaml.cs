@@ -1,5 +1,6 @@
 using RaphCare.Mobile.Core.Features.Family.ViewModels;
 using RaphCare.Mobile.Core.Infrastructure.Composition;
+using RaphCare.Mobile.Core.Common.Navigation;
 
 namespace RaphCare.Mobile.Core.Features.Family.Views;
 
@@ -17,6 +18,6 @@ public partial class FamilyMembersPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is FamilyMembersViewModel vm)
-            await vm.LoadAsync();
+            await SafePageLoad.RunAsync(() => vm.LoadAsync());
     }
 }

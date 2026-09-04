@@ -74,23 +74,37 @@ public sealed class AddInsuranceProfileViewModel : BaseViewModel
         try
         {
             var response = await _insurance.GetActivePlansAsync(CancellationToken.None).ConfigureAwait(false);
-            if (!response.IsSuccess || response.Data is null)
+            await RunOnMainThreadAsync(() =>
             {
-                ErrorMessage = response.ErrorMessage ?? T("InsurancePlansLoadFailed");
-                return;
-            }
+                SelectedPlan = null;
+                Plans.Clear();
 
-            Plans.Clear();
-            foreach (var p in response.Data)
-            {
-                Plans.Add(new InsurancePlanPickerItem
+                if (!response.IsSuccess || response.Data is null)
                 {
-                    Id = p.Id,
-                    DisplayName = string.IsNullOrWhiteSpace(p.Code) ? p.Name : $"{p.Name} ({p.Code})"
-                });
-            }
+                    ErrorMessage = response.ErrorMessage ?? T("InsurancePlansLoadFailed");
+                    return;
+                }
 
-            SelectedPlan = Plans.Count > 0 ? Plans[0] : null;
+                foreach (var p in response.Data)
+                {
+                    Plans.Add(new InsurancePlanPickerItem
+                    {
+                        Id = p.Id,
+                        DisplayName = string.IsNullOrWhiteSpace(p.Code) ? p.Name : $"{p.Name} ({p.Code})"
+                    });
+                }
+
+                SelectedPlan = Plans.Count > 0 ? Plans[0] : null;
+            }).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            await RunOnMainThreadAsync(() =>
+            {
+                ErrorMessage = T("InsurancePlansLoadFailed");
+                SelectedPlan = null;
+                Plans.Clear();
+            }).ConfigureAwait(false);
         }
         finally
         {

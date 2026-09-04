@@ -24,7 +24,8 @@ public sealed class RegisterClinicHandler(
             ReferenceCode = await AllocateReferenceCodeAsync(cancellationToken).ConfigureAwait(false),
             Country = request.Country.Trim(),
             TimeZone = request.TimeZone.Trim(),
-            IsActive = true
+            IsActive = true,
+            AllowAiDischargeDraft = true
         };
 
         Facility? facility = null;

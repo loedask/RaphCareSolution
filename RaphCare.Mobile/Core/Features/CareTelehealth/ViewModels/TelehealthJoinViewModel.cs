@@ -139,7 +139,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         set
         {
             SetProperty(ref _chatInput, value);
-            (SendChatCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(SendChatCommand);
         }
     }
 
@@ -246,8 +246,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
             OnPropertyChanged(nameof(ShowConsultationLayout));
             OnPropertyChanged(nameof(ShowStartVideo));
             OnPropertyChanged(nameof(ShowEndVideo));
-            (StartVideoCommand as Command)?.ChangeCanExecute();
-            (EndVideoCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(StartVideoCommand, EndVideoCommand);
 
             if (_inCall)
                 StartCallTimer();
@@ -327,7 +326,11 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
             _rtcConfigured = j.RtcConfigured;
             OnPropertyChanged(nameof(CanStartVideo));
             OnPropertyChanged(nameof(ShowStartVideo));
-            (StartVideoCommand as Command)?.ChangeCanExecute();
+            RaiseCanExecuteChanged(StartVideoCommand);
+        }
+        catch (Exception)
+        {
+            ErrorMessage = T("CareTelehealthJoinFailed");
         }
         finally
         {
@@ -353,7 +356,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
 
             if (!result.Success)
             {
-                await Shell.Current.DisplayAlertAsync(Title, result.ErrorMessage ?? T("CareTelehealthVideoStartFailed"), T("CommonOk"));
+                await DisplayAlertSafeAsync(Title, result.ErrorMessage ?? T("CareTelehealthVideoStartFailed"), T("CommonOk"));
                 return;
             }
 
@@ -465,12 +468,12 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
     {
         if (string.IsNullOrEmpty(_fullToken))
         {
-            await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthTokenUnset"), T("CommonOk"));
+            await DisplayAlertSafeAsync(Title, T("CareTelehealthTokenUnset"), T("CommonOk"));
             return;
         }
 
         await Clipboard.Default.SetTextAsync(_fullToken);
-        await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthCopied"), T("CommonOk"));
+        await DisplayAlertSafeAsync(Title, T("CareTelehealthCopied"), T("CommonOk"));
     }
 
     private async Task SendSmsAsync()
@@ -482,11 +485,11 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
             var response = await _telehealth.SendSessionSmsAsync(_sessionId, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
             {
-                await Shell.Current.DisplayAlertAsync(Title, response.ErrorMessage ?? T("CareTelehealthSmsFailed"), T("CommonOk"));
+                await DisplayAlertSafeAsync(Title, response.ErrorMessage ?? T("CareTelehealthSmsFailed"), T("CommonOk"));
                 return;
             }
 
-            await Shell.Current.DisplayAlertAsync(Title, T("CareTelehealthSmsSent"), T("CommonOk"));
+            await DisplayAlertSafeAsync(Title, T("CareTelehealthSmsSent"), T("CommonOk"));
         }
         finally
         {
@@ -522,7 +525,7 @@ public sealed class TelehealthJoinViewModel : BaseViewModel, IDisposable
         var response = await _telehealth.SendChatMessageAsync(_sessionId, text, CancellationToken.None).ConfigureAwait(false);
         if (!response.IsSuccess)
         {
-            await Shell.Current.DisplayAlertAsync(Title, response.ErrorMessage ?? T("ConsultationChatSendFailed"), T("CommonOk"));
+            await DisplayAlertSafeAsync(Title, response.ErrorMessage ?? T("ConsultationChatSendFailed"), T("CommonOk"));
             return;
         }
 

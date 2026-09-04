@@ -9,6 +9,7 @@ public sealed class ClinicDetailDto
     public string Country { get; set; } = string.Empty;
     public string TimeZone { get; set; } = string.Empty;
     public bool IsActive { get; set; }
+    public bool AllowAiDischargeDraft { get; set; }
     public DateTime CreatedAt { get; set; }
     public Guid? RegisteredByApplicationUserId { get; set; }
     public bool CurrentUserIsAdministrator { get; set; }

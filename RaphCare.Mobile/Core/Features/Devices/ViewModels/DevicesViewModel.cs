@@ -106,8 +106,7 @@ public sealed class DevicesViewModel : BaseViewModel
                 return;
             _isScanningUi = value;
             OnPropertyChanged(nameof(IsScanningUi));
-            if (StopScanCommand is Command c)
-                c.ChangeCanExecute();
+            RaiseCanExecuteChanged(StopScanCommand);
         }
     }
 
@@ -308,21 +307,24 @@ public sealed class DevicesViewModel : BaseViewModel
         {
             IsScanningUi = false;
             IsBusy = false;
-            RefreshItems();
-            if (ScanCommand is Command sc)
-                sc.ChangeCanExecute();
-            if (StopScanCommand is Command st)
-                st.ChangeCanExecute();
+            await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
+            RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
         }
     }
 
     private async Task StopScanAsync()
     {
-        await _ble.StopScanAsync().ConfigureAwait(false);
-        IsScanningUi = false;
-        StatusHint = T("DevicesScanStopped");
-        if (StopScanCommand is Command st)
-            st.ChangeCanExecute();
+        try
+        {
+            await _ble.StopScanAsync().ConfigureAwait(false);
+            IsScanningUi = false;
+            StatusHint = T("DevicesScanStopped");
+        }
+        finally
+        {
+            await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
+            RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
+        }
     }
 
     private async Task ConnectAsync(Guid deviceId)
@@ -345,9 +347,6 @@ public sealed class DevicesViewModel : BaseViewModel
             else if (name.Contains("ET585", StringComparison.OrdinalIgnoreCase)
                      || name.Contains("E585", StringComparison.OrdinalIgnoreCase))
                 ModelSku = PatientProvisionedDeviceSkus.E585;
-
-            if (DisconnectCommand is Command d)
-                d.ChangeCanExecute();
         }
         catch (Exception ex)
         {
@@ -356,6 +355,8 @@ public sealed class DevicesViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
+            await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
+            RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
         }
     }
 
@@ -371,12 +372,12 @@ public sealed class DevicesViewModel : BaseViewModel
             _lastSpo2At = null;
             SyncResultText = null;
             StatusHint = T("DevicesDisconnected");
-            if (DisconnectCommand is Command d)
-                d.ChangeCanExecute();
         }
         finally
         {
             IsBusy = false;
+            await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
+            RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
         }
     }
 

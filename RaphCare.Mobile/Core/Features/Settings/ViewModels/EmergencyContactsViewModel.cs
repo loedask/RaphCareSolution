@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Mobile.Core.Features.Settings.Models;
 using RaphCare.Mobile.Core.Features.Settings.Services;
@@ -117,8 +116,12 @@ public sealed class EmergencyContactsViewModel : BaseViewModel
             var response = await _api.GetMyEmergencyContactsAsync(CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? T("EmergencyContactsLoadFailed");
-                LoadFromLocalCache();
+                var failMessage = response.ErrorMessage ?? T("EmergencyContactsLoadFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = failMessage;
+                    LoadFromLocalCache();
+                }).ConfigureAwait(false);
                 return;
             }
 
@@ -253,8 +256,7 @@ public sealed class EmergencyContactsViewModel : BaseViewModel
                 return;
             }
 
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-                await Shell.Current.DisplayAlertAsync(Title, RemovedText, T("CommonOk")));
+            await DisplayAlertSafeAsync(Title, RemovedText, T("CommonOk"));
             await LoadAsync().ConfigureAwait(false);
         }
         finally
@@ -264,6 +266,5 @@ public sealed class EmergencyContactsViewModel : BaseViewModel
     }
 
     private static Task AlertAsync(string message) =>
-        MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(T("EmergencyContactsTitle"), message, T("CommonOk")));
+        DisplayAlertSafeAsync(T("EmergencyContactsTitle"), message, T("CommonOk"));
 }

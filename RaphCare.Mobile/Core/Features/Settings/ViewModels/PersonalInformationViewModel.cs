@@ -1,9 +1,8 @@
 using System.Windows.Input;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Profile;
 using RaphCare.Mobile.Core.Features.Settings.Services;
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
@@ -143,7 +142,7 @@ public sealed class PersonalInformationViewModel : BaseViewModel
             var response = await _profileApi.UpdateMyProfileAsync(request, CancellationToken.None).ConfigureAwait(false);
             if (!response.IsSuccess)
             {
-                await ShowAlertAsync(T("PersonalInformationSaveFailed"));
+                await DisplayAlertSafeAsync(T("PersonalInformationTitle"), T("PersonalInformationSaveFailed"), T("CommonOk"));
                 return;
             }
 
@@ -154,18 +153,14 @@ public sealed class PersonalInformationViewModel : BaseViewModel
             _local.Gender = request.Gender;
             _local.Address = Address.Trim();
 
-            await ShowAlertAsync(T("PersonalInformationSaved"));
-            await MainThread.InvokeOnMainThreadAsync(async () => await Shell.Current.GoToAsync(".."));
+            await DisplayAlertSafeAsync(T("PersonalInformationTitle"), T("PersonalInformationSaved"), T("CommonOk"));
+            await SafeShellNavigator.GoToAsync("..");
         }
         finally
         {
             IsBusy = false;
         }
     }
-
-    private static Task ShowAlertAsync(string message) =>
-        MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(T("PersonalInformationTitle"), message, T("CommonOk")));
 
     private static int MapGenderToIndex(string stored) =>
         stored switch

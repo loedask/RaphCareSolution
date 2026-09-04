@@ -1,3 +1,4 @@
+using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Features.Devices.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Devices.Views;
@@ -14,7 +15,7 @@ public partial class DevicesPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is DevicesViewModel vm)
-            await vm.OnAppearingAsync().ConfigureAwait(true);
+            await SafePageLoad.RunAsync(() => vm.OnAppearingAsync());
     }
 
     protected override void OnDisappearing()
