@@ -20,7 +20,7 @@ public sealed class GetAdminClinicsHandlerTests
     private static readonly Guid InactiveClinicId = Guid.Parse("11111111-1111-1111-1111-111111111203");
 
     [Fact]
-    public async Task DemoHospitalAdmin_DoesNotSeeUnrelatedHospitals_EvenWithAdministratorRole()
+    public async Task DemoHospitalAdminDoesNotSeeUnrelatedHospitalsEvenWithAdministratorRole()
     {
         // Mirrors staging: demo.admin@raphcare.com is Administrator and a member of Demo Clinic only.
         var demoAdminUserId = Guid.Parse("11111111-1111-1111-1111-111111111207");
@@ -49,7 +49,7 @@ public sealed class GetAdminClinicsHandlerTests
     }
 
     [Fact]
-    public async Task DemoOpsAdmin_WithoutMembership_SeesAllActiveHospitals_IncludingUnrelated()
+    public async Task DemoOpsAdminWithoutMembershipSeesAllActiveHospitalsIncludingUnrelated()
     {
         // Mirrors staging: demo.ops@raphcare.com is Administrator with no clinic membership.
         var demoOpsUserId = Guid.Parse("11111111-1111-1111-1111-111111111201");
@@ -78,7 +78,7 @@ public sealed class GetAdminClinicsHandlerTests
     }
 
     [Fact]
-    public async Task StaffWithoutAdministrator_SeesOnlyMembershipClinics()
+    public async Task StaffWithoutAdministratorSeesOnlyMembershipClinics()
     {
         var userId = Guid.Parse("11111111-1111-1111-1111-111111111204");
         var memberClinicId = Guid.Parse("11111111-1111-1111-1111-111111111205");

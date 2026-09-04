@@ -34,5 +34,6 @@
     <Project Path="RaphCare.Client.Tests/RaphCare.Client.Tests.csproj" />
     <Project Path="RaphCare.Mobile.Tests/RaphCare.Mobile.Tests.csproj" />
     <Project Path="RaphCare.Portal.Tests/RaphCare.Portal.Tests.csproj" />
+    <Project Path="RaphCare.Persistence.Tests/RaphCare.Persistence.Tests.csproj" />
   </Folder>
 </Solution>
