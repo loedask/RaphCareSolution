@@ -10,15 +10,15 @@ Every time `RaphCare.Mobile` gets a new `ApplicationDisplayVersion` and/or Andro
 
 | File | Purpose |
 |------|---------|
-| `mobile-update-v1.5.1.md` | Plain-language changelog for that APK |
-| `mobile-update-v1.5.1.config.json` | PDF export config |
-| `mobile-update-v1.5.1.pdf` | PDF to send with the APK |
+| `mobile-update-v1.6.0.md` | Plain-language changelog for that APK |
+| `mobile-update-v1.6.0.config.json` | PDF export config |
+| `mobile-update-v1.6.0.pdf` | PDF to send with the APK |
 | `mobile-update.pdf.css` | Shared styles (or reuse partner-update CSS) |
 
 ## Export PDF
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.5.1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.6.0
 ```
 
 ## Sideload APK

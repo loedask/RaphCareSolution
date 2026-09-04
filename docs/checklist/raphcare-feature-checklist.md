@@ -7,7 +7,7 @@ Plain-language twin for non-technical partners: [`raphcare-feature-checklist-par
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../Mobile_Concept_Port.md`](../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
 **Overall completion (this checklist):** **79%**  
-**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **81%**
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **82%**
 
 **How to mark items and score %**
 
@@ -131,7 +131,7 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ---
 
-## Step 3: Patient Mobile (concept parity + APIs) - 62%
+## Step 3: Patient Mobile (concept parity + APIs) - 63%
 
 Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobile.Kernel` / `FeatureFlags`.
 
@@ -142,7 +142,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 - [x] Forgot password (email code + new password)
 - [x] Register options: email / phone / voice
 - [x] Phone OTP send / verify -> API JWT
-- [x] Voice onboarding (record -> API)
+- [x] Voice onboarding (record, API, audio stored privately)
 - [x] Account created
 - [x] Home dashboard + quick links
 - [x] Monochrome tintable icons on Home, Profile, Privacy, and Help (no multicolor emoji)
@@ -162,7 +162,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
 | Mental health | [x] | [x] | [x] | Content + mood check-in |
-| AI assistant | [x] | [x] | [x] | Real Azure OpenAI or placeholder reply |
+| AI assistant | [x] | [x] | [x] | Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
 | Notifications | [x] | [x] | [x] | List / mark read / push registration |
 | Settings / profile | [x] | [x] | [x] | Edit, personal info, medical info, emergency contacts, privacy, help, language, change password, My clinic (name search / RC- code) |
 
@@ -228,7 +228,7 @@ Permissions / hardware UX:
 
 ### Mobile cross-cutting left
 
-- [ ] AI assistant production LLM `(partial)`: needs `PatientAssistant` Azure OpenAI config
+- [x] AI assistant production LLM: `gpt-4.1-mini` Global Standard (pay-as-you-go) via `scripts/New-RaphCareAzureOpenAi.ps1`; App Service `PatientAssistant` settings; `docs/16_Azure_OpenAI_Setup.md`
 - [ ] Dark mode resource dictionary `(out of scope for v1)` unless product reverses
 - [ ] Deep links / NotFound route UX
 - [ ] Prod feature-flag rollout plan filled in `Mobile_Release_Ready_Checklist.md`
@@ -241,7 +241,7 @@ Permissions / hardware UX:
 
 ### Step 3 status
 
-**62%.** Concept screens and patient APIs are largely in. Patients can pick a clinic by name or reference code. Home and Profile use monochrome tintable icons. Shell navigation and list loads are hardened against Android tap crashes. Android is ahead of iOS for video; BLE E580/E585 path exists; wearable catalog is in `docs/14`. Catch-up: phone/OS verification, iOS Agora, push config, store packaging, and wearables depth (live HR/SpO₂, auto sync, activity/sleep and related metrics).
+**63%.** Concept screens and patient APIs are largely in. Patients can pick a clinic by name or reference code. Home and Profile use monochrome tintable icons. Shell navigation and list loads are hardened against Android tap crashes. Azure OpenAI gpt-4.1-mini is the production assistant path when `PatientAssistant` is set. Android is ahead of iOS for video; BLE E580/E585 path exists; wearable catalog is in `docs/14`. Catch-up: phone/OS verification, iOS Agora, push config, store packaging, and wearables depth (live HR/SpO₂, auto sync, activity/sleep and related metrics).
 
 ---
 
@@ -361,13 +361,13 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 |------|--:|-------|
 | Step 1 Admin outpatient | 100% | Clinician Mobile out of scope |
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
-| Step 3 Patient Mobile | 62% | iOS video, push, wearables depth |
+| Step 3 Patient Mobile | 63% | iOS video, push, wearables depth; Azure OpenAI mini wired |
 | Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
 | Step 5 Hospital plan value | 100% | Stay extras closed for this step |
 | Step 6 Next wave (AI / ops) | n/a | Roadmap; optional/later excluded from overall |
 | Cross-cutting | 89% | Demo pack on Staging; private blob files; E2E smoke plan in, script open |
 | **Overall (scored items)** | **79%** | Steps 1-5 + Cross-cutting; out of scope / open optional excluded |
-| **Without wearable Phase 2+ metrics** | **81%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+| **Without wearable Phase 2+ metrics** | **82%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
 **Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, Phase A API smoke from [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md). Pull Step 6 items off `(optional / later)` when you schedule the next product wave.
 
@@ -399,6 +399,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 | [`../13_Patient_Device_Packages_and_Fleet.md`](../13_Patient_Device_Packages_and_Fleet.md) | Y6 / E580 / E585 fleet SKUs |
 | [`../14_Wearable_Capability_Catalog.md`](../14_Wearable_Capability_Catalog.md) | SKU-agnostic band features + delivery phases |
 | [`../10_Agora_Twilio_Setup.md`](../10_Agora_Twilio_Setup.md) | Telehealth RTC setup |
+| [`../16_Azure_OpenAI_Setup.md`](../16_Azure_OpenAI_Setup.md) | Patient assistant and AI discharge drafts |
 | [`../15_Web_Admin_On_Phone.md`](../15_Web_Admin_On_Phone.md) | Staff phone use of web admin: responsive UI, then thin install; not a full PWA |
 | [`../17_Azure_Blob_Storage.md`](../17_Azure_Blob_Storage.md) | Private photos and voice files |
 | [`../02_Solution_Structure.md`](../02_Solution_Structure.md) | Project layout |
