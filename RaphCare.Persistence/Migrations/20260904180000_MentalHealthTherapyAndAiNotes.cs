@@ -142,7 +142,7 @@ public partial class MentalHealthTherapyAndAiNotes : Migration
             {
                 Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                 TherapySessionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                Notes = table.Column<string>(type: "nvarchar(8000)", maxLength: 8000, nullable: false),
+                Notes = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
                 Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                 IsPrivate = table.Column<bool>(type: "bit", nullable: false),
                 RecordedAt = table.Column<DateTime>(type: "datetime2", nullable: false),

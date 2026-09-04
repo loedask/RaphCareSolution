@@ -1085,8 +1085,8 @@ namespace RaphCare.Persistence.Migrations
 
                     b.Property<string>("Notes")
                         .IsRequired()
-                        .HasMaxLength(8000)
-                        .HasColumnType("nvarchar(8000)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<DateTime>("RecordedAt")
                         .HasColumnType("datetime2");
