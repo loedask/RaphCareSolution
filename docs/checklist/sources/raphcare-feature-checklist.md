@@ -6,8 +6,8 @@ Plain-language twin for non-technical partners: [`raphcare-feature-checklist-par
 
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
-**Overall completion (this checklist):** **79%**  
-**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **82%**
+**Overall completion (this checklist):** **80%**  
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **83%**
 
 **How to mark items and score %**
 
@@ -163,7 +163,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
-| Mental health | [x] | [x] | [x] | Content + mood check-in |
+| Mental health | [x] | [x] | [x] | Content, mood check-in, patient PHQ-9 / GAD-7 self-assessment |
 | AI assistant | [x] | [x] | [x] | Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
 | Notifications | [x] | [x] | [x] | List / mark read / push registration |
 | Settings / profile | [x] | [x] | [x] | Edit, personal info, medical info, emergency contacts, privacy, help, language, change password, My clinic (name search / RC- code) |
@@ -248,23 +248,23 @@ Permissions / hardware UX:
 
 ---
 
-## Step 4: Staff / shared clinical APIs (non-admin-clinic) - 83%
+## Step 4: Staff / shared clinical APIs (non-admin-clinic) - 92%
 
 Broader API surface used by staff tools or integrations (not the patient app primary path).
 
 - [x] `PatientsController`, `ClinicalController`, `AppointmentsController` (staff-shaped)
 - [x] `DevicesController` (platform fleet create/assign/list), `TelemedicineController`, `BillingController`, `InsuranceController`
-- [x] `MentalHealthController` (staff assessments: placeholder data until persistence)
+- [x] `MentalHealthController` (assessments PHQ-9/GAD-7, therapy sessions/notes/crisis, behavioral care plans, AI note draft)
 - [x] `AIController`, `ReportingController`
 - [x] FHIR export (`api/fhir`)
 - [x] Standalone emergency webhook
 - [x] Clinic admin surfaces emergency events (patient chart + hospital Devices board)
-- [ ] Staff mental-health assessments persistence `(partial)`: list exists; real store TBD
+- [x] Staff mental-health depth: PHQ-9/GAD-7 item answers, therapy sessions, behavioral care plans, clinic AI note toggle, patient chart Care tab
 - [ ] Reporting depth / real dashboards beyond placeholders `(partial)` as product defines
 
 ### Step 4 status
 
-**83%.** Core staff and integration controllers are in. Mental-health persistence and reporting depth still thin.
+**92%.** Core staff and integration controllers are in. Mental health assessments, therapy, care plans, and AI note draft are wired. Reporting depth still thin.
 
 ---
 
@@ -328,7 +328,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 - [ ] Imaging draft report partner plug-in `(optional / later)`: X-ray or similar draft for radiologist edit (Mecha / Radley); do not build foundation models in-house first
 - [ ] External medical-records retrieval API `(optional / later)`: only if sites need other-EHR pull (Hubble-shaped)
-- [ ] Mental-health AI notes workspace `(optional / later)`: only if staff assessment persistence deepens (Klarify-shaped)
+- [x] Mental-health AI notes on patient chart `(shipped with therapy depth)`: redacted score prompt, hospital `AllowAiMentalHealthNotes` toggle, staff edits draft text
 
 ### Out of scope for RaphCare product
 
@@ -365,12 +365,12 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 | Step 1 Admin outpatient | 100% | Clinician Mobile out of scope |
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 63% | iOS video, push, wearables depth; Azure OpenAI mini wired |
-| Step 4 Staff / shared APIs | 83% | Persistence / reporting polish |
+| Step 4 Staff / shared APIs | 92% | Therapy, care plans, AI MH notes; reporting polish |
 | Step 5 Hospital plan value | 100% | Stay extras closed for this step |
 | Step 6 Next wave (AI / ops) | n/a | Roadmap; optional/later excluded from overall |
 | Cross-cutting | 89% | Demo pack on Staging; private blob files; E2E smoke plan in, script open |
-| **Overall (scored items)** | **79%** | Steps 1-5 + Cross-cutting; out of scope / open optional excluded |
-| **Without wearable Phase 2+ metrics** | **82%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+| **Overall (scored items)** | **80%** | Steps 1-5 + Cross-cutting; out of scope / open optional excluded |
+| **Without wearable Phase 2+ metrics** | **83%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
 **Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, Phase A API smoke from [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md). Pull Step 6 items off `(optional / later)` when you schedule the next product wave.
 

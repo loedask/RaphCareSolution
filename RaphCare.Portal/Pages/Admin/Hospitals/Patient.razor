@@ -2,6 +2,7 @@
 @layout AdminLayout
 @using RaphCare.Domain.Common
 @using RaphCare.Client.Models.Clinical
+@using RaphCare.Client.Models.MentalHealth
 @using RaphCare.Client.Services.Base
 @inject NavigationManager Navigation
 @inject IUiCultureService CultureService
@@ -721,6 +722,360 @@
                         </div>
                     </AdminPageCard>
 
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_WellbeingEyebrow")"
+                                   Title="@AppResources.T("PatientDetail_AssessmentsTitle")"
+                                   Lead="@AppResources.T("PatientDetail_AssessmentsLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatAssessmentCount(_assessments.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            <AdminAlert Message="@_assessmentError" />
+                            @if (_loadingAssessments)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_Loading")</p>
+                            }
+                            else if (_assessments.Count == 0 && !_showInstrumentForm)
+                            {
+                                <p class="text-muted">@AppResources.T("PatientDetail_NoAssessments")</p>
+                            }
+                            else if (_assessments.Count > 0)
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Date")</th>
+                                                <th>@AppResources.T("Common_Type")</th>
+                                                <th>@AppResources.T("PatientDetail_Score")</th>
+                                                <th>@AppResources.T("PatientDetail_Severity")</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var row in _assessments)
+                                            {
+                                                <tr>
+                                                    <td>@FormatLocal(row.AssessedAt)</td>
+                                                    <td>@row.AssessmentType</td>
+                                                    <td>@(row.TotalScore?.ToString("0") ?? AppResources.T("Common_EmptyCell"))</td>
+                                                    <td>@row.SeverityLevel</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-ghost" disabled="@(_loadingAssessmentDetailId == row.Id)" @onclick="() => ToggleAssessmentDetailAsync(row.Id)">
+                                                            @(_expandedAssessmentId == row.Id
+                                                                ? AppResources.T("PatientDetail_HideAnswers")
+                                                                : AppResources.T("Common_Details"))
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                @if (_expandedAssessmentId == row.Id && _expandedAssessmentDetail is not null)
+                                                {
+                                                    <tr>
+                                                        <td colspan="5">
+                                                            <div class="table-wrap">
+                                                                <table class="data-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>#</th>
+                                                                                <th>@AppResources.T("PatientDetail_Question")</th>
+                                                                            <th>@AppResources.T("PatientDetail_Answer")</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var item in _expandedAssessmentDetail.Items)
+                                                                        {
+                                                                            <tr>
+                                                                                <td>@item.Order</td>
+                                                                                <td>@item.QuestionText</td>
+                                                                                <td>@item.ResponseValue (@(item.NumericScore?.ToString() ?? AppResources.T("Common_EmptyCell")))</td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+
+                            <div class="admin-page-actions" style="margin-top: 1rem;">
+                                @if (!_showInstrumentForm)
+                                {
+                                    <button type="button" class="btn btn-secondary" disabled="@_loadingInstrument" @onclick='() => BeginInstrumentAsync("PHQ-9")'>
+                                        @(_loadingInstrument ? AppResources.T("Common_Loading") : AppResources.T("PatientDetail_RecordPhq9"))
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" disabled="@_loadingInstrument" @onclick='() => BeginInstrumentAsync("GAD-7")'>
+                                        @(_loadingInstrument ? AppResources.T("Common_Loading") : AppResources.T("PatientDetail_RecordGad7"))
+                                    </button>
+                                }
+                            </div>
+
+                            @if (_showInstrumentForm && _instrument is not null)
+                            {
+                                <div style="margin-top: 1rem;">
+                                    <p class="text-muted">@_instrument.Instructions</p>
+                                    <div class="form-grid single-column" style="margin-bottom: 1rem;">
+                                        @foreach (var question in _instrument.Questions)
+                                        {
+                                            <div class="form-field">
+                                                <label>@question.Order. @question.QuestionText</label>
+                                                <select class="form-control"
+                                                        value="@(_instrumentAnswers.GetValueOrDefault(question.Order, -1))"
+                                                        @onchange="e => SetInstrumentAnswer(question.Order, e.Value?.ToString())">
+                                                    <option value="-1">@AppResources.T("PatientDetail_SelectAnswer")</option>
+                                                    @foreach (var opt in _instrument.Options)
+                                                    {
+                                                        <option value="@opt.NumericScore">@opt.Label (@opt.NumericScore)</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="admin-page-actions">
+                                        <button type="button" class="btn btn-primary" disabled="@(_savingAssessment || !InstrumentAnswersComplete)" @onclick="SaveInstrumentAsync">
+                                            @(_savingAssessment ? AppResources.T("Common_Saving") : AppResources.T("PatientDetail_SaveAssessment"))
+                                        </button>
+                                        <button type="button" class="btn btn-ghost" disabled="@_savingAssessment" @onclick="CancelInstrument">
+                                            @AppResources.T("Common_Cancel")
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_WellbeingEyebrow")"
+                                   Title="@AppResources.T("PatientDetail_TherapySessionsTitle")"
+                                   Lead="@AppResources.T("PatientDetail_TherapySessionsLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatTherapySessionCount(_therapySessions.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            <AdminAlert Message="@_therapyError" />
+                            @if (_loadingTherapy)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_Loading")</p>
+                            }
+                            else if (_therapySessions.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("PatientDetail_NoTherapySessions")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Date")</th>
+                                                <th>@AppResources.T("PatientDetail_SessionType")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_Summary")</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var session in _therapySessions)
+                                            {
+                                                <tr>
+                                                    <td>@FormatLocal(session.SessionStart)</td>
+                                                    <td>@session.SessionType</td>
+                                                    <td>@session.Status</td>
+                                                    <td>@(string.IsNullOrWhiteSpace(session.Summary) ? AppResources.T("Common_EmptyCell") : session.Summary)</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-ghost" @onclick="() => BeginAddNote(session.Id)">
+                                                            @AppResources.T("PatientDetail_AddTherapyNote")
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                @if (session.Notes.Count > 0)
+                                                {
+                                                    <tr>
+                                                        <td colspan="5">
+                                                            <ul class="text-muted">
+                                                                @foreach (var note in session.Notes)
+                                                                {
+                                                                    <li>@FormatLocal(note.RecordedAt): @note.Notes</li>
+                                                                }
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+
+                            <div class="admin-page-actions" style="margin-top: 1rem;">
+                                @if (!_showSessionForm)
+                                {
+                                    <button type="button" class="btn btn-secondary" @onclick="() => _showSessionForm = true">
+                                        @AppResources.T("PatientDetail_LogTherapySession")
+                                    </button>
+                                }
+                            </div>
+
+                            @if (_showSessionForm)
+                            {
+                                <div class="form-grid single-column" style="margin-top: 1rem;">
+                                    <div class="form-field">
+                                        <label>@AppResources.T("PatientDetail_SessionType")</label>
+                                        <input class="form-control" @bind="_newSessionType" />
+                                    </div>
+                                    <div class="form-field">
+                                        <label>@AppResources.T("PatientDetail_SessionSummary")</label>
+                                        <textarea class="form-control" rows="2" @bind="_newSessionSummary"></textarea>
+                                    </div>
+                                    <div class="admin-page-actions">
+                                        <button type="button" class="btn btn-primary" disabled="@_savingTherapy" @onclick="SaveTherapySessionAsync">
+                                            @(_savingTherapy ? AppResources.T("Common_Saving") : AppResources.T("PatientDetail_LogTherapySession"))
+                                        </button>
+                                        <button type="button" class="btn btn-ghost" disabled="@_savingTherapy" @onclick="CancelSessionForm">
+                                            @AppResources.T("Common_Cancel")
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (_noteSessionId is Guid noteSessionId)
+                            {
+                                <div class="form-grid single-column" style="margin-top: 1rem;">
+                                    <div class="form-field">
+                                        <label>@AppResources.T("PatientDetail_TherapyNote")</label>
+                                        <textarea class="form-control" rows="3" @bind="_newNoteText"></textarea>
+                                    </div>
+                                    <div class="form-field">
+                                        <label>@AppResources.T("PatientDetail_CrisisRiskOptional")</label>
+                                        <input class="form-control" @bind="_newCrisisRisk" placeholder="High / Moderate / Low" />
+                                    </div>
+                                    <div class="form-field">
+                                        <label>@AppResources.T("PatientDetail_CrisisDescription")</label>
+                                        <input class="form-control" @bind="_newCrisisDescription" />
+                                    </div>
+                                    <div class="admin-page-actions">
+                                        <button type="button" class="btn btn-primary" disabled="@(_savingTherapyNote || string.IsNullOrWhiteSpace(_newNoteText))" @onclick="() => SaveTherapyNoteAsync(noteSessionId)">
+                                            @(_savingTherapyNote ? AppResources.T("Common_Saving") : AppResources.T("PatientDetail_AddTherapyNote"))
+                                        </button>
+                                        <button type="button" class="btn btn-ghost" disabled="@_savingTherapyNote" @onclick="CancelNoteForm">
+                                            @AppResources.T("Common_Cancel")
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_WellbeingEyebrow")"
+                                   Title="@AppResources.T("PatientDetail_BehavioralCarePlansTitle")"
+                                   Lead="@AppResources.T("PatientDetail_BehavioralCarePlansLead")">
+                        <AdminPageCardMeta>
+                            <span class="admin-progress-pill">@FormatBehavioralPlanCount(_behavioralPlans.Count)</span>
+                        </AdminPageCardMeta>
+                        <div class="admin-page-card-body">
+                            <AdminAlert Message="@_carePlanError" />
+                            @if (_loadingCarePlans)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_Loading")</p>
+                            }
+                            else if (_behavioralPlans.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("PatientDetail_NoBehavioralCarePlans")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Title")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("PatientDetail_TherapyGoal")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var plan in _behavioralPlans)
+                                            {
+                                                <tr>
+                                                    <td>@plan.Title</td>
+                                                    <td>@plan.Status</td>
+                                                    <td>
+                                                        @if (plan.Goals.Count == 0)
+                                                        {
+                                                            @AppResources.T("Common_EmptyCell")
+                                                        }
+                                                        else
+                                                        {
+                                                            @string.Join("; ", plan.Goals.Select(g => g.GoalDescription))
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+
+                            <div class="admin-page-actions" style="margin-top: 1rem;">
+                                @if (!_showCarePlanForm)
+                                {
+                                    <button type="button" class="btn btn-secondary" @onclick="() => _showCarePlanForm = true">
+                                        @AppResources.T("PatientDetail_CreateCarePlan")
+                                    </button>
+                                }
+                            </div>
+
+                            @if (_showCarePlanForm)
+                            {
+                                <div class="form-grid single-column" style="margin-top: 1rem;">
+                                    <div class="form-field">
+                                        <label>@AppResources.T("PatientDetail_CarePlanTitle")</label>
+                                        <input class="form-control" @bind="_newPlanTitle" />
+                                    </div>
+                                    <div class="form-field">
+                                        <label>@AppResources.T("PatientDetail_CarePlanDescription")</label>
+                                        <textarea class="form-control" rows="2" @bind="_newPlanDescription"></textarea>
+                                    </div>
+                                    <div class="form-field">
+                                        <label>@AppResources.T("PatientDetail_TherapyGoal")</label>
+                                        <input class="form-control" @bind="_newPlanGoal" />
+                                    </div>
+                                    <div class="form-field">
+                                        <label>@AppResources.T("PatientDetail_GoalTargetDate")</label>
+                                        <input class="form-control" type="date" @bind="_newPlanGoalDate" />
+                                    </div>
+                                    <div class="admin-page-actions">
+                                        <button type="button" class="btn btn-primary" disabled="@(_savingCarePlan || string.IsNullOrWhiteSpace(_newPlanTitle) || string.IsNullOrWhiteSpace(_newPlanGoal))" @onclick="SaveCarePlanAsync">
+                                            @(_savingCarePlan ? AppResources.T("Common_Saving") : AppResources.T("PatientDetail_CreateCarePlan"))
+                                        </button>
+                                        <button type="button" class="btn btn-ghost" disabled="@_savingCarePlan" @onclick="CancelCarePlanForm">
+                                            @AppResources.T("Common_Cancel")
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </AdminPageCard>
+
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_WellbeingEyebrow")"
+                                   Title="@AppResources.T("PatientDetail_AiNoteDraftTitle")"
+                                   Lead="@AppResources.T("PatientDetail_AiNoteDraftLead")">
+                        <div class="admin-page-card-body">
+                            <AdminAlert Message="@_aiDraftError" />
+                            <div class="form-field">
+                                <label>@AppResources.T("PatientDetail_AiNoteTextarea")</label>
+                                <textarea class="form-control" rows="6" @bind="_aiDraftText"></textarea>
+                            </div>
+                            <div class="admin-page-actions" style="margin-top: 1rem;">
+                                <button type="button" class="btn btn-secondary" disabled="@_draftingAiNote" @onclick="DraftAiNoteAsync">
+                                    @(_draftingAiNote ? AppResources.T("Common_Loading") : AppResources.T("PatientDetail_DraftAiNote"))
+                                </button>
+                            </div>
+                        </div>
+                    </AdminPageCard>
+
                     <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
                                    Title="@AppResources.T("Common_VisitVitalsTitle")"
                                    Lead="@AppResources.T("Common_VisitVitalsLead")">
@@ -875,15 +1230,29 @@
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicalPatientDeviceReadingsService DeviceReadingsService { get; set; } = default!;
+    [Inject] private IMentalHealthService MentalHealthService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
 
     private bool _loading = true;
     private bool _loadingEmergencies;
+    private bool _loadingAssessments;
+    private bool _loadingInstrument;
+    private bool _savingAssessment;
+    private bool _loadingTherapy;
+    private bool _savingTherapy;
+    private bool _savingTherapyNote;
+    private bool _loadingCarePlans;
+    private bool _savingCarePlan;
+    private bool _draftingAiNote;
     private bool _revoking;
     private bool _isAdministrator;
     private string _tab = "overview";
     private string? _error;
     private string? _actionError;
+    private string? _assessmentError;
+    private string? _therapyError;
+    private string? _carePlanError;
+    private string? _aiDraftError;
     private string? _emergencyError;
     private bool _emergencyClinicContextMissing;
     private string? _clinicName;
@@ -894,6 +1263,28 @@
     private int _emergencyTotal;
     private int _emergencyPage = 1;
     private const int EmergencyPageSize = 20;
+    private List<MentalHealthAssessmentListItem> _assessments = [];
+    private bool _showInstrumentForm;
+    private MentalHealthInstrument? _instrument;
+    private Dictionary<int, int> _instrumentAnswers = new();
+    private Guid? _expandedAssessmentId;
+    private Guid? _loadingAssessmentDetailId;
+    private MentalHealthAssessmentDetail? _expandedAssessmentDetail;
+    private List<TherapySessionListItem> _therapySessions = [];
+    private bool _showSessionForm;
+    private string _newSessionType = "Individual";
+    private string _newSessionSummary = string.Empty;
+    private Guid? _noteSessionId;
+    private string _newNoteText = string.Empty;
+    private string _newCrisisRisk = string.Empty;
+    private string _newCrisisDescription = string.Empty;
+    private List<BehavioralCarePlanItem> _behavioralPlans = [];
+    private bool _showCarePlanForm;
+    private string _newPlanTitle = string.Empty;
+    private string _newPlanDescription = string.Empty;
+    private string _newPlanGoal = string.Empty;
+    private DateTime _newPlanGoalDate = DateTime.UtcNow.Date.AddDays(30);
+    private string _aiDraftText = string.Empty;
 
     private string BackUrl => HospitalDeckReturnUrl.Resolve(
         ClinicId,
@@ -939,11 +1330,18 @@
 
     private int CareSectionCount =>
         _patient is null
-            ? 0
+            ? _assessments.Count + _therapySessions.Count + _behavioralPlans.Count
             : _patient.MoodLogs.Count
+              + _assessments.Count
+              + _therapySessions.Count
+              + _behavioralPlans.Count
               + _patient.RecentVitals.Count
               + _patient.Appointments.Count
               + _patient.RecentVisits.Count;
+
+    private bool InstrumentAnswersComplete =>
+        _instrument is not null
+        && _instrument.Questions.All(q => _instrumentAnswers.ContainsKey(q.Order) && _instrumentAnswers[q.Order] is >= 0 and <= 3);
 
     protected override async Task OnInitializedAsync()
     {
@@ -965,6 +1363,9 @@
         {
             await LoadPhotoAsync();
             await LoadEmergenciesAsync(reset: true);
+            await LoadAssessmentsAsync();
+            await LoadTherapySessionsAsync();
+            await LoadBehavioralCarePlansAsync();
         }
     }
 
@@ -1038,6 +1439,305 @@
         _emergencyPage++;
         await LoadEmergenciesAsync(reset: false);
     }
+
+    private async Task LoadAssessmentsAsync()
+    {
+        _loadingAssessments = true;
+        _assessmentError = null;
+        var response = await MentalHealthService.GetAssessmentsAsync(ClinicId, PatientId, pageNumber: 1, pageSize: 50);
+        _loadingAssessments = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _assessmentError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotLoadAssessments");
+            _assessments = [];
+            return;
+        }
+
+        _assessments = response.Data.Items?.ToList() ?? [];
+    }
+
+    private async Task BeginInstrumentAsync(string assessmentType)
+    {
+        _assessmentError = null;
+        _loadingInstrument = true;
+        var response = await MentalHealthService.GetInstrumentAsync(assessmentType);
+        _loadingInstrument = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _assessmentError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotLoadInstrument");
+            return;
+        }
+
+        _instrument = response.Data;
+        _instrumentAnswers = new Dictionary<int, int>();
+        _showInstrumentForm = true;
+    }
+
+    private void CancelInstrument()
+    {
+        _showInstrumentForm = false;
+        _instrument = null;
+        _instrumentAnswers = new Dictionary<int, int>();
+    }
+
+    private void SetInstrumentAnswer(int order, string? value)
+    {
+        if (int.TryParse(value, out var score) && score is >= 0 and <= 3)
+            _instrumentAnswers[order] = score;
+        else
+            _instrumentAnswers.Remove(order);
+    }
+
+    private async Task SaveInstrumentAsync()
+    {
+        if (_instrument is null || !InstrumentAnswersComplete)
+            return;
+
+        _savingAssessment = true;
+        _assessmentError = null;
+        var request = new CreateMentalHealthAssessmentRequest
+        {
+            ClinicId = ClinicId,
+            PatientId = PatientId,
+            AssessmentType = _instrument.AssessmentType,
+            Answers = _instrument.Questions
+                .Select(q => new CreateMentalHealthAssessmentAnswerRequest
+                {
+                    Order = q.Order,
+                    NumericScore = _instrumentAnswers[q.Order]
+                })
+                .ToList()
+        };
+
+        var response = await MentalHealthService.CreateAssessmentAsync(request);
+        _savingAssessment = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _assessmentError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotSaveAssessment");
+            return;
+        }
+
+        CancelInstrument();
+        await LoadAssessmentsAsync();
+        _expandedAssessmentId = response.Data.Id;
+        _expandedAssessmentDetail = response.Data;
+    }
+
+    private async Task LoadTherapySessionsAsync()
+    {
+        _loadingTherapy = true;
+        _therapyError = null;
+        var response = await MentalHealthService.GetTherapySessionsAsync(ClinicId, PatientId, pageNumber: 1, pageSize: 50);
+        _loadingTherapy = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _therapyError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotLoadTherapySessions");
+            _therapySessions = [];
+            return;
+        }
+
+        _therapySessions = response.Data.Items?.ToList() ?? [];
+    }
+
+    private void CancelSessionForm()
+    {
+        _showSessionForm = false;
+        _newSessionType = "Individual";
+        _newSessionSummary = string.Empty;
+    }
+
+    private async Task SaveTherapySessionAsync()
+    {
+        _savingTherapy = true;
+        _therapyError = null;
+        var response = await MentalHealthService.CreateTherapySessionAsync(new CreateTherapySessionRequest
+        {
+            ClinicId = ClinicId,
+            PatientId = PatientId,
+            SessionType = string.IsNullOrWhiteSpace(_newSessionType) ? "Individual" : _newSessionType.Trim(),
+            Summary = string.IsNullOrWhiteSpace(_newSessionSummary) ? null : _newSessionSummary.Trim(),
+            IsConfidential = true
+        });
+        _savingTherapy = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _therapyError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotSaveTherapySession");
+            return;
+        }
+
+        CancelSessionForm();
+        await LoadTherapySessionsAsync();
+    }
+
+    private void BeginAddNote(Guid sessionId)
+    {
+        _noteSessionId = sessionId;
+        _newNoteText = string.Empty;
+        _newCrisisRisk = string.Empty;
+        _newCrisisDescription = string.Empty;
+        _therapyError = null;
+    }
+
+    private void CancelNoteForm()
+    {
+        _noteSessionId = null;
+        _newNoteText = string.Empty;
+        _newCrisisRisk = string.Empty;
+        _newCrisisDescription = string.Empty;
+    }
+
+    private async Task SaveTherapyNoteAsync(Guid sessionId)
+    {
+        if (string.IsNullOrWhiteSpace(_newNoteText))
+            return;
+
+        _savingTherapyNote = true;
+        _therapyError = null;
+        var response = await MentalHealthService.AddTherapyNoteAsync(new AddTherapyNoteRequest
+        {
+            ClinicId = ClinicId,
+            SessionId = sessionId,
+            Notes = _newNoteText.Trim(),
+            Category = "Progress",
+            IsPrivate = true,
+            CrisisRiskLevel = string.IsNullOrWhiteSpace(_newCrisisRisk) ? null : _newCrisisRisk.Trim(),
+            CrisisDescription = string.IsNullOrWhiteSpace(_newCrisisDescription) ? null : _newCrisisDescription.Trim()
+        });
+        _savingTherapyNote = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _therapyError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotSaveTherapyNote");
+            return;
+        }
+
+        CancelNoteForm();
+        await LoadTherapySessionsAsync();
+    }
+
+    private async Task LoadBehavioralCarePlansAsync()
+    {
+        _loadingCarePlans = true;
+        _carePlanError = null;
+        var response = await MentalHealthService.GetBehavioralCarePlansAsync(ClinicId, PatientId, pageNumber: 1, pageSize: 50);
+        _loadingCarePlans = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _carePlanError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotLoadCarePlans");
+            _behavioralPlans = [];
+            return;
+        }
+
+        _behavioralPlans = response.Data.Items?.ToList() ?? [];
+    }
+
+    private void CancelCarePlanForm()
+    {
+        _showCarePlanForm = false;
+        _newPlanTitle = string.Empty;
+        _newPlanDescription = string.Empty;
+        _newPlanGoal = string.Empty;
+        _newPlanGoalDate = DateTime.UtcNow.Date.AddDays(30);
+    }
+
+    private async Task SaveCarePlanAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newPlanTitle) || string.IsNullOrWhiteSpace(_newPlanGoal))
+            return;
+
+        _savingCarePlan = true;
+        _carePlanError = null;
+        var response = await MentalHealthService.CreateBehavioralCarePlanAsync(new CreateBehavioralCarePlanRequest
+        {
+            ClinicId = ClinicId,
+            PatientId = PatientId,
+            Title = _newPlanTitle.Trim(),
+            Description = _newPlanDescription.Trim(),
+            Goals =
+            [
+                new CreateBehavioralCarePlanGoalRequest
+                {
+                    GoalDescription = _newPlanGoal.Trim(),
+                    TargetDate = DateTime.SpecifyKind(_newPlanGoalDate.Date, DateTimeKind.Utc)
+                }
+            ]
+        });
+        _savingCarePlan = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _carePlanError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotSaveCarePlan");
+            return;
+        }
+
+        CancelCarePlanForm();
+        await LoadBehavioralCarePlansAsync();
+    }
+
+    private async Task DraftAiNoteAsync()
+    {
+        _draftingAiNote = true;
+        _aiDraftError = null;
+        var response = await MentalHealthService.DraftMentalHealthNoteAsync(new DraftMentalHealthNoteRequest
+        {
+            ClinicId = ClinicId,
+            PatientId = PatientId
+        });
+        _draftingAiNote = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _aiDraftError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotDraftAiNote");
+            return;
+        }
+
+        _aiDraftText = response.Data.DraftText;
+    }
+
+    private static string FormatTherapySessionCount(int count) =>
+        count == 1
+            ? AppResources.Format("PatientDetail_TherapySessionCountLabel", count)
+            : AppResources.Format("PatientDetail_TherapySessionCountLabelPlural", count);
+
+    private static string FormatBehavioralPlanCount(int count) =>
+        count == 1
+            ? AppResources.Format("PatientDetail_BehavioralPlanCountLabel", count)
+            : AppResources.Format("PatientDetail_BehavioralPlanCountLabelPlural", count);
+
+    private async Task ToggleAssessmentDetailAsync(Guid assessmentId)
+    {
+        if (_expandedAssessmentId == assessmentId)
+        {
+            _expandedAssessmentId = null;
+            _expandedAssessmentDetail = null;
+            return;
+        }
+
+        _loadingAssessmentDetailId = assessmentId;
+        _assessmentError = null;
+        var response = await MentalHealthService.GetAssessmentByIdAsync(ClinicId, assessmentId);
+        _loadingAssessmentDetailId = null;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _assessmentError = response.ErrorMessage ?? AppResources.T("PatientDetail_CouldNotLoadAssessment");
+            return;
+        }
+
+        _expandedAssessmentId = assessmentId;
+        _expandedAssessmentDetail = response.Data;
+    }
+
+    private static string FormatAssessmentCount(int count) =>
+        count == 1
+            ? AppResources.Format("PatientDetail_AssessmentCountLabel", count)
+            : AppResources.Format("PatientDetail_AssessmentCountLabelPlural", count);
 
     private string FormatLocal(DateTime utc) =>
         ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);

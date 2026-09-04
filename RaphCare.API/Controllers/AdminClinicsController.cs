@@ -135,7 +135,8 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
                 Country = body.Country,
                 TimeZone = body.TimeZone,
                 IsActive = body.IsActive,
-                AllowAiDischargeDraft = body.AllowAiDischargeDraft
+                AllowAiDischargeDraft = body.AllowAiDischargeDraft,
+                AllowAiMentalHealthNotes = body.AllowAiMentalHealthNotes
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);

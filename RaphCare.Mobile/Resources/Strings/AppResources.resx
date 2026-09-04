@@ -1388,6 +1388,39 @@ Accessible. Intelligent. Human.</value>
   <data name="MentalHealthMoodSaveFailed" xml:space="preserve">
     <value>Could not save your check-in. Please try again.</value>
   </data>
+  <data name="MentalHealthSelfAssessmentTitle" xml:space="preserve">
+    <value>Self-assessment</value>
+  </data>
+  <data name="MentalHealthSelfAssessmentHint" xml:space="preserve">
+    <value>Answer PHQ-9 or GAD-7 for your selected clinic. Scores are saved for your care team.</value>
+  </data>
+  <data name="MentalHealthStartPhq9" xml:space="preserve">
+    <value>Start PHQ-9</value>
+  </data>
+  <data name="MentalHealthStartGad7" xml:space="preserve">
+    <value>Start GAD-7</value>
+  </data>
+  <data name="MentalHealthSubmitAssessment" xml:space="preserve">
+    <value>Submit assessment</value>
+  </data>
+  <data name="MentalHealthCancelAssessment" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="MentalHealthSelectAnswer" xml:space="preserve">
+    <value>Select an answer</value>
+  </data>
+  <data name="MentalHealthInstrumentLoadFailed" xml:space="preserve">
+    <value>Could not load the assessment form.</value>
+  </data>
+  <data name="MentalHealthClinicRequired" xml:space="preserve">
+    <value>Select your clinic in Profile before submitting an assessment.</value>
+  </data>
+  <data name="MentalHealthSubmitFailed" xml:space="preserve">
+    <value>Could not save the assessment.</value>
+  </data>
+  <data name="MentalHealthSubmitSuccessFormat" xml:space="preserve">
+    <value>{0} saved. Score {1}, severity {2}.</value>
+  </data>
   <data name="CommonOk" xml:space="preserve">
     <value>OK</value>
   </data>

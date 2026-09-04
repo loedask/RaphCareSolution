@@ -7,4 +7,5 @@ public sealed class UpdateAdminClinicRequest
     public string TimeZone { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public bool AllowAiDischargeDraft { get; set; } = true;
+    public bool AllowAiMentalHealthNotes { get; set; } = true;
 }
