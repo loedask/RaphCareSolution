@@ -2,6 +2,20 @@
 
 ## Date
 
+2026-09-04
+
+## High-level summary of changes
+
+Private Azure Blob (local Development folder if no connection string) for patient profile photos and voice onboarding audio. Staff hospital charts can show the photo. Staging uses `scripts/New-RaphCareAzureBlobStorage.ps1`.
+
+## Modules modified
+
+- **Application / Infrastructure / API / Client / Web / tests / docs / scripts:** object store, staff photo endpoint, voice recording keys, hospital chart photo.
+
+---
+
+## Date
+
 2026-09-03
 
 ## High-level summary of changes

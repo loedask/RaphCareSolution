@@ -19,6 +19,9 @@ public class CreatePatientFromVoiceCommand : IRequest<CreatePatientFromVoiceResu
 
     /// <summary>Clinic to register the patient under.</summary>
     public Guid ClinicId { get; set; }
+
+    /// <summary>Audio content type from the upload (for example audio/wav).</summary>
+    public string ContentType { get; set; } = "audio/wav";
 }
 
 /// <summary>
