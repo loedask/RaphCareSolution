@@ -7,12 +7,17 @@
         }
     </div>
     <div class="stat-value">@Value</div>
+    @if (!string.IsNullOrEmpty(Hint))
+    {
+        <div class="stat-hint">@Hint</div>
+    }
 </div>
 
 @code {
     [Parameter] public string Label { get; set; } = string.Empty;
     [Parameter] public object? Value { get; set; }
     [Parameter] public string? Icon { get; set; }
+    [Parameter] public string? Hint { get; set; }
     [Parameter] public string Accent { get; set; } = "neutral";
 
     private string? AccentClass => Accent switch

@@ -1,5 +1,4 @@
 @typeparam TValue
-@inject IUiCultureService CultureService
 @inject IJSRuntime Js
 @implements IAsyncDisposable
 
@@ -24,15 +23,15 @@
             <input @ref="_searchInput"
                    class="searchable-select-search"
                    value="@_query"
-                   placeholder="@AppResources.T("Common_Search")"
-                   aria-label="@AppResources.T("Common_Search")"
+                   placeholder="@SearchLabel"
+                   aria-label="@SearchLabel"
                    autocomplete="off"
                    @oninput="OnQueryInput"
                    @onkeydown="OnSearchKeyDown" />
             <ul id="@_listId" class="searchable-select-list" role="listbox">
                 @if (Filtered.Count == 0)
                 {
-                    <li class="searchable-select-empty">@AppResources.T("Common_NoMatchingOptions")</li>
+                    <li class="searchable-select-empty">@EmptyLabel</li>
                 }
                 else
                 {
@@ -71,9 +70,13 @@
     private int _activeIndex;
     private IReadOnlyList<SelectOption<TValue>> _filtered = Array.Empty<SelectOption<TValue>>();
 
+    [CascadingParameter] public SearchableSelectLabels? Labels { get; set; }
+
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? CssClass { get; set; }
     [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? SearchPlaceholder { get; set; }
+    [Parameter] public string? EmptyText { get; set; }
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public TValue? Value { get; set; }
     [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
@@ -83,6 +86,16 @@
     private IReadOnlyList<SelectOption<TValue>> Filtered => _filtered;
 
     private bool HasValue => SelectedOption is not null;
+
+    private string SearchLabel =>
+        SearchPlaceholder
+        ?? Labels?.Search
+        ?? "Search";
+
+    private string EmptyLabel =>
+        EmptyText
+        ?? Labels?.NoMatchingOptions
+        ?? "No matching options";
 
     private SelectOption<TValue>? SelectedOption
     {
@@ -103,12 +116,6 @@
         ?? Placeholder
         ?? string.Empty;
 
-    protected override void OnInitialized()
-    {
-        CultureService.CultureChanged += OnCultureChanged;
-        RefreshFilter();
-    }
-
     protected override void OnParametersSet() => RefreshFilter();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -127,7 +134,7 @@
         try
         {
             await _searchInput.FocusAsync().ConfigureAwait(false);
-            await Js.InvokeVoidAsync("raphCareLocale.guardSelectKeys", _searchInput).ConfigureAwait(false);
+            await Js.InvokeVoidAsync("raphCareUi.guardSelectKeys", _searchInput).ConfigureAwait(false);
         }
         catch (JSException)
         {
@@ -136,8 +143,6 @@
         {
         }
     }
-
-    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
 
     private void OnQueryInput(ChangeEventArgs e)
     {
@@ -197,11 +202,8 @@
     [JSInvokable]
     public Task CloseFromOutside() => CloseAsync();
 
-    /// <summary>Closes the panel. Used by Inpatient capacity when starting "Add facility".</summary>
-    internal Task CloseAsync() => CloseCoreAsync();
-
-    /// <summary>Backward-compatible sync close for existing call sites.</summary>
-    internal void Close() => _ = CloseAsync();
+    /// <summary>Closes the panel (for example when starting a nested "Add" flow).</summary>
+    public Task CloseAsync() => CloseCoreAsync();
 
     private async Task CloseCoreAsync()
     {
@@ -220,7 +222,7 @@
         try
         {
             _dotNetRef ??= DotNetObjectReference.Create(this);
-            await Js.InvokeVoidAsync("raphCareLocale.bindSelectDismissOutside", _root, _dotNetRef)
+            await Js.InvokeVoidAsync("raphCareUi.bindSelectDismissOutside", _root, _dotNetRef)
                 .ConfigureAwait(false);
         }
         catch (JSException)
@@ -235,7 +237,7 @@
     {
         try
         {
-            await Js.InvokeVoidAsync("raphCareLocale.unbindSelectDismissOutside", _root)
+            await Js.InvokeVoidAsync("raphCareUi.unbindSelectDismissOutside", _root)
                 .ConfigureAwait(false);
         }
         catch (JSException)
@@ -280,7 +282,6 @@
 
     public async ValueTask DisposeAsync()
     {
-        CultureService.CultureChanged -= OnCultureChanged;
         await UnbindDismissOutsideAsync().ConfigureAwait(false);
         _dotNetRef?.Dispose();
         _dotNetRef = null;

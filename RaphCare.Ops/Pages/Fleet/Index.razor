@@ -32,15 +32,13 @@
             <div class="admin-page-card-body">
                 <div class="claim-form">
                     <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.75rem;">
-                        <label>
+                        <label class="fleet-select-field">
                             @AppResources.T("Common_Hospitals")
-                            <select class="form-control" @bind="_newClinicId">
-                                <option value="">@AppResources.T("Fleet_SelectHospital")</option>
-                                @foreach (var clinic in _clinics)
-                                {
-                                    <option value="@clinic.Id">@clinic.Name</option>
-                                }
-                            </select>
+                            <SearchableSelect TValue="string"
+                                              Placeholder="@AppResources.T("Fleet_SelectHospital")"
+                                              Value="_newClinicId"
+                                              ValueChanged="OnNewClinicChanged"
+                                              Options="HospitalSelectOptions" />
                         </label>
                         <label>
                             @AppResources.T("Fleet_SerialLabel")
@@ -87,15 +85,13 @@
             </AdminPageCardMeta>
             <div class="admin-page-card-body">
                 <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
-                    <label>
+                    <label class="fleet-select-field">
                         @AppResources.T("Common_Hospitals")
-                        <select class="form-control" @bind="_filterClinicId" @bind:after="ReloadListAsync">
-                            <option value="">@AppResources.T("Fleet_AllHospitals")</option>
-                            @foreach (var clinic in _clinics)
-                            {
-                                <option value="@clinic.Id">@clinic.Name</option>
-                            }
-                        </select>
+                        <SearchableSelect TValue="string"
+                                          Placeholder="@AppResources.T("Fleet_AllHospitals")"
+                                          Value="_filterClinicId"
+                                          ValueChanged="OnFilterClinicChangedAsync"
+                                          Options="HospitalFilterOptions" />
                     </label>
                     <label>
                         @AppResources.T("Fleet_SerialFilterLabel")
@@ -144,15 +140,12 @@
                                             else
                                             {
                                                 <div class="claim-form-row" style="gap: 0.5rem; flex-wrap: wrap;">
-                                                    <select class="form-control"
-                                                            value="@GetAssignPatient(device.Id)"
-                                                            @onchange="e => SetAssignPatient(device.Id, e.Value?.ToString())">
-                                                        <option value="">@AppResources.T("Fleet_SelectPatient")</option>
-                                                        @foreach (var patient in PatientsForClinic(device.ClinicId))
-                                                        {
-                                                            <option value="@patient.PatientId">@patient.FirstName @patient.LastName</option>
-                                                        }
-                                                    </select>
+                                                    <SearchableSelect TValue="string"
+                                                                      CssClass="fleet-assign-select"
+                                                                      Placeholder="@AppResources.T("Fleet_SelectPatient")"
+                                                                      Value="@GetAssignPatient(device.Id)"
+                                                                      ValueChanged="v => SetAssignPatient(device.Id, v)"
+                                                                      Options="PatientSelectOptions(device.ClinicId)" />
                                                     <button type="button"
                                                             class="btn btn-secondary btn-sm"
                                                             disabled="@(_assigningDeviceId == device.Id || string.IsNullOrWhiteSpace(GetAssignPatient(device.Id)))"
@@ -202,6 +195,28 @@
 
     private string _signInReturnUrl =>
         $"/signin?returnUrl={Uri.EscapeDataString(FleetPath)}";
+
+    private IReadOnlyList<SelectOption<string>> HospitalSelectOptions =>
+        _clinics.Select(c => new SelectOption<string>(c.Id.ToString(), c.Name)).ToArray();
+
+    private IReadOnlyList<SelectOption<string>> HospitalFilterOptions =>
+        new[] { new SelectOption<string>(string.Empty, AppResources.T("Fleet_AllHospitals")) }
+            .Concat(HospitalSelectOptions)
+            .ToArray();
+
+    private IReadOnlyList<SelectOption<string>> PatientSelectOptions(Guid clinicId) =>
+        PatientsForClinic(clinicId)
+            .Select(p => new SelectOption<string>(p.PatientId.ToString(), $"{p.FirstName} {p.LastName}"))
+            .ToArray();
+
+    private void OnNewClinicChanged(string? value) =>
+        _newClinicId = value ?? string.Empty;
+
+    private async Task OnFilterClinicChangedAsync(string? value)
+    {
+        _filterClinicId = value ?? string.Empty;
+        await ReloadListAsync();
+    }
 
     protected override async Task OnInitializedAsync()
     {

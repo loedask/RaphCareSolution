@@ -12,6 +12,8 @@ public sealed class TenantExemptApiPathsTests
     [InlineData("/api/devices")]
     [InlineData("/api/Devices")]
     [InlineData("/api/Devices/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")]
+    [InlineData("/api/ops")]
+    [InlineData("/api/ops/stats")]
     [InlineData("/api/admin/clinics")]
     [InlineData("/api/auth/email/signin")]
     [InlineData("/api/display/collection/abc")]

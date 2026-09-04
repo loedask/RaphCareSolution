@@ -10,5 +10,6 @@ public static class TenantExemptApiPaths
         path.StartsWith("/api/auth/email", StringComparison.OrdinalIgnoreCase)
         || path.StartsWith("/api/admin/", StringComparison.OrdinalIgnoreCase)
         || path.StartsWith("/api/display/", StringComparison.OrdinalIgnoreCase)
-        || path.StartsWith("/api/devices", StringComparison.OrdinalIgnoreCase);
+        || path.StartsWith("/api/devices", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/api/ops", StringComparison.OrdinalIgnoreCase);
 }

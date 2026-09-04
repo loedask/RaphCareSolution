@@ -45,6 +45,24 @@
   <data name="Home_PageTitle" xml:space="preserve"><value>Ops - RaphCare</value></data>
   <data name="Home_Title" xml:space="preserve"><value>Platform operations</value></data>
   <data name="Home_Lead" xml:space="preserve"><value>Manage RaphCare fleet inventory and other platform tools. Hospital day-to-day work stays in the Portal app.</value></data>
+  <data name="Home_AuthTitle" xml:space="preserve"><value>Sign in as platform admin</value></data>
+  <data name="Home_AuthLead" xml:space="preserve"><value>Platform stats need a RaphCare platform administrator account.</value></data>
+  <data name="Home_StatsTitle" xml:space="preserve"><value>Platform snapshot</value></data>
+  <data name="Home_StatsLead" xml:space="preserve"><value>Live counts across every hospital on this environment.</value></data>
+  <data name="Home_StatPatients" xml:space="preserve"><value>Patients</value></data>
+  <data name="Home_StatDoctors" xml:space="preserve"><value>Doctors</value></data>
+  <data name="Home_StatStaff" xml:space="preserve"><value>Staff memberships</value></data>
+  <data name="Home_StatFacilities" xml:space="preserve"><value>Facilities</value></data>
+  <data name="Home_StatDevices" xml:space="preserve"><value>Fleet devices</value></data>
+  <data name="Home_StatDevicesHint" xml:space="preserve"><value>{0} in stock, {1} assigned</value></data>
+  <data name="Home_StatAppointmentsToday" xml:space="preserve"><value>Appointments today</value></data>
+  <data name="Home_StatAdmissions" xml:space="preserve"><value>Active admissions</value></data>
+  <data name="Home_StatPendingInvites" xml:space="preserve"><value>Pending staff invites</value></data>
+  <data name="Home_StatEmergencies" xml:space="preserve"><value>SafeCare alerts (72h)</value></data>
+  <data name="Home_StatEmergenciesHint" xml:space="preserve"><value>SOS, fall, and related device events</value></data>
+  <data name="Home_CouldNotLoadStats" xml:space="preserve"><value>Could not load platform stats.</value></data>
+  <data name="Common_Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Common_NoMatchingOptions" xml:space="preserve"><value>No matching options</value></data>
   <data name="SignIn_PageTitle" xml:space="preserve"><value>Ops sign in - RaphCare</value></data>
   <data name="SignIn_Title" xml:space="preserve"><value>Sign in to Ops</value></data>
   <data name="SignIn_Subtitle" xml:space="preserve"><value>Use a RaphCare platform administrator account.</value></data>

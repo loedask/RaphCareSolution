@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
@@ -6,6 +7,7 @@ using RaphCare.Client.Models;
 using RaphCare.Portal.Resources.Strings;
 using RaphCare.Portal.Services;
 using RaphCare.Portal.Services.Localization;
+using RaphCare.Ui.Components;
 
 namespace RaphCare.Portal.Layout;
 
@@ -16,6 +18,12 @@ public partial class AdminLayout
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IUiCultureService CultureService { get; set; } = default!;
+
+    private static SearchableSelectLabels SelectLabels => new()
+    {
+        Search = AppResources.T("Common_Search", CultureInfo.CurrentUICulture),
+        NoMatchingOptions = AppResources.T("Common_NoMatchingOptions", CultureInfo.CurrentUICulture)
+    };
 
     private bool _clinicSwitcherOpen;
     private string _searchQuery = string.Empty;
