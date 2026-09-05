@@ -6,8 +6,8 @@ Plain-language twin for non-technical partners: [`raphcare-feature-checklist-par
 
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
-**Overall completion (this checklist):** **79%**  
-**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **82%**
+**Overall completion (this checklist):** **80%**  
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **83%**
 
 **How to mark items and score %**
 
@@ -32,7 +32,7 @@ Last reviewed: 2026-09-05
 
 ---
 
-## Step 1: Admin clinic / hospital ops (outpatient) - 98%
+## Step 1: Admin clinic / hospital ops (outpatient) - 100%
 
 Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/Hospitals/*`.
 
@@ -67,7 +67,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Admin dashboard (hospital-scoped; multi-hospital accounts use All hospitals first; single hospital auto-selects)
 - [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): Portal-style top bar; stock serials under a hospital or Direct (type, packaging barcode/QR scan, take picture, or choose photo; images stay in-browser); optional Ops assign. Hospital Portal Devices assigns in-stock watches to patients.
 - [x] Web UI language switcher (en / fr / ln / sw)
-- [x] Phone-usable admin (responsive layout) `(partial)`: Portal and Ops top bar, forms, tables, hospital deck, and fleet tighten under 768px / 480px. Thin install still later. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
+- [x] Phone-usable admin (responsive layout + thin home-screen install): Portal and Ops top bar, forms, tables, hospital deck, and fleet tighten under 768px / 480px. Manifest and icons support Add to Home Screen. No offline service worker. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 
 ### Mobile
 
@@ -75,7 +75,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**98%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress, collection board and waiting screens, and Ops fleet stock under hospital or Direct. Phone and tablet layout is partial (top bar, forms, tables, deck, fleet). Thin install is still later. Clinician Mobile stays out of scope. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress, collection board and waiting screens, and Ops fleet stock under hospital or Direct. Phone and tablet layout plus a thin home-screen install are in place. Clinician Mobile stays out of scope. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -362,15 +362,15 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 | Area | % | Notes |
 |------|--:|-------|
-| Step 1 Admin outpatient | 98% | Clinician Mobile out of scope; phone layout partial |
+| Step 1 Admin outpatient | 100% | Clinician Mobile out of scope; phone layout + thin install done |
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 63% | iOS video, push, wearables depth; Azure OpenAI mini wired |
 | Step 4 Staff / shared APIs | 92% | Therapy, care plans, AI MH notes; reporting polish |
 | Step 5 Hospital plan value | 100% | Stay extras closed for this step |
 | Step 6 Next wave (AI / ops) | n/a | Roadmap; optional/later excluded from overall |
 | Cross-cutting | 89% | Demo pack on Staging; private blob files; E2E smoke plan in, script open |
-| **Overall (scored items)** | **79%** | Steps 1-5 + Cross-cutting; out of scope / open optional excluded |
-| **Without wearable Phase 2+ metrics** | **82%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+| **Overall (scored items)** | **80%** | Steps 1-5 + Cross-cutting; out of scope / open optional excluded |
+| **Without wearable Phase 2+ metrics** | **83%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
 **Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, Phase A API smoke from [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md). Pull Step 6 items off `(optional / later)` when you schedule the next product wave.
 
@@ -383,7 +383,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 | **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle plus ward notes and discharge invoice; casualty queue and display token; theatre board; outbound referral board; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone layout partial (responsive CSS; thin install later, not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone layout + thin home-screen install (manifest + icons; not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---
@@ -404,7 +404,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 | [`../../14_Wearable_Capability_Catalog.md`](../../14_Wearable_Capability_Catalog.md) | SKU-agnostic band features + delivery phases |
 | [`../../10_Agora_Twilio_Setup.md`](../../10_Agora_Twilio_Setup.md) | Telehealth RTC setup |
 | [`../../16_Azure_OpenAI_Setup.md`](../../16_Azure_OpenAI_Setup.md) | Patient assistant and AI discharge drafts |
-| [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md) | Staff phone use of web admin: responsive UI, then thin install; not a full PWA |
+| [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md) | Staff phone use of web admin: responsive UI + thin home-screen install; not a full PWA |
 | [`../../17_Azure_Blob_Storage.md`](../../17_Azure_Blob_Storage.md) | Private photos and voice files |
 | [`../../02_Solution_Structure.md`](../../02_Solution_Structure.md) | Project layout |
 | [`../../06_Key_Workflows.md`](../../06_Key_Workflows.md) | Workflow narratives (update when inpatient ships docs) |
