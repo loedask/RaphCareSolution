@@ -87,8 +87,8 @@ What patients see on Android and iPhone.
 | Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone. Home and Mental Health tips follow your recent check-ins instead of sample copy. |
 | Chat assistant | Done | Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
 | Notifications list | Done | Real push alerts need Firebase and store setup |
-| Settings and profile | Done | Includes Active clinic: which hospital this phone uses. Search finds hospitals in the directory; it is not a membership list. Enter a short clinic code if you have one. Medical information has blood type presets and quick allergy or chronic chips plus Other. A photo you add on the phone is stored with your record. |
-| Choose my clinic | Done | Patients do not need Guids; use clinic name or an RC- code from the hospital |
+| Settings and profile | Done | Includes Active clinic: which hospital this phone uses. **Hospitals linked to me** lists hospitals tied to your record. Directory search finds hospitals by name; it is not a membership list. Enter a short clinic code if you have one. Medical information has blood type presets and quick allergy or chronic chips plus Other. A photo you add on the phone is stored with your record. |
+| Choose my clinic | Done | Patients do not need Guids; use clinic name or an RC- code from the hospital. Hospitals linked to you show on Active clinic so you can tell membership apart from directory search. |
 
 ### Phones and devices (broader coverage)
 

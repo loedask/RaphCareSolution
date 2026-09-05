@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Settings.ViewModels"
              xmlns:auth="clr-namespace:RaphCare.Mobile.Core.Features.Auth.Models"
+             xmlns:models="clr-namespace:RaphCare.Mobile.Core.Features.Settings.Models"
              xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Common.Controls"
              x:Class="RaphCare.Mobile.Core.Features.Settings.Views.SelectClinicPage"
              x:DataType="vm:SelectClinicViewModel"
@@ -24,6 +25,57 @@
                     <Label Text="{Binding CurrentClinicSummary}"
                            Style="{StaticResource BodyMedium}"
                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="{Binding LinkedHeading}"
+                   Style="{StaticResource SectionTitle}"
+                   Margin="0" />
+            <Label Text="{Binding LinkedTapHint}"
+                   Style="{StaticResource Caption}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding HasLinkedClinics}" />
+            <Label Text="{Binding LinkedEmptyText}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding ShowLinkedEmpty}" />
+            <Label Text="{Binding LinkedLoadFailedText}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource ErrorColor}"
+                   IsVisible="{Binding LinkedLoadFailed}" />
+            <Border Style="{StaticResource CardBorder}"
+                    IsVisible="{Binding HasLinkedClinics}">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding LinkedClinics}" Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:LinkedClinicDisplayItem">
+                            <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Name}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                    <Label Text="{Binding ReferenceCode}"
+                                           Style="{StaticResource Caption}"
+                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                    <Label Text="{Binding AccessLabel}"
+                                           Style="{StaticResource Caption}"
+                                           TextColor="{StaticResource AccentColor}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                    <Label Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.LinkedActiveBadge}"
+                                           Style="{StaticResource Micro}"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource HealthNormalColor}"
+                                           IsVisible="{Binding IsActiveOnPhone}"
+                                           HorizontalTextAlignment="End" />
+                                    <Label Text="→"
+                                           TextColor="{StaticResource PrimaryColor}"
+                                           HorizontalOptions="End" />
+                                </VerticalStackLayout>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectLinkedCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
             </Border>
 

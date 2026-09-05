@@ -1884,10 +1884,40 @@ Accessible. Intelligent. Human.</value>
     <value>Active clinic</value>
   </data>
   <data name="SelectClinicHint" xml:space="preserve">
-    <value>Set which hospital this phone should use for appointments and records. Search only finds hospitals in the directory. It does not mean you are a patient at every result. Staff still need to link your record at that hospital when care starts.</value>
+    <value>Hospitals linked to you appear below. Active clinic is which hospital this phone uses for appointments and records. Directory search finds hospitals by name. It does not mean you are a patient at every result.</value>
   </data>
   <data name="SelectClinicActiveLabel" xml:space="preserve">
     <value>Active on this phone</value>
+  </data>
+  <data name="SelectClinicLinkedHeading" xml:space="preserve">
+    <value>Hospitals linked to me</value>
+  </data>
+  <data name="SelectClinicLinkedEmpty" xml:space="preserve">
+    <value>No hospitals linked yet. Staff can grant access, or a visit and appointment can create a link.</value>
+  </data>
+  <data name="SelectClinicLinkedTapHint" xml:space="preserve">
+    <value>Tap one to make it active on this phone.</value>
+  </data>
+  <data name="SelectClinicLinkedActiveBadge" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="SelectClinicLinkedLoadFailed" xml:space="preserve">
+    <value>Could not load linked hospitals. Try again later.</value>
+  </data>
+  <data name="SelectClinicAccessRegistered" xml:space="preserve">
+    <value>Registered with this hospital</value>
+  </data>
+  <data name="SelectClinicAccessManual" xml:space="preserve">
+    <value>Access granted by staff</value>
+  </data>
+  <data name="SelectClinicAccessEncounter" xml:space="preserve">
+    <value>From a visit or appointment</value>
+  </data>
+  <data name="SelectClinicAccessInsurance" xml:space="preserve">
+    <value>Linked through insurance</value>
+  </data>
+  <data name="SelectClinicAccessCareHistory" xml:space="preserve">
+    <value>From your care history</value>
   </data>
   <data name="SelectClinicSearchLabel" xml:space="preserve">
     <value>Find a hospital</value>
