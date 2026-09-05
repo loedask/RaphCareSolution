@@ -11,9 +11,20 @@
         <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
-    <!-- Profile hub row icon (concept icon-container bg-secondary) -->
+    <!-- gradient-teal: teal -> accent (primary CTA buttons + accent icon wells) -->
+    <LinearGradientBrush x:Key="GradientTealBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource TealColor}" Offset="0" />
+        <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Soft teal wash behind line icons (Home metrics, Profile rows, Settings). -->
+    <LinearGradientBrush x:Key="AppIconWellSoftBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource IconWellSoftStartColor}" Offset="0" />
+        <GradientStop Color="{StaticResource IconWellSoftEndColor}" Offset="1" />
+    </LinearGradientBrush>
+
     <Style TargetType="Border" x:Key="ProfileMenuIconBorder">
-        <Setter Property="BackgroundColor" Value="{StaticResource SecondaryColor}" />
+        <Setter Property="Background" Value="{StaticResource AppIconWellSoftBrush}" />
         <Setter Property="StrokeThickness" Value="0" />
         <Setter Property="Padding" Value="10" />
         <Setter Property="WidthRequest" Value="40" />
@@ -23,6 +34,33 @@
         <Setter Property="StrokeShape">
             <RoundRectangle CornerRadius="12" />
         </Setter>
+        <Setter Property="Shadow">
+            <Shadow Brush="#1B9BBB" Opacity="0.16" Radius="8" Offset="0,2" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Border" x:Key="AppIconWellAccent">
+        <Setter Property="Background" Value="{StaticResource GradientTealBrush}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="WidthRequest" Value="44" />
+        <Setter Property="HeightRequest" Value="44" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="StrokeShape">
+            <RoundRectangle CornerRadius="12" />
+        </Setter>
+        <Setter Property="Shadow">
+            <Shadow Brush="#1B9BBB" Opacity="0.28" Radius="10" Offset="0,3" />
+        </Setter>
+    </Style>
+
+    <Style TargetType="Image" x:Key="AppIconImage">
+        <Setter Property="WidthRequest" Value="20" />
+        <Setter Property="HeightRequest" Value="20" />
+        <Setter Property="Aspect" Value="AspectFit" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 
     <Style TargetType="Border" x:Key="CardPremium">
@@ -38,12 +76,6 @@
         <GradientStop Color="{StaticResource GradientStartColor}" Offset="0" />
         <GradientStop Color="{StaticResource GradientMidColor}" Offset="0.5" />
         <GradientStop Color="{StaticResource GradientEndColor}" Offset="1" />
-    </LinearGradientBrush>
-
-    <!-- gradient-teal: teal -> accent (primary CTA buttons) -->
-    <LinearGradientBrush x:Key="GradientTealBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="{StaticResource TealColor}" Offset="0" />
-        <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
     </LinearGradientBrush>
 
     <Style TargetType="Label" x:Key="AuthTitleLabel">

@@ -32,22 +32,27 @@
 
         <AdminPageCard Title="@AppResources.T("Fleet_AddTitle")" Lead="@AppResources.T("Fleet_AddLead")">
             <div class="admin-page-card-body">
-                <div class="claim-form">
-                    <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.75rem;">
-                        <label class="fleet-select-field">
-                            @AppResources.T("Common_Hospitals")
+                <div class="fleet-add-form">
+                    <div class="fleet-add-grid">
+                        <div class="fleet-add-field">
+                            <span class="fleet-add-label">@AppResources.T("Common_Hospitals")</span>
                             <SearchableSelect TValue="string"
                                               Placeholder="@AppResources.T("Fleet_SelectHospital")"
                                               Value="_newClinicId"
                                               ValueChanged="OnNewClinicChanged"
                                               Options="HospitalSelectOptions" />
+                        </div>
+                        <label class="fleet-add-field">
+                            <span class="fleet-add-label">@AppResources.T("Fleet_SerialLabel")</span>
+                            <input class="form-control"
+                                   @bind="_newSerial"
+                                   @bind:event="oninput"
+                                   placeholder="@AppResources.T("Fleet_SerialPlaceholder")"
+                                   autocomplete="off"
+                                   spellcheck="false" />
                         </label>
-                        <label>
-                            @AppResources.T("Fleet_SerialLabel")
-                            <input class="form-control" @bind="_newSerial" @bind:event="oninput" placeholder="@AppResources.T("Fleet_SerialPlaceholder")" />
-                        </label>
-                        <div class="fleet-model-field">
-                            <span class="fleet-model-label">@AppResources.T("Fleet_ModelLabel")</span>
+                        <div class="fleet-add-field fleet-add-field-span">
+                            <span class="fleet-add-label">@AppResources.T("Fleet_ModelLabel")</span>
                             <div class="fleet-model-radios" role="radiogroup" aria-label="@AppResources.T("Fleet_ModelLabel")">
                                 @foreach (var model in FleetModels)
                                 {
@@ -62,6 +67,9 @@
                                 }
                             </div>
                         </div>
+                    </div>
+
+                    <div class="fleet-add-actions">
                         <button type="button"
                                 class="btn btn-primary"
                                 disabled="@(_saving || string.IsNullOrWhiteSpace(_newClinicId) || string.IsNullOrWhiteSpace(_newSerial))"
@@ -70,50 +78,55 @@
                         </button>
                     </div>
 
-                    <div class="fleet-scan-actions">
-                        <button type="button"
-                                class="btn btn-secondary"
-                                disabled="@(_cameraMode is not null || _extracting)"
-                                @onclick="StartBarcodeScanAsync">
-                            @AppResources.T("Fleet_ScanBarcode")
-                        </button>
-                        <button type="button"
-                                class="btn btn-secondary"
-                                disabled="@(_cameraMode is not null || _extracting)"
-                                @onclick="StartTakePictureAsync">
-                            @AppResources.T("Fleet_TakePicture")
-                        </button>
-                        <button type="button"
-                                class="btn btn-secondary"
-                                disabled="@(_cameraMode is not null || _extracting)"
-                                @onclick="TriggerPhotoPick">
-                            @(_extracting ? AppResources.T("Fleet_ScanExtracting") : AppResources.T("Fleet_ExtractPhoto"))
-                        </button>
-                        <input id="@PhotoInputId"
-                               type="file"
-                               accept="image/*"
-                               hidden
-                               @onchange="OnPhotoSelectedAsync" />
-                    </div>
-                    <p class="fleet-scan-hint">@AppResources.T("Fleet_ScanPrivacy")</p>
-
-                    @if (_scanCandidates.Count > 0)
-                    {
-                        <div class="fleet-scan-candidates">
-                            <span class="fleet-scan-candidates-label">@AppResources.T("Fleet_ScanCandidates")</span>
-                            <div class="fleet-scan-candidate-list">
-                                @foreach (var candidate in _scanCandidates)
-                                {
-                                    <button type="button"
-                                            class="fleet-scan-candidate"
-                                            @onclick="() => ApplyCandidate(candidate)">
-                                        <span class="fleet-scan-candidate-kind">@CandidateKindLabel(candidate.Kind)</span>
-                                        @candidate.Value
-                                    </button>
-                                }
-                            </div>
+                    <div class="fleet-scan-panel">
+                        <div class="fleet-scan-panel-head">
+                            <span class="fleet-scan-panel-title">@AppResources.T("Fleet_ScanToolsTitle")</span>
+                            <p class="fleet-scan-hint">@AppResources.T("Fleet_ScanPrivacy")</p>
                         </div>
-                    }
+                        <div class="fleet-scan-actions">
+                            <button type="button"
+                                    class="btn btn-secondary fleet-scan-btn"
+                                    disabled="@(_cameraMode is not null || _extracting)"
+                                    @onclick="StartBarcodeScanAsync">
+                                @AppResources.T("Fleet_ScanBarcode")
+                            </button>
+                            <button type="button"
+                                    class="btn btn-secondary fleet-scan-btn"
+                                    disabled="@(_cameraMode is not null || _extracting)"
+                                    @onclick="StartTakePictureAsync">
+                                @AppResources.T("Fleet_TakePicture")
+                            </button>
+                            <button type="button"
+                                    class="btn btn-secondary fleet-scan-btn"
+                                    disabled="@(_cameraMode is not null || _extracting)"
+                                    @onclick="TriggerPhotoPick">
+                                @(_extracting ? AppResources.T("Fleet_ScanExtracting") : AppResources.T("Fleet_ExtractPhoto"))
+                            </button>
+                            <input id="@PhotoInputId"
+                                   type="file"
+                                   accept="image/*"
+                                   hidden
+                                   @onchange="OnPhotoSelectedAsync" />
+                        </div>
+
+                        @if (_scanCandidates.Count > 0)
+                        {
+                            <div class="fleet-scan-candidates">
+                                <span class="fleet-scan-candidates-label">@AppResources.T("Fleet_ScanCandidates")</span>
+                                <div class="fleet-scan-candidate-list">
+                                    @foreach (var candidate in _scanCandidates)
+                                    {
+                                        <button type="button"
+                                                class="fleet-scan-candidate"
+                                                @onclick="() => ApplyCandidate(candidate)">
+                                            <span class="fleet-scan-candidate-kind">@CandidateKindLabel(candidate.Kind)</span>
+                                            @candidate.Value
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
 
                     @if (!string.IsNullOrEmpty(_addError))
                     {
@@ -121,33 +134,41 @@
                     }
                     @if (!string.IsNullOrEmpty(_addSuccess))
                     {
-                        <p class="text-muted">@_addSuccess</p>
+                        <p class="fleet-add-feedback">@_addSuccess</p>
                     }
                     @if (!string.IsNullOrEmpty(_scanMacHint))
                     {
-                        <p class="text-muted">@_scanMacHint</p>
+                        <p class="fleet-add-feedback">@_scanMacHint</p>
                     }
                 </div>
             </div>
         </AdminPageCard>
 
         <AdminPageCard Title="@AppResources.T("Fleet_StockTitle")">
-            <div class="admin-page-card-body">
+            <AdminPageCardMeta>
                 <span class="admin-progress-pill">@AppResources.Format("Fleet_TotalMeta", _totalCount)</span>
-                <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.75rem; margin: 1rem 0;">
-                    <label class="fleet-select-field">
-                        @AppResources.T("Common_Hospitals")
+            </AdminPageCardMeta>
+            <div class="admin-page-card-body">
+                <div class="fleet-stock-toolbar">
+                    <div class="fleet-add-field">
+                        <span class="fleet-add-label">@AppResources.T("Common_Hospitals")</span>
                         <SearchableSelect TValue="string"
                                           Placeholder="@AppResources.T("Fleet_AllHospitals")"
                                           Value="_filterClinicId"
                                           ValueChanged="OnFilterClinicChangedAsync"
                                           Options="HospitalFilterOptions" />
+                    </div>
+                    <label class="fleet-add-field">
+                        <span class="fleet-add-label">@AppResources.T("Fleet_SerialFilterLabel")</span>
+                        <input class="form-control"
+                               @bind="_filterSerial"
+                               @bind:event="oninput"
+                               @bind:after="ReloadListAsync"
+                               placeholder="@AppResources.T("Fleet_SerialPlaceholder")"
+                               autocomplete="off"
+                               spellcheck="false" />
                     </label>
-                    <label>
-                        @AppResources.T("Fleet_SerialFilterLabel")
-                        <input class="form-control" @bind="_filterSerial" @bind:event="oninput" @bind:after="ReloadListAsync" placeholder="@AppResources.T("Fleet_SerialPlaceholder")" />
-                    </label>
-                    <label class="admin-checkbox">
+                    <label class="admin-checkbox fleet-stock-checkbox">
                         <input type="checkbox" @bind="_unassignedOnly" @bind:after="ReloadListAsync" />
                         @AppResources.T("Fleet_UnassignedOnly")
                     </label>

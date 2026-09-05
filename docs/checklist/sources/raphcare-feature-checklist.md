@@ -6,8 +6,8 @@ Plain-language twin for non-technical partners: [`raphcare-feature-checklist-par
 
 Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
-**Overall completion (this checklist):** **80%**  
-**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **83%**
+**Overall completion (this checklist):** **79%**  
+**Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **82%**
 
 **How to mark items and score %**
 
@@ -32,7 +32,7 @@ Last reviewed: 2026-09-05
 
 ---
 
-## Step 1: Admin clinic / hospital ops (outpatient) - 100%
+## Step 1: Admin clinic / hospital ops (outpatient) - 98%
 
 Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/Hospitals/*`.
 
@@ -67,7 +67,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Admin dashboard (hospital-scoped; multi-hospital accounts use All hospitals first; single hospital auto-selects)
 - [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): Portal-style top bar; stock serials under a hospital or Direct (type, packaging barcode/QR scan, take picture, or choose photo; images stay in-browser); optional Ops assign. Hospital Portal Devices assigns in-stock watches to patients.
 - [x] Web UI language switcher (en / fr / ln / sw)
-- [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
+- [x] Phone-usable admin (responsive layout) `(partial)`: Portal and Ops top bar, forms, tables, hospital deck, and fleet tighten under 768px / 480px. Thin install still later. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 
 ### Mobile
 
@@ -75,7 +75,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Platform Ops stocks watches under a hospital or Direct (top-bar shell). Hospital Portal Devices assigns in-stock serials to patients. Direct packaging can self-claim in the app. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
+**98%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress, collection board and waiting screens, and Ops fleet stock under hospital or Direct. Phone and tablet layout is partial (top bar, forms, tables, deck, fleet). Thin install is still later. Clinician Mobile stays out of scope. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -146,17 +146,17 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 - [x] Phone OTP send / verify -> API JWT
 - [x] Voice onboarding (record, API, audio stored privately)
 - [x] Account created
-- [x] Home dashboard + quick links
+- [x] Home dashboard + quick links (upcoming, connected devices, health summary, and wellness tip from mood check-ins; empty when none; no demo doctor, fake vitals, or static "positive week" tip)
 - [x] Monochrome tintable icons on Home, Profile, Privacy, and Help (no multicolor emoji)
 - [x] Shell navigation and list loads hardened so failed taps / off-thread UI updates do not close the Android app
 - [x] Feature-flagged navigation / under-construction fallback
-- [x] Patient clinic selection: name search + `RC-…` reference code (Profile My clinic; registration picker); `X-Clinic-Id` from selected clinic with config fallback for demos; friendly tenant error messages
+- [x] Patient clinic selection: name search + `RC-…` reference code (Profile Active clinic; registration picker). Empty search does not dump the full directory (avoids looking like membership). `X-Clinic-Id` from selected clinic with config fallback for demos; friendly tenant error messages
 
 ### Verticals (API + Client + MAUI)
 
 | Area | API | Client | Mobile UI | Notes |
 |------|-----|--------|-----------|-------|
-| Appointments | [x] | [x] | [x] | List, book (clinic from My clinic and clinician name picker), detail |
+| Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
 | Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial; offline outbox retries |
@@ -166,7 +166,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 | Mental health | [x] | [x] | [x] | Content, mood check-in, patient PHQ-9 / GAD-7 self-assessment |
 | AI assistant | [x] | [x] | [x] | Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
 | Notifications | [x] | [x] | [x] | List / mark read / push registration |
-| Settings / profile | [x] | [x] | [x] | Edit, personal info, medical info, emergency contacts, privacy, help, language, change password, My clinic (name search / RC- code) |
+| Settings / profile | [x] | [x] | [x] | Edit, personal info, medical info (blood type picker with Unknown; allergy/chronic chips + Other), emergency contacts, privacy, help, language, change password, Active clinic (typed search / RC- code; not an auto-loaded membership list) |
 
 Screen visual parity table is marked done in `Mobile_Concept_Port.md` (last pass). Re-check when the React concept changes.
 
@@ -362,15 +362,15 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 | Area | % | Notes |
 |------|--:|-------|
-| Step 1 Admin outpatient | 100% | Clinician Mobile out of scope |
+| Step 1 Admin outpatient | 98% | Clinician Mobile out of scope; phone layout partial |
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 63% | iOS video, push, wearables depth; Azure OpenAI mini wired |
 | Step 4 Staff / shared APIs | 92% | Therapy, care plans, AI MH notes; reporting polish |
 | Step 5 Hospital plan value | 100% | Stay extras closed for this step |
 | Step 6 Next wave (AI / ops) | n/a | Roadmap; optional/later excluded from overall |
 | Cross-cutting | 89% | Demo pack on Staging; private blob files; E2E smoke plan in, script open |
-| **Overall (scored items)** | **80%** | Steps 1-5 + Cross-cutting; out of scope / open optional excluded |
-| **Without wearable Phase 2+ metrics** | **83%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
+| **Overall (scored items)** | **79%** | Steps 1-5 + Cross-cutting; out of scope / open optional excluded |
+| **Without wearable Phase 2+ metrics** | **82%** | Excludes activity / sleep / stress / temp / ECG / glucose rows |
 
 **Next:** iOS Agora + dual-OS smoke, push config, wearable live vitals prove-out, Phase A API smoke from [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md). Pull Step 6 items off `(optional / later)` when you schedule the next product wave.
 
@@ -383,7 +383,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 | **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle plus ward notes and discharge invoice; casualty queue and display token; theatre board; outbound referral board; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone layout partial (responsive CSS; thin install later, not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

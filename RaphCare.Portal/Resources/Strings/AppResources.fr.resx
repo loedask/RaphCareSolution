@@ -160,6 +160,9 @@
   <data name="Common_Delete" xml:space="preserve">
     <value>Supprimer</value>
   </data>
+  <data name="Common_MoreActions" xml:space="preserve">
+    <value>Plus d'actions</value>
+  </data>
   <data name="Common_Remove" xml:space="preserve">
     <value>Retirer</value>
   </data>
@@ -2208,6 +2211,15 @@
   </data>
   <data name="PatientDetail_ClinicalEyebrow" xml:space="preserve">
     <value>Clinique</value>
+  </data>
+  <data name="PatientDetail_ClinicalChartTitle" xml:space="preserve">
+    <value>Dossier clinique</value>
+  </data>
+  <data name="PatientDetail_ClinicalChartLead" xml:space="preserve">
+    <value>Passez d'un onglet à l'autre : plans, diagnostics, médicaments, notes et analyses.</value>
+  </data>
+  <data name="PatientDetail_ClinicalSectionsAria" xml:space="preserve">
+    <value>Sections cliniques</value>
   </data>
   <data name="PatientDetail_AppointmentsLead" xml:space="preserve">
     <value>RÃ©servations dans cet hÃ´pital.</value>

@@ -19,6 +19,15 @@ public sealed class SyncMyDeviceReadingsResultViewModel
     public int SpO2Count { get; set; }
 }
 
+/// <summary>Latest synced wearable vitals for the signed-in patient (Home health summary).</summary>
+public sealed class PatientLatestReadingsViewModel
+{
+    public decimal? HeartRateBpm { get; set; }
+    public DateTime? HeartRateRecordedAt { get; set; }
+    public decimal? SpO2Percent { get; set; }
+    public DateTime? SpO2RecordedAt { get; set; }
+}
+
 /// <summary>Input for batch HR sync (maps to generated API body).</summary>
 public sealed class HeartRateReadingInput
 {

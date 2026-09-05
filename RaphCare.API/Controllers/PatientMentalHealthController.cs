@@ -7,6 +7,7 @@ using RaphCare.Application.Features.MentalHealth.DTOs;
 using RaphCare.Application.Features.PatientMentalHealth.Commands.LogMyPatientMoodCheckIn;
 using RaphCare.Application.Features.PatientMentalHealth.Commands.SubmitMyPatientMentalHealthAssessment;
 using RaphCare.Application.Features.PatientMentalHealth.DTOs;
+using RaphCare.Application.Features.PatientMentalHealth.Queries.GetMyMoodCheckIns;
 using RaphCare.Application.Features.PatientMentalHealth.Queries.GetMyPatientMentalHealthAssessments;
 using RaphCare.Application.Features.PatientMentalHealth.Queries.GetMyPatientMentalHealthContent;
 using RaphCare.Application.Features.PatientMentalHealth.Queries.GetMyPatientMentalHealthInstrument;
@@ -27,6 +28,15 @@ public sealed class PatientMentalHealthController(IMediator mediator) : Controll
     public async Task<IActionResult> GetContent(CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetMyPatientMentalHealthContentQuery(), cancellationToken).ConfigureAwait(false);
+        return Ok(result);
+    }
+
+    /// <summary>Recent mood check-ins for the signed-in patient (newest first; scores only, no notes).</summary>
+    [HttpGet("mood-checkins", Name = "GetMyMoodCheckIns")]
+    [ProducesResponseType(typeof(IReadOnlyList<PatientMoodCheckInDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMoodCheckIns([FromQuery] int pageSize = 14, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(new GetMyMoodCheckInsQuery { PageSize = pageSize }, cancellationToken).ConfigureAwait(false);
         return Ok(result);
     }
 

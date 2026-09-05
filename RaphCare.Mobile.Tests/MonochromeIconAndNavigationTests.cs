@@ -57,4 +57,24 @@ public sealed class AbsoluteShellRouteRulesTests
         Assert.False(
             AbsoluteShellRouteRules.IsSafeAbsoluteTarget(route),
             "Absolute // navigation to push-only routes closes the Android app.");
+
+    [Theory]
+    [InlineData("RecordsPage", "//RecordsPage")]
+    [InlineData("AppointmentsPage", "//AppointmentsPage")]
+    [InlineData("InsurancePage", "//InsurancePage")]
+    [InlineData("SettingsPage", "//SettingsPage")]
+    [InlineData("HomePage", "//HomePage")]
+    [InlineData("BookAppointmentPage", "BookAppointmentPage")]
+    [InlineData("DevicesPage", "DevicesPage")]
+    [InlineData("MentalHealthPage", "MentalHealthPage")]
+    [InlineData("AiAssistantPage", "AiAssistantPage")]
+    [InlineData("CareTelehealthPage", "CareTelehealthPage")]
+    public void ToFeatureNavigationPathUsesAbsoluteOnlyForTabRoots(string route, string expected) =>
+        Assert.Equal(expected, AbsoluteShellRouteRules.ToFeatureNavigationPath(route));
+
+    [Fact]
+    public void ToFeatureNavigationPathHonorsAbsoluteRequestedForPushOnlyRoutes() =>
+        Assert.Equal(
+            "//BookAppointmentPage",
+            AbsoluteShellRouteRules.ToFeatureNavigationPath("BookAppointmentPage", absoluteRequested: true));
 }

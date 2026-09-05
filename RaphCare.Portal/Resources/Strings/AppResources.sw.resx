@@ -160,6 +160,9 @@
   <data name="Common_Delete" xml:space="preserve">
     <value>Futa</value>
   </data>
+  <data name="Common_MoreActions" xml:space="preserve">
+    <value>Vitendo zaidi</value>
+  </data>
   <data name="Common_Remove" xml:space="preserve">
     <value>Ondoa</value>
   </data>
@@ -2208,6 +2211,15 @@
   </data>
   <data name="PatientDetail_ClinicalEyebrow" xml:space="preserve">
     <value>Kliniki</value>
+  </data>
+  <data name="PatientDetail_ClinicalChartTitle" xml:space="preserve">
+    <value>Chati ya kliniki</value>
+  </data>
+  <data name="PatientDetail_ClinicalChartLead" xml:space="preserve">
+    <value>Badilisha kati ya mipango, utambuzi, dawa, madokezo, na maagizo ya maabara.</value>
+  </data>
+  <data name="PatientDetail_ClinicalSectionsAria" xml:space="preserve">
+    <value>Sehemu za kliniki</value>
   </data>
   <data name="PatientDetail_AppointmentsLead" xml:space="preserve">
     <value>Miadi katika hospitali hii.</value>

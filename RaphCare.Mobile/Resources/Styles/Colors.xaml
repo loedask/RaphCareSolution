@@ -60,10 +60,15 @@
     <Color x:Key="HealthAttentionColor">#F6A823</Color>
     <Color x:Key="HealthCriticalColor">#DB4343</Color>
 
-    <!-- Calm mental health palette -->
-    <Color x:Key="CalmColor">#F2F4F7</Color>
-    <Color x:Key="CalmAccentColor">#7B6EB9</Color>
-    <Color x:Key="CalmSoftColor">#ECE9F2</Color>
+    <!-- Soft teal wash used behind line icons (Home metrics, Profile rows, Settings). -->
+    <Color x:Key="IconWellSoftStartColor">#D7F4F1</Color>
+    <Color x:Key="IconWellSoftEndColor">#C5EDE4</Color>
+    <Color x:Key="IconWellRoseColor">#FFE4E8</Color>
+    <Color x:Key="IconWellSkyColor">#E3EEFF</Color>
+    <Color x:Key="IconWellMintColor">#DDF7EC</Color>
+    <Color x:Key="IconWellVioletColor">#EDE8F8</Color>
+    <Color x:Key="IconWellAmberColor">#FFF3D6</Color>
+
 
     <!-- Sidebar (light :root) — for future Shell / flyout parity -->
     <Color x:Key="SidebarBackgroundColor">#FAFAFA</Color>

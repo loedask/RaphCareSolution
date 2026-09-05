@@ -16,7 +16,7 @@ Use this doc to keep **visual parity** with the React UI when implementing **MAU
 | **react-router-dom** | Map routes to **Shell** routes / `AppNavigator`—see route table below. |
 | **@tanstack/react-query** | Use **Client** + ViewModels / async commands; no React Query. |
 | **shadcn/ui + Radix UI** | Recreate **look** with **MAUI layouts**, **Shared Controls**, **Styles**—not Radix primitives. |
-| **lucide-react** | Use **PNG/SVG** under `Resources/Images` (`icon_*.svg`, stroke `#1B9BBB`; accent variant `icon_*_on_accent.svg` in white). Bound via `IconSource` / `MonochromeIconKeys`. Do **not** use multicolor emoji on Home / Profile / Settings chrome. |
+| **lucide-react** | Use **PNG/SVG** under `Resources/Images` (`icon_*.svg`, soft fill + stroke `#1B9BBB`; accent variant `icon_*_on_accent.svg` in white). Soft teal / semantic wells (`ProfileMenuIconBorder`, `AppIconWellAccent`). Bound via `IconSource` / `MonochromeIconKeys`. Do **not** use multicolor emoji on Home / Profile / Settings / register chrome. |
 | **framer-motion** | Optional subtle animations; match **duration/easing** where it matters (e.g. fade-up ~0.4s ease-out in Tailwind). |
 | **i18n** (`src/i18n/`) | Align copy with **`AppResources.resx`** (and future `.es.resx` etc.)—same strings as `translations.ts` where applicable. |
 
