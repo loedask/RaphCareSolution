@@ -2,6 +2,20 @@
 
 ## Date
 
+2026-09-05
+
+## High-level summary of changes
+
+Thin home-screen install for Portal and Ops: `site.webmanifest`, 192/512 icons, theme color, and Apple touch icon. Staff can Add to Home Screen from the browser. No service worker (not a full offline PWA). Checklists and feature catalog updated.
+
+## Modules modified
+
+- **Portal / Ops / docs:** wwwroot manifests and icons; index.html meta; phone admin docs; feature checklists and catalog.
+
+---
+
+## Date
+
 2026-09-04
 
 ## High-level summary of changes
