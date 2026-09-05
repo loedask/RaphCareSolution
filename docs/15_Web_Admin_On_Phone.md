@@ -19,7 +19,7 @@ Patients keep **RaphCare.Mobile**. Staff keep the web admin. Do not duplicate ho
 ## Why not a full PWA
 
 - Blazor WASM is a large download. Caching the shell can wait until we have a clear update path.
-- Entra sign-in and Agora video are easy to break in standalone / installed browser mode (redirects, camera, microphone). Test after install on a real phone.
+- Sign-in redirects and Agora video are easy to break in standalone / installed browser mode (camera, microphone). Today staff use email and password; if Entra is turned on later, re-test install redirects then.
 - Service workers often leave people on an old build after you ship.
 
 If we add a service worker later, keep it online-first: cache static assets only, with a clear update path.
@@ -28,7 +28,7 @@ If we add a service worker later, keep it online-first: cache static assets only
 
 - Responsive admin UI is in place on Portal and Ops.
 - Thin home-screen install is available (manifest + icons). No service worker yet.
-- Confirm Entra sign-in and any video flows after adding a home-screen shortcut.
+- After adding a home-screen shortcut, confirm email/password sign-in still works. Re-check video join on a phone if you use that flow.
 
 ## Related
 
