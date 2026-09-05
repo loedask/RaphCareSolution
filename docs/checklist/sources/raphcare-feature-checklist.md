@@ -150,7 +150,7 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 - [x] Monochrome tintable icons on Home, Profile, Privacy, and Help (no multicolor emoji)
 - [x] Shell navigation and list loads hardened so failed taps / off-thread UI updates do not close the Android app
 - [x] Feature-flagged navigation / under-construction fallback
-- [x] Patient clinic selection: name search + `RC-…` reference code (Profile Active clinic; registration picker). Empty search does not dump the full directory (avoids looking like membership). `X-Clinic-Id` from selected clinic with config fallback for demos; friendly tenant error messages
+- [x] Patient clinic selection: name search + `RC-…` reference code (Profile Active clinic; registration picker). Empty search does not dump the full directory (avoids looking like membership). **Hospitals linked to me** lists real membership / care-history clinics from the API; tap sets Active clinic. `X-Clinic-Id` from selected clinic with config fallback for demos; friendly tenant error messages
 
 ### Verticals (API + Client + MAUI)
 
