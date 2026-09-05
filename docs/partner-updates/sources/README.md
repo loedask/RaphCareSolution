@@ -1,17 +1,29 @@
 # Partner update sources
 
-Edit notes here. Partner-facing PDFs are written one level up in `docs/partner-updates/` (current) or `docs/partner-updates/archives/` (old dated updates).
+Edit notes here. Partner-facing PDFs are written one level up in `docs/partner-updates/` (current) or `docs/partner-updates/archives/` (old dated updates and prior versions).
 
 ## Current documents
 
 | Stem | Purpose |
 |------|---------|
 | `partner-update-YYYY-MM-DD` | Dated product / web / API partner note |
-| `raphcare-price-list` | Price list PDF |
+| `raphcare-feature-catalog-v1` | Shareable list of what the product does (Portal for hospitals, Ops for platform owners, Mobile for patients) |
+| `raphcare-price-list-v1` | Price list PDF |
 | `raphcare-demo-accounts-v2` | Staging demo logins sheet (current; keep private) |
 | `archives/raphcare-demo-accounts-v1` | Prior demo accounts sheet (Aug 2026) |
 
 Each stem has `.md`, `.config.json`, and often its own `.pdf.css` (dated notes share `partner-update.pdf.css`).
+
+## Versioning (catalog, price list, demo accounts)
+
+When a new version should replace the current sheet:
+
+1. Move the previous stem’s `.md`, `.config.json`, and `.pdf.css` into `sources/archives/`.
+2. Move the previous `.pdf` into `docs/partner-updates/archives/`.
+3. Create the next stem in `sources/` (for example `raphcare-feature-catalog-v2`) with updated subtitle / `document_title`.
+4. Export the new stem to the folder root. Export archived stems with `-Archive` if you need to rebuild an old PDF.
+
+Dated partner updates keep the date in the stem instead of a `vN` suffix.
 
 ## Archive
 
@@ -19,8 +31,6 @@ When a newer dated partner update becomes current:
 
 1. Move the previous `.md` and `.config.json` into `sources/archives/`.
 2. Move the previous `.pdf` into `docs/partner-updates/archives/`.
-
-Price list and demo accounts stay current until you replace them in place (or version the stem if you need history).
 
 See [`archives/README.md`](archives/README.md).
 

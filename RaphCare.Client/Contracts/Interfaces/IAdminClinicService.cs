@@ -69,6 +69,12 @@ public interface IAdminClinicService
     Task<Response<ClinicRosterEntry>> CreateRosterEntryAsync(Guid clinicId, CreateRosterEntryRequest request, CancellationToken cancellationToken = default);
     Task<Response<bool>> DeleteRosterEntryAsync(Guid clinicId, Guid entryId, CancellationToken cancellationToken = default);
     Task<Response<IReadOnlyList<ClinicDeviceListItem>>> GetDevicesAsync(Guid clinicId, CancellationToken cancellationToken = default);
+
+    Task<Response<Guid>> AssignDeviceToPatientAsync(
+        Guid clinicId,
+        Guid deviceId,
+        Guid patientId,
+        CancellationToken cancellationToken = default);
     Task<Response<ClinicInpatientBoard>> GetInpatientBoardAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicWard>> CreateWardAsync(Guid clinicId, CreateWardRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicWard>> UpdateWardAsync(Guid clinicId, Guid wardId, UpdateWardRequest request, CancellationToken cancellationToken = default);

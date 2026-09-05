@@ -829,7 +829,7 @@
     <value>Fleet</value>
   </data>
   <data name="Common_DevicesLead" xml:space="preserve">
-    <value>Monitoring devices registered to this hospital.</value>
+    <value>Watches stocked for this hospital by Ops. Assign an in-stock serial to a patient. The patient claims it in the phone app.</value>
   </data>
   <data name="Common_DeviceCountLabel" xml:space="preserve">
     <value>{0} device</value>
@@ -838,7 +838,19 @@
     <value>{0} devices</value>
   </data>
   <data name="Common_NoDevicesYet" xml:space="preserve">
-    <value>No devices registered for this hospital yet. Devices appear after patient wearables sync or staff provisioning via the Devices API.</value>
+    <value>No devices for this hospital yet. Ask platform Ops to stock a serial under this hospital, then assign it here.</value>
+  </data>
+  <data name="Common_AssignDevice" xml:space="preserve">
+    <value>Assign</value>
+  </data>
+  <data name="Common_SelectPatientForDevice" xml:space="preserve">
+    <value>Select patient</value>
+  </data>
+  <data name="Common_CouldNotAssignDevice" xml:space="preserve">
+    <value>Could not assign the device.</value>
+  </data>
+  <data name="Common_DeviceAssigned" xml:space="preserve">
+    <value>Device assigned. Ask the patient to claim the serial in the app.</value>
   </data>
   <data name="Common_EmergencyEyebrow" xml:space="preserve">
     <value>Y6 4G emergency</value>

@@ -4,6 +4,8 @@ namespace RaphCare.Persistence.Seed;
 public static class ClinicalSeedIds
 {
     public static readonly Guid DemoClinicId = Guid.Parse("11111111-1111-1111-1111-111111111101");
+    /// <summary>RaphCare Direct programme for private Health Track / SafeCare packages (packaging self-claim).</summary>
+    public static readonly Guid DirectClinicId = Guid.Parse("11111111-1111-1111-1111-111111111120");
     public static readonly Guid DemoProviderId = Guid.Parse("11111111-1111-1111-1111-111111111102");
     public static readonly Guid DemoProviderApplicationUserId = Guid.Parse("11111111-1111-1111-1111-111111111103");
     public static readonly Guid DemoPatientId = Guid.Parse("11111111-1111-1111-1111-111111111104");

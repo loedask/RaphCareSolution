@@ -1292,6 +1292,9 @@ namespace RaphCare.Persistence.Migrations
                     b.Property<bool>("AllowAiMentalHealthNotes")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("AllowPatientDeviceSelfClaim")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 

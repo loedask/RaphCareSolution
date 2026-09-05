@@ -54,6 +54,7 @@ public static class DemoPackSeeder
         try
         {
             await EnsureDemoClinicAsync(clinical, cancellationToken).ConfigureAwait(false);
+            await EnsureDirectClinicAsync(clinical, cancellationToken).ConfigureAwait(false);
             await EnsureDemoCapacityAsync(clinical, cancellationToken).ConfigureAwait(false);
             await MigrateLegacyDemoEmailsAsync(identity, cancellationToken).ConfigureAwait(false);
             await EnsureAccountsAsync(identity, roles, password, cancellationToken).ConfigureAwait(false);
@@ -126,6 +127,38 @@ public static class DemoPackSeeder
         if (string.IsNullOrWhiteSpace(clinic.CollectionDisplayToken))
         {
             clinic.CollectionDisplayToken = ClinicCollectionDisplayToken.Generate();
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task EnsureDirectClinicAsync(ClinicalDbContext clinical, CancellationToken cancellationToken)
+    {
+        var clinic = await clinical.Clinics
+            .FirstOrDefaultAsync(c => c.Id == ClinicalSeedIds.DirectClinicId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (clinic is null)
+        {
+            clinic = new Clinic
+            {
+                Name = "RaphCare Direct",
+                RegistrationNumber = "REG-DIRECT-001",
+                ReferenceCode = "RC-DIRECT",
+                Country = "South Africa",
+                TimeZone = "South Africa Standard Time",
+                IsActive = true,
+                AllowPatientDeviceSelfClaim = true,
+                RegisteredByApplicationUserId = ClinicalSeedIds.DemoOpsUserId
+            };
+            clinical.Clinics.Add(clinic);
+            clinical.Entry(clinic).Property(c => c.Id).CurrentValue = ClinicalSeedIds.DirectClinicId;
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        if (!clinic.AllowPatientDeviceSelfClaim)
+        {
+            clinic.AllowPatientDeviceSelfClaim = true;
             await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }

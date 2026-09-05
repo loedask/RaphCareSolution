@@ -5,6 +5,10 @@ root = true
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA1861.severity = none
 
+# xUnit method names use underscores by convention.
+[**/*Tests*/**/*.cs]
+dotnet_diagnostic.CA1707.severity = none
+
 # Intentional domain and platform names.
 [RaphCare.Domain/Identity/Permission.cs]
 dotnet_diagnostic.CA1711.severity = none

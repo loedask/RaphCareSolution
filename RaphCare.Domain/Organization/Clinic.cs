@@ -37,6 +37,12 @@ public class Clinic : AggregateRoot, ISoftDelete
     /// </summary>
     public bool AllowAiMentalHealthNotes { get; set; } = true;
 
+    /// <summary>
+    /// When true, a patient may claim an in-stock fleet serial for this clinic from packaging
+    /// (Direct / private care packages). Creates the assignment on claim. Hospital programmes keep this false.
+    /// </summary>
+    public bool AllowPatientDeviceSelfClaim { get; set; }
+
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
     public Guid? RegisteredByApplicationUserId { get; set; }
