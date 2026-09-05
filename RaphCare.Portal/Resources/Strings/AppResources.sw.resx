@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -77,7 +77,7 @@
     <value>Ghairi</value>
   </data>
   <data name="Common_Back" xml:space="preserve">
-    <value>â† Nyuma</value>
+    <value>Ã¢â€ Â Nyuma</value>
   </data>
   <data name="Common_BackToHome" xml:space="preserve">
     <value>Rudi nyumbani</value>
@@ -89,7 +89,7 @@
     <value>Rudi hospitalini</value>
   </data>
   <data name="Common_BackToAppointments" xml:space="preserve">
-    <value>â† Rudi kwa miadi</value>
+    <value>Ã¢â€ Â Rudi kwa miadi</value>
   </data>
   <data name="Common_PleaseWait" xml:space="preserve">
     <value>Tafadhali subiri...</value>
@@ -116,7 +116,7 @@
     <value>Tuma nambari tena</value>
   </data>
   <data name="Common_Resending" xml:space="preserve">
-    <value>Inatuma tenaâ€¦</value>
+    <value>Inatuma tenaÃ¢â‚¬Â¦</value>
   </data>
   <data name="Common_NeedNewCode" xml:space="preserve">
     <value>Unahitaji nambari mpya?</value>
@@ -386,7 +386,7 @@
     <value>Pakia zaidi ({0} kati ya {1})</value>
   </data>
   <data name="Common_PageOf" xml:space="preserve">
-    <value>Ukurasa {0} wa {1} Â· {2}</value>
+    <value>Ukurasa {0} wa {1} Ã‚Â· {2}</value>
   </data>
   <data name="Common_Notified" xml:space="preserve">
     <value>Imearifiwa</value>
@@ -527,7 +527,7 @@
     <value>Maendeleo ya kuabiri</value>
   </data>
   <data name="Common_HospitalOnboardingEyebrow" xml:space="preserve">
-    <value>Kuingia hospitalini Â· Hatua {0} kati ya {1}</value>
+    <value>Kuingia hospitalini Ã‚Â· Hatua {0} kati ya {1}</value>
   </data>
   <data name="Common_OpenHospital" xml:space="preserve">
     <value>Hospitali wazi</value>
@@ -581,7 +581,7 @@
     <value>Inapakia wagonjwa...</value>
   </data>
   <data name="Common_LoadingProviders" xml:space="preserve">
-    <value>Inapakia timu ya klinikiâ€¦</value>
+    <value>Inapakia timu ya klinikiÃ¢â‚¬Â¦</value>
   </data>
   <data name="Common_LoadingAppointments" xml:space="preserve">
     <value>Inapakia miadi...</value>
@@ -602,7 +602,7 @@
     <value>Inapakia mgonjwa...</value>
   </data>
   <data name="Common_LoadingProvider" xml:space="preserve">
-    <value>Inapakia daktariâ€¦</value>
+    <value>Inapakia daktariÃ¢â‚¬Â¦</value>
   </data>
   <data name="Common_LoadingVisit" xml:space="preserve">
     <value>Inapakia ziara...</value>
@@ -642,6 +642,12 @@
   </data>
   <data name="Common_Model" xml:space="preserve">
     <value>Mfano</value>
+  </data>
+  <data name="Common_BluetoothMac" xml:space="preserve">
+    <value>Bluetooth MAC</value>
+  </data>
+  <data name="Common_Activated" xml:space="preserve">
+    <value>Activated</value>
   </data>
   <data name="Common_AssignedTo" xml:space="preserve">
     <value>Imekabidhiwa</value>
@@ -716,10 +722,10 @@
     <value>Chagua mgonjwa...</value>
   </data>
   <data name="Common_SelectProvider" xml:space="preserve">
-    <value>Chagua daktariâ€¦</value>
+    <value>Chagua daktariÃ¢â‚¬Â¦</value>
   </data>
   <data name="Common_SelectStaffMemberOption" xml:space="preserve">
-    <value>Chagua mfanyakaziâ€¦</value>
+    <value>Chagua mfanyakaziÃ¢â‚¬Â¦</value>
   </data>
   <data name="Common_LicenseOptionalPlaceholder" xml:space="preserve">
     <value>Leseni # (ya hiari)</value>
@@ -1253,7 +1259,7 @@
     <value>Uzito</value>
   </data>
   <data name="Common_UnitPlaceholder" xml:space="preserve">
-    <value>bpm, Â°C,%</value>
+    <value>bpm, Ã‚Â°C,%</value>
   </data>
   <data name="Common_RecordVital" xml:space="preserve">
     <value>Rekodi muhimu</value>
@@ -1400,7 +1406,7 @@
     <value>Salama kuingia kwa barua pepe</value>
   </data>
   <data name="AuthShell_FooterCopyright" xml:space="preserve">
-    <value>Â© {0} RaphCare</value>
+    <value>Ã‚Â© {0} RaphCare</value>
   </data>
   <data name="AuthShell_MobileTagline" xml:space="preserve">
     <value>Jukwaa la huduma ya afya</value>
@@ -1565,7 +1571,7 @@
     <value>Wagonjwa</value>
   </data>
   <data name="AdminLayout_SearchingPatients" xml:space="preserve">
-    <value>(inatafutaâ€¦)</value>
+    <value>(inatafutaÃ¢â‚¬Â¦)</value>
   </data>
   <data name="AdminLayout_NoPatientsMatch" xml:space="preserve">
     <value>Hakuna wagonjwa wanaolingana na &quot;{0}&quot;.</value>
@@ -2180,10 +2186,10 @@
     <value>Kitanda kimeondolewa.</value>
   </data>
   <data name="Inpatient_LocationFormat" xml:space="preserve">
-    <value>{0} Â· {1} Â· {2} Â· Kitanda {3}</value>
+    <value>{0} Ã‚Â· {1} Ã‚Â· {2} Ã‚Â· Kitanda {3}</value>
   </data>
   <data name="Inpatient_BedDisplayFormat" xml:space="preserve">
-    <value>{0} Â· {1} Â· Kitanda {2}</value>
+    <value>{0} Ã‚Â· {1} Ã‚Â· Kitanda {2}</value>
   </data>
   <data name="Appointments_PageTitle" xml:space="preserve">
     <value>Miadi - RaphCare Msimamizi</value>
@@ -2267,7 +2273,7 @@
     <value>{0}%</value>
   </data>
   <data name="PatientDetail_LocationWithAccuracy" xml:space="preserve">
-    <value>{0} (Â±{1} m)</value>
+    <value>{0} (Ã‚Â±{1} m)</value>
   </data>
   <data name="ProviderDetail_AvailabilityEyebrow" xml:space="preserve">
     <value>Upatikanaji</value>
@@ -2276,7 +2282,7 @@
     <value>Sehemu za daktari</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
-    <value>{0} Â· {1} Â· nyakati katika {2}</value>
+    <value>{0} Ã‚Â· {1} Ã‚Â· nyakati katika {2}</value>
   </data>
   <data name="Visit_DetailsCardLead" xml:space="preserve">
     <value>Wakati ziara ilianza na kuisha, na nani alihusika.</value>
@@ -2285,7 +2291,7 @@
     <value>Kipimo</value>
   </data>
   <data name="Visit_AppointmentsNav" xml:space="preserve">
-    <value>â† Miadi</value>
+    <value>Ã¢â€ Â Miadi</value>
   </data>
   <data name="Common_NationalHealthId" xml:space="preserve">
     <value>Kitambulisho cha afya</value>
@@ -3056,7 +3062,7 @@
     <value>Mapigo ya moyo</value>
   </data>
   <data name="Inpatient_Temperature" xml:space="preserve">
-    <value>Joto (Â°C)</value>
+    <value>Joto (Ã‚Â°C)</value>
   </data>
   <data name="Inpatient_Oxygen" xml:space="preserve">
     <value>Oksijeni (%)</value>
@@ -3122,7 +3128,7 @@
     <value>Panga wagonjwa wanaokuja na mwite anayefuata katika {0}.</value>
   </data>
   <data name="Casualty_Loading" xml:space="preserve">
-    <value>Inapakia ubao wa dharuraâ€¦</value>
+    <value>Inapakia ubao wa dharuraÃ¢â‚¬Â¦</value>
   </data>
   <data name="Casualty_SectionsAria" xml:space="preserve">
     <value>Sehemu za dharura</value>
@@ -3287,7 +3293,7 @@
     <value>Orodha ya upasuaji ya leo kwa {0}.</value>
   </data>
   <data name="Theatre_Loading" xml:space="preserve">
-    <value>Inapakia ubao wa upasuajiâ€¦</value>
+    <value>Inapakia ubao wa upasuajiÃ¢â‚¬Â¦</value>
   </data>
   <data name="Theatre_SectionsAria" xml:space="preserve">
     <value>Sehemu za upasuaji</value>
@@ -3383,7 +3389,7 @@
     <value>Rufaa zinazotumwa kutoka {0}.</value>
   </data>
   <data name="Referral_Loading" xml:space="preserve">
-    <value>Inapakia ubao wa rufaa…</value>
+    <value>Inapakia ubao wa rufaaâ€¦</value>
   </data>
   <data name="Referral_SectionsAria" xml:space="preserve">
     <value>Sehemu za rufaa</value>

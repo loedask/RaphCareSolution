@@ -17,7 +17,7 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 
 Each section shows its % in the heading. Numbers stay in sync when status changes.
 
-Last reviewed: 2026-09-05
+Last reviewed: 2026-09-06
 
 ---
 
@@ -39,7 +39,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
-| Fleet watches (platform) | Done | Ops web app stocks serials under a hospital or the Direct programme (type, scan barcode, take a picture, or choose a photo; the image is not uploaded). Ops uses a top bar like the hospital Portal. Hospital staff assign an in-stock watch to a patient on Devices. Ops can still assign when helping. Hospital patients claim after assignment. Direct package patients can claim the packaging serial in the app. Nobody invents a serial. |
+| Fleet watches (platform) | Done | Ops web app stocks serials under a hospital or the Direct programme (type, optional Bluetooth MAC, scan barcode, take a picture, or choose a photo; the image is not uploaded). Ops and Portal Devices lists show MAC and activated date when known. Hospital staff assign an in-stock watch to a patient on Devices. Patients claim the serial, then Bluetooth only pairs to that watch. |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Use Portal and Ops on a phone | Done | Layouts tighten on small screens: top bar, forms, tables you can swipe, and hospital section tabs. Staff can add a home-screen shortcut from the browser (not a separate staff app, and not offline). |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
@@ -87,7 +87,7 @@ What patients see on Android and iPhone.
 | Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone. Home and Mental Health tips follow your recent check-ins instead of sample copy. |
 | Chat assistant | Done | Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
 | Notifications list | Done | Real push alerts need Firebase and store setup |
-| Settings and profile | Done | Includes Active clinic: which hospital this phone uses. **Hospitals linked to me** lists hospitals tied to your record. Directory search finds hospitals by name; it is not a membership list. Enter a short clinic code if you have one. Medical information has blood type presets and quick allergy or chronic chips plus Other. A photo you add on the phone is stored with your record. |
+| Settings and profile | Done | Includes Active clinic: which hospital this phone uses. **Hospitals linked to me** lists hospitals tied to your record. Directory search finds hospitals by name; it is not a membership list. Enter a short clinic code if you have one. Medical information has blood type presets and quick allergy or chronic chips plus Other. A photo you add on the phone is stored with your record. Insurance shows your plan when one is on file. Payment methods and billing history open the right screens. Privacy is honest about what is phone-only and how to ask for account deletion. |
 | Choose my clinic | Done | Patients do not need Guids; use clinic name or an RC- code from the hospital. Hospitals linked to you show on Active clinic so you can tell membership apart from directory search. |
 
 ### Phones and devices (broader coverage)
@@ -103,7 +103,7 @@ What patients see on Android and iPhone.
 | Video visit on a real iPhone | Not started | Needs iOS video kit wiring |
 | Push alerts on Android | Partial | Needs Firebase configured on the server |
 | Push alerts on iPhone | Partial | Needs store and push setup, then a real device test |
-| Claim an assigned watch serial in the app | Done | Hospital path: after staff assign the watch, the patient enters that serial. Direct package path: claim the packaging serial when the watch is stocked under Direct. Unknown serials are rejected. |
+| Claim an assigned watch serial in the app | Done | Hospital path: after staff assign the watch, the patient enters that serial. Direct package path: claim the packaging serial when the watch is stocked under Direct. Unknown serials are rejected. Scan and Connect stay off until claim. After the first pair, only that Bluetooth address is accepted. |
 | Connect **E580** or **E585** style Bluetooth bands | Partial | Scan includes ET580 and ET585 labels; heart rate or oxygen only when the band speaks standard Bluetooth health profiles |
 | Live heart rate and blood oxygen in the app | Partial | Android vendor path wired; confirm on your ET580 or ET585 samples |
 | Auto sync and background monitoring | Not started | Manual sync exists; background sync not finished |

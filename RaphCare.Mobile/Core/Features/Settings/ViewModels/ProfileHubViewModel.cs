@@ -5,7 +5,9 @@ using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
+using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Client.Models.Insurance;
 using RaphCare.Mobile.Core.Common.Icons;
 using RaphCare.Mobile.Core.Features.Settings.Models;
 using RaphCare.Mobile.Core.Features.Settings.Services;
@@ -23,24 +25,30 @@ public sealed class ProfileHubViewModel : BaseViewModel
     private readonly IAuthService _auth;
     private readonly IPatientProfileService _profileApi;
     private readonly IPatientEmergencyContactsService _emergencyContactsApi;
+    private readonly IPatientInsuranceService _insuranceApi;
     private readonly ILocalPatientProfileStore _localProfile;
     private readonly ISelectedClinicStore _selectedClinic;
     private int _emergencyContactCount;
     private string _displayName = string.Empty;
     private string _emailLine = string.Empty;
+    private string _insuranceBadgeText = string.Empty;
+    private bool _showInsuranceBadge;
     private ImageSource? _profilePhoto;
     private bool _hasProfilePhoto;
+    private bool _isUploadingPhoto;
 
     public ProfileHubViewModel(
         IAuthService auth,
         IPatientProfileService profileApi,
         IPatientEmergencyContactsService emergencyContactsApi,
+        IPatientInsuranceService insuranceApi,
         ILocalPatientProfileStore localProfile,
         ISelectedClinicStore selectedClinic)
     {
         _auth = auth ?? throw new ArgumentNullException(nameof(auth));
         _profileApi = profileApi ?? throw new ArgumentNullException(nameof(profileApi));
         _emergencyContactsApi = emergencyContactsApi ?? throw new ArgumentNullException(nameof(emergencyContactsApi));
+        _insuranceApi = insuranceApi ?? throw new ArgumentNullException(nameof(insuranceApi));
         _localProfile = localProfile ?? throw new ArgumentNullException(nameof(localProfile));
         _selectedClinic = selectedClinic ?? throw new ArgumentNullException(nameof(selectedClinic));
 
@@ -50,7 +58,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
         OpenPhotoCommand = new Command(async () => await PickAndUploadPhotoAsync());
         Sections = new ObservableCollection<ProfileSectionModel>();
         AppVersionLabel = $"{T("ProfileAppName")} v{AppInfo.Current.VersionString}";
-        InsuranceBadgeText = T("ProfileInsuranceBadge");
+        InsuranceBadgeText = T("ProfileInsuranceBadgeNone");
         EditProfileButtonText = T("ProfileEditProfile");
         SignOutButtonText = T("ProfileSignOut");
     }
@@ -86,7 +94,25 @@ public sealed class ProfileHubViewModel : BaseViewModel
         private set => SetProperty(ref _hasProfilePhoto, value);
     }
 
-    public string InsuranceBadgeText { get; }
+    /// <summary>True while a picked photo is uploading and the avatar is refreshing.</summary>
+    public bool IsUploadingPhoto
+    {
+        get => _isUploadingPhoto;
+        private set => SetProperty(ref _isUploadingPhoto, value);
+    }
+
+    public string InsuranceBadgeText
+    {
+        get => _insuranceBadgeText;
+        private set => SetProperty(ref _insuranceBadgeText, value);
+    }
+
+    public bool ShowInsuranceBadge
+    {
+        get => _showInsuranceBadge;
+        private set => SetProperty(ref _showInsuranceBadge, value);
+    }
+
     public string AppVersionLabel { get; }
 
     public ObservableCollection<ProfileSectionModel> Sections { get; }
@@ -98,6 +124,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
     public async Task LoadAsync()
     {
         var contactsTask = _emergencyContactsApi.GetMyEmergencyContactsAsync(CancellationToken.None);
+        var insuranceTask = _insuranceApi.GetMyProfilesAsync(1, 5, CancellationToken.None);
         var response = await _profileApi.GetMyProfileAsync(CancellationToken.None).ConfigureAwait(false);
 
         var contactsResponse = await contactsTask.ConfigureAwait(false);
@@ -105,6 +132,9 @@ public sealed class ProfileHubViewModel : BaseViewModel
             _emergencyContactCount = contactsResponse.Data.Count;
         else
             _emergencyContactCount = _localProfile.GetEmergencyContacts().Count;
+
+        var insuranceResponse = await insuranceTask.ConfigureAwait(false);
+        await ApplyInsuranceBadgeAsync(insuranceResponse).ConfigureAwait(false);
 
         if (response.IsSuccess && response.Data is { } data)
         {
@@ -128,6 +158,23 @@ public sealed class ProfileHubViewModel : BaseViewModel
         await LoadProfilePhotoAsync(false).ConfigureAwait(false);
     }
 
+    private Task ApplyInsuranceBadgeAsync(Response<PagedPatientInsuranceProfilesViewModel> insuranceResponse) =>
+        MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            var plan = insuranceResponse.IsSuccess
+                ? insuranceResponse.Data?.Items?.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.PlanName))
+                : null;
+            if (plan is not null)
+            {
+                InsuranceBadgeText = plan.PlanName.Trim();
+                ShowInsuranceBadge = true;
+                return;
+            }
+
+            InsuranceBadgeText = T("ProfileInsuranceBadgeNone");
+            ShowInsuranceBadge = true;
+        });
+
     private async Task LoadProfilePhotoAsync(bool mayHavePhoto)
     {
         if (!mayHavePhoto)
@@ -149,6 +196,9 @@ public sealed class ProfileHubViewModel : BaseViewModel
 
     private async Task PickAndUploadPhotoAsync()
     {
+        if (IsUploadingPhoto)
+            return;
+
         FileResult? picked = null;
         try
         {
@@ -166,21 +216,29 @@ public sealed class ProfileHubViewModel : BaseViewModel
         if (picked is null)
             return;
 
-        await using var stream = await picked.OpenReadAsync();
-        var response = await _profileApi.UploadProfilePhotoAsync(
-            stream,
-            picked.FileName,
-            picked.ContentType ?? "image/jpeg",
-            CancellationToken.None).ConfigureAwait(false);
-
-        if (!response.IsSuccess)
+        IsUploadingPhoto = true;
+        try
         {
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-                await Shell.Current.DisplayAlertAsync(Title, T("ProfilePhotoUploadFailed"), T("CommonOk")));
-            return;
-        }
+            await using var stream = await picked.OpenReadAsync();
+            var response = await _profileApi.UploadProfilePhotoAsync(
+                stream,
+                picked.FileName,
+                picked.ContentType ?? "image/jpeg",
+                CancellationToken.None).ConfigureAwait(false);
 
-        await LoadProfilePhotoAsync(true);
+            if (!response.IsSuccess)
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                    await Shell.Current.DisplayAlertAsync(Title, T("ProfilePhotoUploadFailed"), T("CommonOk")));
+                return;
+            }
+
+            await LoadProfilePhotoAsync(true);
+        }
+        finally
+        {
+            IsUploadingPhoto = false;
+        }
     }
 
     private Task ApplyProfileDisplayAsync(
@@ -304,7 +362,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
                     Subtitle = T("ProfilePaymentMethodsHint"),
                     IconSource = MonochromeIconKeys.CreditCardOnAccent,
                     TapCommand = new Command(async () =>
-                        await AppNavigator.GoToFeatureAsync(AppNavigator.Billing, T("HomeHubBilling"))),
+                        await SafeShellNavigator.GoToAsync(AppNavigator.AddBillingPaymentMethod)),
                 },
                 new ProfileMenuRowModel
                 {

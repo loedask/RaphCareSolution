@@ -1,6 +1,5 @@
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
-using RaphCare.Client.Models.Appointments;
 using RaphCare.Client.Models.Devices;
 using RaphCare.Client.Services.Base;
 
@@ -20,6 +19,7 @@ public sealed class PatientDevicesService(HttpClient httpClient) : BaseHttpServi
                 DeviceId = d.DeviceId,
                 SerialNumber = d.SerialNumber ?? string.Empty,
                 Model = d.Model ?? string.Empty,
+                BluetoothMacAddress = d.BluetoothMacAddress,
                 AssignedAt = d.AssignedAt
             })
             .ToList();
@@ -57,7 +57,35 @@ public sealed class PatientDevicesService(HttpClient httpClient) : BaseHttpServi
             return Response<RegisterMyDeviceResultViewModel>.Failure(result.ErrorMessage ?? "Could not claim this device.", result.StatusCode);
 
         return Response<RegisterMyDeviceResultViewModel>.Success(
-            new RegisterMyDeviceResultViewModel { DeviceId = result.Data.DeviceId });
+            new RegisterMyDeviceResultViewModel
+            {
+                DeviceId = result.Data.DeviceId,
+                BluetoothMacAddress = result.Data.BluetoothMacAddress
+            });
+    }
+
+    public async Task<Response<BindMyDeviceBluetoothMacResultViewModel>> BindBluetoothMacAsync(
+        Guid deviceId,
+        string bluetoothMacAddress,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await PostAsync<BindMacResponseDto>(
+                $"api/patient/devices/{deviceId}/bluetooth-mac",
+                new { bluetoothMacAddress },
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!result.IsSuccess || result.Data is null)
+            return Response<BindMyDeviceBluetoothMacResultViewModel>.Failure(
+                result.ErrorMessage ?? "Could not lock Bluetooth for this watch.",
+                result.StatusCode);
+
+        return Response<BindMyDeviceBluetoothMacResultViewModel>.Success(
+            new BindMyDeviceBluetoothMacResultViewModel
+            {
+                DeviceId = result.Data.DeviceId,
+                BluetoothMacAddress = result.Data.BluetoothMacAddress ?? string.Empty
+            });
     }
 
     public async Task<Response<SyncMyDeviceReadingsResultViewModel>> SyncReadingsAsync(
@@ -104,12 +132,20 @@ public sealed class PatientDevicesService(HttpClient httpClient) : BaseHttpServi
         public Guid DeviceId { get; set; }
         public string? SerialNumber { get; set; }
         public string? Model { get; set; }
+        public string? BluetoothMacAddress { get; set; }
         public DateTime AssignedAt { get; set; }
     }
 
     private sealed class RegisterDeviceResponseDto
     {
         public Guid DeviceId { get; set; }
+        public string? BluetoothMacAddress { get; set; }
+    }
+
+    private sealed class BindMacResponseDto
+    {
+        public Guid DeviceId { get; set; }
+        public string? BluetoothMacAddress { get; set; }
     }
 
     private sealed class SyncReadingsResponseDto

@@ -18,6 +18,7 @@ public interface IPlatformFleetDevicesService
         Guid clinicId,
         string serialNumber,
         string model,
+        string? bluetoothMacAddress = null,
         CancellationToken cancellationToken = default);
 
     Task<Response<Guid>> AssignDeviceToPatientAsync(

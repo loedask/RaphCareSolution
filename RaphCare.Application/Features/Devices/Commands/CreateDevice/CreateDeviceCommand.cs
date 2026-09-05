@@ -11,4 +11,6 @@ public class CreateDeviceCommand : IRequest<Guid>, IPlatformAdminRequest
     public string Model { get; set; } = string.Empty;
     public Guid DeviceTypeId { get; set; }
     public Guid DeviceManufacturerId { get; set; }
+    /// <summary>Optional Bluetooth MAC when known at stock time.</summary>
+    public string? BluetoothMacAddress { get; set; }
 }

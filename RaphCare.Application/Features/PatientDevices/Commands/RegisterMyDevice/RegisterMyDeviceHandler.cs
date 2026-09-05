@@ -123,7 +123,11 @@ public sealed class RegisterMyDeviceHandler : IRequestHandler<RegisterMyDeviceCo
             cancellationToken).ConfigureAwait(false);
 
         if (myAssignment.Items.Count > 0)
-            return new RegisterMyDeviceResponseDto { DeviceId = existing.Id };
+            return new RegisterMyDeviceResponseDto
+            {
+                DeviceId = existing.Id,
+                BluetoothMacAddress = existing.BluetoothMacAddress
+            };
 
         var otherActive = await _assignments.SearchAsync(
             q => q.Where(a => a.DeviceId == existing.Id && a.PatientId != patientId && a.IsActive),
@@ -176,6 +180,10 @@ public sealed class RegisterMyDeviceHandler : IRequestHandler<RegisterMyDeviceCo
         await _devices.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
         await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return new RegisterMyDeviceResponseDto { DeviceId = existing.Id };
+        return new RegisterMyDeviceResponseDto
+        {
+            DeviceId = existing.Id,
+            BluetoothMacAddress = existing.BluetoothMacAddress
+        };
     }
 }

@@ -440,6 +440,8 @@
                                             <tr>
                                                 <th>@AppResources.T("Common_Serial")</th>
                                                 <th>@AppResources.T("Common_Model")</th>
+                                                <th>@AppResources.T("Common_BluetoothMac")</th>
+                                                <th>@AppResources.T("Common_Activated")</th>
                                                 <th>@AppResources.T("Common_Status")</th>
                                                 <th>@AppResources.T("Common_AssignedTo")</th>
                                                 <th>@AppResources.T("Common_Active")</th>
@@ -452,6 +454,21 @@
                                                 <tr>
                                                     <td><code>@device.SerialNumber</code></td>
                                                     <td>@(string.IsNullOrWhiteSpace(device.Model) ? AppResources.T("Common_EmptyCell") : device.Model)</td>
+                                                    <td>
+                                                        @if (string.IsNullOrWhiteSpace(device.BluetoothMacAddress))
+                                                        {
+                                                            <span class="text-muted">@AppResources.T("Common_EmptyCell")</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <code>@device.BluetoothMacAddress</code>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @(device.ActivatedAt is DateTime activated
+                                                            ? activated.ToString("yyyy-MM-dd")
+                                                            : AppResources.T("Common_EmptyCell"))
+                                                    </td>
                                                     <td>@(string.IsNullOrWhiteSpace(device.Status) ? AppResources.T("Common_EmptyCell") : device.Status)</td>
                                                     <td>
                                                         @if (device.AssignedPatientId is Guid patientId)

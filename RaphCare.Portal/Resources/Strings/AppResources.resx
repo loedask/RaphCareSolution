@@ -621,6 +621,12 @@
   <data name="Common_Model" xml:space="preserve">
     <value>Model</value>
   </data>
+  <data name="Common_BluetoothMac" xml:space="preserve">
+    <value>Bluetooth MAC</value>
+  </data>
+  <data name="Common_Activated" xml:space="preserve">
+    <value>Activated</value>
+  </data>
   <data name="Common_AssignedTo" xml:space="preserve">
     <value>Assigned to</value>
   </data>

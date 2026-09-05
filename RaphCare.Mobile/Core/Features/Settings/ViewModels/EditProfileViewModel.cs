@@ -1,4 +1,7 @@
 using System.Windows.Input;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Media;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Profile;
 using RaphCare.Mobile.Core.Features.Settings.Services;
@@ -18,6 +21,10 @@ public sealed class EditProfileViewModel : BaseViewModel
     private string _phone = string.Empty;
     private DateTime _dob = DateTime.Today.AddYears(-30);
     private int _genderIndex;
+    private ImageSource? _profilePhoto;
+    private bool _hasProfilePhoto;
+    private bool _isUploadingPhoto;
+    private bool _mayHavePhoto;
 
     public EditProfileViewModel(IPatientProfileService profileApi, ILocalPatientProfileStore localProfile)
     {
@@ -25,8 +32,9 @@ public sealed class EditProfileViewModel : BaseViewModel
         _localProfile = localProfile ?? throw new ArgumentNullException(nameof(localProfile));
         Title = T("EditProfileTitle");
 
-    PhotoHint = T("EditProfilePhotoHint");
+        PhotoHint = T("EditProfilePhotoHint");
         SaveCommand = new Command(async () => await SaveAsync());
+        OpenPhotoCommand = new Command(async () => await PickAndUploadPhotoAsync());
         GenderOptions =
         [
             T("ProfileGenderFemale"),
@@ -50,6 +58,7 @@ public sealed class EditProfileViewModel : BaseViewModel
     public string DobLabel { get; }
     public string GenderLabel { get; }
     public string SaveLabel { get; }
+    public string PhotoHint { get; }
 
     public IReadOnlyList<string> GenderOptions { get; }
 
@@ -90,8 +99,30 @@ public sealed class EditProfileViewModel : BaseViewModel
         set => SetProperty(ref _genderIndex, value);
     }
 
-    public string PhotoHint { get; }
+    public ImageSource? ProfilePhoto
+    {
+        get => _profilePhoto;
+        private set
+        {
+            SetProperty(ref _profilePhoto, value);
+            HasProfilePhoto = value is not null;
+        }
+    }
+
+    public bool HasProfilePhoto
+    {
+        get => _hasProfilePhoto;
+        private set => SetProperty(ref _hasProfilePhoto, value);
+    }
+
+    public bool IsUploadingPhoto
+    {
+        get => _isUploadingPhoto;
+        private set => SetProperty(ref _isUploadingPhoto, value);
+    }
+
     public ICommand SaveCommand { get; }
+    public ICommand OpenPhotoCommand { get; }
 
     public async Task LoadAsync()
     {
@@ -104,10 +135,13 @@ public sealed class EditProfileViewModel : BaseViewModel
             {
                 ApplyFromApi(data);
                 CopyToLocalStore(data);
+                _mayHavePhoto = !string.IsNullOrWhiteSpace(data.ProfilePhotoUrl);
+                await LoadProfilePhotoAsync(_mayHavePhoto).ConfigureAwait(false);
                 return;
             }
 
             LoadFromLocalStore();
+            await LoadProfilePhotoAsync(false).ConfigureAwait(false);
         }
         finally
         {
@@ -123,6 +157,71 @@ public sealed class EditProfileViewModel : BaseViewModel
         Phone = _localProfile.Phone;
         DateOfBirth = _localProfile.DateOfBirth ?? DateTime.Today.AddYears(-25);
         GenderIndex = MapGenderToIndex(_localProfile.Gender);
+    }
+
+    private async Task LoadProfilePhotoAsync(bool mayHavePhoto)
+    {
+        if (!mayHavePhoto)
+        {
+            await MainThread.InvokeOnMainThreadAsync(() => ProfilePhoto = null);
+            return;
+        }
+
+        var photoResponse = await _profileApi.GetProfilePhotoBytesAsync(CancellationToken.None).ConfigureAwait(false);
+        if (!photoResponse.IsSuccess || photoResponse.Data is not { Length: > 0 } bytes)
+        {
+            await MainThread.InvokeOnMainThreadAsync(() => ProfilePhoto = null);
+            return;
+        }
+
+        await MainThread.InvokeOnMainThreadAsync(() =>
+            ProfilePhoto = ImageSource.FromStream(() => new MemoryStream(bytes)));
+    }
+
+    private async Task PickAndUploadPhotoAsync()
+    {
+        if (IsUploadingPhoto)
+            return;
+
+        FileResult? picked = null;
+        try
+        {
+            var results = await MainThread.InvokeOnMainThreadAsync(() =>
+                MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions { Title = T("ProfilePhotoPickerTitle") }));
+            picked = results is { Count: > 0 } ? results[0] : null;
+        }
+        catch (FeatureNotSupportedException)
+        {
+            await DisplayAlertSafeAsync(Title, T("ProfilePhotoComingSoon"), T("CommonOk"));
+            return;
+        }
+
+        if (picked is null)
+            return;
+
+        IsUploadingPhoto = true;
+        try
+        {
+            await using var stream = await picked.OpenReadAsync();
+            var response = await _profileApi.UploadProfilePhotoAsync(
+                stream,
+                picked.FileName,
+                picked.ContentType ?? "image/jpeg",
+                CancellationToken.None).ConfigureAwait(false);
+
+            if (!response.IsSuccess)
+            {
+                await DisplayAlertSafeAsync(Title, T("ProfilePhotoUploadFailed"), T("CommonOk"));
+                return;
+            }
+
+            _mayHavePhoto = true;
+            await LoadProfilePhotoAsync(true).ConfigureAwait(false);
+        }
+        finally
+        {
+            IsUploadingPhoto = false;
+        }
     }
 
     private async Task SaveAsync()

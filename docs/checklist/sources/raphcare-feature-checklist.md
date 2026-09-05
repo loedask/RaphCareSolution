@@ -28,7 +28,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-09-05
+Last reviewed: 2026-09-06
 
 ---
 
@@ -50,7 +50,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Collection board: search pending prescriptions/labs, camera QR scan, call a code onto the waiting screen, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR, public waiting-screen token (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs, profile photo when the patient uploaded one
 - [x] Clinic devices list + hospital assign in-stock device to linked patient (`POST …/devices/{deviceId}/assign`)
-- [x] Platform fleet inventory API (CreateDevice, AssignDeviceToPatient, filtered GetDevices) + patient claim (hospital: prior assignment; Direct: packaging self-claim when clinic allows)
+- [x] Platform fleet inventory API (CreateDevice with optional Bluetooth MAC, AssignDeviceToPatient, filtered GetDevices) + patient claim (hospital: prior assignment; Direct: packaging self-claim when clinic allows) + patient bind Bluetooth MAC after first pair
 - [x] Tele-session start (Agora join info for admin)
 
 ### Admin panel (Web)
@@ -159,14 +159,14 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 | Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
-| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial; offline outbox retries |
+| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked Bluetooth MAC (first pair learns MAC); offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
 | Mental health | [x] | [x] | [x] | Content, mood check-in, patient PHQ-9 / GAD-7 self-assessment |
 | AI assistant | [x] | [x] | [x] | Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
 | Notifications | [x] | [x] | [x] | List / mark read / push registration |
-| Settings / profile | [x] | [x] | [x] | Edit, personal info, medical info (blood type picker with Unknown; allergy/chronic chips + Other), emergency contacts, privacy, help, language, change password, Active clinic (typed search / RC- code; not an auto-loaded membership list) |
+| Settings / profile | [x] | [x] | [x] | Edit (including photo upload), personal info, medical info (blood type picker with Unknown; allergy/chronic chips + Other), emergency contacts, insurance plan badge from API, payment methods vs billing history routes, honest privacy (local toggles; delete/export via support/clinic), help, language, change password, Active clinic (typed search / RC- code; not an auto-loaded membership list) |
 
 Screen visual parity table is marked done in `Mobile_Concept_Port.md` (last pass). Re-check when the React concept changes.
 
