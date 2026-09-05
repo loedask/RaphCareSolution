@@ -51,6 +51,15 @@
                                    autocomplete="off"
                                    spellcheck="false" />
                         </label>
+                        <label class="fleet-add-field">
+                            <span class="fleet-add-label">@AppResources.T("Fleet_MacLabel")</span>
+                            <input class="form-control"
+                                   @bind="_newMac"
+                                   @bind:event="oninput"
+                                   placeholder="@AppResources.T("Fleet_MacPlaceholder")"
+                                   autocomplete="off"
+                                   spellcheck="false" />
+                        </label>
                         <div class="fleet-add-field fleet-add-field-span">
                             <span class="fleet-add-label">@AppResources.T("Fleet_ModelLabel")</span>
                             <div class="fleet-model-radios" role="radiogroup" aria-label="@AppResources.T("Fleet_ModelLabel")">
@@ -187,6 +196,8 @@
                                     <th>@AppResources.T("Common_Hospitals")</th>
                                     <th>@AppResources.T("Fleet_SerialLabel")</th>
                                     <th>@AppResources.T("Fleet_ModelLabel")</th>
+                                    <th>@AppResources.T("Fleet_MacLabel")</th>
+                                    <th>@AppResources.T("Fleet_ActivatedLabel")</th>
                                     <th>Status</th>
                                     <th>@AppResources.T("Fleet_AssignColumn")</th>
                                 </tr>
@@ -198,6 +209,21 @@
                                         <td>@ClinicName(device.ClinicId)</td>
                                         <td>@device.SerialNumber</td>
                                         <td>@device.Model</td>
+                                        <td>
+                                            @if (string.IsNullOrWhiteSpace(device.BluetoothMacAddress))
+                                            {
+                                                <span class="text-muted">@AppResources.T("Fleet_MacNotSet")</span>
+                                            }
+                                            else
+                                            {
+                                                <code>@device.BluetoothMacAddress</code>
+                                            }
+                                        </td>
+                                        <td>
+                                            @(device.ActivatedAt is DateTime activated
+                                                ? activated.ToString("yyyy-MM-dd")
+                                                : AppResources.T("Fleet_MacNotSet"))
+                                        </td>
                                         <td>
                                             @(string.IsNullOrWhiteSpace(device.Status) ? (device.IsAssigned ? AppResources.T("Fleet_StatusAssigned") : AppResources.T("Fleet_StatusInStock")) : device.Status)
                                         </td>
@@ -290,6 +316,7 @@
     private string? _scanMacHint;
     private string _newClinicId = string.Empty;
     private string _newSerial = string.Empty;
+    private string _newMac = string.Empty;
     private string _newModel = "E585";
     private string _filterClinicId = string.Empty;
     private string _filterSerial = string.Empty;
@@ -414,7 +441,11 @@
         }
 
         _saving = true;
-        var response = await FleetService.CreateDeviceAsync(clinicId, _newSerial.Trim(), _newModel);
+        var response = await FleetService.CreateDeviceAsync(
+            clinicId,
+            _newSerial.Trim(),
+            _newModel,
+            string.IsNullOrWhiteSpace(_newMac) ? null : _newMac.Trim());
         _saving = false;
 
         if (!response.IsSuccess)
@@ -426,6 +457,7 @@
 
         _addSuccess = AppResources.Format("Fleet_AddedFormat", _newSerial.Trim());
         _newSerial = string.Empty;
+        _newMac = string.Empty;
         _scanCandidates = Array.Empty<FleetDeviceScanParser.Candidate>();
         await ReloadListAsync();
     }
@@ -625,20 +657,34 @@
             return;
         }
 
-        _newSerial = result.PreferredValue;
+        if (result.PreferredLooksLikeMac)
+        {
+            _newMac = result.PreferredValue;
+            _scanMacHint = fromBarcode ? null : AppResources.T("Fleet_ScanMacHint");
+        }
+        else
+        {
+            _newSerial = result.PreferredValue;
+            _scanMacHint = null;
+        }
+
         _addSuccess = AppResources.T("Fleet_ScanFound");
-        _scanMacHint = result.PreferredLooksLikeMac && !fromBarcode
-            ? AppResources.T("Fleet_ScanMacHint")
-            : null;
     }
 
     private void ApplyCandidate(FleetDeviceScanParser.Candidate candidate)
     {
-        _newSerial = candidate.Value;
+        if (string.Equals(candidate.Kind, "Mac", StringComparison.OrdinalIgnoreCase))
+        {
+            _newMac = candidate.Value;
+            _scanMacHint = AppResources.T("Fleet_ScanMacHint");
+        }
+        else
+        {
+            _newSerial = candidate.Value;
+            _scanMacHint = null;
+        }
+
         _addSuccess = AppResources.T("Fleet_ScanFound");
-        _scanMacHint = string.Equals(candidate.Kind, "Mac", StringComparison.OrdinalIgnoreCase)
-            ? AppResources.T("Fleet_ScanMacHint")
-            : null;
         _addError = null;
     }
 

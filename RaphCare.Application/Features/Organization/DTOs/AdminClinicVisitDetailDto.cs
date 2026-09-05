@@ -36,6 +36,8 @@ public sealed class AdminClinicDeviceListItemDto
     public Guid Id { get; set; }
     public string SerialNumber { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
+    public string? BluetoothMacAddress { get; set; }
+    public DateTime? ActivatedAt { get; set; }
     public bool IsActive { get; set; }
     public bool IsAssigned { get; set; }
     public string Status { get; set; } = string.Empty;

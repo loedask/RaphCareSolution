@@ -5,12 +5,20 @@ public sealed class PatientDeviceListItemDto
     public Guid DeviceId { get; set; }
     public string SerialNumber { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
+    public string? BluetoothMacAddress { get; set; }
     public DateTime AssignedAt { get; set; }
 }
 
 public sealed class RegisterMyDeviceResponseDto
 {
     public Guid DeviceId { get; set; }
+    public string? BluetoothMacAddress { get; set; }
+}
+
+public sealed class BindMyDeviceBluetoothMacResponseDto
+{
+    public Guid DeviceId { get; set; }
+    public string BluetoothMacAddress { get; set; } = string.Empty;
 }
 
 public sealed class SyncMyDeviceReadingsResponseDto

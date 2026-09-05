@@ -11,16 +11,56 @@
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="16">
             <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,0,0,8">
-                <Border BackgroundColor="{StaticResource SecondaryColor}"
-                        StrokeThickness="0"
-                        WidthRequest="80"
-                        HeightRequest="80"
-                        HorizontalOptions="Center">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="24" />
-                    </Border.StrokeShape>
-                    <Label Text="👤" FontSize="32" HorizontalOptions="Center" VerticalOptions="Center" />
-                </Border>
+                <Grid WidthRequest="80" HeightRequest="80" HorizontalOptions="Center">
+                    <Border BackgroundColor="{StaticResource SecondaryColor}"
+                            StrokeThickness="0"
+                            HorizontalOptions="Fill"
+                            VerticalOptions="Fill"
+                            IsVisible="{Binding HasProfilePhoto, Converter={StaticResource InvertedBoolConverter}}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="24" />
+                        </Border.StrokeShape>
+                        <Label Text="👤" FontSize="32" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <Image Source="{Binding ProfilePhoto}"
+                           Aspect="AspectFill"
+                           IsVisible="{Binding HasProfilePhoto}"
+                           HorizontalOptions="Fill"
+                           VerticalOptions="Fill">
+                        <Image.Clip>
+                            <RoundRectangleGeometry Rect="0,0,80,80" CornerRadius="24" />
+                        </Image.Clip>
+                    </Image>
+                    <Border BackgroundColor="#99000000"
+                            StrokeThickness="0"
+                            InputTransparent="True"
+                            IsVisible="{Binding IsUploadingPhoto}"
+                            HorizontalOptions="Fill"
+                            VerticalOptions="Fill">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="24" />
+                        </Border.StrokeShape>
+                        <ActivityIndicator IsRunning="{Binding IsUploadingPhoto}"
+                                           Color="White"
+                                           WidthRequest="24"
+                                           HeightRequest="24"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                    </Border>
+                    <Button FontSize="11"
+                            WidthRequest="32"
+                            HeightRequest="32"
+                            CornerRadius="10"
+                            Padding="0"
+                            Text="📷"
+                            BackgroundColor="{StaticResource PrimaryColor}"
+                            TextColor="{StaticResource PrimaryForegroundColor}"
+                            HorizontalOptions="End"
+                            VerticalOptions="End"
+                            Margin="0,0,-4,-4"
+                            IsEnabled="{Binding IsUploadingPhoto, Converter={StaticResource InvertedBoolConverter}}"
+                            Command="{Binding OpenPhotoCommand}" />
+                </Grid>
                 <Label Text="{Binding PhotoHint}"
                        Style="{StaticResource Caption}"
                        TextColor="{StaticResource MutedForegroundColor}"

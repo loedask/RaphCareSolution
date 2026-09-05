@@ -91,6 +91,10 @@
   <data name="Fleet_SelectHospital" xml:space="preserve"><value>Select hospital</value></data>
   <data name="Fleet_SerialLabel" xml:space="preserve"><value>Serial</value></data>
   <data name="Fleet_SerialPlaceholder" xml:space="preserve"><value>Serial on packaging</value></data>
+  <data name="Fleet_MacLabel" xml:space="preserve"><value>Bluetooth MAC</value></data>
+  <data name="Fleet_MacPlaceholder" xml:space="preserve"><value>Optional AA:BB:CC:DD:EE:FF</value></data>
+  <data name="Fleet_MacNotSet" xml:space="preserve"><value>Not set</value></data>
+  <data name="Fleet_ActivatedLabel" xml:space="preserve"><value>Activated</value></data>
   <data name="Fleet_ModelLabel" xml:space="preserve"><value>Model</value></data>
   <data name="Fleet_AddButton" xml:space="preserve"><value>Add to fleet</value></data>
   <data name="Fleet_AddValidation" xml:space="preserve"><value>Choose a hospital and enter a serial number.</value></data>
@@ -127,7 +131,7 @@
   <data name="Fleet_ScanOcrFailed" xml:space="preserve"><value>Text recognition failed on that image. Try a closer, sharper shot of the watch Device Info screen, or type the serial.</value></data>
   <data name="Fleet_ScanNothingFound" xml:space="preserve"><value>No serial, barcode, or MAC found. Type the packaging serial, or take a clearer photo.</value></data>
   <data name="Fleet_ScanFound" xml:space="preserve"><value>Filled from scan. Check the serial before you add the device.</value></data>
-  <data name="Fleet_ScanMacHint" xml:space="preserve"><value>This looks like a Bluetooth MAC from Device Info, not the packaging serial. Prefer the serial on the box when you have it. Patients claim the packaging serial in the app.</value></data>
+  <data name="Fleet_ScanMacHint" xml:space="preserve"><value>This looks like a Bluetooth MAC from Device Info. It is filled in the MAC field. Prefer the packaging serial for claim when you have it.</value></data>
   <data name="Fleet_ScanCandidates" xml:space="preserve"><value>Use a value from the photo:</value></data>
   <data name="Fleet_ScanExtracting" xml:space="preserve"><value>Reading photo…</value></data>
   <data name="Fleet_CandidateMac" xml:space="preserve"><value>MAC</value></data>

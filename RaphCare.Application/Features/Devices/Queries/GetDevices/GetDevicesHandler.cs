@@ -47,6 +47,8 @@ public class GetDevicesHandler : IRequestHandler<GetDevicesQuery, PagedResult<De
                 ClinicId = d.ClinicId,
                 SerialNumber = d.SerialNumber,
                 Model = d.Model,
+                BluetoothMacAddress = d.BluetoothMacAddress,
+                ActivatedAt = d.ActivatedAt,
                 IsActive = d.IsActive,
                 IsAssigned = d.IsAssigned,
                 Status = d.Status

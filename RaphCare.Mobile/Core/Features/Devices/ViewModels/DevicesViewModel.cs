@@ -28,6 +28,7 @@ public sealed class DevicesViewModel : BaseViewModel
     private string _serialNumber = "";
     private string _modelSku = PatientProvisionedDeviceSkus.E585;
     private Guid? _registeredDeviceId;
+    private string? _claimedBluetoothMac;
     private string? _syncResultText;
 
     public DevicesViewModel(IWearableBleCoordinator ble, IPatientDevicesService patientDevices, IVitalsSyncOutbox vitalsOutbox)
@@ -37,25 +38,25 @@ public sealed class DevicesViewModel : BaseViewModel
         _vitalsOutbox = vitalsOutbox ?? throw new ArgumentNullException(nameof(vitalsOutbox));
         Title = T("DevicesPageTitle");
 
-    ScanButtonText = T("DevicesScan");
-    StopScanButtonText = T("DevicesStopScan");
-    ConnectHint = T("DevicesConnectHint");
-    DisconnectButtonText = T("DevicesDisconnect");
-    ShowAllLabel = T("DevicesShowAllBle");
-    E580E585FilterLabel = T("DevicesE580E585Filter");
-    LastReadingLabel = T("DevicesLastReading");
-    BleUnsupportedMessage = T("DevicesBleUnsupported");
-    DevicesConnectLabel = T("DevicesConnectButton");
+        ScanButtonText = T("DevicesScan");
+        StopScanButtonText = T("DevicesStopScan");
+        ConnectHint = T("DevicesConnectHint");
+        DisconnectButtonText = T("DevicesDisconnect");
+        ShowAllLabel = T("DevicesShowAllBle");
+        E580E585FilterLabel = T("DevicesE580E585Filter");
+        LastReadingLabel = T("DevicesLastReading");
+        BleUnsupportedMessage = T("DevicesBleUnsupported");
+        DevicesConnectLabel = T("DevicesConnectButton");
 
-    SyncReadingsButtonText = T("DevicesSyncReadings");
+        SyncReadingsButtonText = T("DevicesSyncReadings");
         ClaimHint = T("DevicesClaimHint");
         ClaimButtonText = T("DevicesClaimButton");
         SerialPlaceholder = T("DevicesSerialPlaceholder");
         SkuPickerTitle = T("DevicesSkuTitle");
 
-        ScanCommand = new Command(async () => await ScanAsync().ConfigureAwait(false), () => !IsBusy && _ble.IsBleSupported);
+        ScanCommand = new Command(async () => await ScanAsync().ConfigureAwait(false), () => CanScanOrConnect);
         StopScanCommand = new Command(async () => await StopScanAsync().ConfigureAwait(false), () => _ble.IsScanning);
-        ConnectCommand = new Command<Guid>(async id => await ConnectAsync(id).ConfigureAwait(false), _ => !IsBusy);
+        ConnectCommand = new Command<Guid>(async id => await ConnectAsync(id).ConfigureAwait(false), _ => CanScanOrConnect);
         DisconnectCommand = new Command(async () => await DisconnectAsync().ConfigureAwait(false), () => _ble.ConnectedDeviceId.HasValue && !IsBusy);
         RegisterCommand = new Command(async () => await RegisterAsync().ConfigureAwait(false), () => !IsBusy);
         SyncLastReadingCommand = new Command(async () => await SyncLastReadingAsync().ConfigureAwait(false), () => !IsBusy);
@@ -89,6 +90,10 @@ public sealed class DevicesViewModel : BaseViewModel
 
     public string ClaimedDeviceIdLabel =>
         RegisteredDeviceId is Guid id ? Format(T("DevicesClaimedIdFormat"), id) : string.Empty;
+
+    public bool HasClaimedDevice => RegisteredDeviceId.HasValue;
+
+    public bool CanScanOrConnect => !IsBusy && _ble.IsBleSupported && HasClaimedDevice;
 
     public string ShowAllToggleText => ShowAllDevices ? ShowAllLabel : E580E585FilterLabel;
 
@@ -183,7 +188,21 @@ public sealed class DevicesViewModel : BaseViewModel
     public Guid? RegisteredDeviceId
     {
         get => _registeredDeviceId;
-        private set => SetProperty(ref _registeredDeviceId, value);
+        private set
+        {
+            if (!SetProperty(ref _registeredDeviceId, value))
+                return;
+            OnPropertyChanged(nameof(ClaimedDeviceIdLabel));
+            OnPropertyChanged(nameof(HasClaimedDevice));
+            OnPropertyChanged(nameof(CanScanOrConnect));
+            RaiseCanExecuteChanged(ScanCommand, ConnectCommand);
+        }
+    }
+
+    public string? ClaimedBluetoothMac
+    {
+        get => _claimedBluetoothMac;
+        private set => SetProperty(ref _claimedBluetoothMac, value);
     }
 
     public string? SyncResultText
@@ -218,7 +237,39 @@ public sealed class DevicesViewModel : BaseViewModel
         }
         catch
         {
-            // Best-effort; user can retry sync manually.
+            // Outbox flush is best-effort.
+        }
+
+        await LoadClaimedDevicesAsync().ConfigureAwait(false);
+    }
+
+    private async Task LoadClaimedDevicesAsync()
+    {
+        try
+        {
+            var resp = await _patientDevices.GetMyDevicesAsync(CancellationToken.None).ConfigureAwait(false);
+            if (!resp.IsSuccess || resp.Data is null || resp.Data.Count == 0)
+            {
+                if (!HasClaimedDevice)
+                    StatusHint = T("DevicesClaimBeforeConnectHint");
+                return;
+            }
+
+            var first = resp.Data[0];
+            RegisteredDeviceId = first.DeviceId;
+            ClaimedBluetoothMac = BluetoothMacNormalizer.TryNormalize(first.BluetoothMacAddress);
+            if (string.IsNullOrWhiteSpace(SerialNumber))
+                SerialNumber = first.SerialNumber ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(first.Model)
+                && ModelSkuOptions.Contains(first.Model))
+                ModelSku = first.Model;
+            StatusHint = string.IsNullOrWhiteSpace(ClaimedBluetoothMac)
+                ? T("DevicesClaimReadyFirstPairHint")
+                : Format(T("DevicesClaimReadyMacHint"), ClaimedBluetoothMac!);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
         }
     }
 
@@ -287,6 +338,12 @@ public sealed class DevicesViewModel : BaseViewModel
             return;
         }
 
+        if (!HasClaimedDevice)
+        {
+            ErrorMessage = T("DevicesClaimBeforeConnect");
+            return;
+        }
+
         ErrorMessage = null;
         StatusHint = T("DevicesPermissionChecking");
         IsBusy = true;
@@ -341,6 +398,25 @@ public sealed class DevicesViewModel : BaseViewModel
     private async Task ConnectAsync(Guid deviceId)
     {
         ErrorMessage = null;
+        if (!HasClaimedDevice || RegisteredDeviceId is not Guid claimedId)
+        {
+            ErrorMessage = T("DevicesClaimBeforeConnect");
+            return;
+        }
+
+        var peripheral = _ble.DiscoveredDevices.FirstOrDefault(d => d.Id == deviceId);
+        var peripheralMac = BluetoothMacNormalizer.TryNormalize(peripheral?.MacAddress);
+        var expectedMac = BluetoothMacNormalizer.TryNormalize(ClaimedBluetoothMac);
+
+        if (expectedMac is not null)
+        {
+            if (peripheralMac is null || !BluetoothMacNormalizer.EqualsNormalized(expectedMac, peripheralMac))
+            {
+                ErrorMessage = T("DevicesWrongWatchMac");
+                return;
+            }
+        }
+
         IsBusy = true;
         try
         {
@@ -358,6 +434,43 @@ public sealed class DevicesViewModel : BaseViewModel
             else if (name.Contains("ET585", StringComparison.OrdinalIgnoreCase)
                      || name.Contains("E585", StringComparison.OrdinalIgnoreCase))
                 ModelSku = PatientProvisionedDeviceSkus.E585;
+
+            if (expectedMac is null)
+            {
+                var learned = peripheralMac
+                    ?? BluetoothMacNormalizer.TryNormalize(_ble.ConnectedDeviceId.HasValue
+                        ? _ble.DiscoveredDevices.FirstOrDefault(d => d.Id == _ble.ConnectedDeviceId)?.MacAddress
+                        : null);
+
+                if (learned is null)
+                {
+                    ErrorMessage = T("DevicesMacMissingAfterConnect");
+                }
+                else
+                {
+                    var bind = await _patientDevices.BindBluetoothMacAsync(claimedId, learned, CancellationToken.None)
+                        .ConfigureAwait(false);
+                    if (!bind.IsSuccess)
+                    {
+                        ErrorMessage = bind.ErrorMessage ?? T("DevicesMacBindFailed");
+                        try
+                        {
+                            await _ble.DisconnectAsync().ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            // ignore
+                        }
+
+                        OnPropertyChanged(nameof(ConnectedDeviceId));
+                    }
+                    else
+                    {
+                        ClaimedBluetoothMac = bind.Data?.BluetoothMacAddress ?? learned;
+                        StatusHint = Format(T("DevicesMacLockedFormat"), ClaimedBluetoothMac!);
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -421,10 +534,14 @@ public sealed class DevicesViewModel : BaseViewModel
             }
 
             RegisteredDeviceId = resp.Data?.DeviceId;
+            ClaimedBluetoothMac = BluetoothMacNormalizer.TryNormalize(resp.Data?.BluetoothMacAddress);
             OnPropertyChanged(nameof(ClaimedDeviceIdLabel));
             SyncResultText = RegisteredDeviceId is { } id
                 ? Format(T("DevicesClaimSuccessFormat"), id)
                 : T("DevicesClaimSuccess");
+            StatusHint = string.IsNullOrWhiteSpace(ClaimedBluetoothMac)
+                ? T("DevicesClaimReadyFirstPairHint")
+                : Format(T("DevicesClaimReadyMacHint"), ClaimedBluetoothMac!);
         }
         finally
         {

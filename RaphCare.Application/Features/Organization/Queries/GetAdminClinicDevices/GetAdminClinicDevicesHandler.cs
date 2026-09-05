@@ -75,6 +75,8 @@ public sealed class GetAdminClinicDevicesHandler(
                 Id = d.Id,
                 SerialNumber = d.SerialNumber,
                 Model = d.Model,
+                BluetoothMacAddress = d.BluetoothMacAddress,
+                ActivatedAt = d.ActivatedAt,
                 IsActive = d.IsActive,
                 IsAssigned = d.IsAssigned,
                 Status = d.Status,

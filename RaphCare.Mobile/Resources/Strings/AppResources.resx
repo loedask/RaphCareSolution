@@ -1311,7 +1311,34 @@ Accessible. Intelligent. Human.</value>
     <value>Showing: E580 / E585-style names only</value>
   </data>
   <data name="DevicesConnectHint" xml:space="preserve">
-    <value>Put your bracelet in pairing range, then tap Scan. Connect to stream notifications (heart rate if the device exposes standard GATT).</value>
+    <value>Claim your assigned watch first. Then put the bracelet nearby, tap Scan, and Connect only to that watch.</value>
+  </data>
+  <data name="DevicesClaimHint" xml:space="preserve">
+    <value>Enter the packaging serial after RaphCare or your clinic assigned the watch. Claim before you scan Bluetooth.</value>
+  </data>
+  <data name="DevicesClaimBeforeConnect" xml:space="preserve">
+    <value>Claim your assigned watch before scanning or connecting Bluetooth.</value>
+  </data>
+  <data name="DevicesClaimBeforeConnectHint" xml:space="preserve">
+    <value>Claim the watch below, then Scan and Connect.</value>
+  </data>
+  <data name="DevicesClaimReadyFirstPairHint" xml:space="preserve">
+    <value>Watch claimed. Scan and Connect once to lock Bluetooth to this band.</value>
+  </data>
+  <data name="DevicesClaimReadyMacHint" xml:space="preserve">
+    <value>Watch claimed. Connect only to Bluetooth {0}.</value>
+  </data>
+  <data name="DevicesWrongWatchMac" xml:space="preserve">
+    <value>That is not the watch assigned to you. Connect only to your claimed band.</value>
+  </data>
+  <data name="DevicesMacMissingAfterConnect" xml:space="preserve">
+    <value>Connected, but this phone could not read a Bluetooth address. Try again near the band.</value>
+  </data>
+  <data name="DevicesMacBindFailed" xml:space="preserve">
+    <value>Could not lock Bluetooth to this watch. Disconnect and try again.</value>
+  </data>
+  <data name="DevicesMacLockedFormat" xml:space="preserve">
+    <value>Bluetooth locked to {0}.</value>
   </data>
   <data name="DevicesConnectButton" xml:space="preserve">
     <value>Connect</value>
@@ -1369,9 +1396,6 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="DevicesRawHexFormat" xml:space="preserve">
     <value>Raw: {0}</value>
-  </data>
-  <data name="DevicesClaimHint" xml:space="preserve">
-    <value>Enter the serial from packaging after RaphCare or your clinic has assigned the watch to you. Then you can sync readings.</value>
   </data>
   <data name="DevicesClaimButton" xml:space="preserve">
     <value>Claim watch</value>
@@ -1496,6 +1520,9 @@ Accessible. Intelligent. Human.</value>
   <data name="ProfileInsuranceBadge" xml:space="preserve">
     <value>RaphCare Essential</value>
   </data>
+  <data name="ProfileInsuranceBadgeNone" xml:space="preserve">
+    <value>No insurance on file</value>
+  </data>
   <data name="ProfileEditProfile" xml:space="preserve">
     <value>Edit profile</value>
   </data>
@@ -1587,13 +1614,13 @@ Accessible. Intelligent. Human.</value>
     <value>Payment methods</value>
   </data>
   <data name="ProfilePaymentMethodsHint" xml:space="preserve">
-    <value>Cards and billing</value>
+    <value>Add or manage a card</value>
   </data>
   <data name="ProfileBillingHistory" xml:space="preserve">
     <value>Billing history</value>
   </data>
   <data name="ProfileBillingHistoryHint" xml:space="preserve">
-    <value>Invoices and payments</value>
+    <value>Plans, invoices, and payments</value>
   </data>
   <data name="ProfileNotificationsHint" xml:space="preserve">
     <value>Alerts and updates</value>
@@ -1617,7 +1644,7 @@ Accessible. Intelligent. Human.</value>
     <value>Edit profile</value>
   </data>
   <data name="EditProfilePhotoHint" xml:space="preserve">
-    <value>Tap camera to change photo (coming soon)</value>
+    <value>Tap the camera to change your photo</value>
   </data>
   <data name="EditProfileFirstName" xml:space="preserve">
     <value>First name</value>
@@ -1713,7 +1740,7 @@ Accessible. Intelligent. Human.</value>
     <value>Two-factor authentication</value>
   </data>
   <data name="PrivacyTwoFactorSubtitle" xml:space="preserve">
-    <value>Extra security for sign-in</value>
+    <value>Preference on this phone only. Account MFA is not available yet.</value>
   </data>
   <data name="PrivacyDataSection" xml:space="preserve">
     <value>Data &amp; permissions</value>
@@ -1722,31 +1749,34 @@ Accessible. Intelligent. Human.</value>
     <value>Data sharing</value>
   </data>
   <data name="PrivacyDataSharingSubtitle" xml:space="preserve">
-    <value>Share anonymized usage to improve the app</value>
+    <value>Saved on this phone only. Not sent to the hospital yet.</value>
   </data>
   <data name="PrivacyDownloadRowTitle" xml:space="preserve">
     <value>Download health data</value>
   </data>
   <data name="PrivacyDownloadRowSubtitle" xml:space="preserve">
-    <value>Export a copy of your records</value>
+    <value>Ask your clinic when export is available</value>
   </data>
   <data name="PrivacyDownloadTitle" xml:space="preserve">
     <value>Export</value>
   </data>
   <data name="PrivacyDownloadMessage" xml:space="preserve">
-    <value>Your clinic will provide exports when connected to this feature.</value>
+    <value>In-app export is not available yet. Ask your clinic if you need a copy of your records.</value>
   </data>
   <data name="PrivacyDeleteRowTitle" xml:space="preserve">
     <value>Delete account</value>
   </data>
   <data name="PrivacyDeleteRowSubtitle" xml:space="preserve">
-    <value>Permanently remove your app account</value>
+    <value>Contact support to request deletion</value>
   </data>
   <data name="PrivacyDeleteTitle" xml:space="preserve">
     <value>Delete account?</value>
   </data>
   <data name="PrivacyDeleteMessage" xml:space="preserve">
-    <value>This requests account deletion. Your organization may retain records as required by law.</value>
+    <value>The app cannot delete your account by itself. Open Help and support to send a request, or ask your clinic.</value>
+  </data>
+  <data name="PrivacyDeleteContactSupport" xml:space="preserve">
+    <value>Open support</value>
   </data>
   <data name="PrivacyDeleteConfirm" xml:space="preserve">
     <value>Request deletion</value>
