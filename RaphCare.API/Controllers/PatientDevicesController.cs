@@ -5,6 +5,7 @@ using RaphCare.Application.Features.PatientDevices.Commands.RegisterMyDevice;
 using RaphCare.Application.Features.PatientDevices.Commands.SyncMyDeviceReadings;
 using RaphCare.Application.Features.PatientDevices.DTOs;
 using RaphCare.Application.Features.PatientDevices.Queries.GetMyDevices;
+using RaphCare.Application.Features.PatientDevices.Queries.GetMyLatestReadings;
 
 namespace RaphCare.API.Controllers;
 
@@ -19,6 +20,14 @@ public class PatientDevicesController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetMyDevices(CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetMyDevicesQuery(), cancellationToken).ConfigureAwait(false);
+        return Ok(result);
+    }
+
+    [HttpGet("readings/latest", Name = "GetMyLatestReadings")]
+    [ProducesResponseType(typeof(GetMyLatestReadingsResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMyLatestReadings(CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetMyLatestReadingsQuery(), cancellationToken).ConfigureAwait(false);
         return Ok(result);
     }
 

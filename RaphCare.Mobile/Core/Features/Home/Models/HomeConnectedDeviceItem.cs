@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using Microsoft.Maui.Graphics;
 
 namespace RaphCare.Mobile.Core.Features.Home.Models;
 
@@ -10,8 +11,11 @@ public sealed class HomeConnectedDeviceItem
     public required string Unit { get; init; }
     public required string Synced { get; init; }
 
-    /// <summary>MAUI image resource (see <c>MonochromeIconKeys</c>), tinted in XAML.</summary>
+    /// <summary>MAUI image resource (see <c>MonochromeIconKeys</c>).</summary>
     public required string IconSource { get; init; }
+
+    /// <summary>Soft tint behind the icon.</summary>
+    public required Color IconWellColor { get; init; }
 
     public required ICommand TapCommand { get; init; }
 }

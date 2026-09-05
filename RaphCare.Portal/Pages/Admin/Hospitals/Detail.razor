@@ -109,7 +109,7 @@
                                          Error="@_homeEmergencyError"
                                          ClinicContextMissing="@_homeEmergencyClinicContextMissing"
                                          TimeZone="@(_detail.TimeZone)"
-                                         ViewAllHref="@($"/admin/hospitals/{ClinicId}?tab=devices")"
+                                         ViewAllHref="@($"/admin/hospitals/{ClinicId}?tab=devices&panel=emergency")"
                                          OnRetry="LoadHomeEmergenciesAsync" />
             </div>
         }
@@ -393,172 +393,191 @@
         }
         else if (_tab == "devices")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Common_FleetEyebrow")"
-                           Title="@AppResources.T("Common_Devices")"
-                           Lead="@AppResources.T("Common_DevicesLead")">
+            <AdminPageCard Eyebrow="@AppResources.T("Common_DevicesBoardEyebrow")"
+                           Title="@AppResources.T("Common_DevicesBoardTitle")"
+                           Lead="@DevicesPanelLead">
                 <AdminPageCardMeta>
-                    <span class="admin-progress-pill">@DeviceCountLabel(_devices.Count)</span>
+                    <span class="admin-progress-pill">@DevicesPanelMeta</span>
                 </AdminPageCardMeta>
                 <div class="admin-page-card-body">
-                    @if (_loadingDevices)
-                    {
-                        <p class="text-muted">@AppResources.T("Common_LoadingDevices")</p>
-                    }
-                    else if (_devices.Count == 0)
-                    {
-                        <p class="text-muted">@AppResources.T("Common_NoDevicesYet")</p>
-                    }
-                    else
-                    {
-                        <div class="table-wrap">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>@AppResources.T("Common_Serial")</th>
-                                        <th>@AppResources.T("Common_Model")</th>
-                                        <th>@AppResources.T("Common_Status")</th>
-                                        <th>@AppResources.T("Common_AssignedTo")</th>
-                                        <th>@AppResources.T("Common_Active")</th>
-                                        <th>@AppResources.T("Common_AssignDevice")</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var device in _devices)
-                                    {
-                                        <tr>
-                                            <td><code>@device.SerialNumber</code></td>
-                                            <td>@(string.IsNullOrWhiteSpace(device.Model) ? AppResources.T("Common_EmptyCell") : device.Model)</td>
-                                            <td>@(string.IsNullOrWhiteSpace(device.Status) ? AppResources.T("Common_EmptyCell") : device.Status)</td>
-                                            <td>
-                                                @if (device.AssignedPatientId is Guid patientId)
-                                                {
-                                                    <a href="@HospitalDeckReturnUrl.PatientHref(ClinicId, patientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "devices"))">@(device.AssignedPatientName ?? AppResources.T("Common_Patient"))</a>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">@AppResources.T("Common_Unassigned")</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                <span class="badge @(device.IsActive ? "badge-success" : "badge-muted")">
-                                                    @(device.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
-                                                </span>
-                                            </td>
-                                            <td>
-                                                @if (device.IsAssigned || !device.IsActive)
-                                                {
-                                                    <span class="text-muted">@AppResources.T("Common_EmptyCell")</span>
-                                                }
-                                                else
-                                                {
-                                                    <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                                                        <SearchableSelect TValue="string"
-                                                                          CssClass="fleet-assign-select"
-                                                                          Placeholder="@AppResources.T("Common_SelectPatientForDevice")"
-                                                                          Value="@GetAssignPatient(device.Id)"
-                                                                          ValueChanged="v => SetAssignPatient(device.Id, v)"
-                                                                          Options="DevicePatientOptions" />
-                                                        <button type="button"
-                                                                class="btn btn-secondary btn-sm"
-                                                                disabled="@(_assigningDeviceId == device.Id || string.IsNullOrWhiteSpace(GetAssignPatient(device.Id)))"
-                                                                @onclick="() => AssignDeviceAsync(device)">
-                                                            @(_assigningDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Common_AssignDevice"))
-                                                        </button>
-                                                    </div>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        @if (!string.IsNullOrEmpty(_deviceAssignError))
-                        {
-                            <AdminAlert Message="@_deviceAssignError" />
-                        }
-                        @if (!string.IsNullOrEmpty(_deviceAssignSuccess))
-                        {
-                            <p class="text-muted">@_deviceAssignSuccess</p>
-                        }
-                    }
-                </div>
-            </AdminPageCard>
+                    <nav class="hospital-deck-segments" role="tablist" aria-label="@AppResources.T("Common_DevicesBoardSectionsAria")">
+                        <button type="button"
+                                class="hospital-deck-segment @(_devicesPanel == "fleet" ? "is-active" : null)"
+                                role="tab"
+                                aria-selected="@(_devicesPanel == "fleet")"
+                                @onclick='() => SetDevicesPanel("fleet")'>
+                            <span class="hospital-deck-segment-mark" aria-hidden="true"></span>
+                            <span class="hospital-deck-segment-label">@AppResources.T("Common_DevicesTabFleet")</span>
+                            <span class="hospital-deck-segment-count @(_devices.Count == 0 ? "is-empty" : null)">@_devices.Count</span>
+                        </button>
+                        <button type="button"
+                                class="hospital-deck-segment @(_devicesPanel == "emergency" ? "is-active" : null)"
+                                role="tab"
+                                aria-selected="@(_devicesPanel == "emergency")"
+                                @onclick='() => SetDevicesPanel("emergency")'>
+                            <span class="hospital-deck-segment-mark" aria-hidden="true"></span>
+                            <span class="hospital-deck-segment-label">@AppResources.T("Common_DevicesTabEmergency")</span>
+                            <span class="hospital-deck-segment-count @(_emergencyTotal == 0 ? "is-empty" : null)">@_emergencyTotal</span>
+                        </button>
+                    </nav>
 
-            <AdminPageCard Eyebrow="@AppResources.T("Common_EmergencyEyebrow")"
-                           Title="@AppResources.T("Common_EmergencyEventsTitle")"
-                           Lead="@AppResources.T("Common_EmergencyEventsLeadClinic")">
-                <AdminPageCardMeta>
-                    <span class="admin-progress-pill">@EventCountLabel(_emergencyTotal)</span>
-                </AdminPageCardMeta>
-                <div class="admin-page-card-body">
-                    @if (_loadingEmergencies)
-                    {
-                        <p class="text-muted">@AppResources.T("Common_LoadingEmergencyEvents")</p>
-                    }
-                    else if (!string.IsNullOrEmpty(_emergencyError))
-                    {
-                        @if (_emergencyClinicContextMissing)
+                    <div class="hospital-deck-segment-panel" role="tabpanel" @key="_devicesPanel">
+                        @if (_devicesPanel == "fleet")
                         {
-                            <ClinicContextRequiredAlert OnRetry="RetryClinicEmergenciesAsync" />
+                            @if (_loadingDevices)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_LoadingDevices")</p>
+                            }
+                            else if (_devices.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoDevicesYet")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Serial")</th>
+                                                <th>@AppResources.T("Common_Model")</th>
+                                                <th>@AppResources.T("Common_Status")</th>
+                                                <th>@AppResources.T("Common_AssignedTo")</th>
+                                                <th>@AppResources.T("Common_Active")</th>
+                                                <th>@AppResources.T("Common_AssignDevice")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var device in _devices)
+                                            {
+                                                <tr>
+                                                    <td><code>@device.SerialNumber</code></td>
+                                                    <td>@(string.IsNullOrWhiteSpace(device.Model) ? AppResources.T("Common_EmptyCell") : device.Model)</td>
+                                                    <td>@(string.IsNullOrWhiteSpace(device.Status) ? AppResources.T("Common_EmptyCell") : device.Status)</td>
+                                                    <td>
+                                                        @if (device.AssignedPatientId is Guid patientId)
+                                                        {
+                                                            <a href="@HospitalDeckReturnUrl.PatientHref(ClinicId, patientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "devices"))">@(device.AssignedPatientName ?? AppResources.T("Common_Patient"))</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">@AppResources.T("Common_Unassigned")</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge @(device.IsActive ? "badge-success" : "badge-muted")">
+                                                            @(device.IsActive ? AppResources.T("Common_Active") : AppResources.T("Common_Inactive"))
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        @if (device.IsAssigned || !device.IsActive)
+                                                        {
+                                                            <span class="text-muted">@AppResources.T("Common_EmptyCell")</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                                                                <SearchableSelect TValue="string"
+                                                                                  CssClass="fleet-assign-select"
+                                                                                  Placeholder="@AppResources.T("Common_SelectPatientForDevice")"
+                                                                                  Value="@GetAssignPatient(device.Id)"
+                                                                                  ValueChanged="v => SetAssignPatient(device.Id, v)"
+                                                                                  Options="DevicePatientOptions" />
+                                                                <button type="button"
+                                                                        class="btn btn-secondary btn-sm"
+                                                                        disabled="@(_assigningDeviceId == device.Id || string.IsNullOrWhiteSpace(GetAssignPatient(device.Id)))"
+                                                                        @onclick="() => AssignDeviceAsync(device)">
+                                                                    @(_assigningDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Common_AssignDevice"))
+                                                                </button>
+                                                            </div>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if (!string.IsNullOrEmpty(_deviceAssignError))
+                                {
+                                    <AdminAlert Message="@_deviceAssignError" />
+                                }
+                                @if (!string.IsNullOrEmpty(_deviceAssignSuccess))
+                                {
+                                    <p class="text-muted">@_deviceAssignSuccess</p>
+                                }
+                            }
                         }
                         else
                         {
-                            <AdminAlert Message="@_emergencyError" />
+                            @if (_loadingEmergencies)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_LoadingEmergencyEvents")</p>
+                            }
+                            else if (!string.IsNullOrEmpty(_emergencyError))
+                            {
+                                @if (_emergencyClinicContextMissing)
+                                {
+                                    <ClinicContextRequiredAlert OnRetry="RetryClinicEmergenciesAsync" />
+                                }
+                                else
+                                {
+                                    <AdminAlert Message="@_emergencyError" />
+                                }
+                            }
+                            else if (_emergencyEvents.Count == 0)
+                            {
+                                <p class="text-muted">@AppResources.T("Common_NoEmergencyEventsClinic")</p>
+                            }
+                            else
+                            {
+                                <div class="table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@AppResources.T("Common_Occurred")</th>
+                                                <th>@AppResources.T("Common_Patient")</th>
+                                                <th>@AppResources.T("Common_Type")</th>
+                                                <th>@AppResources.T("Common_Devices")</th>
+                                                <th>@AppResources.T("Common_Location")</th>
+                                                <th>@AppResources.T("Common_Caregivers")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var ev in _emergencyEvents)
+                                            {
+                                                <tr>
+                                                    <td>@FormatEmergencyLocal(ev.OccurredAtUtc)</td>
+                                                    <td>
+                                                        <a href="@HospitalDeckReturnUrl.PatientHref(ClinicId, ev.PatientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "devices"))">@ev.PatientName</a>
+                                                    </td>
+                                                    <td><span class="badge badge-error">@ev.EventType</span></td>
+                                                    <td>@(string.IsNullOrWhiteSpace(ev.Model) ? ev.SerialNumber : $"{ev.Model} · {ev.SerialNumber}")</td>
+                                                    <td>@FormatEmergencyLocation(ev)</td>
+                                                    <td>
+                                                        @if (ev.CaregiversNotified)
+                                                        {
+                                                            <span title="@(ev.CaregiverNotificationSummary ?? "")">@AppResources.T("Common_Notified")</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">@AppResources.T("Common_EmptyCell")</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if (_emergencyTotal > _emergencyEvents.Count)
+                                {
+                                    <div class="admin-page-actions">
+                                        <button type="button" class="btn btn-secondary" disabled="@_loadingEmergencies" @onclick="LoadMoreClinicEmergenciesAsync">
+                                            @AppResources.Format("Common_LoadMore", _emergencyEvents.Count, _emergencyTotal)
+                                        </button>
+                                    </div>
+                                }
+                            }
                         }
-                    }
-                    else if (_emergencyEvents.Count == 0)
-                    {
-                        <p class="text-muted">@AppResources.T("Common_NoEmergencyEventsClinic")</p>
-                    }
-                    else
-                    {
-                        <div class="table-wrap">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>@AppResources.T("Common_Occurred")</th>
-                                        <th>@AppResources.T("Common_Patient")</th>
-                                        <th>@AppResources.T("Common_Type")</th>
-                                        <th>Device</th>
-                                        <th>@AppResources.T("Common_Location")</th>
-                                        <th>@AppResources.T("Common_Caregivers")</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var ev in _emergencyEvents)
-                                    {
-                                        <tr>
-                                            <td>@FormatEmergencyLocal(ev.OccurredAtUtc)</td>
-                                            <td>
-                                                <a href="@HospitalDeckReturnUrl.PatientHref(ClinicId, ev.PatientId, HospitalDeckReturnUrl.ForClinicTab(ClinicId, "devices"))">@ev.PatientName</a>
-                                            </td>
-                                            <td><span class="badge badge-error">@ev.EventType</span></td>
-                                            <td>@(string.IsNullOrWhiteSpace(ev.Model) ? ev.SerialNumber : $"{ev.Model} · {ev.SerialNumber}")</td>
-                                            <td>@FormatEmergencyLocation(ev)</td>
-                                            <td>
-                                                @if (ev.CaregiversNotified)
-                                                {
-                                                    <span title="@(ev.CaregiverNotificationSummary ?? "")">@AppResources.T("Common_Notified")</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">@AppResources.T("Common_EmptyCell")</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        @if (_emergencyTotal > _emergencyEvents.Count)
-                        {
-                            <div class="admin-page-actions">
-                                <button type="button" class="btn btn-secondary" disabled="@_loadingEmergencies" @onclick="LoadMoreClinicEmergenciesAsync">
-                                    @AppResources.Format("Common_LoadMore", _emergencyEvents.Count, _emergencyTotal)
-                                </button>
-                            </div>
-                        }
-                    }
+                    </div>
                 </div>
             </AdminPageCard>
         }
@@ -718,6 +737,7 @@
 @code {
     [Parameter] public Guid ClinicId { get; set; }
     [SupplyParameterFromQuery(Name = "tab")] public string? TabQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "panel")] public string? PanelQuery { get; set; }
 
     [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
     [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
@@ -755,6 +775,7 @@
     private IReadOnlyList<ClinicDeviceEmergencyEventViewModel> _homeEmergencyEvents =
         Array.Empty<ClinicDeviceEmergencyEventViewModel>();
     private string _tab = "overview";
+    private string _devicesPanel = "fleet";
     private string _inviteEmail = string.Empty;
     private string _inviteJobRole = RaphCareRoles.Clinician;
     private string _grantPatientEmail = string.Empty;
@@ -812,6 +833,16 @@
     private static string EventCountLabel(int count) =>
         count == 1 ? AppResources.Format("Common_EventCountLabel", count) : AppResources.Format("Common_EventCountLabelPlural", count);
 
+    private string DevicesPanelMeta => _devicesPanel == "emergency"
+        ? EventCountLabel(_emergencyTotal)
+        : DeviceCountLabel(_devices.Count);
+
+    private string DevicesPanelLead => _devicesPanel == "emergency"
+        ? AppResources.T("Common_EmergencyEventsLeadClinic")
+        : AppResources.T("Common_DevicesLead");
+
+    private void SetDevicesPanel(string panel) => _devicesPanel = panel;
+
     private static string MemberCountLabel(int count) =>
         count == 1 ? AppResources.Format("Common_MemberCountLabel", count) : AppResources.Format("Common_MemberCountLabelPlural", count);
 
@@ -866,6 +897,8 @@
                 await LoadAppointmentsPreviewAsync();
             else if (_tab == "devices")
             {
+                if (string.Equals(PanelQuery, "emergency", StringComparison.OrdinalIgnoreCase))
+                    _devicesPanel = "emergency";
                 if (!_devicesLoaded)
                     await LoadDevicesAsync();
                 if (!_emergenciesLoaded)

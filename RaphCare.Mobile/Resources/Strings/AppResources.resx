@@ -324,7 +324,7 @@ Accessible. Intelligent. Human.</value>
     <value>Could not finish recording. Try again.</value>
   </data>
   <data name="VoiceSubmitNoClinic" xml:space="preserve">
-    <value>Choose your clinic in Profile (My clinic), or set Api:ClinicId for local demos.</value>
+    <value>Choose your clinic in Profile (Active clinic), or set Api:ClinicId for local demos.</value>
   </data>
   <data name="VoiceSubmitFailed" xml:space="preserve">
     <value>Upload failed.</value>
@@ -447,7 +447,7 @@ Accessible. Intelligent. Human.</value>
     <value>Clinic (optional)</value>
   </data>
   <data name="RegisterEmailClinicHint" xml:space="preserve">
-    <value>Search by clinic name, or pick one that shows a code like RC-DEMCLN. You can also set this later under Profile, My clinic.</value>
+    <value>Search by clinic name, or pick one that shows a code like RC-DEMCLN. You can also set this later under Profile, Active clinic.</value>
   </data>
   <data name="RegisterEmailClinicNone" xml:space="preserve">
     <value>No clinic: register without linking</value>
@@ -531,7 +531,7 @@ Accessible. Intelligent. Human.</value>
     <value>Home</value>
   </data>
   <data name="TabAppointments" xml:space="preserve">
-    <value>Appointments</value>
+    <value>Appts</value>
   </data>
   <data name="TabRecords" xml:space="preserve">
     <value>Records</value>
@@ -626,6 +626,39 @@ Accessible. Intelligent. Human.</value>
   <data name="HomeDemoAppointmentTime" xml:space="preserve">
     <value>Today, 2:30 PM</value>
   </data>
+  <data name="HomeNoUpcoming" xml:space="preserve">
+    <value>No upcoming appointments. Book one when you are ready.</value>
+  </data>
+  <data name="HomeBookFromEmpty" xml:space="preserve">
+    <value>Book appointment</value>
+  </data>
+  <data name="HomeNoHealthReadings" xml:space="preserve">
+    <value>No synced vitals yet. Pair a watch and sync from Devices.</value>
+  </data>
+  <data name="HomeNoConnectedDevices" xml:space="preserve">
+    <value>No claimed devices yet. Claim a watch from Devices when Ops has assigned one.</value>
+  </data>
+  <data name="HomeInPerson" xml:space="preserve">
+    <value>In person</value>
+  </data>
+  <data name="HomeAppointmentFallback" xml:space="preserve">
+    <value>Appointment</value>
+  </data>
+  <data name="HomeSpO2" xml:space="preserve">
+    <value>Oxygen</value>
+  </data>
+  <data name="HomeFromYourWatch" xml:space="preserve">
+    <value>From your watch</value>
+  </data>
+  <data name="HomeSyncedStatus" xml:space="preserve">
+    <value>Synced</value>
+  </data>
+  <data name="HomeAssignedOn" xml:space="preserve">
+    <value>Assigned {0}</value>
+  </data>
+  <data name="HomeSerialShort" xml:space="preserve">
+    <value>Serial</value>
+  </data>
   <data name="HomeConnectedDevicesTitle" xml:space="preserve">
     <value>Connected Devices</value>
   </data>
@@ -646,6 +679,27 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="HomeAskAiAssistant" xml:space="preserve">
     <value>Ask AI Assistant</value>
+  </data>
+  <data name="HomeWellnessTitleFromMood" xml:space="preserve">
+    <value>From your mood check-ins</value>
+  </data>
+  <data name="HomeWellnessNoMood" xml:space="preserve">
+    <value>No mood check-ins yet. Log how you feel in Mental Health so this tip can reflect your week.</value>
+  </data>
+  <data name="HomeWellnessPositive" xml:space="preserve">
+    <value>Your recent check-ins look positive. Keep the routines that are working for you, and reach out if that changes.</value>
+  </data>
+  <data name="HomeWellnessSteady" xml:space="preserve">
+    <value>Your recent check-ins are mostly steady. Small daily habits and a check-in when things shift can help.</value>
+  </data>
+  <data name="HomeWellnessMixed" xml:space="preserve">
+    <value>Your recent check-ins have been mixed. Be kind to yourself, and talk with someone you trust or your care team if you need support.</value>
+  </data>
+  <data name="HomeWellnessLow" xml:space="preserve">
+    <value>Your latest check-in was low. You are not alone. Consider talking with a trusted person or your care team, and use Ask AI only for general wellness questions.</value>
+  </data>
+  <data name="HomeLogMoodCheckIn" xml:space="preserve">
+    <value>Log mood check-in</value>
   </data>
   <data name="HomeDashboardTagline" xml:space="preserve">
     <value>Your care hub at a glance.</value>
@@ -870,7 +924,7 @@ Accessible. Intelligent. Human.</value>
     <value>Choose clinic</value>
   </data>
   <data name="AppointmentsNoClinicSelected" xml:space="preserve">
-    <value>Choose your clinic first (Profile, My clinic).</value>
+    <value>Choose your clinic first (Profile, Active clinic).</value>
   </data>
   <data name="AppointmentsClinicConfigured" xml:space="preserve">
     <value>Your clinic is ready for booking</value>
@@ -1485,10 +1539,10 @@ Accessible. Intelligent. Human.</value>
     <value>Name, email, phone</value>
   </data>
   <data name="ProfileMyClinic" xml:space="preserve">
-    <value>My clinic</value>
+    <value>Active clinic</value>
   </data>
   <data name="ProfileMyClinicHint" xml:space="preserve">
-    <value>Search by name or enter an RC- code</value>
+    <value>Which hospital this phone uses</value>
   </data>
   <data name="ProfileMyClinicSelectedFormat" xml:space="preserve">
     <value>{0} ({1})</value>
@@ -1827,19 +1881,34 @@ Accessible. Intelligent. Human.</value>
     <value>Language</value>
   </data>
   <data name="SelectClinicTitle" xml:space="preserve">
-    <value>My clinic</value>
+    <value>Active clinic</value>
   </data>
   <data name="SelectClinicHint" xml:space="preserve">
-    <value>Pick your hospital by name, or enter the clinic code they gave you (for example RC-DEMCLN). The app uses this for your appointments and records.</value>
+    <value>Set which hospital this phone should use for appointments and records. Search only finds hospitals in the directory. It does not mean you are a patient at every result. Staff still need to link your record at that hospital when care starts.</value>
+  </data>
+  <data name="SelectClinicActiveLabel" xml:space="preserve">
+    <value>Active on this phone</value>
   </data>
   <data name="SelectClinicSearchLabel" xml:space="preserve">
-    <value>Search clinics</value>
+    <value>Find a hospital</value>
   </data>
   <data name="SelectClinicSearchPlaceholder" xml:space="preserve">
-    <value>Clinic name or RC- code</value>
+    <value>Type a name or RC- code</value>
   </data>
   <data name="SelectClinicSearchButton" xml:space="preserve">
     <value>Search</value>
+  </data>
+  <data name="SelectClinicSearchRequired" xml:space="preserve">
+    <value>Type a clinic name or RC- code, then tap Search. An empty search will not list every hospital.</value>
+  </data>
+  <data name="SelectClinicResultsHeading" xml:space="preserve">
+    <value>Search results</value>
+  </data>
+  <data name="SelectClinicResultsEmptyHint" xml:space="preserve">
+    <value>Search results appear here after you search. They are not a list of hospitals linked to your account.</value>
+  </data>
+  <data name="SelectClinicTapToActivate" xml:space="preserve">
+    <value>Tap a result to make it active on this phone.</value>
   </data>
   <data name="SelectClinicReferenceLabel" xml:space="preserve">
     <value>Clinic reference code</value>
@@ -1851,19 +1920,19 @@ Accessible. Intelligent. Human.</value>
     <value>Use code</value>
   </data>
   <data name="SelectClinicClearButton" xml:space="preserve">
-    <value>Clear selection</value>
+    <value>Clear active clinic</value>
   </data>
   <data name="SelectClinicNoneSelected" xml:space="preserve">
-    <value>No clinic selected yet</value>
+    <value>None yet. Search or enter a code below.</value>
   </data>
   <data name="SelectClinicUnknownName" xml:space="preserve">
     <value>Selected clinic</value>
   </data>
   <data name="SelectClinicCurrentFormat" xml:space="preserve">
-    <value>Current: {0}</value>
+    <value>{0}</value>
   </data>
   <data name="SelectClinicCurrentWithCodeFormat" xml:space="preserve">
-    <value>Current: {0} ({1})</value>
+    <value>{0} ({1})</value>
   </data>
   <data name="SelectClinicLoadFailed" xml:space="preserve">
     <value>Could not load clinics. Check your connection and try again.</value>
@@ -1878,10 +1947,10 @@ Accessible. Intelligent. Human.</value>
     <value>No clinic found for that reference code.</value>
   </data>
   <data name="SelectClinicSaved" xml:space="preserve">
-    <value>Clinic saved. Refresh appointments and records if they were open.</value>
+    <value>Active clinic saved on this phone. Refresh appointments and records if they were open.</value>
   </data>
   <data name="SelectClinicCleared" xml:space="preserve">
-    <value>Clinic selection cleared.</value>
+    <value>Active clinic cleared on this phone.</value>
   </data>
   <data name="LanguageSettingsUpdatedFormat" xml:space="preserve">
     <value>App language set to {0}.</value>
@@ -1892,11 +1961,56 @@ Accessible. Intelligent. Human.</value>
   <data name="MedicalInformationBloodType" xml:space="preserve">
     <value>Blood type</value>
   </data>
+  <data name="MedicalInformationBloodTypeUnknown" xml:space="preserve">
+    <value>Unknown / Prefer not to say</value>
+  </data>
   <data name="MedicalInformationAllergies" xml:space="preserve">
     <value>Allergies</value>
   </data>
   <data name="MedicalInformationChronic" xml:space="preserve">
     <value>Chronic conditions</value>
+  </data>
+  <data name="MedicalInformationChipHint" xml:space="preserve">
+    <value>Tap common options, or add anything else below.</value>
+  </data>
+  <data name="MedicalInformationOtherNotes" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="MedicalInformationOtherNotesPlaceholder" xml:space="preserve">
+    <value>Anything not listed above</value>
+  </data>
+  <data name="MedicalInformationChipPenicillin" xml:space="preserve">
+    <value>Penicillin</value>
+  </data>
+  <data name="MedicalInformationChipSulfa" xml:space="preserve">
+    <value>Sulfa</value>
+  </data>
+  <data name="MedicalInformationChipLatex" xml:space="preserve">
+    <value>Latex</value>
+  </data>
+  <data name="MedicalInformationChipPeanuts" xml:space="preserve">
+    <value>Peanuts</value>
+  </data>
+  <data name="MedicalInformationChipShellfish" xml:space="preserve">
+    <value>Shellfish</value>
+  </data>
+  <data name="MedicalInformationChipNoKnownAllergies" xml:space="preserve">
+    <value>No known allergies</value>
+  </data>
+  <data name="MedicalInformationChipDiabetes" xml:space="preserve">
+    <value>Diabetes</value>
+  </data>
+  <data name="MedicalInformationChipHypertension" xml:space="preserve">
+    <value>Hypertension</value>
+  </data>
+  <data name="MedicalInformationChipAsthma" xml:space="preserve">
+    <value>Asthma</value>
+  </data>
+  <data name="MedicalInformationChipHeartDisease" xml:space="preserve">
+    <value>Heart disease</value>
+  </data>
+  <data name="MedicalInformationChipNoChronic" xml:space="preserve">
+    <value>None of these</value>
   </data>
   <data name="MedicalInformationMedications" xml:space="preserve">
     <value>Current medications</value>

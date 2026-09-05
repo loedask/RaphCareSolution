@@ -505,13 +505,19 @@
                                 </h3>
                                 @if (_isAdministrator)
                                 {
-                                    <div class="inpatient-actions">
-                                        <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditWard(ward)">@AppResources.T("Common_Edit")</button>
-                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => ToggleWardActiveAsync(ward)">
+                                    <AdminOverflowMenu AriaLabel="@AppResources.T("Common_MoreActions")"
+                                                       Align="end"
+                                                       Disabled="@_saving">
+                                        <button type="button" class="admin-overflow-item" role="menuitem" @onclick="() => BeginEditWard(ward)">
+                                            @AppResources.T("Common_Edit")
+                                        </button>
+                                        <button type="button" class="admin-overflow-item" role="menuitem" disabled="@_saving" @onclick="() => ToggleWardActiveAsync(ward)">
                                             @(ward.IsActive ? AppResources.T("Common_Deactivate") : AppResources.T("Common_Reactivate"))
                                         </button>
-                                        <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteWardAsync(ward.Id)">@AppResources.T("Common_Delete")</button>
-                                    </div>
+                                        <button type="button" class="admin-overflow-item admin-overflow-item-danger" role="menuitem" disabled="@_saving" @onclick="() => DeleteWardAsync(ward.Id)">
+                                            @AppResources.T("Common_Delete")
+                                        </button>
+                                    </AdminOverflowMenu>
                                 }
                             </div>
 
@@ -555,13 +561,19 @@
                                             </strong>
                                             @if (_isAdministrator)
                                             {
-                                                <div class="inpatient-actions">
-                                                    <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditRoom(room)">@AppResources.T("Common_Edit")</button>
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => ToggleRoomActiveAsync(room)">
+                                                <AdminOverflowMenu AriaLabel="@AppResources.T("Common_MoreActions")"
+                                                                   Align="end"
+                                                                   Disabled="@_saving">
+                                                    <button type="button" class="admin-overflow-item" role="menuitem" @onclick="() => BeginEditRoom(room)">
+                                                        @AppResources.T("Common_Edit")
+                                                    </button>
+                                                    <button type="button" class="admin-overflow-item" role="menuitem" disabled="@_saving" @onclick="() => ToggleRoomActiveAsync(room)">
                                                         @(room.IsActive ? AppResources.T("Common_Deactivate") : AppResources.T("Common_Reactivate"))
                                                     </button>
-                                                    <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteRoomAsync(room.Id)">@AppResources.T("Common_Delete")</button>
-                                                </div>
+                                                    <button type="button" class="admin-overflow-item admin-overflow-item-danger" role="menuitem" disabled="@_saving" @onclick="() => DeleteRoomAsync(room.Id)">
+                                                        @AppResources.T("Common_Delete")
+                                                    </button>
+                                                </AdminOverflowMenu>
                                             }
                                         </div>
 
@@ -603,17 +615,44 @@
                                                                  Tone="@tone">
                                                     @if (_isAdministrator)
                                                     {
-                                                        <div class="inpatient-actions bed-chip-actions">
+                                                        <div class="bed-chip-actions">
                                                             @if (bed.Status == "Available" && bed.IsActive)
                                                             {
-                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="@(() => SetBedStatusAsync(bed.Id, MaintenanceStatus))">@AppResources.T("Common_Maintenance")</button>
+                                                                <button type="button"
+                                                                        class="bed-status-chip bed-status-chip-maintenance"
+                                                                        disabled="@_saving"
+                                                                        title="@AppResources.T("Common_Maintenance")"
+                                                                        @onclick="@(() => SetBedStatusAsync(bed.Id, MaintenanceStatus))">
+                                                                    <svg class="bed-status-chip-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                                                        <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                                              d="M14.7 6.3a4.1 4.1 0 0 0-5.8 5.8L3 18v3h3l5.9-5.9a4.1 4.1 0 0 0 5.8-5.8l-2.5 2.5-2.5-2.5z" />
+                                                                    </svg>
+                                                                    <span>@AppResources.T("Common_Maintenance")</span>
+                                                                </button>
                                                             }
                                                             else if (bed.Status == "Maintenance" && bed.IsActive)
                                                             {
-                                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="@(() => SetBedStatusAsync(bed.Id, AvailableStatus))">@AppResources.T("Common_Clear")</button>
+                                                                <button type="button"
+                                                                        class="bed-status-chip bed-status-chip-clear"
+                                                                        disabled="@_saving"
+                                                                        title="@AppResources.T("Common_Clear")"
+                                                                        @onclick="@(() => SetBedStatusAsync(bed.Id, AvailableStatus))">
+                                                                    <svg class="bed-status-chip-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                                                        <path fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"
+                                                                              d="M5 12.5l4.2 4.2L19 7" />
+                                                                    </svg>
+                                                                    <span>@AppResources.T("Common_Clear")</span>
+                                                                </button>
                                                             }
-                                                            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => BeginEditBed(bed)">@AppResources.T("Common_Edit")</button>
-                                                            <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="() => DeleteBedAsync(bed.Id)">@AppResources.T("Common_Delete")</button>
+                                                            <AdminOverflowMenu AriaLabel="@AppResources.T("Common_MoreActions")"
+                                                                               Disabled="@_saving">
+                                                                <button type="button" class="admin-overflow-item" role="menuitem" @onclick="() => BeginEditBed(bed)">
+                                                                    @AppResources.T("Common_Edit")
+                                                                </button>
+                                                                <button type="button" class="admin-overflow-item admin-overflow-item-danger" role="menuitem" disabled="@_saving" @onclick="() => DeleteBedAsync(bed.Id)">
+                                                                    @AppResources.T("Common_Delete")
+                                                                </button>
+                                                            </AdminOverflowMenu>
                                                         </div>
                                                     }
                                                 </HospitalBedTile>

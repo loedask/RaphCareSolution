@@ -87,7 +87,7 @@
   <data name="Fleet_AuthTitle" xml:space="preserve"><value>Sign in as platform admin</value></data>
   <data name="Fleet_AuthLead" xml:space="preserve"><value>Fleet inventory needs a RaphCare platform administrator account.</value></data>
   <data name="Fleet_AddTitle" xml:space="preserve"><value>Add to stock</value></data>
-  <data name="Fleet_AddLead" xml:space="preserve"><value>Pick the hospital or Direct programme that will own the device, then enter the serial from packaging. You can also scan a barcode, take a picture, or choose a photo. Images stay on this device and are not uploaded.</value></data>
+  <data name="Fleet_AddLead" xml:space="preserve"><value>Pick the hospital or Direct programme that will own the device, then enter the serial from packaging.</value></data>
   <data name="Fleet_SelectHospital" xml:space="preserve"><value>Select hospital</value></data>
   <data name="Fleet_SerialLabel" xml:space="preserve"><value>Serial</value></data>
   <data name="Fleet_SerialPlaceholder" xml:space="preserve"><value>Serial on packaging</value></data>
@@ -110,6 +110,7 @@
   <data name="Fleet_CouldNotAssign" xml:space="preserve"><value>Could not assign the device.</value></data>
   <data name="Fleet_StatusAssigned" xml:space="preserve"><value>Assigned</value></data>
   <data name="Fleet_StatusInStock" xml:space="preserve"><value>In stock</value></data>
+  <data name="Fleet_ScanToolsTitle" xml:space="preserve"><value>Fill serial from packaging</value></data>
   <data name="Fleet_ScanBarcode" xml:space="preserve"><value>Scan barcode</value></data>
   <data name="Fleet_StopScan" xml:space="preserve"><value>Stop scan</value></data>
   <data name="Fleet_TakePicture" xml:space="preserve"><value>Take picture</value></data>

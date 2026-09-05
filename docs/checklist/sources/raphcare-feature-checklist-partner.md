@@ -2,7 +2,7 @@
 
 This is the **simple** status board. Same topics as the builder checklist, without code names.
 
-**Overall completion:** **83%**
+**Overall completion:** **82%**
 
 **How to read this**
 
@@ -10,7 +10,7 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 - **Partial** = 50%
 - **Not started** = 0%
 - **Not for mobile**, **Not for clinical v1**, and **Not for BLE** = left out of the % on purpose
-- **Later** notes (phone use of the web admin, and similar) are left out of the % until we schedule the work
+- Later notes that are still open (for example a thin home-screen install) are left out of the % until we schedule the work
 - Section % = average of that section's scored rows
 - Overall % = average of all scored rows in sections 1-5
 - **Section 6** is a later product list. Those rows stay out of overall % until we schedule them and change the status to Partial or Done
@@ -21,7 +21,7 @@ Last reviewed: 2026-09-05
 
 ---
 
-## 1. Hospital admin (outpatient) - 100%
+## 1. Hospital admin (outpatient) - 97%
 
 What staff do in the **web admin panel** for day-to-day clinic work (not overnight beds).
 
@@ -41,11 +41,10 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Dashboard numbers | Done | See clinic metrics |
 | Fleet watches (platform) | Done | Ops web app stocks serials under a hospital or the Direct programme (type, scan barcode, take a picture, or choose a photo; the image is not uploaded). Ops uses a top bar like the hospital Portal. Hospital staff assign an in-stock watch to a patient on Devices. Ops can still assign when helping. Hospital patients claim after assignment. Direct package patients can claim the packaging serial in the app. Nobody invents a serial. |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
+| Use Portal and Ops on a phone | Partial | Layouts tighten on small screens: top bar, forms, tables you can swipe, and hospital section tabs. A home-screen shortcut is still later. |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Ops stocks watches under a hospital or Direct. Hospital staff assign on Devices. Direct packaging can be claimed in the phone app. Portal admin has no platform left menu; the top bar carries All hospitals and Register hospital.
-
-**Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan.
+**Bottom line (97%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Ops stocks watches under a hospital or Direct. Phone layout is usable but still being polished. A light home-screen shortcut can follow.
 
 ---
 
@@ -78,17 +77,17 @@ What patients see on Android and iPhone.
 | Area | Status | Notes |
 |------|--------|-------|
 | Sign up or sign in (email, phone code, voice) | Done | Includes forgot password: email code, then new password |
-| Home and navigation | Done | Monochrome icons (same teal tint style as the web). Failed taps should not close the app. Some areas can be turned off with feature flags |
+| Home and navigation | Done | Monochrome icons (same teal tint style as the web). Failed taps should not close the app. Some areas can be turned off with feature flags. Home upcoming, devices, vitals, and the wellness tip come from your account (empty when you have none). |
 | Appointments (list, book, detail) | Done | Book uses your clinic and a clinician name list |
 | Care, request a call, join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
 | Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. When staff call your code, you get a notice and Health records say come to the counter. |
 | Insurance | Done | |
 | Billing and payment methods | Done | |
 | Family members | Done | |
-| Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone |
+| Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone. Home and Mental Health tips follow your recent check-ins instead of sample copy. |
 | Chat assistant | Done | Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
 | Notifications list | Done | Real push alerts need Firebase and store setup |
-| Settings and profile | Done | Includes My clinic: search by name or enter a short clinic code. A photo you add on the phone is stored with your record. |
+| Settings and profile | Done | Includes Active clinic: which hospital this phone uses. Search finds hospitals in the directory; it is not a membership list. Enter a short clinic code if you have one. Medical information has blood type presets and quick allergy or chronic chips plus Other. A photo you add on the phone is stored with your record. |
 | Choose my clinic | Done | Patients do not need Guids; use clinic name or an RC- code from the hospital |
 
 ### Phones and devices (broader coverage)
@@ -161,7 +160,7 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 
 **Bottom line (100%):** Hospital plan stay extras for this board are in. Ward notes, cash invoice, occupancy, nurse job, lab result-ready notice, casualty, theatre, referrals, SafeCare on the hospital home, return visit at discharge, who-is-on-today, and AI discharge draft.
 
-**Later (not in this %):** staff using the same web admin on a phone. Same note as section 1.
+**Later (not in this %):** a light home-screen shortcut for Portal and Ops. Phone layout for staff web is already Partial in section 1.
 
 ---
 
@@ -198,13 +197,13 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 
 | Area | % | Notes |
 |------|--:|-------|
-| 1. Hospital admin (outpatient) | 100% | Ready on web |
+| 1. Hospital admin (outpatient) | 97% | Ready on web; phone layout partial |
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 61% | Chat assistant uses cloud AI; iPhone video, push, wearables still catch-up |
 | 4. Other staff and system | 93% | Demo accounts on Staging; private photos and voice files; staff mental-health therapy and AI notes |
 | 5. Hospital plan extras | 100% | Stay extras closed for this board |
 | 6. Next ideas (AI and ops) | n/a | Later list; not in overall % |
-| **Overall** | **83%** | Sections 1-5. Excludes "not for mobile, clinical, or BLE" and section 6 later rows |
+| **Overall** | **82%** | Sections 1-5. Excludes "not for mobile, clinical, or BLE" and section 6 later rows |
 
 ---
 

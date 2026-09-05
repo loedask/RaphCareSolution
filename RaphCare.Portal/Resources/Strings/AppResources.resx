@@ -129,6 +129,9 @@
   <data name="Common_Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Common_MoreActions" xml:space="preserve">
+    <value>More actions</value>
+  </data>
   <data name="Common_Remove" xml:space="preserve">
     <value>Remove</value>
   </data>
@@ -830,6 +833,21 @@
   </data>
   <data name="Common_DevicesLead" xml:space="preserve">
     <value>Watches stocked for this hospital by Ops. Assign an in-stock serial to a patient. The patient claims it in the phone app.</value>
+  </data>
+  <data name="Common_DevicesBoardEyebrow" xml:space="preserve">
+    <value>Fleet and alerts</value>
+  </data>
+  <data name="Common_DevicesBoardTitle" xml:space="preserve">
+    <value>Devices</value>
+  </data>
+  <data name="Common_DevicesBoardSectionsAria" xml:space="preserve">
+    <value>Devices sections</value>
+  </data>
+  <data name="Common_DevicesTabFleet" xml:space="preserve">
+    <value>Fleet</value>
+  </data>
+  <data name="Common_DevicesTabEmergency" xml:space="preserve">
+    <value>Emergency</value>
   </data>
   <data name="Common_DeviceCountLabel" xml:space="preserve">
     <value>{0} device</value>
@@ -2198,6 +2216,51 @@
   </data>
   <data name="PatientDetail_ClinicalEyebrow" xml:space="preserve">
     <value>Clinical</value>
+  </data>
+  <data name="PatientDetail_ClinicalChartTitle" xml:space="preserve">
+    <value>Clinical chart</value>
+  </data>
+  <data name="PatientDetail_ClinicalChartLead" xml:space="preserve">
+    <value>Switch between plans, diagnoses, medications, notes, and lab orders.</value>
+  </data>
+  <data name="PatientDetail_ClinicalSectionsAria" xml:space="preserve">
+    <value>Clinical sections</value>
+  </data>
+  <data name="PatientDetail_CoverageChartTitle" xml:space="preserve">
+    <value>Coverage and billing</value>
+  </data>
+  <data name="PatientDetail_CoverageChartLead" xml:space="preserve">
+    <value>Switch between insurance plans and invoices.</value>
+  </data>
+  <data name="PatientDetail_CoverageSectionsAria" xml:space="preserve">
+    <value>Coverage sections</value>
+  </data>
+  <data name="PatientDetail_CareChartTitle" xml:space="preserve">
+    <value>Care and wellbeing</value>
+  </data>
+  <data name="PatientDetail_CareChartLead" xml:space="preserve">
+    <value>Switch between mood, assessments, therapy, plans, visits, and more.</value>
+  </data>
+  <data name="PatientDetail_CareSectionsAria" xml:space="preserve">
+    <value>Care sections</value>
+  </data>
+  <data name="PatientDetail_AssessmentsTab" xml:space="preserve">
+    <value>Assessments</value>
+  </data>
+  <data name="PatientDetail_TherapyTab" xml:space="preserve">
+    <value>Therapy</value>
+  </data>
+  <data name="PatientDetail_BehavioralPlansTab" xml:space="preserve">
+    <value>Behavioral plans</value>
+  </data>
+  <data name="PatientDetail_AiNoteTab" xml:space="preserve">
+    <value>AI note</value>
+  </data>
+  <data name="PatientDetail_VitalsTab" xml:space="preserve">
+    <value>Vitals</value>
+  </data>
+  <data name="PatientDetail_VisitsTab" xml:space="preserve">
+    <value>Visits</value>
   </data>
   <data name="PatientDetail_AppointmentsLead" xml:space="preserve">
     <value>Bookings at this hospital.</value>

@@ -44,7 +44,7 @@ dotnet user-secrets set "FeatureFlags:RecordsEnabled" "true" --project RaphCare.
 
 ### Voice onboarding (optional)
 
-`POST api/onboarding/voice` requires a **clinic id**. Prefer **Profile, My clinic** (search by name or enter an `RC-` reference code such as seeded `RC-DEMCLN`). Local DEBUG builds also set **`Api:ClinicId`** (and related defaults) to the demo clinic Guid.
+`POST api/onboarding/voice` requires a **clinic id**. Prefer **Profile, Active clinic** (search by name or enter an `RC-` reference code such as seeded `RC-DEMCLN`). Empty search does not list every hospital. Local DEBUG builds also set **`Api:ClinicId`** (and related defaults) to the demo clinic Guid.
 
 Optional config fallbacks (User Secrets or `appsettings.Development.json`):
 

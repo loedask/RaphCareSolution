@@ -120,7 +120,7 @@ Use this as the phone half of partner "What to try," plus a few builder checks.
 3. Home loads without a crash.
 4. Health records: waiting collection items show a pickup code when Staging has one.
 5. Appointments list or empty state loads.
-6. Settings or profile: My clinic search or code entry loads.
+6. Settings or profile: Active clinic search or code entry loads (empty search does not list every hospital).
 7. Devices screen opens (band connect is a separate hardware gate: [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md)).
 
 **iPhone (when a device or Mac build is available):**

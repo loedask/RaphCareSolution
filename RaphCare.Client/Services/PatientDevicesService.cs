@@ -26,6 +26,22 @@ public sealed class PatientDevicesService(HttpClient httpClient) : BaseHttpServi
         return Response<IReadOnlyList<PatientDeviceListItemViewModel>>.Success(list);
     }
 
+    public async Task<Response<PatientLatestReadingsViewModel>> GetMyLatestReadingsAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await GetAsync<LatestReadingsDto>("api/patient/devices/readings/latest", cancellationToken).ConfigureAwait(false);
+        if (!result.IsSuccess)
+            return Response<PatientLatestReadingsViewModel>.Failure(result.ErrorMessage ?? "Could not load readings.", result.StatusCode);
+
+        var data = result.Data ?? new LatestReadingsDto();
+        return Response<PatientLatestReadingsViewModel>.Success(new PatientLatestReadingsViewModel
+        {
+            HeartRateBpm = data.HeartRateBpm,
+            HeartRateRecordedAt = data.HeartRateRecordedAt,
+            SpO2Percent = data.SpO2Percent,
+            SpO2RecordedAt = data.SpO2RecordedAt
+        });
+    }
+
     public async Task<Response<RegisterMyDeviceResultViewModel>> RegisterMyDeviceAsync(
         string serialNumber,
         string modelSku,
@@ -100,5 +116,13 @@ public sealed class PatientDevicesService(HttpClient httpClient) : BaseHttpServi
     {
         public int HeartRateCount { get; set; }
         public int SpO2Count { get; set; }
+    }
+
+    private sealed class LatestReadingsDto
+    {
+        public decimal? HeartRateBpm { get; set; }
+        public DateTime? HeartRateRecordedAt { get; set; }
+        public decimal? SpO2Percent { get; set; }
+        public DateTime? SpO2RecordedAt { get; set; }
     }
 }

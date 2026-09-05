@@ -1,0 +1,45 @@
+---
+description: Keep docs/incubator application drafts in sync when product facts change
+alwaysApply: true
+---
+
+# Incubator and accelerator applications
+
+Whenever you implement, finish, or materially change something that would change a **founder application answer**, update the matching draft under **`docs/incubator/`** in the same change set.
+
+Layout:
+
+- `docs/incubator/README.md` — index and shortlist
+- `docs/incubator/yc/` — Y Combinator (`application.html`)
+- `docs/incubator/<program>/` — add when the user shares that program’s form (same pattern as `yc/`)
+
+These are founder-facing drafts. They are **not** partner PDFs. Follow **human-sounding-copy**.
+
+## When to update
+
+Refresh relevant answers in every filled `application.html` (start with YC) if any of these move:
+
+- Partner-visible product on Portal, Ops, or Mobile (same triggers as feature checklist / catalog)
+- Staging or public URLs, demo accounts, or how to try the product
+- Mobile display version / sideload APK story used in a product-link answer
+- Tech stack, hosting, or AI models named in an application
+- Pricing or monetization (align with `docs/partner-updates/sources/raphcare-price-list-v*.md`)
+- Progress claims: users, pilots, revenue, legal entity, fundraising, equity
+- Regulatory posture (FDA / device claims)
+
+Also update `docs/incubator/README.md` when adding or retiring program targets, or when creating a new `docs/incubator/<program>/` folder.
+
+## How to update
+
+1. Edit the `answers` entries in each affected `docs/incubator/*/application.html`.
+2. Keep answers honest. Do not invent paying users, live clinics, revenue, or regulatory clearance.
+3. Prefer current facts from checklists, feature catalog, demo-accounts sheet, price list, and `docs/Mobile_Android_Test_Hosting.md`.
+4. Leave founder-only placeholders alone unless the user supplied new facts (founder video, full names on equity, batch name).
+5. When the user shares a new program’s questions, create `docs/incubator/<short-name>/` with `README.md` and `application.html`, and add a row to the index table in `docs/incubator/README.md`.
+
+## Do / don't
+
+- Do update incubator drafts in the same change set when product status docs change for the same reason.
+- Don't skip the refresh because the checklist or catalog was updated.
+- Don't put class names, routes, or build commands in answers unless the form field is explicitly technical (tech stack).
+- Don't claim the Laravel/Flutter stack; the live product is .NET / Blazor / MAUI on Azure unless that changes again.

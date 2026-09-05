@@ -1,6 +1,6 @@
 # Web admin on a phone
 
-**Status:** product direction, not scheduled work. Hospital ops on the web remain complete for desktop use.
+**Status:** Portal and Ops have phone and tablet breakpoints (top bar, forms, swipeable tables, hospital deck, fleet). Thin home-screen install is still later. Desktop remains the primary staff target.
 
 ## Goal
 
@@ -14,7 +14,7 @@ Patients keep **RaphCare.Mobile**. Staff keep the web admin. Do not duplicate ho
 
 Order matters more than PWA branding.
 
-1. **Responsive admin UI** (the real work). Layouts, tables, side nav, forms, and tele join must be usable on a small screen. There is already a 768px breakpoint that stacks the sidebar and hides search. That is not phone-ready hospital ops.
+1. **Responsive admin UI** (done for the main chrome). Layouts, tables, top bar, forms, and hospital / fleet screens tighten under 768px and 480px. Keep polishing edge pages as you hit them on a phone.
 2. **Thin install** after the UI works on a phone. Web app manifest, icons, name, and optionally caching the WASM shell so repeat visits on clinic Wi-Fi are faster. `RaphCare.Portal.Host` already maps `.webmanifest` to the right content type; nothing serves a manifest today.
 3. **Not a true PWA** as the product story. No offline clinical writes, no background sync queue, no staff listing in Play / App Store, no “admin app” that staff confuse with the patient app.
 
@@ -30,12 +30,13 @@ If we add a service worker later, keep it online-first: cache static assets only
 
 ## Current state
 
-- Not a PWA: no manifest, no service worker, no install tags in `RaphCare.Web/wwwroot/index.html`.
-- Admin is a desktop-first shell (`AdminLayout`) with limited narrow-width CSS.
+- Responsive admin UI is in place on Portal and Ops: phone breakpoints tighten the top bar, stack forms and actions, keep tables swipeable, and make hospital deck rails / segment tabs scroll horizontally.
+- Not a PWA yet: no manifest, no service worker, no install tags.
+- Thin home-screen install still later.
 
 ## Related
 
-- Engineering checklist: later / optional row under Step 1.
-- Partner checklist: “Later” note under hospital admin.
+- Engineering checklist: Step 1 phone-usable admin `(partial)`.
+- Partner checklist: Portal and Ops on a phone is Partial under hospital admin.
 - Structure: [`02_Solution_Structure.md`](./02_Solution_Structure.md) (`RaphCare.Web` / `RaphCare.Portal.Host`).
 - Patient app: [`09_Mobile_App_Guide.md`](./09_Mobile_App_Guide.md).

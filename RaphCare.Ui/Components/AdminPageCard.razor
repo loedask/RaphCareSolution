@@ -3,7 +3,8 @@
         @if (ShowHeader)
         {
             <header class="admin-page-card-head">
-                <div>
+                <span class="admin-page-card-ornament" aria-hidden="true"></span>
+                <div class="admin-page-card-copy">
                     @if (!string.IsNullOrEmpty(Eyebrow))
                     {
                         <p class="admin-page-eyebrow">@Eyebrow</p>
@@ -24,7 +25,12 @@
                         <p class="admin-page-lead">@Lead</p>
                     }
                 </div>
-                @_headMeta
+                @if (_headMeta is not null)
+                {
+                    <div class="admin-page-head-meta">
+                        @_headMeta
+                    </div>
+                }
             </header>
         }
         @ChildContent
