@@ -3,35 +3,45 @@
 
 <PageTitle>@AppResources.T("SignIn_PageTitle")</PageTitle>
 
-<div class="auth-card auth-card-form">
+<div class="auth-card auth-card-form @(_awaitingCode ? "auth-card-verify" : null)">
     <h2 class="auth-card-title">@AppResources.T("SignIn_Title")</h2>
     <p class="auth-card-subtitle">@AppResources.T("SignIn_Subtitle")</p>
 
     <AdminAlert Message="@_error" />
     @if (!string.IsNullOrEmpty(_status))
     {
-        <p class="text-muted">@_status</p>
+        <p class="text-muted auth-status-copy">@_status</p>
     }
 
     <EditForm Model="_model" OnValidSubmit="SubmitAsync">
         <div class="form-grid single-column">
             <div class="form-field">
                 <label>@AppResources.T("Common_Email")</label>
-                <InputText class="form-control" @bind-Value="_model.Email" type="email" disabled="@_awaitingCode" />
+                <InputText class="form-control"
+                           @bind-Value="_model.Email"
+                           type="email"
+                           autocomplete="username"
+                           disabled="@_awaitingCode" />
             </div>
             <div class="form-field">
                 <label>@AppResources.T("Common_Password")</label>
-                <InputText class="form-control" @bind-Value="_model.Password" type="password" disabled="@_awaitingCode" />
+                <AdminPasswordField @bind-Value="_model.Password"
+                                    Disabled="_awaitingCode"
+                                    ShowLabel="@AppResources.T("Common_ShowPassword")"
+                                    HideLabel="@AppResources.T("Common_HidePassword")" />
             </div>
             @if (_awaitingCode)
             {
-                <div class="form-field">
+                <div class="form-field verification-field">
                     <label>@AppResources.T("Common_VerificationCode")</label>
-                    <InputText class="form-control" @bind-Value="_model.VerificationCode" maxlength="12" autocomplete="one-time-code" />
+                    <InputText class="form-control verification-code-input"
+                               @bind-Value="_model.VerificationCode"
+                               maxlength="12"
+                               autocomplete="one-time-code" />
                 </div>
             }
         </div>
-        <div class="form-actions" style="margin-top: 1rem;">
+        <div class="form-actions auth-form-actions">
             <button class="btn btn-primary btn-block" type="submit" disabled="@_busy">
                 @(_busy ? AppResources.T("Common_PleaseWait") : _awaitingCode ? AppResources.T("Common_VerifyAndSignIn") : AppResources.T("Common_SignIn"))
             </button>

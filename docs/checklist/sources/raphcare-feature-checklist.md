@@ -28,7 +28,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-09-04
+Last reviewed: 2026-09-05
 
 ---
 
@@ -49,8 +49,8 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, lab orders (admin or doctor, InProgress)
 - [x] Collection board: search pending prescriptions/labs, camera QR scan, call a code onto the waiting screen, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR, public waiting-screen token (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs, profile photo when the patient uploaded one
-- [x] Clinic devices list
-- [x] Platform fleet inventory API (CreateDevice, AssignDeviceToPatient, filtered GetDevices) + claim-only patient register
+- [x] Clinic devices list + hospital assign in-stock device to linked patient (`POST …/devices/{deviceId}/assign`)
+- [x] Platform fleet inventory API (CreateDevice, AssignDeviceToPatient, filtered GetDevices) + patient claim (hospital: prior assignment; Direct: packaging self-claim when clinic allows)
 - [x] Tele-session start (Agora join info for admin)
 
 ### Admin panel (Web)
@@ -65,7 +65,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page (hospital-deck)
 - [x] Admin dashboard (hospital-scoped; multi-hospital accounts use All hospitals first; single hospital auto-selects)
-- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): stock-in serials (type, packaging barcode/QR scan, or ephemeral photo text extract; images stay in-browser), assign to patient (separate app from Portal)
+- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): Portal-style top bar; stock serials under a hospital or Direct (type, packaging barcode/QR scan, take picture, or choose photo; images stay in-browser); optional Ops assign. Hospital Portal Devices assigns in-stock watches to patients.
 - [x] Web UI language switcher (en / fr / ln / sw)
 - [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 
@@ -75,7 +75,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Platform wearable fleet stock lives in the separate **RaphCare.Ops** app. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Platform Ops stocks watches under a hospital or Direct (top-bar shell). Hospital Portal Devices assigns in-stock serials to patients. Direct packaging can self-claim in the app. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -199,7 +199,7 @@ Push notifications on device:
 Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`, **`docs/14_Wearable_Capability_Catalog.md`**, desk steps in [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md)):
 
 - [x] Devices screen: BLE scan, connect, disconnect
-- [x] Patient claim of assigned fleet serial (no invent-serial register)
+- [x] Patient claim of fleet serial (hospital: prior staff assignment; Direct packaging self-claim when programme allows; no invent-serial register)
 - [x] E580 / E585 name filter (`E585E580DeviceFilter`, includes `ET580` / `ET585`) + "show all BLE" fallback
 - [x] Android Bluetooth / Nearby devices permission flow
 - [x] iOS Bluetooth usage string (`Info.plist`)

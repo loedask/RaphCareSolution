@@ -73,20 +73,25 @@
                     <div class="fleet-scan-actions">
                         <button type="button"
                                 class="btn btn-secondary"
-                                disabled="@(_scanning || _extracting)"
+                                disabled="@(_cameraMode is not null || _extracting)"
                                 @onclick="StartBarcodeScanAsync">
                             @AppResources.T("Fleet_ScanBarcode")
                         </button>
                         <button type="button"
                                 class="btn btn-secondary"
-                                disabled="@(_scanning || _extracting)"
+                                disabled="@(_cameraMode is not null || _extracting)"
+                                @onclick="StartTakePictureAsync">
+                            @AppResources.T("Fleet_TakePicture")
+                        </button>
+                        <button type="button"
+                                class="btn btn-secondary"
+                                disabled="@(_cameraMode is not null || _extracting)"
                                 @onclick="TriggerPhotoPick">
                             @(_extracting ? AppResources.T("Fleet_ScanExtracting") : AppResources.T("Fleet_ExtractPhoto"))
                         </button>
                         <input id="@PhotoInputId"
                                type="file"
                                accept="image/*"
-                               capture="environment"
                                hidden
                                @onchange="OnPhotoSelectedAsync" />
                     </div>
@@ -209,13 +214,30 @@
     }
 </section>
 
-@if (_scanning)
+@if (_cameraMode is not null)
 {
     <div class="qr-scan-overlay">
         <video id="fleet-scan-video" autoplay playsinline muted></video>
-        <button type="button" class="btn btn-secondary" @onclick="StopBarcodeScanAsync">
-            @AppResources.T("Fleet_StopScan")
-        </button>
+        <div class="qr-scan-overlay-actions">
+            @if (_cameraMode == "photo")
+            {
+                <button type="button"
+                        class="btn btn-primary"
+                        disabled="@_extracting"
+                        @onclick="CapturePictureAsync">
+                    @(_extracting ? AppResources.T("Fleet_ScanExtracting") : AppResources.T("Fleet_CaptureFrame"))
+                </button>
+                <button type="button" class="btn btn-secondary" disabled="@_extracting" @onclick="StopCameraAsync">
+                    @AppResources.T("Fleet_CancelCamera")
+                </button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-secondary" @onclick="StopCameraAsync">
+                    @AppResources.T("Fleet_StopScan")
+                </button>
+            }
+        </div>
     </div>
 }
 
@@ -236,7 +258,7 @@
 
     private bool _loading = true;
     private bool _saving;
-    private bool _scanning;
+    private string? _cameraMode;
     private bool _extracting;
     private bool _authRequired;
     private bool _unassignedOnly = true;
@@ -412,7 +434,7 @@
         _addError = null;
         _addSuccess = null;
         _scanMacHint = null;
-        _scanning = true;
+        _cameraMode = "barcode";
         await InvokeAsync(StateHasChanged);
         await Task.Delay(100);
         _jsSelf ??= DotNetObjectReference.Create(this);
@@ -428,17 +450,42 @@
 
         if (!started)
         {
-            _scanning = false;
+            _cameraMode = null;
             _addError = AppResources.T("Fleet_ScanUnsupported");
         }
     }
 
-    private async Task StopBarcodeScanAsync()
+    private async Task StartTakePictureAsync()
     {
-        _scanning = false;
+        _addError = null;
+        _addSuccess = null;
+        _scanMacHint = null;
+        _cameraMode = "photo";
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(100);
+        var started = false;
         try
         {
-            await Js.InvokeVoidAsync("raphCareOpsFleet.stopBarcodeScan");
+            started = await Js.InvokeAsync<bool>("raphCareOpsFleet.startLiveCamera");
+        }
+        catch
+        {
+            started = false;
+        }
+
+        if (!started)
+        {
+            _cameraMode = null;
+            _addError = AppResources.T("Fleet_CameraUnsupported");
+        }
+    }
+
+    private async Task StopCameraAsync()
+    {
+        _cameraMode = null;
+        try
+        {
+            await Js.InvokeVoidAsync("raphCareOpsFleet.stopAllCameras");
         }
         catch
         {
@@ -446,10 +493,24 @@
         }
     }
 
+    private async Task CapturePictureAsync()
+    {
+        _addError = null;
+        _addSuccess = null;
+        _scanMacHint = null;
+        _extracting = true;
+        await InvokeAsync(StateHasChanged);
+
+        var dto = await ExtractFromJsAsync("raphCareOpsFleet.captureAndExtract");
+        _extracting = false;
+        _cameraMode = null;
+        ApplyExtractDto(dto);
+    }
+
     [JSInvokable]
     public async Task OnFleetBarcodeDetected(string value)
     {
-        await StopBarcodeScanAsync();
+        _cameraMode = null;
         ApplyParseResult(FleetDeviceScanParser.ParseBarcode(value), fromBarcode: true);
         await InvokeAsync(StateHasChanged);
     }
@@ -476,28 +537,43 @@
         _addError = null;
         _addSuccess = null;
         _scanMacHint = null;
+
+        // Start JS immediately so the File is snapshotted before any re-render clears the input.
+        var extractTask = ExtractFromJsAsync("raphCareOpsFleet.extractFromFileInput", PhotoInputId);
         _extracting = true;
         await InvokeAsync(StateHasChanged);
 
-        FleetPhotoExtractDto? dto = null;
+        var dto = await extractTask;
+        _extracting = false;
+        ApplyExtractDto(dto);
+    }
+
+    private async Task<FleetPhotoExtractDto?> ExtractFromJsAsync(string identifier, params object?[] args)
+    {
         try
         {
-            var json = await Js.InvokeAsync<JsonElement>("raphCareOpsFleet.extractFromFileInput", PhotoInputId);
-            dto = JsonSerializer.Deserialize<FleetPhotoExtractDto>(json.GetRawText(), JsonOptions);
+            var raw = await Js.InvokeAsync<string>(identifier, args);
+            if (string.IsNullOrWhiteSpace(raw))
+                return null;
+            return JsonSerializer.Deserialize<FleetPhotoExtractDto>(raw, JsonOptions);
         }
         catch
         {
-            dto = null;
+            return null;
         }
+    }
 
-        _extracting = false;
-
+    private void ApplyExtractDto(FleetPhotoExtractDto? dto)
+    {
         if (dto is null || !dto.Ok)
         {
             _addError = dto?.Error switch
             {
                 "nofile" => AppResources.T("Fleet_ScanNoFile"),
                 "busy" => AppResources.T("Fleet_ScanBusy"),
+                "nocamera" => AppResources.T("Fleet_CameraUnsupported"),
+                "ocrload" => AppResources.T("Fleet_ScanOcrLoadFailed"),
+                "ocrfail" or "imgload" => AppResources.T("Fleet_ScanOcrFailed"),
                 _ => AppResources.T("Fleet_ScanFailed")
             };
             return;
@@ -552,11 +628,11 @@
 
     public async ValueTask DisposeAsync()
     {
-        if (_scanning)
+        if (_cameraMode is not null)
         {
             try
             {
-                await Js.InvokeVoidAsync("raphCareOpsFleet.stopBarcodeScan");
+                await Js.InvokeVoidAsync("raphCareOpsFleet.stopAllCameras");
             }
             catch
             {

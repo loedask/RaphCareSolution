@@ -32,17 +32,50 @@
     {
         <AdminPageCard Title="@AppResources.T("Home_StatsTitle")" Lead="@AppResources.T("Home_StatsLead")">
             <div class="admin-page-card-body">
-                <AdminStatGrid>
-                    <AdminStatCard Label="@AppResources.T("Common_Hospitals")" Value="@_stats.HospitalCount" Accent="accent" />
-                    <AdminStatCard Label="@AppResources.T("Home_StatPatients")" Value="@_stats.PatientCount" Accent="success" />
-                    <AdminStatCard Label="@AppResources.T("Home_StatDoctors")" Value="@_stats.DoctorCount" Accent="violet" />
-                    <AdminStatCard Label="@AppResources.T("Home_StatStaff")" Value="@_stats.StaffCount" Accent="accent" />
-                    <AdminStatCard Label="@AppResources.T("Home_StatFacilities")" Value="@_stats.FacilityCount" Accent="success" />
-                    <AdminStatCard Label="@AppResources.T("Home_StatDevices")" Value="@_stats.DeviceCount" Accent="violet" Hint="@AppResources.Format("Home_StatDevicesHint", _stats.UnassignedDeviceCount, _stats.AssignedDeviceCount)" />
-                    <AdminStatCard Label="@AppResources.T("Home_StatAppointmentsToday")" Value="@_stats.AppointmentsTodayCount" Accent="accent" />
-                    <AdminStatCard Label="@AppResources.T("Home_StatAdmissions")" Value="@_stats.ActiveAdmissionsCount" Accent="success" />
-                    <AdminStatCard Label="@AppResources.T("Home_StatPendingInvites")" Value="@_stats.PendingStaffInvitationCount" Accent="violet" />
-                    <AdminStatCard Label="@AppResources.T("Home_StatEmergencies")" Value="@_stats.EmergencyEventsLast72HoursCount" Accent="accent" Hint="@AppResources.T("Home_StatEmergenciesHint")" />
+                <AdminStatGrid CssClass="ops-stat-grid">
+                    <AdminStatCard Label="@AppResources.T("Common_Hospitals")"
+                                   Value="@_stats.HospitalCount"
+                                   IconKind="hospital"
+                                   Accent="accent" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatPatients")"
+                                   Value="@_stats.PatientCount"
+                                   IconKind="patients"
+                                   Accent="success" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatDoctors")"
+                                   Value="@_stats.DoctorCount"
+                                   IconKind="doctors"
+                                   Accent="violet" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatStaff")"
+                                   Value="@_stats.StaffCount"
+                                   IconKind="staff"
+                                   Accent="accent" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatFacilities")"
+                                   Value="@_stats.FacilityCount"
+                                   IconKind="facilities"
+                                   Accent="success" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatDevices")"
+                                   Value="@_stats.DeviceCount"
+                                   IconKind="devices"
+                                   Accent="violet"
+                                   Href="/fleet"
+                                   Hint="@AppResources.Format("Home_StatDevicesHint", _stats.UnassignedDeviceCount, _stats.AssignedDeviceCount)" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatAppointmentsToday")"
+                                   Value="@_stats.AppointmentsTodayCount"
+                                   IconKind="appointments"
+                                   Accent="accent" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatAdmissions")"
+                                   Value="@_stats.ActiveAdmissionsCount"
+                                   IconKind="admissions"
+                                   Accent="success" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatPendingInvites")"
+                                   Value="@_stats.PendingStaffInvitationCount"
+                                   IconKind="invites"
+                                   Accent="@(_stats.PendingStaffInvitationCount > 0 ? "warn" : "violet")" />
+                    <AdminStatCard Label="@AppResources.T("Home_StatEmergencies")"
+                                   Value="@_stats.EmergencyEventsLast72HoursCount"
+                                   IconKind="alerts"
+                                   Accent="@(_stats.EmergencyEventsLast72HoursCount > 0 ? "alert" : "accent")"
+                                   Hint="@AppResources.T("Home_StatEmergenciesHint")" />
                 </AdminStatGrid>
             </div>
         </AdminPageCard>

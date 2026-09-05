@@ -2124,6 +2124,37 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<Guid>> AssignDeviceToPatientAsync(
+        Guid clinicId,
+        Guid deviceId,
+        Guid patientId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/devices/{deviceId}/assign",
+                    new { patientId },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<Guid>.Failure("Device or hospital not found, or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<Guid>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var id = await response.Content.ReadFromJsonAsync<Guid>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            return Response<Guid>.Success(id);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<Guid>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<ClinicInpatientBoard>> GetInpatientBoardAsync(
         Guid clinicId,
         CancellationToken cancellationToken = default)

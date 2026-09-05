@@ -50,7 +50,7 @@ Patient falls or triggers SOS
 
 - **RaphCare SafeCare Plan** (or “Emergency Monitoring Package”)  
 - Includes: Y6 Pro emergency watch, SOS monitoring, fall detection, location tracking, emergency call routing.
-- **List prices** (South Africa and Congo): [`partner-updates/raphcare-price-list.pdf`](partner-updates/raphcare-price-list.pdf) (edit under [`partner-updates/sources/`](partner-updates/sources/)).
+- **List prices** (South Africa and Congo): [`partner-updates/raphcare-price-list-v1.pdf`](partner-updates/raphcare-price-list-v1.pdf) (edit under [`partner-updates/sources/`](partner-updates/sources/)).
 - **Clinic visibility:** Admin patient chart (`/admin/hospitals/{id}/patients/{patientId}`) and hospital **Devices** tab list emergency events from `GET api/clinical/patients/{patientId}/emergency-events` and `GET api/clinical/emergency-events` (requires `X-Clinic-Id`).
 
 ### Engineering status in this repository
@@ -87,14 +87,14 @@ Sensor reading on device
 
 - **RaphCare Health Track Plan** (or “Basic Health Monitoring Package”)  
 - Includes: E585 watch, heart rate, oxygen, and activity monitoring, plus monthly remote check-ins (example).
-- **List prices** (South Africa and Congo): [`partner-updates/raphcare-price-list.pdf`](partner-updates/raphcare-price-list.pdf) (edit under [`partner-updates/sources/`](partner-updates/sources/)).
+- **List prices** (South Africa and Congo): [`partner-updates/raphcare-price-list-v1.pdf`](partner-updates/raphcare-price-list-v1.pdf) (edit under [`partner-updates/sources/`](partner-updates/sources/)).
 
 ### Engineering status in this repository
 
 | Area | Status |
 |------|--------|
 | **Mobile** | **In progress.** `DevicesPage`, `WearableBleCoordinator` (Plugin.BLE scan), Android **HBand** JNI bridge for connect and live HR/SpO₂ when AARs present (`docs/12`). |
-| **API** | **Patient vitals upload.** **`api/patient/devices`** (claim assigned serial + **`POST …/readings`**). Hand-written **Client** + MAUI sync. Staff / platform **`api/Devices`** fleet registry is separate (stock-in and assign). |
+| **API** | **Patient vitals upload.** **`api/patient/devices`** (claim serial + **`POST …/readings`**). Hand-written **Client** + MAUI sync. Platform **`api/Devices`** stocks serials; hospital staff assign via **`api/admin/clinics/{id}/devices/{deviceId}/assign`**. Direct programme clinics may allow packaging self-claim (creates the assignment). |
 
 ---
 
@@ -118,9 +118,11 @@ Same as **E585** for app and API; filter and docs treat **E580** and **E585** as
 
 ## Cross-cutting requirements (all three)
 
-1. **Provisioning / inventory.** Platform admins register serials into fleet stock (`CreateDevice`) and assign a device to a patient (`AssignDeviceToPatient`) in the **RaphCare.Ops** web app (`/fleet`). Patients **claim** that serial in the mobile app; they cannot invent one. Hospital Portal no longer hosts platform fleet stock UI.  
-2. **Support and docs.** Patient-facing setup guides per SKU (Y6: SIM / emergency testing; E580/E585: app pairing. See **`docs/11`**).  
-3. **Compliance.** Emergency and location features may require regional **telecare / medical device** review; out of scope for code comments but tracked at program level.
+1. **Provisioning / inventory.** Platform admins stock packaging serials in **RaphCare.Ops** (`/fleet`) under a hospital or the **RaphCare Direct** programme (`CreateDevice`). Ops uses Portal-style top chrome (no left sidebar). Ops may still assign when helping (`AssignDeviceToPatient` on platform Devices). Day-to-day hospital assignment is on Portal **Devices** (`AssignAdminClinicDeviceToPatient`).  
+2. **Hospital path.** Stock under the hospital. Staff assign an in-stock watch to a linked patient. The patient claims that serial in the app (claim alone does not invent stock).  
+3. **Direct / private package path.** Stock Health Track or SafeCare serials under Direct (`AllowPatientDeviceSelfClaim`). The patient claims the packaging serial in the app; that grants Direct access and creates the assignment when the device is still in stock. Price list packages first, not naked gadget checkout.  
+4. **Support and docs.** Patient-facing setup guides per SKU (Y6: SIM / emergency testing; E580/E585: app pairing. See **`docs/11`**).  
+5. **Compliance.** Emergency and location features may require regional **telecare / medical device** review; out of scope for code comments but tracked at program level.
 
 ---
 
@@ -132,4 +134,4 @@ Same as **E585** for app and API; filter and docs treat **E580** and **E585** as
 | **12** | HBand SDK repos, optional AARs, binding-project next step |
 | **14** | Wearable capability catalog (features survive SKU changes) |
 | **10** | Twilio SMS (relevant for alerting workflows) |
-| Price list | South Africa and Congo starting prices: [`partner-updates/raphcare-price-list.pdf`](partner-updates/raphcare-price-list.pdf) |
+| Price list | South Africa and Congo starting prices: [`partner-updates/raphcare-price-list-v1.pdf`](partner-updates/raphcare-price-list-v1.pdf) |
