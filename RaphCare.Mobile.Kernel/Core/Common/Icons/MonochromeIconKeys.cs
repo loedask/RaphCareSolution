@@ -2,7 +2,8 @@ namespace RaphCare.Mobile.Core.Common.Icons;
 
 /// <summary>
 /// MAUI image resource names for app icons (SVG under <c>Resources/Images</c>).
-/// Teal stroke icons for soft wells; <c>*OnAccent</c> white icons for gradient wells.
+/// Teal stroke icons for soft wells (Home metrics); <c>*OnAccent</c> white icons for gradient wells
+/// (Home quick actions, Profile / Help / Privacy menu rows).
 /// </summary>
 public static class MonochromeIconKeys
 {

@@ -16,7 +16,7 @@
                 <VerticalStackLayout Spacing="0">
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="16,14">
                         <Border Grid.Column="0" Style="{StaticResource ProfileMenuIconBorder}" Margin="0,0,12,0">
-                            <Image Source="icon_help.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
+                            <Image Source="icon_help_on_accent.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
                                    HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
@@ -31,7 +31,7 @@
                     <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" Margin="16,0" />
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="16,14">
                         <Border Grid.Column="0" Style="{StaticResource ProfileMenuIconBorder}" Margin="0,0,12,0">
-                            <Image Source="icon_message.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
+                            <Image Source="icon_message_on_accent.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
                                    HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
@@ -46,7 +46,7 @@
                     <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" Margin="16,0" />
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="16,14">
                         <Border Grid.Column="0" Style="{StaticResource ProfileMenuIconBorder}" Margin="0,0,12,0">
-                            <Image Source="icon_phone.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
+                            <Image Source="icon_phone_on_accent.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
                                    HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
@@ -61,7 +61,7 @@
                     <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" Margin="16,0" />
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="16,14">
                         <Border Grid.Column="0" Style="{StaticResource ProfileMenuIconBorder}" Margin="0,0,12,0">
-                            <Image Source="icon_mail.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
+                            <Image Source="icon_mail_on_accent.png" WidthRequest="18" HeightRequest="18" Aspect="AspectFit"
                                    HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
