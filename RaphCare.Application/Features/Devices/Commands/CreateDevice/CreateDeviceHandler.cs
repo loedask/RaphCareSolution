@@ -42,10 +42,10 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
             ]);
         }
 
-        string? mac;
+        string? macFromForm;
         try
         {
-            mac = BluetoothMacAddress.NormalizeOrNull(request.BluetoothMacAddress);
+            macFromForm = BluetoothMacAddress.NormalizeOrNull(request.BluetoothMacAddress);
         }
         catch (FormatException)
         {
@@ -57,25 +57,34 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
             ]);
         }
 
-        if (mac is not null)
+        // Restore keeps a stored MAC when the form leaves MAC blank; new stock and bare restores need a MAC.
+        var mac = macFromForm ?? existing?.BluetoothMacAddress;
+        if (string.IsNullOrWhiteSpace(mac))
         {
-            var excludeId = existing?.Id;
-            var macConflict = await _repository.SearchAsync(
-                q => q.Where(d => d.BluetoothMacAddress == mac && (excludeId == null || d.Id != excludeId)),
-                1,
-                1,
-                false,
-                cancellationToken).ConfigureAwait(false);
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    nameof(CreateDeviceCommand.BluetoothMacAddress),
+                    "Enter the Bluetooth MAC from the watch Device Info screen (for example AA:BB:CC:DD:EE:FF).")
+            ]);
+        }
 
-            if (macConflict.Items.Count > 0)
-            {
-                throw new ValidationException(
-                [
-                    new ValidationFailure(
-                        nameof(CreateDeviceCommand.BluetoothMacAddress),
-                        "A device with this Bluetooth MAC is already in the fleet.")
-                ]);
-            }
+        var excludeId = existing?.Id;
+        var macConflict = await _repository.SearchAsync(
+            q => q.Where(d => d.BluetoothMacAddress == mac && (excludeId == null || d.Id != excludeId)),
+            1,
+            1,
+            false,
+            cancellationToken).ConfigureAwait(false);
+
+        if (macConflict.Items.Count > 0)
+        {
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    nameof(CreateDeviceCommand.BluetoothMacAddress),
+                    "A device with this Bluetooth MAC is already in the fleet.")
+            ]);
         }
 
         var typeId = request.DeviceTypeId == Guid.Empty

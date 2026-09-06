@@ -5,6 +5,7 @@ using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.Devices.Commands.AssignDeviceToPatient;
 using RaphCare.Application.Features.Devices.Commands.CreateDevice;
 using RaphCare.Application.Features.Devices.Commands.DeleteDevice;
+using RaphCare.Application.Features.Devices.Commands.SetDeviceBluetoothMac;
 using RaphCare.Application.Features.Devices.Commands.UnassignDeviceFromPatient;
 using RaphCare.Application.Features.Devices.Commands.UpdateDevice;
 using RaphCare.Application.Features.Devices.DTOs;
@@ -88,6 +89,23 @@ public class DevicesController(IMediator mediator) : ControllerBase
     {
         var deviceId = await mediator.Send(new UnassignDeviceFromPatientCommand { DeviceId = id }, cancellationToken);
         return Ok(new { id = deviceId });
+    }
+
+    [HttpPut("{id:guid}/bluetooth-mac", Name = "SetDeviceBluetoothMac")]
+    [Authorize(Policy = "RequirePlatformAdmin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetBluetoothMac(
+        Guid id,
+        [FromBody] SetDeviceBluetoothMacCommand command,
+        CancellationToken cancellationToken)
+    {
+        if (id != command.DeviceId && command.DeviceId != Guid.Empty)
+            return BadRequest();
+        command.DeviceId = id;
+        await mediator.Send(command, cancellationToken);
+        return NoContent();
     }
 
     [HttpDelete("{id:guid}", Name = "DeleteDevice")]

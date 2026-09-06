@@ -52,13 +52,14 @@
                                    spellcheck="false" />
                         </label>
                         <label class="fleet-add-field">
-                            <span class="fleet-add-label">@AppResources.T("Fleet_MacLabel")</span>
+                            <span class="fleet-add-label">@AppResources.T("Fleet_MacLabelRequired")</span>
                             <input class="form-control"
                                    @bind="_newMac"
                                    @bind:event="oninput"
                                    placeholder="@AppResources.T("Fleet_MacPlaceholder")"
                                    autocomplete="off"
-                                   spellcheck="false" />
+                                   spellcheck="false"
+                                   required />
                         </label>
                         <div class="fleet-add-field fleet-add-field-span">
                             <span class="fleet-add-label">@AppResources.T("Fleet_ModelLabel")</span>
@@ -81,7 +82,7 @@
                     <div class="fleet-add-actions">
                         <button type="button"
                                 class="btn btn-primary"
-                                disabled="@(_saving || string.IsNullOrWhiteSpace(_newClinicId) || string.IsNullOrWhiteSpace(_newSerial))"
+                                disabled="@(_saving || string.IsNullOrWhiteSpace(_newClinicId) || string.IsNullOrWhiteSpace(_newSerial) || string.IsNullOrWhiteSpace(_newMac))"
                                 @onclick="AddDeviceAsync">
                             @(_saving ? AppResources.T("Common_Saving") : AppResources.T("Fleet_AddButton"))
                         </button>
@@ -212,7 +213,21 @@
                                         <td>
                                             @if (string.IsNullOrWhiteSpace(device.BluetoothMacAddress))
                                             {
-                                                <span class="text-muted">@AppResources.T("Fleet_MacNotSet")</span>
+                                                <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.35rem; align-items: center;">
+                                                    <input class="form-control"
+                                                           style="min-width: 10rem; max-width: 12rem;"
+                                                           value="@GetMacDraft(device.Id)"
+                                                           @oninput="e => SetMacDraft(device.Id, e.Value?.ToString())"
+                                                           placeholder="@AppResources.T("Fleet_MacPlaceholder")"
+                                                           autocomplete="off"
+                                                           spellcheck="false" />
+                                                    <button type="button"
+                                                            class="btn btn-secondary btn-sm"
+                                                            disabled="@(_busyDeviceId == device.Id || string.IsNullOrWhiteSpace(GetMacDraft(device.Id)))"
+                                                            @onclick="() => SaveMacAsync(device)">
+                                                        @(_busyDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_SaveMacButton"))
+                                                    </button>
+                                                </div>
                                             }
                                             else
                                             {
@@ -338,6 +353,7 @@
     private IReadOnlyList<FleetDeviceScanParser.Candidate> _scanCandidates = Array.Empty<FleetDeviceScanParser.Candidate>();
     private readonly Dictionary<Guid, IReadOnlyList<ClinicPatientListItem>> _patientsByClinic = new();
     private readonly Dictionary<Guid, string> _assignPatientByDevice = new();
+    private readonly Dictionary<Guid, string> _macDraftByDevice = new();
     private DotNetObjectReference<Index>? _jsSelf;
 
     private string _signInReturnUrl =>
@@ -441,6 +457,37 @@
     private void SetAssignPatient(Guid deviceId, string? patientId) =>
         _assignPatientByDevice[deviceId] = patientId ?? string.Empty;
 
+    private string GetMacDraft(Guid deviceId) =>
+        _macDraftByDevice.TryGetValue(deviceId, out var value) ? value : string.Empty;
+
+    private void SetMacDraft(Guid deviceId, string? mac) =>
+        _macDraftByDevice[deviceId] = mac ?? string.Empty;
+
+    private async Task SaveMacAsync(FleetDeviceListItem device)
+    {
+        var mac = GetMacDraft(device.Id).Trim();
+        if (string.IsNullOrWhiteSpace(mac))
+        {
+            _error = AppResources.T("Fleet_MacRequired");
+            return;
+        }
+
+        _busyDeviceId = device.Id;
+        _error = null;
+        var response = await FleetService.SetDeviceBluetoothMacAsync(device.Id, mac);
+        _busyDeviceId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Fleet_CouldNotSaveMac");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        _macDraftByDevice.Remove(device.Id);
+        await ReloadListAsync();
+    }
+
     private async Task AddDeviceAsync()
     {
         _addError = null;
@@ -452,12 +499,18 @@
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(_newMac))
+        {
+            _addError = AppResources.T("Fleet_MacRequired");
+            return;
+        }
+
         _saving = true;
         var response = await FleetService.CreateDeviceAsync(
             clinicId,
             _newSerial.Trim(),
             _newModel,
-            string.IsNullOrWhiteSpace(_newMac) ? null : _newMac.Trim());
+            _newMac.Trim());
         _saving = false;
 
         if (!response.IsSuccess)

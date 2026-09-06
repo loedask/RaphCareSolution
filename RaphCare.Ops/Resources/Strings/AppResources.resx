@@ -92,8 +92,12 @@
   <data name="Fleet_SerialLabel" xml:space="preserve"><value>Serial</value></data>
   <data name="Fleet_SerialPlaceholder" xml:space="preserve"><value>Serial on packaging</value></data>
   <data name="Fleet_MacLabel" xml:space="preserve"><value>Bluetooth MAC</value></data>
-  <data name="Fleet_MacPlaceholder" xml:space="preserve"><value>Optional AA:BB:CC:DD:EE:FF</value></data>
+  <data name="Fleet_MacLabelRequired" xml:space="preserve"><value>Bluetooth MAC (required)</value></data>
+  <data name="Fleet_MacPlaceholder" xml:space="preserve"><value>AA:BB:CC:DD:EE:FF from Device Info</value></data>
   <data name="Fleet_MacNotSet" xml:space="preserve"><value>Not set</value></data>
+  <data name="Fleet_MacRequired" xml:space="preserve"><value>Enter the Bluetooth MAC from the watch Device Info screen.</value></data>
+  <data name="Fleet_SaveMacButton" xml:space="preserve"><value>Save MAC</value></data>
+  <data name="Fleet_CouldNotSaveMac" xml:space="preserve"><value>Could not save the Bluetooth MAC.</value></data>
   <data name="Fleet_ActivatedLabel" xml:space="preserve"><value>Activated</value></data>
   <data name="Fleet_ModelLabel" xml:space="preserve"><value>Model</value></data>
   <data name="Fleet_AddButton" xml:space="preserve"><value>Add to fleet</value></data>

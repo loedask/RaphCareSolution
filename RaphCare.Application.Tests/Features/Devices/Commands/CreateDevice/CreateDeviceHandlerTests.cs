@@ -81,6 +81,56 @@ public sealed class CreateDeviceHandlerTests
         Assert.Equal("AA:BB:CC:DD:EE:FF", existing.BluetoothMacAddress);
         Assert.Null(existing.ActivatedAt);
     }
+
+    [Fact]
+    public async Task CreateRejectsNewStockWithoutBluetoothMac()
+    {
+        var handler = new CreateDeviceHandler(new FakeRepository<Device>(), new FakeUnitOfWork());
+
+        var ex = await Assert.ThrowsAsync<ValidationException>(() =>
+            handler.Handle(
+                new CreateDeviceCommand
+                {
+                    ClinicId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccc0104"),
+                    SerialNumber = "RC-E585-NEW",
+                    Model = "E585"
+                },
+                CancellationToken.None));
+
+        Assert.Contains(
+            ex.Errors.Values.SelectMany(v => v),
+            m => m.Contains("Bluetooth MAC", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task CreateRestoreKeepsExistingMacWhenFormOmitsMac()
+    {
+        var existing = new Device
+        {
+            ClinicId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccc0105"),
+            SerialNumber = "RC-E585-KEEP",
+            Model = "E585",
+            BluetoothMacAddress = "11:22:33:44:55:66",
+            IsActive = false,
+            IsAssigned = false,
+            Status = "Retired"
+        };
+        EntityId.SetId(existing, Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa0105"));
+
+        var handler = new CreateDeviceHandler(new FakeRepository<Device>([existing]), new FakeUnitOfWork());
+
+        await handler.Handle(
+            new CreateDeviceCommand
+            {
+                ClinicId = existing.ClinicId,
+                SerialNumber = "RC-E585-KEEP",
+                Model = "E585"
+            },
+            CancellationToken.None);
+
+        Assert.Equal("11:22:33:44:55:66", existing.BluetoothMacAddress);
+        Assert.True(existing.IsActive);
+    }
 }
 
 file static class EntityId

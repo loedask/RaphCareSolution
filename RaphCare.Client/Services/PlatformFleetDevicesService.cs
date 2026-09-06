@@ -123,6 +123,21 @@ public sealed class PlatformFleetDevicesService(HttpClient httpClient) : BaseHtt
             : Response<bool>.Failure(result.ErrorMessage ?? "Could not delete device.", result.StatusCode);
     }
 
+    public async Task<Response<bool>> SetDeviceBluetoothMacAsync(
+        Guid deviceId,
+        string bluetoothMacAddress,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await PutNoContentAsync(
+                $"api/Devices/{deviceId}/bluetooth-mac",
+                new { bluetoothMacAddress },
+                cancellationToken)
+            .ConfigureAwait(false);
+        return result.IsSuccess
+            ? Response<bool>.Success(true)
+            : Response<bool>.Failure(result.ErrorMessage ?? "Could not save Bluetooth MAC.", result.StatusCode);
+    }
+
     private sealed class FleetDeviceDto
     {
         public Guid Id { get; set; }

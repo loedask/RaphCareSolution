@@ -33,4 +33,9 @@ public interface IPlatformFleetDevicesService
     Task<Response<bool>> DeleteDeviceAsync(
         Guid deviceId,
         CancellationToken cancellationToken = default);
+
+    Task<Response<bool>> SetDeviceBluetoothMacAsync(
+        Guid deviceId,
+        string bluetoothMacAddress,
+        CancellationToken cancellationToken = default);
 }
