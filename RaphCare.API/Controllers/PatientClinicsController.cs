@@ -6,7 +6,10 @@ using RaphCare.Application.Features.PatientClinics.Queries.GetMyLinkedClinics;
 
 namespace RaphCare.API.Controllers;
 
-/// <summary>Patient hospitals they are linked to (membership / care history), separate from Active clinic on the phone.</summary>
+/// <summary>
+/// Patient hospitals they are linked to (membership / care history), separate from Active clinic on the phone.
+/// Does not require <c>X-Clinic-Id</c> (tenant-exempt) so the list loads before a hospital is picked.
+/// </summary>
 [Authorize(Policy = "RequirePatient")]
 [ApiController]
 [Route("api/patient/clinics")]
