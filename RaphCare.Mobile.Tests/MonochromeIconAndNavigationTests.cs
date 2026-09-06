@@ -53,6 +53,8 @@ public sealed class AbsoluteShellRouteRulesTests
     [InlineData("//BillingPage")]
     [InlineData("TelehealthJoinPage")]
     [InlineData("HealthRecordDetailPage")]
+    [InlineData("NotificationsPage")]
+    [InlineData("//NotificationsPage")]
     public void PushOnlyRoutesMustNotUseAbsoluteShellPaths(string route) =>
         Assert.False(
             AbsoluteShellRouteRules.IsSafeAbsoluteTarget(route),
@@ -69,6 +71,7 @@ public sealed class AbsoluteShellRouteRulesTests
     [InlineData("MentalHealthPage", "MentalHealthPage")]
     [InlineData("AiAssistantPage", "AiAssistantPage")]
     [InlineData("CareTelehealthPage", "CareTelehealthPage")]
+    [InlineData("NotificationsPage", "NotificationsPage")]
     public void ToFeatureNavigationPathUsesAbsoluteOnlyForTabRoots(string route, string expected) =>
         Assert.Equal(expected, AbsoluteShellRouteRules.ToFeatureNavigationPath(route));
 
