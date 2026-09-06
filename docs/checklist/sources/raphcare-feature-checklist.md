@@ -65,7 +65,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page (hospital-deck)
 - [x] Admin dashboard (hospital-scoped; multi-hospital accounts use All hospitals first; single hospital auto-selects)
-- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): Portal-style top bar; stock serials under a hospital or Direct (type, packaging barcode/QR scan, take picture, or choose photo; images stay in-browser); optional Ops assign; revoke assignment back to stock; Ops-only delete (hard remove when unused, retire when history exists). Hospital Portal Devices assigns in-stock watches to patients.
+- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): Portal-style top bar; scan-first add (barcode / picture / photo, then hospital, serial, required Bluetooth MAC, model); stock tabs All / In stock / Assigned; optional Ops assign; revoke assignment back to stock; Ops-only delete (hard remove when unused, retire when history exists). Hospital Portal Devices assigns in-stock watches to patients.
 - [x] Web UI language switcher (en / fr / ln / sw)
 - [x] Phone-usable admin (responsive layout + thin home-screen install): Portal and Ops top bar, forms, tables, hospital deck, and fleet tighten under 768px / 480px. Manifest and icons support Add to Home Screen. No offline service worker. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 

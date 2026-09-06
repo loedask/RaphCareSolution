@@ -87,7 +87,18 @@
   <data name="Fleet_AuthTitle" xml:space="preserve"><value>Sign in as platform admin</value></data>
   <data name="Fleet_AuthLead" xml:space="preserve"><value>Fleet inventory needs a RaphCare platform administrator account.</value></data>
   <data name="Fleet_AddTitle" xml:space="preserve"><value>Add to stock</value></data>
-  <data name="Fleet_AddLead" xml:space="preserve"><value>Pick the hospital or Direct programme that will own the device, then enter the serial from packaging.</value></data>
+  <data name="Fleet_AddLead" xml:space="preserve"><value>Scan packaging or the Device Info screen first, then confirm the hospital, serial, and Bluetooth MAC.</value></data>
+  <data name="Fleet_StepCaptureTitle" xml:space="preserve"><value>Capture</value></data>
+  <data name="Fleet_StepCaptureLead" xml:space="preserve"><value>Scan a barcode, take a picture, or choose a photo of packaging or Device Info.</value></data>
+  <data name="Fleet_StepConfirmTitle" xml:space="preserve"><value>Confirm and add</value></data>
+  <data name="Fleet_StepConfirmLead" xml:space="preserve"><value>Choose the owning hospital, check the serial and MAC, then add the watch to stock.</value></data>
+  <data name="Fleet_StockTabsAria" xml:space="preserve"><value>Stock filters</value></data>
+  <data name="Fleet_TabAll" xml:space="preserve"><value>All</value></data>
+  <data name="Fleet_TabInStock" xml:space="preserve"><value>In stock</value></data>
+  <data name="Fleet_TabAssigned" xml:space="preserve"><value>Assigned</value></data>
+  <data name="Fleet_EmptyInStockTab" xml:space="preserve"><value>No unassigned stock for these filters.</value></data>
+  <data name="Fleet_EmptyAssignedTab" xml:space="preserve"><value>No assigned watches for these filters.</value></data>
+  <data name="Fleet_StatusColumn" xml:space="preserve"><value>Status</value></data>
   <data name="Fleet_SelectHospital" xml:space="preserve"><value>Select hospital</value></data>
   <data name="Fleet_SerialLabel" xml:space="preserve"><value>Serial</value></data>
   <data name="Fleet_SerialPlaceholder" xml:space="preserve"><value>Serial on packaging</value></data>
