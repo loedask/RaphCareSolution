@@ -6,7 +6,7 @@
 
 ## High-level summary of changes
 
-Safer wearable pairing: patients must claim an assigned serial before Bluetooth Scan/Connect. The fleet device stores an optional Bluetooth MAC (Ops can set it at stock, or the first successful pair locks it). Wrong MAC is rejected. Portal and Ops device lists show Bluetooth MAC and activated date. Profile hub: real insurance badge, separate payment vs billing routes, Edit Profile photo upload, honest privacy delete/export copy.
+Safer wearable pairing: patients must claim an assigned serial before Bluetooth Scan/Connect. The fleet device stores an optional Bluetooth MAC (Ops can set it at stock, or the first successful pair locks it). Wrong MAC is rejected. Portal and Ops device lists show Bluetooth MAC and activated date. Profile hub: real insurance badge, separate payment vs billing routes, Edit Profile photo upload, honest privacy delete/export copy. Ops Fleet can revoke a patient assignment back to stock and delete (or retire) unassigned stock. Ops stock list defaults to all devices (not Unassigned only). Patients can photograph a packaging barcode or QR to fill the claim serial.
 
 ## Modules modified
 

@@ -126,6 +126,9 @@
                     </Grid>
 
                     <HorizontalStackLayout Spacing="12">
+                        <Button Text="{Binding ScanPackagingButtonText}"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ScanPackagingCommand}" />
                         <Button Text="{Binding ClaimButtonText}"
                                 Style="{StaticResource PrimaryButton}"
                                 Command="{Binding RegisterCommand}" />

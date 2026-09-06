@@ -25,4 +25,12 @@ public interface IPlatformFleetDevicesService
         Guid deviceId,
         Guid patientId,
         CancellationToken cancellationToken = default);
+
+    Task<Response<Guid>> UnassignDeviceFromPatientAsync(
+        Guid deviceId,
+        CancellationToken cancellationToken = default);
+
+    Task<Response<bool>> DeleteDeviceAsync(
+        Guid deviceId,
+        CancellationToken cancellationToken = default);
 }

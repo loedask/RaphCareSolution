@@ -106,12 +106,20 @@
   <data name="Fleet_SerialFilterLabel" xml:space="preserve"><value>Serial contains</value></data>
   <data name="Fleet_UnassignedOnly" xml:space="preserve"><value>Unassigned only</value></data>
   <data name="Fleet_EmptyStock" xml:space="preserve"><value>No devices match these filters.</value></data>
+  <data name="Fleet_EmptyUnassignedOnly" xml:space="preserve"><value>No unassigned stock for these filters. Clear Unassigned only to see assigned watches (including revoke).</value></data>
   <data name="Fleet_CouldNotLoad" xml:space="preserve"><value>Could not load fleet devices.</value></data>
   <data name="Fleet_AssignColumn" xml:space="preserve"><value>Assign</value></data>
+  <data name="Fleet_ActionsColumn" xml:space="preserve"><value>Actions</value></data>
   <data name="Fleet_AlreadyAssigned" xml:space="preserve"><value>Assigned</value></data>
   <data name="Fleet_SelectPatient" xml:space="preserve"><value>Select patient</value></data>
   <data name="Fleet_AssignButton" xml:space="preserve"><value>Assign</value></data>
   <data name="Fleet_CouldNotAssign" xml:space="preserve"><value>Could not assign the device.</value></data>
+  <data name="Fleet_RevokeButton" xml:space="preserve"><value>Revoke assignment</value></data>
+  <data name="Fleet_RevokeConfirmFormat" xml:space="preserve"><value>Revoke the patient assignment for {0}? The watch returns to stock.</value></data>
+  <data name="Fleet_CouldNotRevoke" xml:space="preserve"><value>Could not revoke the assignment.</value></data>
+  <data name="Fleet_DeleteButton" xml:space="preserve"><value>Delete</value></data>
+  <data name="Fleet_DeleteConfirmFormat" xml:space="preserve"><value>Delete {0} from stock? If the watch was used before, it is retired instead of erased.</value></data>
+  <data name="Fleet_CouldNotDelete" xml:space="preserve"><value>Could not delete the device.</value></data>
   <data name="Fleet_StatusAssigned" xml:space="preserve"><value>Assigned</value></data>
   <data name="Fleet_StatusInStock" xml:space="preserve"><value>In stock</value></data>
   <data name="Fleet_ScanToolsTitle" xml:space="preserve"><value>Fill serial from packaging</value></data>

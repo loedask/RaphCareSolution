@@ -97,6 +97,32 @@ public sealed class PlatformFleetDevicesService(HttpClient httpClient) : BaseHtt
         return Response<Guid>.Success(result.Data.Id);
     }
 
+    public async Task<Response<Guid>> UnassignDeviceFromPatientAsync(
+        Guid deviceId,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await PostAsync<CreatedIdDto>(
+                $"api/Devices/{deviceId}/unassign",
+                new { },
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!result.IsSuccess || result.Data is null || result.Data.Id == Guid.Empty)
+            return Response<Guid>.Failure(result.ErrorMessage ?? "Could not revoke assignment.", result.StatusCode);
+
+        return Response<Guid>.Success(result.Data.Id);
+    }
+
+    public async Task<Response<bool>> DeleteDeviceAsync(
+        Guid deviceId,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await DeleteAsync($"api/Devices/{deviceId}", cancellationToken).ConfigureAwait(false);
+        return result.IsSuccess
+            ? Response<bool>.Success(true)
+            : Response<bool>.Failure(result.ErrorMessage ?? "Could not delete device.", result.StatusCode);
+    }
+
     private sealed class FleetDeviceDto
     {
         public Guid Id { get; set; }

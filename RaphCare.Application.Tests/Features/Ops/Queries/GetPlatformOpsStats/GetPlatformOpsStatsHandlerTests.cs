@@ -204,8 +204,8 @@ file sealed class DeviceCountingRepository(int total, int unassigned, int assign
         {
             var probe = new[]
             {
-                new Device { IsAssigned = false },
-                new Device { IsAssigned = true }
+                new Device { IsActive = true, IsAssigned = false },
+                new Device { IsActive = true, IsAssigned = true }
             }.AsQueryable();
 
             var shaped = queryShaper?.Invoke(probe) ?? probe;

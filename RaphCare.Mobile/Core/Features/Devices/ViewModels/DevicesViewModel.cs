@@ -2,8 +2,10 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Media;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Devices;
+using RaphCare.Client.Models.Fleet;
 using RaphCare.Mobile.Core.Features.Devices.Models;
 using RaphCare.Mobile.Core.Features.Devices.Services;
 using RaphCare.Mobile.Core.Common.Navigation;
@@ -51,6 +53,7 @@ public sealed class DevicesViewModel : BaseViewModel
         SyncReadingsButtonText = T("DevicesSyncReadings");
         ClaimHint = T("DevicesClaimHint");
         ClaimButtonText = T("DevicesClaimButton");
+        ScanPackagingButtonText = T("DevicesScanPackagingButton");
         SerialPlaceholder = T("DevicesSerialPlaceholder");
         SkuPickerTitle = T("DevicesSkuTitle");
 
@@ -59,6 +62,7 @@ public sealed class DevicesViewModel : BaseViewModel
         ConnectCommand = new Command<Guid>(async id => await ConnectAsync(id).ConfigureAwait(false), _ => CanScanOrConnect);
         DisconnectCommand = new Command(async () => await DisconnectAsync().ConfigureAwait(false), () => _ble.ConnectedDeviceId.HasValue && !IsBusy);
         RegisterCommand = new Command(async () => await RegisterAsync().ConfigureAwait(false), () => !IsBusy);
+        ScanPackagingCommand = new Command(async () => await ScanPackagingAsync().ConfigureAwait(false), () => !IsBusy);
         SyncLastReadingCommand = new Command(async () => await SyncLastReadingAsync().ConfigureAwait(false), () => !IsBusy);
         BackCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
         ToggleShowAllCommand = new Command(() =>
@@ -85,6 +89,7 @@ public sealed class DevicesViewModel : BaseViewModel
     public string SyncReadingsButtonText { get; }
     public string ClaimHint { get; }
     public string ClaimButtonText { get; }
+    public string ScanPackagingButtonText { get; }
     public string SerialPlaceholder { get; }
     public string SkuPickerTitle { get; }
 
@@ -216,6 +221,7 @@ public sealed class DevicesViewModel : BaseViewModel
     public ICommand ConnectCommand { get; }
     public ICommand DisconnectCommand { get; }
     public ICommand RegisterCommand { get; }
+    public ICommand ScanPackagingCommand { get; }
     public ICommand SyncLastReadingCommand { get; }
     public ICommand BackCommand { get; }
     public ICommand ToggleShowAllCommand { get; }
@@ -502,6 +508,74 @@ public sealed class DevicesViewModel : BaseViewModel
             IsBusy = false;
             await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
             RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
+        }
+    }
+
+    private async Task ScanPackagingAsync()
+    {
+        ErrorMessage = null;
+        SyncResultText = null;
+
+        var camera = await Permissions.RequestAsync<Permissions.Camera>().ConfigureAwait(false);
+        if (camera != PermissionStatus.Granted)
+        {
+            ErrorMessage = T("DevicesScanPackagingCameraDenied");
+            return;
+        }
+
+        FileResult? photo;
+        try
+        {
+            photo = await MainThread.InvokeOnMainThreadAsync(() =>
+                MediaPicker.Default.CapturePhotoAsync()).ConfigureAwait(false);
+        }
+        catch (FeatureNotSupportedException)
+        {
+            ErrorMessage = T("DevicesScanPackagingUnsupported");
+            return;
+        }
+        catch
+        {
+            ErrorMessage = T("DevicesScanPackagingFailed");
+            return;
+        }
+
+        if (photo is null)
+            return;
+
+        IsBusy = true;
+        try
+        {
+            await using var stream = await photo.OpenReadAsync().ConfigureAwait(false);
+            var payload = PackagingBarcodeDecoder.Decode(stream);
+            if (string.IsNullOrWhiteSpace(payload))
+            {
+                ErrorMessage = T("DevicesScanPackagingNoCode");
+                return;
+            }
+
+            var parsed = FleetDeviceScanParser.ParseBarcode(payload);
+            if (string.IsNullOrWhiteSpace(parsed.PreferredValue) || parsed.PreferredLooksLikeMac)
+            {
+                ErrorMessage = T("DevicesScanPackagingNeedSerial");
+                return;
+            }
+
+            SerialNumber = parsed.PreferredValue;
+            if (!string.IsNullOrWhiteSpace(parsed.SuggestedModel))
+            {
+                var match = ModelSkuOptions.FirstOrDefault(o =>
+                    o.Equals(parsed.SuggestedModel, StringComparison.OrdinalIgnoreCase));
+                if (match is not null)
+                    ModelSku = match;
+            }
+
+            SyncResultText = Format(T("DevicesScanPackagingFilledFormat"), SerialNumber);
+        }
+        finally
+        {
+            IsBusy = false;
+            RaiseCanExecuteChanged(RegisterCommand, ScanPackagingCommand, SyncLastReadingCommand);
         }
     }
 

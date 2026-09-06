@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace RaphCare.Ops.Helpers;
+namespace RaphCare.Client.Models.Fleet;
 
 /// <summary>Parses packaging barcodes or Device Info OCR text into fleet stock-in fields.</summary>
 public static partial class FleetDeviceScanParser

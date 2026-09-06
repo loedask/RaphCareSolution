@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.Devices.Commands.AssignDeviceToPatient;
 using RaphCare.Application.Features.Devices.Commands.CreateDevice;
+using RaphCare.Application.Features.Devices.Commands.DeleteDevice;
+using RaphCare.Application.Features.Devices.Commands.UnassignDeviceFromPatient;
 using RaphCare.Application.Features.Devices.Commands.UpdateDevice;
 using RaphCare.Application.Features.Devices.DTOs;
 using RaphCare.Application.Features.Devices.Queries.GetDeviceById;
@@ -75,6 +77,28 @@ public class DevicesController(IMediator mediator) : ControllerBase
         command.DeviceId = id;
         var deviceId = await mediator.Send(command, cancellationToken);
         return Ok(new { id = deviceId });
+    }
+
+    [HttpPost("{id:guid}/unassign", Name = "UnassignDeviceFromPatient")]
+    [Authorize(Policy = "RequirePlatformAdmin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Unassign(Guid id, CancellationToken cancellationToken)
+    {
+        var deviceId = await mediator.Send(new UnassignDeviceFromPatientCommand { DeviceId = id }, cancellationToken);
+        return Ok(new { id = deviceId });
+    }
+
+    [HttpDelete("{id:guid}", Name = "DeleteDevice")]
+    [Authorize(Policy = "RequirePlatformAdmin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        await mediator.Send(new DeleteDeviceCommand { DeviceId = id }, cancellationToken);
+        return NoContent();
     }
 
     [HttpPut("{id:guid}", Name = "UpdateDevice")]

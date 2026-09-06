@@ -1,4 +1,4 @@
-using RaphCare.Ops.Helpers;
+using RaphCare.Client.Models.Fleet;
 using Xunit;
 
 namespace RaphCare.Ops.Tests.Helpers;

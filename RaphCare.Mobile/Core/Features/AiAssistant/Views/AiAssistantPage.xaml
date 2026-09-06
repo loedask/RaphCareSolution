@@ -4,54 +4,47 @@
              xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Common.Controls"
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.AiAssistant.ViewModels"
              xmlns:models="clr-namespace:RaphCare.Mobile.Core.Features.AiAssistant.Models"
-             xmlns:local="clr-namespace:RaphCare.Mobile.Core.Features.AiAssistant.Views"
              x:Class="RaphCare.Mobile.Core.Features.AiAssistant.Views.AiAssistantPage"
              x:DataType="vm:AiAssistantViewModel"
              Title="{Binding Title}"
              BackgroundColor="{StaticResource BackgroundColor}">
 
     <ContentPage.Resources>
-        <DataTemplate x:Key="UserMessageTemplate" x:DataType="models:AiAssistantChatMessage">
-            <Grid Padding="0,4" ColumnDefinitions="48,*">
-                <Border Grid.Column="1"
-                        Padding="14,12"
+        <!-- Single template: avoid DataTemplateSelector crashes on Android Shell push. -->
+        <DataTemplate x:Key="ChatMessageTemplate" x:DataType="models:AiAssistantChatMessage">
+            <Grid Padding="0,4">
+                <Border Padding="14,12"
                         HorizontalOptions="End"
                         MaximumWidthRequest="320"
                         Background="{StaticResource GradientTealBrush}"
-                        StrokeThickness="0">
+                        StrokeThickness="0"
+                        IsVisible="{Binding IsFromUser}">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16,16,4,16" />
                     </Border.StrokeShape>
                     <Label Text="{Binding Text}"
-                           Style="{StaticResource BodyMedium}"
+                           FontSize="14"
                            TextColor="{StaticResource PrimaryForegroundColor}"
                            LineBreakMode="WordWrap" />
                 </Border>
-            </Grid>
-        </DataTemplate>
 
-        <DataTemplate x:Key="AssistantMessageTemplate" x:DataType="models:AiAssistantChatMessage">
-            <Grid Padding="0,4" ColumnDefinitions="*,48">
-                <Border Grid.Column="0"
-                        Padding="14,12"
+                <Border Padding="14,12"
                         HorizontalOptions="Start"
                         MaximumWidthRequest="320"
-                        Style="{StaticResource CardBorder}"
-                        Margin="0">
+                        BackgroundColor="{StaticResource CardColor}"
+                        Stroke="{StaticResource BorderColor}"
+                        StrokeThickness="1"
+                        IsVisible="{Binding IsFromUser, Converter={StaticResource InvertedBoolConverter}}">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16,16,16,4" />
                     </Border.StrokeShape>
                     <Label Text="{Binding Text}"
-                           Style="{StaticResource BodyMedium}"
+                           FontSize="14"
                            TextColor="{StaticResource ForegroundColor}"
                            LineBreakMode="WordWrap" />
                 </Border>
             </Grid>
         </DataTemplate>
-
-        <local:AiAssistantMessageTemplateSelector x:Key="MessageTemplateSelector"
-                                                  UserTemplate="{StaticResource UserMessageTemplate}"
-                                                  AssistantTemplate="{StaticResource AssistantMessageTemplate}" />
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*,Auto" Padding="0">
@@ -62,7 +55,7 @@
                    Style="{StaticResource BodySmall}"
                    TextColor="{StaticResource MutedForegroundColor}" />
             <Label Text="{Binding ErrorMessage}"
-                   Style="{StaticResource BodyMedium}"
+                   FontSize="14"
                    TextColor="{StaticResource ErrorColor}"
                    IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
         </VerticalStackLayout>
@@ -70,7 +63,7 @@
         <CollectionView x:Name="MessagesList"
                         Grid.Row="1"
                         ItemsSource="{Binding Messages}"
-                        ItemTemplate="{StaticResource MessageTemplateSelector}"
+                        ItemTemplate="{StaticResource ChatMessageTemplate}"
                         Margin="16,0"
                         SelectionMode="None">
             <CollectionView.ItemsLayout>
@@ -95,9 +88,6 @@
                     StrokeThickness="1"
                     BackgroundColor="{StaticResource CardColor}"
                     Padding="12,10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="0" />
-                </Border.StrokeShape>
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" VerticalOptions="Center">
                     <Editor Grid.Column="0"
                             Text="{Binding DraftMessage}"
@@ -106,7 +96,9 @@
                             MaximumHeightRequest="120"
                             MinimumHeightRequest="44"
                             MaxLength="2000"
-                            Style="{StaticResource BodyMedium}"
+                            FontSize="14"
+                            TextColor="{StaticResource ForegroundColor}"
+                            PlaceholderColor="{StaticResource MutedForegroundColor}"
                             BackgroundColor="Transparent"
                             VerticalOptions="Center" />
                     <shared:GradientButton Grid.Column="1"

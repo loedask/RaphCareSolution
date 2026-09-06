@@ -55,6 +55,8 @@ public sealed class AbsoluteShellRouteRulesTests
     [InlineData("HealthRecordDetailPage")]
     [InlineData("NotificationsPage")]
     [InlineData("//NotificationsPage")]
+    [InlineData("AiAssistantPage")]
+    [InlineData("//AiAssistantPage")]
     public void PushOnlyRoutesMustNotUseAbsoluteShellPaths(string route) =>
         Assert.False(
             AbsoluteShellRouteRules.IsSafeAbsoluteTarget(route),

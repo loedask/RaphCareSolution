@@ -1314,7 +1314,28 @@ Accessible. Intelligent. Human.</value>
     <value>Claim your assigned watch first. Then put the bracelet nearby, tap Scan, and Connect only to that watch.</value>
   </data>
   <data name="DevicesClaimHint" xml:space="preserve">
-    <value>Enter the packaging serial after RaphCare or your clinic assigned the watch. Claim before you scan Bluetooth.</value>
+    <value>Type the packaging serial, or photograph the barcode or QR on the box, after RaphCare or your clinic assigned the watch. Claim before you scan Bluetooth.</value>
+  </data>
+  <data name="DevicesScanPackagingButton" xml:space="preserve">
+    <value>Photo of barcode</value>
+  </data>
+  <data name="DevicesScanPackagingCameraDenied" xml:space="preserve">
+    <value>Camera permission is needed to photograph the packaging barcode.</value>
+  </data>
+  <data name="DevicesScanPackagingUnsupported" xml:space="preserve">
+    <value>This phone cannot open the camera for packaging photos. Type the serial instead.</value>
+  </data>
+  <data name="DevicesScanPackagingFailed" xml:space="preserve">
+    <value>Could not take that photo. Try again, or type the serial.</value>
+  </data>
+  <data name="DevicesScanPackagingNoCode" xml:space="preserve">
+    <value>No barcode or QR found. Use a clearer shot of the packaging code, or type the serial.</value>
+  </data>
+  <data name="DevicesScanPackagingNeedSerial" xml:space="preserve">
+    <value>That photo looks like a Bluetooth address, not the packaging serial. Photograph the box barcode, or type the serial.</value>
+  </data>
+  <data name="DevicesScanPackagingFilledFormat" xml:space="preserve">
+    <value>Filled serial {0} from the photo. Check the model, then Claim watch.</value>
   </data>
   <data name="DevicesClaimBeforeConnect" xml:space="preserve">
     <value>Claim your assigned watch before scanning or connecting Bluetooth.</value>

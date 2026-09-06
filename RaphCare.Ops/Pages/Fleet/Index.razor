@@ -185,7 +185,7 @@
 
                 @if (_devices.Count == 0)
                 {
-                    <p class="text-muted">@AppResources.T("Fleet_EmptyStock")</p>
+                    <p class="text-muted">@(_unassignedOnly ? AppResources.T("Fleet_EmptyUnassignedOnly") : AppResources.T("Fleet_EmptyStock"))</p>
                 }
                 else
                 {
@@ -199,7 +199,7 @@
                                     <th>@AppResources.T("Fleet_MacLabel")</th>
                                     <th>@AppResources.T("Fleet_ActivatedLabel")</th>
                                     <th>Status</th>
-                                    <th>@AppResources.T("Fleet_AssignColumn")</th>
+                                    <th>@AppResources.T("Fleet_ActionsColumn")</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -228,13 +228,19 @@
                                             @(string.IsNullOrWhiteSpace(device.Status) ? (device.IsAssigned ? AppResources.T("Fleet_StatusAssigned") : AppResources.T("Fleet_StatusInStock")) : device.Status)
                                         </td>
                                         <td>
-                                            @if (device.IsAssigned)
-                                            {
-                                                <span class="text-muted">@AppResources.T("Fleet_AlreadyAssigned")</span>
-                                            }
-                                            else
-                                            {
-                                                <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                                            <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                                                @if (device.IsAssigned)
+                                                {
+                                                    <span class="text-muted">@AppResources.T("Fleet_AlreadyAssigned")</span>
+                                                    <button type="button"
+                                                            class="btn btn-secondary"
+                                                            disabled="@(_busyDeviceId == device.Id)"
+                                                            @onclick="() => RevokeAsync(device)">
+                                                        @(_busyDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_RevokeButton"))
+                                                    </button>
+                                                }
+                                                else
+                                                {
                                                     <SearchableSelect TValue="string"
                                                                       CssClass="fleet-assign-select"
                                                                       Placeholder="@AppResources.T("Fleet_SelectPatient")"
@@ -243,12 +249,18 @@
                                                                       Options="PatientSelectOptions(device.ClinicId)" />
                                                     <button type="button"
                                                             class="btn btn-secondary"
-                                                            disabled="@(_assigningDeviceId == device.Id || string.IsNullOrWhiteSpace(GetAssignPatient(device.Id)))"
+                                                            disabled="@(_busyDeviceId == device.Id || string.IsNullOrWhiteSpace(GetAssignPatient(device.Id)))"
                                                             @onclick="() => AssignAsync(device)">
-                                                        @(_assigningDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_AssignButton"))
+                                                        @(_busyDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_AssignButton"))
                                                     </button>
-                                                </div>
-                                            }
+                                                    <button type="button"
+                                                            class="btn btn-ghost"
+                                                            disabled="@(_busyDeviceId == device.Id)"
+                                                            @onclick="() => DeleteAsync(device)">
+                                                        @(_busyDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_DeleteButton"))
+                                                    </button>
+                                                }
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -308,8 +320,8 @@
     private string? _cameraMode;
     private bool _extracting;
     private bool _authRequired;
-    private bool _unassignedOnly = true;
-    private Guid? _assigningDeviceId;
+    private bool _unassignedOnly;
+    private Guid? _busyDeviceId;
     private string? _error;
     private string? _addError;
     private string? _addSuccess;
@@ -467,14 +479,60 @@
         if (!Guid.TryParse(GetAssignPatient(device.Id), out var patientId))
             return;
 
-        _assigningDeviceId = device.Id;
+        _busyDeviceId = device.Id;
         _error = null;
         var response = await FleetService.AssignDeviceToPatientAsync(device.Id, patientId);
-        _assigningDeviceId = null;
+        _busyDeviceId = null;
 
         if (!response.IsSuccess)
         {
             _error = response.ErrorMessage ?? AppResources.T("Fleet_CouldNotAssign");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        await ReloadListAsync();
+    }
+
+    private async Task RevokeAsync(FleetDeviceListItem device)
+    {
+        var confirmed = await Js.InvokeAsync<bool>(
+            "confirm",
+            AppResources.Format("Fleet_RevokeConfirmFormat", device.SerialNumber));
+        if (!confirmed)
+            return;
+
+        _busyDeviceId = device.Id;
+        _error = null;
+        var response = await FleetService.UnassignDeviceFromPatientAsync(device.Id);
+        _busyDeviceId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Fleet_CouldNotRevoke");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        await ReloadListAsync();
+    }
+
+    private async Task DeleteAsync(FleetDeviceListItem device)
+    {
+        var confirmed = await Js.InvokeAsync<bool>(
+            "confirm",
+            AppResources.Format("Fleet_DeleteConfirmFormat", device.SerialNumber));
+        if (!confirmed)
+            return;
+
+        _busyDeviceId = device.Id;
+        _error = null;
+        var response = await FleetService.DeleteDeviceAsync(device.Id);
+        _busyDeviceId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Fleet_CouldNotDelete");
             _authRequired = response.StatusCode is 401 or 403;
             return;
         }
