@@ -22,8 +22,12 @@ public static class DevicesBleSessionPolicy
 
     /// <summary>
     /// When true, Connect tries the Veepoo/HBand SDK before Plugin.BLE.
-    /// Keep off for patient builds: the vendor stack often shows a brief Android toast
-    /// ("This feature is not supported") when it probes BLE advertising, then we fall back to GATT anyway.
+    /// Keep off for patient Connect: the vendor stack often shows a brief Android toast
+    /// ("This feature is not supported") when it probes BLE advertising.
+    /// Live HR/SpO₂ use <c>MeasureLiveVitalsAsync</c> on the Watch readings page instead.
     /// </summary>
     public static bool TryVendorSdkOnConnect => false;
+
+    /// <summary>How long Measure waits for the first heart rate or oxygen sample.</summary>
+    public static TimeSpan LiveMeasureTimeout { get; } = TimeSpan.FromSeconds(45);
 }

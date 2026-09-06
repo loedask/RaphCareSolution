@@ -1391,6 +1391,66 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesConnectedRowButton" xml:space="preserve">
     <value>Connected</value>
   </data>
+  <data name="DevicesOpenReadingsButton" xml:space="preserve">
+    <value>Open watch readings</value>
+  </data>
+  <data name="DevicesReadingsLinkHint" xml:space="preserve">
+    <value>Measure heart rate and oxygen on a dedicated screen. More reading types will land there later.</value>
+  </data>
+  <data name="WatchReadingsPageTitle" xml:space="preserve">
+    <value>Watch readings</value>
+  </data>
+  <data name="WatchReadingsPageHint" xml:space="preserve">
+    <value>Connect your claimed watch on Devices first. Then measure here. On-watch Health Monitor alone does not send numbers to the phone.</value>
+  </data>
+  <data name="WatchReadingsHeartRateLabel" xml:space="preserve">
+    <value>Heart rate</value>
+  </data>
+  <data name="WatchReadingsSpo2Label" xml:space="preserve">
+    <value>Blood oxygen</value>
+  </data>
+  <data name="WatchReadingsMeasureButton" xml:space="preserve">
+    <value>Measure now</value>
+  </data>
+  <data name="WatchReadingsSyncButton" xml:space="preserve">
+    <value>Sync to clinic</value>
+  </data>
+  <data name="WatchReadingsComingSoonTitle" xml:space="preserve">
+    <value>Coming later</value>
+  </data>
+  <data name="WatchReadingsComingSoonBody" xml:space="preserve">
+    <value>Blood pressure, stress, temperature, and other watch monitors will show here when RaphCare can read them from your band.</value>
+  </data>
+  <data name="WatchReadingsNotConnectedHint" xml:space="preserve">
+    <value>No watch linked. Go back to Devices, Scan, and Connect your claimed band.</value>
+  </data>
+  <data name="WatchReadingsReadyToMeasureHint" xml:space="preserve">
+    <value>Ready. On the watch, open Heart Rate and tap to test if needed, then Measure now.</value>
+  </data>
+  <data name="WatchReadingsMeasuringHint" xml:space="preserve">
+    <value>Measuring. Keep the watch on your wrist and nearby.</value>
+  </data>
+  <data name="WatchReadingsUpdatedHint" xml:space="preserve">
+    <value>Reading updated.</value>
+  </data>
+  <data name="WatchReadingsMeasureFailedHint" xml:space="preserve">
+    <value>No reading yet. Try Heart Rate on the watch, then Measure again.</value>
+  </data>
+  <data name="WatchReadingsVendorUnavailable" xml:space="preserve">
+    <value>Live measure is not available on this phone build.</value>
+  </data>
+  <data name="WatchReadingsValueEmpty" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="WatchReadingsSyncNoVitals" xml:space="preserve">
+    <value>Measure a heart rate or oxygen reading first, then sync.</value>
+  </data>
+  <data name="WatchReadingsSyncOk" xml:space="preserve">
+    <value>Synced.</value>
+  </data>
+  <data name="WatchReadingsSyncOkFormat" xml:space="preserve">
+    <value>Synced heart rate {0}, oxygen {1}.</value>
+  </data>
   <data name="DevicesUnnamedPeripheral" xml:space="preserve">
     <value>Unknown device</value>
   </data>

@@ -27,6 +27,13 @@ public sealed class DevicesBleSessionPolicyTests
     {
         // Regression: HBand/Inuker connect probed advertising and briefly toasted
         // "This feature is not supported" before GATT fallback still showed Connected.
+        // Live vitals use MeasureLiveVitalsAsync on Watch readings instead.
         Assert.False(DevicesBleSessionPolicy.TryVendorSdkOnConnect);
+    }
+
+    [Fact]
+    public void LiveMeasureTimeoutIsLongEnoughForWatchTapToTest()
+    {
+        Assert.True(DevicesBleSessionPolicy.LiveMeasureTimeout >= TimeSpan.FromSeconds(30));
     }
 }

@@ -159,7 +159,7 @@ Design lock and screen map: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobi
 | Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
-| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial (type or photo of packaging barcode/QR) before BLE; Connect matches locked Bluetooth MAC (first pair learns MAC); leaving Devices stops scan but keeps the GATT link; offline outbox retries |
+| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; Watch readings page Measure uses vendor live HR/SpO₂; offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |

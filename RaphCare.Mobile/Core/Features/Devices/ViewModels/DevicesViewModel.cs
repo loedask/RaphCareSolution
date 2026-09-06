@@ -54,6 +54,8 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         ClaimSectionTitle = T("DevicesClaimSectionTitle");
         ReadingsEmptyHint = T("DevicesReadingsEmptyHint");
         VitalsWaitingHint = T("DevicesVitalsWaitingHint");
+        OpenReadingsButtonText = T("DevicesOpenReadingsButton");
+        ReadingsLinkHint = T("DevicesReadingsLinkHint");
         BleUnsupportedMessage = T("DevicesBleUnsupported");
         DevicesConnectLabel = T("DevicesConnectButton");
         DevicesConnectedRowLabel = T("DevicesConnectedRowButton");
@@ -77,6 +79,8 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         ScanPackagingCommand = new Command(async () => await ScanPackagingAsync().ConfigureAwait(false), () => !IsBusy);
         SyncLastReadingCommand = new Command(async () => await SyncLastReadingAsync().ConfigureAwait(false), () => !IsBusy);
         BackCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
+        OpenReadingsCommand = new Command(async () =>
+            await AppNavigator.GoToFeatureAsync(AppNavigator.WatchReadings, T("WatchReadingsPageTitle")));
         ToggleShowAllCommand = new Command(() =>
         {
             ShowAllDevices = !ShowAllDevices;
@@ -104,6 +108,8 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     public string ClaimSectionTitle { get; }
     public string ReadingsEmptyHint { get; }
     public string VitalsWaitingHint { get; }
+    public string OpenReadingsButtonText { get; }
+    public string ReadingsLinkHint { get; }
     public string BleUnsupportedMessage { get; }
     public string DevicesConnectLabel { get; }
     public string DevicesConnectedRowLabel { get; }
@@ -266,6 +272,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     public ICommand ScanPackagingCommand { get; }
     public ICommand SyncLastReadingCommand { get; }
     public ICommand BackCommand { get; }
+    public ICommand OpenReadingsCommand { get; }
     public ICommand ToggleShowAllCommand { get; }
 
     public void DetachBleHandlers()

@@ -26,6 +26,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
 
     private Guid? _connectedId;
     private bool _usingHbandSession;
+    private WearableVitalsSnapshot? _lastVitals;
 
     public WearableBleCoordinator(IHBandWearableBridge hband)
     {
@@ -47,6 +48,10 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     public bool IsScanning => _adapter.IsScanning;
 
     public Guid? ConnectedDeviceId => _connectedId;
+
+    public bool IsVendorMeasureAvailable => _hband.IsAvailable;
+
+    public WearableVitalsSnapshot? LastVitals => _lastVitals;
 
     public IReadOnlyList<WearableDeviceDisplayItem> DiscoveredDevices =>
         _devices.Values
@@ -298,11 +303,147 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             }
 
             _connectedId = null;
+            _lastVitals = null;
         }
         finally
         {
             _connectGate.Release();
         }
+    }
+
+    public async Task<WearableVitalsSnapshot?> MeasureLiveVitalsAsync(CancellationToken cancellationToken = default)
+    {
+        if (!_hband.IsAvailable)
+        {
+            ErrorOccurred?.Invoke(this, "Live measure needs the watch SDK on this phone build.");
+            return null;
+        }
+
+        if (_connectedId is not Guid deviceId || !_devices.TryGetValue(deviceId, out var device))
+        {
+            ErrorOccurred?.Invoke(this, "Connect your claimed watch first, then tap Measure.");
+            return null;
+        }
+
+        var mac = _macById.GetValueOrDefault(deviceId) ?? TryReadMacAddress(device);
+        if (string.IsNullOrWhiteSpace(mac))
+        {
+            ErrorOccurred?.Invoke(this, "Bluetooth address missing. Scan again, then Connect.");
+            return null;
+        }
+
+        await _connectGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await StopScanAsync().ConfigureAwait(false);
+            await CleanupNotificationsAsync().ConfigureAwait(false);
+
+            // Vendor SDK needs the radio; drop Plugin.BLE GATT if we own it.
+            if (!_usingHbandSession)
+            {
+                try
+                {
+                    await _adapter.DisconnectDeviceAsync(device).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // already disconnected
+                }
+            }
+            else
+            {
+                try
+                {
+                    await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // ignore
+                }
+
+                _usingHbandSession = false;
+            }
+
+            await _hband.ConnectAndHandshakeAsync(
+                    mac,
+                    device.Name,
+                    HBandSdkInfo.DefaultDevicePasswordPlaceholder,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            _connectedId = deviceId;
+            _usingHbandSession = true;
+
+            var tcs = new TaskCompletionSource<WearableVitalsSnapshot>(TaskCreationOptions.RunContinuationsAsynchronously);
+            void OnMeasureSample(object? sender, WearableVitalsSnapshot snap)
+            {
+                if (!snap.HeartRateBpm.HasValue && !snap.SpO2Percent.HasValue)
+                    return;
+                MergeLastVitals(snap);
+                tcs.TrySetResult(snap);
+            }
+
+            VitalsUpdated += OnMeasureSample;
+            try
+            {
+                await _hband.StartLiveHeartRateAsync(cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    await _hband.StartLiveSpo2Async(cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception spo2Ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"SpO₂ start: {spo2Ex.Message}");
+                }
+
+                using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                timeoutCts.CancelAfter(DevicesBleSessionPolicy.LiveMeasureTimeout);
+                try
+                {
+                    using var reg = timeoutCts.Token.Register(() => tcs.TrySetCanceled(timeoutCts.Token));
+                    var sample = await tcs.Task.ConfigureAwait(false);
+                    return _lastVitals ?? sample;
+                }
+                catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                {
+                    ErrorOccurred?.Invoke(
+                        this,
+                        "No heart rate yet. On the watch, open Heart Rate and tap to test, then Measure again.");
+                    return _lastVitals;
+                }
+            }
+            finally
+            {
+                VitalsUpdated -= OnMeasureSample;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            ErrorOccurred?.Invoke(this, ex.Message);
+            _usingHbandSession = false;
+            return null;
+        }
+        finally
+        {
+            _connectGate.Release();
+        }
+    }
+
+    private void MergeLastVitals(WearableVitalsSnapshot incoming)
+    {
+        var prev = _lastVitals;
+        _lastVitals = new WearableVitalsSnapshot
+        {
+            At = incoming.At,
+            HeartRateBpm = incoming.HeartRateBpm ?? prev?.HeartRateBpm,
+            SpO2Percent = incoming.SpO2Percent ?? prev?.SpO2Percent,
+            SpO2PulseBpm = incoming.SpO2PulseBpm ?? prev?.SpO2PulseBpm,
+            CharacteristicUuid = incoming.CharacteristicUuid,
+            RawHex = incoming.RawHex,
+        };
     }
 
     private void OnDeviceDiscovered(object? sender, BleDeviceEventArgs e)
@@ -314,8 +455,11 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         MainThread.BeginInvokeOnMainThread(() => DiscoveredDevicesChanged?.Invoke(this, EventArgs.Empty));
     }
 
-    private void OnHbandVitalsUpdated(object? sender, WearableVitalsSnapshot e) =>
+    private void OnHbandVitalsUpdated(object? sender, WearableVitalsSnapshot e)
+    {
+        MergeLastVitals(e);
         MainThread.BeginInvokeOnMainThread(() => VitalsUpdated?.Invoke(this, e));
+    }
 
     private void OnHbandError(object? sender, string? message) =>
         MainThread.BeginInvokeOnMainThread(() => ErrorOccurred?.Invoke(this, message));
@@ -380,6 +524,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         if (!hr.HasValue && !spo2.HasValue)
             return;
 
+        MergeLastVitals(snap);
         MainThread.BeginInvokeOnMainThread(() => VitalsUpdated?.Invoke(this, snap));
     }
 

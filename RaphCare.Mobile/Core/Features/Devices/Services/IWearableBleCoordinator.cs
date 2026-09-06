@@ -3,12 +3,19 @@ using RaphCare.Mobile.Core.Features.Devices.Models;
 
 namespace RaphCare.Mobile.Core.Features.Devices.Services;
 
-/// <summary>Scan, connect, and subscribe to E580/E585-class BLE wearables (Plugin.BLE).</summary>
+/// <summary>Scan, connect, and subscribe to E580/E585-class BLE wearables (Plugin.BLE + optional HBand measure).</summary>
 public interface IWearableBleCoordinator
 {
     bool IsBleSupported { get; }
     bool IsScanning { get; }
     Guid? ConnectedDeviceId { get; }
+
+    /// <summary>True when the vendor HBand bridge is present (Android AARs).</summary>
+    bool IsVendorMeasureAvailable { get; }
+
+    /// <summary>Last merged vitals from GATT notify or a live Measure.</summary>
+    WearableVitalsSnapshot? LastVitals { get; }
+
     IReadOnlyList<WearableDeviceDisplayItem> DiscoveredDevices { get; }
 
     event EventHandler? DiscoveredDevicesChanged;
@@ -22,4 +29,10 @@ public interface IWearableBleCoordinator
     Task StopScanAsync();
     Task ConnectAsync(Guid deviceId, CancellationToken cancellationToken = default);
     Task DisconnectAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Runs a vendor live measure (heart rate, then SpO₂ when available).
+    /// E580/E585 on-watch Health Monitor does not push SIG GATT vitals; this is the phone path that can read them.
+    /// </summary>
+    Task<WearableVitalsSnapshot?> MeasureLiveVitalsAsync(CancellationToken cancellationToken = default);
 }

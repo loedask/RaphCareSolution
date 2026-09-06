@@ -96,7 +96,7 @@ public sealed class DevicesPageResourceTests
 
         Assert.Contains("Text=\"{Binding ActionLabel}\"", pageXml, StringComparison.Ordinal);
         Assert.Contains("IsEnabled=\"{Binding CanConnect}\"", pageXml, StringComparison.Ordinal);
-        Assert.Contains("IsVisible=\"{Binding ShowVitalsWaiting}\"", pageXml, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding OpenReadingsCommand}\"", pageXml, StringComparison.Ordinal);
     }
 
     private static string FindRepoFile(string relativePath)

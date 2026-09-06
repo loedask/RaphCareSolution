@@ -190,41 +190,28 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <!-- Last reading -->
+                <!-- Readings entry -->
                 <Border Style="{StaticResource CardPremium}" Margin="0" Padding="18">
-                    <VerticalStackLayout Spacing="8">
+                    <VerticalStackLayout Spacing="12">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <Border Grid.Column="0" Style="{StaticResource AppIconWellAccent}">
                                 <Image Source="icon_heart_on_accent.png"
                                        Style="{StaticResource AppIconImage}" />
                             </Border>
-                            <Label Grid.Column="1"
-                                   Text="{Binding LastReadingLabel}"
-                                   Style="{StaticResource SectionTitle}"
-                                   VerticalOptions="Center"
-                                   Margin="0" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{Binding LastReadingLabel}"
+                                       Style="{StaticResource SectionTitle}"
+                                       Margin="0" />
+                                <Label Text="{Binding ReadingsLinkHint}"
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{StaticResource MutedForegroundColor}"
+                                       Margin="0" />
+                            </VerticalStackLayout>
                         </Grid>
-                        <Label Text="{Binding VitalsHeartLine}"
-                               FontFamily="SpaceGrotesk"
-                               FontSize="20"
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource ForegroundColor}"
-                               IsVisible="{Binding VitalsHeartLine, Converter={StaticResource StringNotEmptyConverter}}" />
-                        <Label Text="{Binding VitalsSpo2Line}"
-                               Style="{StaticResource BodyMedium}"
-                               IsVisible="{Binding VitalsSpo2Line, Converter={StaticResource StringNotEmptyConverter}}" />
-                        <Label Text="{Binding VitalsRawLine}"
-                               Style="{StaticResource BodySmall}"
-                               TextColor="{StaticResource MutedForegroundColor}"
-                               IsVisible="{Binding VitalsRawLine, Converter={StaticResource StringNotEmptyConverter}}" />
-                        <Label Text="{Binding ReadingsEmptyHint}"
-                               Style="{StaticResource BodySmall}"
-                               TextColor="{StaticResource MutedForegroundColor}"
-                               IsVisible="{Binding ShowReadingsEmpty}" />
-                        <Label Text="{Binding VitalsWaitingHint}"
-                               Style="{StaticResource BodySmall}"
-                               TextColor="{StaticResource MutedForegroundColor}"
-                               IsVisible="{Binding ShowVitalsWaiting}" />
+                        <shared:GradientButton Text="{Binding OpenReadingsButtonText}"
+                                               Command="{Binding OpenReadingsCommand}"
+                                               HorizontalOptions="Fill"
+                                               Padding="12,14" />
                     </VerticalStackLayout>
                 </Border>
 
