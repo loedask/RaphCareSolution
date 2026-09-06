@@ -7,12 +7,23 @@
     <Label x:Name="LabelTitle" Text="{Binding LabelText, Source={x:Reference RootLayout}}"
            IsVisible="{Binding LabelText, Source={x:Reference RootLayout}, Converter={StaticResource StringNotEmptyConverter}}"
            Style="{StaticResource BodyMedium}" />
-    <Grid ColumnDefinitions="*,Auto"
-          Margin="0,0,0,12">
+    <Border Stroke="{StaticResource BorderColor}"
+            StrokeThickness="1"
+            BackgroundColor="{StaticResource SecondaryColor}"
+            Padding="14,2"
+            Margin="0,0,0,14">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="16" />
+        </Border.StrokeShape>
+        <Border.Shadow>
+            <Shadow Brush="Black" Opacity="0.04" Radius="8" Offset="0,2" />
+        </Border.Shadow>
+        <Grid ColumnDefinitions="*,Auto">
         <Entry x:Name="InputEntry"
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Margin="0"
+               BackgroundColor="Transparent"
                Placeholder="{Binding Placeholder, Source={x:Reference RootLayout}}"
                Text="{Binding Text, Source={x:Reference RootLayout}, Mode=TwoWay}"
                Keyboard="{Binding Keyboard, Source={x:Reference RootLayout}}"
@@ -27,7 +38,8 @@
                 HorizontalOptions="End"
                 IsVisible="False"
                 Clicked="OnPasswordVisibilityClicked" />
-    </Grid>
+        </Grid>
+    </Border>
     <Label x:Name="LabelError" Text="{Binding ErrorText, Source={x:Reference RootLayout}}"
            IsVisible="{Binding ErrorText, Source={x:Reference RootLayout}, Converter={StaticResource StringNotEmptyConverter}}"
            TextColor="{StaticResource ErrorColor}"

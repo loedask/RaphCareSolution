@@ -1,57 +1,58 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-
-    <!-- Gradient background for auth screens -->
-    <LinearGradientBrush x:Key="AuthBackgroundGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#512BD4" Offset="0" />
-        <GradientStop Color="#7B2CBF" Offset="0.5" />
-        <GradientStop Color="#240046" Offset="1" />
+    <!--
+      Legacy auth dictionary kept in sync with Premium soft brand tokens.
+      App.xaml loads Colors/Typography/Buttons/Inputs/Cards; prefer those keys.
+      Do not reintroduce purple/template defaults here.
+    -->
+    <LinearGradientBrush x:Key="AuthStylesBackgroundGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#0F1728" Offset="0" />
+        <GradientStop Color="#1F2E48" Offset="0.48" />
+        <GradientStop Color="#1B9BBB" Offset="1" />
     </LinearGradientBrush>
 
-    <!-- Primary button style -->
-    <Style TargetType="Button" x:Key="AuthPrimaryButton">
-        <Setter Property="BackgroundColor" Value="#512BD4" />
-        <Setter Property="TextColor" Value="White" />
+    <Style TargetType="Button" x:Key="AuthStylesPrimaryButton">
+        <Setter Property="BackgroundColor" Value="#FFFFFF" />
+        <Setter Property="TextColor" Value="#0F1728" />
+        <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Padding" Value="24,14" />
-        <Setter Property="MinimumHeightRequest" Value="48" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="24,16" />
+        <Setter Property="MinimumHeightRequest" Value="52" />
     </Style>
 
-    <!-- Secondary / outline button -->
-    <Style TargetType="Button" x:Key="AuthSecondaryButton" BasedOn="{StaticResource AuthPrimaryButton}">
+    <Style TargetType="Button" x:Key="AuthStylesSecondaryButton" BasedOn="{StaticResource AuthStylesPrimaryButton}">
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="TextColor" Value="White" />
-        <Setter Property="BorderColor" Value="White" />
-        <Setter Property="BorderWidth" Value="2" />
+        <Setter Property="TextColor" Value="#8AE8E4" />
+        <Setter Property="BorderColor" Value="#8AE8E4" />
+        <Setter Property="BorderWidth" Value="1.5" />
     </Style>
 
-    <!-- Auth label (title) -->
-    <Style TargetType="Label" x:Key="AuthTitleLabel">
+    <Style TargetType="Label" x:Key="AuthStylesTitleLabel">
+        <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="TextColor" Value="White" />
-        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontSize" Value="30" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="HorizontalOptions" Value="Center" />
-        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="Margin" Value="0,0,0,10" />
     </Style>
 
-    <Style TargetType="Label" x:Key="AuthSubtitleLabel">
-        <Setter Property="TextColor" Value="#E0D0F0" />
-        <Setter Property="FontSize" Value="14" />
+    <Style TargetType="Label" x:Key="AuthStylesSubtitleLabel">
+        <Setter Property="TextColor" Value="#8AE8E4" />
+        <Setter Property="FontSize" Value="15" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
-        <Setter Property="Margin" Value="24,0,24,24" />
+        <Setter Property="Margin" Value="28,0,28,28" />
     </Style>
 
-    <!-- Entry styling for auth forms -->
-    <Style TargetType="Entry" x:Key="AuthEntry">
+    <Style TargetType="Entry" x:Key="AuthStylesEntry">
         <Setter Property="BackgroundColor" Value="#FFFFFF" />
-        <Setter Property="TextColor" Value="#1a1a1a" />
-        <Setter Property="PlaceholderColor" Value="#888" />
-        <Setter Property="FontSize" Value="16" />
-        <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="Margin" Value="0,0,0,12" />
+        <Setter Property="TextColor" Value="#121A2A" />
+        <Setter Property="PlaceholderColor" Value="#6B7789" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="Margin" Value="0,0,0,14" />
     </Style>
 </ResourceDictionary>

@@ -7,10 +7,13 @@
         FontFamily="SpaceGrotesk"
         FontSize="16"
         FontAttributes="Bold"
-        CornerRadius="12"
-        Padding="24,14"
-        MinimumHeightRequest="48"
+        CornerRadius="16"
+        Padding="24,16"
+        MinimumHeightRequest="52"
         Opacity="1">
+    <Button.Shadow>
+        <Shadow Brush="#1B9BBB" Opacity="0.28" Radius="16" Offset="0,6" />
+    </Button.Shadow>
     <Button.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
             <GradientStop Color="{StaticResource TealColor}" Offset="0" />

@@ -10,38 +10,41 @@
 
     <Grid>
         <ScrollView>
-            <VerticalStackLayout Padding="24,56,24,32" Spacing="0">
-                <Grid HeightRequest="8" />
+            <VerticalStackLayout Padding="28,64,28,40" Spacing="0">
+                <Grid HeightRequest="12" />
 
                 <!-- Branding: replace Resources/Images/raphcare_logo.png with your production asset (same key). -->
                 <Border BackgroundColor="{StaticResource CardColor}"
-                        Stroke="{StaticResource BorderColor}"
-                        StrokeThickness="1"
-                        Padding="16,18"
-                        Margin="0,0,0,28"
+                        StrokeThickness="0"
+                        Padding="20,22"
+                        Margin="0,0,0,32"
                         HorizontalOptions="Center"
                         MaximumWidthRequest="300">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="16" />
+                        <RoundRectangle CornerRadius="24" />
                     </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.18" Radius="24" Offset="0,10" />
+                    </Border.Shadow>
                     <Image Source="raphcare_logo.png"
                            Aspect="AspectFit"
-                           HeightRequest="104"
+                           HeightRequest="112"
                            SemanticProperties.Description="RaphCare logo" />
                 </Border>
 
                 <Label Text="{Binding WelcomeTagline}"
+                       FontFamily="SpaceGrotesk"
                        TextColor="{StaticResource TealGlowColor}"
-                       Opacity="0.85"
-                       FontSize="18"
-                       LineHeight="1.35"
+                       Opacity="0.92"
+                       FontSize="20"
+                       LineHeight="1.4"
                        HorizontalTextAlignment="Center"
-                       Margin="8,0,8,36" />
+                       Margin="12,0,12,40" />
 
                 <Button Text="{Binding SignInText}"
                         Style="{StaticResource AuthPrimaryButton}"
                         Command="{Binding SignInCommand}"
-                        Margin="0,0,0,12" />
+                        Margin="0,0,0,14" />
 
                 <Button Text="{Binding CreateAccountText}"
                         Style="{StaticResource AuthSecondaryButton}"
@@ -50,24 +53,27 @@
                 <Label Text="{Binding FooterTagline}"
                        Style="{StaticResource Micro}"
                        TextColor="{StaticResource TealGlowColor}"
-                       Opacity="0.55"
-                       FontSize="11"
+                       Opacity="0.6"
+                       FontSize="12"
                        HorizontalTextAlignment="Center"
-                       Margin="0,36,0,0" />
+                       Margin="0,40,0,0" />
             </VerticalStackLayout>
         </ScrollView>
 
         <!-- Language chip (concept: globe + language name) -->
-        <Border Padding="12,8"
+        <Border Padding="14,10"
                 StrokeThickness="1"
-                Stroke="#33FFFFFF"
-                BackgroundColor="#19FFFFFF"
+                Stroke="#40FFFFFF"
+                BackgroundColor="#22FFFFFF"
                 HorizontalOptions="End"
                 VerticalOptions="Start"
-                Margin="0,28,16,0">
+                Margin="0,32,20,0">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="20" />
+                <RoundRectangle CornerRadius="22" />
             </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.12" Radius="10" Offset="0,4" />
+            </Border.Shadow>
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding OpenLanguageSheetCommand}" />
             </Border.GestureRecognizers>
@@ -97,27 +103,30 @@
                 </BoxView>
                 <Border Grid.Row="1"
                         BackgroundColor="{StaticResource CardColor}"
-                        Padding="20,16,20,32">
+                        Padding="24,20,24,36">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="24,24,0,0" />
+                        <RoundRectangle CornerRadius="28,28,0,0" />
                     </Border.StrokeShape>
-                <VerticalStackLayout Spacing="16">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.12" Radius="20" Offset="0,-4" />
+                    </Border.Shadow>
+                <VerticalStackLayout Spacing="18">
                     <Label Text="{Binding ChooseLanguageTitle}"
                            FontFamily="SpaceGrotesk"
-                           FontSize="18"
+                           FontSize="20"
                            FontAttributes="Bold"
                            HorizontalTextAlignment="Center"
                            TextColor="{StaticResource ForegroundColor}" />
-                    <VerticalStackLayout Spacing="8"
+                    <VerticalStackLayout Spacing="10"
                                          BindableLayout.ItemsSource="{Binding Languages}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:LanguageOption">
-                                <Border Padding="14,12"
+                                <Border Padding="16,14"
                                         BackgroundColor="{Binding IsCurrent, Converter={StaticResource LanguageRowHighlightConverter}}"
                                         StrokeThickness="1"
                                         Stroke="{StaticResource BorderColor}">
                                     <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="14" />
+                                        <RoundRectangle CornerRadius="16" />
                                     </Border.StrokeShape>
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer

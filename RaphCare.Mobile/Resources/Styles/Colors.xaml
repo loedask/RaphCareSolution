@@ -1,95 +1,92 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <!-- From prototype src/index.css :root (light). HSL to hex (sRGB), same components as CSS hsl(). -->
-    <!-- background 210 20% 98% / foreground 220 40% 13% -->
-    <Color x:Key="BackgroundColor">#F9FAFB</Color>
-    <Color x:Key="ForegroundColor">#141D2E</Color>
+    <!-- Premium soft identity (MAUI): calm wash, teal/navy brand. Intentionally beyond the React concept. -->
+    <Color x:Key="BackgroundColor">#F3F6F9</Color>
+    <Color x:Key="ForegroundColor">#121A2A</Color>
 
-    <!-- primary 192 75% 42% / primary-foreground -->
+    <!-- primary / primary-foreground -->
     <Color x:Key="PrimaryColor">#1B9BBB</Color>
     <Color x:Key="PrimaryForegroundColor">#FFFFFF</Color>
-    <Color x:Key="PrimaryDarkColor">#16819C</Color>
-    <Color x:Key="PrimaryLightColor">#41C8C8</Color>
+    <Color x:Key="PrimaryDarkColor">#157F97</Color>
+    <Color x:Key="PrimaryLightColor">#4AD0D0</Color>
 
-    <!-- secondary 210 30% 96% / secondary-foreground 220 30% 20% -->
-    <Color x:Key="SecondaryColor">#F2F5F8</Color>
-    <Color x:Key="SecondaryForegroundColor">#242E42</Color>
+    <!-- secondary -->
+    <Color x:Key="SecondaryColor">#EEF3F7</Color>
+    <Color x:Key="SecondaryForegroundColor">#1E2A3E</Color>
 
-    <!-- card / popover 0 0% 100%, foreground matches text -->
+    <!-- card / popover / surface -->
     <Color x:Key="CardColor">#FFFFFF</Color>
-    <Color x:Key="CardForegroundColor">#141D2E</Color>
+    <Color x:Key="CardForegroundColor">#121A2A</Color>
     <Color x:Key="SurfaceColor">#FFFFFF</Color>
     <Color x:Key="PopoverColor">#FFFFFF</Color>
-    <Color x:Key="PopoverForegroundColor">#141D2E</Color>
+    <Color x:Key="PopoverForegroundColor">#121A2A</Color>
 
-    <!-- muted 210 15% 94% / muted-foreground 215 12% 52% -->
-    <Color x:Key="MutedColor">#EDF0F2</Color>
-    <Color x:Key="MutedForegroundColor">#768293</Color>
+    <!-- muted -->
+    <Color x:Key="MutedColor">#E8EEF2</Color>
+    <Color x:Key="MutedForegroundColor">#6B7789</Color>
 
-    <!-- accent 168 55% 46% -->
-    <Color x:Key="AccentColor">#35B69C</Color>
+    <!-- accent -->
+    <Color x:Key="AccentColor">#2FB39A</Color>
     <Color x:Key="AccentForegroundColor">#FFFFFF</Color>
 
-    <!-- destructive 0 68% 56% -->
+    <!-- destructive -->
     <Color x:Key="DestructiveColor">#DB4343</Color>
     <Color x:Key="DestructiveForegroundColor">#FFFFFF</Color>
     <Color x:Key="ErrorColor">#DB4343</Color>
 
-    <!-- border / input 210 18% 92%; ring = primary -->
-    <Color x:Key="BorderColor">#E7EBEE</Color>
-    <Color x:Key="InputColor">#E7EBEE</Color>
+    <!-- border / input / ring -->
+    <Color x:Key="BorderColor">#E2E8EE</Color>
+    <Color x:Key="InputColor">#E8EEF2</Color>
     <Color x:Key="RingColor">#1B9BBB</Color>
 
-    <!-- RaphCare premium: navy and teal (matches index.css navy / teal tokens) -->
-    <Color x:Key="NavyColor">#121C30</Color>
-    <Color x:Key="NavyLightColor">#23324D</Color>
+    <!-- RaphCare navy and teal -->
+    <Color x:Key="NavyColor">#0F1728</Color>
+    <Color x:Key="NavyLightColor">#1F2E48</Color>
     <Color x:Key="TealColor">#1B9BBB</Color>
-    <Color x:Key="TealLightColor">#41C8C8</Color>
-    <Color x:Key="TealGlowColor">#78E2DF</Color>
+    <Color x:Key="TealLightColor">#4AD0D0</Color>
+    <Color x:Key="TealGlowColor">#8AE8E4</Color>
 
-    <!-- Text (align with foreground / muted scale) -->
-    <Color x:Key="TextPrimaryColor">#141D2E</Color>
-    <Color x:Key="TextSecondaryColor">#768293</Color>
-    <Color x:Key="TextMutedColor">#929CAA</Color>
+    <!-- Text -->
+    <Color x:Key="TextPrimaryColor">#121A2A</Color>
+    <Color x:Key="TextSecondaryColor">#6B7789</Color>
+    <Color x:Key="TextMutedColor">#8A95A6</Color>
 
-    <!-- Semantic: success + health status (health-normal, health-attention, health-critical) -->
+    <!-- Semantic health status -->
     <Color x:Key="SuccessColor">#37BE7F</Color>
     <Color x:Key="WarningColor">#F6A823</Color>
     <Color x:Key="HealthNormalColor">#37BE7F</Color>
     <Color x:Key="HealthAttentionColor">#F6A823</Color>
     <Color x:Key="HealthCriticalColor">#DB4343</Color>
 
-    <!-- calm / calm-accent / calm-soft from concept :root (mental health + notification badge wash) -->
-    <Color x:Key="CalmColor">#F2F4F7</Color>
+    <!-- calm (mental health + notification wash) -->
+    <Color x:Key="CalmColor">#F0F3F7</Color>
     <Color x:Key="CalmAccentColor">#7B6EB9</Color>
-    <Color x:Key="CalmSoftColor">#ECE9F2</Color>
+    <Color x:Key="CalmSoftColor">#EBE7F3</Color>
 
-    <!-- Soft teal wash used behind line icons (Home metrics, Profile rows, Settings). -->
-    <Color x:Key="IconWellSoftStartColor">#D7F4F1</Color>
-    <Color x:Key="IconWellSoftEndColor">#C5EDE4</Color>
+    <!-- Soft washes behind line icons -->
+    <Color x:Key="IconWellSoftStartColor">#D5F5F1</Color>
+    <Color x:Key="IconWellSoftEndColor">#C0EBE3</Color>
     <Color x:Key="IconWellRoseColor">#FFE4E8</Color>
     <Color x:Key="IconWellSkyColor">#E3EEFF</Color>
     <Color x:Key="IconWellMintColor">#DDF7EC</Color>
     <Color x:Key="IconWellVioletColor">#EDE8F8</Color>
     <Color x:Key="IconWellAmberColor">#FFF3D6</Color>
 
-
-    <!-- Sidebar (light :root) — for future Shell / flyout parity -->
-    <Color x:Key="SidebarBackgroundColor">#FAFAFA</Color>
+    <!-- Sidebar (future Shell / flyout) -->
+    <Color x:Key="SidebarBackgroundColor">#F7F8FA</Color>
     <Color x:Key="SidebarForegroundColor">#3F3F46</Color>
     <Color x:Key="SidebarPrimaryColor">#18181B</Color>
     <Color x:Key="SidebarPrimaryForegroundColor">#FAFAFA</Color>
     <Color x:Key="SidebarAccentColor">#F4F4F5</Color>
     <Color x:Key="SidebarAccentForegroundColor">#18181B</Color>
     <Color x:Key="SidebarBorderColor">#E5E7EB</Color>
-    <Color x:Key="SidebarRingColor">#3B82F6</Color>
+    <Color x:Key="SidebarRingColor">#1B9BBB</Color>
 
-    <!-- gradient-brand: navy, navy-light, teal (see .gradient-brand in index.css) -->
-    <Color x:Key="GradientStartColor">#121C30</Color>
-    <Color x:Key="GradientMidColor">#23324D</Color>
+    <!-- Brand gradients -->
+    <Color x:Key="GradientStartColor">#0F1728</Color>
+    <Color x:Key="GradientMidColor">#1F2E48</Color>
     <Color x:Key="GradientEndColor">#1B9BBB</Color>
-    <!-- gradient-card: white → background -->
     <Color x:Key="GradientCardStartColor">#FFFFFF</Color>
-    <Color x:Key="GradientCardEndColor">#F9FAFB</Color>
+    <Color x:Key="GradientCardEndColor">#F3F6F9</Color>
 </ResourceDictionary>

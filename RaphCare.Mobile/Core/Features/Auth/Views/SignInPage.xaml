@@ -11,8 +11,8 @@
 
     <Grid>
         <ScrollView>
-            <VerticalStackLayout Padding="24,48,24,24" Spacing="0">
-                <HorizontalStackLayout Margin="0,0,0,24" HorizontalOptions="Start">
+            <VerticalStackLayout Padding="28,52,28,32" Spacing="0">
+                <HorizontalStackLayout Margin="0,0,0,28" HorizontalOptions="Start">
                     <Button Style="{StaticResource IconBackButton}"
                             Text="←"
                             FontSize="20"
@@ -24,9 +24,9 @@
                        TextColor="{StaticResource ForegroundColor}" />
 
                 <Label Text="{Binding SignInSubtitle}"
-                       FontSize="14"
+                       Style="{StaticResource BodyLarge}"
                        TextColor="{StaticResource MutedForegroundColor}"
-                       Margin="0,0,0,20" />
+                       Margin="0,0,0,28" />
 
                 <shared:InputField LabelText="{Binding EmailLabel}"
                                    Placeholder="{Binding EmailPlaceholder}"
@@ -59,7 +59,7 @@
                 <shared:GradientButton Text="{Binding SignInButtonText}"
                                        Command="{Binding SignInCommand}"
                                        IsBusy="{Binding IsBusy}"
-                                       Margin="0,24,0,0" />
+                                       Margin="0,28,0,0" />
 
                 <Button Text="{Binding ForgotPasswordText}"
                         Style="{StaticResource TextButton}"
@@ -67,9 +67,9 @@
                         FontSize="14"
                         HorizontalOptions="End"
                         Command="{Binding ForgotPasswordCommand}"
-                        Margin="0,8,0,0" />
+                        Margin="0,12,0,0" />
 
-                <HorizontalStackLayout Margin="0,32,0,0"
+                <HorizontalStackLayout Margin="0,36,0,0"
                                        HorizontalOptions="Center"
                                        Spacing="4">
                     <Label Text="{Binding DontHaveAccountText}"

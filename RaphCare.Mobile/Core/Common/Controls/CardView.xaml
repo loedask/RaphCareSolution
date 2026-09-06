@@ -4,11 +4,11 @@
         x:Class="RaphCare.Mobile.Core.Common.Controls.CardView"
         x:Name="RootBorder"
         Style="{StaticResource CardBorder}"
-        Padding="16">
+        Padding="20">
     <Border.StrokeShape>
-        <RoundRectangle CornerRadius="16" />
+        <RoundRectangle CornerRadius="20" />
     </Border.StrokeShape>
     <Border.Shadow>
-        <Shadow Brush="Black" Opacity="0.06" Radius="8" Offset="0,2" />
+        <Shadow Brush="Black" Opacity="0.08" Radius="16" Offset="0,6" />
     </Border.Shadow>
 </Border>

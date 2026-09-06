@@ -2,7 +2,17 @@
 
 **Concept app path (local):** `C:\laragon\www\raphcare-mobile-app-concept`
 
-Use this doc to keep **visual parity** with the React UI when implementing **MAUI**. Update it when the concept’s `index.css` or `tailwind.config.ts` changes.
+## Current MAUI identity: Premium soft
+
+As of the **Premium soft** redesign, **RaphCare.Mobile** no longer targets pixel parity with the React concept.
+
+| Layer | Source of truth |
+|-------|-----------------|
+| **Look and feel** | MAUI **Premium soft** tokens in `RaphCare.Mobile/Resources/Styles/` and shared controls under `Core/Common/Controls/` (softer page wash, larger radii, deeper soft shadows, richer teal/navy gradients, more breathing room). |
+| **Structure** | React concept remains useful for **routes**, **screen inventory**, **copy alignment**, and **feature layout ideas**. |
+| **Historical tokens** | Tables below keep the original concept → MAUI mapping for reference. Prefer live `Colors.xaml` / `Typography.xaml` / `Cards.xaml` / `Buttons.xaml` / `Inputs.xaml` when implementing UI. |
+
+Do **not** revert Premium soft screens to concept pixel values unless product explicitly asks to restore concept parity.
 
 **Cursor rules:** `.cursor/rules/raphcare-mobile-concept-template.mdc`, `.cursor/rules/raphcare-mobile.mdc`
 
@@ -13,14 +23,14 @@ Use this doc to keep **visual parity** with the React UI when implementing **MAU
 | In concept | Notes for MAUI |
 |------------|----------------|
 | **React 18 + Vite** | Use **.NET MAUI** pages / Shell, not WebView for the main app (unless you intentionally host a web surface). |
-| **react-router-dom** | Map routes to **Shell** routes / `AppNavigator`—see route table below. |
+| **react-router-dom** | Map routes to **Shell** routes / `AppNavigator`. See route table below. |
 | **@tanstack/react-query** | Use **Client** + ViewModels / async commands; no React Query. |
-| **shadcn/ui + Radix UI** | Recreate **look** with **MAUI layouts**, **Shared Controls**, **Styles**—not Radix primitives. |
-| **lucide-react** | Use **PNG/SVG** under `Resources/Images` (`icon_*.svg`, soft fill + stroke `#1B9BBB`; accent variant `icon_*_on_accent.svg` in white). Home quick actions, Profile menu rows, Help, and Privacy use accent wells (`AppIconWellAccent` / `ProfileMenuIconBorder` + `*OnAccent`). Soft teal wells remain for Home health metrics and device rows. Bound via `IconSource` / `MonochromeIconKeys`. Do **not** use multicolor emoji on Home / Profile / Settings / register chrome. |
-| **framer-motion** | Optional subtle animations; match **duration/easing** where it matters (e.g. fade-up ~0.4s ease-out in Tailwind). |
-| **i18n** (`src/i18n/`) | Align copy with **`AppResources.resx`** (and future `.es.resx` etc.)—same strings as `translations.ts` where applicable. |
+| **shadcn/ui + Radix UI** | Recreate structure with **MAUI layouts**, **Shared Controls**, **Styles**, not Radix primitives. Visual chrome follows **Premium soft**, not shadcn defaults. |
+| **lucide-react** | Use **PNG/SVG** under `Resources/Images` (`icon_*.svg`, soft fill + stroke teal; accent variant `icon_*_on_accent.svg` in white). Home quick actions, Profile menu rows, Help, and Privacy use accent wells (`AppIconWellAccent` / `ProfileMenuIconBorder` + `*OnAccent`). Soft teal wells remain for Home health metrics and device rows. Bound via `IconSource` / `MonochromeIconKeys`. Do **not** use multicolor emoji on Home / Profile / Settings / register chrome. |
+| **framer-motion** | Optional subtle animations only where they stay calm and trustworthy. |
+| **i18n** (`src/i18n/`) | Align copy with **`AppResources.resx`** (and future `.es.resx` etc.). Same strings as `translations.ts` where applicable. |
 
-**Port the design:** colors, typography, spacing, radii, shadows, borders, component layout, and states—not the JS framework.
+**Port from the concept:** screen structure, navigation map, and product copy. **Do not** treat concept colors, radii, shadows, or density as the live MAUI design target.
 
 ---
 
@@ -31,9 +41,9 @@ Loaded in concept via Google Fonts in `src/index.css`:
 | Role | Family | Weights (concept) |
 |------|--------|-------------------|
 | **Display** | **Space Grotesk** | 400, 500, 600, 700 |
-| **Body** | **DM Sans** | 300–700, italic |
+| **Body** | **DM Sans** | 300 to 700, italic |
 
-**MAUI:** bundled as variable TTFs (OFL, from [google/fonts](https://github.com/google/fonts)) under `RaphCare.Mobile/Resources/Fonts/`, with `OFL-*.txt` license copies. Registered in `MauiProgram.ConfigureFonts`: alias **`SpaceGrotesk`** → `SpaceGrotesk-VariableFont_wght.ttf`, **`DMSans`** → `DMSans-VariableFont_opsz_wght.ttf`, **`DMSansItalic`** → `DMSans-Italic-VariableFont_opsz_wght.ttf`. Default **Label** / **Button** / **Entry** / **Editor** use **DM Sans** via `App.xaml`; display styles (`TitleLarge`, `SectionTitle`, …) and `AuthTitleLabel` set **Space Grotesk**.
+**MAUI:** bundled as variable TTFs (OFL, from [google/fonts](https://github.com/google/fonts)) under `RaphCare.Mobile/Resources/Fonts/`, with `OFL-*.txt` license copies. Registered in `MauiProgram.ConfigureFonts`: alias **`SpaceGrotesk`** → `SpaceGrotesk-VariableFont_wght.ttf`, **`DMSans`** → `DMSans-VariableFont_opsz_wght.ttf`, **`DMSansItalic`** → `DMSans-Italic-VariableFont_opsz_wght.ttf`. Default **Label** / **Button** / **Entry** / **Editor** use **DM Sans** via `App.xaml`; display styles (`TitleLarge`, `SectionTitle`, …) and `AuthTitleLabel` set **Space Grotesk**. Premium soft slightly enlarges display sizes vs the original concept scale.
 
 ---
 
@@ -52,7 +62,7 @@ Use these as the target for **MAUI styles** (convert `rem` → device-independen
 
 ---
 
-## Color tokens — `:root` (light) in `src/index.css`
+## Color tokens (historical concept `:root` light in `src/index.css`)
 
 Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. **MAUI** mirrors them in `RaphCare.Mobile/Resources/Styles/Colors.xaml` as **`Color`** resources. Hex below is **sRGB** from the same HSL components (standard `hsl()` conversion); use these literals in XAML.
 
@@ -98,15 +108,15 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | Gradient brand end | `--teal` (with navy stops) | `GradientEndColor` | `#1B9BBB` |
 | Gradient card | `--gradient-card` stops | `GradientCardStartColor`, `GradientCardEndColor` | `#FFFFFF`, `#F9FAFB` |
 
-**Also in XAML (no separate CSS variable):** `SurfaceColor` → `#FFFFFF`; `TextPrimaryColor` → `#141D2E`; `TextMutedColor` → `#929CAA` (lighter muted tier for captions; HSL `215 12% 62%`).
+**Also in XAML (no separate CSS variable):** `SurfaceColor`; `TextPrimaryColor`; `TextMutedColor` (lighter muted tier for captions). Live Premium soft hex values are in `Colors.xaml` and may differ from the concept column above.
 
-**Corner radius:** `--radius: 0.875rem` (**14px** at 16px/rem). Tailwind `rounded-lg` etc. derive from this (`md` = radius − 4px, …).
+**Corner radius (Premium soft):** shared cards and buttons use about **16 to 20** device units (larger than concept `--radius: 0.875rem`).
 
-**Shadows (concept):** `--shadow-xs`, `--shadow-soft`, `--shadow-card`, `--shadow-elevated`, `--shadow-glow`, `--shadow-glow-lg` — replicate with MAUI shadow APIs or platform-specific drawables where close enough.
+**Shadows (Premium soft):** softer, taller card and CTA shadows via MAUI `Shadow` on `CardBorder`, `CardView`, `GradientButton`, and hero CTAs. Concept CSS shadow names remain historical only.
 
-**Gradients:** `--gradient-brand`, `--gradient-teal`, `--gradient-card`, `--gradient-glass` — use **LinearGradientBrush** / existing **GradientButton** patterns to match angles and stops.
+**Gradients:** navy → teal brand washes and teal → accent CTAs via **LinearGradientBrush** / **GradientButton**.
 
-**Dark theme:** `.dark` block in `index.css` — when MAUI supports app dark mode, mirror the same variable set in a second resource dictionary.
+**Dark theme:** not the default. If added later, define a second resource dictionary rather than copying concept `.dark` blindly.
 
 ---
 
@@ -126,7 +136,7 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/appointments`, `/book-appointment`, `/appointment-details` | Appointments, BookAppointment, AppointmentDetails | `AppointmentsPage`, `BookAppointmentPage`, `AppointmentDetailPage` (patient API) |
 | `/request-call`, `/consultation` | RequestCall, Consultation | `RequestCallPage` → `CareTelehealthPage` / `TelehealthJoinPage` |
 | `/records`, `/health-record-details` | HealthRecords, HealthRecordDetails | Records |
-| `/devices` | ConnectedDevices | `DevicesPage` (BLE E580/E585-class — see `docs/11_Devices_BLE_E580_E585.md`; fleet/packages — `docs/13_Patient_Device_Packages_and_Fleet.md`) |
+| `/devices` | ConnectedDevices | `DevicesPage` (BLE E580/E585-class; see `docs/11_Devices_BLE_E580_E585.md`; fleet/packages: `docs/13_Patient_Device_Packages_and_Fleet.md`) |
 | `/insurance` | Insurance | Insurance |
 | `/family-members` | FamilyMembers | Profile / account |
 | `/personal-information`, `/change-password`, `/language`, `/medical-information`, `/emergency-contacts` | Profile sub-pages | `PersonalInformationPage`, `ChangePasswordPage`, `LanguageSettingsPage`, `MedicalInformationPage`, `EmergencyContactsPage` |
@@ -137,28 +147,28 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/ai-assistant` | AIAssistant | `AiAssistantPage` (chat bubbles with in-session history; patient API chat) |
 | `*` | NotFound | Optional error page |
 
-Shell route names in MAUI may differ; this table is for **screen inventory and parity**, not a 1:1 path string match.
+Shell route names in MAUI may differ; this table is for **screen inventory**, not a 1:1 path string match.
 
 ---
 
 ## Screen parity checklist
 
-Tick when the **MAUI** screen matches the concept in **layout, type scale, colors, spacing, and primary controls**.
+Tick when the **MAUI** screen is product-complete (layout, type, colors, spacing, primary controls) under the **Premium soft** identity. Concept files are structural references only.
 
 | Screen | Concept file | MAUI target | Done |
 |--------|----------------|-------------|------|
-| Welcome | `Welcome.tsx` | `LandingPage` | ☑ |
-| Home | `Home.tsx` | `HomePage` (dashboard hero + quick-link cards) | ☑ |
+| Welcome | `Welcome.tsx` | `LandingPage` (Premium soft) | ☑ |
+| Home | `Home.tsx` | `HomePage` (Premium soft dashboard) | ☑ |
 | Register (3 methods) | `Register.tsx` | `RegisterOptionsPage` (Email / Phone / Voice cards) | ☑ |
 | Email register | `EmailRegister.tsx` | `RegisterEmailPage` | ☑ |
 | Phone register / verify | `PhoneRegister.tsx`, verify | `RegisterPhonePage`, `VerifyPhonePage` | ☑ |
-| Voice register | `VoiceRegister.tsx` (full animated mock) | `RegisterVoiceIntroPage` → phone → `VoiceSubmitPage` (mic record + level bars + API) | ☑ |
+| Voice register | `VoiceRegister.tsx` (full animated mock) | `RegisterVoiceIntroPage` then phone then `VoiceSubmitPage` (mic record + level bars + API) | ☑ |
 | Account created | `AccountCreated.tsx` | `AccountCreatedPage` (shared welcome after phone OTP, email verify sign-in, or voice profile success) | ☑ |
-| Login / … | `Login.tsx`, … | `SignInPage`, `VerifyEmailPage` | ☑ |
+| Login / … | `Login.tsx`, … | `SignInPage` (Premium soft), `VerifyEmailPage` | ☑ |
 | Devices | `ConnectedDevices.tsx` | `DevicesPage` | ☑ |
 | Family members | `FamilyMembers.tsx` | `FamilyMembersPage` (+ add / detail) | ☑ |
 | Mental health | `MentalHealth.tsx` | `MentalHealthPage` (API content + mood check-in) | ☑ |
-| Profile hub | `Profile.tsx` | `SettingsPage` + `ProfileHubViewModel` | ☑ |
+| Profile hub | `Profile.tsx` | `SettingsPage` + `ProfileHubViewModel` (Premium soft) | ☑ |
 | Edit profile | `EditProfile.tsx` | `EditProfilePage` (local store + JWT hints) | ☑ |
 | Privacy | `Privacy.tsx` | `PrivacyPage` (local toggles, delete flow) | ☑ |
 | Help & support | `HelpSupport.tsx` | `HelpSupportPage` | ☑ |

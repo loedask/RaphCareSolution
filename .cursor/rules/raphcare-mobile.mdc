@@ -47,4 +47,4 @@ Apply when editing **RaphCare.Mobile**, **RaphCare.Mobile.Kernel**, or **RaphCar
 
 ## External React concept (Vite)
 
-- Design reference: **`C:\laragon\www\raphcare-mobile-app-concept`**. **Visual design should match the concept as exactly as MAUI allows**—see **`.cursor/rules/raphcare-mobile-concept-template.mdc`** and **`docs/Mobile_Concept_Port.md`** (tokens, fonts, route map, checklist). Architecture stays per this rule (Features, Common, Infrastructure, Client, Kernel).
+- Design reference: **`C:\laragon\www\raphcare-mobile-app-concept`** for routes, screen inventory, and copy. **Visual design follows the Premium soft MAUI identity** in `Resources/Styles/` (see **`.cursor/rules/raphcare-mobile-concept-template.mdc`** and **`docs/Mobile_Concept_Port.md`**). Architecture stays per this rule (Features, Common, Infrastructure, Client, Kernel).

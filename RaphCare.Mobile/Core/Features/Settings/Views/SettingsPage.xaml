@@ -10,17 +10,20 @@
              BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24,56,24,24" Spacing="20">
-            <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
-                <Grid WidthRequest="96" HeightRequest="96" HorizontalOptions="Center">
+        <VerticalStackLayout Padding="28,56,28,32" Spacing="24">
+            <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
+                <Grid WidthRequest="104" HeightRequest="104" HorizontalOptions="Center">
                     <Border BackgroundColor="{StaticResource SecondaryColor}"
                             StrokeThickness="0"
                             HorizontalOptions="Fill"
                             VerticalOptions="Fill"
                             IsVisible="{Binding HasProfilePhoto, Converter={StaticResource InvertedBoolConverter}}">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="24" />
+                            <RoundRectangle CornerRadius="28" />
                         </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Opacity="0.08" Radius="16" Offset="0,6" />
+                        </Border.Shadow>
                         <Label Text="👤"
                                FontSize="36"
                                HorizontalOptions="Center"
@@ -32,7 +35,7 @@
                            HorizontalOptions="Fill"
                            VerticalOptions="Fill">
                         <Image.Clip>
-                            <RoundRectangleGeometry Rect="0,0,96,96" CornerRadius="24" />
+                            <RoundRectangleGeometry Rect="0,0,104,104" CornerRadius="28" />
                         </Image.Clip>
                     </Image>
                     <Border BackgroundColor="#99000000"
@@ -42,7 +45,7 @@
                             HorizontalOptions="Fill"
                             VerticalOptions="Fill">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="24" />
+                            <RoundRectangle CornerRadius="28" />
                         </Border.StrokeShape>
                         <ActivityIndicator IsRunning="{Binding IsUploadingPhoto}"
                                            Color="White"
@@ -52,9 +55,9 @@
                                            VerticalOptions="Center" />
                     </Border>
                     <Button FontSize="12"
-                            WidthRequest="36"
-                            HeightRequest="36"
-                            CornerRadius="12"
+                            WidthRequest="38"
+                            HeightRequest="38"
+                            CornerRadius="14"
                             Padding="0"
                             Text="📷"
                             BackgroundColor="{StaticResource PrimaryColor}"
@@ -63,7 +66,11 @@
                             VerticalOptions="End"
                             Margin="0,0,-4,-4"
                             IsEnabled="{Binding IsUploadingPhoto, Converter={StaticResource InvertedBoolConverter}}"
-                            Command="{Binding OpenPhotoCommand}" />
+                            Command="{Binding OpenPhotoCommand}">
+                        <Button.Shadow>
+                            <Shadow Brush="#1B9BBB" Opacity="0.3" Radius="10" Offset="0,3" />
+                        </Button.Shadow>
+                    </Button>
                 </Grid>
 
                 <Label Text="{Binding DisplayName}"
@@ -75,10 +82,9 @@
                        TextColor="{StaticResource MutedForegroundColor}"
                        HorizontalTextAlignment="Center" />
 
-                <Border BackgroundColor="{StaticResource AccentColor}"
+                <Border BackgroundColor="#1A35B69C"
                         StrokeThickness="0"
-                        Opacity="0.12"
-                        Padding="14,8"
+                        Padding="16,9"
                         HorizontalOptions="Center"
                         IsVisible="{Binding ShowInsuranceBadge}">
                     <Border.StrokeShape>
@@ -98,25 +104,25 @@
                         Text="{Binding EditProfileButtonText}"
                         Command="{Binding EditProfileCommand}"
                         HorizontalOptions="Center"
-                        Padding="24,10" />
+                        Padding="28,12" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="0"
                                  BindableLayout.ItemsSource="{Binding Sections}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="models:ProfileSectionModel">
-                        <VerticalStackLayout Spacing="12" Margin="0,0,0,8">
+                        <VerticalStackLayout Spacing="14" Margin="0,0,0,10">
                             <Label Text="{Binding Title}"
                                    Style="{StaticResource SectionTitle}"
                                    Margin="4,0,0,0" />
-                            <Border Style="{StaticResource CardBorder}" Margin="0">
+                            <Border Style="{StaticResource CardBorder}" Margin="0" Padding="6,4">
                                 <VerticalStackLayout Spacing="0"
                                                      BindableLayout.ItemsSource="{Binding Items}">
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate x:DataType="models:ProfileMenuRowModel">
                                             <VerticalStackLayout Spacing="0">
                                                 <Grid ColumnDefinitions="Auto,*,Auto"
-                                                      Padding="16,14"
+                                                      Padding="14,16"
                                                       BackgroundColor="Transparent">
                                                     <Border Grid.Column="0"
                                                             Style="{StaticResource ProfileMenuIconBorder}"
@@ -167,16 +173,16 @@
                     TextColor="{StaticResource DestructiveColor}"
                     BackgroundColor="#14DB4343"
                     FontAttributes="Bold"
-                    CornerRadius="16"
-                    Padding="16,14"
-                    Margin="0,8,0,0" />
+                    CornerRadius="18"
+                    Padding="16,16"
+                    Margin="0,10,0,0" />
 
             <Label Text="{Binding AppVersionLabel}"
                    Style="{StaticResource Micro}"
                    TextColor="{StaticResource MutedForegroundColor}"
                    HorizontalTextAlignment="Center"
                    Opacity="0.7"
-                   Margin="0,8,0,0" />
+                   Margin="0,10,0,0" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
