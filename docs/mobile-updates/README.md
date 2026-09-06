@@ -1,6 +1,6 @@
 # RaphCare mobile updates
 
-Partner PDFs for each patient Android APK. Match the APK stem: `mobile-update-v1.8.5+17.pdf` goes with `RaphCare-v1.8.5+17.apk`.
+Partner PDFs for each patient Android APK. Match the APK stem: `mobile-update-v1.8.6+18.pdf` goes with `RaphCare-v1.8.6+18.apk`.
 
 | Path | What is here |
 |------|----------------|
@@ -9,27 +9,27 @@ Partner PDFs for each patient Android APK. Match the APK stem: `mobile-update-v1
 | [`sources/`](sources/) | Markdown, PDF config, CSS (edit here; do not send to partners) |
 | [`brand/`](brand/) | Logo used in the PDF header |
 
-Every time `RaphCare.Mobile` gets a new `ApplicationDisplayVersion` and/or Android `ApplicationVersion` (versionCode), or you publish a sideload APK for the partner.
+Every time `RaphCare.Mobile` gets a new `ApplicationDisplayVersion` or Android `ApplicationVersion` (versionCode), or you publish a sideload APK for the partner.
 
 ## Naming
 
 | File | Purpose |
 |------|---------|
-| `mobile-update-v1.8.5+17.md` | Plain-language changelog for that APK |
-| `mobile-update-v1.8.5+17.config.json` | PDF export config |
-| `mobile-update-v1.8.5+17.pdf` | PDF to send with the APK |
+| `mobile-update-v1.8.6+18.md` | Plain-language changelog for that APK |
+| `mobile-update-v1.8.6+18.config.json` | PDF export config |
+| `mobile-update-v1.8.6+18.pdf` | PDF to send with the APK |
 | `mobile-update.pdf.css` | Shared styles (under `sources/`) |
 
 ## Export after editing sources
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.8.5+17
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.8.6+18
 ```
 
 Archived note:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.8.3+15 -Archive
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.8.5+17 -Archive
 ```
 
 Details for builders: [`sources/README.md`](sources/README.md).
