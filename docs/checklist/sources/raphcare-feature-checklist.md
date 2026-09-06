@@ -164,9 +164,9 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
 | Mental health | [x] | [x] | [x] | Content, mood check-in, patient PHQ-9 / GAD-7 self-assessment |
-| AI assistant | [x] | [x] | [x] | Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
+| AI assistant | [x] | [x] | [x] | Chat bubbles with in-session history; Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
 | Notifications | [x] | [x] | [x] | List / mark read / push registration |
-| Settings / profile | [x] | [x] | [x] | Edit (including photo upload), personal info, medical info (blood type picker with Unknown; allergy/chronic chips + Other), emergency contacts, insurance plan badge from API, payment methods vs billing history routes, honest privacy (local toggles; delete/export via support/clinic), help, language, change password, Active clinic (typed search / RC- code; not an auto-loaded membership list) |
+| Settings / profile | [x] | [x] | [x] | Edit (including photo upload), personal info, medical info (blood type picker with Unknown; allergy/chronic chips + Other), emergency contacts (pick from phone contacts or enter manually), insurance plan badge from API, payment methods vs billing history routes, honest privacy (local toggles; delete/export via support/clinic), help, language, change password, Active clinic (typed search / RC- code; not an auto-loaded membership list) |
 
 Screen visual parity table is marked done in `Mobile_Concept_Port.md` (last pass). Re-check when the React concept changes.
 

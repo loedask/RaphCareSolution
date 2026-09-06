@@ -5,13 +5,14 @@ using Microsoft.Extensions.Options;
 using RaphCare.Application.Common.Configuration;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Application.Features.PatientAiAssistant;
 using RaphCare.Application.Features.PatientAiAssistant.DTOs;
 
 namespace RaphCare.Application.Features.PatientAiAssistant.Commands.SendMyPatientAssistantMessage;
 
 /// <summary>
 /// Handles patient assistant chat: validates input, audits by patient id and length only (not message body),
-/// and delegates text generation to <see cref="IAIService"/> (placeholder or future LLM with policy guardrails).
+/// windows optional prior turns, and delegates text generation to <see cref="IAIService"/>.
 /// </summary>
 public sealed partial class SendMyPatientAssistantMessageHandler(
     IAIService aiService,
@@ -29,10 +30,15 @@ public sealed partial class SendMyPatientAssistantMessageHandler(
             ?? throw new ForbiddenAccessException("A patient profile is required.");
 
         var message = NormalizeMessage(request.Message);
-        LogPatientAssistantMessageAccepted(patientId, message.Length);
-
-        var reply = await _aiService.GeneratePatientAssistantReplyAsync(message, cancellationToken).ConfigureAwait(false);
         var opts = _options.Value;
+        var prior = PatientAssistantChatHistoryRules.NormalizeAndWindow(
+            request.PriorMessages,
+            opts.MaxPriorMessages);
+
+        LogPatientAssistantMessageAccepted(patientId, message.Length, prior.Count);
+
+        var reply = await _aiService.GeneratePatientAssistantReplyAsync(message, prior, cancellationToken)
+            .ConfigureAwait(false);
 
         return new PatientAssistantReplyDto
         {
@@ -56,6 +62,6 @@ public sealed partial class SendMyPatientAssistantMessageHandler(
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Patient assistant message accepted for patient {PatientId}; length {Length}.")]
-    private partial void LogPatientAssistantMessageAccepted(Guid patientId, int length);
+        Message = "Patient assistant message accepted for patient {PatientId}; length {Length}; prior turns {PriorCount}.")]
+    private partial void LogPatientAssistantMessageAccepted(Guid patientId, int length, int priorCount);
 }

@@ -1692,16 +1692,16 @@ Accessible. Intelligent. Human.</value>
     <value>Ask general wellness questions. Do not share passwords or full medical records. This is not for emergencies.</value>
   </data>
   <data name="AiAssistantPlaceholder" xml:space="preserve">
-    <value>Type your message…</value>
+    <value>Ask me anything…</value>
   </data>
   <data name="AiAssistantSend" xml:space="preserve">
     <value>Send</value>
   </data>
-  <data name="AiAssistantReplyHeading" xml:space="preserve">
-    <value>Reply</value>
+  <data name="AiAssistantGreeting" xml:space="preserve">
+    <value>Hello! I'm your RaphCare AI assistant. I can help with appointments, health records, insurance questions, and wellness tips. How can I help you today?</value>
   </data>
-  <data name="AiAssistantEmptyReply" xml:space="preserve">
-    <value>Your reply will appear here after you send a message.</value>
+  <data name="AiAssistantDisclaimerFallback" xml:space="preserve">
+    <value>This assistant is not a substitute for professional medical advice, diagnosis, or treatment. For urgent concerns, contact your clinician or local emergency services.</value>
   </data>
   <data name="AiAssistantSendFailed" xml:space="preserve">
     <value>We couldn't reach the assistant. Check your connection and try again.</value>
@@ -2089,6 +2089,27 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="EmergencyContactsAdd" xml:space="preserve">
     <value>Add emergency contact</value>
+  </data>
+  <data name="EmergencyContactsAddHowTitle" xml:space="preserve">
+    <value>Add emergency contact</value>
+  </data>
+  <data name="EmergencyContactsFromPhone" xml:space="preserve">
+    <value>From phone contacts</value>
+  </data>
+  <data name="EmergencyContactsEnterManually" xml:space="preserve">
+    <value>Enter manually</value>
+  </data>
+  <data name="EmergencyContactsPickPhoneTitle" xml:space="preserve">
+    <value>Which number?</value>
+  </data>
+  <data name="EmergencyContactsPermissionDenied" xml:space="preserve">
+    <value>Allow contacts access in Settings to pick from your phone book, or enter the contact manually.</value>
+  </data>
+  <data name="EmergencyContactsNoPhoneOnContact" xml:space="preserve">
+    <value>That contact has no phone number. Enter the details manually.</value>
+  </data>
+  <data name="EmergencyContactsPickFailed" xml:space="preserve">
+    <value>Could not open phone contacts. Enter the details manually.</value>
   </data>
   <data name="EmergencyContactsSave" xml:space="preserve">
     <value>Save contact</value>
