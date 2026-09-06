@@ -226,28 +226,28 @@ public sealed class ProfileHubViewModel : BaseViewModel
                 {
                     Title = T("ProfilePersonalInformation"),
                     Subtitle = T("ProfilePersonalInformationHint"),
-                    IconSource = MonochromeIconKeys.User,
+                    IconSource = MonochromeIconKeys.UserOnAccent,
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.PersonalInformation)),
                 },
                 new ProfileMenuRowModel
                 {
                     Title = T("ProfileMyClinic"),
                     Subtitle = ClinicSubtitle(),
-                    IconSource = MonochromeIconKeys.Hospital,
+                    IconSource = MonochromeIconKeys.HospitalOnAccent,
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.SelectClinic)),
                 },
                 new ProfileMenuRowModel
                 {
                     Title = T("ProfileChangePassword"),
                     Subtitle = T("ProfileChangePasswordHint"),
-                    IconSource = MonochromeIconKeys.Lock,
+                    IconSource = MonochromeIconKeys.LockOnAccent,
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.ChangePassword)),
                 },
                 new ProfileMenuRowModel
                 {
                     Title = T("ProfileLanguage"),
                     Subtitle = CurrentLanguageSubtitle(),
-                    IconSource = MonochromeIconKeys.Globe,
+                    IconSource = MonochromeIconKeys.GlobeOnAccent,
                     ShowSeparator = false,
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.LanguageSettings)),
                 },
@@ -263,21 +263,21 @@ public sealed class ProfileHubViewModel : BaseViewModel
                 {
                     Title = T("ProfileMedicalInformation"),
                     Subtitle = T("ProfileMedicalInformationHint"),
-                    IconSource = MonochromeIconKeys.Heart,
+                    IconSource = MonochromeIconKeys.HeartOnAccent,
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.MedicalInformation)),
                 },
                 new ProfileMenuRowModel
                 {
                     Title = T("ProfileEmergencyContacts"),
                     Subtitle = EmergencyContactsSubtitle(),
-                    IconSource = MonochromeIconKeys.Phone,
+                    IconSource = MonochromeIconKeys.PhoneOnAccent,
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.EmergencyContacts)),
                 },
                 new ProfileMenuRowModel
                 {
                     Title = T("HomeHubFamily"),
                     Subtitle = T("ProfileFamilyMembersHint"),
-                    IconSource = MonochromeIconKeys.Users,
+                    IconSource = MonochromeIconKeys.UsersOnAccent,
                     ShowSeparator = false,
                     TapCommand = new Command(async () =>
                         await AppNavigator.GoToFeatureAsync(AppNavigator.FamilyMembers, T("HomeHubFamily"))),
@@ -294,7 +294,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
                 {
                     Title = T("ProfileCurrentPlan"),
                     Subtitle = T("ProfileCurrentPlanHint"),
-                    IconSource = MonochromeIconKeys.Shield,
+                    IconSource = MonochromeIconKeys.ShieldOnAccent,
                     TapCommand = new Command(async () =>
                         await AppNavigator.GoToFeatureAsync(AppNavigator.Insurance, T("HomeHubInsurance"))),
                 },
@@ -302,7 +302,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
                 {
                     Title = T("ProfilePaymentMethods"),
                     Subtitle = T("ProfilePaymentMethodsHint"),
-                    IconSource = MonochromeIconKeys.CreditCard,
+                    IconSource = MonochromeIconKeys.CreditCardOnAccent,
                     TapCommand = new Command(async () =>
                         await AppNavigator.GoToFeatureAsync(AppNavigator.Billing, T("HomeHubBilling"))),
                 },
@@ -310,7 +310,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
                 {
                     Title = T("ProfileBillingHistory"),
                     Subtitle = T("ProfileBillingHistoryHint"),
-                    IconSource = MonochromeIconKeys.Receipt,
+                    IconSource = MonochromeIconKeys.ReceiptOnAccent,
                     ShowSeparator = false,
                     TapCommand = new Command(async () =>
                         await AppNavigator.GoToFeatureAsync(AppNavigator.Billing, T("HomeHubBilling"))),
@@ -327,7 +327,7 @@ public sealed class ProfileHubViewModel : BaseViewModel
                 {
                     Title = T("HomeHubNotifications"),
                     Subtitle = T("ProfileNotificationsHint"),
-                    IconSource = MonochromeIconKeys.Bell,
+                    IconSource = MonochromeIconKeys.BellOnAccent,
                     TapCommand = new Command(async () =>
                         await AppNavigator.GoToFeatureAsync(AppNavigator.Notifications, T("HomeHubNotifications"))),
                 },
@@ -335,14 +335,14 @@ public sealed class ProfileHubViewModel : BaseViewModel
                 {
                     Title = T("ProfilePrivacy"),
                     Subtitle = T("ProfilePrivacyHint"),
-                    IconSource = MonochromeIconKeys.Eye,
+                    IconSource = MonochromeIconKeys.EyeOnAccent,
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.Privacy)),
                 },
                 new ProfileMenuRowModel
                 {
                     Title = T("ProfileHelpSupport"),
                     Subtitle = T("ProfileHelpSupportHint"),
-                    IconSource = MonochromeIconKeys.Help,
+                    IconSource = MonochromeIconKeys.HelpOnAccent,
                     ShowSeparator = false,
                     TapCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.HelpSupport)),
                 },
