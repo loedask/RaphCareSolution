@@ -1,14 +1,30 @@
 # Incubators and accelerators
 
-Founder-facing application drafts. Not partner PDFs.
+Founder-facing application drafts and the shared apply plan. Not partner product PDFs.
 
-Each program gets its own folder under here when you start an application. Share the form questions (and any old answers) and we fill that folder the same way as YC.
+## Share with your co-founder
+
+| File | Use |
+|------|-----|
+| [`plan.html`](plan.html) | Open in a browser. Priority list, why each program was selected, apply links. |
+| [`raphcare-incubator-plan.pdf`](raphcare-incubator-plan.pdf) | Same plan as a PDF to send. |
+| [`sources/raphcare-incubator-plan.md`](sources/raphcare-incubator-plan.md) | Source for the PDF. Edit here, then re-export. |
+
+Regenerate the PDF after editing the markdown:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareIncubatorPlanPdf.ps1
+```
+
+Also update `plan.html` in the same change set so HTML and PDF stay aligned.
+
+## Application drafts
+
+Each program gets its own folder when you start an application. Share the form questions (and any old answers) and we fill that folder the same way as YC.
 
 | Folder | Program | Status |
 |--------|---------|--------|
 | [`yc/`](yc/) | Y Combinator | Draft ready (`application.html`) |
-
-Planned next (create a folder when you share the apply form): Techstars, 500 Global, Antler, Founders Factory Africa, AUDA-NEPAD HGS, Africa Health-Tech Accelerator, and others from the shortlist below.
 
 Last reviewed: 5 September 2026
 
@@ -16,13 +32,15 @@ Last reviewed: 5 September 2026
 
 ```text
 docs/incubator/
-  README.md                 ← this index and shortlist
+  README.md                      ← this index
+  plan.html                      ← shareable plan (HTML)
+  raphcare-incubator-plan.pdf    ← shareable plan (PDF)
+  brand/                         ← logo for HTML and PDF
+  sources/                       ← markdown + PDF config/CSS
   yc/
     README.md
-    application.html        ← copy-paste answers for that form
-  techstars/                ← example of a later folder
-    README.md
     application.html
+  founders-factory-africa/       ← add when that form starts
 ```
 
 Keep product facts honest. Prefer checklists, feature catalog, demo-accounts sheet, price list, and `docs/Mobile_Android_Test_Hosting.md`.
@@ -41,48 +59,33 @@ Most forms ask the same core story. Start from [`yc/application.html`](yc/applic
 
 Do **not** paste demo passwords into public program directories or social posts. Share credentials only inside a private application portal or a direct email they request.
 
----
+## Priority and why selected
 
-## Shortlist (until each has a folder)
+Full write-up (why selected, why this rank, apply URLs, windows): [`plan.html`](plan.html) or the PDF.
 
-Deadlines and deal terms change; confirm on each site before you apply.
+| Priority | Program | Why selected (short) | Apply |
+|---------:|---------|----------------------|-------|
+| 1 | Y Combinator | Strongest investor signal; reapply with a real product | [ycombinator.com/apply](https://www.ycombinator.com/apply) |
+| 2 | Founders Factory Africa (Scale) | Johannesburg, African startups, product-stage Scale track | [foundersfactory.africa/apply](https://www.foundersfactory.africa/apply) |
+| 3 | Techstars (healthcare) | Mentorship and capital; healthcare cohorts fit clinic OS | [techstars.com/accelerators](https://www.techstars.com/accelerators) |
+| 4 | Africa Health-Tech Accelerator | Closest digital-health sector match in Africa | [menterprise opportunity](https://menterprise.africa/opportunities/africa-health-tech-accelerator-2026/) (watch next year) |
+| 5 | 500 Global Flagship | Global emerging-markets accelerator brand | [500.co/apply-for-an-accelerator](https://500.co/apply-for-an-accelerator) |
+| 6 | Google for Startups SA | Equity-free, SA-led; better after traction | [startup.google.com/.../south-africa](https://startup.google.com/programs/accelerator/south-africa/) |
+| 7 | AUDA-NEPAD HGS | Pan-African health-systems mandate | [VC4A HGS](https://vc4a.com/auda-nepad/hgs-2026/) (next call) |
+| 8 | Antler Nairobi | Africa capital; only if we can relocate | [antler.co/apply](https://www.antler.co/apply) |
+| 9 | a16z Speedrun | Large cheque and brand; after more traction | [speedrun.a16z.com](https://speedrun.a16z.com/) |
 
-### Global (YC-like)
+## What to do this month
 
-| Program | Why it fits | Start here | Notes |
-|---------|-------------|------------|-------|
-| **Y Combinator** | Default bar; strongest investor signal | [ycombinator.com/apply](https://www.ycombinator.com/apply) | See [`yc/`](yc/) |
-| **Techstars** | Mentorship and network; sometimes Africa or health batches | [techstars.com](https://www.techstars.com/) | Check relocation for the open cohort |
-| **500 Global** | Emerging-markets friendly | [500.co](https://500.co/) | Emphasize Africa clinic OS and SA then Congo |
-| **Antler** | Capital and network; Africa presence | [antler.co](https://www.antler.co/) | Weaker fit if they want idea-stage matching; lead with shipped product |
-| **a16z Speedrun** (or similar VC programs) | Fast capital and brand if you clear the bar | Search current a16z founder programs | Apply when you have a pilot or clear LOIs |
-
-### Africa and South Africa first
-
-| Program | Why it fits | Start here | Notes |
-|---------|-------------|------------|-------|
-| **Founders Factory Africa** | Builds with African startups; health is a common sector | [foundersfactory.africa](https://www.foundersfactory.africa/) | Lead with collection counter, waiting screen, beds, pickup QR |
-| **Google for Startups Africa** | Strong brand; often wants more traction | [startup.google.com](https://startup.google.com/) | Better after first live clinic |
-| **AUDA-NEPAD Home Grown Solutions (HGS)** | Pan-African health systems; digital health in scope | [Villgro Africa HGS](https://villgroafrica.org/funding_calls/home-grown-solutions-hgs-accelerator-africa/), [VC4A](https://vc4a.com/auda-nepad/hgs-2026/) | Frame as hospital OS, not consumer wellness |
-| **Africa Health-Tech Accelerator** | Digital health, hospital systems, telemedicine, remote monitoring | [menterprise.africa](https://menterprise.africa/opportunities/africa-health-tech-accelerator-2026/) | Closest sector match outside YC |
-
-### Health-focused (worth watching)
-
-| Program | Notes |
-|---------|-------|
-| University or LaunchLab healthtech cohorts (for example Stellenbosch LaunchLab when open) | Shorter incubation; demo Portal on staging |
-| Villgro Africa and similar health innovation calls | Grant or acceleration mix; check eligibility each year |
-| Corporate or hospital-group innovation programs in SA | Often warm intro after a live demo; bring price list privately |
-
-## Suggested order
-
-1. Finish and submit **YC** from [`yc/application.html`](yc/application.html).
-2. Same week, pick **one global** (Techstars or 500 Global) and **one Africa or health** program (HGS or Africa Health-Tech). Share that form here and we add `docs/incubator/<name>/`.
-3. Keep Founders Factory Africa and Google for Startups Africa for a second wave once a pilot clinic is live.
-4. Before each submit, ask for a final pass so answers match HEAD.
+1. Submit **YC** using [`yc/application.html`](yc/application.html).
+2. Start **Founders Factory Africa Scale**. Share that form here and we add `docs/incubator/founders-factory-africa/`.
+3. On Techstars, pick one **open healthcare** cohort if dates work.
+4. Bookmark HGS, Africa Health-Tech, and Google SA for the **next** open call.
+5. Before each submit, ask for a final pass so answers match HEAD.
 
 ## What not to chase first
 
 - Pure idea-stage “find a cofounder” programs (you already have founders and a product).
 - US FDA device accelerators (RaphCare is healthcare IT first; do not pitch as a diagnostic device).
 - Programs that demand relocation you cannot do unless the deal clearly pays for that move.
+- Closed 2026 cohort pages that only say “expired” with no next-year form yet.

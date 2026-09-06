@@ -6,11 +6,11 @@
 
 ## High-level summary of changes
 
-Thin home-screen install for Portal and Ops: `site.webmanifest`, 192/512 icons, theme color, and Apple touch icon. Staff can Add to Home Screen from the browser. No service worker (not a full offline PWA). Checklists and feature catalog updated.
+Thin home-screen install for Portal and Ops: `site.webmanifest`, 192/512 icons, theme color, and Apple touch icon. Staff can Add to Home Screen from the browser. No service worker (not a full offline PWA). Checklists and feature catalog updated. Partner update **5 Sep 2026** covers the 1.8.4 phone honesty work and the home-screen shortcut.
 
 ## Modules modified
 
-- **Portal / Ops / docs:** wwwroot manifests and icons; index.html meta; phone admin docs; feature checklists and catalog.
+- **Portal / Ops / docs:** wwwroot manifests and icons; index.html meta; phone admin docs; feature checklists and catalog; `partner-update-2026-09-05`.
 
 ---
 
