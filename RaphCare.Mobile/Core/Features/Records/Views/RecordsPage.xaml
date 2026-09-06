@@ -9,118 +9,115 @@
              Title="{Binding Title}"
              BackgroundColor="{StaticResource BackgroundColor}">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="24" RowSpacing="12">
-        <HorizontalStackLayout Grid.Row="0" Spacing="8">
-            <Button Text="{Binding RefreshButtonText}"
-                    Style="{StaticResource SecondaryButton}"
-                    Command="{Binding RefreshCommand}" />
-            <Button Text="{Binding ScanButtonText}"
-                    Style="{StaticResource SecondaryButton}"
-                    Command="{Binding ScanPosterCommand}" />
-        </HorizontalStackLayout>
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="24" Spacing="12">
+                <HorizontalStackLayout Spacing="8">
+                    <Button Text="{Binding RefreshButtonText}"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding RefreshCommand}" />
+                    <Button Text="{Binding ScanButtonText}"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ScanPosterCommand}" />
+                </HorizontalStackLayout>
 
-        <Button Grid.Row="1"
-                Text="{Binding ClearCheckInButtonText}"
-                IsVisible="{Binding ShowClearCheckIn}"
-                Style="{StaticResource SecondaryButton}"
-                Command="{Binding ClearCheckInCommand}"
-                HorizontalOptions="Start" />
+                <Button Text="{Binding ClearCheckInButtonText}"
+                        IsVisible="{Binding ShowClearCheckIn}"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding ClearCheckInCommand}"
+                        HorizontalOptions="Start" />
 
-        <VerticalStackLayout Grid.Row="2"
-                             Spacing="8"
-                             IsVisible="{Binding ShowPickup}">
-            <Label Text="{Binding PickupSectionTitle}" Style="{StaticResource SectionTitle}" />
-            <Label Text="{Binding PickupHint}"
-                   Style="{StaticResource BodySmall}"
-                   TextColor="{StaticResource MutedForegroundColor}" />
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding PickupItems}" Spacing="8">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:CollectionOrderDisplayItem">
-                        <Grid>
-                            <Border Style="{StaticResource CardBorder}" Padding="16" Margin="0">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="16" />
-                                </Border.StrokeShape>
-                                <VerticalStackLayout Spacing="4" InputTransparent="True">
-                                    <Label Text="{Binding KindLabel}" Style="{StaticResource BodySmall}" />
-                                    <Label Text="{Binding PickupCode}"
-                                           Style="{StaticResource TitleLarge}"
-                                           CharacterSpacing="4"
-                                           HorizontalTextAlignment="Center"
-                                           Margin="0" />
-                                    <Image Source="{Binding QrImage}"
-                                           HeightRequest="140"
-                                           WidthRequest="140"
-                                           HorizontalOptions="Center"
-                                           Aspect="AspectFit" />
-                                    <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-                                    <Label Text="{Binding ClinicName}"
-                                           Style="{StaticResource BodySmall}"
-                                           TextColor="{StaticResource MutedForegroundColor}" />
-                                    <Label Text="{Binding StatusText}"
-                                           Style="{StaticResource BodySmall}"
-                                           TextColor="{StaticResource MutedForegroundColor}">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsCalled}" Value="True">
-                                                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
-                                                <Setter Property="FontAttributes" Value="Bold" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                </VerticalStackLayout>
-                            </Border>
-                            <Button BackgroundColor="Transparent"
-                                    Opacity="0.02"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenDetailCommand}"
-                                    CommandParameter="{Binding VisitId}" />
-                        </Grid>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
+                <VerticalStackLayout Spacing="8"
+                                     IsVisible="{Binding ShowPickup}">
+                    <Label Text="{Binding PickupSectionTitle}" Style="{StaticResource SectionTitle}" />
+                    <Label Text="{Binding PickupHint}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding PickupItems}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:CollectionOrderDisplayItem">
+                                <Border Style="{StaticResource CardBorder}" Padding="16" Margin="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenDetailCommand}"
+                                            CommandParameter="{Binding VisitId}" />
+                                    </Border.GestureRecognizers>
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="{Binding KindLabel}" Style="{StaticResource BodySmall}" />
+                                        <Label Text="{Binding PickupCode}"
+                                               Style="{StaticResource TitleLarge}"
+                                               CharacterSpacing="4"
+                                               HorizontalTextAlignment="Center"
+                                               Margin="0" />
+                                        <Image Source="{Binding QrImage}"
+                                               HeightRequest="140"
+                                               WidthRequest="140"
+                                               HorizontalOptions="Center"
+                                               Aspect="AspectFit" />
+                                        <Label Text="{Binding DetailLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                        <Label Text="{Binding ClinicName}"
+                                               Style="{StaticResource BodySmall}"
+                                               TextColor="{StaticResource MutedForegroundColor}" />
+                                        <Label Text="{Binding StatusText}"
+                                               Style="{StaticResource BodySmall}"
+                                               TextColor="{StaticResource MutedForegroundColor}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsCalled}" Value="True">
+                                                    <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                                                    <Setter Property="FontAttributes" Value="Bold" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="12"
+                                     IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:HealthRecordListDisplayItem">
+                                <Border Style="{StaticResource CardBorder}"
+                                        Padding="16"
+                                        Margin="0,0,0,12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenDetailCommand}"
+                                            CommandParameter="{Binding Id}" />
+                                    </Border.GestureRecognizers>
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="{Binding PrimaryLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                        <Label Text="{Binding SecondaryLine}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Label Text="{Binding EmptyStateText}"
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="{Binding ShowEmpty}" />
+                </VerticalStackLayout>
+
+                <Label Text="{Binding ErrorMessage}"
+                       Style="{StaticResource BodyMedium}"
+                       TextColor="{StaticResource ErrorColor}"
+                       HorizontalTextAlignment="Center"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
             </VerticalStackLayout>
-        </VerticalStackLayout>
+        </ScrollView>
 
-        <Grid Grid.Row="3">
-            <CollectionView ItemsSource="{Binding Items}"
-                            SelectionMode="None"
-                            IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:HealthRecordListDisplayItem">
-                        <Grid Margin="0,0,0,12">
-                            <Border Style="{StaticResource CardBorder}" Padding="16" Margin="0">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="16" />
-                                </Border.StrokeShape>
-                                <VerticalStackLayout Spacing="4" InputTransparent="True">
-                                    <Label Text="{Binding PrimaryLine}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-                                    <Label Text="{Binding SecondaryLine}" Style="{StaticResource BodySmall}" TextColor="{StaticResource MutedForegroundColor}" />
-                                </VerticalStackLayout>
-                            </Border>
-                            <Button BackgroundColor="Transparent"
-                                    Opacity="0.02"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenDetailCommand}"
-                                    CommandParameter="{Binding Id}" />
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <Label Text="{Binding EmptyStateText}"
-                   Style="{StaticResource BodyMedium}"
-                   TextColor="{StaticResource MutedForegroundColor}"
-                   HorizontalTextAlignment="Center"
-                   VerticalOptions="Center"
-                   IsVisible="{Binding ShowEmpty}"
-                   InputTransparent="True" />
-
-            <Label Text="{Binding ErrorMessage}"
-                   Style="{StaticResource BodyMedium}"
-                   TextColor="{StaticResource ErrorColor}"
-                   VerticalOptions="Center"
-                   HorizontalTextAlignment="Center"
-                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   InputTransparent="True" />
-
-            <shared:BusyOverlay IsBusy="{Binding IsBusy}" Message="{Binding BusyMessage}" />
-        </Grid>
+        <shared:BusyOverlay IsBusy="{Binding IsBusy}" Message="{Binding BusyMessage}" />
     </Grid>
 </ContentPage>
