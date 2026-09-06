@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace RaphCare.Client.Models.Fleet;
@@ -16,6 +17,9 @@ public static partial class FleetDeviceScanParser
 
     /// <summary>A fillable value found in scan or OCR output.</summary>
     public sealed record Candidate(string Value, string Kind);
+
+    /// <summary>Suggested serial and MAC to put on the Add to stock form (both may be set).</summary>
+    public sealed record FillSuggestion(string? Serial, string? Mac);
 
     /// <summary>Parses free text from OCR or a barcode payload.</summary>
     public static Result Parse(string? rawText)
@@ -37,11 +41,33 @@ public static partial class FleetDeviceScanParser
             candidates.Add(new Candidate(trimmed, kind));
         }
 
-        foreach (Match match in MacRegex().Matches(text))
-            Add(NormalizeMac(match.Value), "Mac");
+        foreach (Match match in MacSeparatedRegex().Matches(text))
+        {
+            var normalized = NormalizeMac(match.Value);
+            if (normalized is not null)
+                Add(normalized, "Mac");
+        }
+
+        foreach (Match match in MacCompactRegex().Matches(text))
+        {
+            var normalized = NormalizeMac(match.Value);
+            if (normalized is not null)
+                Add(normalized, "Mac");
+        }
 
         foreach (Match match in SerialLabelRegex().Matches(text))
-            Add(match.Groups[1].Value, "Serial");
+        {
+            var labeled = match.Groups[1].Value.Trim();
+            if (LooksLikeMac(labeled))
+            {
+                var normalized = NormalizeMac(labeled);
+                if (normalized is not null)
+                    Add(normalized, "Mac");
+                continue;
+            }
+
+            Add(labeled, "Serial");
+        }
 
         // Packaging-style tokens (RC-E585-1001). Skip firmware, MAC, model labels, and Device Info chrome.
         foreach (Match match in SerialTokenRegex().Matches(text))
@@ -89,15 +115,53 @@ public static partial class FleetDeviceScanParser
         // Many packaging barcodes are the serial itself (including numeric-only codes).
         if (value.Length is >= 4 and <= 100)
         {
-            var kind = LooksLikeMac(value) ? "Mac" : "Serial";
+            if (LooksLikeMac(value))
+            {
+                var mac = NormalizeMac(value)!;
+                return new Result(DetectModel(value), mac, true, [new Candidate(mac, "Mac")]);
+            }
+
             return new Result(
                 DetectModel(value),
-                LooksLikeMac(value) ? NormalizeMac(value) : value,
-                LooksLikeMac(value),
-                [new Candidate(LooksLikeMac(value) ? NormalizeMac(value) : value, kind)]);
+                value,
+                false,
+                [new Candidate(value, "Serial")]);
         }
 
         return parsed;
+    }
+
+    /// <summary>
+    /// Picks serial and MAC for the form. Packaging serial wins for Serial; any MAC candidate fills Mac.
+    /// </summary>
+    public static FillSuggestion SuggestFill(Result result)
+    {
+        string? serial = null;
+        string? mac = null;
+
+        foreach (var candidate in result.Candidates)
+        {
+            if (string.Equals(candidate.Kind, "Serial", StringComparison.OrdinalIgnoreCase))
+                serial ??= candidate.Value;
+            else if (string.Equals(candidate.Kind, "Mac", StringComparison.OrdinalIgnoreCase))
+                mac ??= candidate.Value;
+        }
+
+        if (serial is null
+            && !string.IsNullOrWhiteSpace(result.PreferredValue)
+            && !result.PreferredLooksLikeMac)
+        {
+            serial = result.PreferredValue;
+        }
+
+        if (mac is null
+            && !string.IsNullOrWhiteSpace(result.PreferredValue)
+            && result.PreferredLooksLikeMac)
+        {
+            mac = result.PreferredValue;
+        }
+
+        return new FillSuggestion(serial, mac);
     }
 
     private static string? PreferValue(IReadOnlyList<Candidate> candidates)
@@ -155,10 +219,34 @@ public static partial class FleetDeviceScanParser
         return null;
     }
 
-    private static string NormalizeMac(string mac) =>
-        mac.Replace('-', ':').ToUpperInvariant();
+    /// <summary>Canonical <c>AA:BB:CC:DD:EE:FF</c>, or null when not a 6-byte hex MAC.</summary>
+    private static string? NormalizeMac(string mac)
+    {
+        var hex = HexOnlyRegex().Replace(mac.Trim(), string.Empty);
+        if (hex.Length != 12 || !HexOnlyValidRegex().IsMatch(hex))
+            return null;
 
-    private static bool LooksLikeMac(string value) => MacRegex().IsMatch(value.Trim());
+        var sb = new StringBuilder(17);
+        for (var i = 0; i < 12; i += 2)
+        {
+            if (i > 0)
+                sb.Append(':');
+            sb.Append(char.ToUpperInvariant(hex[i]));
+            sb.Append(char.ToUpperInvariant(hex[i + 1]));
+        }
+
+        return sb.ToString();
+    }
+
+    private static bool LooksLikeMac(string value)
+    {
+        var trimmed = value.Trim();
+        if (MacSeparatedRegex().IsMatch(trimmed))
+            return true;
+
+        // OCR often drops colons (6F9ACBACE445). Require a hex letter so all-digit TP blobs stay out.
+        return MacCompactRegex().IsMatch(trimmed);
+    }
 
     private static bool LooksLikeFirmwareVersion(string value) =>
         FirmwareVersionRegex().IsMatch(value);
@@ -204,7 +292,17 @@ public static partial class FleetDeviceScanParser
     }
 
     [GeneratedRegex(@"\b(?:[0-9A-Fa-f]{2}[:\-]){5}[0-9A-Fa-f]{2}\b", RegexOptions.CultureInvariant)]
-    private static partial Regex MacRegex();
+    private static partial Regex MacSeparatedRegex();
+
+    /// <summary>Compact 12-hex MAC from OCR without separators. Requires A-F so digit-only TP blobs are skipped.</summary>
+    [GeneratedRegex(@"\b(?=[0-9A-Fa-f]*[A-Fa-f])[0-9A-Fa-f]{12}\b", RegexOptions.CultureInvariant)]
+    private static partial Regex MacCompactRegex();
+
+    [GeneratedRegex(@"[^0-9A-Fa-f]", RegexOptions.CultureInvariant)]
+    private static partial Regex HexOnlyRegex();
+
+    [GeneratedRegex(@"^[0-9A-Fa-f]{12}$", RegexOptions.CultureInvariant)]
+    private static partial Regex HexOnlyValidRegex();
 
     [GeneratedRegex(
         @"\b(?:Serial(?:\s*(?:number|no\.?|#))?|S/?N)\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-_/]{3,79})\b",

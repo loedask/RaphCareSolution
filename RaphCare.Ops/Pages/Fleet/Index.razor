@@ -826,25 +826,32 @@
             _newModel = result.SuggestedModel;
         }
 
-        if (string.IsNullOrWhiteSpace(result.PreferredValue))
+        var fill = FleetDeviceScanParser.SuggestFill(result);
+        if (string.IsNullOrWhiteSpace(fill.Serial) && string.IsNullOrWhiteSpace(fill.Mac))
         {
             _addError = AppResources.T("Fleet_ScanNothingFound");
             _scanMacHint = null;
             return;
         }
 
-        if (result.PreferredLooksLikeMac)
+        if (!string.IsNullOrWhiteSpace(fill.Serial))
+            _newSerial = fill.Serial;
+
+        if (!string.IsNullOrWhiteSpace(fill.Mac))
         {
-            _newMac = result.PreferredValue;
-            _scanMacHint = fromBarcode ? null : AppResources.T("Fleet_ScanMacHint");
+            _newMac = fill.Mac;
+            // Hint only when MAC was the only find (packaging serial still preferred for claim).
+            _scanMacHint = string.IsNullOrWhiteSpace(fill.Serial) && !fromBarcode
+                ? AppResources.T("Fleet_ScanMacHint")
+                : null;
         }
         else
         {
-            _newSerial = result.PreferredValue;
             _scanMacHint = null;
         }
 
         _addSuccess = AppResources.T("Fleet_ScanFound");
+        _addError = null;
     }
 
     private void ApplyCandidate(FleetDeviceScanParser.Candidate candidate)

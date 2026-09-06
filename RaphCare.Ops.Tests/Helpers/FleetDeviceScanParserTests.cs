@@ -30,6 +30,53 @@ public sealed class FleetDeviceScanParserTests
     }
 
     [Fact]
+    public void Parse_DeviceInfoOcr_CompactMacWithoutColons_IsMacNotSerial()
+    {
+        // OCR often drops colons; this matches the Ops Fleet photo case (Serial ET595 + hex blob).
+        const string ocr =
+            """
+            Device Info
+            ET595
+            MAC
+            6F9ACBACE445
+            Version
+            00.53.04.00-5291
+            TP
+            04.00.00.00.00.00
+            """;
+
+        var result = FleetDeviceScanParser.Parse(ocr);
+        var fill = FleetDeviceScanParser.SuggestFill(result);
+
+        Assert.Contains(
+            result.Candidates,
+            c => string.Equals(c.Kind, "Mac", StringComparison.OrdinalIgnoreCase)
+                 && c.Value == "6F:9A:CB:AC:E4:45");
+        Assert.DoesNotContain(
+            result.Candidates,
+            c => string.Equals(c.Kind, "Serial", StringComparison.OrdinalIgnoreCase)
+                 && c.Value.Contains("6F9A", StringComparison.OrdinalIgnoreCase));
+        Assert.Equal("ET595", fill.Serial);
+        Assert.Equal("6F:9A:CB:AC:E4:45", fill.Mac);
+    }
+
+    [Fact]
+    public void SuggestFill_PackagingSerialAndMac_FillsBothFields()
+    {
+        const string ocr =
+            """
+            Model E580
+            Serial number: RC-E580-2044
+            MAC 11:22:33:44:55:66
+            """;
+
+        var fill = FleetDeviceScanParser.SuggestFill(FleetDeviceScanParser.Parse(ocr));
+
+        Assert.Equal("RC-E580-2044", fill.Serial);
+        Assert.Equal("11:22:33:44:55:66", fill.Mac);
+    }
+
+    [Fact]
     public void Parse_PackagingSerialLabel_PrefersSerialOverNearbyMac()
     {
         const string ocr =
@@ -44,6 +91,17 @@ public sealed class FleetDeviceScanParserTests
         Assert.Equal("E580", result.SuggestedModel);
         Assert.Equal("RC-E580-2044", result.PreferredValue);
         Assert.False(result.PreferredLooksLikeMac);
+    }
+
+    [Fact]
+    public void Parse_AllDigitTwelveHex_IsNotTreatedAsMac()
+    {
+        // TP blobs can OCR as 12 digits; those must not become Bluetooth MAC.
+        var result = FleetDeviceScanParser.Parse("TP 040000000000 Version 00.53.04.00");
+
+        Assert.DoesNotContain(
+            result.Candidates,
+            c => string.Equals(c.Kind, "Mac", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]

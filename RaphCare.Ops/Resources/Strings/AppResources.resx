@@ -91,7 +91,7 @@
   <data name="Fleet_StepCaptureTitle" xml:space="preserve"><value>Capture</value></data>
   <data name="Fleet_StepCaptureLead" xml:space="preserve"><value>Scan a barcode, take a picture, or choose a photo of packaging or Device Info.</value></data>
   <data name="Fleet_StepConfirmTitle" xml:space="preserve"><value>Confirm and add</value></data>
-  <data name="Fleet_StepConfirmLead" xml:space="preserve"><value>Choose the owning hospital, check the serial and MAC, then add the watch to stock.</value></data>
+  <data name="Fleet_StepConfirmLead" xml:space="preserve"><value>Choose the owning hospital, then check serial and Bluetooth MAC against the watch Device Info before you add.</value></data>
   <data name="Fleet_StockTabsAria" xml:space="preserve"><value>Stock filters</value></data>
   <data name="Fleet_TabAll" xml:space="preserve"><value>All</value></data>
   <data name="Fleet_TabInStock" xml:space="preserve"><value>In stock</value></data>
@@ -153,7 +153,7 @@
   <data name="Fleet_ScanOcrLoadFailed" xml:space="preserve"><value>Could not start text recognition in this browser (network or script blocked). Try Chrome or Edge, allow the page to load scripts, or type the serial.</value></data>
   <data name="Fleet_ScanOcrFailed" xml:space="preserve"><value>Text recognition failed on that image. Try a closer, sharper shot of the watch Device Info screen, or type the serial.</value></data>
   <data name="Fleet_ScanNothingFound" xml:space="preserve"><value>No serial, barcode, or MAC found. Type the packaging serial, or take a clearer photo.</value></data>
-  <data name="Fleet_ScanFound" xml:space="preserve"><value>Filled from scan. Check the serial before you add the device.</value></data>
+  <data name="Fleet_ScanFound" xml:space="preserve"><value>Filled from scan. Check the serial and Bluetooth MAC against Device Info before you add. Photos can misread letters and numbers.</value></data>
   <data name="Fleet_ScanMacHint" xml:space="preserve"><value>This looks like a Bluetooth MAC from Device Info. It is filled in the MAC field. Prefer the packaging serial for claim when you have it.</value></data>
   <data name="Fleet_ScanCandidates" xml:space="preserve"><value>Use a value from the photo:</value></data>
   <data name="Fleet_ScanExtracting" xml:space="preserve"><value>Reading photo…</value></data>
