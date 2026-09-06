@@ -38,6 +38,7 @@ Global Standard is the SKU Azure lists for this model in South Africa North. Tok
 Cap blast radius:
 
 - Keep `PatientAssistant:MaxCompletionTokens` at 512 (already the API default).
+- Keep `PatientAssistant:MaxPriorMessages` at 8 (last few chat turns only; server windows again even if the phone sends more).
 - Keep deployment capacity low (10K tokens per minute at capacity 10).
 - Optional: a Cost Management budget on **this OpenAI account only** (default $15 / month, email `raphcare@yindula.com`). That is an alert, not a hard shutoff.
 

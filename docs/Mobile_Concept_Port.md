@@ -163,7 +163,7 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Privacy | `Privacy.tsx` | `PrivacyPage` (local toggles, delete flow) | ☑ |
 | Help & support | `HelpSupport.tsx` | `HelpSupportPage` | ☑ |
 | Notifications | (concept notifications) | `NotificationsPage` (list, mark read, push registration API) | ☑ |
-| AI assistant | `AIAssistant` | `AiAssistantPage` (bubble thread, prior turns in session; `POST api/patient/ai-assistant/chat`, no auto PHI) | ☑ |
+| AI assistant | `AIAssistant` | `AiAssistantPage` (bubble thread; last 8 turns as model context; `POST api/patient/ai-assistant/chat`, no auto PHI) | ☑ |
 | Appointments | `Appointments.tsx`, `BookAppointment.tsx`, `AppointmentDetails.tsx` | `AppointmentsPage`, `BookAppointmentPage`, `AppointmentDetailPage` | ☑ |
 | Health records | `HealthRecords.tsx`, `HealthRecordDetails.tsx` | `RecordsPage`, `HealthRecordDetailPage` | ☑ |
 | Insurance | `Insurance.tsx` | `InsurancePage` (+ add / detail) | ☑ |
