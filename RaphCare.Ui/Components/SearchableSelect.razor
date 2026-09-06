@@ -11,14 +11,15 @@
             aria-expanded="@_open"
             aria-controls="@_listId"
             disabled="@Disabled"
-            @onclick="ToggleAsync">
+            @onclick="ToggleAsync"
+            @onclick:stopPropagation="true">
         <span class="searchable-select-value @(HasValue ? null : "placeholder")">@DisplayLabel</span>
         <span class="searchable-select-caret" aria-hidden="true">▾</span>
     </button>
 
     @if (_open)
     {
-        <div class="searchable-select-backdrop" @onclick="CloseAsync"></div>
+        <div class="searchable-select-backdrop" @onclick="CloseAsync" @onmousedown:preventDefault="true"></div>
         <div class="searchable-select-panel" @onclick:stopPropagation="true">
             <input @ref="_searchInput"
                    class="searchable-select-search"
@@ -42,7 +43,9 @@
                         <li role="option"
                             class="searchable-select-option @(IsSelected(option) ? "selected" : null) @(index == _activeIndex ? "active" : null)"
                             aria-selected="@IsSelected(option)"
-                            @onclick="() => SelectAsync(option)">
+                            @onmousedown:preventDefault="true"
+                            @onclick="() => SelectAsync(option)"
+                            @onclick:stopPropagation="true">
                             @option.Label
                         </li>
                     }
@@ -66,6 +69,7 @@
     private bool _open;
     private bool _focusSearch;
     private bool _bindDismiss;
+    private bool _suppressNextToggle;
     private string _query = string.Empty;
     private int _activeIndex;
     private IReadOnlyList<SelectOption<TValue>> _filtered = Array.Empty<SelectOption<TValue>>();
@@ -156,6 +160,13 @@
         if (Disabled)
             return;
 
+        // A wrapping <label> re-activates this trigger after an option click; ignore that ghost toggle.
+        if (_suppressNextToggle)
+        {
+            _suppressNextToggle = false;
+            return;
+        }
+
         if (_open)
         {
             await CloseAsync().ConfigureAwait(false);
@@ -194,8 +205,11 @@
 
     private async Task SelectAsync(SelectOption<TValue> option)
     {
+        // Close first, then notify parent. Suppress the next trigger toggle so a wrapping
+        // <label> cannot reopen the panel after the option click.
+        _suppressNextToggle = true;
+        await CloseCoreAsync().ConfigureAwait(false);
         await ValueChanged.InvokeAsync(option.Value).ConfigureAwait(false);
-        await CloseAsync().ConfigureAwait(false);
     }
 
     /// <summary>Called from JS when the user presses outside the select.</summary>

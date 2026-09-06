@@ -78,13 +78,13 @@
 ### RaphCare.Web
 - Blazor WASM structure (App, components, pages, etc.); references RaphCare.Client
 - Local development: `dotnet run --project RaphCare.Web`
-- Staff portal today is desktop-first. Future: same admin on a phone via responsive UI, then a thin install, not a full PWA. See **docs/15_Web_Admin_On_Phone.md**.
+- Staff portal works on phone and tablet (responsive layout) plus a thin home-screen install (manifest + icons). Not a full offline PWA. See **docs/15_Web_Admin_On_Phone.md**.
 
 ### RaphCare.Portal.Host
 - Thin ASP.NET Core host (`UseBlazorFrameworkFiles`, static files, `MapFallbackToFile("index.html")`)
 - Project reference to **RaphCare.Web**; publish this project (not WASM alone) to **Linux** App Service
 - Same approach as Bobeta `Bobeta.Web.Host`
-- Maps `.webmanifest` for a possible later thin install; no manifest is served yet.
+- Serves `site.webmanifest` (and maps `.webmanifest`) for thin home-screen install on Portal and Ops.
 - Forwards `ASPNETCORE_ENVIRONMENT` to Blazor WASM (`Blazor-Environment` header) and can serve `ApiBaseUrl` from App Service settings so the browser does not keep `localhost`.
 
 ### RaphCare.Mobile.Kernel

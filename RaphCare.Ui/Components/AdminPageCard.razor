@@ -3,28 +3,38 @@
         @if (ShowHeader)
         {
             <header class="admin-page-card-head">
-                <div>
-                    @if (!string.IsNullOrEmpty(Eyebrow))
-                    {
-                        <p class="admin-page-eyebrow">@Eyebrow</p>
-                    }
-                    @if (!string.IsNullOrEmpty(Title))
-                    {
-                        @if (LargeTitle)
+                <span class="admin-page-card-ornament" aria-hidden="true"></span>
+                <div class="admin-page-card-copy">
+                    <div class="admin-page-card-title-row">
+                        @if (!string.IsNullOrEmpty(Title))
                         {
-                            <h1>@Title</h1>
+                            @if (LargeTitle)
+                            {
+                                <h1>@Title</h1>
+                            }
+                            else
+                            {
+                                <h2>@Title</h2>
+                            }
                         }
-                        else
+                        @if (!string.IsNullOrEmpty(Eyebrow))
                         {
-                            <h2>@Title</h2>
+                            <p class="admin-page-eyebrow">@Eyebrow</p>
                         }
-                    }
+                    </div>
                     @if (!string.IsNullOrEmpty(Lead))
                     {
                         <p class="admin-page-lead">@Lead</p>
                     }
                 </div>
-                @_headMeta
+                <div class="admin-page-head-aside@(HasAsideContent ? null : " is-spacer")">
+                    @if (_headMeta is not null)
+                    {
+                        <div class="admin-page-head-meta">
+                            @_headMeta
+                        </div>
+                    }
+                </div>
             </header>
         }
         @ChildContent
@@ -46,6 +56,8 @@
         || !string.IsNullOrEmpty(Title)
         || !string.IsNullOrEmpty(Lead)
         || _headMeta is not null;
+
+    private bool HasAsideContent => _headMeta is not null;
 
     internal void SetHeadMeta(RenderFragment? meta)
     {

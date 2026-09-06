@@ -1,6 +1,6 @@
 # Web admin on a phone
 
-**Status:** product direction, not scheduled work. Hospital ops on the web remain complete for desktop use.
+**Status:** Portal and Ops work on phone and tablet: responsive layout plus a thin home-screen install (web app manifest and icons). Desktop remains the primary staff target. This is not a full offline PWA.
 
 ## Goal
 
@@ -10,32 +10,29 @@ This stays the Blazor WASM portal (`RaphCare.Web` hosted by `RaphCare.Portal.Hos
 
 Patients keep **RaphCare.Mobile**. Staff keep the web admin. Do not duplicate hospital ops into Mobile unless product later scopes a clinician app.
 
-## What to build when we pick this up
+## What shipped
 
-Order matters more than PWA branding.
+1. **Responsive admin UI.** Layouts, tables, top bar, forms, and hospital / fleet screens tighten under 768px and 480px. Keep polishing edge pages as you hit them on a phone.
+2. **Thin install.** `site.webmanifest`, 192/512 icons, theme color, and Apple touch icon on Portal and Ops. Staff can use the browser Add to Home Screen / Install app flow. Hosts already map `.webmanifest` to the right content type.
+3. **Not a true PWA** as the product story. No service worker, no offline clinical writes, no background sync queue, no staff listing in Play / App Store, no “admin app” that staff confuse with the patient app.
 
-1. **Responsive admin UI** (the real work). Layouts, tables, side nav, forms, and tele join must be usable on a small screen. There is already a 768px breakpoint that stacks the sidebar and hides search. That is not phone-ready hospital ops.
-2. **Thin install** after the UI works on a phone. Web app manifest, icons, name, and optionally caching the WASM shell so repeat visits on clinic Wi-Fi are faster. `RaphCare.Portal.Host` already maps `.webmanifest` to the right content type; nothing serves a manifest today.
-3. **Not a true PWA** as the product story. No offline clinical writes, no background sync queue, no staff listing in Play / App Store, no “admin app” that staff confuse with the patient app.
+## Why not a full PWA
 
-A responsive admin UI plus that thin install matters more than a true PWA.
-
-## Why not a full PWA first
-
-- Blazor WASM is a large download. Caching the shell helps. Caching **saves** (admissions, vitals, chart edits) is a clinical risk if staff think something persisted when it only queued.
-- Entra sign-in and Agora video are easy to break in standalone / installed browser mode (redirects, camera, microphone).
+- Blazor WASM is a large download. Caching the shell can wait until we have a clear update path.
+- Sign-in redirects and Agora video are easy to break in standalone / installed browser mode (camera, microphone). Today staff use email and password; if Entra is turned on later, re-test install redirects then.
 - Service workers often leave people on an old build after you ship.
 
 If we add a service worker later, keep it online-first: cache static assets only, with a clear update path.
 
 ## Current state
 
-- Not a PWA: no manifest, no service worker, no install tags in `RaphCare.Web/wwwroot/index.html`.
-- Admin is a desktop-first shell (`AdminLayout`) with limited narrow-width CSS.
+- Responsive admin UI is in place on Portal and Ops.
+- Thin home-screen install is available (manifest + icons). No service worker yet.
+- After adding a home-screen shortcut, confirm email/password sign-in still works. Re-check video join on a phone if you use that flow.
 
 ## Related
 
-- Engineering checklist: later / optional row under Step 1.
-- Partner checklist: “Later” note under hospital admin.
+- Engineering checklist: Step 1 phone-usable admin.
+- Partner checklist: Portal and Ops on a phone.
 - Structure: [`02_Solution_Structure.md`](./02_Solution_Structure.md) (`RaphCare.Web` / `RaphCare.Portal.Host`).
 - Patient app: [`09_Mobile_App_Guide.md`](./09_Mobile_App_Guide.md).

@@ -1,5 +1,6 @@
 using FluentValidation.Results;
 using MediatR;
+using RaphCare.Application.Common.Devices;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Domain.Devices;
@@ -38,6 +39,41 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
             ]);
         }
 
+        string? mac;
+        try
+        {
+            mac = BluetoothMacAddress.NormalizeOrNull(request.BluetoothMacAddress);
+        }
+        catch (FormatException)
+        {
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    nameof(CreateDeviceCommand.BluetoothMacAddress),
+                    "Enter a valid Bluetooth MAC (for example AA:BB:CC:DD:EE:FF).")
+            ]);
+        }
+
+        if (mac is not null)
+        {
+            var macConflict = await _repository.SearchAsync(
+                q => q.Where(d => d.BluetoothMacAddress == mac),
+                1,
+                1,
+                false,
+                cancellationToken).ConfigureAwait(false);
+
+            if (macConflict.Items.Count > 0)
+            {
+                throw new ValidationException(
+                [
+                    new ValidationFailure(
+                        nameof(CreateDeviceCommand.BluetoothMacAddress),
+                        "A device with this Bluetooth MAC is already in the fleet.")
+                ]);
+            }
+        }
+
         var typeId = request.DeviceTypeId == Guid.Empty
             ? KnownDeviceCatalogIds.WearableBleDeviceTypeId
             : request.DeviceTypeId;
@@ -50,6 +86,7 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
             ClinicId = request.ClinicId,
             SerialNumber = serial,
             Model = request.Model.Trim(),
+            BluetoothMacAddress = mac,
             DeviceTypeId = typeId,
             DeviceManufacturerId = manufacturerId,
             IsActive = true,

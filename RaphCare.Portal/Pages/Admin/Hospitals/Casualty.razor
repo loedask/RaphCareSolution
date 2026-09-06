@@ -50,7 +50,9 @@
         <div class="hospital-deck-stage">
         @if (_tab == "waiting")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")" Title="@AppResources.T("Casualty_WaitingTitle")">
+            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")"
+                           Title="@AppResources.T("Casualty_WaitingTitle")"
+                           Lead="@AppResources.T("Casualty_WaitingLead")">
                 <div class="admin-page-card-body">
                     <div class="admin-page-actions collection-find-actions">
                         <button type="button" class="btn btn-ghost" disabled="@_busy" @onclick="OpenWaitingScreenAsync">
@@ -121,7 +123,9 @@
         }
         else if (_tab == "called")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")" Title="@AppResources.T("Casualty_CalledTitle")">
+            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")"
+                           Title="@AppResources.T("Casualty_CalledTitle")"
+                           Lead="@AppResources.T("Casualty_CalledLead")">
                 <div class="admin-page-card-body">
                     @if (_board is null || _board.Called.Count == 0)
                     {
@@ -184,7 +188,9 @@
         }
         else if (_tab == "add")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")" Title="@AppResources.T("Casualty_AddWalkInTitle")">
+            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")"
+                           Title="@AppResources.T("Casualty_AddWalkInTitle")"
+                           Lead="@AppResources.T("Casualty_AddWalkInLead")">
                 <div class="admin-page-card-body">
                     <p class="hint">@AppResources.T("Casualty_WalkInHint")</p>
                     <div class="form-grid">
@@ -228,7 +234,9 @@
         }
         else if (_tab == "recent")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")" Title="@AppResources.T("Casualty_RecentTitle")">
+            <AdminPageCard Eyebrow="@AppResources.T("Casualty_Eyebrow")"
+                           Title="@AppResources.T("Casualty_RecentTitle")"
+                           Lead="@AppResources.T("Casualty_RecentLead")">
                 <div class="admin-page-card-body">
                     @if (_board is null || _board.Recent.Count == 0)
                     {

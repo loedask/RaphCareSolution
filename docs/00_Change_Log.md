@@ -2,6 +2,34 @@
 
 ## Date
 
+2026-09-06
+
+## High-level summary of changes
+
+Safer wearable pairing: patients must claim an assigned serial before Bluetooth Scan/Connect. The fleet device stores an optional Bluetooth MAC (Ops can set it at stock, or the first successful pair locks it). Wrong MAC is rejected. Portal and Ops device lists show Bluetooth MAC and activated date. Profile hub: real insurance badge, separate payment vs billing routes, Edit Profile photo upload, honest privacy delete/export copy.
+
+## Modules modified
+
+- **Domain / Persistence / Application / API / Client / Portal / Ops / Mobile / tests / docs:** `BluetoothMacAddress`, bind API, claim-first Connect, checklist and catalog.
+
+---
+
+## Date
+
+2026-09-05
+
+## High-level summary of changes
+
+Thin home-screen install for Portal and Ops: `site.webmanifest`, 192/512 icons, theme color, and Apple touch icon. Staff can Add to Home Screen from the browser. No service worker (not a full offline PWA). Checklists and feature catalog updated. Partner update **5 Sep 2026** covers the 1.8.4 phone honesty work and the home-screen shortcut.
+
+## Modules modified
+
+- **Portal / Ops / docs:** wwwroot manifests and icons; index.html meta; phone admin docs; feature checklists and catalog; `partner-update-2026-09-05`.
+
+---
+
+## Date
+
 2026-09-04
 
 ## High-level summary of changes

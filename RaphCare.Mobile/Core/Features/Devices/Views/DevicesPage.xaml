@@ -117,7 +117,7 @@
                         <Entry Grid.Column="0"
                                Placeholder="{Binding SerialPlaceholder}"
                                Text="{Binding SerialNumber}"
-                               Style="{StaticResource TextEntry}" />
+                               Style="{StaticResource DefaultEntry}" />
                         <Picker Grid.Column="1"
                                 WidthRequest="110"
                                 Title="{Binding SkuPickerTitle}"

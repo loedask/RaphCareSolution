@@ -4,20 +4,21 @@ Partner PDFs for product and web updates (separate from phone APK notes under [`
 
 | Path | What is here |
 |------|----------------|
-| `*.pdf` | Current PDFs to send (dated partner update, price list, demo accounts v2) |
-| [`archives/`](archives/) | Older dated partner-update PDFs (and older demo-accounts versions) |
+| `*.pdf` | Current PDFs to send (dated partner update, feature catalog v1, price list v1, demo accounts v2) |
+| [`archives/`](archives/) | Older dated partner-update PDFs and prior catalog / price list / demo-accounts versions |
 | [`sources/`](sources/) | Markdown, PDF config, CSS (edit here) |
 | [`brand/`](brand/) | Logo used in the PDFs |
 
 ## Export after editing sources
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartnerUpdatePdf.ps1 -Stem partner-update-2026-09-04b
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartnerUpdatePdf.ps1 -Stem raphcare-price-list
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartnerUpdatePdf.ps1 -Stem partner-update-2026-09-05
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartnerUpdatePdf.ps1 -Stem raphcare-feature-catalog-v1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartnerUpdatePdf.ps1 -Stem raphcare-price-list-v1
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartnerUpdatePdf.ps1 -Stem raphcare-demo-accounts-v2
 ```
 
-Archived dated note or older demo sheet:
+Archived dated note or older versioned sheet:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartnerUpdatePdf.ps1 -Stem partner-update-2026-08-29 -Archive

@@ -128,4 +128,21 @@ public abstract class BaseViewModel : INotifyPropertyChanged
             if (Shell.Current is { } shell)
                 await shell.DisplayAlertAsync(title ?? string.Empty, message, accept).ConfigureAwait(true);
         });
+
+    /// <summary>Shows an action sheet when Shell exists; returns null when Shell is unavailable or the user cancels.</summary>
+    protected static Task<string?> DisplayActionSheetSafeAsync(
+        string? title,
+        string cancel,
+        string? destruction,
+        params string[] buttons) =>
+        MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            if (Shell.Current is not { } shell)
+                return null;
+
+            var result = await shell.DisplayActionSheetAsync(title, cancel, destruction, buttons).ConfigureAwait(true);
+            if (string.IsNullOrEmpty(result) || string.Equals(result, cancel, StringComparison.Ordinal))
+                return null;
+            return result;
+        });
 }

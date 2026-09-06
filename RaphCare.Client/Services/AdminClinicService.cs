@@ -2111,6 +2111,8 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
                     Id = d.Id,
                     SerialNumber = d.SerialNumber,
                     Model = d.Model,
+                    BluetoothMacAddress = d.BluetoothMacAddress,
+                    ActivatedAt = d.ActivatedAt,
                     IsActive = d.IsActive,
                     IsAssigned = d.IsAssigned,
                     Status = d.Status,
@@ -2121,6 +2123,37 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         catch (HttpRequestException)
         {
             return Response<IReadOnlyList<ClinicDeviceListItem>>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<Guid>> AssignDeviceToPatientAsync(
+        Guid clinicId,
+        Guid deviceId,
+        Guid patientId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/devices/{deviceId}/assign",
+                    new { patientId },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<Guid>.Failure("Device or hospital not found, or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<Guid>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var id = await response.Content.ReadFromJsonAsync<Guid>(JsonOptions, cancellationToken).ConfigureAwait(false);
+            return Response<Guid>.Success(id);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<Guid>.Failure("We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -3798,6 +3831,8 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public Guid Id { get; set; }
         public string SerialNumber { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
+        public string? BluetoothMacAddress { get; set; }
+        public DateTime? ActivatedAt { get; set; }
         public bool IsActive { get; set; }
         public bool IsAssigned { get; set; }
         public string Status { get; set; } = string.Empty;

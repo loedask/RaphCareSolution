@@ -1,0 +1,83 @@
+@implements IDisposable
+
+<div class="admin-overflow @(_open ? "is-open" : null) @AlignClass">
+    @if (_open)
+    {
+        <button type="button"
+                class="admin-overflow-backdrop"
+                tabindex="-1"
+                aria-hidden="true"
+                @onclick="Close"></button>
+    }
+    <button type="button"
+            class="admin-overflow-trigger"
+            aria-label="@AriaLabel"
+            aria-haspopup="menu"
+            aria-expanded="@_open"
+            disabled="@Disabled"
+            @onclick="Toggle">
+        <svg class="admin-overflow-dots" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="5" r="1.75" />
+            <circle cx="12" cy="12" r="1.75" />
+            <circle cx="12" cy="19" r="1.75" />
+        </svg>
+    </button>
+    @if (_open)
+    {
+        <div class="admin-overflow-panel" role="menu" @onclick="Close">
+            @ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    private static AdminOverflowMenu? s_openMenu;
+    private bool _open;
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string AriaLabel { get; set; } = "More actions";
+    [Parameter] public bool Disabled { get; set; }
+    /// <summary>Horizontal alignment of the panel relative to the trigger. Use <c>end</c> for row headers.</summary>
+    [Parameter] public string Align { get; set; } = "start";
+
+    private string AlignClass => Align == "end" ? "admin-overflow-end" : "admin-overflow-start";
+
+    private void Toggle()
+    {
+        if (_open)
+        {
+            Close();
+            return;
+        }
+
+        s_openMenu?.CloseInternal();
+        s_openMenu = this;
+        _open = true;
+    }
+
+    private void Close() => CloseInternal();
+
+    private void CloseInternal()
+    {
+        if (!_open)
+        {
+            return;
+        }
+
+        _open = false;
+        if (ReferenceEquals(s_openMenu, this))
+        {
+            s_openMenu = null;
+        }
+
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        if (ReferenceEquals(s_openMenu, this))
+        {
+            s_openMenu = null;
+        }
+    }
+}

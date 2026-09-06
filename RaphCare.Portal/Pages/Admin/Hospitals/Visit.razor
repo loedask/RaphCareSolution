@@ -58,7 +58,9 @@
             <div class="hospital-deck-stage">
                 @if (_tab == "details")
                 {
-                    <AdminPageCard Eyebrow="@AppResources.T("Common_EncounterEyebrow")" Title="@AppResources.T("Common_Details")">
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_EncounterEyebrow")"
+                                   Title="@AppResources.T("Common_Details")"
+                                   Lead="@AppResources.T("Visit_DetailsCardLead")">
                         <div class="admin-page-card-body">
                             <AdminDefinitionGrid>
                                 <AdminDefinitionItem Label="@AppResources.T("Common_Started")" Value="@FormatLocal(_visit.VisitStart)" />
@@ -89,7 +91,9 @@
                 }
                 else if (_tab == "vitals")
                 {
-                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")" Title="@AppResources.T("Common_VitalsTitle")">
+                    <AdminPageCard Eyebrow="@AppResources.T("PatientDetail_ClinicalEyebrow")"
+                                   Title="@AppResources.T("Common_VitalsTitle")"
+                                   Lead="@AppResources.T("Visit_VitalsCardLead")">
                         <AdminPageCardMeta>
                             <span class="admin-progress-pill">@FormatVitalCount(_visit.Vitals.Count)</span>
                         </AdminPageCardMeta>

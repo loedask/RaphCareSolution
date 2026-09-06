@@ -40,6 +40,11 @@ public sealed class PatientAssistantAiOptions
     /// <summary>Sampling temperature for chat completions.</summary>
     public double Temperature { get; set; } = 0.5;
 
+    /// <summary>
+    /// Max earlier user/assistant turns sent with the current message (cost window). Default 8.
+    /// </summary>
+    public int MaxPriorMessages { get; set; } = 8;
+
     /// <summary>True when Azure OpenAI chat can be called.</summary>
     public bool IsAzureOpenAiConfigured =>
         !string.IsNullOrWhiteSpace(AzureOpenAiEndpoint)

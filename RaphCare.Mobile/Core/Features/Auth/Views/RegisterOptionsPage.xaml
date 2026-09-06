@@ -33,7 +33,12 @@
                                     <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
                                 </LinearGradientBrush>
                             </Border.Background>
-                            <Label Text="✉" FontSize="22" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Source="icon_mail_on_accent.png"
+                                   WidthRequest="24"
+                                   HeightRequest="24"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Spacing="2" VerticalOptions="Center">
                             <Label Text="{Binding EmailTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
@@ -59,7 +64,12 @@
                                     <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
                                 </LinearGradientBrush>
                             </Border.Background>
-                            <Label Text="📞" FontSize="22" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Source="icon_phone_on_accent.png"
+                                   WidthRequest="24"
+                                   HeightRequest="24"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Spacing="2" VerticalOptions="Center">
                             <Label Text="{Binding PhoneTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
@@ -85,7 +95,12 @@
                                     <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
                                 </LinearGradientBrush>
                             </Border.Background>
-                            <Label Text="🎤" FontSize="22" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Source="icon_mic_on_accent.png"
+                                   WidthRequest="24"
+                                   HeightRequest="24"
+                                   Aspect="AspectFit"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Spacing="2" VerticalOptions="Center">
                             <Label Text="{Binding VoiceTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />

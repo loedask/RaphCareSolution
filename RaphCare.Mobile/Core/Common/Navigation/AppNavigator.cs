@@ -175,13 +175,14 @@ public static class AppNavigator
         if (StubRoutes.Contains(pageRoute))
         {
             var q = $"featureName={Uri.EscapeDataString(display)}";
-            var path = absolute ? $"//{pageRoute}?{q}" : $"{pageRoute}?{q}";
+            var path = AbsoluteShellRouteRules.ToFeatureNavigationPath(pageRoute, absolute) + "?" + q;
             await SafeShellNavigator.GoToAsync(path);
             return;
         }
 
-        var normalPath = absolute ? "//" + pageRoute : pageRoute;
-        await SafeShellNavigator.GoToAsync(normalPath);
+        // Tab ShellContent routes need // or Home quick actions / See all fail to switch tabs.
+        await SafeShellNavigator.GoToAsync(
+            AbsoluteShellRouteRules.ToFeatureNavigationPath(pageRoute, absolute));
     }
 
     private static (bool enabled, string route) GetFeatureRoute(string route)

@@ -5,6 +5,7 @@ using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.MentalHealth;
+using RaphCare.Mobile.Core.Common.Home;
 using RaphCare.Mobile.Core.Common.Navigation;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
@@ -171,21 +172,50 @@ public sealed class MentalHealthViewModel : BaseViewModel
         IsBusy = true;
         try
         {
-            var response = await _mentalHealth.GetContentAsync(CancellationToken.None).ConfigureAwait(false);
-            if (!response.IsSuccess || response.Data is null)
+            var contentTask = _mentalHealth.GetContentAsync(CancellationToken.None);
+            var moodsTask = _mentalHealth.GetMyMoodCheckInsAsync(14, CancellationToken.None);
+            await Task.WhenAll(contentTask, moodsTask).ConfigureAwait(false);
+
+            var content = await contentTask.ConfigureAwait(false);
+            var moods = await moodsTask.ConfigureAwait(false);
+
+            if (!content.IsSuccess || content.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? T("MentalHealthLoadFailed");
+                ErrorMessage = content.ErrorMessage ?? T("MentalHealthLoadFailed");
                 return;
             }
 
-            InsightTitle = response.Data.InsightTitle;
-            InsightBody = response.Data.InsightBody;
-            MedicalDisclaimer = response.Data.MedicalDisclaimer;
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                MedicalDisclaimer = content.Data.MedicalDisclaimer;
+                ApplyMoodInsight(moods.IsSuccess ? moods.Data : null);
+            });
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    private void ApplyMoodInsight(IReadOnlyList<PatientMoodCheckInViewModel>? moods)
+    {
+        var kind = HomeWellnessInsightRules.Classify(moods?.Select(m => m.MoodScore) ?? Enumerable.Empty<int>());
+        if (kind == HomeWellnessInsightRules.Kind.None)
+        {
+            InsightTitle = T("HomeDailyHealthTip");
+            InsightBody = T("HomeWellnessNoMood");
+            return;
+        }
+
+        InsightTitle = T("HomeWellnessTitleFromMood");
+        InsightBody = kind switch
+        {
+            HomeWellnessInsightRules.Kind.Positive => T("HomeWellnessPositive"),
+            HomeWellnessInsightRules.Kind.Steady => T("HomeWellnessSteady"),
+            HomeWellnessInsightRules.Kind.Mixed => T("HomeWellnessMixed"),
+            HomeWellnessInsightRules.Kind.Low => T("HomeWellnessLow"),
+            _ => T("HomeWellnessNoMood"),
+        };
     }
 
     private async Task OnSelectMoodAsync(int index)
@@ -202,7 +232,12 @@ public sealed class MentalHealthViewModel : BaseViewModel
                     T("MentalHealthTitle"),
                     response.ErrorMessage ?? T("MentalHealthMoodSaveFailed"),
                     "OK"));
+            return;
         }
+
+        var moods = await _mentalHealth.GetMyMoodCheckInsAsync(14, CancellationToken.None).ConfigureAwait(false);
+        await MainThread.InvokeOnMainThreadAsync(() =>
+            ApplyMoodInsight(moods.IsSuccess ? moods.Data : null));
     }
 
     private async Task BeginAssessmentAsync(string assessmentType)

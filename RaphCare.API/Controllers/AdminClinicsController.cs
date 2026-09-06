@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.Organization.Commands.AdmitAdminClinicPatient;
+using RaphCare.Application.Features.Organization.Commands.AssignAdminClinicDeviceToPatient;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicBed;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicRoom;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicWard;
@@ -1312,6 +1313,27 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetDevices(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetAdminClinicDevicesQuery { ClinicId = id }, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Assign an in-stock hospital device to a patient of this hospital.</summary>
+    [HttpPost("{id:guid}/devices/{deviceId:guid}/assign", Name = "AssignAdminClinicDeviceToPatient")]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AssignDeviceToPatient(
+        Guid id,
+        Guid deviceId,
+        [FromBody] AssignAdminClinicDeviceToPatientRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new AssignAdminClinicDeviceToPatientCommand
+            {
+                ClinicId = id,
+                DeviceId = deviceId,
+                PatientId = body.PatientId
+            },
+            cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 

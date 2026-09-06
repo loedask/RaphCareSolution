@@ -129,6 +129,9 @@
   <data name="Common_Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Common_MoreActions" xml:space="preserve">
+    <value>More actions</value>
+  </data>
   <data name="Common_Remove" xml:space="preserve">
     <value>Remove</value>
   </data>
@@ -618,6 +621,12 @@
   <data name="Common_Model" xml:space="preserve">
     <value>Model</value>
   </data>
+  <data name="Common_BluetoothMac" xml:space="preserve">
+    <value>Bluetooth MAC</value>
+  </data>
+  <data name="Common_Activated" xml:space="preserve">
+    <value>Activated</value>
+  </data>
   <data name="Common_AssignedTo" xml:space="preserve">
     <value>Assigned to</value>
   </data>
@@ -829,7 +838,22 @@
     <value>Fleet</value>
   </data>
   <data name="Common_DevicesLead" xml:space="preserve">
-    <value>Monitoring devices registered to this hospital.</value>
+    <value>Watches stocked for this hospital by Ops. Assign an in-stock serial to a patient. The patient claims it in the phone app.</value>
+  </data>
+  <data name="Common_DevicesBoardEyebrow" xml:space="preserve">
+    <value>Fleet and alerts</value>
+  </data>
+  <data name="Common_DevicesBoardTitle" xml:space="preserve">
+    <value>Devices</value>
+  </data>
+  <data name="Common_DevicesBoardSectionsAria" xml:space="preserve">
+    <value>Devices sections</value>
+  </data>
+  <data name="Common_DevicesTabFleet" xml:space="preserve">
+    <value>Fleet</value>
+  </data>
+  <data name="Common_DevicesTabEmergency" xml:space="preserve">
+    <value>Emergency</value>
   </data>
   <data name="Common_DeviceCountLabel" xml:space="preserve">
     <value>{0} device</value>
@@ -838,7 +862,19 @@
     <value>{0} devices</value>
   </data>
   <data name="Common_NoDevicesYet" xml:space="preserve">
-    <value>No devices registered for this hospital yet. Devices appear after patient wearables sync or staff provisioning via the Devices API.</value>
+    <value>No devices for this hospital yet. Ask platform Ops to stock a serial under this hospital, then assign it here.</value>
+  </data>
+  <data name="Common_AssignDevice" xml:space="preserve">
+    <value>Assign</value>
+  </data>
+  <data name="Common_SelectPatientForDevice" xml:space="preserve">
+    <value>Select patient</value>
+  </data>
+  <data name="Common_CouldNotAssignDevice" xml:space="preserve">
+    <value>Could not assign the device.</value>
+  </data>
+  <data name="Common_DeviceAssigned" xml:space="preserve">
+    <value>Device assigned. Ask the patient to claim the serial in the app.</value>
   </data>
   <data name="Common_EmergencyEyebrow" xml:space="preserve">
     <value>Y6 4G emergency</value>
@@ -960,6 +996,9 @@
   <data name="Common_BookAppointmentTitle" xml:space="preserve">
     <value>Book appointment</value>
   </data>
+  <data name="Common_BookAppointmentLead" xml:space="preserve">
+    <value>Choose a patient, provider, and time to create a booking.</value>
+  </data>
   <data name="Common_InPerson" xml:space="preserve">
     <value>In person</value>
   </data>
@@ -974,6 +1013,9 @@
   </data>
   <data name="Common_RescheduleAppointment" xml:space="preserve">
     <value>Reschedule appointment</value>
+  </data>
+  <data name="Common_RescheduleAppointmentLead" xml:space="preserve">
+    <value>Pick a new start and end time for this booking.</value>
   </data>
   <data name="Common_NoAppointmentsMatchFilter" xml:space="preserve">
     <value>No appointments match this filter.</value>
@@ -1038,11 +1080,17 @@
   <data name="Common_Profile" xml:space="preserve">
     <value>Profile</value>
   </data>
+  <data name="Common_ProfileLead" xml:space="preserve">
+    <value>Name, contact details, and identity on file for this patient.</value>
+  </data>
   <data name="Common_HospitalLinkEyebrow" xml:space="preserve">
     <value>Hospital link</value>
   </data>
   <data name="Common_AccessSection" xml:space="preserve">
     <value>Access</value>
+  </data>
+  <data name="Common_AccessLead" xml:space="preserve">
+    <value>How this patient is linked to the hospital, and when access was granted.</value>
   </data>
   <data name="Common_RevokeHospitalAccess" xml:space="preserve">
     <value>Revoke hospital access</value>
@@ -1086,6 +1134,9 @@
   <data name="Common_VisitVitalsLead" xml:space="preserve">
     <value>Vitals recorded during encounters at this hospital.</value>
   </data>
+  <data name="Visit_VitalsCardLead" xml:space="preserve">
+    <value>Blood pressure, heart rate, temperature, and related readings for this visit.</value>
+  </data>
   <data name="Common_VitalCountLabel" xml:space="preserve">
     <value>{0} vital</value>
   </data>
@@ -1124,6 +1175,9 @@
   </data>
   <data name="Common_ProviderDetailsTitle" xml:space="preserve">
     <value>Clinician details</value>
+  </data>
+  <data name="Common_ProviderDetailsLead" xml:space="preserve">
+    <value>Contact details and role for this provider.</value>
   </data>
   <data name="Common_WeeklyScheduleTitle" xml:space="preserve">
     <value>Weekly schedule</value>
@@ -1581,6 +1635,9 @@
   <data name="Dashboard_UpcomingAppointmentsTitle" xml:space="preserve">
     <value>Upcoming appointments</value>
   </data>
+  <data name="Dashboard_UpcomingAppointmentsLead" xml:space="preserve">
+    <value>Upcoming appointments in the next seven days.</value>
+  </data>
   <data name="Dashboard_NoUpcoming7Days" xml:space="preserve">
     <value>No upcoming appointments in the next 7 days.</value>
   </data>
@@ -1905,6 +1962,9 @@
   <data name="Inpatient_AdmitPatientTitle" xml:space="preserve">
     <value>Admit patient</value>
   </data>
+  <data name="Inpatient_AdmitLead" xml:space="preserve">
+    <value>Find a patient and assign them to an open bed.</value>
+  </data>
   <data name="Inpatient_FindPatientLabel" xml:space="preserve">
     <value>Find patient</value>
   </data>
@@ -1925,6 +1985,9 @@
   </data>
   <data name="Inpatient_ActiveAdmissionsTitle" xml:space="preserve">
     <value>Active admissions</value>
+  </data>
+  <data name="Inpatient_ActiveAdmissionsLead" xml:space="preserve">
+    <value>Patients currently admitted, with ward and bed.</value>
   </data>
   <data name="Inpatient_NoPatientsAdmitted" xml:space="preserve">
     <value>No patients currently admitted.</value>
@@ -1962,6 +2025,9 @@
   <data name="Inpatient_BedsByWardTitle" xml:space="preserve">
     <value>Beds by ward</value>
   </data>
+  <data name="Inpatient_BedsByWardLead" xml:space="preserve">
+    <value>Bed map by ward, including who occupies each bed.</value>
+  </data>
   <data name="Inpatient_NoWardsYet" xml:space="preserve">
     <value>No wards yet. Add a physical facility, then create a ward, rooms, and beds.</value>
   </data>
@@ -1979,6 +2045,9 @@
   </data>
   <data name="Inpatient_AdmissionHistoryTitle" xml:space="preserve">
     <value>Admission history</value>
+  </data>
+  <data name="Inpatient_HistoryLead" xml:space="preserve">
+    <value>Past admissions you can filter by status and dates.</value>
   </data>
   <data name="Inpatient_StatusFilterLabel" xml:space="preserve">
     <value>Status filter</value>
@@ -2136,6 +2205,9 @@
   <data name="Appointments_TabSchedule" xml:space="preserve">
     <value>Schedule</value>
   </data>
+  <data name="Appointments_ScheduleLead" xml:space="preserve">
+    <value>Bookings for {0}. Times shown in {1}.</value>
+  </data>
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Patient</value>
   </data>
@@ -2172,6 +2244,9 @@
   <data name="TeleJoin_TabSession" xml:space="preserve">
     <value>Session</value>
   </data>
+  <data name="TeleJoin_SessionLead" xml:space="preserve">
+    <value>Join details for this telehealth session.</value>
+  </data>
   <data name="PatientDetail_Gender" xml:space="preserve">
     <value>Gender</value>
   </data>
@@ -2186,6 +2261,51 @@
   </data>
   <data name="PatientDetail_ClinicalEyebrow" xml:space="preserve">
     <value>Clinical</value>
+  </data>
+  <data name="PatientDetail_ClinicalChartTitle" xml:space="preserve">
+    <value>Clinical chart</value>
+  </data>
+  <data name="PatientDetail_ClinicalChartLead" xml:space="preserve">
+    <value>Switch between plans, diagnoses, medications, notes, and lab orders.</value>
+  </data>
+  <data name="PatientDetail_ClinicalSectionsAria" xml:space="preserve">
+    <value>Clinical sections</value>
+  </data>
+  <data name="PatientDetail_CoverageChartTitle" xml:space="preserve">
+    <value>Coverage and billing</value>
+  </data>
+  <data name="PatientDetail_CoverageChartLead" xml:space="preserve">
+    <value>Switch between insurance plans and invoices.</value>
+  </data>
+  <data name="PatientDetail_CoverageSectionsAria" xml:space="preserve">
+    <value>Coverage sections</value>
+  </data>
+  <data name="PatientDetail_CareChartTitle" xml:space="preserve">
+    <value>Care and wellbeing</value>
+  </data>
+  <data name="PatientDetail_CareChartLead" xml:space="preserve">
+    <value>Switch between mood, assessments, therapy, plans, visits, and more.</value>
+  </data>
+  <data name="PatientDetail_CareSectionsAria" xml:space="preserve">
+    <value>Care sections</value>
+  </data>
+  <data name="PatientDetail_AssessmentsTab" xml:space="preserve">
+    <value>Assessments</value>
+  </data>
+  <data name="PatientDetail_TherapyTab" xml:space="preserve">
+    <value>Therapy</value>
+  </data>
+  <data name="PatientDetail_BehavioralPlansTab" xml:space="preserve">
+    <value>Behavioral plans</value>
+  </data>
+  <data name="PatientDetail_AiNoteTab" xml:space="preserve">
+    <value>AI note</value>
+  </data>
+  <data name="PatientDetail_VitalsTab" xml:space="preserve">
+    <value>Vitals</value>
+  </data>
+  <data name="PatientDetail_VisitsTab" xml:space="preserve">
+    <value>Visits</value>
   </data>
   <data name="PatientDetail_AppointmentsLead" xml:space="preserve">
     <value>Bookings at this hospital.</value>
@@ -2204,6 +2324,9 @@
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} · {1} · times in {2}</value>
+  </data>
+  <data name="Visit_DetailsCardLead" xml:space="preserve">
+    <value>When the visit started and ended, and who was involved.</value>
   </data>
   <data name="Visit_UnitLabel" xml:space="preserve">
     <value>Unit</value>
@@ -2676,6 +2799,9 @@
   <data name="Collection_FindTitle" xml:space="preserve">
     <value>Find an order</value>
   </data>
+  <data name="Collection_FindLead" xml:space="preserve">
+    <value>Search by pickup code, patient name, or national health ID.</value>
+  </data>
   <data name="Collection_SearchLabel" xml:space="preserve">
     <value>Pickup code, name, or national health ID</value>
   </data>
@@ -2691,6 +2817,9 @@
   <data name="Collection_PrescriptionsTitle" xml:space="preserve">
     <value>Prescriptions to collect</value>
   </data>
+  <data name="Collection_PrescriptionsLead" xml:space="preserve">
+    <value>Medicines ready for patients to collect.</value>
+  </data>
   <data name="Collection_NoPrescriptions" xml:space="preserve">
     <value>No prescriptions waiting.</value>
   </data>
@@ -2705,6 +2834,9 @@
   </data>
   <data name="Collection_LabsTitle" xml:space="preserve">
     <value>Lab tests to complete</value>
+  </data>
+  <data name="Collection_LabsLead" xml:space="preserve">
+    <value>Lab tests ready for patients to collect.</value>
   </data>
   <data name="Collection_NoLabs" xml:space="preserve">
     <value>No lab tests waiting.</value>
@@ -2793,8 +2925,14 @@
   <data name="Collection_RecentPrescriptionsTitle" xml:space="preserve">
     <value>Recently collected</value>
   </data>
+  <data name="Collection_RecentPrescriptionsLead" xml:space="preserve">
+    <value>Prescriptions marked collected recently.</value>
+  </data>
   <data name="Collection_RecentLabsTitle" xml:space="preserve">
     <value>Recently completed labs</value>
+  </data>
+  <data name="Collection_RecentLabsLead" xml:space="preserve">
+    <value>Lab orders marked collected recently.</value>
   </data>
   <data name="Collection_NoRecent" xml:space="preserve">
     <value>Nothing collected yet in this search.</value>
@@ -3042,14 +3180,26 @@
   <data name="Casualty_WaitingTitle" xml:space="preserve">
     <value>Queue</value>
   </data>
+  <data name="Casualty_WaitingLead" xml:space="preserve">
+    <value>Walk-ins waiting to be called.</value>
+  </data>
   <data name="Casualty_CalledTitle" xml:space="preserve">
     <value>Called</value>
+  </data>
+  <data name="Casualty_CalledLead" xml:space="preserve">
+    <value>Patients already called from the waiting list.</value>
   </data>
   <data name="Casualty_AddWalkInTitle" xml:space="preserve">
     <value>Add walk-in</value>
   </data>
+  <data name="Casualty_AddWalkInLead" xml:space="preserve">
+    <value>Register a walk-in for triage and the waiting list.</value>
+  </data>
   <data name="Casualty_RecentTitle" xml:space="preserve">
     <value>Recent</value>
+  </data>
+  <data name="Casualty_RecentLead" xml:space="preserve">
+    <value>Recent casualty visits from this hospital.</value>
   </data>
   <data name="Casualty_WaitingOne" xml:space="preserve">
     <value>{0} waiting</value>
@@ -3204,8 +3354,14 @@
   <data name="Theatre_TodaysList" xml:space="preserve">
     <value>Today's list</value>
   </data>
+  <data name="Theatre_TodaysListLead" xml:space="preserve">
+    <value>Cases scheduled for the operating theatre today.</value>
+  </data>
   <data name="Theatre_AddCase" xml:space="preserve">
     <value>Add case</value>
+  </data>
+  <data name="Theatre_AddCaseLead" xml:space="preserve">
+    <value>Add a patient to today's operating list.</value>
   </data>
   <data name="Theatre_NoCases" xml:space="preserve">
     <value>No theatre cases for today.</value>
@@ -3294,11 +3450,20 @@
   <data name="Referral_OpenList" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="Referral_OpenListLead" xml:space="preserve">
+    <value>Referrals still open for follow-up.</value>
+  </data>
   <data name="Referral_Recent" xml:space="preserve">
     <value>Recent</value>
   </data>
+  <data name="Referral_RecentLead" xml:space="preserve">
+    <value>Referrals logged recently at this hospital.</value>
+  </data>
   <data name="Referral_LogReferral" xml:space="preserve">
     <value>Log referral</value>
+  </data>
+  <data name="Referral_LogLead" xml:space="preserve">
+    <value>Record an outbound referral for a patient.</value>
   </data>
   <data name="Referral_ReferredTo" xml:space="preserve">
     <value>Referred to</value>
@@ -3378,8 +3543,14 @@
   <data name="Roster_TodaysList" xml:space="preserve">
     <value>Who is on</value>
   </data>
+  <data name="Roster_TodaysListLead" xml:space="preserve">
+    <value>Who is on duty for the selected day and shift.</value>
+  </data>
   <data name="Roster_AddPerson" xml:space="preserve">
     <value>Add to roster</value>
+  </data>
+  <data name="Roster_AddPersonLead" xml:space="preserve">
+    <value>Put a staff member on the roster for a day and shift.</value>
   </data>
   <data name="Roster_DayLabel" xml:space="preserve">
     <value>Day</value>

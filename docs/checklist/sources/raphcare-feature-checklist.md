@@ -28,7 +28,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-09-04
+Last reviewed: 2026-09-06
 
 ---
 
@@ -49,8 +49,8 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, lab orders (admin or doctor, InProgress)
 - [x] Collection board: search pending prescriptions/labs, camera QR scan, call a code onto the waiting screen, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR, public waiting-screen token (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs, profile photo when the patient uploaded one
-- [x] Clinic devices list
-- [x] Platform fleet inventory API (CreateDevice, AssignDeviceToPatient, filtered GetDevices) + claim-only patient register
+- [x] Clinic devices list + hospital assign in-stock device to linked patient (`POST …/devices/{deviceId}/assign`)
+- [x] Platform fleet inventory API (CreateDevice with optional Bluetooth MAC, AssignDeviceToPatient, filtered GetDevices) + patient claim (hospital: prior assignment; Direct: packaging self-claim when clinic allows) + patient bind Bluetooth MAC after first pair
 - [x] Tele-session start (Agora join info for admin)
 
 ### Admin panel (Web)
@@ -65,9 +65,9 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page (hospital-deck)
 - [x] Admin dashboard (hospital-scoped; multi-hospital accounts use All hospitals first; single hospital auto-selects)
-- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): stock-in serials, assign to patient (separate app from Portal)
+- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): Portal-style top bar; stock serials under a hospital or Direct (type, packaging barcode/QR scan, take picture, or choose photo; images stay in-browser); optional Ops assign. Hospital Portal Devices assigns in-stock watches to patients.
 - [x] Web UI language switcher (en / fr / ln / sw)
-- [ ] Phone-usable admin (responsive layout, then thin install) `(optional / later)`: same web portal on phones; not a clinician MAUI app; not a full PWA. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
+- [x] Phone-usable admin (responsive layout + thin home-screen install): Portal and Ops top bar, forms, tables, hospital deck, and fleet tighten under 768px / 480px. Manifest and icons support Add to Home Screen. No offline service worker. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 
 ### Mobile
 
@@ -75,7 +75,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress (hospital administrator or doctor), a collection board where pharmacy, lab, or general staff can complete prescriptions and lab results, and a waiting screen that shows pickup codes only. Platform wearable fleet stock lives in the separate **RaphCare.Ops** app. Clinician Mobile stays out of scope. Phone use of the same web admin is later (optional); see [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress, collection board and waiting screens, and Ops fleet stock under hospital or Direct. Phone and tablet layout plus a thin home-screen install are in place. Clinician Mobile stays out of scope. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -146,27 +146,27 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 - [x] Phone OTP send / verify -> API JWT
 - [x] Voice onboarding (record, API, audio stored privately)
 - [x] Account created
-- [x] Home dashboard + quick links
+- [x] Home dashboard + quick links (upcoming, connected devices, health summary, and wellness tip from mood check-ins; empty when none; no demo doctor, fake vitals, or static "positive week" tip)
 - [x] Monochrome tintable icons on Home, Profile, Privacy, and Help (no multicolor emoji)
 - [x] Shell navigation and list loads hardened so failed taps / off-thread UI updates do not close the Android app
 - [x] Feature-flagged navigation / under-construction fallback
-- [x] Patient clinic selection: name search + `RC-…` reference code (Profile My clinic; registration picker); `X-Clinic-Id` from selected clinic with config fallback for demos; friendly tenant error messages
+- [x] Patient clinic selection: name search + `RC-…` reference code (Profile Active clinic; registration picker). Empty search does not dump the full directory (avoids looking like membership). **Hospitals linked to me** lists real membership / care-history clinics from the API; tap sets Active clinic. `X-Clinic-Id` from selected clinic with config fallback for demos; friendly tenant error messages
 
 ### Verticals (API + Client + MAUI)
 
 | Area | API | Client | Mobile UI | Notes |
 |------|-----|--------|-----------|-------|
-| Appointments | [x] | [x] | [x] | List, book (clinic from My clinic and clinician name picker), detail |
+| Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
-| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial; offline outbox retries |
+| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked Bluetooth MAC (first pair learns MAC); offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
 | Mental health | [x] | [x] | [x] | Content, mood check-in, patient PHQ-9 / GAD-7 self-assessment |
-| AI assistant | [x] | [x] | [x] | Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
+| AI assistant | [x] | [x] | [x] | Chat bubbles with in-session history; last 8 turns sent as model context; Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
 | Notifications | [x] | [x] | [x] | List / mark read / push registration |
-| Settings / profile | [x] | [x] | [x] | Edit, personal info, medical info, emergency contacts, privacy, help, language, change password, My clinic (name search / RC- code) |
+| Settings / profile | [x] | [x] | [x] | Edit (including photo upload), personal info, medical info (blood type picker with Unknown; allergy/chronic chips + Other), emergency contacts (pick from phone contacts or enter manually), insurance plan badge from API, payment methods vs billing history routes, honest privacy (local toggles; delete/export via support/clinic), help, language, change password, Active clinic (typed search / RC- code; not an auto-loaded membership list) |
 
 Screen visual parity table is marked done in `Mobile_Concept_Port.md` (last pass). Re-check when the React concept changes.
 
@@ -199,7 +199,7 @@ Push notifications on device:
 Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`, **`docs/14_Wearable_Capability_Catalog.md`**, desk steps in [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md)):
 
 - [x] Devices screen: BLE scan, connect, disconnect
-- [x] Patient claim of assigned fleet serial (no invent-serial register)
+- [x] Patient claim of fleet serial (hospital: prior staff assignment; Direct packaging self-claim when programme allows; no invent-serial register)
 - [x] E580 / E585 name filter (`E585E580DeviceFilter`, includes `ET580` / `ET585`) + "show all BLE" fallback
 - [x] Android Bluetooth / Nearby devices permission flow
 - [x] iOS Bluetooth usage string (`Info.plist`)
@@ -362,7 +362,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 | Area | % | Notes |
 |------|--:|-------|
-| Step 1 Admin outpatient | 100% | Clinician Mobile out of scope |
+| Step 1 Admin outpatient | 100% | Clinician Mobile out of scope; phone layout + thin install done |
 | Step 2 Inpatient MVP | 100% | Clinician Mobile out of scope |
 | Step 3 Patient Mobile | 63% | iOS video, push, wearables depth; Azure OpenAI mini wired |
 | Step 4 Staff / shared APIs | 92% | Therapy, care plans, AI MH notes; reporting polish |
@@ -383,7 +383,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 | **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle plus ward notes and discharge invoice; casualty queue and display token; theatre board; outbound referral board; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone use later (responsive + thin install, not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone layout + thin home-screen install (manifest + icons; not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---
@@ -404,7 +404,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 | [`../../14_Wearable_Capability_Catalog.md`](../../14_Wearable_Capability_Catalog.md) | SKU-agnostic band features + delivery phases |
 | [`../../10_Agora_Twilio_Setup.md`](../../10_Agora_Twilio_Setup.md) | Telehealth RTC setup |
 | [`../../16_Azure_OpenAI_Setup.md`](../../16_Azure_OpenAI_Setup.md) | Patient assistant and AI discharge drafts |
-| [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md) | Staff phone use of web admin: responsive UI, then thin install; not a full PWA |
+| [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md) | Staff phone use of web admin: responsive UI + thin home-screen install; not a full PWA |
 | [`../../17_Azure_Blob_Storage.md`](../../17_Azure_Blob_Storage.md) | Private photos and voice files |
 | [`../../02_Solution_Structure.md`](../../02_Solution_Structure.md) | Project layout |
 | [`../../06_Key_Workflows.md`](../../06_Key_Workflows.md) | Workflow narratives (update when inpatient ships docs) |

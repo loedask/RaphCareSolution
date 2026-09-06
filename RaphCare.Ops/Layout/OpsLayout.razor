@@ -1,40 +1,30 @@
 @inherits LayoutComponentBase
 
-<div class="admin-shell">
-    <aside class="admin-sidebar">
-        <div class="admin-brand">
-            <div class="admin-brand-icon">+</div>
-            <div>
-                <div class="admin-brand-title">@AppResources.T("Common_AppName")</div>
-                <div class="admin-brand-sub">@AppResources.T("OpsLayout_BrandSub")</div>
-            </div>
-        </div>
-
-        <nav class="admin-nav">
-            <div class="admin-nav-section">@AppResources.T("OpsLayout_NavSection")</div>
-            <NavLink class="admin-nav-link" href="/" Match="NavLinkMatch.All">
-                <span class="admin-nav-icon" aria-hidden="true">▦</span>
-                @AppResources.T("Common_Home")
-            </NavLink>
-            <NavLink class="admin-nav-link" href="/fleet" Match="NavLinkMatch.Prefix">
-                <span class="admin-nav-icon" aria-hidden="true">⌚</span>
-                @AppResources.T("Fleet_Nav")
-            </NavLink>
-        </nav>
-
-        <div class="admin-sidebar-footer">
-            <div class="admin-user-card">
-                <div class="admin-user-avatar">OP</div>
-                <div class="admin-user-meta">
-                    <div class="admin-user-name">@AppResources.T("OpsLayout_UserName")</div>
-                    <div class="admin-user-role">@AppResources.T("OpsLayout_UserRole")</div>
-                </div>
-            </div>
-            <button type="button" class="btn btn-ghost admin-signout" @onclick="SignOutAsync">@AppResources.T("Common_SignOut")</button>
-        </div>
-    </aside>
-
+<div class="admin-shell admin-shell-hospital">
     <div class="admin-main">
+        <header class="admin-topbar">
+            <div class="admin-topbar-left">
+                <a class="admin-topbar-brand" href="/" title="@AppResources.T("Common_Home")">
+                    <div class="admin-brand-icon admin-topbar-brand-icon">+</div>
+                    <span class="admin-topbar-brand-title">@AppResources.T("Common_AppName")</span>
+                </a>
+                <nav class="admin-workspace-nav" aria-label="@AppResources.T("OpsLayout_NavSection")">
+                    <NavLink class="admin-ops-nav-link" href="/" Match="NavLinkMatch.All">
+                        @AppResources.T("Common_Home")
+                    </NavLink>
+                    <NavLink class="admin-ops-nav-link" href="/fleet" Match="NavLinkMatch.Prefix">
+                        @AppResources.T("Fleet_Nav")
+                    </NavLink>
+                </nav>
+            </div>
+            <div class="admin-topbar-right">
+                <span class="admin-ops-user-pill">@AppResources.T("OpsLayout_UserRole")</span>
+                <button type="button" class="btn btn-ghost admin-topbar-signout" @onclick="SignOutAsync">
+                    @AppResources.T("Common_SignOut")
+                </button>
+            </div>
+        </header>
+
         <main class="admin-content">
             @Body
         </main>

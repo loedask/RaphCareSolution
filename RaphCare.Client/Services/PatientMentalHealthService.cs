@@ -17,6 +17,31 @@ public sealed class PatientMentalHealthService(HttpClient httpClient) : BaseHttp
         return Response<PatientMentalHealthContentViewModel>.Success(Map(result.Data));
     }
 
+    public async Task<Response<IReadOnlyList<PatientMoodCheckInViewModel>>> GetMyMoodCheckInsAsync(
+        int pageSize = 14,
+        CancellationToken cancellationToken = default)
+    {
+        var size = pageSize is < 1 or > 50 ? 14 : pageSize;
+        var result = await GetAsync<List<MoodCheckInDto>>(
+                $"api/patient/mental-health/mood-checkins?pageSize={size}",
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (!result.IsSuccess)
+            return Response<IReadOnlyList<PatientMoodCheckInViewModel>>.Failure(
+                result.ErrorMessage ?? "Could not load mood check-ins.",
+                result.StatusCode);
+
+        IReadOnlyList<PatientMoodCheckInViewModel> items = (result.Data ?? [])
+            .Select(d => new PatientMoodCheckInViewModel
+            {
+                Id = d.Id,
+                LoggedAt = d.LoggedAt,
+                MoodScore = d.MoodScore
+            })
+            .ToList();
+        return Response<IReadOnlyList<PatientMoodCheckInViewModel>>.Success(items);
+    }
+
     public async Task<Response<Guid>> LogMoodCheckInAsync(int moodScore, string? notes, CancellationToken cancellationToken = default)
     {
         var result = await PostAsync<CreatedGuidApiResponse>(
@@ -157,6 +182,13 @@ public sealed class PatientMentalHealthService(HttpClient httpClient) : BaseHttp
         public string? InsightTitle { get; set; }
         public string? InsightBody { get; set; }
         public string? MedicalDisclaimer { get; set; }
+    }
+
+    private sealed class MoodCheckInDto
+    {
+        public Guid Id { get; set; }
+        public DateTime LoggedAt { get; set; }
+        public int MoodScore { get; set; }
     }
 
     private class AssessmentListDto

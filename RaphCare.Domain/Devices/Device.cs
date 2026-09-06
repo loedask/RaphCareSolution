@@ -14,6 +14,8 @@ public class Device : AggregateRoot
     public Guid DeviceManufacturerId { get; set; }
     public Guid? DeviceFirmwareId { get; set; }
     public string Model { get; set; } = string.Empty;
+    /// <summary>Normalized Bluetooth MAC (<c>AA:BB:CC:DD:EE:FF</c>) when known; null until Ops stocks it or the patient locks it on first pair.</summary>
+    public string? BluetoothMacAddress { get; set; }
     public DateTime? ActivatedAt { get; set; }
     public bool IsActive { get; set; }
     public bool IsAssigned { get; set; }

@@ -13,9 +13,13 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
         builder.HasKey(e => e.Id);
         builder.Property(e => e.SerialNumber).IsRequired().HasMaxLength(100);
         builder.Property(e => e.Model).IsRequired().HasMaxLength(100);
+        builder.Property(e => e.BluetoothMacAddress).HasMaxLength(17);
         builder.Property(e => e.Status).IsRequired().HasMaxLength(50);
         builder.HasIndex(e => e.ClinicId);
         builder.HasIndex(e => e.SerialNumber).IsUnique();
+        builder.HasIndex(e => e.BluetoothMacAddress)
+            .IsUnique()
+            .HasFilter("[BluetoothMacAddress] IS NOT NULL");
         builder.HasIndex(e => e.DeviceTypeId);
         builder.HasIndex(e => e.DeviceManufacturerId);
         builder.HasOne(e => e.DeviceType).WithMany().HasForeignKey(e => e.DeviceTypeId).OnDelete(DeleteBehavior.Restrict);

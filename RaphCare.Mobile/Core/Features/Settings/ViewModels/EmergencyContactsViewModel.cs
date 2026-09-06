@@ -1,10 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.ApplicationModel.Communication;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Common.Settings;
+using RaphCare.Mobile.Core.Common.ViewModels;
 using RaphCare.Mobile.Core.Features.Settings.Models;
 using RaphCare.Mobile.Core.Features.Settings.Services;
-using RaphCare.Mobile.Core.Common.ViewModels;
+using MauiContacts = Microsoft.Maui.ApplicationModel.Communication.Contacts;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
@@ -39,7 +42,7 @@ public sealed class EmergencyContactsViewModel : BaseViewModel
 
         Contacts = new ObservableCollection<StoredEmergencyContact>();
         Contacts.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ShowEmpty));
-        AddCommand = new Command(() => ShowFormFor(null));
+        AddCommand = new Command(async () => await BeginAddAsync());
         CancelFormCommand = new Command(ResetForm);
         SaveFormCommand = new Command(async () => await SaveFormAsync());
         EditCommand = new Command<StoredEmergencyContact>(c => ShowFormFor(c));
@@ -159,6 +162,95 @@ public sealed class EmergencyContactsViewModel : BaseViewModel
     }
 
     private void SyncLocalCache() => _local.SetEmergencyContacts(Contacts.ToList());
+
+    private async Task BeginAddAsync()
+    {
+        if (ShowForm || IsBusy)
+            return;
+
+        var fromPhone = T("EmergencyContactsFromPhone");
+        var enterManually = T("EmergencyContactsEnterManually");
+        var choice = await DisplayActionSheetSafeAsync(
+            T("EmergencyContactsAddHowTitle"),
+            T("CommonCancel"),
+            destruction: null,
+            fromPhone,
+            enterManually).ConfigureAwait(false);
+
+        if (choice is null)
+            return;
+
+        if (string.Equals(choice, fromPhone, StringComparison.Ordinal))
+        {
+            await ImportFromPhoneContactsAsync().ConfigureAwait(false);
+            return;
+        }
+
+        if (string.Equals(choice, enterManually, StringComparison.Ordinal))
+            ShowFormFor(null);
+    }
+
+    private async Task ImportFromPhoneContactsAsync()
+    {
+        var status = await Permissions.RequestAsync<Permissions.ContactsRead>().ConfigureAwait(false);
+        if (status != PermissionStatus.Granted)
+        {
+            await AlertAsync(T("EmergencyContactsPermissionDenied")).ConfigureAwait(false);
+            return;
+        }
+
+        Contact? picked;
+        try
+        {
+            picked = await MainThread.InvokeOnMainThreadAsync(
+                () => MauiContacts.Default.PickContactAsync()).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            await AlertAsync(T("EmergencyContactsPickFailed")).ConfigureAwait(false);
+            return;
+        }
+
+        if (picked is null)
+            return;
+
+        var phoneChoices = EmergencyContactPhonePickerRules.DistinctPhoneChoices(
+            picked.Phones?.Select(p => p.PhoneNumber));
+
+        if (phoneChoices.Count == 0)
+        {
+            await AlertAsync(T("EmergencyContactsNoPhoneOnContact")).ConfigureAwait(false);
+            ShowFormFor(null);
+            return;
+        }
+
+        string? chosenPhone = phoneChoices[0];
+        if (phoneChoices.Count > 1)
+        {
+            chosenPhone = await DisplayActionSheetSafeAsync(
+                T("EmergencyContactsPickPhoneTitle"),
+                T("CommonCancel"),
+                destruction: null,
+                phoneChoices.ToArray()).ConfigureAwait(false);
+            if (chosenPhone is null)
+                return;
+        }
+
+        var mapped = EmergencyContactPhonePickerRules.MapFromPhoneContact(picked.DisplayName, [chosenPhone]);
+        ShowFormForImport(mapped.Name, mapped.Phone);
+    }
+
+    private void ShowFormForImport(string name, string phone)
+    {
+        _editId = null;
+        FormName = name;
+        FormRelationship = string.Empty;
+        FormPhone = phone;
+        ShowForm = true;
+        OnPropertyChanged(nameof(IsEditing));
+        OnPropertyChanged(nameof(FormTitle));
+        OnPropertyChanged(nameof(SaveFormButtonText));
+    }
 
     private void ShowFormFor(StoredEmergencyContact? contact)
     {

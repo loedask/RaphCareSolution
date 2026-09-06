@@ -25,20 +25,9 @@
                 </VerticalStackLayout>
                 <HorizontalStackLayout Grid.Column="1" Spacing="12" VerticalOptions="Start">
                     <Grid WidthRequest="44" HeightRequest="44">
-                        <Border BackgroundColor="{StaticResource CardColor}"
-                                Stroke="{StaticResource BorderColor}"
-                                StrokeThickness="1"
-                                Padding="0">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="12" />
-                            </Border.StrokeShape>
-                            <Border.Shadow>
-                                <Shadow Brush="Black" Opacity="0.06" Radius="8" Offset="0,2" />
-                            </Border.Shadow>
-                            <Label Text="🔔"
-                                   FontSize="18"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center" />
+                        <Border Style="{StaticResource AppIconWellAccent}">
+                            <Image Source="icon_bell_on_accent.png"
+                                   Style="{StaticResource AppIconImage}" />
                         </Border>
                         <Border WidthRequest="8"
                                 HeightRequest="8"
@@ -118,8 +107,10 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
-                            <Label Text="📞"
-                                   FontSize="26"
+                            <Image Source="icon_phone_on_accent.png"
+                                   WidthRequest="28"
+                                   HeightRequest="28"
+                                   Aspect="AspectFit"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center" />
                         </Border>
@@ -148,7 +139,8 @@
                     Stroke="{StaticResource BorderColor}"
                     StrokeThickness="1"
                     Padding="0"
-                    Margin="0,0,0,28">
+                    Margin="0,0,0,28"
+                    IsVisible="{Binding HasUpcomingAppointment}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16" />
                 </Border.StrokeShape>
@@ -246,6 +238,7 @@
                             CornerRadius="0"
                             Padding="0,14"
                             BorderWidth="0"
+                            IsVisible="{Binding ShowJoinConsultation}"
                             Command="{Binding JoinConsultationCommand}">
                         <Button.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -254,6 +247,33 @@
                             </LinearGradientBrush>
                         </Button.Background>
                     </Button>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="{StaticResource CardColor}"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="1"
+                    Padding="20"
+                    Margin="0,0,0,28"
+                    IsVisible="{Binding ShowUpcomingEmpty}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="Black" Opacity="0.06" Radius="10" Offset="0,3" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{Binding UpcomingEmptyText}"
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           Margin="0" />
+                    <Button Text="{Binding BookFromHomeText}"
+                            Style="{StaticResource TextButton}"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Start"
+                            Padding="0"
+                            Command="{Binding BookFromHomeCommand}" />
                 </VerticalStackLayout>
             </Border>
 
@@ -284,30 +304,7 @@
                                     <Shadow Brush="Black" Opacity="0.05" Radius="6" Offset="0,2" />
                                 </Border.Shadow>
                                 <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
-                                    <Border WidthRequest="44"
-                                            HeightRequest="44"
-                                            StrokeThickness="0"
-                                            HorizontalOptions="Center">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="12" />
-                                        </Border.StrokeShape>
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border"
-                                                         Binding="{Binding IsAccent}"
-                                                         Value="True">
-                                                <Setter Property="Background">
-                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                        <GradientStop Color="{StaticResource TealColor}" Offset="0" />
-                                                        <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
-                                                    </LinearGradientBrush>
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border"
-                                                         Binding="{Binding IsAccent}"
-                                                         Value="False">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource SecondaryColor}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
+                                    <Border Style="{StaticResource AppIconWellAccent}">
                                         <Image Source="{Binding IconSource}"
                                                WidthRequest="22"
                                                HeightRequest="22"
@@ -347,7 +344,8 @@
             </Grid>
             <CollectionView ItemsSource="{Binding HealthMetrics}"
                             Margin="0,0,0,28"
-                            SelectionMode="None">
+                            SelectionMode="None"
+                            IsVisible="{Binding HasHealthMetrics}">
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical"
                                      Span="2"
@@ -369,10 +367,17 @@
                             <VerticalStackLayout Spacing="0">
                                 <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,12">
                                     <Border Grid.Column="0"
-                                            Style="{StaticResource ProfileMenuIconBorder}"
                                             WidthRequest="36"
                                             HeightRequest="36"
-                                            Padding="8">
+                                            Padding="8"
+                                            StrokeThickness="0"
+                                            BackgroundColor="{Binding IconWellColor}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12" />
+                                        </Border.StrokeShape>
+                                        <Border.Shadow>
+                                            <Shadow Brush="#1B9BBB" Opacity="0.12" Radius="6" Offset="0,2" />
+                                        </Border.Shadow>
                                         <Image Source="{Binding IconSource}"
                                                WidthRequest="18"
                                                HeightRequest="18"
@@ -429,7 +434,8 @@
                                                        HeightRequest="36"
                                                        Spacing="2"
                                                        Margin="0,12,0,0"
-                                                       VerticalOptions="End">
+                                                       VerticalOptions="End"
+                                                       IsVisible="False">
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate x:DataType="models:HomeSparklineBar">
                                             <BoxView WidthRequest="6"
@@ -457,6 +463,20 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+            <Border BackgroundColor="{StaticResource CardColor}"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="1"
+                    Padding="20"
+                    Margin="0,0,0,28"
+                    IsVisible="{Binding ShowHealthEmpty}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Label Text="{Binding HealthEmptyText}"
+                       Style="{StaticResource BodyMedium}"
+                       TextColor="{StaticResource MutedForegroundColor}"
+                       Margin="0" />
+            </Border>
 
             <!-- Connected devices -->
             <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
@@ -475,7 +495,8 @@
                     Stroke="{StaticResource BorderColor}"
                     StrokeThickness="1"
                     Padding="0"
-                    Margin="0,0,0,28">
+                    Margin="0,0,0,28"
+                    IsVisible="{Binding HasConnectedDevices}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16" />
                 </Border.StrokeShape>
@@ -488,10 +509,17 @@
                         <DataTemplate x:DataType="models:HomeConnectedDeviceItem">
                             <Grid Padding="16,16" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                                 <Border Grid.Column="0"
-                                        Style="{StaticResource ProfileMenuIconBorder}"
                                         WidthRequest="40"
                                         HeightRequest="40"
-                                        Padding="8">
+                                        Padding="8"
+                                        StrokeThickness="0"
+                                        BackgroundColor="{Binding IconWellColor}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+                                    <Border.Shadow>
+                                        <Shadow Brush="#1B9BBB" Opacity="0.12" Radius="6" Offset="0,2" />
+                                    </Border.Shadow>
                                     <Image Source="{Binding IconSource}"
                                            WidthRequest="20"
                                            HeightRequest="20"
@@ -536,6 +564,20 @@
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
             </Border>
+            <Border BackgroundColor="{StaticResource CardColor}"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="1"
+                    Padding="20"
+                    Margin="0,0,0,28"
+                    IsVisible="{Binding ShowDevicesEmpty}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Label Text="{Binding DevicesEmptyText}"
+                       Style="{StaticResource BodyMedium}"
+                       TextColor="{StaticResource MutedForegroundColor}"
+                       Margin="0" />
+            </Border>
 
             <!-- AI wellness insight -->
             <Label Text="{Binding SectionAiInsight}"
@@ -551,21 +593,12 @@
                     <Shadow Brush="Black" Opacity="0.06" Radius="8" Offset="0,2" />
                 </Border.Shadow>
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
-                    <Border WidthRequest="40"
+                    <Border Style="{StaticResource AppIconWellAccent}"
+                            WidthRequest="40"
                             HeightRequest="40"
-                            StrokeThickness="0"
-                            Padding="0"
                             VerticalOptions="Start">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="{StaticResource TealColor}" Offset="0" />
-                                <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
-                            </LinearGradientBrush>
-                        </Border.Background>
-                        <Label Text="✨" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Image Source="icon_sparkles_on_accent.png"
+                               Style="{StaticResource AppIconImage}" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" Spacing="6">
                         <Label Text="{Binding DailyHealthTipTitle}"
@@ -579,6 +612,15 @@
                                TextColor="{StaticResource MutedForegroundColor}"
                                LineHeight="1.4"
                                Margin="0" />
+                        <Button Text="{Binding LogMoodCheckInText}"
+                                Style="{StaticResource TextButton}"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                HorizontalOptions="Start"
+                                Padding="0"
+                                Margin="0,4,0,0"
+                                IsVisible="{Binding ShowMoodEmpty}"
+                                Command="{Binding OpenMentalHealthCommand}" />
                         <Button Text="{Binding AskAiAssistantText}"
                                 Style="{StaticResource TextButton}"
                                 FontSize="14"
@@ -586,6 +628,7 @@
                                 HorizontalOptions="Start"
                                 Padding="0"
                                 Margin="0,4,0,0"
+                                IsVisible="{Binding HasMoodInsight}"
                                 Command="{Binding AskAiAssistantCommand}" />
                     </VerticalStackLayout>
                 </Grid>

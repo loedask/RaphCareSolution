@@ -3,6 +3,7 @@ using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.PatientDevices.Commands.RegisterMyDevice;
 using RaphCare.Domain.Devices;
+using RaphCare.Domain.Organization;
 using Xunit;
 using ValidationException = RaphCare.Application.Common.Exceptions.ValidationException;
 
@@ -17,11 +18,7 @@ public sealed class RegisterMyDeviceHandlerTests
         var clinicId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbb0001");
         var devices = new FakeRepository<Device>();
         var assignments = new FakeRepository<DeviceAssignment>();
-        var handler = new RegisterMyDeviceHandler(
-            devices,
-            assignments,
-            new FakeCurrentUser(patientId),
-            new FakePatientAccess([clinicId]));
+        var handler = CreateHandler(devices, assignments, patientId, [clinicId], clinics: []);
 
         var ex = await Assert.ThrowsAsync<ValidationException>(() =>
             handler.Handle(
@@ -55,13 +52,10 @@ public sealed class RegisterMyDeviceHandlerTests
             AssignedAt = DateTime.UtcNow,
             IsActive = true
         };
+        var clinic = Clinic(clinicId, allowSelfClaim: false);
         var devices = new FakeRepository<Device>([device]);
         var assignments = new FakeRepository<DeviceAssignment>([assignment]);
-        var handler = new RegisterMyDeviceHandler(
-            devices,
-            assignments,
-            new FakeCurrentUser(patientId),
-            new FakePatientAccess([clinicId]));
+        var handler = CreateHandler(devices, assignments, patientId, [clinicId], [clinic]);
 
         var result = await handler.Handle(
             new RegisterMyDeviceCommand { SerialNumber = "RC-E585-1001", ModelSku = "E585" },
@@ -73,7 +67,7 @@ public sealed class RegisterMyDeviceHandlerTests
     }
 
     [Fact]
-    public async Task ClaimRejectsWhenInStockButNotAssignedToPatient()
+    public async Task ClaimRejectsWhenInStockAtHospitalWithoutPriorAssignment()
     {
         var patientId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa0003");
         var clinicId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbb0003");
@@ -87,11 +81,12 @@ public sealed class RegisterMyDeviceHandlerTests
             Status = "InStock"
         };
         EntityId.SetId(device, Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccc0003"));
-        var handler = new RegisterMyDeviceHandler(
+        var handler = CreateHandler(
             new FakeRepository<Device>([device]),
             new FakeRepository<DeviceAssignment>(),
-            new FakeCurrentUser(patientId),
-            new FakePatientAccess([clinicId]));
+            patientId,
+            [clinicId],
+            [Clinic(clinicId, allowSelfClaim: false)]);
 
         var ex = await Assert.ThrowsAsync<ValidationException>(() =>
             handler.Handle(
@@ -99,6 +94,77 @@ public sealed class RegisterMyDeviceHandlerTests
                 CancellationToken.None));
 
         Assert.Contains(ex.Errors.Values.SelectMany(v => v), m => m.Contains("not assigned to you", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task PackagingSelfClaimCreatesAssignmentForDirectInStockDevice()
+    {
+        var patientId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa0004");
+        var clinicId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbb0004");
+        var device = new Device
+        {
+            ClinicId = clinicId,
+            SerialNumber = "RC-E585-DIRECT-1",
+            Model = "E585",
+            IsActive = true,
+            IsAssigned = false,
+            Status = "InStock"
+        };
+        EntityId.SetId(device, Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccc0004"));
+        var devices = new FakeRepository<Device>([device]);
+        var assignments = new FakeRepository<DeviceAssignment>();
+        var access = new FakePatientAccess([]);
+        var handler = CreateHandler(
+            devices,
+            assignments,
+            patientId,
+            access,
+            [Clinic(clinicId, allowSelfClaim: true)]);
+
+        var result = await handler.Handle(
+            new RegisterMyDeviceCommand { SerialNumber = "RC-E585-DIRECT-1", ModelSku = "E585" },
+            CancellationToken.None);
+
+        Assert.Equal(device.Id, result.DeviceId);
+        Assert.True(device.IsAssigned);
+        Assert.Equal("Assigned", device.Status);
+        Assert.Single(assignments.Items);
+        Assert.Contains(clinicId, access.GrantedClinicIds);
+    }
+
+    private static RegisterMyDeviceHandler CreateHandler(
+        IRepository<Device> devices,
+        IRepository<DeviceAssignment> assignments,
+        Guid patientId,
+        Guid[] clinicIds,
+        IEnumerable<Clinic> clinics) =>
+        CreateHandler(devices, assignments, patientId, new FakePatientAccess(clinicIds), clinics);
+
+    private static RegisterMyDeviceHandler CreateHandler(
+        IRepository<Device> devices,
+        IRepository<DeviceAssignment> assignments,
+        Guid patientId,
+        IPatientClinicAccessService access,
+        IEnumerable<Clinic> clinics) =>
+        new(
+            devices,
+            assignments,
+            new FakeRepository<Clinic>(clinics),
+            new FakeCurrentUser(patientId),
+            access,
+            new FakeUnitOfWork(),
+            new FakeClock());
+
+    private static Clinic Clinic(Guid id, bool allowSelfClaim)
+    {
+        var clinic = new Clinic
+        {
+            Name = "Test",
+            AllowPatientDeviceSelfClaim = allowSelfClaim,
+            IsActive = true
+        };
+        EntityId.SetId(clinic, id);
+        return clinic;
     }
 }
 
@@ -125,23 +191,40 @@ file sealed class FakeCurrentUser(Guid patientId) : ICurrentUserService
 
 file sealed class FakePatientAccess(Guid[] clinicIds) : IPatientClinicAccessService
 {
+    private readonly HashSet<Guid> _clinicIds = [.. clinicIds];
+    public List<Guid> GrantedClinicIds { get; } = [];
+
     public Task<bool> HasClinicAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct) =>
-        Task.FromResult(clinicIds.Contains(clinicId));
+        Task.FromResult(_clinicIds.Contains(clinicId));
 
     public Task EnsureClinicAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct) =>
-        clinicIds.Contains(clinicId) ? Task.CompletedTask : throw new ForbiddenAccessException("No access.");
+        _clinicIds.Contains(clinicId) ? Task.CompletedTask : throw new ForbiddenAccessException("No access.");
 
     public Task GrantEncounterAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct) =>
         Task.CompletedTask;
 
     public Task<Guid[]> GetAccessibleClinicIdsAsync(Guid patientId, CancellationToken ct) =>
-        Task.FromResult(clinicIds);
+        Task.FromResult(_clinicIds.ToArray());
 
-    public Task GrantManualAccessAsync(Guid patientId, Guid clinicId, string? notes, CancellationToken ct) =>
-        Task.CompletedTask;
+    public Task GrantManualAccessAsync(Guid patientId, Guid clinicId, string? notes, CancellationToken ct)
+    {
+        _clinicIds.Add(clinicId);
+        GrantedClinicIds.Add(clinicId);
+        return Task.CompletedTask;
+    }
 
     public Task RevokeClinicAccessAsync(Guid patientId, Guid clinicId, CancellationToken ct) =>
         Task.CompletedTask;
+}
+
+file sealed class FakeClock : IDateTimeProvider
+{
+    public DateTime UtcNow { get; } = DateTime.UtcNow;
+}
+
+file sealed class FakeUnitOfWork : IUnitOfWork
+{
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => Task.FromResult(1);
 }
 
 file sealed class FakeRepository<T> : IRepository<T> where T : class

@@ -17,7 +17,7 @@ if (-not $RepoRoot) {
 
 $Stem = $Stem.Trim()
 if ($Stem -match '\.(md|pdf|config\.json)$') {
-    throw "Pass the document stem only (example: partner-update-2026-09-02 or raphcare-price-list). Got: $Stem"
+    throw "Pass the document stem only (example: partner-update-2026-09-02 or raphcare-price-list-v1). Got: $Stem"
 }
 
 $docsRoot = Join-Path $RepoRoot "docs\partner-updates"

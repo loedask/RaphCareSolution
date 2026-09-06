@@ -224,7 +224,10 @@ file sealed class CapturingAiService(string reply) : IAIService
         return Task.FromResult(reply);
     }
 
-    public Task<string> GeneratePatientAssistantReplyAsync(string userMessage, CancellationToken cancellationToken = default) =>
+    public Task<string> GeneratePatientAssistantReplyAsync(
+        string userMessage,
+        IReadOnlyList<(string Role, string Content)>? priorTurns = null,
+        CancellationToken cancellationToken = default) =>
         Task.FromResult(reply);
 }
 

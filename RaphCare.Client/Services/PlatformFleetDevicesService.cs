@@ -40,6 +40,8 @@ public sealed class PlatformFleetDevicesService(HttpClient httpClient) : BaseHtt
                     ClinicId = d.ClinicId,
                     SerialNumber = d.SerialNumber ?? string.Empty,
                     Model = d.Model ?? string.Empty,
+                    BluetoothMacAddress = d.BluetoothMacAddress,
+                    ActivatedAt = d.ActivatedAt,
                     IsActive = d.IsActive,
                     IsAssigned = d.IsAssigned,
                     Status = d.Status ?? string.Empty
@@ -55,6 +57,7 @@ public sealed class PlatformFleetDevicesService(HttpClient httpClient) : BaseHtt
         Guid clinicId,
         string serialNumber,
         string model,
+        string? bluetoothMacAddress = null,
         CancellationToken cancellationToken = default)
     {
         var result = await PostAsync<CreatedIdDto>(
@@ -64,6 +67,7 @@ public sealed class PlatformFleetDevicesService(HttpClient httpClient) : BaseHtt
                     clinicId,
                     serialNumber,
                     model,
+                    bluetoothMacAddress,
                     deviceTypeId = Guid.Empty,
                     deviceManufacturerId = Guid.Empty
                 },
@@ -99,6 +103,8 @@ public sealed class PlatformFleetDevicesService(HttpClient httpClient) : BaseHtt
         public Guid ClinicId { get; set; }
         public string? SerialNumber { get; set; }
         public string? Model { get; set; }
+        public string? BluetoothMacAddress { get; set; }
+        public DateTime? ActivatedAt { get; set; }
         public bool IsActive { get; set; }
         public bool IsAssigned { get; set; }
         public string? Status { get; set; }

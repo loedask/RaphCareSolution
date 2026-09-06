@@ -3,23 +3,20 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using RaphCare.Mobile.Core.Features.Settings.Services;
 using RaphCare.Mobile.Core.Common.Navigation;
-using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.ViewModels;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
-/// <summary>Privacy &amp; data controls (concept <c>Privacy.tsx</c>). Toggles are device-local.</summary>
+/// <summary>Privacy and data controls. Password change is live; other toggles are phone-local preferences.</summary>
 public sealed class PrivacySettingsViewModel : BaseViewModel
 {
     private readonly ILocalPatientProfileStore _profile;
-    private readonly IAuthService _auth;
     private bool _dataSharing;
     private bool _twoFactor;
 
-    public PrivacySettingsViewModel(ILocalPatientProfileStore profile, IAuthService auth)
+    public PrivacySettingsViewModel(ILocalPatientProfileStore profile)
     {
         _profile = profile ?? throw new ArgumentNullException(nameof(profile));
-        _auth = auth ?? throw new ArgumentNullException(nameof(auth));
         Title = T("PrivacyTitle");
         ChangePasswordCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.ChangePassword));
         DownloadDataCommand = new Command(async () =>
@@ -29,6 +26,7 @@ public sealed class PrivacySettingsViewModel : BaseViewModel
                     T("PrivacyDownloadMessage"),
                     T("CommonOk"))));
         DeleteAccountCommand = new Command(async () => await ConfirmDeleteAccountAsync());
+        ContactSupportCommand = new Command(async () => await SafeShellNavigator.GoToAsync(AppNavigator.HelpSupport));
 
         SecuritySectionTitle = T("PrivacySecuritySection");
         ChangePasswordTitle = T("ProfileChangePassword");
@@ -86,6 +84,7 @@ public sealed class PrivacySettingsViewModel : BaseViewModel
     public ICommand ChangePasswordCommand { get; }
     public ICommand DownloadDataCommand { get; }
     public ICommand DeleteAccountCommand { get; }
+    public ICommand ContactSupportCommand { get; }
 
     public void LoadFromStore()
     {
@@ -95,23 +94,17 @@ public sealed class PrivacySettingsViewModel : BaseViewModel
         OnPropertyChanged(nameof(TwoFactor));
     }
 
-    private async Task ConfirmDeleteAccountAsync()
+    private static async Task ConfirmDeleteAccountAsync()
     {
-        var ok = await MainThread.InvokeOnMainThreadAsync(async () =>
+        var goToSupport = await MainThread.InvokeOnMainThreadAsync(async () =>
             await Shell.Current.DisplayAlertAsync(
                 T("PrivacyDeleteTitle"),
                 T("PrivacyDeleteMessage"),
-                T("PrivacyDeleteConfirm"),
+                T("PrivacyDeleteContactSupport"),
                 T("CommonCancel")));
-        if (!ok)
+        if (!goToSupport)
             return;
 
-        await MainThread.InvokeOnMainThreadAsync(async () =>
-            await Shell.Current.DisplayAlertAsync(
-                T("PrivacyDeleteRequestedTitle"),
-                T("PrivacyDeleteRequestedBody"),
-                T("CommonOk")));
-        await _auth.SignOutAsync(CancellationToken.None);
-        await SafeShellNavigator.GoToAsync("//" + AppNavigator.Landing);
+        await SafeShellNavigator.GoToAsync(AppNavigator.HelpSupport);
     }
 }

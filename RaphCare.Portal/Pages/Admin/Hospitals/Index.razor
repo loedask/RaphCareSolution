@@ -73,7 +73,8 @@
     }
     else
     {
-        <AdminPageCard Title="@AppResources.T("Common_YourHospitals")">
+        <AdminPageCard Title="@AppResources.T("Common_YourHospitals")"
+                       Lead="@AppResources.T("HospitalsIndex_Lead")">
             <AdminPageCardMeta>
                 <span class="admin-progress-pill">@AppResources.Format("HospitalsIndex_TotalMeta", _clinics.Count)</span>
             </AdminPageCardMeta>

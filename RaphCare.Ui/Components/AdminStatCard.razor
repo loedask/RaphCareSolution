@@ -1,30 +1,74 @@
-<div class="stat-card @AccentClass">
-    <div class="stat-card-top">
-        <span class="stat-label">@Label</span>
-        @if (!string.IsNullOrEmpty(Icon))
-        {
-            <span class="stat-icon" aria-hidden="true">@Icon</span>
-        }
+@if (!string.IsNullOrWhiteSpace(Href))
+{
+    <a class="@RootClass" href="@Href">
+        @CardBody
+    </a>
+}
+else
+{
+    <div class="@RootClass">
+        @CardBody
     </div>
-    <div class="stat-value">@Value</div>
-    @if (!string.IsNullOrEmpty(Hint))
-    {
-        <div class="stat-hint">@Hint</div>
-    }
-</div>
+}
 
 @code {
     [Parameter] public string Label { get; set; } = string.Empty;
     [Parameter] public object? Value { get; set; }
     [Parameter] public string? Icon { get; set; }
+    [Parameter] public string? IconKind { get; set; }
     [Parameter] public string? Hint { get; set; }
     [Parameter] public string Accent { get; set; } = "neutral";
+    [Parameter] public string? Href { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+
+    private bool IsZero =>
+        Value is null
+        || (Value is int i && i == 0)
+        || (Value is long l && l == 0)
+        || string.Equals(Value.ToString(), "0", StringComparison.Ordinal);
 
     private string? AccentClass => Accent switch
     {
         "accent" => "stat-card-blue",
         "success" => "stat-card-green",
         "violet" => "stat-card-violet",
+        "warn" => "stat-card-warn",
+        "alert" => "stat-card-alert",
         _ => null
+    };
+
+    private string RootClass =>
+        string.Join(' ', new[]
+        {
+            "stat-card",
+            AccentClass,
+            IsZero ? "stat-card-zero" : null,
+            string.IsNullOrWhiteSpace(Href) ? null : "stat-card-link",
+            CssClass
+        }.Where(static s => !string.IsNullOrWhiteSpace(s)));
+
+    private RenderFragment CardBody => __builder =>
+    {
+        <div class="stat-card-top">
+            <span class="stat-label">@Label</span>
+            @if (!string.IsNullOrWhiteSpace(IconKind) || !string.IsNullOrEmpty(Icon))
+            {
+                <span class="stat-icon" aria-hidden="true">
+                    @if (!string.IsNullOrWhiteSpace(IconKind))
+                    {
+                        <AdminStatIcon Kind="@IconKind" />
+                    }
+                    else
+                    {
+                        @Icon
+                    }
+                </span>
+            }
+        </div>
+        <div class="stat-value">@Value</div>
+        @if (!string.IsNullOrEmpty(Hint))
+        {
+            <div class="stat-hint">@Hint</div>
+        }
     };
 }
