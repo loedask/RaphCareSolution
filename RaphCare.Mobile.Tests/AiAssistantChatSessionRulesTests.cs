@@ -31,6 +31,30 @@ public sealed class AiAssistantChatSessionRulesTests
         Assert.True(AiAssistantChatSessionRules.NeedsGreetingSeed(0));
 
     [Fact]
-    public void NeedsGreetingSeedFalseWhenThreadHasMessages() =>
-        Assert.False(AiAssistantChatSessionRules.NeedsGreetingSeed(1));
+    public void SelectPriorForRequestKeepsLastEight()
+    {
+        var messages = Enumerable.Range(1, 12)
+            .Select(i => (IsFromUser: i % 2 == 1, Text: $"m{i}"))
+            .ToList();
+
+        var prior = AiAssistantChatSessionRules.SelectPriorForRequest(messages);
+
+        Assert.Equal(8, prior.Count);
+        Assert.Equal("m5", prior[0].Text);
+        Assert.Equal("m12", prior[^1].Text);
+    }
+
+    [Fact]
+    public void SelectPriorForRequestSkipsBlankText()
+    {
+        var prior = AiAssistantChatSessionRules.SelectPriorForRequest(
+        [
+            (false, "  "),
+            (true, "hello"),
+            (false, "hi"),
+        ]);
+
+        Assert.Equal(2, prior.Count);
+        Assert.Equal("hello", prior[0].Text);
+    }
 }

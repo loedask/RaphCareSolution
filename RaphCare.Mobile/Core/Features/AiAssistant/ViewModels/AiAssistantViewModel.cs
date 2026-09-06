@@ -105,29 +105,29 @@ public sealed class AiAssistantViewModel : BaseViewModel
         IsBusy = true;
         RaiseCanExecuteChanged(SendCommand);
 
+        List<PatientAssistantPriorMessage> priorMessages = [];
         await RunOnMainThreadAsync(() =>
         {
+            var prior = AiAssistantChatSessionRules.SelectPriorForRequest(
+                Messages.Select(m => (m.IsFromUser, m.Text)));
+            priorMessages = prior
+                .Select(m => new PatientAssistantPriorMessage
+                {
+                    Role = m.IsFromUser ? "user" : "assistant",
+                    Content = m.Text,
+                })
+                .ToList();
+
             Messages.Add(new AiAssistantChatMessage(isFromUser: true, text));
             DraftMessage = string.Empty;
         }).ConfigureAwait(false);
 
         try
         {
-            var prior = AiAssistantChatSessionRules.SelectPriorForRequest(
-                Messages
-                    .Take(Math.Max(0, Messages.Count - 1))
-                    .Select(m => (m.IsFromUser, m.Text)));
-
             var request = new SendMyPatientAssistantMessageRequest
             {
                 Message = text,
-                PriorMessages = prior
-                    .Select(m => new PatientAssistantPriorMessage
-                    {
-                        Role = m.IsFromUser ? "user" : "assistant",
-                        Content = m.Text,
-                    })
-                    .ToList(),
+                PriorMessages = priorMessages,
             };
 
             var response = await _assistant.SendMessageAsync(request, CancellationToken.None)

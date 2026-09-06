@@ -22,7 +22,7 @@ public sealed class AIServiceTests
         };
         var service = CreateService(options, handler);
 
-        var reply = await service.GeneratePatientAssistantReplyAsync("I have a headache", CancellationToken.None);
+        var reply = await service.GeneratePatientAssistantReplyAsync("I have a headache", cancellationToken: CancellationToken.None);
 
         Assert.Equal(options.PlaceholderReply, reply);
         Assert.Null(handler.LastRequest);
@@ -50,7 +50,7 @@ public sealed class AIServiceTests
         var options = ConfiguredOptions();
         var service = CreateService(options, handler);
 
-        var reply = await service.GeneratePatientAssistantReplyAsync("I feel tired", CancellationToken.None);
+        var reply = await service.GeneratePatientAssistantReplyAsync("I feel tired", cancellationToken: CancellationToken.None);
 
         Assert.Equal("Drink water and rest. Contact your clinician if it worsens.", reply);
         Assert.NotNull(handler.LastRequest);
@@ -96,11 +96,35 @@ public sealed class AIServiceTests
         var options = ConfiguredOptions();
         var service = CreateService(options, handler);
 
-        var reply = await service.GeneratePatientAssistantReplyAsync("Hello", CancellationToken.None);
+        var reply = await service.GeneratePatientAssistantReplyAsync("Hello", cancellationToken: CancellationToken.None);
 
         Assert.Equal(options.PlaceholderReply, reply);
         Assert.DoesNotContain("secret internals", reply, StringComparison.Ordinal);
         Assert.DoesNotContain("DeploymentNotFound", reply, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task GeneratePatientAssistantReplyAsyncIncludesPriorTurnsInRequestBody()
+    {
+        var handler = new CapturingHandler
+        {
+            Response = JsonChatResponse("Based on what you said earlier, try a short walk.")
+        };
+        var service = CreateService(ConfiguredOptions(), handler);
+
+        var reply = await service.GeneratePatientAssistantReplyAsync(
+            "What else can I try?",
+            [
+                ("assistant", "Hello! How can I help?"),
+                ("user", "I am not sleeping well."),
+            ],
+            CancellationToken.None);
+
+        Assert.Equal("Based on what you said earlier, try a short walk.", reply);
+        Assert.Contains("I am not sleeping well.", handler.LastBody, StringComparison.Ordinal);
+        Assert.Contains("What else can I try?", handler.LastBody, StringComparison.Ordinal);
+        Assert.Contains("\"role\":\"assistant\"", handler.LastBody, StringComparison.Ordinal);
+        Assert.Contains("\"role\":\"user\"", handler.LastBody, StringComparison.Ordinal);
     }
 
     private static PatientAssistantAiOptions ConfiguredOptions() => new()

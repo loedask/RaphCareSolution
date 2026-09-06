@@ -85,7 +85,7 @@ What patients see on Android and iPhone.
 | Billing and payment methods | Done | |
 | Family members | Done | |
 | Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone. Home and Mental Health tips follow your recent check-ins instead of sample copy. |
-| Chat assistant | Done | Scrollable chat with prior messages in the same session. Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
+| Chat assistant | Done | Scrollable chat with prior messages in the same session. The assistant can use the last few turns so follow-ups make sense. Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
 | Notifications list | Done | Real push alerts need Firebase and store setup |
 | Settings and profile | Done | Includes Active clinic: which hospital this phone uses. **Hospitals linked to me** lists hospitals tied to your record. Directory search finds hospitals by name; it is not a membership list. Enter a short clinic code if you have one. Medical information has blood type presets and quick allergy or chronic chips plus Other. Emergency contacts can be picked from the phone book or typed in. A photo you add on the phone is stored with your record. Insurance shows your plan when one is on file. Payment methods and billing history open the right screens. Privacy is honest about what is phone-only and how to ask for account deletion. |
 | Choose my clinic | Done | Patients do not need Guids; use clinic name or an RC- code from the hospital. Hospitals linked to you show on Active clinic so you can tell membership apart from directory search. |
