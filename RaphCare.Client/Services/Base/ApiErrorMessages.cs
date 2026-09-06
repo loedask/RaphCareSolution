@@ -68,17 +68,23 @@ public static class ApiErrorMessages
             var dto = JsonSerializer.Deserialize<ErrorDto>(body, JsonOptions);
             if (!string.IsNullOrWhiteSpace(dto?.Error))
                 return dto.Error.Trim();
-            if (!string.IsNullOrWhiteSpace(dto?.Detail))
-                return dto.Detail.Trim();
+
+            // Prefer field errors over ProblemDetails.detail ("One or more validation failures…").
             if (dto?.Errors is { Count: > 0 })
             {
                 var messages = dto.Errors
-                    .SelectMany(pair => pair.Value)
+                    .SelectMany(pair => pair.Value ?? Array.Empty<string>())
                     .Where(m => !string.IsNullOrWhiteSpace(m))
+                    .Select(m => m.Trim())
+                    .Distinct(StringComparer.Ordinal)
                     .ToList();
                 if (messages.Count > 0)
                     return string.Join(" ", messages);
             }
+
+            if (!string.IsNullOrWhiteSpace(dto?.Detail)
+                && !IsGenericValidationDetail(dto.Detail))
+                return dto.Detail.Trim();
         }
         catch (JsonException)
         {
@@ -86,6 +92,9 @@ public static class ApiErrorMessages
 
         return null;
     }
+
+    private static bool IsGenericValidationDetail(string detail) =>
+        detail.Contains("One or more validation failures", StringComparison.OrdinalIgnoreCase);
 
     private static bool LooksLikeJsonObject(string body)
     {

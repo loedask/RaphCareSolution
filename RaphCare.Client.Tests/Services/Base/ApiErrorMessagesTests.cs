@@ -39,6 +39,26 @@ public sealed class ApiErrorMessagesTests
     }
 
     [Fact]
+    public void FromBodyPrefersValidationFieldErrorsOverGenericDetail()
+    {
+        var message = ApiErrorMessages.FromBody(
+            """
+            {
+              "title": "Validation Error",
+              "status": 400,
+              "detail": "One or more validation failures occurred.",
+              "errors": {
+                "SerialNumber": [ "A device with this serial number is already in the fleet." ]
+              }
+            }
+            """,
+            HttpStatusCode.BadRequest);
+
+        Assert.Equal("A device with this serial number is already in the fleet.", message);
+        Assert.DoesNotContain("One or more validation failures", message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void IsClinicSelectionRequiredDetectsRewrittenMissingClinicMessage()
     {
         var rewritten = ApiErrorMessages.FromBody(

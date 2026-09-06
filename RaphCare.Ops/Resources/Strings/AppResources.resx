@@ -118,7 +118,7 @@
   <data name="Fleet_RevokeConfirmFormat" xml:space="preserve"><value>Revoke the patient assignment for {0}? The watch returns to stock.</value></data>
   <data name="Fleet_CouldNotRevoke" xml:space="preserve"><value>Could not revoke the assignment.</value></data>
   <data name="Fleet_DeleteButton" xml:space="preserve"><value>Delete</value></data>
-  <data name="Fleet_DeleteConfirmFormat" xml:space="preserve"><value>Delete {0} from stock? If the watch was used before, it is retired instead of erased.</value></data>
+  <data name="Fleet_DeleteConfirmFormat" xml:space="preserve"><value>Remove {0} from stock? If the watch was used before, it is retired (hidden from Ops). Add the same serial again later to put it back in stock.</value></data>
   <data name="Fleet_CouldNotDelete" xml:space="preserve"><value>Could not delete the device.</value></data>
   <data name="Fleet_StatusAssigned" xml:space="preserve"><value>Assigned</value></data>
   <data name="Fleet_StatusInStock" xml:space="preserve"><value>In stock</value></data>

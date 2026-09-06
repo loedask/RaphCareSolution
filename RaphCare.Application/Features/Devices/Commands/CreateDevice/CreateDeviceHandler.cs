@@ -24,18 +24,21 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
     public async Task<Guid> Handle(CreateDeviceCommand request, CancellationToken cancellationToken)
     {
         var serial = request.SerialNumber.Trim();
-        var existing = await _repository.SearchAsync(
+        var existingPage = await _repository.SearchAsync(
             q => q.Where(d => d.SerialNumber == serial),
             1,
             1,
             false,
             cancellationToken).ConfigureAwait(false);
 
-        if (existing.Items.Count > 0)
+        var existing = existingPage.Items.Count > 0 ? existingPage.Items[0] : null;
+        if (existing is not null && existing.IsActive)
         {
             throw new ValidationException(
             [
-                new ValidationFailure(nameof(CreateDeviceCommand.SerialNumber), "A device with this serial number is already in the fleet.")
+                new ValidationFailure(
+                    nameof(CreateDeviceCommand.SerialNumber),
+                    "A device with this serial number is already in the fleet.")
             ]);
         }
 
@@ -56,8 +59,9 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
 
         if (mac is not null)
         {
+            var excludeId = existing?.Id;
             var macConflict = await _repository.SearchAsync(
-                q => q.Where(d => d.BluetoothMacAddress == mac),
+                q => q.Where(d => d.BluetoothMacAddress == mac && (excludeId == null || d.Id != excludeId)),
                 1,
                 1,
                 false,
@@ -80,6 +84,23 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
         var manufacturerId = request.DeviceManufacturerId == Guid.Empty
             ? KnownDeviceCatalogIds.GenericOemManufacturerId
             : request.DeviceManufacturerId;
+
+        if (existing is not null)
+        {
+            // Ops "Delete" retires devices with history. Re-add restores the same serial to stock.
+            existing.ClinicId = request.ClinicId;
+            existing.Model = request.Model.Trim();
+            existing.BluetoothMacAddress = mac;
+            existing.DeviceTypeId = typeId;
+            existing.DeviceManufacturerId = manufacturerId;
+            existing.IsActive = true;
+            existing.IsAssigned = false;
+            existing.Status = "InStock";
+            existing.ActivatedAt = null;
+            await _repository.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return existing.Id;
+        }
 
         var device = new Device
         {
