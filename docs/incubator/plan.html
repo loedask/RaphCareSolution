@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RaphCare incubator plan</title>
+  <style>
+    :root {
+      --ink: #1f2937;
+      --muted: #4b5563;
+      --line: #c5d5dc;
+      --brand: #002d58;
+      --teal: #00a3ad;
+      --link: #00627a;
+      --card: #fff;
+      --bg: #f4fafb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      line-height: 1.45;
+      background: linear-gradient(180deg, #eef7f8 0%, #f7fafb 40%, #fff 100%);
+    }
+
+    .wrap {
+      max-width: 46rem;
+      margin: 0 auto;
+      padding: 1.5rem 1.15rem 3rem;
+    }
+
+    .doc-header {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--teal);
+      margin-bottom: 1rem;
+    }
+
+    .doc-header img {
+      height: 56px;
+      width: auto;
+    }
+
+    .doc-header h1 {
+      margin: 0;
+      font-size: 1.45rem;
+      color: var(--brand);
+      line-height: 1.25;
+    }
+
+    .subtitle {
+      margin: 0.2rem 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    h2 {
+      margin: 1.5rem 0 0.5rem;
+      font-size: 1.15rem;
+      color: #004a73;
+    }
+
+    h3 {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+      color: var(--brand);
+    }
+
+    p, li { font-size: 0.98rem; }
+
+    a { color: var(--link); word-break: break-word; }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: 0.6rem 0 1rem;
+      background: var(--card);
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.45rem 0.55rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #004a73;
+      color: #fff;
+    }
+
+    tr:nth-child(even) td { background: var(--bg); }
+
+    .program {
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 0.9rem 1rem;
+      margin: 0.75rem 0;
+    }
+
+    .program .rank {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--teal);
+      padding: 0.15rem 0.45rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .label {
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .actions {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      background: #fff8e8;
+      border-left: 4px solid #c9a227;
+    }
+
+    @media print {
+      body { background: #fff; }
+      .program { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="doc-header">
+      <img src="brand/raphcare-logo.png" alt="RaphCare" />
+      <div>
+        <h1>RaphCare incubator plan</h1>
+        <p class="subtitle">Priority list for founders · September 2026</p>
+      </div>
+    </header>
+
+    <p>
+      Shared plan for which accelerators and incubators we apply to, in what order, and why each one is on the list.
+      Deadlines move every cohort, so confirm the apply link before you submit.
+    </p>
+    <p class="meta"><strong>Last reviewed:</strong> 5 September 2026</p>
+
+    <h2>How to read this</h2>
+    <ul>
+      <li><strong>Priority</strong> is fit for RaphCare today: Johannesburg base, healthtech, working product on staging, not paying clinics yet.</li>
+      <li><strong>Why selected</strong> is why that program is on our list at all.</li>
+      <li><strong>Why this rank</strong> is why it sits above or below the others.</li>
+    </ul>
+
+    <h2>Priority at a glance</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Priority</th>
+          <th>Program</th>
+          <th>Apply when</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Y Combinator</td><td>Now (current open batch)</td></tr>
+        <tr><td>2</td><td>Founders Factory Africa (Scale)</td><td>Now (rolling)</td></tr>
+        <tr><td>3</td><td>Techstars (healthcare cohorts)</td><td>When a healthcare cohort is open</td></tr>
+        <tr><td>4</td><td>Africa Health-Tech Accelerator</td><td>Next open call (2026 closed)</td></tr>
+        <tr><td>5</td><td>500 Global Flagship</td><td>Next Flagship batch deadline</td></tr>
+        <tr><td>6</td><td>Google for Startups Accelerator: South Africa</td><td>Register interest; apply next cohort</td></tr>
+        <tr><td>7</td><td>AUDA-NEPAD Home Grown Solutions (HGS)</td><td>Next annual call</td></tr>
+        <tr><td>8</td><td>Antler East Africa (Nairobi)</td><td>Only if we can relocate</td></tr>
+        <tr><td>9</td><td>a16z Speedrun</td><td>Next open batch, after more traction</td></tr>
+      </tbody>
+    </table>
+
+    <article class="program">
+      <div class="rank">Priority 1</div>
+      <h3>Y Combinator</h3>
+      <p><span class="label">Why selected:</span> Best-known early-stage program. Strongest investor signal if we get in. We already applied once with more idea than product; reapplying with a real Portal, Ops site, and patient Android app is the point.</p>
+      <p><span class="label">Why this rank:</span> Highest upside brand and network. Draft answers are ready. Do this first.</p>
+      <p><span class="label">How to apply:</span> <a href="https://www.ycombinator.com/apply">https://www.ycombinator.com/apply</a></p>
+      <p><span class="label">Window:</span> Use the current open batch in the form.</p>
+    </article>
+
+    <article class="program">
+      <div class="rank">Priority 2</div>
+      <h3>Founders Factory Africa (Scale)</h3>
+      <p><span class="label">Why selected:</span> Based in Johannesburg. Built for African startups. Scale track is for companies that already have a product, not a blank idea. Hands-on support on product, growth, and corporate partnerships matches how we sell hospital software.</p>
+      <p><span class="label">Why this rank:</span> Best local next step after YC. Rolling applications. Low travel friction.</p>
+      <p><span class="label">How to apply:</span> <a href="https://www.foundersfactory.africa/apply">https://www.foundersfactory.africa/apply</a></p>
+      <p><span class="label">Also see:</span> <a href="https://www.foundersfactory.africa/scale">Scale</a> · <a href="https://www.foundersfactory.africa/build">Build</a> (idea stage only)</p>
+      <p><span class="label">Window:</span> Rolling. Apply to <strong>Scale</strong>, not Build.</p>
+    </article>
+
+    <article class="program">
+      <div class="rank">Priority 3</div>
+      <h3>Techstars (healthcare cohorts first)</h3>
+      <p><span class="label">Why selected:</span> Serious mentorship and capital. Healthcare-specific cohorts match a clinic operating system better than a generic city batch.</p>
+      <p><span class="label">Why this rank:</span> Global brand with a path that can fit healthtech. We only apply when a relevant cohort is open.</p>
+      <p><span class="label">How to apply:</span> <a href="https://www.techstars.com/accelerators">https://www.techstars.com/accelerators</a> then open the apply flow on a healthcare cohort page.</p>
+      <p><span class="label">Window:</span> Cohort-specific. Pick a live healthcare cohort; do not apply blind to a closed city.</p>
+    </article>
+
+    <article class="program">
+      <div class="rank">Priority 4</div>
+      <h3>Africa Health-Tech Accelerator</h3>
+      <p><span class="label">Why selected:</span> Explicitly for African digital health: hospital systems, telemedicine, remote monitoring, health data. Closest sector match outside YC.</p>
+      <p><span class="label">Why this rank:</span> Perfect theme fit, but the 2026 deadline has passed. Keep it high so we catch the next call early.</p>
+      <p><span class="label">How to apply:</span> <a href="https://menterprise.africa/opportunities/africa-health-tech-accelerator-2026/">Opportunity page</a> (re-check for next year when expired)</p>
+      <p><span class="label">Window:</span> 2026 deadline passed (30 June 2026). Watch for 2027.</p>
+    </article>
+
+    <article class="program">
+      <div class="rank">Priority 5</div>
+      <h3>500 Global Flagship</h3>
+      <p><span class="label">Why selected:</span> Global accelerator with a long history in emerging markets. Useful international network beyond YC.</p>
+      <p><span class="label">Why this rank:</span> Strong brand, but less Africa-clinic-specific than Founders Factory or Africa Health-Tech.</p>
+      <p><span class="label">How to apply:</span> <a href="https://500.co/apply-for-an-accelerator">https://500.co/apply-for-an-accelerator</a> · Flagship <a href="https://500.co/founders/flagship">https://500.co/founders/flagship</a></p>
+      <p><span class="label">Window:</span> Per-batch deadlines. Skip Eurasia or MENA tracks unless we have real ops there.</p>
+    </article>
+
+    <article class="program">
+      <div class="rank">Priority 6</div>
+      <h3>Google for Startups Accelerator: South Africa</h3>
+      <p><span class="label">Why selected:</span> Equity-free. South African-led. Strong Google brand, cloud credits, and mentorship. Better once we look growth-stage and can show AI use in the product.</p>
+      <p><span class="label">Why this rank:</span> Excellent terms when open, but the 2026 SA window closed. Register interest; apply next round after a live pilot if possible.</p>
+      <p><span class="label">How to apply:</span> <a href="https://startup.google.com/programs/accelerator/south-africa/">https://startup.google.com/programs/accelerator/south-africa/</a> · <a href="https://g.co/acceleratorafrica">g.co/acceleratorafrica</a></p>
+      <p><span class="label">Window:</span> SA 2026 closed (28 August 2026). Register interest for the next cohort.</p>
+    </article>
+
+    <article class="program">
+      <div class="rank">Priority 7</div>
+      <h3>AUDA-NEPAD Home Grown Solutions (HGS)</h3>
+      <p><span class="label">Why selected:</span> Pan-African health-systems program. Digital health is in scope. Strong continental partnership signal once we look like a growth venture.</p>
+      <p><span class="label">Why this rank:</span> Strong mission fit, but 2026 cohort is already selected and they lean growth or mature.</p>
+      <p><span class="label">How to apply:</span> <a href="https://vc4a.com/auda-nepad/hgs-2026/">VC4A HGS 2026</a> · <a href="https://villgroafrica.org/funding_calls/home-grown-solutions-hgs-accelerator-africa/">Villgro Africa</a> · Questions: HGSAHealthSol@auda-nepad.org</p>
+      <p><span class="label">Window:</span> 2026 cohort selected. Wait for the next call.</p>
+    </article>
+
+    <article class="program">
+      <div class="rank">Priority 8</div>
+      <h3>Antler (East Africa / Nairobi)</h3>
+      <p><span class="label">Why selected:</span> Active Africa investor with a Nairobi residency and pre-seed cheques.</p>
+      <p><span class="label">Why this rank:</span> Lower fit today. Residency expects relocation to Nairobi, and the model is often earlier-stage. Only pursue if we accept that move.</p>
+      <p><span class="label">How to apply:</span> <a href="https://www.antler.co/apply">https://www.antler.co/apply</a> · <a href="https://www.antler.co/location/kenya">Kenya location</a></p>
+      <p><span class="label">Window:</span> Rolling residencies.</p>
+    </article>
+
+    <article class="program">
+      <div class="rank">Priority 9</div>
+      <h3>a16z Speedrun</h3>
+      <p><span class="label">Why selected:</span> Large possible cheque and Andreessen Horowitz brand. Open to founders worldwide with SF in-person program in past cycles.</p>
+      <p><span class="label">Why this rank:</span> Highest bar and heaviest relocation. Better after pilots or clear letters of intent.</p>
+      <p><span class="label">How to apply:</span> <a href="https://speedrun.a16z.com/">https://speedrun.a16z.com/</a></p>
+      <p><span class="label">Window:</span> 2026-style window closed around May 2026. Revisit the next open batch.</p>
+    </article>
+
+    <h2>Also watch (not ranked)</h2>
+    <table>
+      <thead>
+        <tr><th>Program</th><th>Why on the watch list</th><th>How to find</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Stellenbosch LaunchLab / university healthtech</td>
+          <td>Short local incubation; possible intros</td>
+          <td><a href="https://www.launchlab.co.za/">launchlab.co.za</a></td>
+        </tr>
+        <tr>
+          <td>Villgro Africa health calls</td>
+          <td>Often tied to HGS-style health support</td>
+          <td><a href="https://villgroafrica.org/">villgroafrica.org</a></td>
+        </tr>
+        <tr>
+          <td>Corporate or hospital-group innovation in SA</td>
+          <td>Pilot path without a public apply form</td>
+          <td>Warm intro after a live Portal demo</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="actions">
+      <h2 style="margin-top:0">What we do this month</h2>
+      <ol>
+        <li>Submit <strong>Y Combinator</strong>.</li>
+        <li>Start <strong>Founders Factory Africa Scale</strong>.</li>
+        <li>Check <strong>Techstars</strong> for one open healthcare cohort and apply if dates work.</li>
+        <li>Bookmark Africa Health-Tech, HGS, and Google SA for the <strong>next</strong> open call.</li>
+        <li>Before each submit, refresh answers against the live product so claims stay honest.</li>
+      </ol>
+    </div>
+
+    <h2>What we skip for now</h2>
+    <ul>
+      <li>Idea-stage “find a cofounder” programs (we already have founders and a product).</li>
+      <li>FDA device accelerators (RaphCare is healthcare software first, not a diagnostic device pitch).</li>
+      <li>Programs that demand relocation we cannot do unless the deal clearly funds that move.</li>
+    </ul>
+  </div>
+</body>
+</html>

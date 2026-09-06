@@ -29,6 +29,14 @@ Refresh relevant answers in every filled `application.html` (start with YC) if a
 
 Also update `docs/incubator/README.md` when adding or retiring program targets, or when creating a new `docs/incubator/<program>/` folder.
 
+When the shared founder plan changes (priority, why selected, apply URLs), update in the same change set:
+
+1. `docs/incubator/sources/raphcare-incubator-plan.md`
+2. `docs/incubator/plan.html`
+3. Regenerate `docs/incubator/raphcare-incubator-plan.pdf` via `scripts/Export-RaphCareIncubatorPlanPdf.ps1`
+
+Do not leave the PDF or HTML stale after editing the plan markdown.
+
 ## How to update
 
 1. Edit the `answers` entries in each affected `docs/incubator/*/application.html`.
