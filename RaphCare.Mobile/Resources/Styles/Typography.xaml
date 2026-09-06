@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <!-- Prototype: font-display = Space Grotesk, font-body = DM Sans (registered in MauiProgram). -->
-    <!-- page-title 1.75rem 700, section-title 1.25rem 600, body-lg 1rem, body-md 0.875rem, caption 0.75rem -->
+    <!-- Premium soft type: Space Grotesk display, DM Sans body (registered in MauiProgram). -->
     <Style TargetType="Label" x:Key="TitleLarge">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
-        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontSize" Value="30" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="CharacterSpacing" Value="-0.4" />
+        <Setter Property="Margin" Value="0,0,0,10" />
     </Style>
 
     <Style TargetType="Label" x:Key="TitleMedium">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
-        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontSize" Value="24" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="CharacterSpacing" Value="-0.3" />
+        <Setter Property="Margin" Value="0,0,0,6" />
     </Style>
 
     <Style TargetType="Label" x:Key="TitleSmall">
@@ -24,42 +25,47 @@
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CharacterSpacing" Value="-0.2" />
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
     <Style TargetType="Label" x:Key="SectionTitle">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
-        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontSize" Value="22" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="CharacterSpacing" Value="-0.2" />
+        <Setter Property="Margin" Value="0,0,0,6" />
     </Style>
 
     <Style TargetType="Label" x:Key="BodyLarge">
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
         <Setter Property="FontSize" Value="16" />
+        <Setter Property="LineHeight" Value="1.45" />
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
     <Style TargetType="Label" x:Key="BodyMedium">
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="1.4" />
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
     <Style TargetType="Label" x:Key="BodySmall">
         <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
     <Style TargetType="Label" x:Key="Caption">
         <Setter Property="TextColor" Value="{StaticResource TextMutedColor}" />
         <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="1.35" />
     </Style>
 
     <Style TargetType="Label" x:Key="Micro">
         <Setter Property="TextColor" Value="{StaticResource TextMutedColor}" />
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontSize" Value="11" />
     </Style>
 </ResourceDictionary>

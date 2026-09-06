@@ -1,33 +1,45 @@
 ---
-description: React (Vite) concept app — design must match exactly when porting to RaphCare.Mobile (MAUI)
+description: React (Vite) concept app — structure and copy reference for RaphCare.Mobile; visuals follow Premium soft
 globs: RaphCare.Mobile/**/*,RaphCare.Mobile/**/*.xaml,RaphCare.Mobile.Kernel/**/*.cs,RaphCare.Client/**/*.cs
 alwaysApply: false
 ---
 
-# Mobile concept — design source (React + Vite)
+# Mobile concept — structure source (React + Vite)
 
 ## Source repo
 
 **`C:\laragon\www\raphcare-mobile-app-concept`** — **React 18 + Vite + TypeScript**. UI stack includes **Tailwind CSS**, **shadcn/ui** (built on **Radix UI**), **lucide-react** icons, **framer-motion**, **react-router-dom**, **TanStack Query**, **react-hook-form** + **zod**, toasts (**sonner** / **radix toast**), and **i18n** under `src/i18n/`.
 
-**Do not** port those libraries into MAUI. **Do** port **design tokens and layout** so the app **looks the same**.
+**Do not** port those libraries into MAUI.
 
-**Authoritative port doc in this repo:** **`docs/Mobile_Concept_Port.md`** (fonts, HSL tokens from `index.css`, typography scale from `tailwind.config.ts`, route ↔ feature map, parity checklist). **Keep it updated** when the concept changes.
+**Authoritative design doc in this repo:** **`docs/Mobile_Concept_Port.md`**.
 
-## What must match
+## Look and feel (Premium soft)
 
-As closely as MAUI allows: **colors** (`:root` / `.dark` HSL in `src/index.css`), **typography** (Space Grotesk display, DM Sans body; `text-page-title` … `text-micro` scale), **spacing**, **radii** (base `--radius: 0.875rem`), **shadows**, **gradients**, **borders**, **icon weight/size**, **layout** and **component states**. The concept is the **design spec**, not the architecture spec.
+MAUI visuals follow the **Premium soft** identity in **`Resources/Styles/`** and **`Core/Common/Controls/`**, not pixel parity with the React concept.
+
+Keep from the concept: **routes**, **screen inventory**, **copy**, and **feature layout ideas**.
+
+Do **not** force concept colors, radii, shadows, or density onto Premium soft screens unless product asks to restore concept parity.
+
+## What still comes from the concept
+
+- Route ↔ Shell / `AppNavigator` map
+- Feature completeness and screen checklist
+- Icon inventory ideas (lucide → `Resources/Images`)
+- i18n string alignment with `AppResources.resx`
 
 ## Fidelity rules for RaphCare.Mobile
 
-- **Match the concept first** per screen/control; then wire **Shell**, **ViewModels**, **Client**, **Kernel** per **`.cursor/rules/raphcare-mobile.mdc`**.
-- Map tokens into **`Resources/Styles/`** and shared **`Core/Common/Controls/`**—avoid one-off colors in page XAML.
-- Document intentional deltas in **`docs/Mobile_Concept_Port.md`** (or comments). Default: **closest visual match**, not MAUI/template defaults.
+- Prefer **Premium soft** tokens for new or polished UI.
+- Map shared chrome into **`Resources/Styles/`** and **`Core/Common/Controls/`**. Avoid one-off colors in page XAML.
+- Document intentional deltas in **`docs/Mobile_Concept_Port.md`**.
+- Wire **Shell**, **ViewModels**, **Client**, **Kernel** per **`.cursor/rules/raphcare-mobile.mdc`**.
 
 ## Architecture vs design
 
 - **Structure / DI / features:** this solution’s rules.
-- **Look and feel:** the **React concept** exactly unless the user approves a change.
+- **Look and feel:** Premium soft MAUI identity (see **`docs/Mobile_Concept_Port.md`**).
 
 ## Making the concept visible to Cursor
 
@@ -35,7 +47,7 @@ The concept folder is **outside** **`RaphCareSolution`** unless you add it to th
 
 1. **Multi-root workspace** — Add the Laragon path so you can **`@`** `src/pages/*.tsx`, `src/index.css`, `src/components/ui/*`.
 2. **Paste / attach** — Screenshots or snippets for the screen in progress.
-3. **`docs/Mobile_Concept_Port.md`** — Filled **MAUI resource** column next to each token as you lock colors.
+3. **`docs/Mobile_Concept_Port.md`** — Route map and historical token tables; live colors live in `Colors.xaml`.
 
 ## Optional
 
