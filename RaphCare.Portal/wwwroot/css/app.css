@@ -886,6 +886,17 @@ a:hover { text-decoration: underline; }
     flex: 1 1 14rem;
 }
 
+.admin-page-card-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem 0.85rem;
+}
+
+.admin-page-card-title-row .admin-page-eyebrow {
+    margin: 0;
+}
+
 .admin-page-head-aside {
     position: relative;
     z-index: 1;
@@ -2302,7 +2313,7 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
 
 .hospital-deck .admin-page-card-head {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr) minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 1rem 1.25rem;
     margin: 0;
@@ -2383,13 +2394,17 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
 }
 
 .hospital-deck .admin-page-card-copy {
-    justify-self: center;
+    justify-self: stretch;
     align-self: center;
     width: 100%;
-    max-width: 38rem;
+    max-width: none;
     padding-left: 0;
-    text-align: center;
+    text-align: left;
     animation: admin-page-card-rise 0.55s ease-out both;
+}
+
+.hospital-deck .admin-page-card-title-row {
+    gap: 0.7rem 0.9rem;
 }
 
 .hospital-deck .admin-page-head-aside {
@@ -2453,18 +2468,17 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
 .hospital-deck .admin-page-card-head h2::after {
     content: "";
     position: absolute;
-    left: 50%;
+    left: 0;
     bottom: 0;
     width: 3.25rem;
     height: 0.22rem;
     border-radius: 999px;
     background: linear-gradient(90deg, #14b8a6, rgba(45, 212, 191, 0.15));
-    transform: translateX(-50%);
     animation: admin-page-card-underline 0.7s 0.15s ease-out both;
 }
 
 .hospital-deck .admin-page-card-head .admin-page-lead {
-    margin: 0.7rem auto 0;
+    margin: 0.7rem 0 0;
     max-width: 36rem;
     color: #475569;
     font-size: 0.94rem;
@@ -2551,11 +2565,6 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
     .hospital-deck .admin-page-card-head .admin-page-eyebrow::before,
     .hospital-deck .admin-page-card-head::after {
         animation: none;
-    }
-
-    .hospital-deck .admin-page-card-head h1::after,
-    .hospital-deck .admin-page-card-head h2::after {
-        transform: translateX(-50%);
     }
 }
 
@@ -4155,11 +4164,6 @@ a.hospital-directory-person:hover strong {
     .hospital-deck .admin-page-card-head h1,
     .hospital-deck .admin-page-card-head h2 {
         font-size: clamp(1.35rem, 6vw, 1.7rem);
-    }
-    .hospital-deck .admin-page-card-head h1::after,
-    .hospital-deck .admin-page-card-head h2::after {
-        left: 0;
-        transform: none;
     }
     .hospital-deck .admin-page-card-head .admin-page-lead {
         margin-left: 0;

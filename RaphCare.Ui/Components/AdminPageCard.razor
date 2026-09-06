@@ -5,27 +5,29 @@
             <header class="admin-page-card-head">
                 <span class="admin-page-card-ornament" aria-hidden="true"></span>
                 <div class="admin-page-card-copy">
-                    @if (!string.IsNullOrEmpty(Title))
-                    {
-                        @if (LargeTitle)
+                    <div class="admin-page-card-title-row">
+                        @if (!string.IsNullOrEmpty(Title))
                         {
-                            <h1>@Title</h1>
+                            @if (LargeTitle)
+                            {
+                                <h1>@Title</h1>
+                            }
+                            else
+                            {
+                                <h2>@Title</h2>
+                            }
                         }
-                        else
+                        @if (!string.IsNullOrEmpty(Eyebrow))
                         {
-                            <h2>@Title</h2>
+                            <p class="admin-page-eyebrow">@Eyebrow</p>
                         }
-                    }
+                    </div>
                     @if (!string.IsNullOrEmpty(Lead))
                     {
                         <p class="admin-page-lead">@Lead</p>
                     }
                 </div>
                 <div class="admin-page-head-aside@(HasAsideContent ? null : " is-spacer")">
-                    @if (!string.IsNullOrEmpty(Eyebrow))
-                    {
-                        <p class="admin-page-eyebrow">@Eyebrow</p>
-                    }
                     @if (_headMeta is not null)
                     {
                         <div class="admin-page-head-meta">
@@ -55,8 +57,7 @@
         || !string.IsNullOrEmpty(Lead)
         || _headMeta is not null;
 
-    private bool HasAsideContent =>
-        !string.IsNullOrEmpty(Eyebrow) || _headMeta is not null;
+    private bool HasAsideContent => _headMeta is not null;
 
     internal void SetHeadMeta(RenderFragment? meta)
     {
