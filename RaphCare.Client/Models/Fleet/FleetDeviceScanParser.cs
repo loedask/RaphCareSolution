@@ -188,6 +188,10 @@ public static partial class FleetDeviceScanParser
         if (E580Regex().IsMatch(text))
             return "E580";
 
+        // OCR often turns ET585 into ET595 under glare (8 → 9).
+        if (Et585OcrNearMissRegex().IsMatch(text))
+            return "E585";
+
         foreach (var model in KnownModels)
         {
             if (text.Contains(model, StringComparison.OrdinalIgnoreCase))
@@ -254,14 +258,22 @@ public static partial class FleetDeviceScanParser
     private static bool IsModelToken(string token)
     {
         var t = token.Trim();
-        return t.Equals("E585", StringComparison.OrdinalIgnoreCase)
-               || t.Equals("E580", StringComparison.OrdinalIgnoreCase)
-               || t.Equals("ET585", StringComparison.OrdinalIgnoreCase)
-               || t.Equals("ET580", StringComparison.OrdinalIgnoreCase)
-               || t.Equals("Y6", StringComparison.OrdinalIgnoreCase)
-               || t.Equals("Y6Pro", StringComparison.OrdinalIgnoreCase)
-               || t.Equals("Y6 Pro", StringComparison.OrdinalIgnoreCase);
+        if (t.Equals("E585", StringComparison.OrdinalIgnoreCase)
+            || t.Equals("E580", StringComparison.OrdinalIgnoreCase)
+            || t.Equals("ET585", StringComparison.OrdinalIgnoreCase)
+            || t.Equals("ET580", StringComparison.OrdinalIgnoreCase)
+            || t.Equals("Y6", StringComparison.OrdinalIgnoreCase)
+            || t.Equals("Y6Pro", StringComparison.OrdinalIgnoreCase)
+            || t.Equals("Y6 Pro", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        // Device Info shows OEM series labels like ET585. OCR may turn that into ET595.
+        // Packaging claim serials are longer codes (for example RC-E585-1001), not ET### alone.
+        return DeviceSeriesLabelRegex().IsMatch(t);
     }
+
 
     private static bool IsNoiseWord(string token) =>
         token.Equals("Device", StringComparison.OrdinalIgnoreCase)
@@ -323,4 +335,12 @@ public static partial class FleetDeviceScanParser
 
     [GeneratedRegex(@"\bY6(?:\s*Pro)?\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex Y6Regex();
+
+    /// <summary>HBand-style Device Info series chrome (ET585 / E580), including common OCR near-misses.</summary>
+    [GeneratedRegex(@"^ET?\d{3}$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex DeviceSeriesLabelRegex();
+
+    /// <summary>Glare OCR often reads ET585 as ET595 / ET5B5.</summary>
+    [GeneratedRegex(@"\bET?59[0-9B]\b|\bET?5B5\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex Et585OcrNearMissRegex();
 }

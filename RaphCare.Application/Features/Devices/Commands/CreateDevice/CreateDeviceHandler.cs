@@ -38,7 +38,7 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
             [
                 new ValidationFailure(
                     nameof(CreateDeviceCommand.SerialNumber),
-                    "A device with this serial number is already in the fleet.")
+                    "A device with this serial number is already in the fleet. To correct the Bluetooth MAC, use Save MAC on that stock row.")
             ]);
         }
 
@@ -83,7 +83,7 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
             [
                 new ValidationFailure(
                     nameof(CreateDeviceCommand.BluetoothMacAddress),
-                    "A device with this Bluetooth MAC is already in the fleet.")
+                    "A device with this Bluetooth MAC is already in the fleet. Find that stock row to correct values if needed.")
             ]);
         }
 

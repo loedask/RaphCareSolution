@@ -1370,6 +1370,21 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesLastReading" xml:space="preserve">
     <value>Last reading</value>
   </data>
+  <data name="DevicesStatusSectionTitle" xml:space="preserve">
+    <value>Watch status</value>
+  </data>
+  <data name="DevicesBluetoothSectionTitle" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="DevicesNearbySectionTitle" xml:space="preserve">
+    <value>Nearby watches</value>
+  </data>
+  <data name="DevicesClaimSectionTitle" xml:space="preserve">
+    <value>Claim your watch</value>
+  </data>
+  <data name="DevicesReadingsEmptyHint" xml:space="preserve">
+    <value>Connect your watch, then heart rate and oxygen show here.</value>
+  </data>
   <data name="DevicesUnnamedPeripheral" xml:space="preserve">
     <value>Unknown device</value>
   </data>

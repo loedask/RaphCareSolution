@@ -48,13 +48,16 @@ public sealed class ApiErrorMessagesTests
               "status": 400,
               "detail": "One or more validation failures occurred.",
               "errors": {
-                "SerialNumber": [ "A device with this serial number is already in the fleet." ]
+                "SerialNumber": [ "A device with this serial number is already in the fleet. To correct the Bluetooth MAC, use Save MAC on that stock row." ]
               }
             }
             """,
             HttpStatusCode.BadRequest);
 
-        Assert.Equal("A device with this serial number is already in the fleet.", message);
+        Assert.Equal(
+            "A device with this serial number is already in the fleet. To correct the Bluetooth MAC, use Save MAC on that stock row.",
+            message);
+
         Assert.DoesNotContain("One or more validation failures", message, StringComparison.OrdinalIgnoreCase);
     }
 

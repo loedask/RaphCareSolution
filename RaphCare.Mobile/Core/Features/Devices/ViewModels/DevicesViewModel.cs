@@ -47,6 +47,11 @@ public sealed class DevicesViewModel : BaseViewModel
         ShowAllLabel = T("DevicesShowAllBle");
         E580E585FilterLabel = T("DevicesE580E585Filter");
         LastReadingLabel = T("DevicesLastReading");
+        StatusSectionTitle = T("DevicesStatusSectionTitle");
+        BluetoothSectionTitle = T("DevicesBluetoothSectionTitle");
+        NearbySectionTitle = T("DevicesNearbySectionTitle");
+        ClaimSectionTitle = T("DevicesClaimSectionTitle");
+        ReadingsEmptyHint = T("DevicesReadingsEmptyHint");
         BleUnsupportedMessage = T("DevicesBleUnsupported");
         DevicesConnectLabel = T("DevicesConnectButton");
 
@@ -83,6 +88,11 @@ public sealed class DevicesViewModel : BaseViewModel
     public string ShowAllLabel { get; }
     public string E580E585FilterLabel { get; }
     public string LastReadingLabel { get; }
+    public string StatusSectionTitle { get; }
+    public string BluetoothSectionTitle { get; }
+    public string NearbySectionTitle { get; }
+    public string ClaimSectionTitle { get; }
+    public string ReadingsEmptyHint { get; }
     public string BleUnsupportedMessage { get; }
     public string DevicesConnectLabel { get; }
 
@@ -155,6 +165,7 @@ public sealed class DevicesViewModel : BaseViewModel
             OnPropertyChanged(nameof(VitalsHeartLine));
             OnPropertyChanged(nameof(VitalsSpo2Line));
             OnPropertyChanged(nameof(VitalsRawLine));
+            OnPropertyChanged(nameof(ShowReadingsEmpty));
         }
     }
 
@@ -170,6 +181,11 @@ public sealed class DevicesViewModel : BaseViewModel
 
     public string? VitalsRawLine =>
         string.IsNullOrEmpty(LastVitals?.RawHex) ? null : Format(T("DevicesRawHexFormat"), LastVitals!.RawHex);
+
+    public bool ShowReadingsEmpty =>
+        string.IsNullOrEmpty(VitalsHeartLine)
+        && string.IsNullOrEmpty(VitalsSpo2Line)
+        && string.IsNullOrEmpty(VitalsRawLine);
 
     public Guid? ConnectedDeviceId => _ble.ConnectedDeviceId;
 

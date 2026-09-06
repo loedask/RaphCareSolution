@@ -11,12 +11,12 @@ namespace RaphCare.Application.Tests.Features.Devices.Commands.CreateDevice;
 public sealed class CreateDeviceHandlerTests
 {
     [Fact]
-    public async Task CreateRejectsActiveDuplicateSerial()
+    public async Task CreateRejectsActiveDuplicateSerialWithoutUpdatingMac()
     {
         var existing = new Device
         {
             ClinicId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccc0101"),
-            SerialNumber = "ET595",
+            SerialNumber = "RC-E585-STOCK",
             Model = "E585",
             IsActive = true,
             IsAssigned = false,
@@ -31,14 +31,55 @@ public sealed class CreateDeviceHandlerTests
                 new CreateDeviceCommand
                 {
                     ClinicId = existing.ClinicId,
-                    SerialNumber = "ET595",
-                    Model = "E585"
+                    SerialNumber = "RC-E585-STOCK",
+                    Model = "E585",
+                    BluetoothMacAddress = "6F:9A:CB:AC:E4:45"
                 },
                 CancellationToken.None));
 
+        Assert.Null(existing.BluetoothMacAddress);
         Assert.Contains(
             ex.Errors.Values.SelectMany(v => v),
-            m => m.Contains("already in the fleet", StringComparison.OrdinalIgnoreCase));
+            m => m.Contains("already in the fleet", StringComparison.OrdinalIgnoreCase)
+                 && m.Contains("Save MAC", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task CreateRejectsActiveDuplicateMacWithoutUpdatingExistingRow()
+    {
+        var existing = new Device
+        {
+            ClinicId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccc0106"),
+            SerialNumber = "RC-E585-REAL",
+            Model = "E585",
+            BluetoothMacAddress = "6F:9A:C8:4C:E4:45",
+            IsActive = true,
+            IsAssigned = true,
+            Status = "Assigned"
+        };
+        EntityId.SetId(existing, Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa0106"));
+
+        var handler = new CreateDeviceHandler(new FakeRepository<Device>([existing]), new FakeUnitOfWork());
+
+        var ex = await Assert.ThrowsAsync<ValidationException>(() =>
+            handler.Handle(
+                new CreateDeviceCommand
+                {
+                    ClinicId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccc0107"),
+                    SerialNumber = "RC-E585-OTHER",
+                    Model = "E580",
+                    BluetoothMacAddress = "6F:9A:C8:4C:E4:45"
+                },
+                CancellationToken.None));
+
+        Assert.Equal("RC-E585-REAL", existing.SerialNumber);
+        Assert.Equal("E585", existing.Model);
+        Assert.Equal(Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccc0106"), existing.ClinicId);
+        Assert.True(existing.IsAssigned);
+        Assert.Contains(
+            ex.Errors.Values.SelectMany(v => v),
+            m => m.Contains("Bluetooth MAC", StringComparison.OrdinalIgnoreCase)
+                 && m.Contains("already in the fleet", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -49,7 +90,7 @@ public sealed class CreateDeviceHandlerTests
         var existing = new Device
         {
             ClinicId = clinicId,
-            SerialNumber = "ET595",
+            SerialNumber = "RC-E585-RETIRED",
             Model = "E585",
             IsActive = false,
             IsAssigned = false,
@@ -65,7 +106,7 @@ public sealed class CreateDeviceHandlerTests
             new CreateDeviceCommand
             {
                 ClinicId = newClinicId,
-                SerialNumber = "ET595",
+                SerialNumber = "RC-E585-RETIRED",
                 Model = "E580",
                 BluetoothMacAddress = "AA:BB:CC:DD:EE:FF"
             },

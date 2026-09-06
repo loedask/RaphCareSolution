@@ -32,7 +32,7 @@ public sealed class FleetDeviceScanParserTests
     [Fact]
     public void Parse_DeviceInfoOcr_CompactMacWithoutColons_IsMacNotSerial()
     {
-        // OCR often drops colons; this matches the Ops Fleet photo case (Serial ET595 + hex blob).
+        // OCR often drops colons; series label ET595 must not become the packaging serial.
         const string ocr =
             """
             Device Info
@@ -54,10 +54,22 @@ public sealed class FleetDeviceScanParserTests
                  && c.Value == "6F:9A:CB:AC:E4:45");
         Assert.DoesNotContain(
             result.Candidates,
-            c => string.Equals(c.Kind, "Serial", StringComparison.OrdinalIgnoreCase)
-                 && c.Value.Contains("6F9A", StringComparison.OrdinalIgnoreCase));
-        Assert.Equal("ET595", fill.Serial);
+            c => string.Equals(c.Kind, "Serial", StringComparison.OrdinalIgnoreCase));
+        Assert.Null(fill.Serial);
         Assert.Equal("6F:9A:CB:AC:E4:45", fill.Mac);
+        Assert.True(result.PreferredLooksLikeMac);
+        Assert.Equal("E585", result.SuggestedModel);
+    }
+
+    [Fact]
+    public void Parse_DeviceInfoOcr_Et585NearMiss_MapsModelAndSkipsSeriesSerial()
+    {
+        var result = FleetDeviceScanParser.Parse("Device Info\nET595\nMAC\nAA:BB:CC:DD:EE:FF");
+        var fill = FleetDeviceScanParser.SuggestFill(result);
+
+        Assert.Equal("E585", result.SuggestedModel);
+        Assert.Null(fill.Serial);
+        Assert.Equal("AA:BB:CC:DD:EE:FF", fill.Mac);
     }
 
     [Fact]
