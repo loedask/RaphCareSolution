@@ -28,6 +28,22 @@ public static class DevicesBleSessionPolicy
     /// </summary>
     public static bool TryVendorSdkOnConnect => false;
 
-    /// <summary>How long Measure waits for the first heart rate or oxygen sample.</summary>
-    public static TimeSpan LiveMeasureTimeout { get; } = TimeSpan.FromSeconds(45);
+    /// <summary>How long Measure waits for the first heart rate or oxygen sample after handshake.</summary>
+    public static TimeSpan LiveMeasureTimeout { get; } = TimeSpan.FromSeconds(40);
+
+    /// <summary>
+    /// Vendor connect + notify must finish within this window or Measure aborts.
+    /// Includes room for a few REQUEST_CANCELED (-2) retries after GATT handoff.
+    /// </summary>
+    public static TimeSpan VendorHandshakeTimeout { get; } = TimeSpan.FromSeconds(45);
+
+    /// <summary>Pause after dropping Plugin.BLE so the vendor stack can reclaim the radio.</summary>
+    public static TimeSpan PostGattDisconnectSettle { get; } = TimeSpan.FromMilliseconds(2500);
+
+    /// <summary>How many times Measure retries vendor connect after Inuker REQUEST_CANCELED (-2).</summary>
+    public static int VendorConnectMaxAttempts { get; } = 3;
+
+    /// <summary>Total Measure budget (handshake settle + sample wait).</summary>
+    public static TimeSpan LiveMeasureOverallTimeout { get; } =
+        VendorHandshakeTimeout + LiveMeasureTimeout + PostGattDisconnectSettle + TimeSpan.FromSeconds(15);
 }

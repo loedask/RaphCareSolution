@@ -20,6 +20,10 @@ public partial class HomePage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        // Shell / native BLE callbacks have left Content blank with a null BindingContext.
+        if (!ReferenceEquals(BindingContext, _viewModel))
+            BindingContext = _viewModel;
+
         await SafePageLoad.RunAsync(() => _viewModel.RefreshAsync());
     }
 }

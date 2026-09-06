@@ -1436,6 +1436,9 @@ Accessible. Intelligent. Human.</value>
   <data name="WatchReadingsMeasureFailedHint" xml:space="preserve">
     <value>No reading yet. Try Heart Rate on the watch, then Measure again.</value>
   </data>
+  <data name="WatchReadingsMeasureTimeout" xml:space="preserve">
+    <value>Measure stopped after waiting. Keep the watch nearby, open Heart Rate and tap to test, then try Measure again.</value>
+  </data>
   <data name="WatchReadingsVendorUnavailable" xml:space="preserve">
     <value>Live measure is not available on this phone build.</value>
   </data>

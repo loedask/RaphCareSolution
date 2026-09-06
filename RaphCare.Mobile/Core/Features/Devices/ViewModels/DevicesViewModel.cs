@@ -275,6 +275,15 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     public ICommand OpenReadingsCommand { get; }
     public ICommand ToggleShowAllCommand { get; }
 
+    public void AttachBleHandlers()
+    {
+        // Idempotent: OnDisappearing detaches; Shell may reuse the page instance.
+        DetachBleHandlers();
+        _ble.DiscoveredDevicesChanged += OnDiscoveredChanged;
+        _ble.VitalsUpdated += OnVitalsUpdated;
+        _ble.ErrorOccurred += OnBleError;
+    }
+
     public void DetachBleHandlers()
     {
         _ble.DiscoveredDevicesChanged -= OnDiscoveredChanged;
@@ -306,6 +315,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
 
     public async Task OnAppearingAsync()
     {
+        AttachBleHandlers();
         try
         {
             var flushed = await _vitalsOutbox.TryFlushAsync(_patientDevices, CancellationToken.None).ConfigureAwait(false);

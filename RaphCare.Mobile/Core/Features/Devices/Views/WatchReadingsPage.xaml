@@ -95,6 +95,7 @@
 
             <shared:GradientButton Text="{Binding MeasureButtonText}"
                                    Command="{Binding MeasureCommand}"
+                                   IsBusy="{Binding IsMeasuring}"
                                    HorizontalOptions="Fill"
                                    Padding="12,14" />
 

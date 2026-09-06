@@ -27,6 +27,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     private Guid? _connectedId;
     private bool _usingHbandSession;
     private WearableVitalsSnapshot? _lastVitals;
+    private int _suppressDisconnectClear;
 
     public WearableBleCoordinator(IHBandWearableBridge hband)
     {
@@ -36,6 +37,8 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
 
         _adapter.DeviceDisconnected += (_, e) =>
         {
+            if (_suppressDisconnectClear > 0)
+                return;
             if (_connectedId != e.Device.Id)
                 return;
             _connectedId = null;
@@ -232,35 +235,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             _connectedId = device.Id;
             _usingHbandSession = false;
 
-            var services = await device.GetServicesAsync(cancellationToken).ConfigureAwait(false);
-            foreach (var service in services)
-            {
-                var characteristics = await service.GetCharacteristicsAsync().ConfigureAwait(false);
-                foreach (var c in characteristics)
-                {
-                    if (!c.CanUpdate)
-                        continue;
-
-                    var uuidText = c.Uuid.ToString();
-                    // Only standard HR / pulse-ox notify UUIDs. Subscribing every CanUpdate char
-                    // on E580/E585 firmware often triggers Android "This feature is not supported" toasts.
-                    if (!IsStandardHealthNotifyUuid(uuidText))
-                        continue;
-
-                    EventHandler<CharacteristicUpdatedEventArgs> handler = (_, e) =>
-                        OnCharacteristicNotified(e.Characteristic);
-                    c.ValueUpdated += handler;
-                    _notifyHandlers.Add((Ch: c, H: handler));
-                    try
-                    {
-                        await c.StartUpdatesAsync(cancellationToken).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Notify failed ({uuidText}): {ex.Message}");
-                    }
-                }
-            }
+            await SubscribeStandardHealthNotifiesAsync(device, cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -275,6 +250,85 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         finally
         {
             _connectGate.Release();
+        }
+    }
+
+    private async Task SubscribeStandardHealthNotifiesAsync(IDevice device, CancellationToken cancellationToken)
+    {
+        var services = await device.GetServicesAsync(cancellationToken).ConfigureAwait(false);
+        foreach (var service in services)
+        {
+            var characteristics = await service.GetCharacteristicsAsync().ConfigureAwait(false);
+            foreach (var c in characteristics)
+            {
+                if (!c.CanUpdate)
+                    continue;
+
+                var uuidText = c.Uuid.ToString();
+                // Only standard HR / pulse-ox notify UUIDs. Subscribing every CanUpdate char
+                // on E580/E585 firmware often triggers Android "This feature is not supported" toasts.
+                if (!IsStandardHealthNotifyUuid(uuidText))
+                    continue;
+
+                EventHandler<CharacteristicUpdatedEventArgs> handler = (_, e) =>
+                    OnCharacteristicNotified(e.Characteristic);
+                c.ValueUpdated += handler;
+                _notifyHandlers.Add((Ch: c, H: handler));
+                try
+                {
+                    await c.StartUpdatesAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Notify failed ({uuidText}): {ex.Message}");
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// After Measure (success or fail), drop the vendor link and re-open Plugin.BLE GATT so
+    /// Devices still shows Connected and the next Measure can hand off cleanly.
+    /// </summary>
+    private async Task TryRestorePluginBleAfterMeasureAsync(IDevice device, Guid deviceId, CancellationToken ct)
+    {
+        try
+        {
+            if (_usingHbandSession)
+            {
+                try
+                {
+                    await _hband.DisconnectAsync(ct).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // ignore
+                }
+
+                _usingHbandSession = false;
+            }
+
+            await Task.Delay(DevicesBleSessionPolicy.PostGattDisconnectSettle, ct).ConfigureAwait(false);
+            await CleanupNotificationsAsync().ConfigureAwait(false);
+
+            Interlocked.Increment(ref _suppressDisconnectClear);
+            try
+            {
+                await _adapter.ConnectToDeviceAsync(device, ConnectParameters.None, ct).ConfigureAwait(false);
+                _connectedId = deviceId;
+                await SubscribeStandardHealthNotifiesAsync(device, ct).ConfigureAwait(false);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _suppressDisconnectClear);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Restore Plugin.BLE after Measure: {ex.Message}");
+            // Keep _connectedId if we still believe the patient has a claimed watch session intent;
+            // Measure can retry vendor connect without requiring a full Devices Connect.
+            _connectedId ??= deviceId;
         }
     }
 
@@ -332,7 +386,11 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             return null;
         }
 
-        await _connectGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        using var overallCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        overallCts.CancelAfter(DevicesBleSessionPolicy.LiveMeasureOverallTimeout);
+        var ct = overallCts.Token;
+
+        await _connectGate.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             await StopScanAsync().ConfigureAwait(false);
@@ -341,20 +399,30 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             // Vendor SDK needs the radio; drop Plugin.BLE GATT if we own it.
             if (!_usingHbandSession)
             {
+                Interlocked.Increment(ref _suppressDisconnectClear);
                 try
                 {
-                    await _adapter.DisconnectDeviceAsync(device).ConfigureAwait(false);
+                    try
+                    {
+                        await _adapter.DisconnectDeviceAsync(device).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // already disconnected
+                    }
+
+                    await Task.Delay(DevicesBleSessionPolicy.PostGattDisconnectSettle, ct).ConfigureAwait(false);
                 }
-                catch
+                finally
                 {
-                    // already disconnected
+                    Interlocked.Decrement(ref _suppressDisconnectClear);
                 }
             }
             else
             {
                 try
                 {
-                    await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+                    await _hband.DisconnectAsync(ct).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -362,14 +430,28 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                 }
 
                 _usingHbandSession = false;
+                await Task.Delay(DevicesBleSessionPolicy.PostGattDisconnectSettle, ct).ConfigureAwait(false);
             }
 
-            await _hband.ConnectAndHandshakeAsync(
-                    mac,
-                    device.Name,
-                    HBandSdkInfo.DefaultDevicePasswordPlaceholder,
-                    cancellationToken)
-                .ConfigureAwait(false);
+            using var handshakeCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            handshakeCts.CancelAfter(DevicesBleSessionPolicy.VendorHandshakeTimeout);
+            try
+            {
+                await _hband.ConnectAndHandshakeAsync(
+                        mac,
+                        device.Name,
+                        HBandSdkInfo.DefaultDevicePasswordPlaceholder,
+                        handshakeCts.Token)
+                    .ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                ErrorOccurred?.Invoke(
+                    this,
+                    "Watch measure could not start Bluetooth in time. Stay on Devices Connected, then try Measure again.");
+                return null;
+            }
+
             _connectedId = deviceId;
             _usingHbandSession = true;
 
@@ -385,29 +467,34 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             VitalsUpdated += OnMeasureSample;
             try
             {
-                await _hband.StartLiveHeartRateAsync(cancellationToken).ConfigureAwait(false);
-                try
-                {
-                    await _hband.StartLiveSpo2Async(cancellationToken).ConfigureAwait(false);
-                }
-                catch (Exception spo2Ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"SpO₂ start: {spo2Ex.Message}");
-                }
+                // Veepoo forbids overlapping long ops; measure heart rate first only.
+                await _hband.StartLiveHeartRateAsync(ct).ConfigureAwait(false);
 
-                using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                timeoutCts.CancelAfter(DevicesBleSessionPolicy.LiveMeasureTimeout);
+                using var sampleCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                sampleCts.CancelAfter(DevicesBleSessionPolicy.LiveMeasureTimeout);
                 try
                 {
-                    using var reg = timeoutCts.Token.Register(() => tcs.TrySetCanceled(timeoutCts.Token));
+                    using var reg = sampleCts.Token.Register(() => tcs.TrySetCanceled(sampleCts.Token));
                     var sample = await tcs.Task.ConfigureAwait(false);
+
+                    // Best-effort SpO₂ after the first HR sample (still sequential).
+                    try
+                    {
+                        await _hband.StartLiveSpo2Async(ct).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromSeconds(8), ct).ConfigureAwait(false);
+                    }
+                    catch (Exception spo2Ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"SpO₂ start: {spo2Ex.Message}");
+                    }
+
                     return _lastVitals ?? sample;
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
                     ErrorOccurred?.Invoke(
                         this,
-                        "No heart rate yet. On the watch, open Heart Rate and tap to test, then Measure again.");
+                        "No heart rate yet. On the watch open Heart Rate, tap to test, keep it on your wrist, then Measure again.");
                     return _lastVitals;
                 }
             }
@@ -415,6 +502,14 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             {
                 VitalsUpdated -= OnMeasureSample;
             }
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            ErrorOccurred?.Invoke(
+                this,
+                "Measure timed out. Keep the watch nearby, open Heart Rate on the watch, then try again.");
+            _usingHbandSession = false;
+            return null;
         }
         catch (OperationCanceledException)
         {
@@ -428,6 +523,17 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         }
         finally
         {
+            try
+            {
+                using var restoreCts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+                await TryRestorePluginBleAfterMeasureAsync(device, deviceId, restoreCts.Token)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception restoreEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"Measure restore: {restoreEx.Message}");
+            }
+
             _connectGate.Release();
         }
     }

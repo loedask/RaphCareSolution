@@ -4,6 +4,7 @@ using Java.Lang.Reflect;
 using Microsoft.Maui.ApplicationModel;
 using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Devices.Models;
+using RaphCare.Mobile.Kernel.Core.Common.Devices;
 using Exception = System.Exception;
 
 namespace RaphCare.Mobile.Platforms.Android.HBand;
@@ -20,6 +21,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
     private bool _initialized;
     private bool _sessionReady;
     private string? _connectedMac;
+    private readonly List<Java.Lang.Object> _proxyRoots = new();
     private HBandInvocationHandler? _activeHandler;
 
     public bool IsAvailable
@@ -81,73 +83,119 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             EnsureInitialized();
             var manager = _manager ?? throw new InvalidOperationException("VPOperateManager is null.");
 
-            await DisconnectCoreAsync().ConfigureAwait(true);
-
-            var connectTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            var notifyTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using var reg = cancellationToken.Register(() =>
-            {
-                connectTcs.TrySetCanceled(cancellationToken);
-                notifyTcs.TrySetCanceled(cancellationToken);
-            });
-
-            var connectProxy = CreateProxy(
-                "com.veepoo.protocol.listener.base.IConnectResponse",
-                (method, args) =>
-                {
-                    if (method.Name is "connectState" or "onResponse")
-                    {
-                        var code = UnboxInt(args.Length > 0 ? args[0] : null);
-                        if (code == RequestSuccessCode())
-                            connectTcs.TrySetResult(true);
-                        else
-                            connectTcs.TrySetException(new InvalidOperationException($"HBand connect failed (code {code})."));
-                    }
-
-                    return null;
-                });
-
-            var notifyProxy = CreateProxy(
-                "com.veepoo.protocol.listener.base.INotifyResponse",
-                (method, args) =>
-                {
-                    if (method.Name is "notifyState" or "onResponse" or "notifySuccess")
-                    {
-                        var code = args.Length > 0 ? UnboxInt(args[0]) : RequestSuccessCode();
-                        if (code == RequestSuccessCode() || method.Name == "notifySuccess")
-                            notifyTcs.TrySetResult(true);
-                        else
-                            notifyTcs.TrySetException(new InvalidOperationException($"HBand notify failed (code {code})."));
-                    }
-
-                    return null;
-                });
-
-            var mac = new Java.Lang.String(macAddress);
-            var name = new Java.Lang.String(deviceName ?? string.Empty);
-
-            // Preferred: connectDevice(mac, name, connectResponse, notifyResponse)
-            var connected = TryInvoke(manager, "connectDevice", mac, name, connectProxy, notifyProxy);
-            if (!connected)
-            {
-                // Fallback: connectDevice(mac, connectResponse, notifyResponse)
-                if (!TryInvoke(manager, "connectDevice", mac, connectProxy, notifyProxy))
-                    throw new InvalidOperationException("connectDevice overload not found on VPOperateManager.");
-            }
-
-            await connectTcs.Task.ConfigureAwait(true);
-            await notifyTcs.Task.ConfigureAwait(true);
-
-            await ConfirmPasswordAsync(manager, devicePassword, cancellationToken).ConfigureAwait(true);
-            await SyncPersonInfoAsync(manager, cancellationToken).ConfigureAwait(true);
-
             lock (_sync)
             {
-                _connectedMac = macAddress;
-                _sessionReady = true;
+                if (_sessionReady
+                    && string.Equals(_connectedMac, macAddress, StringComparison.OrdinalIgnoreCase))
+                    return;
             }
+
+            Exception? lastError = null;
+            for (var attempt = 1; attempt <= DevicesBleSessionPolicy.VendorConnectMaxAttempts; attempt++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    await DisconnectCoreAsync().ConfigureAwait(true);
+                    // Inuker code -2 (REQUEST_CANCELED) when connect runs before the radio settles.
+                    await Task.Delay(TimeSpan.FromMilliseconds(900 * attempt), cancellationToken)
+                        .ConfigureAwait(true);
+
+                    var connectTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    var notifyTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    linked.CancelAfter(TimeSpan.FromSeconds(25));
+                    using var reg = linked.Token.Register(() =>
+                    {
+                        connectTcs.TrySetCanceled(linked.Token);
+                        notifyTcs.TrySetCanceled(linked.Token);
+                    });
+
+                    var connectProxy = CreateProxy(
+                        "com.veepoo.protocol.listener.base.IConnectResponse",
+                        (method, args) =>
+                        {
+                            Log.Debug(Tag, $"IConnectResponse.{method.Name} args={args.Length}");
+                            if (method.Name is "connectState" or "onResponse" or "onConnectResponse")
+                            {
+                                var code = UnboxInt(args.Length > 0 ? args[0] : null);
+                                if (code == RequestSuccessCode())
+                                    connectTcs.TrySetResult(true);
+                                else
+                                    connectTcs.TrySetException(
+                                        new InvalidOperationException(FormatConnectFailure(code)));
+                            }
+
+                            return null;
+                        });
+
+                    var notifyProxy = CreateProxy(
+                        "com.veepoo.protocol.listener.base.INotifyResponse",
+                        (method, args) =>
+                        {
+                            Log.Debug(Tag, $"INotifyResponse.{method.Name} args={args.Length}");
+                            if (method.Name is "notifyState" or "onResponse" or "notifySuccess" or "onNotifyResponse")
+                            {
+                                var code = args.Length > 0 ? UnboxInt(args[0]) : RequestSuccessCode();
+                                if (code == RequestSuccessCode() || method.Name is "notifySuccess")
+                                    notifyTcs.TrySetResult(true);
+                                else
+                                    notifyTcs.TrySetException(
+                                        new InvalidOperationException($"HBand notify failed (code {code})."));
+                            }
+
+                            return null;
+                        });
+
+                    var mac = new Java.Lang.String(macAddress);
+                    var name = new Java.Lang.String(deviceName ?? string.Empty);
+
+                    var connected = TryInvoke(manager, "connectDevice", mac, name, connectProxy, notifyProxy);
+                    if (!connected
+                        && !TryInvoke(manager, "connectDevice", mac, connectProxy, notifyProxy))
+                    {
+                        throw new InvalidOperationException("connectDevice overload not found on VPOperateManager.");
+                    }
+
+                    try
+                    {
+                        await connectTcs.Task.ConfigureAwait(true);
+                        await notifyTcs.Task.ConfigureAwait(true);
+                    }
+                    catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                    {
+                        throw new TimeoutException(
+                            "HBand connect timed out. Keep the watch nearby and try Measure again.");
+                    }
+
+                    await ConfirmPasswordAsync(manager, devicePassword, cancellationToken).ConfigureAwait(true);
+                    await SyncPersonInfoAsync(manager, cancellationToken).ConfigureAwait(true);
+
+                    lock (_sync)
+                    {
+                        _connectedMac = macAddress;
+                        _sessionReady = true;
+                    }
+
+                    return;
+                }
+                catch (InvalidOperationException ex) when (
+                    attempt < DevicesBleSessionPolicy.VendorConnectMaxAttempts
+                    && HBandConnectFailureMessages.IsRadioBusyCancel(ex.Message))
+                {
+                    lastError = ex;
+                    Log.Warn(Tag, $"Connect attempt {attempt} canceled (-2); retrying.");
+                }
+            }
+
+            throw lastError
+                  ?? new InvalidOperationException(
+                      HBandConnectFailureMessages.ForCode(HBandConnectFailureMessages.RequestCanceled));
         });
     }
+
+    private static string FormatConnectFailure(int code) =>
+        HBandConnectFailureMessages.ForCode(code);
 
     public Task StartLiveHeartRateAsync(CancellationToken cancellationToken = default) =>
         MainThread.InvokeOnMainThreadAsync(() =>
@@ -160,12 +208,15 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                 "com.veepoo.protocol.listener.data.IHeartDataListener",
                 (method, args) =>
                 {
-                    if (method.Name != "onDataChange" || args.Length == 0 || args[0] is null)
+                    Log.Debug(Tag, $"IHeartDataListener.{method.Name} args={args.Length}");
+                    if (method.Name is not ("onDataChange" or "onHeartDataChange" or "heartDataChange")
+                        || args.Length == 0
+                        || args[0] is null)
                         return null;
 
                     try
                     {
-                        var bpm = ReadIntProperty(args[0]!, "getData", "data");
+                        var bpm = ReadIntProperty(args[0]!, "getData", "data", "getHeartRate", "heartRate", "getValue", "value");
                         if (bpm is >= 20 and <= 300)
                         {
                             RaiseVitals(new WearableVitalsSnapshot
@@ -176,6 +227,10 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                                 RawHex = $"hr={bpm}"
                             });
                         }
+                        else
+                        {
+                            Log.Warn(Tag, $"Heart callback ignored bpm={bpm}");
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -185,7 +240,8 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                     return null;
                 });
 
-            if (!TryInvoke(manager, "startDetectHeart", write, heartProxy))
+            if (!TryInvoke(manager, "startDetectHeart", write, heartProxy)
+                && !TryInvoke(manager, "startDetectHeart", heartProxy))
                 throw new InvalidOperationException("startDetectHeart not found on VPOperateManager.");
         });
 
@@ -277,7 +333,8 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         var customProxy = CreateProxy("com.veepoo.protocol.listener.data.ICustomSettingDataListener", (_, _) => null);
 
         var pwd = new Java.Lang.String(string.IsNullOrWhiteSpace(password) ? HBandSdkInfo.DefaultDevicePasswordPlaceholder : password);
-        var is24 = Java.Lang.Boolean.ValueOf(true);
+        // Official sample uses false for 24-hour model during pwd confirm.
+        var is24 = Java.Lang.Boolean.ValueOf(false);
 
         var ok = TryInvoke(manager, "confirmDevicePwd", write, pwdProxy, functionProxy, socialProxy, customProxy, pwd, is24)
                  || TryInvoke(manager, "confirmDevicePwd", write, pwdProxy, functionProxy, socialProxy, pwd, is24);
@@ -353,12 +410,13 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
 
         var mgrClass = Class.ForName("com.veepoo.protocol.VPOperateManager");
         Java.Lang.Object? manager = null;
-        foreach (var name in new[] { "getInstance", "getMangerInstance" })
+        var appContext = global::Android.App.Application.Context;
+        foreach (var name in new[] { "getMangerInstance", "getInstance" })
         {
             try
             {
                 var m = mgrClass.GetMethod(name, Class.FromType(typeof(global::Android.Content.Context)));
-                manager = m.Invoke(null, global::Android.App.Application.Context) as Java.Lang.Object;
+                manager = m.Invoke(null, appContext) as Java.Lang.Object;
                 if (manager is not null)
                     break;
             }
@@ -383,7 +441,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         if (manager is null)
             throw new InvalidOperationException("Could not obtain VPOperateManager instance.");
 
-        TryInvoke(manager, "init", global::Android.App.Application.Context);
+        TryInvoke(manager, "init", appContext);
         _manager = manager;
         _initialized = true;
     }
@@ -439,8 +497,13 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
 
         var loader = iface.ClassLoader ?? throw new InvalidOperationException("Missing class loader.");
         _activeHandler = new HBandInvocationHandler(handler);
-        return Proxy.NewProxyInstance(loader, [iface], _activeHandler)
+        var proxy = Proxy.NewProxyInstance(loader, [iface], _activeHandler)
                ?? throw new InvalidOperationException("Proxy.NewProxyInstance returned null.");
+        // Keep C# roots so the JNI proxy listener is not collected mid-callback.
+        _proxyRoots.Add(proxy);
+        if (_proxyRoots.Count > 24)
+            _proxyRoots.RemoveRange(0, _proxyRoots.Count - 16);
+        return proxy;
     }
 
     private static Java.Lang.Object? CreateDefaultPersonInfo()
@@ -585,7 +648,21 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             if (method.Name is "toString" or "hashCode" or "equals")
                 return method.Invoke(this, args);
 
-            return handler(method, args ?? []);
+            try
+            {
+                return handler(method, args ?? []);
+            }
+            catch (Throwable t)
+            {
+                // Veepoo / Inuker NPEs on the binder or UI proxy must not tear down MAUI Shell.
+                Log.Error(Tag, "HBand proxy invoke failed: " + t);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(Tag, "HBand proxy invoke failed: " + ex.Message);
+                return null;
+            }
         }
     }
 }

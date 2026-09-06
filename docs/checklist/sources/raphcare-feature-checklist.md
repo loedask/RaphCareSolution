@@ -207,10 +207,10 @@ Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_P
 - [x] SpO₂ GATT read when the band exposes standard PLX (`0x2A5F` / `0x2A60`)
 - [x] Vitals sync to API + offline outbox retry (`FileVitalsSyncOutbox`): HR / SpO₂ batches only
 - [x] SKU-agnostic wearable capability catalog documented (`docs/14_Wearable_Capability_Catalog.md`)
-- [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: sideload 1.5.2 packages current `jar_core` AARs; physical ET580/ET585 verification still open; iOS not wired
+- [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: REQUEST_CANCELED (-2) retries after GATT handoff; proxy invoke guarded; physical ET580/ET585 Measure prove-out still open; iOS not wired
 - [ ] Reliable full band data (HBand-class parity for in-scope metrics) `(partial)`: Phase 1 HR/SpO₂ hooks in; activity/sleep/history still open. See `docs/14`
 - [ ] Full typed HBand SDK C# binding project `(out of scope for Phase 1)`: JNI bridge used instead; optional later. See `docs/12_HBand_SDK_Integration.md`
-- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: wired in 1.5.2; awaiting [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md) on a real band
+- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: Watch readings Measure with settle/retry; awaiting prove-out that numbers stick after -2 radio-busy cases
 - [ ] Auto sync / background monitoring of band readings `(partial)`: manual sync + outbox exist; background unproven; OS limits in `docs/14`
 - [ ] Activity (steps / kcal / distance / goals) domain + sync + mobile `(not started)`
 - [ ] Sleep domain + sync + mobile `(not started)`

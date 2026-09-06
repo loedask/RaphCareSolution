@@ -1,6 +1,6 @@
 # RaphCare mobile updates
 
-Partner PDFs for each patient Android APK. Match the APK stem: `mobile-update-v1.8.13+25.pdf` goes with `RaphCare-v1.8.13+25.apk`.
+Partner PDFs for each patient Android APK. Match the APK stem: `mobile-update-v1.8.15+27.pdf` goes with `RaphCare-v1.8.15+27.apk`.
 
 | Path | What is here |
 |------|----------------|
@@ -15,21 +15,21 @@ Every time `RaphCare.Mobile` gets a new `ApplicationDisplayVersion` or Android `
 
 | File | Purpose |
 |------|---------|
-| `mobile-update-v1.8.13+25.md` | Plain-language changelog for that APK |
-| `mobile-update-v1.8.13+25.config.json` | PDF export config |
-| `mobile-update-v1.8.13+25.pdf` | PDF to send with the APK |
+| `mobile-update-v1.8.15+27.md` | Plain-language changelog for that APK |
+| `mobile-update-v1.8.15+27.config.json` | PDF export config |
+| `mobile-update-v1.8.15+27.pdf` | PDF to send with the APK |
 | `mobile-update.pdf.css` | Shared styles (under `sources/`) |
 
 ## Export after editing sources
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.8.13+25
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.8.15+27
 ```
 
 Archived note:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.8.12+24 -Archive
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCareMobileUpdatePdf.ps1 -Version 1.8.14+26 -Archive
 ```
 
 Details for builders: [`sources/README.md`](sources/README.md).

@@ -114,10 +114,22 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
         && _registeredDeviceId.HasValue
         && DevicesVitalsDisplayPolicy.HasPatientFacingReading(_lastVitals?.HeartRateBpm, _lastVitals?.SpO2Percent);
 
-    public void Dispose()
+    public void AttachBleHandlers()
+    {
+        DetachBleHandlers();
+        _ble.VitalsUpdated += OnVitalsUpdated;
+        _ble.ErrorOccurred += OnBleError;
+    }
+
+    public void DetachBleHandlers()
     {
         _ble.VitalsUpdated -= OnVitalsUpdated;
         _ble.ErrorOccurred -= OnBleError;
+    }
+
+    public void Dispose()
+    {
+        DetachBleHandlers();
         GC.SuppressFinalize(this);
     }
 
@@ -211,8 +223,10 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
         StatusHint = T("WatchReadingsMeasuringHint");
         try
         {
-            var snap = await _ble.MeasureLiveVitalsAsync(CancellationToken.None).ConfigureAwait(false);
-            if (snap is not null)
+            using var cts = new CancellationTokenSource(DevicesBleSessionPolicy.LiveMeasureOverallTimeout);
+            var snap = await _ble.MeasureLiveVitalsAsync(cts.Token).ConfigureAwait(false);
+            if (snap is not null
+                && DevicesVitalsDisplayPolicy.HasPatientFacingReading(snap.HeartRateBpm, snap.SpO2Percent))
             {
                 ApplySnapshot(snap);
                 StatusHint = T("WatchReadingsUpdatedHint");
@@ -222,9 +236,15 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
                 StatusHint = T("WatchReadingsMeasureFailedHint");
             }
         }
+        catch (OperationCanceledException)
+        {
+            ErrorMessage = T("WatchReadingsMeasureTimeout");
+            StatusHint = T("WatchReadingsMeasureFailedHint");
+        }
         catch (Exception ex)
         {
             ErrorMessage = ex.Message;
+            StatusHint = T("WatchReadingsMeasureFailedHint");
         }
         finally
         {

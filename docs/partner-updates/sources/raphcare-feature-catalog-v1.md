@@ -148,7 +148,7 @@ Android is the day-to-day test target. iPhone can run the app. Video on iPhone i
 | Push alerts on Android | App can register. Delivery needs Firebase on the server, then a real-device test. | In progress |
 | Push alerts on iPhone | Needs store and push setup, then a real-device test. | In progress |
 | Claim a watch | Patient claims the serial Ops already assigned. They can type it or photograph the packaging barcode or QR. They cannot invent a serial. Bluetooth Connect is blocked until claim, and only the locked MAC is accepted after the first pair. Leaving Devices keeps the link when the band stays nearby. | Ready |
-| E580 or E585 style band | Scan and connect after claim. Open Watch readings and Measure now for heart rate and oxygen. Confirm on your sample watches. | In progress |
+| E580 or E585 style band | Scan and connect after claim. Open Watch readings and Measure now for heart rate and oxygen. Measure retries when the watch radio is busy after Connect. Confirm on your sample watches. | In progress |
 | Watch readings screen | Dedicated screen for heart rate and oxygen, with room for more measures later. | Ready |
 | Live heart rate and oxygen | Wired on Android. Hardware prove-out still needed. | In progress |
 | Auto sync in the background | Manual sync exists. Background sync is not finished. | Later |

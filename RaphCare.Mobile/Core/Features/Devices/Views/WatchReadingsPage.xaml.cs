@@ -15,13 +15,18 @@ public partial class WatchReadingsPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is WatchReadingsViewModel vm)
+        {
+            vm.AttachBleHandlers();
             await SafePageLoad.RunAsync(() => vm.OnAppearingAsync());
+        }
     }
 
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
+        // Do not Dispose here: Shell can keep the page; hard dispose left Home blank after
+        // Measure / vendor callbacks. Detach only; Dispose when the page is finalized.
         if (BindingContext is WatchReadingsViewModel vm)
-            vm.Dispose();
+            vm.DetachBleHandlers();
     }
 }
