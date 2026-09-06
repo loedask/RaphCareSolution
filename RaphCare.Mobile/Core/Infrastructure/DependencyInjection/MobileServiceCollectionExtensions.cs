@@ -154,7 +154,8 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<MentalHealthPage>();
         services.AddTransient<NotificationsViewModel>();
         services.AddTransient<NotificationsPage>();
-        services.AddTransient<AiAssistantViewModel>();
+        // Singleton so the chat thread survives leaving and reopening the page in one app session.
+        services.AddSingleton<AiAssistantViewModel>();
         services.AddTransient<AiAssistantPage>();
         services.AddTransient<ProfileHubViewModel>();
         services.AddTransient<EditProfileViewModel>();

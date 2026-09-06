@@ -32,6 +32,7 @@ Styles: `docs/checklist/sources/raphcare-feature-checklist.pdf.css`. Configs: `d
 
 ## Related docs (do not replace the checklists)
 
+- **Partner feature catalog** (what is in Portal / Ops / Mobile): see **raphcare-feature-catalog**; update that PDF when partner-visible surfaces change
 - **Mobile visual parity:** `docs/Mobile_Concept_Port.md`
 - **Mobile release gates:** `docs/checklist/sources/Mobile_Release_Ready_Checklist.md`
 - **Wearables / fleet:** `docs/11_Devices_BLE_E580_E585.md`, `docs/12_HBand_SDK_Integration.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`

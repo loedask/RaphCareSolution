@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Settings.ViewModels"
              xmlns:auth="clr-namespace:RaphCare.Mobile.Core.Features.Auth.Models"
+             xmlns:models="clr-namespace:RaphCare.Mobile.Core.Features.Settings.Models"
              xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Common.Controls"
              x:Class="RaphCare.Mobile.Core.Features.Settings.Views.SelectClinicPage"
              x:DataType="vm:SelectClinicViewModel"
@@ -15,9 +16,68 @@
                    Style="{StaticResource BodyMedium}"
                    TextColor="{StaticResource MutedForegroundColor}" />
 
-            <Label Text="{Binding CurrentClinicSummary}"
-                   Style="{StaticResource BodyMedium}"
-                   FontAttributes="Bold" />
+            <Border Style="{StaticResource CardBorder}" Padding="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="{Binding ActiveClinicLabel}"
+                           Style="{StaticResource Caption}"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource MutedForegroundColor}" />
+                    <Label Text="{Binding CurrentClinicSummary}"
+                           Style="{StaticResource BodyMedium}"
+                           FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="{Binding LinkedHeading}"
+                   Style="{StaticResource SectionTitle}"
+                   Margin="0" />
+            <Label Text="{Binding LinkedTapHint}"
+                   Style="{StaticResource Caption}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding HasLinkedClinics}" />
+            <Label Text="{Binding LinkedEmptyText}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding ShowLinkedEmpty}" />
+            <Label Text="{Binding LinkedLoadFailedText}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource ErrorColor}"
+                   IsVisible="{Binding LinkedLoadFailed}" />
+            <Border Style="{StaticResource CardBorder}"
+                    IsVisible="{Binding HasLinkedClinics}">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding LinkedClinics}" Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:LinkedClinicDisplayItem">
+                            <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Name}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                    <Label Text="{Binding ReferenceCode}"
+                                           Style="{StaticResource Caption}"
+                                           TextColor="{StaticResource MutedForegroundColor}" />
+                                    <Label Text="{Binding AccessLabel}"
+                                           Style="{StaticResource Caption}"
+                                           TextColor="{StaticResource AccentColor}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                    <Label Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.LinkedActiveBadge}"
+                                           Style="{StaticResource Micro}"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource HealthNormalColor}"
+                                           IsVisible="{Binding IsActiveOnPhone}"
+                                           HorizontalTextAlignment="End" />
+                                    <Label Text="→"
+                                           TextColor="{StaticResource PrimaryColor}"
+                                           HorizontalOptions="End" />
+                                </VerticalStackLayout>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectLinkedCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </Border>
 
             <shared:InputField LabelText="{Binding SearchLabel}"
                                Placeholder="{Binding SearchPlaceholder}"
@@ -49,30 +109,45 @@
                    FontSize="12"
                    IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}" />
 
-            <Border Style="{StaticResource CardBorder}">
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Results}" Spacing="0">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="auth:ClinicPickerItem">
-                            <Grid Padding="16,14" ColumnDefinitions="*,Auto">
-                                <VerticalStackLayout Spacing="2">
-                                    <Label Text="{Binding Name}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
-                                    <Label Text="{Binding ReferenceCode}"
-                                           Style="{StaticResource Caption}"
-                                           TextColor="{StaticResource MutedForegroundColor}" />
-                                </VerticalStackLayout>
-                                <Label Grid.Column="1"
-                                       Text="→"
-                                       TextColor="{StaticResource PrimaryColor}"
-                                       VerticalOptions="Center" />
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectCommand}"
-                                                          CommandParameter="{Binding .}" />
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
-            </Border>
+            <Label Text="{Binding ResultsEmptyHint}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding ShowResultsCard, Converter={StaticResource InvertedBoolConverter}}" />
+
+            <VerticalStackLayout IsVisible="{Binding ShowResultsCard}" Spacing="8">
+                <Label Text="{Binding ResultsHeading}"
+                       Style="{StaticResource SectionTitle}"
+                       Margin="0" />
+                <Label Text="{Binding TapToActivateHint}"
+                       Style="{StaticResource Caption}"
+                       TextColor="{StaticResource MutedForegroundColor}"
+                       IsVisible="{Binding HasSearchResults}" />
+                <Border Style="{StaticResource CardBorder}"
+                        IsVisible="{Binding HasSearchResults}">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Results}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="auth:ClinicPickerItem">
+                                <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding Name}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                                        <Label Text="{Binding ReferenceCode}"
+                                               Style="{StaticResource Caption}"
+                                               TextColor="{StaticResource MutedForegroundColor}" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1"
+                                           Text="→"
+                                           TextColor="{StaticResource PrimaryColor}"
+                                           VerticalOptions="Center" />
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -1,10 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RaphCare.Application.Features.PatientDevices.Commands.BindMyDeviceBluetoothMac;
 using RaphCare.Application.Features.PatientDevices.Commands.RegisterMyDevice;
 using RaphCare.Application.Features.PatientDevices.Commands.SyncMyDeviceReadings;
 using RaphCare.Application.Features.PatientDevices.DTOs;
 using RaphCare.Application.Features.PatientDevices.Queries.GetMyDevices;
+using RaphCare.Application.Features.PatientDevices.Queries.GetMyLatestReadings;
 
 namespace RaphCare.API.Controllers;
 
@@ -22,10 +24,31 @@ public class PatientDevicesController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("readings/latest", Name = "GetMyLatestReadings")]
+    [ProducesResponseType(typeof(GetMyLatestReadingsResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMyLatestReadings(CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetMyLatestReadingsQuery(), cancellationToken).ConfigureAwait(false);
+        return Ok(result);
+    }
+
     [HttpPost("register", Name = "RegisterMyDevice")]
     [ProducesResponseType(typeof(RegisterMyDeviceResponseDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterMyDeviceCommand command, CancellationToken cancellationToken)
     {
+        var result = await mediator.Send(command, cancellationToken).ConfigureAwait(false);
+        return Ok(result);
+    }
+
+    [HttpPost("{deviceId:guid}/bluetooth-mac", Name = "BindMyDeviceBluetoothMac")]
+    [ProducesResponseType(typeof(BindMyDeviceBluetoothMacResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> BindBluetoothMac(
+        Guid deviceId,
+        [FromBody] BindMyDeviceBluetoothMacCommand command,
+        CancellationToken cancellationToken)
+    {
+        command.DeviceId = deviceId;
         var result = await mediator.Send(command, cancellationToken).ConfigureAwait(false);
         return Ok(result);
     }

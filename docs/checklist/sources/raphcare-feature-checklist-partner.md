@@ -10,14 +10,14 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 - **Partial** = 50%
 - **Not started** = 0%
 - **Not for mobile**, **Not for clinical v1**, and **Not for BLE** = left out of the % on purpose
-- **Later** notes (phone use of the web admin, and similar) are left out of the % until we schedule the work
+- Later notes that are still open are left out of the % until we schedule the work
 - Section % = average of that section's scored rows
 - Overall % = average of all scored rows in sections 1-5
 - **Section 6** is a later product list. Those rows stay out of overall % until we schedule them and change the status to Partial or Done
 
 Each section shows its % in the heading. Numbers stay in sync when status changes.
 
-Last reviewed: 2026-09-04
+Last reviewed: 2026-09-06
 
 ---
 
@@ -39,13 +39,12 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
-| Fleet watches (platform) | Done | Done in a separate Ops web app (not the hospital Portal). Add serials to stock and assign a watch to a patient. Patients claim that serial in the phone app. They cannot invent one. |
+| Fleet watches (platform) | Done | Ops web app stocks serials under a hospital or the Direct programme (type, optional Bluetooth MAC, scan barcode, take a picture, or choose a photo; the image is not uploaded). Ops and Portal Devices lists show MAC and activated date when known. Hospital staff assign an in-stock watch to a patient on Devices. Patients claim the serial, then Bluetooth only pairs to that watch. |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
+| Use Portal and Ops on a phone | Done | Layouts tighten on small screens: top bar, forms, tables you can swipe, and hospital section tabs. Staff can add a home-screen shortcut from the browser (not a separate staff app, and not offline). |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Platform watch stock and assignment live in a separate Ops web app. Portal admin has no platform left menu; the top bar carries All hospitals and Register hospital.
-
-**Later (not in this %):** staff should use this same web admin on a phone. Make the screens work on a small display first. A light home-screen shortcut can follow. A full offline installable web app is not the plan.
+**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Ops stocks watches under a hospital or Direct. Phone layout and a light home-screen shortcut are available.
 
 ---
 
@@ -78,18 +77,18 @@ What patients see on Android and iPhone.
 | Area | Status | Notes |
 |------|--------|-------|
 | Sign up or sign in (email, phone code, voice) | Done | Includes forgot password: email code, then new password |
-| Home and navigation | Done | Monochrome icons (same teal tint style as the web). Failed taps should not close the app. Some areas can be turned off with feature flags |
+| Home and navigation | Done | Monochrome icons (same teal tint style as the web). Failed taps should not close the app. Some areas can be turned off with feature flags. Home upcoming, devices, vitals, and the wellness tip come from your account (empty when you have none). |
 | Appointments (list, book, detail) | Done | Book uses your clinic and a clinician name list |
 | Care, request a call, join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
 | Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. When staff call your code, you get a notice and Health records say come to the counter. |
 | Insurance | Done | |
 | Billing and payment methods | Done | |
 | Family members | Done | |
-| Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone |
-| Chat assistant | Done | Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
+| Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone. Home and Mental Health tips follow your recent check-ins instead of sample copy. |
+| Chat assistant | Done | Scrollable chat with prior messages in the same session. The assistant can use the last few turns so follow-ups make sense. Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
 | Notifications list | Done | Real push alerts need Firebase and store setup |
-| Settings and profile | Done | Includes My clinic: search by name or enter a short clinic code. A photo you add on the phone is stored with your record. |
-| Choose my clinic | Done | Patients do not need Guids; use clinic name or an RC- code from the hospital |
+| Settings and profile | Done | Includes Active clinic: which hospital this phone uses. **Hospitals linked to me** lists hospitals tied to your record. Directory search finds hospitals by name; it is not a membership list. Enter a short clinic code if you have one. Medical information has blood type presets and quick allergy or chronic chips plus Other. Emergency contacts can be picked from the phone book or typed in. A photo you add on the phone is stored with your record. Insurance shows your plan when one is on file. Payment methods and billing history open the right screens. Privacy is honest about what is phone-only and how to ask for account deletion. |
+| Choose my clinic | Done | Patients do not need Guids; use clinic name or an RC- code from the hospital. Hospitals linked to you show on Active clinic so you can tell membership apart from directory search. |
 
 ### Phones and devices (broader coverage)
 
@@ -104,7 +103,7 @@ What patients see on Android and iPhone.
 | Video visit on a real iPhone | Not started | Needs iOS video kit wiring |
 | Push alerts on Android | Partial | Needs Firebase configured on the server |
 | Push alerts on iPhone | Partial | Needs store and push setup, then a real device test |
-| Claim an assigned watch serial in the app | Done | After RaphCare or the clinic assigns the watch, the patient enters that serial. Unknown serials are rejected. |
+| Claim an assigned watch serial in the app | Done | Hospital path: after staff assign the watch, the patient enters that serial. Direct package path: claim the packaging serial when the watch is stocked under Direct. Unknown serials are rejected. Scan and Connect stay off until claim. After the first pair, only that Bluetooth address is accepted. |
 | Connect **E580** or **E585** style Bluetooth bands | Partial | Scan includes ET580 and ET585 labels; heart rate or oxygen only when the band speaks standard Bluetooth health profiles |
 | Live heart rate and blood oxygen in the app | Partial | Android vendor path wired; confirm on your ET580 or ET585 samples |
 | Auto sync and background monitoring | Not started | Manual sync exists; background sync not finished |
@@ -161,8 +160,6 @@ What a site gets when they pay for Hospital, not Clinic. Beds and the collection
 
 **Bottom line (100%):** Hospital plan stay extras for this board are in. Ward notes, cash invoice, occupancy, nurse job, lab result-ready notice, casualty, theatre, referrals, SafeCare on the hospital home, return visit at discharge, who-is-on-today, and AI discharge draft.
 
-**Later (not in this %):** staff using the same web admin on a phone. Same note as section 1.
-
 ---
 
 ## 6. Next ideas (AI and clinic ops) - later (not in overall %)
@@ -198,7 +195,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 
 | Area | % | Notes |
 |------|--:|-------|
-| 1. Hospital admin (outpatient) | 100% | Ready on web |
+| 1. Hospital admin (outpatient) | 100% | Ready on web; phone layout + home-screen shortcut |
 | 2. Inpatient | 100% | Ready on web |
 | 3. Patient phone app | 61% | Chat assistant uses cloud AI; iPhone video, push, wearables still catch-up |
 | 4. Other staff and system | 93% | Demo accounts on Staging; private photos and voice files; staff mental-health therapy and AI notes |

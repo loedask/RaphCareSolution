@@ -48,7 +48,9 @@
         <div class="hospital-deck-stage">
         @if (_tab == "open")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Referral_Eyebrow")" Title="@AppResources.T("Referral_OpenList")">
+            <AdminPageCard Eyebrow="@AppResources.T("Referral_Eyebrow")"
+                           Title="@AppResources.T("Referral_OpenList")"
+                           Lead="@AppResources.T("Referral_OpenListLead")">
                 <div class="admin-page-card-body">
                     @if (_board is null || _board.Open.Count == 0)
                     {
@@ -111,7 +113,9 @@
         }
         else if (_tab == "recent")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Referral_Eyebrow")" Title="@AppResources.T("Referral_Recent")">
+            <AdminPageCard Eyebrow="@AppResources.T("Referral_Eyebrow")"
+                           Title="@AppResources.T("Referral_Recent")"
+                           Lead="@AppResources.T("Referral_RecentLead")">
                 <div class="admin-page-card-body">
                     @if (_board is null || _board.Recent.Count == 0)
                     {
@@ -155,7 +159,9 @@
         }
         else if (_tab == "log")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Referral_Eyebrow")" Title="@AppResources.T("Referral_LogReferral")">
+            <AdminPageCard Eyebrow="@AppResources.T("Referral_Eyebrow")"
+                           Title="@AppResources.T("Referral_LogReferral")"
+                           Lead="@AppResources.T("Referral_LogLead")">
                 <div class="admin-page-card-body">
                     <div class="form-grid">
                         <label>

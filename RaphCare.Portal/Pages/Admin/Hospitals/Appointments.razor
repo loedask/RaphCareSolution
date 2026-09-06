@@ -41,7 +41,9 @@
         <div class="hospital-deck-stage">
             @if (_tab == "book" && _isAdministrator)
             {
-                <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")" Title="@AppResources.T("Common_BookAppointmentTitle")">
+                <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")"
+                               Title="@AppResources.T("Common_BookAppointmentTitle")"
+                               Lead="@AppResources.T("Common_BookAppointmentLead")">
                     <div class="admin-page-card-body">
                         <div class="form-grid">
                             <label>
@@ -89,7 +91,9 @@
             {
                 @if (_isAdministrator && _rescheduleId is Guid)
                 {
-                    <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")" Title="@AppResources.T("Common_RescheduleAppointment")">
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")"
+                                   Title="@AppResources.T("Common_RescheduleAppointment")"
+                                   Lead="@AppResources.T("Common_RescheduleAppointmentLead")">
                         <div class="admin-page-card-body">
                             <div class="form-grid">
                                 <label>
@@ -121,7 +125,9 @@
                     </AdminPageCard>
                 }
 
-                <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")" Title="@AppResources.T("Appointments_TabSchedule")">
+                <AdminPageCard Eyebrow="@AppResources.T("Common_SchedulingEyebrow")"
+                               Title="@AppResources.T("Appointments_TabSchedule")"
+                               Lead="@AppResources.Format("Appointments_ScheduleLead", _clinicName, _timeZoneLabel)">
                     <AdminPageCardMeta>
                         <span class="admin-progress-pill">@FormatAppointmentCount(_totalCount)</span>
                     </AdminPageCardMeta>

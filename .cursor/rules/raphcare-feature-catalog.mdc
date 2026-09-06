@@ -1,0 +1,61 @@
+---
+description: Keep the partner feature catalog (Portal / Ops / Mobile) in sync when product surfaces change
+alwaysApply: true
+---
+
+# RaphCare Feature Catalog Updates
+
+Whenever you implement, finish, or materially change a **partner-visible** feature on **Portal**, **Ops**, **Mobile**, or the shared pieces behind them, update the **feature catalog** in the same change set.
+
+This is the shareable “what is in the product” list. It is **not** the progress board. Completion % stays on the feature checklists (see **raphcare-feature-checklist**).
+
+## Surfaces (do not mix these up)
+
+| Surface | Who | What belongs here |
+|---------|-----|-------------------|
+| **Portal** | Hospitals / clinic staff | Hospital website: landing, waiting screens, and the full clinic/hospital staff workspace |
+| **Ops** | Platform owners | Separate site: wearable fleet stock, assign to patient, fleet list (not day-to-day hospital work) |
+| **Mobile** | Patients | Phone app, including claim of a watch that Ops already assigned |
+
+Do **not** put hospital staff workspace rows under Ops, or platform fleet stock under Portal. Match `docs/partner-updates/sources/raphcare-demo-accounts-v2.md` for who signs in where.
+
+## Files (current stem)
+
+Use the highest `raphcare-feature-catalog-vN` stem under `docs/partner-updates/sources/` (today: **v1**).
+
+- Edit: `docs/partner-updates/sources/raphcare-feature-catalog-v1.md`
+- Config / CSS: `raphcare-feature-catalog-v1.config.json`, `raphcare-feature-catalog-v1.pdf.css`
+- PDF to send: `docs/partner-updates/raphcare-feature-catalog-v1.pdf`
+
+Whenever the `.md` changes, regenerate the PDF in the same change set. Do not leave the PDF stale.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Export-RaphCarePartnerUpdatePdf.ps1 -Stem raphcare-feature-catalog-v1
+```
+
+## Version bump
+
+When the partner should treat the sheet as a new edition (major restructure, wrong-audience rename, or replacing a circulated PDF):
+
+1. Archive the previous stem’s `.md`, `.config.json`, `.pdf.css` under `sources/archives/` and the PDF under `docs/partner-updates/archives/`.
+2. Create `raphcare-feature-catalog-v(N+1)` sources, bump the subtitle and `document_title`, then export to the folder root.
+3. Update this rule’s paths and any README export examples to the new stem.
+
+Small feature row or status edits stay on the current `vN`. Same pattern as `raphcare-price-list-vN` and `raphcare-demo-accounts-vN`.
+
+## What to update
+
+1. Add, move, or edit the feature row under the correct surface section (Portal / Ops / Mobile / Shared / Later).
+2. Set status with the catalog words only: **Ready**, **In progress**, or **Later**.
+3. Put Clinic-only vs Hospital-plan extras under the Portal subsections that already exist.
+4. Set **Last reviewed** to today's date.
+5. Keep commercial Clinic / Hospital / Network reminder aligned if the saleable scope changed.
+6. Follow **human-sounding-copy**. No class names, routes, build commands, or repo paths in the catalog body.
+
+## Do / don't
+
+- Do update the catalog when a surface gains a walkthrough-worthy capability, or when status moves (for example In progress to Ready).
+- Do update checklists **and** the catalog when both apply; one does not replace the other.
+- Don't skip the catalog because the checklist was updated.
+- Don't invent a clinician phone app section unless product scopes one.
+- Don't rename Portal/Ops to mean something else without updating this rule and the catalog intro table together.

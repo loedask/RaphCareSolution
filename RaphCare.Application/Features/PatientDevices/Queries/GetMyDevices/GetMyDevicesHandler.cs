@@ -40,6 +40,7 @@ public sealed class GetMyDevicesHandler : IRequestHandler<GetMyDevicesQuery, IRe
                 DeviceId = a.DeviceId,
                 SerialNumber = a.Device!.SerialNumber,
                 Model = a.Device.Model,
+                BluetoothMacAddress = a.Device.BluetoothMacAddress,
                 AssignedAt = a.AssignedAt
             })
             .ToList();

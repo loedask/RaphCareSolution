@@ -8,7 +8,7 @@ public sealed class ProfileMenuRowModel
     public required string Title { get; init; }
     public string? Subtitle { get; init; }
 
-    /// <summary>MAUI image resource (see <c>MonochromeIconKeys</c>), tinted in XAML.</summary>
+    /// <summary>MAUI image resource (see <c>MonochromeIconKeys</c>); use <c>*OnAccent</c> with <c>ProfileMenuIconBorder</c>.</summary>
     public required string IconSource { get; init; }
 
     public bool ShowSeparator { get; init; } = true;

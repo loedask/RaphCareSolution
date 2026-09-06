@@ -3,16 +3,22 @@ using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using RaphCare.Client.Contracts.Interfaces;
+using RaphCare.Mobile.Core.Common.Clinics;
 using RaphCare.Mobile.Core.Common.Services.Api;
 using RaphCare.Mobile.Core.Common.ViewModels;
 using RaphCare.Mobile.Core.Features.Auth.Models;
+using RaphCare.Mobile.Core.Features.Settings.Models;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
-/// <summary>Search or enter a clinic reference code, then save it for API tenant headers.</summary>
+/// <summary>
+/// Sets the active clinic on this phone (API tenant header). Directory search is not hospital membership.
+/// Linked hospitals come from the patient's care links on the server.
+/// </summary>
 public sealed class SelectClinicViewModel : BaseViewModel
 {
     private readonly IEmailAuthService _emailAuth;
+    private readonly IPatientClinicsService _patientClinics;
     private readonly ISelectedClinicStore _selectedClinic;
 
     private string _searchText = string.Empty;
@@ -20,13 +26,30 @@ public sealed class SelectClinicViewModel : BaseViewModel
     private string? _errorMessage;
     private string? _statusMessage;
     private string _currentClinicSummary = string.Empty;
+    private bool _hasSearchResults;
+    private bool _showResultsCard;
+    private bool _hasLinkedClinics;
+    private bool _showLinkedEmpty;
+    private bool _linkedLoadFailed;
+    private string _linkedLoadFailedText;
 
-    public SelectClinicViewModel(IEmailAuthService emailAuth, ISelectedClinicStore selectedClinic)
+    public SelectClinicViewModel(
+        IEmailAuthService emailAuth,
+        IPatientClinicsService patientClinics,
+        ISelectedClinicStore selectedClinic)
     {
         _emailAuth = emailAuth ?? throw new ArgumentNullException(nameof(emailAuth));
+        _patientClinics = patientClinics ?? throw new ArgumentNullException(nameof(patientClinics));
         _selectedClinic = selectedClinic ?? throw new ArgumentNullException(nameof(selectedClinic));
 
         Title = T("SelectClinicTitle");
+        HintText = T("SelectClinicHint");
+        ActiveClinicLabel = T("SelectClinicActiveLabel");
+        LinkedHeading = T("SelectClinicLinkedHeading");
+        LinkedEmptyText = T("SelectClinicLinkedEmpty");
+        LinkedTapHint = T("SelectClinicLinkedTapHint");
+        LinkedActiveBadge = T("SelectClinicLinkedActiveBadge");
+        _linkedLoadFailedText = T("SelectClinicLinkedLoadFailed");
         SearchLabel = T("SelectClinicSearchLabel");
         SearchPlaceholder = T("SelectClinicSearchPlaceholder");
         ReferenceLabel = T("SelectClinicReferenceLabel");
@@ -34,14 +57,31 @@ public sealed class SelectClinicViewModel : BaseViewModel
         SearchButtonText = T("SelectClinicSearchButton");
         UseCodeButtonText = T("SelectClinicUseCodeButton");
         ClearButtonText = T("SelectClinicClearButton");
-        HintText = T("SelectClinicHint");
+        ResultsHeading = T("SelectClinicResultsHeading");
+        ResultsEmptyHint = T("SelectClinicResultsEmptyHint");
+        TapToActivateHint = T("SelectClinicTapToActivate");
 
         Results = new ObservableCollection<ClinicPickerItem>();
+        LinkedClinics = new ObservableCollection<LinkedClinicDisplayItem>();
         SearchCommand = new Command(async () => await SearchAsync(), () => !IsBusy);
         UseCodeCommand = new Command(async () => await UseCodeAsync(), () => !IsBusy);
         SelectCommand = new Command<ClinicPickerItem>(async item => await SelectAsync(item), _ => !IsBusy);
+        SelectLinkedCommand = new Command<LinkedClinicDisplayItem>(async item => await SelectLinkedAsync(item), _ => !IsBusy);
         ClearCommand = new Command(ClearSelection, () => !IsBusy);
         RefreshCurrentSummary();
+    }
+
+    public string HintText { get; }
+    public string ActiveClinicLabel { get; }
+    public string LinkedHeading { get; }
+    public string LinkedEmptyText { get; }
+    public string LinkedTapHint { get; }
+    public string LinkedActiveBadge { get; }
+
+    public string LinkedLoadFailedText
+    {
+        get => _linkedLoadFailedText;
+        private set => SetProperty(ref _linkedLoadFailedText, value);
     }
 
     public string SearchLabel { get; }
@@ -51,9 +91,12 @@ public sealed class SelectClinicViewModel : BaseViewModel
     public string SearchButtonText { get; }
     public string UseCodeButtonText { get; }
     public string ClearButtonText { get; }
-    public string HintText { get; }
+    public string ResultsHeading { get; }
+    public string ResultsEmptyHint { get; }
+    public string TapToActivateHint { get; }
 
     public ObservableCollection<ClinicPickerItem> Results { get; }
+    public ObservableCollection<LinkedClinicDisplayItem> LinkedClinics { get; }
 
     public string SearchText
     {
@@ -73,6 +116,36 @@ public sealed class SelectClinicViewModel : BaseViewModel
         private set => SetProperty(ref _currentClinicSummary, value);
     }
 
+    public bool HasSearchResults
+    {
+        get => _hasSearchResults;
+        private set => SetProperty(ref _hasSearchResults, value);
+    }
+
+    public bool ShowResultsCard
+    {
+        get => _showResultsCard;
+        private set => SetProperty(ref _showResultsCard, value);
+    }
+
+    public bool HasLinkedClinics
+    {
+        get => _hasLinkedClinics;
+        private set => SetProperty(ref _hasLinkedClinics, value);
+    }
+
+    public bool ShowLinkedEmpty
+    {
+        get => _showLinkedEmpty;
+        private set => SetProperty(ref _showLinkedEmpty, value);
+    }
+
+    public bool LinkedLoadFailed
+    {
+        get => _linkedLoadFailed;
+        private set => SetProperty(ref _linkedLoadFailed, value);
+    }
+
     public string? ErrorMessage
     {
         get => _errorMessage;
@@ -88,12 +161,73 @@ public sealed class SelectClinicViewModel : BaseViewModel
     public ICommand SearchCommand { get; }
     public ICommand UseCodeCommand { get; }
     public ICommand SelectCommand { get; }
+    public ICommand SelectLinkedCommand { get; }
     public ICommand ClearCommand { get; }
 
     public async Task LoadAsync()
     {
         RefreshCurrentSummary();
-        await SearchAsync().ConfigureAwait(false);
+        ClearResultsUi(showCard: false);
+        StatusMessage = null;
+        ErrorMessage = null;
+        if (_selectedClinic.ClinicId is not null
+            && !string.IsNullOrWhiteSpace(_selectedClinic.ReferenceCode)
+            && string.IsNullOrWhiteSpace(ReferenceCodeText))
+        {
+            ReferenceCodeText = _selectedClinic.ReferenceCode;
+        }
+
+        await LoadLinkedClinicsAsync().ConfigureAwait(false);
+    }
+
+    private async Task LoadLinkedClinicsAsync()
+    {
+        var fallback = T("SelectClinicLinkedLoadFailed");
+        try
+        {
+            var response = await _patientClinics.GetMyLinkedClinicsAsync(CancellationToken.None).ConfigureAwait(false);
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                LinkedClinics.Clear();
+                if (!response.IsSuccess || response.Data is null)
+                {
+                    LinkedLoadFailedText = LinkedClinicLoadFailureMessage.Resolve(response.ErrorMessage, fallback);
+                    LinkedLoadFailed = true;
+                    HasLinkedClinics = false;
+                    ShowLinkedEmpty = false;
+                    return;
+                }
+
+                LinkedLoadFailed = false;
+                LinkedLoadFailedText = fallback;
+                var activeId = _selectedClinic.ClinicId;
+                foreach (var clinic in response.Data)
+                {
+                    LinkedClinics.Add(new LinkedClinicDisplayItem
+                    {
+                        ClinicId = clinic.ClinicId,
+                        Name = clinic.Name,
+                        ReferenceCode = clinic.ReferenceCode ?? string.Empty,
+                        AccessLabel = T(LinkedClinicAccessLabelRules.ResourceKey(clinic.AccessKind)),
+                        IsActiveOnPhone = activeId is { } id && id == clinic.ClinicId,
+                    });
+                }
+
+                HasLinkedClinics = LinkedClinics.Count > 0;
+                ShowLinkedEmpty = LinkedClinics.Count == 0;
+            });
+        }
+        catch
+        {
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                LinkedClinics.Clear();
+                LinkedLoadFailedText = fallback;
+                LinkedLoadFailed = true;
+                HasLinkedClinics = false;
+                ShowLinkedEmpty = false;
+            });
+        }
     }
 
     private void RefreshCurrentSummary()
@@ -115,11 +249,19 @@ public sealed class SelectClinicViewModel : BaseViewModel
     {
         ErrorMessage = null;
         StatusMessage = null;
+
+        if (!SelectClinicSearchRules.TryNormalizeQuery(SearchText, out var query))
+        {
+            ClearResultsUi(showCard: false);
+            StatusMessage = T("SelectClinicSearchRequired");
+            return;
+        }
+
         IsBusy = true;
         try
         {
             var response = await _emailAuth
-                .GetRegistrationClinicsAsync(string.IsNullOrWhiteSpace(SearchText) ? null : SearchText.Trim())
+                .GetRegistrationClinicsAsync(query)
                 .ConfigureAwait(false);
 
             await MainThread.InvokeOnMainThreadAsync(() =>
@@ -128,12 +270,16 @@ public sealed class SelectClinicViewModel : BaseViewModel
                 if (!response.IsSuccess || response.Data is null)
                 {
                     ErrorMessage = response.ErrorMessage ?? T("SelectClinicLoadFailed");
+                    HasSearchResults = false;
+                    ShowResultsCard = false;
                     return;
                 }
 
                 foreach (var clinic in response.Data)
                     Results.Add(ToPickerItem(clinic));
 
+                HasSearchResults = Results.Count > 0;
+                ShowResultsCard = true;
                 if (Results.Count == 0)
                     StatusMessage = T("SelectClinicNoResults");
             });
@@ -141,11 +287,12 @@ public sealed class SelectClinicViewModel : BaseViewModel
         catch (Exception)
         {
             ErrorMessage = T("SelectClinicLoadFailed");
+            ClearResultsUi(showCard: false);
         }
         finally
         {
             IsBusy = false;
-            RaiseCanExecuteChanged(SearchCommand, UseCodeCommand, ClearCommand);
+            RaiseCanExecuteChanged(SearchCommand, UseCodeCommand, ClearCommand, SelectLinkedCommand);
         }
     }
 
@@ -174,6 +321,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
 
             await ApplyClinicAsync(response.Data.Id, response.Data.Name, response.Data.ReferenceCode)
                 .ConfigureAwait(false);
+            ClearResultsUi(showCard: false);
         }
         catch (Exception)
         {
@@ -182,7 +330,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
-            RaiseCanExecuteChanged(SearchCommand, UseCodeCommand, ClearCommand);
+            RaiseCanExecuteChanged(SearchCommand, UseCodeCommand, ClearCommand, SelectLinkedCommand);
         }
     }
 
@@ -194,15 +342,44 @@ public sealed class SelectClinicViewModel : BaseViewModel
         await ApplyClinicAsync(id, item.Name, item.ReferenceCode).ConfigureAwait(false);
     }
 
+    private async Task SelectLinkedAsync(LinkedClinicDisplayItem? item)
+    {
+        if (item is null)
+            return;
+
+        await ApplyClinicAsync(item.ClinicId, item.Name, item.ReferenceCode).ConfigureAwait(false);
+    }
+
     private async Task ApplyClinicAsync(Guid id, string name, string referenceCode)
     {
         _selectedClinic.SetClinic(id, name, referenceCode);
         await MainThread.InvokeOnMainThreadAsync(() =>
         {
             RefreshCurrentSummary();
+            if (!string.IsNullOrWhiteSpace(referenceCode))
+                ReferenceCodeText = referenceCode;
             StatusMessage = T("SelectClinicSaved");
             ErrorMessage = null;
+            RefreshLinkedActiveFlags();
         });
+    }
+
+    private void RefreshLinkedActiveFlags()
+    {
+        var activeId = _selectedClinic.ClinicId;
+        var snapshot = LinkedClinics.ToList();
+        LinkedClinics.Clear();
+        foreach (var clinic in snapshot)
+        {
+            LinkedClinics.Add(new LinkedClinicDisplayItem
+            {
+                ClinicId = clinic.ClinicId,
+                Name = clinic.Name,
+                ReferenceCode = clinic.ReferenceCode,
+                AccessLabel = clinic.AccessLabel,
+                IsActiveOnPhone = activeId is { } id && id == clinic.ClinicId,
+            });
+        }
     }
 
     private void ClearSelection()
@@ -211,6 +388,14 @@ public sealed class SelectClinicViewModel : BaseViewModel
         RefreshCurrentSummary();
         StatusMessage = T("SelectClinicCleared");
         ErrorMessage = null;
+        RefreshLinkedActiveFlags();
+    }
+
+    private void ClearResultsUi(bool showCard)
+    {
+        Results.Clear();
+        HasSearchResults = false;
+        ShowResultsCard = showCard;
     }
 
     private static ClinicPickerItem ToPickerItem(RegistrationClinicItem clinic)

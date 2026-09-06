@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YC application: RaphCare (rewrite)</title>
+  <style>
+    :root {
+      --bg: #f3f0ea;
+      --ink: #1a1a1a;
+      --muted: #5c5c5c;
+      --line: #d4cfc4;
+      --accent: #0b5f4b;
+      --accent-hover: #084536;
+      --card: #fffcf7;
+      --warn: #6a3e2f;
+      --warn-bg: #f6ebe6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Georgia, serif;
+      background:
+        radial-gradient(ellipse at top left, #e8efe9 0%, transparent 45%),
+        linear-gradient(180deg, #f7f4ee 0%, var(--bg) 100%);
+      color: var(--ink);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    header, main {
+      max-width: 46rem;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem;
+    }
+
+    header h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.55rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      margin: 0 0 0.75rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .note {
+      border: 1px solid #e0cfc6;
+      background: var(--warn-bg);
+      color: var(--warn);
+      padding: 0.85rem 1rem;
+      font-size: 0.9rem;
+      margin-top: 0.75rem;
+    }
+
+    .note strong { color: var(--ink); }
+
+    .note ul {
+      margin: 0.4rem 0 0;
+      padding-left: 1.15rem;
+    }
+
+    .section-label {
+      margin: 1.75rem 0 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .part-block {
+      margin-top: 0.85rem;
+      padding: 1rem 1rem 0.85rem;
+      border: 1px solid var(--line);
+      background: var(--card);
+    }
+
+    .part-block h2 {
+      margin: 0 0 0.55rem;
+      font-size: 0.95rem;
+      font-weight: 650;
+      line-height: 1.35;
+    }
+
+    .part-preview {
+      white-space: pre-wrap;
+      font-size: 0.95rem;
+      margin: 0 0 0.75rem;
+    }
+
+    .part-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .part-actions button {
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      padding: 0.4rem 0.8rem;
+      background: var(--accent);
+      color: #fff;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .part-actions button:hover { background: var(--accent-hover); }
+    .part-actions button:active { transform: translateY(1px); }
+    .part-actions button.copied { background: var(--accent); opacity: 0.85; }
+
+    .meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: -0.25rem 0 0.55rem;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.85rem;
+    }
+
+    .top-actions button {
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      padding: 0.4rem 0.8rem;
+      background: transparent;
+      color: var(--accent);
+    }
+
+    .top-actions button:hover { background: #e7f2ee; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>YC application: RaphCare</h1>
+    <p>
+      Repo path: <code>docs/incubator/yc/application.html</code>. Rewritten answers grounded in the current product
+      (Portal, Ops, patient Android app on Azure staging). Click <strong>Copy answer</strong> next to each field and paste into the YC form.
+    </p>
+    <div class="note">
+      <strong>Check these before you submit</strong>
+      <ul>
+        <li>Founder video: record a new one that shows the live Portal and phone app, not slides.</li>
+        <li>Equity titles (CEO / CTO) and 50/50 split: confirm names match who is applying.</li>
+        <li>“Are people using your product?” stays honest: staging demos yes, paying clinics not yet unless that changed.</li>
+        <li>Do not put the demo password on a public website. YC’s form is fine.</li>
+        <li>Batch preference: pick the actual upcoming batch in the form (not the word “current”).</li>
+      </ul>
+    </div>
+    <div class="top-actions">
+      <button type="button" id="copy-all">Copy all answers (plain text)</button>
+    </div>
+  </header>
+
+  <main id="answers"></main>
+
+  <script>
+    const answers = [
+      {
+        section: "Founders",
+        q: "How long have the founders known one another and how did you meet? Have any of the founders not met in person?",
+        a: `The founders have known each other since 2020. We met during COVID while talking through technology problems in the real world, including healthcare access and digital systems for clinics.
+
+We have worked together since then and have met in person. None of the founders have only met online.`
+      },
+      {
+        section: "Founders",
+        q: "Who writes code, or does other technical work on your product? Was any of it done by a non-founder? Please explain.",
+        a: `All technical work is founder-led.
+
+One co-founder (CTO) is a senior software engineer and built the product end to end: system architecture, .NET APIs, hospital Portal, Ops, and the patient mobile app.
+
+No non-founder engineers or contractors have contributed to the product.`
+      },
+      {
+        section: "Founders",
+        q: "Are you looking for a cofounder?",
+        a: `No. We are not looking for a cofounder.`
+      },
+      {
+        section: "Founders",
+        q: "Founder Video",
+        a: `[Record a new 1-minute video. Show yourselves briefly, then screen-share the live Portal (appointments / collection counter / waiting screen) and the patient Android app. Say what you shipped since the last application and what you will do by Demo Day. Do not use slides.]`
+      },
+      {
+        section: "Company",
+        q: "Company name",
+        a: `RaphCare`
+      },
+      {
+        section: "Company",
+        q: "Describe what your company does in 50 characters or less.",
+        a: `Hospital OS + patient app for African clinics`,
+        meta: "45 characters. Alternatives if you prefer: “Clinic software and patient app for Africa” (42) or “Digital clinic OS for hospitals and patients” (44)."
+      },
+      {
+        section: "Company",
+        q: "Company URL, if any",
+        a: `https://raphcare.com`
+      },
+      {
+        section: "Company",
+        q: "Please provide a link to the product, if any.",
+        a: `Hospital Portal (staff demo):
+https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net/professional/signin
+
+Ops (wearable fleet):
+https://raphcare-ops.azurewebsites.net/signin
+
+Demo clinic: RaphCare Demo Clinic
+Admin: demo.admin@raphcare.com
+Doctor: demo.doctor@raphcare.com
+Patient (phone app): demo.patient@raphcare.com
+Password (all demo accounts): RaphCareDemo!2026
+
+Android patient APK is available for sideload against this staging API (current build ~v1.8.x).`,
+        meta: "Prefer Portal for reviewers on a laptop. Patient experience needs the Android APK if you send it."
+      },
+      {
+        section: "Company",
+        q: "What is your company going to make? Please describe your product and what it does or will do.",
+        a: `RaphCare is a digital clinic operating system for African hospitals and clinics, plus a patient phone app.
+
+Hospitals use a web Portal to run day-to-day care in one place: register a site, invite staff, manage patients, book appointments, run visits with vitals and notes, order prescriptions and labs, join video visits, and (on the Hospital plan) run beds, ward notes, a pharmacy/lab collection counter with a TV waiting screen, casualty triage, theatre lists, referrals, and discharge billing.
+
+Platform Ops stocks and assigns wearable devices. Patients claim an assigned watch in the app. They also book care, keep health records, see pickup codes and QR codes for medicines and labs, manage insurance and family members, do mental-health check-ins, and chat with a hospital-configured AI assistant that does not act as a doctor.
+
+We built this for how clinics actually work today: paper files, WhatsApp consults, and disconnected tools. RaphCare replaces that stack with one multi-tenant system that already runs on Azure staging, with English, French, Lingala, and Swahili on the Portal.`
+      },
+      {
+        section: "Company",
+        q: "Where do you live now, and where would the company be based after YC?",
+        a: `Johannesburg, South Africa.`
+      },
+      {
+        section: "Company",
+        q: "Explain your decision regarding location.",
+        a: `South Africa gives us a large healthcare market, strong clinical talent, and the same operational constraints we see across much of Africa: mixed paper and digital workflows, uneven bandwidth, and clinics that need one system rather than five apps.
+
+We already host the product in Azure South Africa North. Building here keeps us close to pilot hospitals, keeps costs down, and is a natural base for Congo and other African markets next.`
+      },
+      {
+        section: "Progress",
+        q: "How far along are you?",
+        a: `We have a working product on Azure staging, not a mockup.
+
+Shipped today:
+• Hospital Portal: outpatient workflows, patient chart, telemedicine join, inpatient beds, collection counter and waiting screens, casualty, theatre, referrals, discharge invoice, AI discharge draft, multi-language UI
+• Ops site: wearable fleet stock and assignment
+• Patient Android app (v1.8.x): sign-in, appointments, honest Home (real upcoming visits, claimed watches, synced vitals), health records with pickup QR, insurance, billing, family, mental health (mood, PHQ-9, GAD-7), AI chat, Active clinic with hospitals linked to you, medical profile and emergency contacts (from the phone book or typed in), claim assigned watches then Bluetooth only to that locked band
+• Shared .NET API, Azure SQL, private blob storage for photos and voice onboarding, Azure OpenAI for chat and draft summaries
+• Staff Portal and Ops work on a phone browser, including a home-screen shortcut (same website, not a separate staff app)
+
+Partner feature board is about 83% complete on current scope. Next work is paid pilot onboarding, iPhone video polish, push notifications, deeper wearable vitals, and turning staging into production clinics.`
+      },
+      {
+        section: "Progress",
+        q: "How long have each of you been working on this? How much of that has been full-time? Please explain.",
+        a: `We have been working on RaphCare together since 2020, starting from healthcare access problems we were already discussing during COVID.
+
+The current product is a full rebuild on .NET, Blazor, and .NET MAUI. That shipping push has been intense and continuous into 2026 (Portal, Ops, staging on Azure, and a sideloadable Android patient app).
+
+Work has mostly been alongside other commitments so far. We will move full-time as soon as funding allows.`,
+        meta: "Edit the full-time sentence if either of you is already full-time, or if you want to name months of heavy build time."
+      },
+      {
+        section: "Progress",
+        q: "What tech stack are you using, or planning to use, to build this product? Include AI models and AI coding tools you use.",
+        a: `We already run on this stack (the earlier Laravel/Flutter plan is gone):
+
+• Backend: .NET 10, ASP.NET Core REST APIs, MediatR, EF Core, SQL Server / Azure SQL
+• Hospital Portal and Ops: Blazor WebAssembly on Azure App Service
+• Patient mobile: .NET MAUI (Android first; iOS target exists)
+• Auth: JWT; staff can use Microsoft Entra ID; patients use email/password or phone OTP
+• Files: Azure Blob (patient photos, voice onboarding)
+• AI: Azure OpenAI (gpt-4.1-mini) for patient chat and staff draft summaries only. Not for diagnosis.
+• Video: Agora for telemedicine sessions
+• Hosting: Azure (South Africa North)
+• Dev tools: Cursor / AI-assisted coding, GitHub for source control
+
+We chose this stack for long-term maintainability in regulated, multi-tenant healthcare software.`
+      },
+      {
+        section: "Progress",
+        q: "Are people using your product?",
+        a: `Not as paying clinics yet.
+
+The product is live on staging and used for partner and internal demos (Portal, Ops, and the patient Android app against the hosted API). First paid pilot clinics are the next step.`,
+        meta: "If a real clinic is already live with real patients, change this to Yes and say how many sites/users."
+      },
+      {
+        section: "Progress",
+        q: "When will you have a version people can use?",
+        a: `People can already use the product on staging today (staff Portal, Ops, and patient Android app).
+
+We expect first paid pilot clinics within 1 to 3 months after focusing full-time on onboarding, production hardening, and local go-live support.`
+      },
+      {
+        section: "Progress",
+        q: "Do you have revenue?",
+        a: `No.`
+      },
+      {
+        section: "Progress",
+        q: "If you are applying with the same idea as a previous batch, did anything change? If you applied with a different idea, why did you pivot and what did you learn from the last idea?",
+        a: `Same idea: RaphCare. What changed is the product.
+
+In the earlier application we described an MVP direction and a lighter PHP/Flutter stack. We were not selected. Since then we rebuilt and shipped a real multi-tenant healthcare system: hospital Portal, Ops fleet tools, patient Android app, Azure hosting, demo clinic, wearables claim flow, collection counter with waiting screens, inpatient, and AI-assisted drafts.
+
+One founder had also applied earlier with a fintech idea. That taught us to talk to users sooner and to pick problems people are already solving with paper and WhatsApp. RaphCare is that problem. We are reapplying because we now have something reviewers can click, not only a plan.`
+      },
+      {
+        section: "Progress",
+        q: "If you have already participated or committed to participate in an incubator, \"accelerator\" or \"pre-accelerator\" program, please tell us about it.",
+        a: `No. We have not participated in any accelerator or incubator programs.`
+      },
+      {
+        section: "Idea",
+        q: "Why did you pick this idea to work on? Do you have domain expertise in this area? How do you know people need what you’re making?",
+        a: `We picked this because clinic work across Africa is still fragmented even in cities. Patients carry paper, consult on WhatsApp, and repeat visits for information that should already be in one file. Staff juggle appointments, beds, pharmacy pickup, and labs in separate tools or notebooks.
+
+We have built and shipped software in regulated, data-sensitive environments. Through conversations with clinics, healthcare workers, and patients, the same gaps kept showing up: no shared patient record, heavy admin load, weak continuity of care, and no affordable system that covers outpatient, inpatient, and the pharmacy/lab counter together.
+
+Demand shows up in the workarounds. Clinics already try to stitch care together with informal tools. RaphCare is the system they are trying to invent piece by piece. Partner walkthroughs on staging confirm the workflows (collection codes, waiting screens, bed board, patient pickup QR) match how they work on the floor.`
+      },
+      {
+        section: "Idea",
+        q: "Who are your competitors? What do you understand about your business that they don’t?",
+        a: `Competitors include global telemedicine apps, regional digital health startups, hospital EHR vendors, and point tools that only do video, only records, or only billing.
+
+Most either target high-income markets or solve one slice of the workflow. They assume reliable connectivity, mature insurance rails, and staff who will learn five products.
+
+What we understand is that many African clinics need one operating system: outpatient visit, bed, pharmacy/lab counter, waiting TV, patient phone app, and optional wearables, sold as Clinic or Hospital software with clear monthly pricing. Clinics do not want another chat app. They want to replace paper and WhatsApp with one place that staff and patients both use.
+
+RaphCare is built as that unified stack, with Ops for device fleet, not as a telemedicine widget bolted onto a brochure site.`
+      },
+      {
+        section: "Idea",
+        q: "How do or will you make money? How much could you make?",
+        a: `Hospitals pay for software. Patients stay free for core records and booking. Extra care and wearable programmes are optional.
+
+List pricing (ex tax, discussion rates):
+• Clinic plan: R 3,490 / month in South Africa ($89 in Congo) for outpatient admin
+• Hospital plan: R 9,990 / month ($249) adds beds, collection counter, casualty, theatre, discharge billing, and related stay tools
+• Network: from R 19,990 / month ($499), quoted for multi-site
+• Optional patient care plans and watch packages (Health Track / SafeCare) billed monthly to a clinic, employer, scheme, or NGO
+• AI add-on and extra video visits as usage lines
+
+Example: 200 Hospital sites at R 9,990 is about R 24M ARR before extras. Watch programmes and network deals sit on top. Card and mobile-money collection are not live yet; first revenue is invoiced hospital software and programme deals.`
+      },
+      {
+        section: "Idea",
+        q: "Which category best applies to your company?",
+        a: `Healthcare`
+      },
+      {
+        section: "Idea",
+        q: "If you had any other ideas you considered applying with, please list them. One may be something we’ve been waiting for. Often when we fund people it’s to do something they list here and not in the main application.",
+        a: `We considered fintech and enterprise tools for regulated industries. We chose RaphCare because the pain is visible in daily clinic work, the product is already shipping, and the market is large enough to build a real company.`
+      },
+      {
+        section: "Idea",
+        q: "Please describe the scientific basis for your product. How does it work?",
+        a: `RaphCare is healthcare software, not a new medical device or diagnostic model.
+
+It stores structured clinical records, supports telemedicine sessions, and connects optional wearables for monitoring signals such as heart rate, oxygen, and (on SafeCare watches) SOS or fall alerts. Staff workflows follow normal clinic practice: visit documentation, prescriptions, labs, beds, and collection.
+
+AI is used only for drafts and assistance (patient chat, discharge summary drafts, therapy note drafts). A clinician reviews and edits before anything becomes the record. We do not claim diagnostic AI.
+
+The system uses standard multi-tenant software engineering: authenticated APIs, clinic-scoped data, private file storage, and audit-friendly clinical events.`
+      },
+      {
+        section: "Idea",
+        q: "Describe the next few stages in developing your product. For each stage, how much time and money will it take?",
+        a: `Stage 1 (0–3 months): Pilot go-live
+Move 1–3 clinics from staging demos to production use. Harden onboarding, support, backups, and Android distribution. Finish the highest-impact mobile gaps (push, iPhone video path).
+Cost: low to mid five figures USD (Azure, devices for pilots, founder living costs if full-time).
+
+Stage 2 (3–9 months): Paid expansion
+Convert pilots to paying Clinic/Hospital plans. Sell first Health Track or SafeCare programmes. Add the next operational AI drafts clinics ask for. Hire first support/onboarding help if needed.
+Cost: mid five to low six figures USD depending on how fast we hire.
+
+Stage 3 (9–18 months): Multi-site and Congo
+Network deals, shared patient index depth, Congo programme sales in USD, stronger wearable coverage.
+Cost: scales with adoption and local partnerships.`
+      },
+      {
+        section: "Idea",
+        q: "If you were accepted into YC, what could you accomplish by Demo Day?",
+        a: `By Demo Day we would have:
+• At least one live pilot clinic with real staff workflows (appointments, visits, collection or beds)
+• Real patients on the Android app tied to that clinic
+• Clear pricing closed with those sites (Clinic or Hospital)
+• Early revenue or signed pilot-to-paid conversion
+• A tight Demo Day demo: Portal counter/waiting screen plus patient pickup code on the phone
+
+YC would mainly buy us full-time focus, faster clinic sales cycles, and help turning a working staging product into a company with retention and revenue.`
+      },
+      {
+        section: "Idea",
+        q: "Does your product need regulatory approval (i.e., FDA)? If so, what is the approval process? What is your plan to get approved, and how much time and money will it take?",
+        a: `RaphCare is a healthcare IT platform. It does not diagnose or prescribe by algorithm. Clinicians and clinic staff make clinical decisions.
+
+We do not currently need FDA clearance for the core Portal, Ops, and patient app. Wearables are treated as monitoring and safety alerting tools inside clinic programmes; we will follow device and privacy rules market by market as those programmes go live.
+
+Our near-term compliance focus is data protection, access control, and local healthcare privacy expectations in South Africa (and later Congo), not a US FDA device path. If a future feature needs clearance, we will pursue it per market rather than block the software platform.`
+      },
+      {
+        section: "Idea",
+        q: "What experimental data (if any) do you have showing that this would work?",
+        a: `We do not yet have production usage metrics from paying clinics.
+
+What we do have is a complete staging system that partners can operate end to end: staff roles, collection codes on a waiting screen, inpatient occupancy, patient pickup QR on Android, Ops device assignment, and AI drafts with human edit. Clinics and healthcare professionals reviewing those workflows have confirmed they match how their counters and wards already work.
+
+The next experimental data we need is pilot retention: appointments booked, visits completed, medicines collected through the counter, and weekly active staff and patients at a live site.`
+      },
+      {
+        section: "Equity",
+        q: "Have you formed ANY legal entity yet?",
+        a: `No.`
+      },
+      {
+        section: "Equity",
+        q: "If you have not formed the company yet, describe the planned equity ownership breakdown among the founders, employees and any other proposed stockholders. If there are multiple founders, be sure to give the proposed equity ownership of each founder and founder title (e.g. CEO). (This question is as much for you as us.)",
+        a: `We have not formed the company yet. Planned ownership is an even split between the two founders: CEO and CTO at 50% each before an option pool. After incorporation we will create a standard employee option pool (around 10%) by diluting both founders equally.`,
+        meta: "Put real full names and titles in the YC form, e.g. “Sanel … CEO 50%, Daskana Loecos CTO 50%”. Confirm the names with each other first."
+      },
+      {
+        section: "Equity",
+        q: "Have you taken any investment yet?",
+        a: `No.`
+      },
+      {
+        section: "Equity",
+        q: "Are you currently fundraising?",
+        a: `No.`
+      },
+      {
+        section: "Curious",
+        q: "What convinced you to apply to Y Combinator? Did someone encourage you to apply? Have you been to any YC events?",
+        a: `We applied before with more idea than product. Building the real system convinced us to apply again: YC is strongest when founders already have something users can touch and need help turning it into a company.
+
+We want YC’s pressure on pilots, pricing, and focus. We have not been to YC events in person.`
+      },
+      {
+        section: "Curious",
+        q: "How did you hear about Y Combinator?",
+        a: `From my co-founder.`
+      },
+      {
+        section: "Batch",
+        q: "What batch do you want to apply for?",
+        a: `current`,
+        meta: "In the live form, select the actual batch name/date offered (for example W27 / S27), not the word current."
+      }
+    ];
+
+    const root = document.getElementById("answers");
+    let lastSection = null;
+
+    answers.forEach((item, index) => {
+      if (item.section !== lastSection) {
+        const label = document.createElement("div");
+        label.className = "section-label";
+        label.textContent = item.section;
+        root.appendChild(label);
+        lastSection = item.section;
+      }
+
+      const block = document.createElement("section");
+      block.className = "part-block";
+      block.dataset.index = String(index);
+
+      const h2 = document.createElement("h2");
+      h2.textContent = item.q;
+      block.appendChild(h2);
+
+      if (item.meta) {
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.textContent = item.meta;
+        block.appendChild(meta);
+      }
+
+      const preview = document.createElement("div");
+      preview.className = "part-preview";
+      preview.textContent = item.a;
+      block.appendChild(preview);
+
+      const actions = document.createElement("div");
+      actions.className = "part-actions";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "Copy answer";
+      btn.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(item.a);
+        btn.textContent = "Copied";
+        btn.classList.add("copied");
+        setTimeout(() => {
+          btn.textContent = "Copy answer";
+          btn.classList.remove("copied");
+        }, 1200);
+      });
+      actions.appendChild(btn);
+      block.appendChild(actions);
+      root.appendChild(block);
+    });
+
+    document.getElementById("copy-all").addEventListener("click", async () => {
+      const text = answers
+        .map((item) => `${item.q}\n\n${item.a}`)
+        .join("\n\n---\n\n");
+      await navigator.clipboard.writeText(text);
+      const btn = document.getElementById("copy-all");
+      const old = btn.textContent;
+      btn.textContent = "Copied all";
+      setTimeout(() => { btn.textContent = old; }, 1200);
+    });
+  </script>
+</body>
+</html>

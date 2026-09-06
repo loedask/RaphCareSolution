@@ -9,6 +9,10 @@ public interface IPatientMentalHealthService
 {
     Task<Response<PatientMentalHealthContentViewModel>> GetContentAsync(CancellationToken cancellationToken = default);
 
+    Task<Response<IReadOnlyList<PatientMoodCheckInViewModel>>> GetMyMoodCheckInsAsync(
+        int pageSize = 14,
+        CancellationToken cancellationToken = default);
+
     Task<Response<Guid>> LogMoodCheckInAsync(int moodScore, string? notes, CancellationToken cancellationToken = default);
 
     Task<Response<MentalHealthInstrument>> GetInstrumentAsync(

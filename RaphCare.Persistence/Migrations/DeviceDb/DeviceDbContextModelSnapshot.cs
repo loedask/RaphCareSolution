@@ -31,6 +31,10 @@ namespace RaphCare.Persistence.Migrations.DeviceDb
                     b.Property<DateTime?>("ActivatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("BluetoothMacAddress")
+                        .HasMaxLength(17)
+                        .HasColumnType("nvarchar(17)");
+
                     b.Property<Guid>("ClinicId")
                         .HasColumnType("uniqueidentifier");
 
@@ -73,6 +77,10 @@ namespace RaphCare.Persistence.Migrations.DeviceDb
                     b.HasKey("Id");
 
                     b.HasIndex("ClinicId");
+
+                    b.HasIndex("BluetoothMacAddress")
+                        .IsUnique()
+                        .HasFilter("[BluetoothMacAddress] IS NOT NULL");
 
                     b.HasIndex("DeviceFirmwareId");
 

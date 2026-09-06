@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -77,7 +77,7 @@
     <value>Kolongola</value>
   </data>
   <data name="Common_Back" xml:space="preserve">
-    <value>â† Kozonga nsima</value>
+    <value>Ã¢â€ Â Kozonga nsima</value>
   </data>
   <data name="Common_BackToHome" xml:space="preserve">
     <value>Kozonga na ndako</value>
@@ -89,7 +89,7 @@
     <value>Kozonga na lopitalo</value>
   </data>
   <data name="Common_BackToAppointments" xml:space="preserve">
-    <value>â† Kozonga na ba rendez-vous</value>
+    <value>Ã¢â€ Â Kozonga na ba rendez-vous</value>
   </data>
   <data name="Common_PleaseWait" xml:space="preserve">
     <value>Svp bozela...</value>
@@ -104,7 +104,7 @@
     <value>Verifier pe ko kota</value>
   </data>
   <data name="Common_VerifyAndCreateAccount" xml:space="preserve">
-    <value>Verifier pe crÃ©er compte</value>
+    <value>Verifier pe crÃƒÂ©er compte</value>
   </data>
   <data name="Common_Sending" xml:space="preserve">
     <value>Kotinda...</value>
@@ -116,7 +116,7 @@
     <value>Tinda code lisusu</value>
   </data>
   <data name="Common_Resending" xml:space="preserve">
-    <value>Kozongisaâ€¦</value>
+    <value>KozongisaÃ¢â‚¬Â¦</value>
   </data>
   <data name="Common_NeedNewCode" xml:space="preserve">
     <value>Osengeli na code ya sika?</value>
@@ -159,6 +159,9 @@
   </data>
   <data name="Common_Delete" xml:space="preserve">
     <value>Boma</value>
+  </data>
+  <data name="Common_MoreActions" xml:space="preserve">
+    <value>Misala mosusu</value>
   </data>
   <data name="Common_Remove" xml:space="preserve">
     <value>Kolongola</value>
@@ -224,31 +227,31 @@
     <value>Nkombo ya libota</value>
   </data>
   <data name="Common_VerificationCode" xml:space="preserve">
-    <value>Code ya vÃ©rification</value>
+    <value>Code ya vÃƒÂ©rification</value>
   </data>
   <data name="Common_VerificationCodePlaceholder" xml:space="preserve">
     <value>Code ya 6 chiffres</value>
   </data>
   <data name="Common_SignInFailed" xml:space="preserve">
-    <value>KokÉ”ta na site elongi te.</value>
+    <value>KokÃ‰â€ta na site elongi te.</value>
   </data>
   <data name="Common_RegistrationFailed" xml:space="preserve">
     <value>Kokomisa nkombo elongaki te.</value>
   </data>
   <data name="Common_CouldNotSendVerificationEmail" xml:space="preserve">
-    <value>Ekoki te kotinda email ya vÃ©rification.</value>
+    <value>Ekoki te kotinda email ya vÃƒÂ©rification.</value>
   </data>
   <data name="Common_VerificationCodeSentEmail" xml:space="preserve">
-    <value>Totindaki code ya vÃ©rification na email na yo.</value>
+    <value>Totindaki code ya vÃƒÂ©rification na email na yo.</value>
   </data>
   <data name="Common_EnterEmailBeforeCode" xml:space="preserve">
-    <value>TyÃ¡ email na yo liboso ya kosÉ›nga code ya vÃ©rification.</value>
+    <value>TyÃƒÂ¡ email na yo liboso ya kosÃ‰â€ºnga code ya vÃƒÂ©rification.</value>
   </data>
   <data name="Common_CodeSentCheckInbox" xml:space="preserve">
-    <value>Code ya vÃ©rification etindami. Tala boÃ®te de rÃ©ception na yo.</value>
+    <value>Code ya vÃƒÂ©rification etindami. Tala boÃƒÂ®te de rÃƒÂ©ception na yo.</value>
   </data>
   <data name="Common_CodeSentCheckInboxSpam" xml:space="preserve">
-    <value>Code ya vÃ©rification etindami. Tala boÃ®te de rÃ©ception na yo (mpe dossier ya ba spam).</value>
+    <value>Code ya vÃƒÂ©rification etindami. Tala boÃƒÂ®te de rÃƒÂ©ception na yo (mpe dossier ya ba spam).</value>
   </data>
   <data name="Common_CodeSentTitle" xml:space="preserve">
     <value>Code etindami</value>
@@ -257,13 +260,13 @@
     <value>Etindami na {0}</value>
   </data>
   <data name="Common_CodeSentSpamHint" xml:space="preserve">
-    <value>Tala boÃ®te de rÃ©ception na yo mpe dossier ya ba spam soki omoni yango te.</value>
+    <value>Tala boÃƒÂ®te de rÃƒÂ©ception na yo mpe dossier ya ba spam soki omoni yango te.</value>
   </data>
   <data name="Common_EnterSixDigitCodeHint" xml:space="preserve">
-    <value>TyÃ¡ code ya 6 chiffres na email na yo. FinÃ¡ na Tinda code lisusu soki ekomi te.</value>
+    <value>TyÃƒÂ¡ code ya 6 chiffres na email na yo. FinÃƒÂ¡ na Tinda code lisusu soki ekomi te.</value>
   </data>
   <data name="Common_CodeMustBeSixDigits" xml:space="preserve">
-    <value>Code ya vÃ©rification esengeli ezala exactement 6 chiffres.</value>
+    <value>Code ya vÃƒÂ©rification esengeli ezala exactement 6 chiffres.</value>
   </data>
   <data name="Common_PleaseEnterFirstName" xml:space="preserve">
     <value>Svp kotia kombo na yo ya liboso.</value>
@@ -383,7 +386,7 @@
     <value>Charger mingi ({0} ya {1})</value>
   </data>
   <data name="Common_PageOf" xml:space="preserve">
-    <value>Lokasa {0} ya {1} Â· {2} .</value>
+    <value>Lokasa {0} ya {1} Ã‚Â· {2} .</value>
   </data>
   <data name="Common_Notified" xml:space="preserve">
     <value>Eyebisami</value>
@@ -404,7 +407,7 @@
     <value>Na kozelaka bokomisi nkombo</value>
   </data>
   <data name="Common_PendingSignIn" xml:space="preserve">
-    <value>Na kozelaka kokÉ”ta na site</value>
+    <value>Na kozelaka kokÃ‰â€ta na site</value>
   </data>
   <data name="Common_MakeAdmin" xml:space="preserve">
     <value>Sala admin</value>
@@ -428,7 +431,7 @@
     <value>Ekokaki te ko charger ba appareils.</value>
   </data>
   <data name="Common_CouldNotLoadEmergencyEvents" xml:space="preserve">
-    <value>Ekokaki te ko charger ba Ã©vÃ©nements ya urgence.</value>
+    <value>Ekokaki te ko charger ba ÃƒÂ©vÃƒÂ©nements ya urgence.</value>
   </data>
   <data name="Common_CouldNotResendInvitation" xml:space="preserve">
     <value>Ekokaki te kotinda lisusu invitation.</value>
@@ -443,7 +446,7 @@
     <value>Lopitalo ezwami te.</value>
   </data>
   <data name="Common_PatientNotFound" xml:space="preserve">
-    <value>MobÉ›li azwami te.</value>
+    <value>MobÃ‰â€ºli azwami te.</value>
   </data>
   <data name="Common_ProviderNotFound" xml:space="preserve">
     <value>Mopesi ya clinique azwami te.</value>
@@ -479,13 +482,13 @@
     <value>ID ya lopitalo</value>
   </data>
   <data name="Common_HospitalReference" xml:space="preserve">
-    <value>RÃ©fÃ©rence ya lopitalo</value>
+    <value>RÃƒÂ©fÃƒÂ©rence ya lopitalo</value>
   </data>
   <data name="Common_HospitalReferenceHint" xml:space="preserve">
-    <value>Pesa rÃ©fÃ©rence oyo na basali oyo basalaka lien na lopitalo.</value>
+    <value>Pesa rÃƒÂ©fÃƒÂ©rence oyo na basali oyo basalaka lien na lopitalo.</value>
   </data>
   <data name="Common_HospitalClaimLabel" xml:space="preserve">
-    <value>RÃ©fÃ©rence to numÃ©ro ya kokomisa</value>
+    <value>RÃƒÂ©fÃƒÂ©rence to numÃƒÂ©ro ya kokomisa</value>
   </data>
   <data name="Common_HospitalClaimPlaceholder" xml:space="preserve">
     <value>ndakisa RC-K7M3P2 to HPCSA-12345</value>
@@ -512,7 +515,7 @@
     <value>Mukongo</value>
   </data>
   <data name="Common_SkipStep" xml:space="preserve">
-    <value>SalÃ¡ koleka litambe</value>
+    <value>SalÃƒÂ¡ koleka litambe</value>
   </data>
   <data name="Common_Registering" xml:space="preserve">
     <value>Kokomisa nkombo...</value>
@@ -524,7 +527,7 @@
     <value>Bokoli ya onboarding</value>
   </data>
   <data name="Common_HospitalOnboardingEyebrow" xml:space="preserve">
-    <value>BokÉ”ti na lopitalo Â· Etape {0} ya {1} .</value>
+    <value>BokÃ‰â€ti na lopitalo Ã‚Â· Etape {0} ya {1} .</value>
   </data>
   <data name="Common_OpenHospital" xml:space="preserve">
     <value>Lopitalo ya polele</value>
@@ -536,7 +539,7 @@
     <value>Bokomisa nkombo mosusu</value>
   </data>
   <data name="Common_HospitalRegisteredTitle" xml:space="preserve">
-    <value>{0} ezali enregistrÃ©</value>
+    <value>{0} ezali enregistrÃƒÂ©</value>
   </data>
   <data name="Common_HospitalRegisteredLead" xml:space="preserve">
     <value>Lopitalo ezali na mosala mingi na estrade. Ba maladi bakoki kopona yango na tango ya bokomisi nkombo mbala moko basali bapesameli.</value>
@@ -545,13 +548,13 @@
     <value>Contact ya administrateur (enzela)</value>
   </data>
   <data name="Common_SignInAndContinue" xml:space="preserve">
-    <value>Kota na site mpe kobÃ¡</value>
+    <value>Kota na site mpe kobÃƒÂ¡</value>
   </data>
   <data name="Common_AuthRetryHint" xml:space="preserve">
-    <value>Makambo na yo ya lopitalo ebombami na aparÉ›yi oyo. Kota lisusu, sima zonga awa mpo na kosilisa kokomisa nkombo.</value>
+    <value>Makambo na yo ya lopitalo ebombami na aparÃ‰â€ºyi oyo. Kota lisusu, sima zonga awa mpo na kosilisa kokomisa nkombo.</value>
   </data>
   <data name="Common_ResumeReadyReview" xml:space="preserve">
-    <value>Tozongisaki makambo na yo ya lopitalo oyo obombaki. Tala mpe finÃ¡ Komisa nkombo na lopitalo ntango ozali pene.</value>
+    <value>Tozongisaki makambo na yo ya lopitalo oyo obombaki. Tala mpe finÃƒÂ¡ Komisa nkombo na lopitalo ntango ozali pene.</value>
   </data>
   <data name="Common_ResumeFromStep" xml:space="preserve">
     <value>Tozongisaki bokoli na yo oyo obombaki uta na etape {0}. Okoki kokoba esika oyo otikaki.</value>
@@ -578,7 +581,7 @@
     <value>Ko charger ba malades...</value>
   </data>
   <data name="Common_LoadingProviders" xml:space="preserve">
-    <value>Chargement ya ekipi ya klinikiâ€¦</value>
+    <value>Chargement ya ekipi ya klinikiÃ¢â‚¬Â¦</value>
   </data>
   <data name="Common_LoadingAppointments" xml:space="preserve">
     <value>Chargement ya ba rendez-vous...</value>
@@ -587,7 +590,7 @@
     <value>Ko charger ba appareils...</value>
   </data>
   <data name="Common_LoadingEmergencyEvents" xml:space="preserve">
-    <value>Chargement ya ba Ã©vÃ©nements ya urgence...</value>
+    <value>Chargement ya ba ÃƒÂ©vÃƒÂ©nements ya urgence...</value>
   </data>
   <data name="Common_LoadingStaff" xml:space="preserve">
     <value>Chargement ya basali...</value>
@@ -599,7 +602,7 @@
     <value>Chargement ya mobeli...</value>
   </data>
   <data name="Common_LoadingProvider" xml:space="preserve">
-    <value>Chargement ya mopesi ya cliniqueâ€¦</value>
+    <value>Chargement ya mopesi ya cliniqueÃ¢â‚¬Â¦</value>
   </data>
   <data name="Common_LoadingVisit" xml:space="preserve">
     <value>Bozali ko charger visite...</value>
@@ -608,7 +611,7 @@
     <value>Chargement ya tableau de bord...</value>
   </data>
   <data name="Common_GrantAccess" xml:space="preserve">
-    <value>Kopesa nzela ya kokÉ”ta</value>
+    <value>Kopesa nzela ya kokÃ‰â€ta</value>
   </data>
   <data name="Common_Granting" xml:space="preserve">
     <value>Kopesa...</value>
@@ -635,10 +638,16 @@
     <value>Basanganaki</value>
   </data>
   <data name="Common_Serial" xml:space="preserve">
-    <value>SÃ©rieux na yango</value>
+    <value>SÃƒÂ©rieux na yango</value>
   </data>
   <data name="Common_Model" xml:space="preserve">
     <value>Modele</value>
+  </data>
+  <data name="Common_BluetoothMac" xml:space="preserve">
+    <value>Bluetooth MAC</value>
+  </data>
+  <data name="Common_Activated" xml:space="preserve">
+    <value>Activated</value>
   </data>
   <data name="Common_AssignedTo" xml:space="preserve">
     <value>Bapesameli mosala ya</value>
@@ -689,13 +698,13 @@
     <value>Ba appareils</value>
   </data>
   <data name="Common_Inpatient" xml:space="preserve">
-    <value>MobÉ›li oyo azali na lopitalo</value>
+    <value>MobÃ‰â€ºli oyo azali na lopitalo</value>
   </data>
   <data name="Common_Casualty" xml:space="preserve">
     <value>Urgence</value>
   </data>
   <data name="Common_Theatre" xml:space="preserve">
-    <value>Salle ya opÃ©ration</value>
+    <value>Salle ya opÃƒÂ©ration</value>
   </data>
   <data name="Common_Referrals" xml:space="preserve">
     <value>Ba reference</value>
@@ -713,7 +722,7 @@
     <value>Pona mobeli...</value>
   </data>
   <data name="Common_SelectProvider" xml:space="preserve">
-    <value>Pona mopesi ya cliniqueâ€¦</value>
+    <value>Pona mopesi ya cliniqueÃ¢â‚¬Â¦</value>
   </data>
   <data name="Common_SelectStaffMemberOption" xml:space="preserve">
     <value>Pona mosali ya mosala...</value>
@@ -725,16 +734,16 @@
     <value>Bakisa mopesi ya clinique</value>
   </data>
   <data name="Common_SearchByNameEmailPhone" xml:space="preserve">
-    <value>LukÃ¡ na nkombo, na email, to na telefone</value>
+    <value>LukÃƒÂ¡ na nkombo, na email, to na telefone</value>
   </data>
   <data name="Common_GrantPatientAccessTitle" xml:space="preserve">
-    <value>PesÃ¡ mobÉ›li nzela ya kokÉ”ta</value>
+    <value>PesÃƒÂ¡ mobÃ‰â€ºli nzela ya kokÃ‰â€ta</value>
   </data>
   <data name="Common_GrantPatientAccessLead" xml:space="preserve">
     <value>Lien compte ya maladi oyo ezali na lopitalo oyo na nzela ya email.</value>
   </data>
   <data name="Common_PatientEmailPlaceholder" xml:space="preserve">
-    <value>mobÉ›li@email.com</value>
+    <value>mobÃ‰â€ºli@email.com</value>
   </data>
   <data name="Common_ColleagueEmailPlaceholder" xml:space="preserve">
     <value>moninga ya mosala@lopitalo.com</value>
@@ -797,10 +806,10 @@
     <value>Bato oyo bazwaka lisalisi</value>
   </data>
   <data name="Common_PatientsLead" xml:space="preserve">
-    <value>Ba malades oyo bazali na accÃ¨s na lopitalo oyo.</value>
+    <value>Ba malades oyo bazali na accÃƒÂ¨s na lopitalo oyo.</value>
   </data>
   <data name="Common_PatientCountLabel" xml:space="preserve">
-    <value>{0} mobÉ›li</value>
+    <value>{0} mobÃ‰â€ºli</value>
   </data>
   <data name="Common_PatientCountLabelPlural" xml:space="preserve">
     <value>{0} ba maladi</value>
@@ -809,7 +818,7 @@
     <value>Ba malades moko te azali na lien na lopitalo oyo nanu.</value>
   </data>
   <data name="Common_NoPatientsMatchSearch" xml:space="preserve">
-    <value>MobÉ›li moko te oyo ekokani na bolukiluki na yo.</value>
+    <value>MobÃ‰â€ºli moko te oyo ekokani na bolukiluki na yo.</value>
   </data>
   <data name="Common_ClinicalTeamEyebrow" xml:space="preserve">
     <value>Bosalisami ya bakonzi</value>
@@ -842,7 +851,7 @@
     <value>Kobongisa manaka</value>
   </data>
   <data name="Common_AppointmentsLead" xml:space="preserve">
-    <value>Ba rÃ©servations oyo ekoya na hÃ´pital oyo.</value>
+    <value>Ba rÃƒÂ©servations oyo ekoya na hÃƒÂ´pital oyo.</value>
   </data>
   <data name="Common_NoUpcomingAppointments30Days" xml:space="preserve">
     <value>Ba rendez-vous ekoya te na mikolo 30 oyo ekoya.</value>
@@ -884,7 +893,7 @@
     <value>Makambo ya mbalakaka ekomamaki naino te mpo na lopitalo oyo.</value>
   </data>
   <data name="Common_NoEmergencyEventsPatient" xml:space="preserve">
-    <value>Makambo ya mbalakaka moko te ekomamaki mpo na mobÉ›li oyo na lopitalo oyo.</value>
+    <value>Makambo ya mbalakaka moko te ekomamaki mpo na mobÃ‰â€ºli oyo na lopitalo oyo.</value>
   </data>
   <data name="Common_EmergencyHomeLead" xml:space="preserve">
     <value>Ba alerte SOS mpe ba chute ya sika mpo na lopitalo oyo. Lisolo mobimba ezali na Ba appareils.</value>
@@ -929,7 +938,7 @@
     <value>Etiquette ya mbeto</value>
   </data>
   <data name="Common_Deactivate" xml:space="preserve">
-    <value>DÃ©sactivÃ©</value>
+    <value>DÃƒÂ©sactivÃƒÂ©</value>
   </data>
   <data name="Common_Reactivate" xml:space="preserve">
     <value>Bozongisa lisusu mosala</value>
@@ -941,7 +950,7 @@
     <value>Kobongisa</value>
   </data>
   <data name="Common_ConfirmDischarge" xml:space="preserve">
-    <value>Confirmer dÃ©charge</value>
+    <value>Confirmer dÃƒÂ©charge</value>
   </data>
   <data name="Common_ConfirmTransfer" xml:space="preserve">
     <value>Confirmer transfert</value>
@@ -977,10 +986,13 @@
     <value>Bozwa rendez-vous na buku</value>
   </data>
   <data name="Common_Booking" xml:space="preserve">
-    <value>RÃ©servation ya...</value>
+    <value>RÃƒÂ©servation ya...</value>
   </data>
   <data name="Common_BookAppointmentTitle" xml:space="preserve">
     <value>Bozwa rendez-vous na buku</value>
+  </data>
+  <data name="Common_BookAppointmentLead" xml:space="preserve">
+    <value>Pona malade, soignant mpe ntango mpo na kosala reservation.</value>
   </data>
   <data name="Common_InPerson" xml:space="preserve">
     <value>Na miso</value>
@@ -997,20 +1009,23 @@
   <data name="Common_RescheduleAppointment" xml:space="preserve">
     <value>Bongisa lisusu programme ya rendez-vous</value>
   </data>
+  <data name="Common_RescheduleAppointmentLead" xml:space="preserve">
+    <value>Pona ntango ya sika ya ebandeli mpe ya nsuka mpo na reservation oyo.</value>
+  </data>
   <data name="Common_NoAppointmentsMatchFilter" xml:space="preserve">
     <value>Ba rendez-vous moko te ekokani na filtre oyo.</value>
   </data>
   <data name="Common_JoinTelehealth" xml:space="preserve">
-    <value>Bokota na telesantÃ©</value>
+    <value>Bokota na telesantÃƒÂ©</value>
   </data>
   <data name="Common_OpenVisit" xml:space="preserve">
     <value>Botali ya polele</value>
   </data>
   <data name="Common_StartVisit" xml:space="preserve">
-    <value>BandÃ¡ kotala</value>
+    <value>BandÃƒÂ¡ kotala</value>
   </data>
   <data name="Common_Reschedule" xml:space="preserve">
-    <value>Bongisa programÉ› ya sika</value>
+    <value>Bongisa programÃ‰â€º ya sika</value>
   </data>
   <data name="Common_AppointmentBooked" xml:space="preserve">
     <value>Rendez-vous ezwamaki.</value>
@@ -1034,7 +1049,7 @@
     <value>Ekokaki te ko annuler rendez-vous.</value>
   </data>
   <data name="Common_SelectPatientAndProvider" xml:space="preserve">
-    <value>Pona mobÄ›li mpe mopesi ya clinique.</value>
+    <value>Pona mobÃ„â€ºli mpe mopesi ya clinique.</value>
   </data>
   <data name="Common_Upcoming30Days" xml:space="preserve">
     <value>Ekoya (mikolo 30)</value>
@@ -1046,7 +1061,7 @@
     <value>Nyonso</value>
   </data>
   <data name="Common_ScheduledVisitsLead" xml:space="preserve">
-    <value>Ba visites programmÃ©es pona {0}. Bantango oyo elakisami na {1}.</value>
+    <value>Ba visites programmÃƒÂ©es pona {0}. Bantango oyo elakisami na {1}.</value>
   </data>
   <data name="Common_AppointmentCountLabel" xml:space="preserve">
     <value>{0} rendez-vous</value>
@@ -1055,10 +1070,13 @@
     <value>{0} ba rendez-vous</value>
   </data>
   <data name="Common_DemographicsEyebrow" xml:space="preserve">
-    <value>DÃ©mographie ya bato</value>
+    <value>DÃƒÂ©mographie ya bato</value>
   </data>
   <data name="Common_Profile" xml:space="preserve">
     <value>Profil</value>
+  </data>
+  <data name="Common_ProfileLead" xml:space="preserve">
+    <value>Kombo, ba coordonnees mpe identite oyo ezali na dossier ya malade oyo.</value>
   </data>
   <data name="Common_HospitalLinkEyebrow" xml:space="preserve">
     <value>Lien ya lopitalo</value>
@@ -1066,14 +1084,17 @@
   <data name="Common_AccessSection" xml:space="preserve">
     <value>Kokota</value>
   </data>
+  <data name="Common_AccessLead" xml:space="preserve">
+    <value>Ndenge malade oyo azali na lien na lopitalo, mpe ntango acces epesamaki.</value>
+  </data>
   <data name="Common_RevokeHospitalAccess" xml:space="preserve">
-    <value>Kolongola nzela ya kokÉ”ta na lopitalo</value>
+    <value>Kolongola nzela ya kokÃ‰â€ta na lopitalo</value>
   </data>
   <data name="Common_Revoking" xml:space="preserve">
     <value>Kolongolama...</value>
   </data>
   <data name="Common_CouldNotRevokeAccess" xml:space="preserve">
-    <value>Ekokaki te ko rÃ©voquer accÃ¨s.</value>
+    <value>Ekokaki te ko rÃƒÂ©voquer accÃƒÂ¨s.</value>
   </data>
   <data name="Common_WearablesEyebrow" xml:space="preserve">
     <value>Biloko oyo balataka</value>
@@ -1082,13 +1103,13 @@
     <value>Ba lectures ya appareil</value>
   </data>
   <data name="Common_DeviceReadingsLead" xml:space="preserve">
-    <value>Ba vitals synchronisÃ©s ya sika uta na ba appareils ya malade (bokuse ya mikolo 7 ya suka).</value>
+    <value>Ba vitals synchronisÃƒÂ©s ya sika uta na ba appareils ya malade (bokuse ya mikolo 7 ya suka).</value>
   </data>
   <data name="Common_NoDeviceReadings" xml:space="preserve">
-    <value>Ba lectures ya appareil synchronisÃ© te pona malade oyo nanu.</value>
+    <value>Ba lectures ya appareil synchronisÃƒÂ© te pona malade oyo nanu.</value>
   </data>
   <data name="Common_HeartRateTitle" xml:space="preserve">
-    <value>Motema ya kobÉ›ta moyenne/min/max</value>
+    <value>Motema ya kobÃ‰â€ºta moyenne/min/max</value>
   </data>
   <data name="Common_HeartRateLabel" xml:space="preserve">
     <value>HR</value>
@@ -1106,7 +1127,10 @@
     <value>Kotala ba vitals</value>
   </data>
   <data name="Common_VisitVitalsLead" xml:space="preserve">
-    <value>Vitals enregistrÃ©s na tango ya ba rencontres na lopitalo oyo.</value>
+    <value>Vitals enregistrÃƒÂ©s na tango ya ba rencontres na lopitalo oyo.</value>
+  </data>
+  <data name="Visit_VitalsCardLead" xml:space="preserve">
+    <value>Tension, pouls, temperature mpe ba mesures mosusu ya visite oyo.</value>
   </data>
   <data name="Common_VitalCountLabel" xml:space="preserve">
     <value>{0} ezali na ntina mingi</value>
@@ -1147,6 +1171,9 @@
   <data name="Common_ProviderDetailsTitle" xml:space="preserve">
     <value>Makambo ya mopesi ya clinique</value>
   </data>
+  <data name="Common_ProviderDetailsLead" xml:space="preserve">
+    <value>Ba coordonnees mpe role ya soignant oyo.</value>
+  </data>
   <data name="Common_WeeklyScheduleTitle" xml:space="preserve">
     <value>Programme ya poso na poso</value>
   </data>
@@ -1178,7 +1205,7 @@
     <value>Fungola lisusu mopesi ya clinique</value>
   </data>
   <data name="Common_Updating" xml:space="preserve">
-    <value>Kosala mise Ã  jour...</value>
+    <value>Kosala mise ÃƒÂ  jour...</value>
   </data>
   <data name="Common_CouldNotUpdateProviderStatus" xml:space="preserve">
     <value>Ekoki te kosala mikolo oyo ezalela ya mopesi ya clinique.</value>
@@ -1187,7 +1214,7 @@
     <value>Ekokaki te ko charger mopesi ya clinique.</value>
   </data>
   <data name="Common_EnterValidStartEnd" xml:space="preserve">
-    <value>TyÃ¡ ngonga ya kobanda mpe ya nsuka oyo ezali na ntina.</value>
+    <value>TyÃƒÂ¡ ngonga ya kobanda mpe ya nsuka oyo ezali na ntina.</value>
   </data>
   <data name="Common_CouldNotAddScheduleSlot" xml:space="preserve">
     <value>Ekoki te kobakisa esika ya manaka.</value>
@@ -1217,10 +1244,10 @@
     <value>Makambo ya ntina mingi</value>
   </data>
   <data name="Common_HeartRateOption" xml:space="preserve">
-    <value>Motema oyo ezali kobÉ›tabÉ›ta</value>
+    <value>Motema oyo ezali kobÃ‰â€ºtabÃ‰â€ºta</value>
   </data>
   <data name="Common_BloodPressureOption" xml:space="preserve">
-    <value>TansiÉ”Ì ya makila</value>
+    <value>TansiÃ‰â€ÃŒÂ ya makila</value>
   </data>
   <data name="Common_TemperatureOption" xml:space="preserve">
     <value>Molunge</value>
@@ -1232,16 +1259,16 @@
     <value>Kilo</value>
   </data>
   <data name="Common_UnitPlaceholder" xml:space="preserve">
-    <value>bpm, Â°C, % 100.</value>
+    <value>bpm, Ã‚Â°C, % 100.</value>
   </data>
   <data name="Common_RecordVital" xml:space="preserve">
     <value>Enregistrer vital</value>
   </data>
   <data name="Common_NoVitalsYet" xml:space="preserve">
-    <value>Vitals moko te e enregistrÃ© nanu.</value>
+    <value>Vitals moko te e enregistrÃƒÂ© nanu.</value>
   </data>
   <data name="Common_VitalRecorded" xml:space="preserve">
-    <value>Vital enregistrÃ©.</value>
+    <value>Vital enregistrÃƒÂ©.</value>
   </data>
   <data name="Common_CouldNotRecordVital" xml:space="preserve">
     <value>Ekokaki te ko enregistrer vital.</value>
@@ -1259,22 +1286,22 @@
     <value>Bokuse ya botali ya bolingi</value>
   </data>
   <data name="Common_PatientChartLink" xml:space="preserve">
-    <value>Etanda ya mobÉ›li</value>
+    <value>Etanda ya mobÃ‰â€ºli</value>
   </data>
   <data name="Common_VisitHeader" xml:space="preserve">
     <value>Botali - {0} .</value>
   </data>
   <data name="Common_TelehealthSession" xml:space="preserve">
-    <value>Session ya tÃ©lÃ©santÃ©</value>
+    <value>Session ya tÃƒÂ©lÃƒÂ©santÃƒÂ©</value>
   </data>
   <data name="Common_Connecting" xml:space="preserve">
     <value>Kosala boyokani...</value>
   </data>
   <data name="Common_PreparingTelehealth" xml:space="preserve">
-    <value>Kobongisa session ya tÃ©lÃ©santÃ©...</value>
+    <value>Kobongisa session ya tÃƒÂ©lÃƒÂ©santÃƒÂ©...</value>
   </data>
   <data name="Common_Channel" xml:space="preserve">
-    <value>ChaÃ®ne</value>
+    <value>ChaÃƒÂ®ne</value>
   </data>
   <data name="Common_Session" xml:space="preserve">
     <value>Eteni</value>
@@ -1298,13 +1325,13 @@
     <value>Video ya mboka</value>
   </data>
   <data name="Common_CouldNotStartTelehealth" xml:space="preserve">
-    <value>Ekokaki te kobanda session ya telesantÃ©.</value>
+    <value>Ekokaki te kobanda session ya telesantÃƒÂ©.</value>
   </data>
   <data name="Common_AgoraNotConfigured" xml:space="preserve">
-    <value>Agora ezali configurÃ© te na API. Session esalemaki, kasi video en direct ekoki kobanda te kino Agora:AppId mpe Agora:AppCertificate ekotia. Tala mikanda/10_Agora_Twilio_Setup.md.</value>
+    <value>Agora ezali configurÃƒÂ© te na API. Session esalemaki, kasi video en direct ekoki kobanda te kino Agora:AppId mpe Agora:AppCertificate ekotia. Tala mikanda/10_Agora_Twilio_Setup.md.</value>
   </data>
   <data name="Common_SessionReadyConfigureAgora" xml:space="preserve">
-    <value>Session ebongami. Configurer Agora na API mpo na ko activer vidÃ©o en direct.</value>
+    <value>Session ebongami. Configurer Agora na API mpo na ko activer vidÃƒÂ©o en direct.</value>
   </data>
   <data name="Common_PageTitleAdminSuffix" xml:space="preserve">
     <value>- RaphCare Mokambi ya mosala</value>
@@ -1349,16 +1376,16 @@
     <value>Recharger lisusu</value>
   </data>
   <data name="AuthShell_BrandTagline" xml:space="preserve">
-    <value>Plateforme ya soins de santÃ© oyo ekangami</value>
+    <value>Plateforme ya soins de santÃƒÂ© oyo ekangami</value>
   </data>
   <data name="AuthShell_Headline" xml:space="preserve">
-    <value>Mema Ã©quipe nionso ya maladi, clinique mpe ya soins na vue moko ya confiance.</value>
+    <value>Mema ÃƒÂ©quipe nionso ya maladi, clinique mpe ya soins na vue moko ya confiance.</value>
   </data>
   <data name="AuthShell_Lead" xml:space="preserve">
-    <value>Kokomisa balopitalo, basali oyo bazali na kati ya masuwa, mpe kopesa bato ya maladi nzela ya libateli ya kozwa mikanda, ba rendez-vous, mpe kolÉ”ngÉ”nÉ” ya nzoto na nzela ya telefone.</value>
+    <value>Kokomisa balopitalo, basali oyo bazali na kati ya masuwa, mpe kopesa bato ya maladi nzela ya libateli ya kozwa mikanda, ba rendez-vous, mpe kolÃ‰â€ngÃ‰â€nÃ‰â€ ya nzoto na nzela ya telefone.</value>
   </data>
   <data name="AuthShell_FeatureHospitalTitle" xml:space="preserve">
-    <value>KokÉ”tisa bato na lopitalo</value>
+    <value>KokÃ‰â€tisa bato na lopitalo</value>
   </data>
   <data name="AuthShell_FeatureHospitalDesc" xml:space="preserve">
     <value>Komisa clinique na yo, ba installations, mpe portail ya pratique na ba minutes.</value>
@@ -1370,19 +1397,19 @@
     <value>Ba maladi, botali, mpe bopesi lapolo epesamaki na mofuteli moko ya clinique.</value>
   </data>
   <data name="AuthShell_FeatureVerifiedTitle" xml:space="preserve">
-    <value>AccÃ¨s oyo e vÃ©rifiÃ©</value>
+    <value>AccÃƒÂ¨s oyo e vÃƒÂ©rifiÃƒÂ©</value>
   </data>
   <data name="AuthShell_FeatureVerifiedDesc" xml:space="preserve">
-    <value>VÃ©rification ya email mpe ba codes 2FA oyo etindami uta na boÃ®te postale na yo RaphCare.</value>
+    <value>VÃƒÂ©rification ya email mpe ba codes 2FA oyo etindami uta na boÃƒÂ®te postale na yo RaphCare.</value>
   </data>
   <data name="AuthShell_FooterSecureSignIn" xml:space="preserve">
-    <value>KokÉ”ta na email na libateli</value>
+    <value>KokÃ‰â€ta na email na libateli</value>
   </data>
   <data name="AuthShell_FooterCopyright" xml:space="preserve">
-    <value>Â© {0} RaphCare Ezali ndenge moko na .</value>
+    <value>Ã‚Â© {0} RaphCare Ezali ndenge moko na .</value>
   </data>
   <data name="AuthShell_MobileTagline" xml:space="preserve">
-    <value>Plateforme ya soins de santÃ©</value>
+    <value>Plateforme ya soins de santÃƒÂ©</value>
   </data>
   <data name="Home_PageTitle" xml:space="preserve">
     <value>RaphCare - Kokota na site</value>
@@ -1394,7 +1421,7 @@
     <value>Pona ndenge okosalela RaphCare, sima kota to sala compte.</value>
   </data>
   <data name="Home_AccountTypeAria" xml:space="preserve">
-    <value>Lolenge ya kÉ”nti</value>
+    <value>Lolenge ya kÃ‰â€nti</value>
   </data>
   <data name="Home_RolePatient" xml:space="preserve">
     <value>Moto ya maladi</value>
@@ -1403,25 +1430,25 @@
     <value>Mosali ya bokolongono</value>
   </data>
   <data name="Home_PatientAccessTitle" xml:space="preserve">
-    <value>AccÃ¨s ya mobeli</value>
+    <value>AccÃƒÂ¨s ya mobeli</value>
   </data>
   <data name="Home_PatientAccessLead" xml:space="preserve">
-    <value>Bosala buku ya bobateli, tala mikanda, mpe bozala na boyokani na kliniki na bino. ExpÃ©rience mobile mobimba ezali na appli RaphCare.</value>
+    <value>Bosala buku ya bobateli, tala mikanda, mpe bozala na boyokani na kliniki na bino. ExpÃƒÂ©rience mobile mobimba ezali na appli RaphCare.</value>
   </data>
   <data name="Home_PatientBullet1" xml:space="preserve">
-    <value>Email + mot de passe na code ya vÃ©rification</value>
+    <value>Email + mot de passe na code ya vÃƒÂ©rification</value>
   </data>
   <data name="Home_PatientBullet2" xml:space="preserve">
     <value>Lien na lopitalo na yo na tango ya bokomisi nkombo</value>
   </data>
   <data name="Home_PatientBullet3" xml:space="preserve">
-    <value>Portal ya malade ya sÃ©curitÃ© na web na mobile</value>
+    <value>Portal ya malade ya sÃƒÂ©curitÃƒÂ© na web na mobile</value>
   </data>
   <data name="Home_ClinicPortalTitle" xml:space="preserve">
     <value>Portal ya clinique</value>
   </data>
   <data name="Home_ClinicPortalLead" xml:space="preserve">
-    <value>Enregistrer pratique na yo, na kati ya lopitalo na yo, pe gÃ©rer esika ya mosala ya clinique na yo depuis portail ya administrateur.</value>
+    <value>Enregistrer pratique na yo, na kati ya lopitalo na yo, pe gÃƒÂ©rer esika ya mosala ya clinique na yo depuis portail ya administrateur.</value>
   </data>
   <data name="Home_ClinicBullet1" xml:space="preserve">
     <value>Bosala compte professionnel na bino</value>
@@ -1439,7 +1466,7 @@
     <value>Bobongola na professionnel</value>
   </data>
   <data name="Home_LookingForPatientPrompt" xml:space="preserve">
-    <value>Ozali koluka accÃ¨s ya patient?</value>
+    <value>Ozali koluka accÃƒÂ¨s ya patient?</value>
   </data>
   <data name="Home_SwitchToPatient" xml:space="preserve">
     <value>Bobongola na motema molai</value>
@@ -1451,49 +1478,49 @@
     <value>Pardon, contenus oyo ozali koluka ezali te.</value>
   </data>
   <data name="PatientSignIn_PageTitle" xml:space="preserve">
-    <value>Kokota na - MobÉ›li</value>
+    <value>Kokota na - MobÃ‰â€ºli</value>
   </data>
   <data name="PatientSignIn_Title" xml:space="preserve">
     <value>Boyei malamu lisusu</value>
   </data>
   <data name="PatientSignIn_Subtitle" xml:space="preserve">
-    <value>Kota na compte na yo ya mobeli. Tokotindela yo code ya vÃ©rification na email.</value>
+    <value>Kota na compte na yo ya mobeli. Tokotindela yo code ya vÃƒÂ©rification na email.</value>
   </data>
   <data name="PatientSignIn_FootNoAccount" xml:space="preserve">
     <value>Compte moko te?</value>
   </data>
   <data name="PatientSignIn_RegisterLink" xml:space="preserve">
-    <value>Komisa nkombo lokola mobÉ›li</value>
+    <value>Komisa nkombo lokola mobÃ‰â€ºli</value>
   </data>
   <data name="PatientRegister_PageTitle" xml:space="preserve">
-    <value>Bokomisa nkombo - MobÉ›li</value>
+    <value>Bokomisa nkombo - MobÃ‰â€ºli</value>
   </data>
   <data name="PatientRegister_Title" xml:space="preserve">
     <value>Bosala compte ya patient</value>
   </data>
   <data name="PatientRegister_SubtitleDetails" xml:space="preserve">
-    <value>Tondisa ba dÃ©tails na yo pona kosala compte na yo.</value>
+    <value>Tondisa ba dÃƒÂ©tails na yo pona kosala compte na yo.</value>
   </data>
   <data name="PatientRegister_SubtitleCode" xml:space="preserve">
-    <value>TyÃ¡ code ya vÃ©rification oyo totindaki na email na yo.</value>
+    <value>TyÃƒÂ¡ code ya vÃƒÂ©rification oyo totindaki na email na yo.</value>
   </data>
   <data name="PatientRegister_FootAlready" xml:space="preserve">
-    <value>Ozali dÃ©jÃ  enregistrÃ©?</value>
+    <value>Ozali dÃƒÂ©jÃƒÂ  enregistrÃƒÂ©?</value>
   </data>
   <data name="PatientWelcome_PageTitle" xml:space="preserve">
-    <value>Boyei malamu - MobÉ›li ya motema</value>
+    <value>Boyei malamu - MobÃ‰â€ºli ya motema</value>
   </data>
   <data name="PatientWelcome_Title" xml:space="preserve">
     <value>Ozali ko signer na kati</value>
   </data>
   <data name="PatientWelcome_Lead" xml:space="preserve">
-    <value>Compte na yo ya mobeli ezali activÃ©. TÃ©lÃ©charger appli mobile RaphCare pona ba rendez-vous, ba dossiers, tÃ©lÃ©santÃ©, pe suivi ya appareil.</value>
+    <value>Compte na yo ya mobeli ezali activÃƒÂ©. TÃƒÂ©lÃƒÂ©charger appli mobile RaphCare pona ba rendez-vous, ba dossiers, tÃƒÂ©lÃƒÂ©santÃƒÂ©, pe suivi ya appareil.</value>
   </data>
   <data name="ProfessionalSignIn_PageTitle" xml:space="preserve">
     <value>Sign in - Mosali ya bokolongono</value>
   </data>
   <data name="ProfessionalSignIn_Subtitle" xml:space="preserve">
-    <value>Kota na portail ya clinique na yo. Tokotindela yo code ya vÃ©rification na email.</value>
+    <value>Kota na portail ya clinique na yo. Tokotindela yo code ya vÃƒÂ©rification na email.</value>
   </data>
   <data name="ProfessionalSignIn_PendingOnboarding" xml:space="preserve">
     <value>Ozali na enregistrement ya lopitalo oyo ebombami. Sima ya kokota tokozongisa yo po osilisa yango.</value>
@@ -1514,10 +1541,10 @@
     <value>Tondisa makambo na yo mpo na kosala compte na yo ya portail ya clinique.</value>
   </data>
   <data name="ProfessionalRegister_SubtitleCode" xml:space="preserve">
-    <value>TyÃ¡ code ya vÃ©rification oyo totindaki na email na yo.</value>
+    <value>TyÃƒÂ¡ code ya vÃƒÂ©rification oyo totindaki na email na yo.</value>
   </data>
   <data name="ProfessionalRegister_FootAlready" xml:space="preserve">
-    <value>Ozali dÃ©jÃ  na compte?</value>
+    <value>Ozali dÃƒÂ©jÃƒÂ  na compte?</value>
   </data>
   <data name="AdminLayout_BrandSub" xml:space="preserve">
     <value>Portal ya clinique</value>
@@ -1526,16 +1553,16 @@
     <value>Esika</value>
   </data>
   <data name="AdminLayout_NavOnboarding" xml:space="preserve">
-    <value>KokÉ”ta na masuwa</value>
+    <value>KokÃ‰â€ta na masuwa</value>
   </data>
   <data name="AdminLayout_BreadcrumbAria" xml:space="preserve">
-    <value>Limpa ya kopÉ”la</value>
+    <value>Limpa ya kopÃ‰â€la</value>
   </data>
   <data name="AdminLayout_SearchPlaceholder" xml:space="preserve">
     <value>Boluka ba lopitalo, ba malades...</value>
   </data>
   <data name="AdminLayout_SearchResultsAria" xml:space="preserve">
-    <value>Ba rÃ©sultats ya boluki</value>
+    <value>Ba rÃƒÂ©sultats ya boluki</value>
   </data>
   <data name="AdminLayout_SearchGroupHospitals" xml:space="preserve">
     <value>Ba lopitalo</value>
@@ -1589,10 +1616,10 @@
     <value>Pona lopitalo moko na barre ya likolo mpo na komona ba metrics ya scoped.</value>
   </data>
   <data name="Dashboard_ManageOnboardingLead" xml:space="preserve">
-    <value>GÃ©rer onboarding ya lopitalo mpe ba organisations na yo oyo ezali na lien.</value>
+    <value>GÃƒÂ©rer onboarding ya lopitalo mpe ba organisations na yo oyo ezali na lien.</value>
   </data>
   <data name="Dashboard_AuthGuidanceLead" xml:space="preserve">
-    <value>Compte professionnel na yo ezali prÃªt. Komisa lopitalo na yo mpo na kofungola portail ya clinique mobimba, to kota lisusu soki session na yo esilaki.</value>
+    <value>Compte professionnel na yo ezali prÃƒÂªt. Komisa lopitalo na yo mpo na kofungola portail ya clinique mobimba, to kota lisusu soki session na yo esilaki.</value>
   </data>
   <data name="Dashboard_StatActiveHospitals" xml:space="preserve">
     <value>Ba lopitalo oyo ezali kosala mosala</value>
@@ -1603,6 +1630,9 @@
   <data name="Dashboard_UpcomingAppointmentsTitle" xml:space="preserve">
     <value>Ba rendez-vous oyo ekoya</value>
   </data>
+  <data name="Dashboard_UpcomingAppointmentsLead" xml:space="preserve">
+    <value>Ba rendez-vous oyo ekoya na mikolo sambo oyo ekoya.</value>
+  </data>
   <data name="Dashboard_NoUpcoming7Days" xml:space="preserve">
     <value>Ba rendez-vous ekoya te na mikolo 7 oyo ekoya.</value>
   </data>
@@ -1610,16 +1640,16 @@
     <value>Lopitalo moko te naino</value>
   </data>
   <data name="Dashboard_EmptyNoHospitalsLead" xml:space="preserve">
-    <value>BandÃ¡ na kokomisa lopitalo na yo ya liboso na nzela ya assistent ya onboarding.</value>
+    <value>BandÃƒÂ¡ na kokomisa lopitalo na yo ya liboso na nzela ya assistent ya onboarding.</value>
   </data>
   <data name="Dashboard_StartOnboarding" xml:space="preserve">
-    <value>BandÃ¡ kokÉ”ta na masuwa</value>
+    <value>BandÃƒÂ¡ kokÃ‰â€ta na masuwa</value>
   </data>
   <data name="HospitalsIndex_PageTitle" xml:space="preserve">
     <value>Ba lopitalo - RaphCare Admin</value>
   </data>
   <data name="HospitalsIndex_Lead" xml:space="preserve">
-    <value>Ba organisations ya soins de santÃ© oyo ezali na lien na compte professionnel na yo.</value>
+    <value>Ba organisations ya soins de santÃƒÂ© oyo ezali na lien na compte professionnel na yo.</value>
   </data>
   <data name="HospitalsIndex_AuthGuidanceLead" xml:space="preserve">
     <value>Compte professionnel na yo esalemi, kasi tokokaki nanu ko charger ba lopitalo na yo te. Koba kosala onboard to kota lisusu soki session na yo esilaki.</value>
@@ -1628,13 +1658,13 @@
     <value>Ba lopitalo moko te ekangami nanu</value>
   </data>
   <data name="HospitalsIndex_EmptyLead" xml:space="preserve">
-    <value>Komisa lopitalo ya sika, to sala lien na oyo osalaki liboso na rÃ©fÃ©rence to nimero ya bokomisi nkombo.</value>
+    <value>Komisa lopitalo ya sika, to sala lien na oyo osalaki liboso na rÃƒÂ©fÃƒÂ©rence to nimero ya bokomisi nkombo.</value>
   </data>
   <data name="HospitalsIndex_TotalMeta" xml:space="preserve">
     <value>{0} motango mobimba</value>
   </data>
   <data name="HospitalsIndex_EnterRegistrationNumber" xml:space="preserve">
-    <value>Tia rÃ©fÃ©rence to nimero ya enregistrement.</value>
+    <value>Tia rÃƒÂ©fÃƒÂ©rence to nimero ya enregistrement.</value>
   </data>
   <data name="HospitalsRegister_PageTitle" xml:space="preserve">
     <value>Bokomisa lopitalo - RaphCare Admin</value>
@@ -1661,43 +1691,43 @@
     <value>Bobongisi mokuse mpo na kokomisa ebongiseli ya sika ya bokolongono na RaphCare.</value>
   </data>
   <data name="HospitalsRegister_Step2Title" xml:space="preserve">
-    <value>IdentitÃ© ya lopitalo</value>
+    <value>IdentitÃƒÂ© ya lopitalo</value>
   </data>
   <data name="HospitalsRegister_Step2Subtitle" xml:space="preserve">
-    <value>Nkombo ya mibeko, nimero ya bokomisi nkombo, mpe ba paramÃ¨tres ya etuka.</value>
+    <value>Nkombo ya mibeko, nimero ya bokomisi nkombo, mpe ba paramÃƒÂ¨tres ya etuka.</value>
   </data>
   <data name="HospitalsRegister_Step3Title" xml:space="preserve">
     <value>Esika ya libosoliboso</value>
   </data>
   <data name="HospitalsRegister_Step3Subtitle" xml:space="preserve">
-    <value>Site ya liboso optionnel: campus physique to hub virtuel ya tÃ©lÃ©santÃ©.</value>
+    <value>Site ya liboso optionnel: campus physique to hub virtuel ya tÃƒÂ©lÃƒÂ©santÃƒÂ©.</value>
   </data>
   <data name="HospitalsRegister_Step4Title" xml:space="preserve">
     <value>Contact ya administrateur</value>
   </data>
   <data name="HospitalsRegister_Step4Subtitle" xml:space="preserve">
-    <value>Nani ako gÃ©rer lopitalo oyo na plateforme.</value>
+    <value>Nani ako gÃƒÂ©rer lopitalo oyo na plateforme.</value>
   </data>
   <data name="HospitalsRegister_Step5Title" xml:space="preserve">
-    <value>TalÃ¡ mpe komisa nkombo</value>
+    <value>TalÃƒÂ¡ mpe komisa nkombo</value>
   </data>
   <data name="HospitalsRegister_Step5Subtitle" xml:space="preserve">
-    <value>Confirmer ba dÃ©tails avant ya ko crÃ©er locataire ya lopitalo.</value>
+    <value>Confirmer ba dÃƒÂ©tails avant ya ko crÃƒÂ©er locataire ya lopitalo.</value>
   </data>
   <data name="HospitalsRegister_Intro" xml:space="preserve">
-    <value>Komisa ebongiseli ya sika ya bobateli bokolongono na RaphCare. Assistant oyo esangisi identitÃ© ya lopitalo, esika ya liboso, mpe contact ya administrateur mpo na fourniture ya suivi.</value>
+    <value>Komisa ebongiseli ya sika ya bobateli bokolongono na RaphCare. Assistant oyo esangisi identitÃƒÂ© ya lopitalo, esika ya liboso, mpe contact ya administrateur mpo na fourniture ya suivi.</value>
   </data>
   <data name="HospitalsRegister_FeatureTenantTitle" xml:space="preserve">
     <value>Mofuteli ya lopitalo</value>
   </data>
   <data name="HospitalsRegister_FeatureTenantDesc" xml:space="preserve">
-    <value>Ezali kosala dossier ya clinique mpe ba paramÃ¨tres ya rÃ©gion mpo na organisation na yo.</value>
+    <value>Ezali kosala dossier ya clinique mpe ba paramÃƒÂ¨tres ya rÃƒÂ©gion mpo na organisation na yo.</value>
   </data>
   <data name="HospitalsRegister_FeatureFacilityTitle" xml:space="preserve">
     <value>Esika ya libosoliboso</value>
   </data>
   <data name="HospitalsRegister_FeatureFacilityDesc" xml:space="preserve">
-    <value>Bakisa campus physique to site ya tÃ©lÃ©santÃ© virtuelle lokola esika ya liboso.</value>
+    <value>Bakisa campus physique to site ya tÃƒÂ©lÃƒÂ©santÃƒÂ© virtuelle lokola esika ya liboso.</value>
   </data>
   <data name="HospitalsRegister_FeatureAdminTitle" xml:space="preserve">
     <value>Mokambi ya mosala</value>
@@ -1736,7 +1766,7 @@
     <value>Engumba</value>
   </data>
   <data name="HospitalsRegister_VirtualFacilityCheckbox" xml:space="preserve">
-    <value>Site virtuel / tÃ©lÃ©santÃ© kaka</value>
+    <value>Site virtuel / tÃƒÂ©lÃƒÂ©santÃƒÂ© kaka</value>
   </data>
   <data name="HospitalsRegister_AdminNameLabel" xml:space="preserve">
     <value>Administrateur kombo mobimba</value>
@@ -1772,7 +1802,7 @@
     <value>Royaume-Uni</value>
   </data>
   <data name="HospitalsRegister_Country_UnitedStates" xml:space="preserve">
-    <value>Ã‰tats-Unis</value>
+    <value>Ãƒâ€°tats-Unis</value>
   </data>
   <data name="HospitalsRegister_Country_Other" xml:space="preserve">
     <value>Mosusu</value>
@@ -1790,7 +1820,7 @@
     <value>W. Europe Ngonga ya momesano</value>
   </data>
   <data name="HospitalsRegister_TimeZone_Eastern" xml:space="preserve">
-    <value>Ngonga ya momeseno ya Æsti</value>
+    <value>Ngonga ya momeseno ya Ã†Âsti</value>
   </data>
   <data name="HospitalsRegister_TimeZone_CentralEurope" xml:space="preserve">
     <value>Ngonga ya momeseno ya Mpoto ya ntei</value>
@@ -1805,25 +1835,25 @@
     <value>Afrika/Johannesburg</value>
   </data>
   <data name="HospitalDetail_CouldNotUpdateHospital" xml:space="preserve">
-    <value>Ekoki te kosala mise Ã  jour ya lopitalo.</value>
+    <value>Ekoki te kosala mise ÃƒÂ  jour ya lopitalo.</value>
   </data>
   <data name="HospitalDetail_CouldNotAddFacility" xml:space="preserve">
-    <value>Ekokaki kobakisa facilitÃ© te.</value>
+    <value>Ekokaki kobakisa facilitÃƒÂ© te.</value>
   </data>
   <data name="HospitalDetail_CouldNotUpdateFacility" xml:space="preserve">
-    <value>Ekokaki te kosala mise Ã  jour ya installation.</value>
+    <value>Ekokaki te kosala mise ÃƒÂ  jour ya installation.</value>
   </data>
   <data name="HospitalDetail_CouldNotDeleteFacility" xml:space="preserve">
-    <value>Ekokaki te ko effacer facilitÃ©.</value>
+    <value>Ekokaki te ko effacer facilitÃƒÂ©.</value>
   </data>
   <data name="HospitalDetail_CouldNotInviteStaff" xml:space="preserve">
     <value>Ekokaki kobengisa basali te.</value>
   </data>
   <data name="HospitalDetail_CouldNotGrantPatientAccess" xml:space="preserve">
-    <value>Ekokaki te kopesa mobeli nzela ya kokÉ”ta.</value>
+    <value>Ekokaki te kopesa mobeli nzela ya kokÃ‰â€ta.</value>
   </data>
   <data name="HospitalDetail_CouldNotUpdateStaffRole" xml:space="preserve">
-    <value>Ekoki te ko mettre Ã  jour rÃ´le ya staff.</value>
+    <value>Ekoki te ko mettre ÃƒÂ  jour rÃƒÂ´le ya staff.</value>
   </data>
   <data name="HospitalDetail_CouldNotAddProvider" xml:space="preserve">
     <value>Ekoki te kobakisa mopesi ya clinique.</value>
@@ -1835,19 +1865,19 @@
     <value>(ezali kosala te) .</value>
   </data>
   <data name="Inpatient_PageTitle" xml:space="preserve">
-    <value>MobÉ›li oyo azali na lopitalo - RaphCare Admin</value>
+    <value>MobÃ‰â€ºli oyo azali na lopitalo - RaphCare Admin</value>
   </data>
   <data name="Inpatient_Lead" xml:space="preserve">
     <value>Ba quartier, ba chambre, ba mbeto, na ba admissions pona {0}.</value>
   </data>
   <data name="Inpatient_OccupiedPill" xml:space="preserve">
-    <value>{0} / {1} occupÃ©</value>
+    <value>{0} / {1} occupÃƒÂ©</value>
   </data>
   <data name="Inpatient_LoadingBoard" xml:space="preserve">
-    <value>Chargement ya tableau ya ba malades hospitalisÃ©s...</value>
+    <value>Chargement ya tableau ya ba malades hospitalisÃƒÂ©s...</value>
   </data>
   <data name="Inpatient_SectionsAria" xml:space="preserve">
-    <value>Biteni ya ba malades hospitalisÃ©s</value>
+    <value>Biteni ya ba malades hospitalisÃƒÂ©s</value>
   </data>
   <data name="Inpatient_SetupEyebrow" xml:space="preserve">
     <value>Kobongisa</value>
@@ -1925,7 +1955,10 @@
     <value>Soin</value>
   </data>
   <data name="Inpatient_AdmitPatientTitle" xml:space="preserve">
-    <value>Kondima mobÉ›li</value>
+    <value>Kondima mobÃ‰â€ºli</value>
+  </data>
+  <data name="Inpatient_AdmitLead" xml:space="preserve">
+    <value>Luka malade mpe pona ye lit oyo ezali libre.</value>
   </data>
   <data name="Inpatient_FindPatientLabel" xml:space="preserve">
     <value>Luka motema molai</value>
@@ -1948,8 +1981,11 @@
   <data name="Inpatient_ActiveAdmissionsTitle" xml:space="preserve">
     <value>Ba admissions ya active</value>
   </data>
+  <data name="Inpatient_ActiveAdmissionsLead" xml:space="preserve">
+    <value>Ba malades oyo bazali na hopital sikoyo, na salle mpe lit.</value>
+  </data>
   <data name="Inpatient_NoPatientsAdmitted" xml:space="preserve">
-    <value>Moto moko te ya maladi azali kokÉ”tisama na lopitalo na ntango oyo.</value>
+    <value>Moto moko te ya maladi azali kokÃ‰â€tisama na lopitalo na ntango oyo.</value>
   </data>
   <data name="Inpatient_LocationColumn" xml:space="preserve">
     <value>Esika</value>
@@ -1984,8 +2020,11 @@
   <data name="Inpatient_BedsByWardTitle" xml:space="preserve">
     <value>Mbeto na quartier</value>
   </data>
+  <data name="Inpatient_BedsByWardLead" xml:space="preserve">
+    <value>Carte ya ba lits na salle, na nani azali na lit moko moko.</value>
+  </data>
   <data name="Inpatient_NoWardsYet" xml:space="preserve">
-    <value>Naino ba quartiers te. Bakisa esika ya mosuni, na nsima salÃ¡ palwasi, bashambre, mpe mbeto.</value>
+    <value>Naino ba quartiers te. Bakisa esika ya mosuni, na nsima salÃƒÂ¡ palwasi, bashambre, mpe mbeto.</value>
   </data>
   <data name="Inpatient_NoRoomsInWard" xml:space="preserve">
     <value>Ba chambre te na quartier oyo.</value>
@@ -2002,8 +2041,11 @@
   <data name="Inpatient_AdmissionHistoryTitle" xml:space="preserve">
     <value>Histoire ya admission</value>
   </data>
+  <data name="Inpatient_HistoryLead" xml:space="preserve">
+    <value>Ba hospitalisations ya kala oyo okoki kofiltrer na statut mpe ba dates.</value>
+  </data>
   <data name="Inpatient_StatusFilterLabel" xml:space="preserve">
-    <value>Filtre ya Ã©tat</value>
+    <value>Filtre ya ÃƒÂ©tat</value>
   </data>
   <data name="Inpatient_StatusAdmitted" xml:space="preserve">
     <value>Endimisami</value>
@@ -2018,7 +2060,7 @@
     <value>Balongolami na mosala</value>
   </data>
   <data name="Inpatient_CouldNotLoadInpatientBoard" xml:space="preserve">
-    <value>Ekokaki te ko charger tableau ya ba malades hospitalisÃ©s.</value>
+    <value>Ekokaki te ko charger tableau ya ba malades hospitalisÃƒÂ©s.</value>
   </data>
   <data name="Inpatient_CouldNotLoadAdmissionHistory" xml:space="preserve">
     <value>Ekokaki te ko charger histoire ya admission.</value>
@@ -2030,7 +2072,7 @@
     <value>Pona esika moko mpe kotia nkombo ya palwasi.</value>
   </data>
   <data name="Inpatient_CouldNotCreateWard" xml:space="preserve">
-    <value>Ekokaki te ko crÃ©er ward.</value>
+    <value>Ekokaki te ko crÃƒÂ©er ward.</value>
   </data>
   <data name="Inpatient_WardCreated" xml:space="preserve">
     <value>Ward akelaki.</value>
@@ -2045,7 +2087,7 @@
     <value>Chambre esalemi.</value>
   </data>
   <data name="Inpatient_SelectRoomAndBed" xml:space="preserve">
-    <value>Pona shambre moko mpe kotia Ã©tiquette ya mbeto.</value>
+    <value>Pona shambre moko mpe kotia ÃƒÂ©tiquette ya mbeto.</value>
   </data>
   <data name="Inpatient_CouldNotCreateBed" xml:space="preserve">
     <value>Ekokaki kokela mbeto te.</value>
@@ -2054,19 +2096,19 @@
     <value>Mbeto ekelamaki.</value>
   </data>
   <data name="Inpatient_SelectPatientAndBed" xml:space="preserve">
-    <value>Pona mobÉ›li mpe mbeto oyo ezali.</value>
+    <value>Pona mobÃ‰â€ºli mpe mbeto oyo ezali.</value>
   </data>
   <data name="Inpatient_CouldNotAdmitPatient" xml:space="preserve">
-    <value>Ekokaki te kondima mobÉ›li.</value>
+    <value>Ekokaki te kondima mobÃ‰â€ºli.</value>
   </data>
   <data name="Inpatient_PatientAdmitted" xml:space="preserve">
-    <value>MobÉ›li oyo azwaki ndingisa.</value>
+    <value>MobÃ‰â€ºli oyo azwaki ndingisa.</value>
   </data>
   <data name="Inpatient_CouldNotDischargePatient" xml:space="preserve">
-    <value>Ekokaki te ko dÃ©charger malade.</value>
+    <value>Ekokaki te ko dÃƒÂ©charger malade.</value>
   </data>
   <data name="Inpatient_PatientDischarged" xml:space="preserve">
-    <value>MobÉ›li alongolami na lopitalo.</value>
+    <value>MobÃ‰â€ºli alongolami na lopitalo.</value>
   </data>
   <data name="Inpatient_SelectTargetBed" xml:space="preserve">
     <value>Pona mbeto oyo olingi kozwa.</value>
@@ -2075,19 +2117,19 @@
     <value>Ekokaki te ko transferer patient.</value>
   </data>
   <data name="Inpatient_PatientTransferred" xml:space="preserve">
-    <value>MobÉ›li oyo akÃ³mi na esika mosusu.</value>
+    <value>MobÃ‰â€ºli oyo akÃƒÂ³mi na esika mosusu.</value>
   </data>
   <data name="Inpatient_WardNameRequired" xml:space="preserve">
     <value>Nkombo ya palwasi esengeli.</value>
   </data>
   <data name="Inpatient_CouldNotUpdateWard" xml:space="preserve">
-    <value>Ekoki te kosala mise Ã  jour ya quartier.</value>
+    <value>Ekoki te kosala mise ÃƒÂ  jour ya quartier.</value>
   </data>
   <data name="Inpatient_WardUpdated" xml:space="preserve">
     <value>Ward ezongisami na mikolo.</value>
   </data>
   <data name="Inpatient_WardDeactivated" xml:space="preserve">
-    <value>Ward azali dÃ©sactivÃ©.</value>
+    <value>Ward azali dÃƒÂ©sactivÃƒÂ©.</value>
   </data>
   <data name="Inpatient_WardReactivated" xml:space="preserve">
     <value>Ward azongisaki mosala.</value>
@@ -2102,13 +2144,13 @@
     <value>Nkombo ya shambre esengeli.</value>
   </data>
   <data name="Inpatient_CouldNotUpdateRoom" xml:space="preserve">
-    <value>Ekokaki te kosala mise Ã  jour ya chambre.</value>
+    <value>Ekokaki te kosala mise ÃƒÂ  jour ya chambre.</value>
   </data>
   <data name="Inpatient_RoomUpdated" xml:space="preserve">
-    <value>Chambre mise Ã  jour.</value>
+    <value>Chambre mise ÃƒÂ  jour.</value>
   </data>
   <data name="Inpatient_RoomDeactivated" xml:space="preserve">
-    <value>Chambre e dÃ©sactivÃ©.</value>
+    <value>Chambre e dÃƒÂ©sactivÃƒÂ©.</value>
   </data>
   <data name="Inpatient_RoomReactivated" xml:space="preserve">
     <value>Chambre ezongisami na mosala.</value>
@@ -2120,10 +2162,10 @@
     <value>Chambre elongolami.</value>
   </data>
   <data name="Inpatient_BedLabelRequired" xml:space="preserve">
-    <value>Esengeli kozala na Ã©tiquette ya mbeto.</value>
+    <value>Esengeli kozala na ÃƒÂ©tiquette ya mbeto.</value>
   </data>
   <data name="Inpatient_CouldNotUpdateBed" xml:space="preserve">
-    <value>Ekokaki te kosala mise Ã  jour ya mbeto.</value>
+    <value>Ekokaki te kosala mise ÃƒÂ  jour ya mbeto.</value>
   </data>
   <data name="Inpatient_BedUpdated" xml:space="preserve">
     <value>Mbeto ezongisami na mikolo.</value>
@@ -2135,7 +2177,7 @@
     <value>Mbeto etiamaki na entretien.</value>
   </data>
   <data name="Inpatient_BedAvailable" xml:space="preserve">
-    <value>Mbeto marquÃ© ezali.</value>
+    <value>Mbeto marquÃƒÂ© ezali.</value>
   </data>
   <data name="Inpatient_CouldNotDeleteBed" xml:space="preserve">
     <value>Ekokaki te ko effacer mbeto.</value>
@@ -2144,10 +2186,10 @@
     <value>Mbeto elongolami.</value>
   </data>
   <data name="Inpatient_LocationFormat" xml:space="preserve">
-    <value>{0} Â· {1} Â· {2} Â· Mbeto {3} .</value>
+    <value>{0} Ã‚Â· {1} Ã‚Â· {2} Ã‚Â· Mbeto {3} .</value>
   </data>
   <data name="Inpatient_BedDisplayFormat" xml:space="preserve">
-    <value>{0} Â· {1} Â· Mbeto {2} .</value>
+    <value>{0} Ã‚Â· {1} Ã‚Â· Mbeto {2} .</value>
   </data>
   <data name="Appointments_PageTitle" xml:space="preserve">
     <value>Ba rendez-vous - RaphCare Admin</value>
@@ -2157,6 +2199,9 @@
   </data>
   <data name="Appointments_TabSchedule" xml:space="preserve">
     <value>Programme</value>
+  </data>
+  <data name="Appointments_ScheduleLead" xml:space="preserve">
+    <value>Ba reservations mpo na {0}. Ba ntango ezali na {1}.</value>
   </data>
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Moto ya maladi</value>
@@ -2186,13 +2231,16 @@
     <value>Ya lopitalo</value>
   </data>
   <data name="TeleJoin_PageTitle" xml:space="preserve">
-    <value>TelesantÃ© - RaphCare Mokambi ya mosala</value>
+    <value>TelesantÃƒÂ© - RaphCare Mokambi ya mosala</value>
   </data>
   <data name="TeleJoin_SectionsAria" xml:space="preserve">
-    <value>Biteni ya telesantÃ©</value>
+    <value>Biteni ya telesantÃƒÂ©</value>
   </data>
   <data name="TeleJoin_TabSession" xml:space="preserve">
     <value>Eteni</value>
+  </data>
+  <data name="TeleJoin_SessionLead" xml:space="preserve">
+    <value>Ba details ya kokota na seance ya teleconsultation oyo.</value>
   </data>
   <data name="PatientDetail_Gender" xml:space="preserve">
     <value>Mobali/mwasi</value>
@@ -2209,6 +2257,15 @@
   <data name="PatientDetail_ClinicalEyebrow" xml:space="preserve">
     <value>Ya lopitalo</value>
   </data>
+  <data name="PatientDetail_ClinicalChartTitle" xml:space="preserve">
+    <value>Dossier clinique</value>
+  </data>
+  <data name="PatientDetail_ClinicalChartLead" xml:space="preserve">
+    <value>Bongwana kati ya ba plans, ba diagnoses, ba mÃ©dicaments, ba notes mpe ba labo.</value>
+  </data>
+  <data name="PatientDetail_ClinicalSectionsAria" xml:space="preserve">
+    <value>Ba sections ya clinique</value>
+  </data>
   <data name="PatientDetail_AppointmentsLead" xml:space="preserve">
     <value>Ba rendez-vous na lopitalo oyo.</value>
   </data>
@@ -2216,34 +2273,37 @@
     <value>{0}%</value>
   </data>
   <data name="PatientDetail_LocationWithAccuracy" xml:space="preserve">
-    <value>{0} (Â±{1} m)</value>
+    <value>{0} (Ã‚Â±{1} m)</value>
   </data>
   <data name="ProviderDetail_AvailabilityEyebrow" xml:space="preserve">
-    <value>DisponibilitÃ©</value>
+    <value>DisponibilitÃƒÂ©</value>
   </data>
   <data name="ProviderDetail_SectionsAria" xml:space="preserve">
     <value>Biteni ya mopesi ya clinique</value>
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
-    <value>{0} Â· {1} Â· ntango na {2}</value>
+    <value>{0} Ã‚Â· {1} Ã‚Â· ntango na {2}</value>
+  </data>
+  <data name="Visit_DetailsCardLead" xml:space="preserve">
+    <value>Ntango visite ebandaki mpe esilaki, mpe nani bazalaki na yango.</value>
   </data>
   <data name="Visit_UnitLabel" xml:space="preserve">
-    <value>UnitÃ©</value>
+    <value>UnitÃƒÂ©</value>
   </data>
   <data name="Visit_AppointmentsNav" xml:space="preserve">
-    <value>â† Ba rendez-vous</value>
+    <value>Ã¢â€ Â Ba rendez-vous</value>
   </data>
   <data name="Common_NationalHealthId" xml:space="preserve">
-    <value>NumÃ©ro ya santÃ© ya mboka</value>
+    <value>NumÃƒÂ©ro ya santÃƒÂ© ya mboka</value>
   </data>
   <data name="Common_MedicalInfoTitle" xml:space="preserve">
-    <value>Sango ya santÃ©</value>
+    <value>Sango ya santÃƒÂ©</value>
   </data>
   <data name="PatientDetail_MedicalLead" xml:space="preserve">
-    <value>Sango mokili na application, mpe allergies to biloko ya nkisi. Ba staff bakoki kotala awa, kasi bÃ¡bongola te na lokasa oyo.</value>
+    <value>Sango mokili na application, mpe allergies to biloko ya nkisi. Ba staff bakoki kotala awa, kasi bÃƒÂ¡bongola te na lokasa oyo.</value>
   </data>
   <data name="Common_NoMedicalInfo" xml:space="preserve">
-    <value>Sango ya santÃ© ezali te.</value>
+    <value>Sango ya santÃƒÂ© ezali te.</value>
   </data>
   <data name="Common_BloodType" xml:space="preserve">
     <value>Groupe ya makila</value>
@@ -2270,7 +2330,7 @@
     <value>Eloko</value>
   </data>
   <data name="Common_Reaction" xml:space="preserve">
-    <value>RÃ©action</value>
+    <value>RÃƒÂ©action</value>
   </data>
   <data name="Common_Severity" xml:space="preserve">
     <value>Makasi</value>
@@ -2312,7 +2372,7 @@
     <value>Plan</value>
   </data>
   <data name="Common_MembershipNumber" xml:space="preserve">
-    <value>NumÃ©ro ya membre</value>
+    <value>NumÃƒÂ©ro ya membre</value>
   </data>
   <data name="PatientDetail_BillingEyebrow" xml:space="preserve">
     <value>Facture</value>
@@ -2648,10 +2708,10 @@
     <value>Kobakisa ordonnance</value>
   </data>
   <data name="Common_AddLabResult" xml:space="preserve">
-    <value>Bakisa rÃ©sultat ya labo</value>
+    <value>Bakisa rÃƒÂ©sultat ya labo</value>
   </data>
   <data name="Common_AddingLab" xml:space="preserve">
-    <value>Kobakisa rÃ©sultat ya labo</value>
+    <value>Kobakisa rÃƒÂ©sultat ya labo</value>
   </data>
   <data name="Common_NoteCategoryPlaceholder" xml:space="preserve">
     <value>Lolenge ya note (soki olingi)</value>
@@ -2666,7 +2726,7 @@
     <value>Kobakisa ordonnance ekoki te.</value>
   </data>
   <data name="Common_CouldNotAddLab" xml:space="preserve">
-    <value>Kobakisa rÃ©sultat ya labo ekoki te.</value>
+    <value>Kobakisa rÃƒÂ©sultat ya labo ekoki te.</value>
   </data>
   <data name="Common_SoapSaved" xml:space="preserve">
     <value>Note SOAP ebombami.</value>
@@ -2678,7 +2738,7 @@
     <value>Ordonnance ebakisami.</value>
   </data>
   <data name="Common_LabResultAdded" xml:space="preserve">
-    <value>RÃ©sultat ya labo ebakisami.</value>
+    <value>RÃƒÂ©sultat ya labo ebakisami.</value>
   </data>
   <data name="Collection_PageTitle" xml:space="preserve">
     <value>Kozwa</value>
@@ -2698,8 +2758,11 @@
   <data name="Collection_FindTitle" xml:space="preserve">
     <value>Luka commande</value>
   </data>
+  <data name="Collection_FindLead" xml:space="preserve">
+    <value>Luka na code ya kozwa, kombo ya malade to numero ya sante ya mboka.</value>
+  </data>
   <data name="Collection_SearchLabel" xml:space="preserve">
-    <value>Code ya kozwa, kombo, to ID ya santÃ© ya mboka</value>
+    <value>Code ya kozwa, kombo, to ID ya santÃƒÂ© ya mboka</value>
   </data>
   <data name="Collection_SearchPlaceholder" xml:space="preserve">
     <value>Code, kombo, to ID</value>
@@ -2712,6 +2775,9 @@
   </data>
   <data name="Collection_PrescriptionsTitle" xml:space="preserve">
     <value>Ba ordonnances ya kozwa</value>
+  </data>
+  <data name="Collection_PrescriptionsLead" xml:space="preserve">
+    <value>Ba medicaments oyo esili mpo na kozwa na ba malades.</value>
   </data>
   <data name="Collection_NoPrescriptions" xml:space="preserve">
     <value>Ordonnance ezali kozela te.</value>
@@ -2728,17 +2794,20 @@
   <data name="Collection_LabsTitle" xml:space="preserve">
     <value>Ba tests ya labo ya kosilisa</value>
   </data>
+  <data name="Collection_LabsLead" xml:space="preserve">
+    <value>Ba analyses oyo esili mpo na kozwa na ba malades.</value>
+  </data>
   <data name="Collection_NoLabs" xml:space="preserve">
     <value>Test ya labo ezali kozela te.</value>
   </data>
   <data name="Collection_EnterResult" xml:space="preserve">
-    <value>Koma rÃ©sultat</value>
+    <value>Koma rÃƒÂ©sultat</value>
   </data>
   <data name="Collection_SaveResult" xml:space="preserve">
-    <value>Bomba rÃ©sultat</value>
+    <value>Bomba rÃƒÂ©sultat</value>
   </data>
   <data name="Collection_SavingResult" xml:space="preserve">
-    <value>Kobomba rÃ©sultat</value>
+    <value>Kobomba rÃƒÂ©sultat</value>
   </data>
   <data name="Collection_PendingOne" xml:space="preserve">
     <value>{0} ezali kozela</value>
@@ -2756,10 +2825,10 @@
     <value>Ordonnance ezwami.</value>
   </data>
   <data name="Collection_CouldNotSaveResult" xml:space="preserve">
-    <value>Kobomba rÃ©sultat ya labo ekoki te.</value>
+    <value>Kobomba rÃƒÂ©sultat ya labo ekoki te.</value>
   </data>
   <data name="Collection_ResultSaved" xml:space="preserve">
-    <value>RÃ©sultat ya labo ebombami.</value>
+    <value>RÃƒÂ©sultat ya labo ebombami.</value>
   </data>
   <data name="Common_PickupCode" xml:space="preserve">
     <value>Code ya kozwa</value>
@@ -2792,7 +2861,7 @@
     <value>Esengami</value>
   </data>
   <data name="Visit_OrderLabLead" xml:space="preserve">
-    <value>Tinda test ntango visite ezali kokende. Ba staff bakoma rÃ©sultat na Kozwa, ata nsima visite esili.</value>
+    <value>Tinda test ntango visite ezali kokende. Ba staff bakoma rÃƒÂ©sultat na Kozwa, ata nsima visite esili.</value>
   </data>
   <data name="Common_AddMedicationLine" xml:space="preserve">
     <value>Bakisa nkisi mosusu</value>
@@ -2815,8 +2884,14 @@
   <data name="Collection_RecentPrescriptionsTitle" xml:space="preserve">
     <value>Ezwami sika</value>
   </data>
+  <data name="Collection_RecentPrescriptionsLead" xml:space="preserve">
+    <value>Ba ordonnances oyo ekomamaki deja kozwa kala te.</value>
+  </data>
   <data name="Collection_RecentLabsTitle" xml:space="preserve">
     <value>Ba tests esilisi sika</value>
+  </data>
+  <data name="Collection_RecentLabsLead" xml:space="preserve">
+    <value>Ba analyses oyo ekomamaki deja kozwa kala te.</value>
   </data>
   <data name="Collection_NoRecent" xml:space="preserve">
     <value>Eloko ezwami te na boluki oyo.</value>
@@ -2852,25 +2927,25 @@
     <value>Imprimer affiche</value>
   </data>
   <data name="Collection_OpenDisplay" xml:space="preserve">
-    <value>Ã‰cran ya kozela</value>
+    <value>Ãƒâ€°cran ya kozela</value>
   </data>
   <data name="Collection_DisplayHint" xml:space="preserve">
-    <value>Benga code ya kozwa mpo na komonisa yango na Ã©cran. Ã‰cran emonisa kaka ba code, nkombo te. Fungola yango na TV to tablette mpe batela lokasa.</value>
+    <value>Benga code ya kozwa mpo na komonisa yango na ÃƒÂ©cran. Ãƒâ€°cran emonisa kaka ba code, nkombo te. Fungola yango na TV to tablette mpe batela lokasa.</value>
   </data>
   <data name="Collection_Call" xml:space="preserve">
     <value>Benga</value>
   </data>
   <data name="Collection_OnScreen" xml:space="preserve">
-    <value>Na Ã©cran</value>
+    <value>Na ÃƒÂ©cran</value>
   </data>
   <data name="Collection_Called" xml:space="preserve">
-    <value>Code yango ezali na Ã©cran ya kozela.</value>
+    <value>Code yango ezali na ÃƒÂ©cran ya kozela.</value>
   </data>
   <data name="Collection_CouldNotCall" xml:space="preserve">
     <value>Kobenga code oyo ekoki te.</value>
   </data>
   <data name="Collection_CouldNotOpenDisplay" xml:space="preserve">
-    <value>Kofungola Ã©cran ya kozela ekoki te.</value>
+    <value>Kofungola ÃƒÂ©cran ya kozela ekoki te.</value>
   </data>
   <data name="Display_PageTitle" xml:space="preserve">
     <value>Kozwa</value>
@@ -2897,7 +2972,7 @@
     <value>Laboratoire</value>
   </data>
   <data name="Display_CouldNotLoad" xml:space="preserve">
-    <value>Kofungola Ã©cran ya kozela ekoki te.</value>
+    <value>Kofungola ÃƒÂ©cran ya kozela ekoki te.</value>
   </data>
   <data name="Collection_ScanUnsupported" xml:space="preserve">
     <value>Navigateur oyo ekoki ko fungola camera te. Salela Chrome to Edge, to koma code.</value>
@@ -2987,13 +3062,13 @@
     <value>Motema</value>
   </data>
   <data name="Inpatient_Temperature" xml:space="preserve">
-    <value>Chaleur (Â°C)</value>
+    <value>Chaleur (Ã‚Â°C)</value>
   </data>
   <data name="Inpatient_Oxygen" xml:space="preserve">
-    <value>OxygÃ¨ne (%)</value>
+    <value>OxygÃƒÂ¨ne (%)</value>
   </data>
   <data name="Inpatient_DischargeSummaryLabel" xml:space="preserve">
-    <value>RÃ©sumÃ© mpo na mokili</value>
+    <value>RÃƒÂ©sumÃƒÂ© mpo na mokili</value>
   </data>
   <data name="Inpatient_DischargeSummaryPlaceholder" xml:space="preserve">
     <value>Ntina, bosaleli, nkombo ya ba nkisi, mokolo ya kozonga</value>
@@ -3053,7 +3128,7 @@
     <value>Triage walk-ins and call the next patient at {0}.</value>
   </data>
   <data name="Casualty_Loading" xml:space="preserve">
-    <value>Loading the casualty boardâ€¦</value>
+    <value>Loading the casualty boardÃ¢â‚¬Â¦</value>
   </data>
   <data name="Casualty_SectionsAria" xml:space="preserve">
     <value>Casualty sections</value>
@@ -3064,14 +3139,26 @@
   <data name="Casualty_WaitingTitle" xml:space="preserve">
     <value>Queue</value>
   </data>
+  <data name="Casualty_WaitingLead" xml:space="preserve">
+    <value>Ba malades oyo bazali kozela kobengama.</value>
+  </data>
   <data name="Casualty_CalledTitle" xml:space="preserve">
     <value>Called</value>
+  </data>
+  <data name="Casualty_CalledLead" xml:space="preserve">
+    <value>Ba malades oyo ebandi kobengama na liste ya kozela.</value>
   </data>
   <data name="Casualty_AddWalkInTitle" xml:space="preserve">
     <value>Add walk-in</value>
   </data>
+  <data name="Casualty_AddWalkInLead" xml:space="preserve">
+    <value>Komisa malade ya walk-in mpo na triage mpe liste ya kozela.</value>
+  </data>
   <data name="Casualty_RecentTitle" xml:space="preserve">
     <value>Recent</value>
+  </data>
+  <data name="Casualty_RecentLead" xml:space="preserve">
+    <value>Ba passages ya kala te na urgences ya lopitalo oyo.</value>
   </data>
   <data name="Casualty_WaitingOne" xml:space="preserve">
     <value>{0} waiting</value>
@@ -3206,7 +3293,7 @@
     <value>Today's operating list for {0}.</value>
   </data>
   <data name="Theatre_Loading" xml:space="preserve">
-    <value>Loading the theatre boardâ€¦</value>
+    <value>Loading the theatre boardÃ¢â‚¬Â¦</value>
   </data>
   <data name="Theatre_SectionsAria" xml:space="preserve">
     <value>Theatre sections</value>
@@ -3226,8 +3313,14 @@
   <data name="Theatre_TodaysList" xml:space="preserve">
     <value>Today's list</value>
   </data>
+  <data name="Theatre_TodaysListLead" xml:space="preserve">
+    <value>Ba interventions oyo ezali na liste ya salle d'operation lelo.</value>
+  </data>
   <data name="Theatre_AddCase" xml:space="preserve">
     <value>Add case</value>
+  </data>
+  <data name="Theatre_AddCaseLead" xml:space="preserve">
+    <value>Bakisa malade na liste ya operation ya lelo.</value>
   </data>
   <data name="Theatre_NoCases" xml:space="preserve">
     <value>No theatre cases for today.</value>
@@ -3296,7 +3389,7 @@
     <value>Ba reference oyo etindami mpo na {0}.</value>
   </data>
   <data name="Referral_Loading" xml:space="preserve">
-    <value>Ezali kocharger tableau ya ba reference…</value>
+    <value>Ezali kocharger tableau ya ba referenceâ€¦</value>
   </data>
   <data name="Referral_SectionsAria" xml:space="preserve">
     <value>Ba section ya reference</value>
@@ -3316,11 +3409,20 @@
   <data name="Referral_OpenList" xml:space="preserve">
     <value>Efungoli</value>
   </data>
+  <data name="Referral_OpenListLead" xml:space="preserve">
+    <value>Ba references oyo ezali naino ouverte mpo na kosuivre.</value>
+  </data>
   <data name="Referral_Recent" xml:space="preserve">
     <value>Ya sika</value>
   </data>
+  <data name="Referral_RecentLead" xml:space="preserve">
+    <value>Ba references oyo ekomamaki kala te na lopitalo oyo.</value>
+  </data>
   <data name="Referral_LogReferral" xml:space="preserve">
     <value>Kokomisa reference</value>
+  </data>
+  <data name="Referral_LogLead" xml:space="preserve">
+    <value>Komisa reference sortante mpo na malade.</value>
   </data>
   <data name="Referral_ReferredTo" xml:space="preserve">
     <value>Etindami na</value>
@@ -3400,8 +3502,14 @@
   <data name="Roster_TodaysList" xml:space="preserve">
     <value>Nani azali</value>
   </data>
+  <data name="Roster_TodaysListLead" xml:space="preserve">
+    <value>Nani azali na service mpo na mokolo mpe shift oyo oponaki.</value>
+  </data>
   <data name="Roster_AddPerson" xml:space="preserve">
     <value>Bakisa na liste</value>
+  </data>
+  <data name="Roster_AddPersonLead" xml:space="preserve">
+    <value>Tia moto ya mosala na roster mpo na mokolo mpe shift.</value>
   </data>
   <data name="Roster_DayLabel" xml:space="preserve">
     <value>Mokolo</value>

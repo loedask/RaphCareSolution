@@ -60,7 +60,9 @@
                     </dl>
                 </HospitalIdentityPlate>
 
-                <AdminPageCard Eyebrow="@AppResources.T("Collection_Eyebrow")" Title="@AppResources.T("Collection_FindTitle")">
+                <AdminPageCard Eyebrow="@AppResources.T("Collection_Eyebrow")"
+                               Title="@AppResources.T("Collection_FindTitle")"
+                               Lead="@AppResources.T("Collection_FindLead")">
                     <div class="admin-page-card-body">
                         <div class="form-grid collection-find-grid">
                             <label>
@@ -90,7 +92,9 @@
         }
         else if (_tab == "prescriptions")
         {
-        <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")" Title="@AppResources.T("Collection_PrescriptionsTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")"
+                       Title="@AppResources.T("Collection_PrescriptionsTitle")"
+                       Lead="@AppResources.T("Collection_PrescriptionsLead")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.Prescriptions.Count == 0)
                 {
@@ -145,21 +149,23 @@
                                         </td>
                                         <td>@FormatLocal(rx.IssuedAt)</td>
                                         <td>
-                                            <button type="button" class="btn btn-secondary" disabled="@(_savingId == rx.Id)" @onclick="() => CallPrescriptionAsync(rx.Id)">
-                                                @AppResources.T("Collection_Call")
-                                            </button>
-                                            @if (_canDispense)
-                                            {
-                                                <button type="button" class="btn btn-primary" disabled="@(_savingId == rx.Id)" @onclick="() => DispenseAsync(rx.Id)">
-                                                    @(_savingId == rx.Id ? AppResources.T("Collection_MarkingCollected") : AppResources.T("Collection_MarkCollected"))
+                                            <div class="admin-page-actions collection-row-actions">
+                                                <button type="button" class="btn btn-secondary" disabled="@(_savingId == rx.Id)" @onclick="() => CallPrescriptionAsync(rx.Id)">
+                                                    @AppResources.T("Collection_Call")
                                                 </button>
-                                            }
-                                            <button type="button" class="btn btn-secondary" @onclick="() => PrintPrescription(rx)">
-                                                @AppResources.T("Collection_PrintSlip")
-                                            </button>
-                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => CancelPrescriptionAsync(rx.Id)">
-                                                @AppResources.T("Collection_CancelOrder")
-                                            </button>
+                                                @if (_canDispense)
+                                                {
+                                                    <button type="button" class="btn btn-primary" disabled="@(_savingId == rx.Id)" @onclick="() => DispenseAsync(rx.Id)">
+                                                        @(_savingId == rx.Id ? AppResources.T("Collection_MarkingCollected") : AppResources.T("Collection_MarkCollected"))
+                                                    </button>
+                                                }
+                                                <button type="button" class="btn btn-secondary" @onclick="() => PrintPrescription(rx)">
+                                                    @AppResources.T("Collection_PrintSlip")
+                                                </button>
+                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == rx.Id)" @onclick="() => CancelPrescriptionAsync(rx.Id)">
+                                                    @AppResources.T("Collection_CancelOrder")
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -172,7 +178,9 @@
         }
         else if (_tab == "labs")
         {
-        <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")" Title="@AppResources.T("Collection_LabsTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")"
+                       Title="@AppResources.T("Collection_LabsTitle")"
+                       Lead="@AppResources.T("Collection_LabsLead")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.LabOrders.Count == 0)
                 {
@@ -213,21 +221,23 @@
                                         <td>@lab.TestName</td>
                                         <td>@FormatLocal(lab.RequestedAt)</td>
                                         <td>
-                                            <button type="button" class="btn btn-secondary" disabled="@(_savingId == lab.Id)" @onclick="() => CallLabAsync(lab.Id)">
-                                                @AppResources.T("Collection_Call")
-                                            </button>
-                                            @if (_canCompleteLabs)
-                                            {
-                                                <button type="button" class="btn btn-secondary" @onclick="() => SelectLab(lab.Id)">
-                                                    @AppResources.T("Collection_EnterResult")
+                                            <div class="admin-page-actions collection-row-actions">
+                                                <button type="button" class="btn btn-secondary" disabled="@(_savingId == lab.Id)" @onclick="() => CallLabAsync(lab.Id)">
+                                                    @AppResources.T("Collection_Call")
                                                 </button>
-                                            }
-                                            <button type="button" class="btn btn-secondary" @onclick="() => PrintLab(lab)">
-                                                @AppResources.T("Collection_PrintSlip")
-                                            </button>
-                                            <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => CancelLabAsync(lab.Id)">
-                                                @AppResources.T("Collection_CancelOrder")
-                                            </button>
+                                                @if (_canCompleteLabs)
+                                                {
+                                                    <button type="button" class="btn btn-secondary" @onclick="() => SelectLab(lab.Id)">
+                                                        @AppResources.T("Collection_EnterResult")
+                                                    </button>
+                                                }
+                                                <button type="button" class="btn btn-secondary" @onclick="() => PrintLab(lab)">
+                                                    @AppResources.T("Collection_PrintSlip")
+                                                </button>
+                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == lab.Id)" @onclick="() => CancelLabAsync(lab.Id)">
+                                                    @AppResources.T("Collection_CancelOrder")
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                     @if (_selectedLabId == lab.Id)
@@ -267,7 +277,9 @@
         }
         else if (_tab == "recent")
         {
-        <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")" Title="@AppResources.T("Collection_RecentPrescriptionsTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")"
+                       Title="@AppResources.T("Collection_RecentPrescriptionsTitle")"
+                       Lead="@AppResources.T("Collection_RecentPrescriptionsLead")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.RecentPrescriptions.Count == 0)
                 {
@@ -325,7 +337,9 @@
             </div>
         </AdminPageCard>
 
-        <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")" Title="@AppResources.T("Collection_RecentLabsTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")"
+                       Title="@AppResources.T("Collection_RecentLabsTitle")"
+                       Lead="@AppResources.T("Collection_RecentLabsLead")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.RecentLabOrders.Count == 0)
                 {

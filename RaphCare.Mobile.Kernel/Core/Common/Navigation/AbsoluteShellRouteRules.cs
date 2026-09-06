@@ -40,4 +40,21 @@ public static class AbsoluteShellRouteRules
     /// <summary>True when <paramref name="route"/> may safely use absolute <c>//</c> navigation.</summary>
     public static bool IsSafeAbsoluteTarget(string route) =>
         AbsoluteSafeRoots.Contains(RootSegment(route));
+
+    /// <summary>
+    /// Builds the Shell URI for a registered feature route. Tab roots always use <c>//</c>
+    /// so Home quick actions switch tabs instead of failing as relative pushes.
+    /// </summary>
+    public static string ToFeatureNavigationPath(string pageRoute, bool absoluteRequested = false)
+    {
+        ArgumentNullException.ThrowIfNull(pageRoute);
+        var root = RootSegment(pageRoute);
+        if (string.IsNullOrEmpty(root))
+            return pageRoute;
+
+        if (absoluteRequested || AbsoluteSafeRoots.Contains(root))
+            return "//" + root;
+
+        return root;
+    }
 }
