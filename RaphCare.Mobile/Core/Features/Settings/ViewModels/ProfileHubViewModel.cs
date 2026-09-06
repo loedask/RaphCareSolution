@@ -16,6 +16,8 @@ using RaphCare.Mobile.Core.Common.Services.Api;
 using RaphCare.Mobile.Core.Common.Services.Auth;
 using RaphCare.Mobile.Core.Common.Services.Localization;
 using RaphCare.Mobile.Core.Common.ViewModels;
+using RaphCare.Mobile.Core.Features.AiAssistant.ViewModels;
+using RaphCare.Mobile.Core.Infrastructure.Composition;
 
 namespace RaphCare.Mobile.Core.Features.Settings.ViewModels;
 
@@ -441,6 +443,15 @@ public sealed class ProfileHubViewModel : BaseViewModel
             return;
 
         await _auth.SignOutAsync(CancellationToken.None);
+        try
+        {
+            MobileServiceHub.GetRequiredService<AiAssistantViewModel>().ResetConversation();
+        }
+        catch (InvalidOperationException)
+        {
+            // Hub may be unavailable in early startup tests; chat reset is best-effort.
+        }
+
         await SafeShellNavigator.GoToAsync($"//{AppNavigator.Landing}");
     }
 }

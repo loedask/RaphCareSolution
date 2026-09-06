@@ -134,7 +134,7 @@ Values are **HSL components** (no `hsl()` wrapper): use `hsl({value})` in CSS. *
 | `/mental-health` | MentalHealth | Mental health |
 | `/profile`, `/edit-profile`, … | Profile, EditProfile, … | `SettingsPage` (hub), `EditProfilePage` |
 | `/notifications`, `/privacy`, `/help-support` | … | `NotificationsPage` (patient API), `PrivacyPage`, `HelpSupportPage` |
-| `/ai-assistant` | AIAssistant | `AiAssistantPage` (patient API chat, placeholder LLM) |
+| `/ai-assistant` | AIAssistant | `AiAssistantPage` (chat bubbles with in-session history; patient API chat) |
 | `*` | NotFound | Optional error page |
 
 Shell route names in MAUI may differ; this table is for **screen inventory and parity**, not a 1:1 path string match.
@@ -163,7 +163,7 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Privacy | `Privacy.tsx` | `PrivacyPage` (local toggles, delete flow) | ☑ |
 | Help & support | `HelpSupport.tsx` | `HelpSupportPage` | ☑ |
 | Notifications | (concept notifications) | `NotificationsPage` (list, mark read, push registration API) | ☑ |
-| AI assistant | `AIAssistant` | `AiAssistantPage` (`POST api/patient/ai-assistant/chat`, no auto PHI) | ☑ |
+| AI assistant | `AIAssistant` | `AiAssistantPage` (bubble thread, prior turns in session; `POST api/patient/ai-assistant/chat`, no auto PHI) | ☑ |
 | Appointments | `Appointments.tsx`, `BookAppointment.tsx`, `AppointmentDetails.tsx` | `AppointmentsPage`, `BookAppointmentPage`, `AppointmentDetailPage` | ☑ |
 | Health records | `HealthRecords.tsx`, `HealthRecordDetails.tsx` | `RecordsPage`, `HealthRecordDetailPage` | ☑ |
 | Insurance | `Insurance.tsx` | `InsurancePage` (+ add / detail) | ☑ |
@@ -174,7 +174,7 @@ Tick when the **MAUI** screen matches the concept in **layout, type scale, color
 | Change password | `ChangePassword.tsx` | `ChangePasswordPage` (email: `api/patient/account/change-password`; Entra: SSPR) | ☑ |
 | Language | `Language.tsx` | `LanguageSettingsPage` | ☑ |
 | Medical information | `MedicalInformation.tsx` | `MedicalInformationPage` (`api/patient/medical-info`) | ☑ |
-| Emergency contacts | `EmergencyContacts.tsx` | `EmergencyContactsPage` (`api/patient/emergency-contacts`) | ☑ |
+| Emergency contacts | `EmergencyContacts.tsx` | `EmergencyContactsPage` (`api/patient/emergency-contacts`; add from phone contacts or enter manually) | ☑ |
 
 *(Extend the table as you implement each flow.)*
 

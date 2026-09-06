@@ -1,16 +1,19 @@
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Windows.Input;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.AiAssistant;
+using RaphCare.Mobile.Core.Common.AiAssistant;
 using RaphCare.Mobile.Core.Common.ViewModels;
+using RaphCare.Mobile.Core.Features.AiAssistant.Models;
 
 namespace RaphCare.Mobile.Core.Features.AiAssistant.ViewModels;
 
-/// <summary>Patient AI assistant (concept <c>/ai-assistant</c>).</summary>
+/// <summary>Patient AI assistant chat thread (concept <c>/ai-assistant</c>).</summary>
 public sealed class AiAssistantViewModel : BaseViewModel
 {
     private readonly IPatientAiAssistantService _assistant;
     private string _draftMessage = string.Empty;
-    private string _replyText = string.Empty;
     private string _disclaimerText = string.Empty;
     private string? _errorMessage;
 
@@ -19,20 +22,27 @@ public sealed class AiAssistantViewModel : BaseViewModel
         _assistant = assistant ?? throw new ArgumentNullException(nameof(assistant));
         Title = T("AiAssistantTitle");
 
-    IntroText = T("AiAssistantIntro");
-    PlaceholderText = T("AiAssistantPlaceholder");
-    SendButtonText = T("AiAssistantSend");
-    ReplyHeading = T("AiAssistantReplyHeading");
-    EmptyReplyText = T("AiAssistantEmptyReply");
-        SendCommand = new Command(async () => await SendAsync(), () => !IsBusy && !string.IsNullOrWhiteSpace(DraftMessage));
-        DraftMessage = string.Empty;
+        IntroText = T("AiAssistantIntro");
+        PlaceholderText = T("AiAssistantPlaceholder");
+        SendButtonText = T("AiAssistantSend");
+        DisclaimerFallbackText = T("AiAssistantDisclaimerFallback");
+
+        Messages = [];
+        Messages.CollectionChanged += OnMessagesCollectionChanged;
+
+        SendCommand = new Command(async () => await SendAsync(), CanSend);
+        SeedGreeting();
     }
+
+    /// <summary>Raised when the message list grows so the page can scroll to the latest bubble.</summary>
+    public event EventHandler? MessagesChanged;
 
     public string IntroText { get; }
     public string PlaceholderText { get; }
     public string SendButtonText { get; }
-    public string ReplyHeading { get; }
-    public string EmptyReplyText { get; }
+    public string DisclaimerFallbackText { get; }
+
+    public ObservableCollection<AiAssistantChatMessage> Messages { get; }
 
     public string DraftMessage
     {
@@ -42,12 +52,6 @@ public sealed class AiAssistantViewModel : BaseViewModel
             SetProperty(ref _draftMessage, value);
             RaiseCanExecuteChanged(SendCommand);
         }
-    }
-
-    public string ReplyText
-    {
-        get => _replyText;
-        set => SetProperty(ref _replyText, value);
     }
 
     public string DisclaimerText
@@ -62,34 +66,97 @@ public sealed class AiAssistantViewModel : BaseViewModel
         set => SetProperty(ref _errorMessage, value);
     }
 
-    public bool HasReply => !string.IsNullOrWhiteSpace(ReplyText);
+    public bool HasDisclaimer => !string.IsNullOrWhiteSpace(DisclaimerText);
 
     public ICommand SendCommand { get; }
 
+    /// <summary>Clears the thread (for example after sign-out) and reseeds the greeting.</summary>
+    public void ResetConversation()
+    {
+        ErrorMessage = null;
+        DraftMessage = string.Empty;
+        DisclaimerText = string.Empty;
+        OnPropertyChanged(nameof(HasDisclaimer));
+        Messages.Clear();
+        SeedGreeting();
+    }
+
+    private void SeedGreeting()
+    {
+        if (!AiAssistantChatSessionRules.NeedsGreetingSeed(Messages.Count))
+            return;
+
+        Messages.Add(new AiAssistantChatMessage(isFromUser: false, T("AiAssistantGreeting")));
+    }
+
+    private bool CanSend() =>
+        !IsBusy && AiAssistantChatSessionRules.TryNormalizeOutgoing(DraftMessage) is not null;
+
     private async Task SendAsync()
     {
-        if (IsBusy) return;
-        var text = DraftMessage.Trim();
-        if (text.Length == 0) return;
+        if (IsBusy)
+            return;
+
+        var text = AiAssistantChatSessionRules.TryNormalizeOutgoing(DraftMessage);
+        if (text is null)
+            return;
 
         ErrorMessage = null;
         IsBusy = true;
         RaiseCanExecuteChanged(SendCommand);
+
+        await RunOnMainThreadAsync(() =>
+        {
+            Messages.Add(new AiAssistantChatMessage(isFromUser: true, text));
+            DraftMessage = string.Empty;
+        }).ConfigureAwait(false);
+
         try
         {
-            var response = await _assistant.SendMessageAsync(
-                new SendMyPatientAssistantMessageRequest { Message = text },
-                CancellationToken.None).ConfigureAwait(false);
+            var prior = AiAssistantChatSessionRules.SelectPriorForRequest(
+                Messages
+                    .Take(Math.Max(0, Messages.Count - 1))
+                    .Select(m => (m.IsFromUser, m.Text)));
+
+            var request = new SendMyPatientAssistantMessageRequest
+            {
+                Message = text,
+                PriorMessages = prior
+                    .Select(m => new PatientAssistantPriorMessage
+                    {
+                        Role = m.IsFromUser ? "user" : "assistant",
+                        Content = m.Text,
+                    })
+                    .ToList(),
+            };
+
+            var response = await _assistant.SendMessageAsync(request, CancellationToken.None)
+                .ConfigureAwait(false);
 
             if (!response.IsSuccess || response.Data is null)
             {
-                ErrorMessage = response.ErrorMessage ?? T("AiAssistantSendFailed");
+                await RunOnMainThreadAsync(() =>
+                {
+                    ErrorMessage = response.ErrorMessage ?? T("AiAssistantSendFailed");
+                }).ConfigureAwait(false);
                 return;
             }
 
-            ReplyText = response.Data.Reply;
-            DisclaimerText = response.Data.MedicalDisclaimer;
-            OnPropertyChanged(nameof(HasReply));
+            var reply = response.Data.Reply?.Trim() ?? string.Empty;
+            var disclaimer = string.IsNullOrWhiteSpace(response.Data.MedicalDisclaimer)
+                ? DisclaimerFallbackText
+                : response.Data.MedicalDisclaimer.Trim();
+
+            await RunOnMainThreadAsync(() =>
+            {
+                if (reply.Length > 0)
+                    Messages.Add(new AiAssistantChatMessage(isFromUser: false, reply));
+                else
+                    ErrorMessage = T("AiAssistantSendFailed");
+
+                DisclaimerText = disclaimer;
+                OnPropertyChanged(nameof(HasDisclaimer));
+            }).ConfigureAwait(false);
         }
         finally
         {
@@ -97,4 +164,7 @@ public sealed class AiAssistantViewModel : BaseViewModel
             RaiseCanExecuteChanged(SendCommand);
         }
     }
+
+    private void OnMessagesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
+        MessagesChanged?.Invoke(this, EventArgs.Empty);
 }

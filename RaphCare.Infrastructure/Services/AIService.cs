@@ -48,6 +48,7 @@ public sealed partial class AIService : IAIService
         var reply = await CompleteChatAsync(
                 ClinicalDraftSystemPrompt,
                 trimmed,
+                priorTurns: null,
                 maxTokens: Math.Clamp(opts.MaxCompletionTokens, 64, 2048),
                 temperature: 0.3,
                 cancellationToken)
@@ -61,7 +62,10 @@ public sealed partial class AIService : IAIService
     }
 
     /// <inheritdoc />
-    public async Task<string> GeneratePatientAssistantReplyAsync(string userMessage, CancellationToken cancellationToken = default)
+    public async Task<string> GeneratePatientAssistantReplyAsync(
+        string userMessage,
+        IReadOnlyList<(string Role, string Content)>? priorTurns = null,
+        CancellationToken cancellationToken = default)
     {
         var opts = _patientAssistantOptions.CurrentValue;
         var trimmed = userMessage.Trim();
@@ -81,6 +85,7 @@ public sealed partial class AIService : IAIService
         var reply = await CompleteChatAsync(
                 systemPrompt,
                 trimmed,
+                priorTurns,
                 maxTokens: Math.Clamp(opts.MaxCompletionTokens, 64, 4096),
                 temperature: Math.Clamp(opts.Temperature, 0, 2),
                 cancellationToken)
@@ -106,6 +111,7 @@ public sealed partial class AIService : IAIService
     private async Task<string?> CompleteChatAsync(
         string systemPrompt,
         string userContent,
+        IReadOnlyList<(string Role, string Content)>? priorTurns,
         int maxTokens,
         double temperature,
         CancellationToken cancellationToken)
@@ -121,13 +127,28 @@ public sealed partial class AIService : IAIService
             var url =
                 $"{endpoint}/openai/deployments/{deployment}/chat/completions?api-version={apiVersion}";
 
+            var messages = new List<AzureOpenAiChatMessage>
+            {
+                new() { Role = "system", Content = systemPrompt },
+            };
+
+            if (priorTurns is { Count: > 0 })
+            {
+                foreach (var (role, content) in priorTurns)
+                {
+                    if (string.IsNullOrWhiteSpace(content))
+                        continue;
+                    if (role is not ("user" or "assistant"))
+                        continue;
+                    messages.Add(new AzureOpenAiChatMessage { Role = role, Content = content });
+                }
+            }
+
+            messages.Add(new AzureOpenAiChatMessage { Role = "user", Content = userContent });
+
             var requestBody = new AzureOpenAiChatRequest
             {
-                Messages =
-                [
-                    new AzureOpenAiChatMessage { Role = "system", Content = systemPrompt },
-                    new AzureOpenAiChatMessage { Role = "user", Content = userContent },
-                ],
+                Messages = messages,
                 MaxTokens = maxTokens,
                 Temperature = temperature,
             };
