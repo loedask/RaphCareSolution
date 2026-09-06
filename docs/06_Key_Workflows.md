@@ -54,7 +54,7 @@
 ## Mobile App Flow
 
 - **Startup:** AppShell registers all routes via AppNavigator.RegisterAllRoutes(). Shell shows LandingPage (auth) or HomePage (main) based on navigation.
-- **Auth:** User lands on LandingPage; can go to Register (**RegisterOptions** offers **Email**, **Phone**, **Voice**—matching the React concept) or SignIn.
+- **Auth:** User lands on LandingPage; can go to Register (**RegisterOptions** offers **Email**, **Phone**, or **Voice**) or SignIn.
   - **Email:** RegisterEmail → VerifyEmail → Entra sign-in → Home (same as before).
   - **Phone:** RegisterPhone (E.164 + OTP send) → VerifyPhone → `api/auth/otp/verify` returns a **patient JWT**; mobile stores it via `IAuthService.StoreApiSessionAsync` (same secure storage as Entra for `IAccessTokenProvider`) → Home.
   - **Voice:** RegisterVoiceIntro → RegisterPhone with `ContinueWith=Voice` → VerifyPhone → VoiceSubmit (**in-app recording** via Plugin.Maui.Audio, then multipart upload) → `api/onboarding/voice`. Requires **`Onboarding:VoiceRegistrationClinicId`** in mobile configuration (Guid of a clinic in your environment, e.g. after ClinicalSeeder).

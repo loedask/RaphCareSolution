@@ -49,7 +49,7 @@ Good: The waiting screen shows pickup codes only. It does not show names or medi
 
 ## When editing existing copy
 
-- Match the voice already in nearby strings for that locale (MAUI `AppResources`, Blazor admin pages, concept translations).
+- Match the voice already in nearby strings for that locale (MAUI `AppResources`, Blazor admin pages).
 - Do not "polish" copy into generic AI tone while translating or refactoring.
 
 ## Full-file check (required)

@@ -33,7 +33,7 @@ Styles: `docs/checklist/sources/raphcare-feature-checklist.pdf.css`. Configs: `d
 ## Related docs (do not replace the checklists)
 
 - **Partner feature catalog** (what is in Portal / Ops / Mobile): see **raphcare-feature-catalog**; update that PDF when partner-visible surfaces change
-- **Mobile visual parity:** `docs/Mobile_Concept_Port.md`
+- **Mobile design lock / screen map:** `docs/Mobile_Concept_Port.md`
 - **Mobile release gates:** `docs/checklist/sources/Mobile_Release_Ready_Checklist.md`
 - **Wearables / fleet:** `docs/11_Devices_BLE_E580_E585.md`, `docs/12_HBand_SDK_Integration.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`
 - **Layer order:** backend first, then Client, then Web / Mobile (see **raphcare-solution-layers**)
@@ -41,7 +41,7 @@ Styles: `docs/checklist/sources/raphcare-feature-checklist.pdf.css`. Configs: `d
 ## Step exit / polish
 
 - Do not treat a step as done while non-blocked product rows are still open.
-- For **Mobile** screens, mark done only when the flow is usable and matches the concept (see `Mobile_Concept_Port.md`). Do not mark done for a stub page.
+- For **Mobile** screens, mark done only when the flow is usable under the **Premium soft** identity (see `Mobile_Concept_Port.md`). Do not mark done for a stub page.
 - For **admin Web**, match existing `Pages/Admin/Hospitals/*` patterns in the same change set as the wire-up.
 - Move an item out of blocked when the API (or Client) now exists and is wired.
 
