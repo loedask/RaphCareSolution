@@ -79,7 +79,9 @@
                             </dl>
                         </HospitalIdentityPlate>
 
-                        <AdminPageCard Eyebrow="@AppResources.T("Common_DemographicsEyebrow")" Title="@AppResources.T("Common_Profile")">
+                        <AdminPageCard Eyebrow="@AppResources.T("Common_DemographicsEyebrow")"
+                                       Title="@AppResources.T("Common_Profile")"
+                                       Lead="@AppResources.T("Common_ProfileLead")">
                             <div class="admin-page-card-body">
                                 <AdminDefinitionGrid>
                                     <AdminDefinitionItem Label="@AppResources.T("Common_DateOfBirth")" Value="@_patient.DateOfBirth.ToString("dd MMM yyyy")" />
@@ -92,7 +94,9 @@
                         </AdminPageCard>
                     </div>
 
-                    <AdminPageCard Eyebrow="@AppResources.T("Common_HospitalLinkEyebrow")" Title="@AppResources.T("Common_AccessSection")">
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_HospitalLinkEyebrow")"
+                                   Title="@AppResources.T("Common_AccessSection")"
+                                   Lead="@AppResources.T("Common_AccessLead")">
                         <div class="admin-page-card-body">
                             <AdminDefinitionGrid>
                                 <AdminDefinitionItem Label="@AppResources.T("Common_Granted")" Value="@_patient.GrantedAt.ToString("dd MMM yyyy")" />

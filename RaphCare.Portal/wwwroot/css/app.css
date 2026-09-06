@@ -886,11 +886,24 @@ a:hover { text-decoration: underline; }
     flex: 1 1 14rem;
 }
 
-.admin-page-head-meta {
+.admin-page-head-aside {
     position: relative;
     z-index: 1;
-    padding-top: 0.25rem;
-    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.55rem;
+    flex: 0 1 auto;
+    max-width: 100%;
+}
+
+.admin-page-head-aside:empty,
+.admin-page-head-aside.is-spacer {
+    display: none;
+}
+
+.admin-page-head-meta {
+    padding-top: 0;
 }
 
 .admin-progress-pill {
@@ -2288,11 +2301,13 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
 }
 
 .hospital-deck .admin-page-card-head {
-    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr) minmax(0, 1fr);
     align-items: center;
-    gap: 1.15rem 1.5rem;
+    gap: 1rem 1.25rem;
     margin: 0;
-    padding: 1.55rem 1.75rem 1.35rem;
+    padding: 1.75rem 1.75rem;
+    overflow: hidden;
     border-bottom: 1px solid rgba(13, 148, 136, 0.1);
     background:
         radial-gradient(circle at 92% 18%, rgba(45, 212, 191, 0.22), transparent 34%),
@@ -2333,9 +2348,10 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
 
 .hospital-deck .admin-page-card-ornament {
     display: block;
-    position: absolute;
-    left: 1.35rem;
-    top: 1.45rem;
+    position: relative;
+    z-index: 1;
+    justify-self: start;
+    align-self: center;
     width: 2.55rem;
     height: 2.55rem;
     border-radius: 0.9rem;
@@ -2344,7 +2360,6 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
     box-shadow:
         0 10px 24px rgba(13, 148, 136, 0.28),
         inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    z-index: 0;
 }
 
 .hospital-deck .admin-page-card-ornament::before,
@@ -2368,15 +2383,37 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
 }
 
 .hospital-deck .admin-page-card-copy {
-    padding-left: 3.35rem;
+    justify-self: center;
+    align-self: center;
+    width: 100%;
+    max-width: 38rem;
+    padding-left: 0;
+    text-align: center;
     animation: admin-page-card-rise 0.55s ease-out both;
+}
+
+.hospital-deck .admin-page-head-aside {
+    display: flex;
+    justify-self: end;
+    align-self: center;
+    align-items: flex-end;
+    gap: 0.55rem;
+    animation: admin-page-card-rise 0.55s 0.08s ease-out both;
+}
+
+.hospital-deck .admin-page-head-aside.is-spacer {
+    display: block;
+    min-height: 2.55rem;
+    min-width: 2.55rem;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .hospital-deck .admin-page-card-head .admin-page-eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    margin: 0 0 0.55rem;
+    margin: 0;
     padding: 0.28rem 0.7rem 0.28rem 0.45rem;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.72);
@@ -2384,6 +2421,7 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
     color: #0f766e;
     box-shadow: 0 6px 16px rgba(15, 118, 110, 0.08);
     backdrop-filter: blur(8px);
+    white-space: nowrap;
 }
 
 .hospital-deck .admin-page-card-head .admin-page-eyebrow::before {
@@ -2415,25 +2453,25 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
 .hospital-deck .admin-page-card-head h2::after {
     content: "";
     position: absolute;
-    left: 0;
+    left: 50%;
     bottom: 0;
     width: 3.25rem;
     height: 0.22rem;
     border-radius: 999px;
     background: linear-gradient(90deg, #14b8a6, rgba(45, 212, 191, 0.15));
+    transform: translateX(-50%);
     animation: admin-page-card-underline 0.7s 0.15s ease-out both;
 }
 
 .hospital-deck .admin-page-card-head .admin-page-lead {
-    margin-top: 0.7rem;
-    max-width: 38rem;
+    margin: 0.7rem auto 0;
+    max-width: 36rem;
     color: #475569;
     font-size: 0.94rem;
 }
 
 .hospital-deck .admin-page-head-meta {
     padding-top: 0;
-    animation: admin-page-card-rise 0.55s 0.08s ease-out both;
 }
 
 .hospital-deck .admin-page-card-head .admin-progress-pill {
@@ -2507,12 +2545,17 @@ a.hospital-deck-crumb:hover .hospital-deck-crumb-home {
 
 @media (prefers-reduced-motion: reduce) {
     .hospital-deck .admin-page-card-copy,
-    .hospital-deck .admin-page-head-meta,
+    .hospital-deck .admin-page-head-aside,
     .hospital-deck .admin-page-card-head h1::after,
     .hospital-deck .admin-page-card-head h2::after,
     .hospital-deck .admin-page-card-head .admin-page-eyebrow::before,
     .hospital-deck .admin-page-card-head::after {
         animation: none;
+    }
+
+    .hospital-deck .admin-page-card-head h1::after,
+    .hospital-deck .admin-page-card-head h2::after {
+        transform: translateX(-50%);
     }
 }
 
@@ -4086,22 +4129,41 @@ a.hospital-directory-person:hover strong {
     .admin-page-card-foot { padding-left: 1rem; padding-right: 1rem; }
     .admin-page-card-head { gap: 0.75rem; }
     .hospital-deck .admin-page-card-head {
-        padding: 1.25rem 1rem 1.15rem;
-        align-items: flex-start;
+        grid-template-columns: auto minmax(0, 1fr);
+        padding: 1.35rem 1rem;
+        align-items: center;
     }
     .hospital-deck .admin-page-card-ornament {
-        left: 1rem;
-        top: 1.2rem;
         width: 2.2rem;
         height: 2.2rem;
         border-radius: 0.75rem;
     }
+    .hospital-deck .admin-page-head-aside {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+    .hospital-deck .admin-page-head-aside.is-spacer {
+        display: none;
+    }
     .hospital-deck .admin-page-card-copy {
-        padding-left: 2.9rem;
+        grid-column: 1 / -1;
+        justify-self: stretch;
+        max-width: none;
+        text-align: left;
     }
     .hospital-deck .admin-page-card-head h1,
     .hospital-deck .admin-page-card-head h2 {
         font-size: clamp(1.35rem, 6vw, 1.7rem);
+    }
+    .hospital-deck .admin-page-card-head h1::after,
+    .hospital-deck .admin-page-card-head h2::after {
+        left: 0;
+        transform: none;
+    }
+    .hospital-deck .admin-page-card-head .admin-page-lead {
+        margin-left: 0;
+        margin-right: 0;
     }
     .admin-brand-page .brand-hero { padding: 1.15rem 1rem; }
     .hospitals-empty-paths { grid-template-columns: 1fr; }
