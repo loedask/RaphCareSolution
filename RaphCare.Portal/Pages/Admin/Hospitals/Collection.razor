@@ -60,7 +60,9 @@
                     </dl>
                 </HospitalIdentityPlate>
 
-                <AdminPageCard Eyebrow="@AppResources.T("Collection_Eyebrow")" Title="@AppResources.T("Collection_FindTitle")">
+                <AdminPageCard Eyebrow="@AppResources.T("Collection_Eyebrow")"
+                               Title="@AppResources.T("Collection_FindTitle")"
+                               Lead="@AppResources.T("Collection_FindLead")">
                     <div class="admin-page-card-body">
                         <div class="form-grid collection-find-grid">
                             <label>
@@ -90,7 +92,9 @@
         }
         else if (_tab == "prescriptions")
         {
-        <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")" Title="@AppResources.T("Collection_PrescriptionsTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")"
+                       Title="@AppResources.T("Collection_PrescriptionsTitle")"
+                       Lead="@AppResources.T("Collection_PrescriptionsLead")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.Prescriptions.Count == 0)
                 {
@@ -174,7 +178,9 @@
         }
         else if (_tab == "labs")
         {
-        <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")" Title="@AppResources.T("Collection_LabsTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")"
+                       Title="@AppResources.T("Collection_LabsTitle")"
+                       Lead="@AppResources.T("Collection_LabsLead")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.LabOrders.Count == 0)
                 {
@@ -271,7 +277,9 @@
         }
         else if (_tab == "recent")
         {
-        <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")" Title="@AppResources.T("Collection_RecentPrescriptionsTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_PharmacyEyebrow")"
+                       Title="@AppResources.T("Collection_RecentPrescriptionsTitle")"
+                       Lead="@AppResources.T("Collection_RecentPrescriptionsLead")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.RecentPrescriptions.Count == 0)
                 {
@@ -329,7 +337,9 @@
             </div>
         </AdminPageCard>
 
-        <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")" Title="@AppResources.T("Collection_RecentLabsTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Collection_LabEyebrow")"
+                       Title="@AppResources.T("Collection_RecentLabsTitle")"
+                       Lead="@AppResources.T("Collection_RecentLabsLead")">
             <div class="admin-page-card-body">
                 @if (_board is null || _board.RecentLabOrders.Count == 0)
                 {

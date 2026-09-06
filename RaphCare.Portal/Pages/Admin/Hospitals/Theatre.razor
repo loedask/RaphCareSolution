@@ -45,7 +45,9 @@
         <div class="hospital-deck-stage">
         @if (_tab == "list")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Theatre_Eyebrow")" Title="@AppResources.T("Theatre_TodaysList")">
+            <AdminPageCard Eyebrow="@AppResources.T("Theatre_Eyebrow")"
+                           Title="@AppResources.T("Theatre_TodaysList")"
+                           Lead="@AppResources.T("Theatre_TodaysListLead")">
                 <div class="admin-page-card-body">
                     @if (_board is null || _board.Cases.Count == 0)
                     {
@@ -108,7 +110,9 @@
         }
         else if (_tab == "add")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Theatre_Eyebrow")" Title="@AppResources.T("Theatre_AddCase")">
+            <AdminPageCard Eyebrow="@AppResources.T("Theatre_Eyebrow")"
+                           Title="@AppResources.T("Theatre_AddCase")"
+                           Lead="@AppResources.T("Theatre_AddCaseLead")">
                 <div class="admin-page-card-body">
                     <div class="form-grid">
                         <label>

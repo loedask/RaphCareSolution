@@ -194,7 +194,9 @@
 
         @if (_isAdministrator && _tab == "admit")
         {
-            <AdminPageCard Eyebrow="@AppResources.T("Inpatient_CareEyebrow")" Title="@AppResources.T("Inpatient_AdmitPatientTitle")">
+            <AdminPageCard Eyebrow="@AppResources.T("Inpatient_CareEyebrow")"
+                           Title="@AppResources.T("Inpatient_AdmitPatientTitle")"
+                           Lead="@AppResources.T("Inpatient_AdmitLead")">
                 <div class="admin-page-card-body">
                     <div class="form-grid">
                         <label>
@@ -249,7 +251,9 @@
                     <span></span>
                 </div>
             </HospitalIdentityPlate>
-        <AdminPageCard Eyebrow="@AppResources.T("Inpatient_BoardEyebrow")" Title="@AppResources.T("Inpatient_ActiveAdmissionsTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Inpatient_BoardEyebrow")"
+                       Title="@AppResources.T("Inpatient_ActiveAdmissionsTitle")"
+                       Lead="@AppResources.T("Inpatient_ActiveAdmissionsLead")">
             <div class="admin-page-card-body">
                 @if (_board.ActiveAdmissionsList.Count == 0)
                 {
@@ -483,7 +487,9 @@
 
         @if (_tab == "beds")
         {
-        <AdminPageCard Eyebrow="@AppResources.T("Inpatient_MapEyebrow")" Title="@AppResources.T("Inpatient_BedsByWardTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Inpatient_MapEyebrow")"
+                       Title="@AppResources.T("Inpatient_BedsByWardTitle")"
+                       Lead="@AppResources.T("Inpatient_BedsByWardLead")">
             <div class="admin-page-card-body">
                 @if (_board.Wards.Count == 0)
                 {
@@ -690,7 +696,9 @@
 
         @if (_tab == "history")
         {
-        <AdminPageCard Eyebrow="@AppResources.T("Inpatient_HistoryEyebrow")" Title="@AppResources.T("Inpatient_AdmissionHistoryTitle")">
+        <AdminPageCard Eyebrow="@AppResources.T("Inpatient_HistoryEyebrow")"
+                       Title="@AppResources.T("Inpatient_AdmissionHistoryTitle")"
+                       Lead="@AppResources.T("Inpatient_HistoryLead")">
             <div class="admin-page-card-body">
                 <div class="form-grid inpatient-history-filters">
                     <label>

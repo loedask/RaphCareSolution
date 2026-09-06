@@ -985,6 +985,9 @@
   <data name="Common_BookAppointmentTitle" xml:space="preserve">
     <value>Bozwa rendez-vous na buku</value>
   </data>
+  <data name="Common_BookAppointmentLead" xml:space="preserve">
+    <value>Pona malade, soignant mpe ntango mpo na kosala reservation.</value>
+  </data>
   <data name="Common_InPerson" xml:space="preserve">
     <value>Na miso</value>
   </data>
@@ -999,6 +1002,9 @@
   </data>
   <data name="Common_RescheduleAppointment" xml:space="preserve">
     <value>Bongisa lisusu programme ya rendez-vous</value>
+  </data>
+  <data name="Common_RescheduleAppointmentLead" xml:space="preserve">
+    <value>Pona ntango ya sika ya ebandeli mpe ya nsuka mpo na reservation oyo.</value>
   </data>
   <data name="Common_NoAppointmentsMatchFilter" xml:space="preserve">
     <value>Ba rendez-vous moko te ekokani na filtre oyo.</value>
@@ -1063,11 +1069,17 @@
   <data name="Common_Profile" xml:space="preserve">
     <value>Profil</value>
   </data>
+  <data name="Common_ProfileLead" xml:space="preserve">
+    <value>Kombo, ba coordonnees mpe identite oyo ezali na dossier ya malade oyo.</value>
+  </data>
   <data name="Common_HospitalLinkEyebrow" xml:space="preserve">
     <value>Lien ya lopitalo</value>
   </data>
   <data name="Common_AccessSection" xml:space="preserve">
     <value>Kokota</value>
+  </data>
+  <data name="Common_AccessLead" xml:space="preserve">
+    <value>Ndenge malade oyo azali na lien na lopitalo, mpe ntango acces epesamaki.</value>
   </data>
   <data name="Common_RevokeHospitalAccess" xml:space="preserve">
     <value>Kolongola nzela ya kokÉ”ta na lopitalo</value>
@@ -1111,6 +1123,9 @@
   <data name="Common_VisitVitalsLead" xml:space="preserve">
     <value>Vitals enregistrÃ©s na tango ya ba rencontres na lopitalo oyo.</value>
   </data>
+  <data name="Visit_VitalsCardLead" xml:space="preserve">
+    <value>Tension, pouls, temperature mpe ba mesures mosusu ya visite oyo.</value>
+  </data>
   <data name="Common_VitalCountLabel" xml:space="preserve">
     <value>{0} ezali na ntina mingi</value>
   </data>
@@ -1149,6 +1164,9 @@
   </data>
   <data name="Common_ProviderDetailsTitle" xml:space="preserve">
     <value>Makambo ya mopesi ya clinique</value>
+  </data>
+  <data name="Common_ProviderDetailsLead" xml:space="preserve">
+    <value>Ba coordonnees mpe role ya soignant oyo.</value>
   </data>
   <data name="Common_WeeklyScheduleTitle" xml:space="preserve">
     <value>Programme ya poso na poso</value>
@@ -1606,6 +1624,9 @@
   <data name="Dashboard_UpcomingAppointmentsTitle" xml:space="preserve">
     <value>Ba rendez-vous oyo ekoya</value>
   </data>
+  <data name="Dashboard_UpcomingAppointmentsLead" xml:space="preserve">
+    <value>Ba rendez-vous oyo ekoya na mikolo sambo oyo ekoya.</value>
+  </data>
   <data name="Dashboard_NoUpcoming7Days" xml:space="preserve">
     <value>Ba rendez-vous ekoya te na mikolo 7 oyo ekoya.</value>
   </data>
@@ -1930,6 +1951,9 @@
   <data name="Inpatient_AdmitPatientTitle" xml:space="preserve">
     <value>Kondima mobÉ›li</value>
   </data>
+  <data name="Inpatient_AdmitLead" xml:space="preserve">
+    <value>Luka malade mpe pona ye lit oyo ezali libre.</value>
+  </data>
   <data name="Inpatient_FindPatientLabel" xml:space="preserve">
     <value>Luka motema molai</value>
   </data>
@@ -1950,6 +1974,9 @@
   </data>
   <data name="Inpatient_ActiveAdmissionsTitle" xml:space="preserve">
     <value>Ba admissions ya active</value>
+  </data>
+  <data name="Inpatient_ActiveAdmissionsLead" xml:space="preserve">
+    <value>Ba malades oyo bazali na hopital sikoyo, na salle mpe lit.</value>
   </data>
   <data name="Inpatient_NoPatientsAdmitted" xml:space="preserve">
     <value>Moto moko te ya maladi azali kokÉ”tisama na lopitalo na ntango oyo.</value>
@@ -1987,6 +2014,9 @@
   <data name="Inpatient_BedsByWardTitle" xml:space="preserve">
     <value>Mbeto na quartier</value>
   </data>
+  <data name="Inpatient_BedsByWardLead" xml:space="preserve">
+    <value>Carte ya ba lits na salle, na nani azali na lit moko moko.</value>
+  </data>
   <data name="Inpatient_NoWardsYet" xml:space="preserve">
     <value>Naino ba quartiers te. Bakisa esika ya mosuni, na nsima salÃ¡ palwasi, bashambre, mpe mbeto.</value>
   </data>
@@ -2004,6 +2034,9 @@
   </data>
   <data name="Inpatient_AdmissionHistoryTitle" xml:space="preserve">
     <value>Histoire ya admission</value>
+  </data>
+  <data name="Inpatient_HistoryLead" xml:space="preserve">
+    <value>Ba hospitalisations ya kala oyo okoki kofiltrer na statut mpe ba dates.</value>
   </data>
   <data name="Inpatient_StatusFilterLabel" xml:space="preserve">
     <value>Filtre ya Ã©tat</value>
@@ -2161,6 +2194,9 @@
   <data name="Appointments_TabSchedule" xml:space="preserve">
     <value>Programme</value>
   </data>
+  <data name="Appointments_ScheduleLead" xml:space="preserve">
+    <value>Ba reservations mpo na {0}. Ba ntango ezali na {1}.</value>
+  </data>
   <data name="PatientDetail_PageTitleFallback" xml:space="preserve">
     <value>Moto ya maladi</value>
   </data>
@@ -2196,6 +2232,9 @@
   </data>
   <data name="TeleJoin_TabSession" xml:space="preserve">
     <value>Eteni</value>
+  </data>
+  <data name="TeleJoin_SessionLead" xml:space="preserve">
+    <value>Ba details ya kokota na seance ya teleconsultation oyo.</value>
   </data>
   <data name="PatientDetail_Gender" xml:space="preserve">
     <value>Mobali/mwasi</value>
@@ -2238,6 +2277,9 @@
   </data>
   <data name="Visit_DetailLead" xml:space="preserve">
     <value>{0} Â· {1} Â· ntango na {2}</value>
+  </data>
+  <data name="Visit_DetailsCardLead" xml:space="preserve">
+    <value>Ntango visite ebandaki mpe esilaki, mpe nani bazalaki na yango.</value>
   </data>
   <data name="Visit_UnitLabel" xml:space="preserve">
     <value>UnitÃ©</value>
@@ -2710,6 +2752,9 @@
   <data name="Collection_FindTitle" xml:space="preserve">
     <value>Luka commande</value>
   </data>
+  <data name="Collection_FindLead" xml:space="preserve">
+    <value>Luka na code ya kozwa, kombo ya malade to numero ya sante ya mboka.</value>
+  </data>
   <data name="Collection_SearchLabel" xml:space="preserve">
     <value>Code ya kozwa, kombo, to ID ya santÃ© ya mboka</value>
   </data>
@@ -2725,6 +2770,9 @@
   <data name="Collection_PrescriptionsTitle" xml:space="preserve">
     <value>Ba ordonnances ya kozwa</value>
   </data>
+  <data name="Collection_PrescriptionsLead" xml:space="preserve">
+    <value>Ba medicaments oyo esili mpo na kozwa na ba malades.</value>
+  </data>
   <data name="Collection_NoPrescriptions" xml:space="preserve">
     <value>Ordonnance ezali kozela te.</value>
   </data>
@@ -2739,6 +2787,9 @@
   </data>
   <data name="Collection_LabsTitle" xml:space="preserve">
     <value>Ba tests ya labo ya kosilisa</value>
+  </data>
+  <data name="Collection_LabsLead" xml:space="preserve">
+    <value>Ba analyses oyo esili mpo na kozwa na ba malades.</value>
   </data>
   <data name="Collection_NoLabs" xml:space="preserve">
     <value>Test ya labo ezali kozela te.</value>
@@ -2827,8 +2878,14 @@
   <data name="Collection_RecentPrescriptionsTitle" xml:space="preserve">
     <value>Ezwami sika</value>
   </data>
+  <data name="Collection_RecentPrescriptionsLead" xml:space="preserve">
+    <value>Ba ordonnances oyo ekomamaki deja kozwa kala te.</value>
+  </data>
   <data name="Collection_RecentLabsTitle" xml:space="preserve">
     <value>Ba tests esilisi sika</value>
+  </data>
+  <data name="Collection_RecentLabsLead" xml:space="preserve">
+    <value>Ba analyses oyo ekomamaki deja kozwa kala te.</value>
   </data>
   <data name="Collection_NoRecent" xml:space="preserve">
     <value>Eloko ezwami te na boluki oyo.</value>
@@ -3076,14 +3133,26 @@
   <data name="Casualty_WaitingTitle" xml:space="preserve">
     <value>Queue</value>
   </data>
+  <data name="Casualty_WaitingLead" xml:space="preserve">
+    <value>Ba malades oyo bazali kozela kobengama.</value>
+  </data>
   <data name="Casualty_CalledTitle" xml:space="preserve">
     <value>Called</value>
+  </data>
+  <data name="Casualty_CalledLead" xml:space="preserve">
+    <value>Ba malades oyo ebandi kobengama na liste ya kozela.</value>
   </data>
   <data name="Casualty_AddWalkInTitle" xml:space="preserve">
     <value>Add walk-in</value>
   </data>
+  <data name="Casualty_AddWalkInLead" xml:space="preserve">
+    <value>Komisa malade ya walk-in mpo na triage mpe liste ya kozela.</value>
+  </data>
   <data name="Casualty_RecentTitle" xml:space="preserve">
     <value>Recent</value>
+  </data>
+  <data name="Casualty_RecentLead" xml:space="preserve">
+    <value>Ba passages ya kala te na urgences ya lopitalo oyo.</value>
   </data>
   <data name="Casualty_WaitingOne" xml:space="preserve">
     <value>{0} waiting</value>
@@ -3238,8 +3307,14 @@
   <data name="Theatre_TodaysList" xml:space="preserve">
     <value>Today's list</value>
   </data>
+  <data name="Theatre_TodaysListLead" xml:space="preserve">
+    <value>Ba interventions oyo ezali na liste ya salle d'operation lelo.</value>
+  </data>
   <data name="Theatre_AddCase" xml:space="preserve">
     <value>Add case</value>
+  </data>
+  <data name="Theatre_AddCaseLead" xml:space="preserve">
+    <value>Bakisa malade na liste ya operation ya lelo.</value>
   </data>
   <data name="Theatre_NoCases" xml:space="preserve">
     <value>No theatre cases for today.</value>
@@ -3328,11 +3403,20 @@
   <data name="Referral_OpenList" xml:space="preserve">
     <value>Efungoli</value>
   </data>
+  <data name="Referral_OpenListLead" xml:space="preserve">
+    <value>Ba references oyo ezali naino ouverte mpo na kosuivre.</value>
+  </data>
   <data name="Referral_Recent" xml:space="preserve">
     <value>Ya sika</value>
   </data>
+  <data name="Referral_RecentLead" xml:space="preserve">
+    <value>Ba references oyo ekomamaki kala te na lopitalo oyo.</value>
+  </data>
   <data name="Referral_LogReferral" xml:space="preserve">
     <value>Kokomisa reference</value>
+  </data>
+  <data name="Referral_LogLead" xml:space="preserve">
+    <value>Komisa reference sortante mpo na malade.</value>
   </data>
   <data name="Referral_ReferredTo" xml:space="preserve">
     <value>Etindami na</value>
@@ -3412,8 +3496,14 @@
   <data name="Roster_TodaysList" xml:space="preserve">
     <value>Nani azali</value>
   </data>
+  <data name="Roster_TodaysListLead" xml:space="preserve">
+    <value>Nani azali na service mpo na mokolo mpe shift oyo oponaki.</value>
+  </data>
   <data name="Roster_AddPerson" xml:space="preserve">
     <value>Bakisa na liste</value>
+  </data>
+  <data name="Roster_AddPersonLead" xml:space="preserve">
+    <value>Tia moto ya mosala na roster mpo na mokolo mpe shift.</value>
   </data>
   <data name="Roster_DayLabel" xml:space="preserve">
     <value>Mokolo</value>
