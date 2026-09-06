@@ -31,6 +31,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
     private bool _hasLinkedClinics;
     private bool _showLinkedEmpty;
     private bool _linkedLoadFailed;
+    private string _linkedLoadFailedText;
 
     public SelectClinicViewModel(
         IEmailAuthService emailAuth,
@@ -48,7 +49,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
         LinkedEmptyText = T("SelectClinicLinkedEmpty");
         LinkedTapHint = T("SelectClinicLinkedTapHint");
         LinkedActiveBadge = T("SelectClinicLinkedActiveBadge");
-        LinkedLoadFailedText = T("SelectClinicLinkedLoadFailed");
+        _linkedLoadFailedText = T("SelectClinicLinkedLoadFailed");
         SearchLabel = T("SelectClinicSearchLabel");
         SearchPlaceholder = T("SelectClinicSearchPlaceholder");
         ReferenceLabel = T("SelectClinicReferenceLabel");
@@ -76,7 +77,13 @@ public sealed class SelectClinicViewModel : BaseViewModel
     public string LinkedEmptyText { get; }
     public string LinkedTapHint { get; }
     public string LinkedActiveBadge { get; }
-    public string LinkedLoadFailedText { get; }
+
+    public string LinkedLoadFailedText
+    {
+        get => _linkedLoadFailedText;
+        private set => SetProperty(ref _linkedLoadFailedText, value);
+    }
+
     public string SearchLabel { get; }
     public string SearchPlaceholder { get; }
     public string ReferenceLabel { get; }
@@ -175,6 +182,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
 
     private async Task LoadLinkedClinicsAsync()
     {
+        var fallback = T("SelectClinicLinkedLoadFailed");
         try
         {
             var response = await _patientClinics.GetMyLinkedClinicsAsync(CancellationToken.None).ConfigureAwait(false);
@@ -183,6 +191,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
                 LinkedClinics.Clear();
                 if (!response.IsSuccess || response.Data is null)
                 {
+                    LinkedLoadFailedText = LinkedClinicLoadFailureMessage.Resolve(response.ErrorMessage, fallback);
                     LinkedLoadFailed = true;
                     HasLinkedClinics = false;
                     ShowLinkedEmpty = false;
@@ -190,6 +199,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
                 }
 
                 LinkedLoadFailed = false;
+                LinkedLoadFailedText = fallback;
                 var activeId = _selectedClinic.ClinicId;
                 foreach (var clinic in response.Data)
                 {
@@ -212,6 +222,7 @@ public sealed class SelectClinicViewModel : BaseViewModel
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
                 LinkedClinics.Clear();
+                LinkedLoadFailedText = fallback;
                 LinkedLoadFailed = true;
                 HasLinkedClinics = false;
                 ShowLinkedEmpty = false;
