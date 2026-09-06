@@ -12,7 +12,7 @@
              BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20,16,20,28" Spacing="14">
+        <VerticalStackLayout Padding="20,16,20,96" Spacing="14">
 
             <!-- Page intro + back -->
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
@@ -116,6 +116,7 @@
                         <Button Text="{Binding DisconnectButtonText}"
                                 Style="{StaticResource OutlineTealButton}"
                                 Command="{Binding DisconnectCommand}"
+                                IsVisible="{Binding IsBleConnected}"
                                 HorizontalOptions="Fill" />
                     </VerticalStackLayout>
                 </Border>
@@ -126,16 +127,19 @@
                            Style="{StaticResource SectionTitle}"
                            Margin="0" />
 
-                    <CollectionView ItemsSource="{Binding Items}"
-                                    SelectionMode="None">
-                        <CollectionView.EmptyView>
-                            <Border Style="{StaticResource CardBorder}" Margin="0" Padding="18">
-                                <Label Text="{Binding ConnectHint}"
-                                       Style="{StaticResource BodySmall}"
-                                       TextColor="{StaticResource MutedForegroundColor}" />
-                            </Border>
-                        </CollectionView.EmptyView>
-                        <CollectionView.ItemTemplate>
+                    <Border Style="{StaticResource CardBorder}"
+                            Margin="0"
+                            Padding="18"
+                            IsVisible="{Binding ShowNearbyEmpty}">
+                        <Label Text="{Binding ConnectHint}"
+                               Style="{StaticResource BodySmall}"
+                               TextColor="{StaticResource MutedForegroundColor}" />
+                    </Border>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}"
+                                         Spacing="0"
+                                         IsVisible="{Binding ShowNearbyEmpty, Converter={StaticResource InvertedBoolConverter}}">
+                        <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:WearableDeviceRowViewModel">
                                 <Grid Margin="0,0,0,10">
                                     <Border Style="{StaticResource CardBorder}" Margin="0" Padding="16">
@@ -170,9 +174,10 @@
                                                        Margin="0" />
                                             </VerticalStackLayout>
                                             <shared:GradientButton Grid.Column="2"
-                                                                   Text="{Binding Path=BindingContext.DevicesConnectLabel, Source={x:Reference ThisPage}}"
+                                                                   Text="{Binding ActionLabel}"
                                                                    Command="{Binding Path=BindingContext.ConnectCommand, Source={x:Reference ThisPage}}"
                                                                    CommandParameter="{Binding Id}"
+                                                                   IsEnabled="{Binding CanConnect}"
                                                                    Padding="16,10"
                                                                    MinimumHeightRequest="44"
                                                                    FontSize="14"
@@ -181,8 +186,8 @@
                                     </Border>
                                 </Grid>
                             </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
 
                 <!-- Last reading -->
@@ -216,6 +221,10 @@
                                Style="{StaticResource BodySmall}"
                                TextColor="{StaticResource MutedForegroundColor}"
                                IsVisible="{Binding ShowReadingsEmpty}" />
+                        <Label Text="{Binding VitalsWaitingHint}"
+                               Style="{StaticResource BodySmall}"
+                               TextColor="{StaticResource MutedForegroundColor}"
+                               IsVisible="{Binding ShowVitalsWaiting}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -267,21 +276,19 @@
                                     TitleColor="{StaticResource MutedForegroundColor}" />
                         </Border>
 
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                            <Button Grid.Column="0"
-                                    Text="{Binding ScanPackagingButtonText}"
+                        <VerticalStackLayout Spacing="10">
+                            <Button Text="{Binding ScanPackagingButtonText}"
                                     Style="{StaticResource SecondaryButton}"
                                     Command="{Binding ScanPackagingCommand}"
                                     HorizontalOptions="Fill"
                                     FontSize="14"
                                     Padding="12,14" />
-                            <shared:GradientButton Grid.Column="1"
-                                                   Text="{Binding ClaimButtonText}"
+                            <shared:GradientButton Text="{Binding ClaimButtonText}"
                                                    Command="{Binding RegisterCommand}"
                                                    HorizontalOptions="Fill"
                                                    FontSize="14"
                                                    Padding="12,14" />
-                        </Grid>
+                        </VerticalStackLayout>
 
                         <Button Text="{Binding SyncReadingsButtonText}"
                                 Style="{StaticResource OutlineTealButton}"

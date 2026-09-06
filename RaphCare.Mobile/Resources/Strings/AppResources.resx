@@ -1350,7 +1350,7 @@ Accessible. Intelligent. Human.</value>
     <value>Watch claimed. Connect only to Bluetooth {0}.</value>
   </data>
   <data name="DevicesWrongWatchMac" xml:space="preserve">
-    <value>That is not the watch assigned to you. Connect only to your claimed band.</value>
+    <value>That is not the watch assigned to you. Connect only to Bluetooth {0}.</value>
   </data>
   <data name="DevicesMacMissingAfterConnect" xml:space="preserve">
     <value>Connected, but this phone could not read a Bluetooth address. Try again near the band.</value>
@@ -1384,6 +1384,12 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="DevicesReadingsEmptyHint" xml:space="preserve">
     <value>Connect your watch, then heart rate and oxygen show here.</value>
+  </data>
+  <data name="DevicesVitalsWaitingHint" xml:space="preserve">
+    <value>Connected. Heart rate and oxygen show here when this band sends them.</value>
+  </data>
+  <data name="DevicesConnectedRowButton" xml:space="preserve">
+    <value>Connected</value>
   </data>
   <data name="DevicesUnnamedPeripheral" xml:space="preserve">
     <value>Unknown device</value>
@@ -2196,7 +2202,10 @@ Accessible. Intelligent. Human.</value>
     <value>Audio</value>
   </data>
   <data name="RequestCallModeLowBand" xml:space="preserve">
-    <value>Low bandwidth</value>
+    <value>Low data</value>
+  </data>
+  <data name="RequestCallModePickerLabel" xml:space="preserve">
+    <value>How to connect</value>
   </data>
   <data name="RequestCallStart" xml:space="preserve">
     <value>Request call now</value>

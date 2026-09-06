@@ -6,13 +6,14 @@ using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
 using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Devices.Models;
+using RaphCare.Mobile.Kernel.Core.Common.Devices;
 using BleDeviceEventArgs = Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs;
 
 namespace RaphCare.Mobile.Core.Features.Devices.Services;
 
 /// <summary>
-/// BLE scan via Plugin.BLE. On Android, prefers HBand/Veepoo <see cref="IHBandWearableBridge"/> for connect + live HR/SpO₂ when SDK AARs are present;
-/// otherwise GATT notify + standard HR/PLX parsers.
+/// BLE scan/connect via Plugin.BLE. Optional Veepoo/HBand path is gated by
+/// <see cref="DevicesBleSessionPolicy.TryVendorSdkOnConnect"/> (off for patient builds to avoid vendor toasts).
 /// </summary>
 public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposable
 {
@@ -100,6 +101,19 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         _adapter.DeviceDiscovered -= OnDeviceDiscovered;
         _adapter.DeviceDiscovered += OnDeviceDiscovered;
 
+        using var stopOnCancel = cancellationToken.Register(() =>
+        {
+            try
+            {
+                if (_adapter.IsScanning)
+                    _ = _adapter.StopScanningForDevicesAsync();
+            }
+            catch
+            {
+                // Best-effort stop when the Devices page cancels the scan.
+            }
+        });
+
         try
         {
             await _adapter.StartScanningForDevicesAsync(
@@ -164,7 +178,9 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             if (!string.IsNullOrWhiteSpace(mac))
                 _macById[deviceId] = mac;
 
-            if (_hband.IsAvailable && !string.IsNullOrWhiteSpace(mac))
+            if (DevicesBleSessionPolicy.TryVendorSdkOnConnect
+                && _hband.IsAvailable
+                && !string.IsNullOrWhiteSpace(mac))
             {
                 try
                 {
@@ -185,14 +201,16 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                     }
                     catch (Exception spo2Ex)
                     {
-                        ErrorOccurred?.Invoke(this, $"SpO₂ start: {spo2Ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"SpO₂ start: {spo2Ex.Message}");
                     }
 
                     return;
                 }
                 catch (Exception hbandEx)
                 {
-                    ErrorOccurred?.Invoke(this, $"HBand connect failed, trying standard BLE: {hbandEx.Message}");
+                    // Vendor session often fails on sample bands; fall through to GATT quietly.
+                    System.Diagnostics.Debug.WriteLine(
+                        $"HBand connect failed, trying standard BLE: {hbandEx.Message}");
                     _usingHbandSession = false;
                     try
                     {
@@ -218,6 +236,12 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                     if (!c.CanUpdate)
                         continue;
 
+                    var uuidText = c.Uuid.ToString();
+                    // Only standard HR / pulse-ox notify UUIDs. Subscribing every CanUpdate char
+                    // on E580/E585 firmware often triggers Android "This feature is not supported" toasts.
+                    if (!IsStandardHealthNotifyUuid(uuidText))
+                        continue;
+
                     EventHandler<CharacteristicUpdatedEventArgs> handler = (_, e) =>
                         OnCharacteristicNotified(e.Characteristic);
                     c.ValueUpdated += handler;
@@ -228,7 +252,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                     }
                     catch (Exception ex)
                     {
-                        ErrorOccurred?.Invoke(this, $"Notify failed: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"Notify failed ({uuidText}): {ex.Message}");
                     }
                 }
             }
@@ -352,8 +376,15 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             RawHex = hex,
         };
 
+        // Skip empty vendor noise packets that parse to neither HR nor SpO₂.
+        if (!hr.HasValue && !spo2.HasValue)
+            return;
+
         MainThread.BeginInvokeOnMainThread(() => VitalsUpdated?.Invoke(this, snap));
     }
+
+    private static bool IsStandardHealthNotifyUuid(string uuidText) =>
+        IsHeartRateMeasurement(uuidText) || IsPlxContinuous(uuidText) || IsPlxSpotCheck(uuidText);
 
     private static bool IsHeartRateMeasurement(string uuidText) =>
         uuidText.Contains("2a37", StringComparison.OrdinalIgnoreCase);

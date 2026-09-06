@@ -6,166 +6,285 @@
              x:Class="RaphCare.Mobile.Core.Features.MentalHealth.Views.MentalHealthPage"
              x:DataType="vm:MentalHealthViewModel"
              Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource BackgroundColor}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="20">
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}"
-                               Color="{StaticResource PrimaryColor}"
-                               VerticalOptions="Center" />
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0"
+              Padding="20,16,20,8"
+              ColumnDefinitions="Auto,*"
+              ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Style="{StaticResource IconBackButton}"
+                    Text="←"
+                    FontSize="20"
+                    Command="{Binding BackCommand}" />
+            <Label Grid.Column="1"
+                   Text="{Binding Title}"
+                   FontFamily="SpaceGrotesk"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource ForegroundColor}"
+                   VerticalOptions="Center"
+                   Margin="0" />
+        </Grid>
 
-            <Label Text="{Binding ErrorMessage}"
-                   Style="{StaticResource BodyMedium}"
-                   TextColor="{StaticResource ErrorColor}"
-                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,8,20,28" Spacing="14">
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource PrimaryColor}"
+                                   HeightRequest="28" />
 
-            <Label Text="{Binding AssessmentMessage}"
-                   Style="{StaticResource BodyMedium}"
-                   TextColor="{StaticResource PrimaryColor}"
-                   IsVisible="{Binding AssessmentMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+                <Label Text="{Binding ErrorMessage}"
+                       Style="{StaticResource BodyMedium}"
+                       TextColor="{StaticResource ErrorColor}"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
 
-            <Border Style="{StaticResource CardBorder}"
-                    BackgroundColor="{StaticResource CalmColor}"
-                    Margin="0"
-                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="{Binding HowAreYouLabel}"
-                           Style="{StaticResource BodyLarge}"
-                           FontAttributes="Bold" />
-                    <Label Text="{Binding DailyCheckInHint}"
+                <Border StrokeThickness="0"
+                        BackgroundColor="#E8F7F4"
+                        Padding="14,12"
+                        IsVisible="{Binding AssessmentMessage, Converter={StaticResource StringNotEmptyConverter}}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="14" />
+                    </Border.StrokeShape>
+                    <Label Text="{Binding AssessmentMessage}"
                            Style="{StaticResource BodySmall}"
-                           TextColor="{StaticResource MutedForegroundColor}" />
-                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                        <Button Text="{Binding MoodGreat}"
-                                Style="{StaticResource SecondaryButton}"
-                                Command="{Binding SelectMoodCommand}"
-                                CommandParameter="0" />
-                        <Button Text="{Binding MoodGood}"
-                                Style="{StaticResource SecondaryButton}"
-                                Command="{Binding SelectMoodCommand}"
-                                CommandParameter="1" />
-                        <Button Text="{Binding MoodOkay}"
-                                Style="{StaticResource SecondaryButton}"
-                                Command="{Binding SelectMoodCommand}"
-                                CommandParameter="2" />
-                        <Button Text="{Binding MoodLow}"
-                                Style="{StaticResource SecondaryButton}"
-                                Command="{Binding SelectMoodCommand}"
-                                CommandParameter="3" />
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
+                           TextColor="{StaticResource PrimaryColor}"
+                           Margin="0" />
+                </Border>
 
-            <Border Style="{StaticResource CardBorder}"
-                    Padding="20"
-                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="{Binding InsightTitle}"
-                           Style="{StaticResource BodyMedium}"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource PrimaryColor}" />
-                    <Label Text="{Binding InsightBody}"
-                           Style="{StaticResource BodyMedium}"
-                           TextColor="{StaticResource MutedForegroundColor}" />
-                    <Label Text="{Binding MedicalDisclaimer}"
-                           Style="{StaticResource Caption}"
-                           TextColor="{StaticResource MutedForegroundColor}"
-                           Margin="0,8,0,0" />
-                </VerticalStackLayout>
-            </Border>
+                <!-- Mood check-in -->
+                <Border Style="{StaticResource CardPremium}"
+                        Margin="0"
+                        Padding="18"
+                        BackgroundColor="{StaticResource CalmColor}"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Border Grid.Column="0" Style="{StaticResource AppIconWellAccent}">
+                                <Image Source="icon_brain_on_accent.png"
+                                       Style="{StaticResource AppIconImage}" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{Binding HowAreYouLabel}"
+                                       Style="{StaticResource SectionTitle}"
+                                       Margin="0" />
+                                <Label Text="{Binding DailyCheckInHint}"
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{StaticResource MutedForegroundColor}"
+                                       Margin="0" />
+                            </VerticalStackLayout>
+                        </Grid>
 
-            <Border Style="{StaticResource CardBorder}"
-                    Padding="20"
-                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="{Binding SelfAssessmentTitle}"
-                           Style="{StaticResource BodyLarge}"
-                           FontAttributes="Bold" />
-                    <Label Text="{Binding SelfAssessmentHint}"
-                           Style="{StaticResource BodySmall}"
-                           TextColor="{StaticResource MutedForegroundColor}" />
-
-                    <HorizontalStackLayout Spacing="10"
-                                           IsVisible="{Binding ShowAssessmentForm, Converter={StaticResource InvertedBoolConverter}}">
-                        <Button Text="{Binding StartPhq9Label}"
-                                Style="{StaticResource SecondaryButton}"
-                                Command="{Binding StartPhq9Command}" />
-                        <Button Text="{Binding StartGad7Label}"
-                                Style="{StaticResource SecondaryButton}"
-                                Command="{Binding StartGad7Command}" />
-                    </HorizontalStackLayout>
-
-                    <VerticalStackLayout Spacing="12"
-                                         IsVisible="{Binding ShowAssessmentForm}">
-                        <Label Text="{Binding AssessmentTitle}"
-                               Style="{StaticResource BodyMedium}"
-                               FontAttributes="Bold" />
-                        <Label Text="{Binding AssessmentInstructions}"
-                               Style="{StaticResource Caption}"
-                               TextColor="{StaticResource MutedForegroundColor}" />
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding AssessmentQuestions}" Spacing="12">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="vm:MentalHealthAssessmentQuestionItem">
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Text="{Binding QuestionText}"
-                                               Style="{StaticResource BodySmall}" />
-                                        <Picker ItemsSource="{Binding OptionLabels}"
-                                                SelectedIndex="{Binding SelectedOptionIndex}"
-                                                FontFamily="DMSans" />
-                                    </VerticalStackLayout>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-                        <Button Text="{Binding SubmitAssessmentLabel}"
-                                Style="{StaticResource PrimaryButton}"
-                                Command="{Binding SubmitAssessmentCommand}"
-                                IsEnabled="{Binding SubmittingAssessment, Converter={StaticResource InvertedBoolConverter}}" />
-                        <Button Text="{Binding CancelAssessmentLabel}"
-                                Style="{StaticResource SecondaryButton}"
-                                Command="{Binding CancelAssessmentCommand}" />
+                        <!-- 2x2 mood grid: never clips off-screen -->
+                        <Grid ColumnDefinitions="*,*"
+                              RowDefinitions="Auto,Auto"
+                              ColumnSpacing="8"
+                              RowSpacing="8">
+                            <Button Grid.Row="0" Grid.Column="0"
+                                    Text="{Binding MoodGreat}"
+                                    FontFamily="DMSans"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    CornerRadius="16"
+                                    Padding="12,14"
+                                    MinimumHeightRequest="52"
+                                    BackgroundColor="{StaticResource CardColor}"
+                                    TextColor="{StaticResource ForegroundColor}"
+                                    BorderColor="{StaticResource BorderColor}"
+                                    BorderWidth="1"
+                                    HorizontalOptions="Fill"
+                                    Command="{Binding SelectMoodCommand}"
+                                    CommandParameter="0" />
+                            <Button Grid.Row="0" Grid.Column="1"
+                                    Text="{Binding MoodGood}"
+                                    FontFamily="DMSans"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    CornerRadius="16"
+                                    Padding="12,14"
+                                    MinimumHeightRequest="52"
+                                    BackgroundColor="{StaticResource CardColor}"
+                                    TextColor="{StaticResource ForegroundColor}"
+                                    BorderColor="{StaticResource BorderColor}"
+                                    BorderWidth="1"
+                                    HorizontalOptions="Fill"
+                                    Command="{Binding SelectMoodCommand}"
+                                    CommandParameter="1" />
+                            <Button Grid.Row="1" Grid.Column="0"
+                                    Text="{Binding MoodOkay}"
+                                    FontFamily="DMSans"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    CornerRadius="16"
+                                    Padding="12,14"
+                                    MinimumHeightRequest="52"
+                                    BackgroundColor="{StaticResource CardColor}"
+                                    TextColor="{StaticResource ForegroundColor}"
+                                    BorderColor="{StaticResource BorderColor}"
+                                    BorderWidth="1"
+                                    HorizontalOptions="Fill"
+                                    Command="{Binding SelectMoodCommand}"
+                                    CommandParameter="2" />
+                            <Button Grid.Row="1" Grid.Column="1"
+                                    Text="{Binding MoodLow}"
+                                    FontFamily="DMSans"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    CornerRadius="16"
+                                    Padding="12,14"
+                                    MinimumHeightRequest="52"
+                                    BackgroundColor="{StaticResource CardColor}"
+                                    TextColor="{StaticResource ForegroundColor}"
+                                    BorderColor="{StaticResource BorderColor}"
+                                    BorderWidth="1"
+                                    HorizontalOptions="Fill"
+                                    Command="{Binding SelectMoodCommand}"
+                                    CommandParameter="3" />
+                        </Grid>
                     </VerticalStackLayout>
-                </VerticalStackLayout>
-            </Border>
+                </Border>
 
-            <shared:GradientButton Text="{Binding BookTherapyTitle}"
-                                   Command="{Binding BookTherapyCommand}"
-                                   IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                <!-- Insight -->
+                <Border Style="{StaticResource CardPremium}"
+                        Margin="0"
+                        Padding="18"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding InsightTitle}"
+                               Style="{StaticResource Micro}"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryColor}"
+                               Margin="0" />
+                        <Label Text="{Binding InsightBody}"
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="{StaticResource ForegroundColor}"
+                               Margin="0" />
+                        <Label Text="{Binding MedicalDisclaimer}"
+                               Style="{StaticResource Caption}"
+                               TextColor="{StaticResource MutedForegroundColor}"
+                               Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                </Border>
 
-            <Label Text="{Binding BookTherapySubtitle}"
-                   Style="{StaticResource Caption}"
-                   TextColor="{StaticResource TealLightColor}"
-                   HorizontalTextAlignment="Center"
-                   Margin="0,-12,0,0"
-                   IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                <!-- Self-assessment -->
+                <Border Style="{StaticResource CardPremium}"
+                        Margin="0"
+                        Padding="18"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Border Grid.Column="0" Style="{StaticResource AppIconWellAccent}">
+                                <Image Source="icon_clipboard_on_accent.png"
+                                       Style="{StaticResource AppIconImage}" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{Binding SelfAssessmentTitle}"
+                                       Style="{StaticResource SectionTitle}"
+                                       Margin="0" />
+                                <Label Text="{Binding SelfAssessmentHint}"
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{StaticResource MutedForegroundColor}"
+                                       Margin="0" />
+                            </VerticalStackLayout>
+                        </Grid>
 
-            <Border Style="{StaticResource CardBorder}"
-                    Padding="16"
-                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding SessionHistoryCommand}" />
-                </Border.GestureRecognizers>
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="{Binding SessionHistoryTitle}"
-                           Style="{StaticResource BodyMedium}"
-                           FontAttributes="Bold" />
-                    <Label Text="{Binding SessionHistorySubtitle}"
+                        <VerticalStackLayout Spacing="8"
+                                             IsVisible="{Binding ShowAssessmentForm, Converter={StaticResource InvertedBoolConverter}}">
+                            <Button Text="{Binding StartPhq9Label}"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding StartPhq9Command}"
+                                    HorizontalOptions="Fill"
+                                    FontSize="15" />
+                            <Button Text="{Binding StartGad7Label}"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding StartGad7Command}"
+                                    HorizontalOptions="Fill"
+                                    FontSize="15" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="12"
+                                             IsVisible="{Binding ShowAssessmentForm}">
+                            <Label Text="{Binding AssessmentTitle}"
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold" />
+                            <Label Text="{Binding AssessmentInstructions}"
+                                   Style="{StaticResource Caption}"
+                                   TextColor="{StaticResource MutedForegroundColor}" />
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding AssessmentQuestions}" Spacing="12">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:MentalHealthAssessmentQuestionItem">
+                                        <Border Stroke="{StaticResource BorderColor}"
+                                                StrokeThickness="1"
+                                                BackgroundColor="{StaticResource SecondaryColor}"
+                                                Padding="12,10">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="14" />
+                                            </Border.StrokeShape>
+                                            <VerticalStackLayout Spacing="6">
+                                                <Label Text="{Binding QuestionText}"
+                                                       Style="{StaticResource BodySmall}" />
+                                                <Picker ItemsSource="{Binding OptionLabels}"
+                                                        SelectedIndex="{Binding SelectedOptionIndex}"
+                                                        FontFamily="DMSans" />
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                            <shared:GradientButton Text="{Binding SubmitAssessmentLabel}"
+                                                   Command="{Binding SubmitAssessmentCommand}"
+                                                   IsEnabled="{Binding SubmittingAssessment, Converter={StaticResource InvertedBoolConverter}}"
+                                                   HorizontalOptions="Fill" />
+                            <Button Text="{Binding CancelAssessmentLabel}"
+                                    Style="{StaticResource OutlineTealButton}"
+                                    Command="{Binding CancelAssessmentCommand}"
+                                    HorizontalOptions="Fill" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Therapy CTA -->
+                <VerticalStackLayout Spacing="8"
+                                     IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                    <shared:GradientButton Text="{Binding BookTherapyTitle}"
+                                           Command="{Binding BookTherapyCommand}"
+                                           HorizontalOptions="Fill" />
+                    <Label Text="{Binding BookTherapySubtitle}"
                            Style="{StaticResource Caption}"
-                           TextColor="{StaticResource MutedForegroundColor}" />
+                           TextColor="{StaticResource PrimaryColor}"
+                           HorizontalTextAlignment="Center"
+                           Margin="0" />
                 </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
-    </ScrollView>
+
+                <!-- Session history -->
+                <Border Style="{StaticResource CardPremium}"
+                        Margin="0"
+                        Padding="16"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SessionHistoryCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                            <Label Text="{Binding SessionHistoryTitle}"
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   Margin="0" />
+                            <Label Text="{Binding SessionHistorySubtitle}"
+                                   Style="{StaticResource Caption}"
+                                   TextColor="{StaticResource MutedForegroundColor}"
+                                   Margin="0" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="1"
+                               Text="→"
+                               FontSize="20"
+                               TextColor="{StaticResource PrimaryColor}"
+                               VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

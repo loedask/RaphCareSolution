@@ -103,8 +103,8 @@ What patients see on Android and iPhone.
 | Video visit on a real iPhone | Not started | Needs iOS video kit wiring |
 | Push alerts on Android | Partial | Needs Firebase configured on the server |
 | Push alerts on iPhone | Partial | Needs store and push setup, then a real device test |
-| Claim an assigned watch serial in the app | Done | Hospital path: after staff assign the watch, the patient types that serial or photographs the packaging barcode or QR. Direct package path: claim the packaging serial when the watch is stocked under Direct. Unknown serials are rejected. Scan and Connect stay off until claim. After the first pair, only that Bluetooth address is accepted. |
-| Connect **E580** or **E585** style Bluetooth bands | Partial | Scan includes ET580 and ET585 labels; heart rate or oxygen only when the band speaks standard Bluetooth health profiles |
+| Claim an assigned watch serial in the app | Done | Hospital path: after staff assign the watch, the patient types that serial or photographs the packaging barcode or QR. Direct package path: claim the packaging serial when the watch is stocked under Direct. Unknown serials are rejected. Scan and Connect stay off until claim. After the first pair, only that Bluetooth address is accepted. Trying a different nearby band shows which Bluetooth address belongs to your claim. |
+| Connect **E580** or **E585** style Bluetooth bands | Partial | Scan includes ET580 and ET585 labels. Leaving Devices and coming back keeps the Bluetooth link when the band stays in range. After Connect, the linked row says Connected. Heart rate or oxygen only when the band sends those readings |
 | Live heart rate and blood oxygen in the app | Partial | Android vendor path wired; confirm on your ET580 or ET585 samples |
 | Auto sync and background monitoring | Not started | Manual sync exists; background sync not finished |
 | Full band health history (like the vendor companion app) | Partial | Connect and live HR/SpO₂ started; activity, sleep, and history still open |

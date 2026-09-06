@@ -15,7 +15,7 @@ using RaphCare.Mobile.Kernel.Core.Common.Devices;
 namespace RaphCare.Mobile.Core.Features.Devices.ViewModels;
 
 /// <summary>E580 / E585-class BLE wearables: scan, connect, and display HR or raw notify payloads.</summary>
-public sealed class DevicesViewModel : BaseViewModel
+public sealed class DevicesViewModel : BaseViewModel, IDisposable
 {
     private readonly IWearableBleCoordinator _ble;
     private readonly IPatientDevicesService _patientDevices;
@@ -32,6 +32,7 @@ public sealed class DevicesViewModel : BaseViewModel
     private Guid? _registeredDeviceId;
     private string? _claimedBluetoothMac;
     private string? _syncResultText;
+    private CancellationTokenSource? _scanCts;
 
     public DevicesViewModel(IWearableBleCoordinator ble, IPatientDevicesService patientDevices, IVitalsSyncOutbox vitalsOutbox)
     {
@@ -52,8 +53,10 @@ public sealed class DevicesViewModel : BaseViewModel
         NearbySectionTitle = T("DevicesNearbySectionTitle");
         ClaimSectionTitle = T("DevicesClaimSectionTitle");
         ReadingsEmptyHint = T("DevicesReadingsEmptyHint");
+        VitalsWaitingHint = T("DevicesVitalsWaitingHint");
         BleUnsupportedMessage = T("DevicesBleUnsupported");
         DevicesConnectLabel = T("DevicesConnectButton");
+        DevicesConnectedRowLabel = T("DevicesConnectedRowButton");
 
         SyncReadingsButtonText = T("DevicesSyncReadings");
         ClaimHint = T("DevicesClaimHint");
@@ -63,8 +66,12 @@ public sealed class DevicesViewModel : BaseViewModel
         SkuPickerTitle = T("DevicesSkuTitle");
 
         ScanCommand = new Command(async () => await ScanAsync().ConfigureAwait(false), () => CanScanOrConnect);
-        StopScanCommand = new Command(async () => await StopScanAsync().ConfigureAwait(false), () => _ble.IsScanning);
-        ConnectCommand = new Command<Guid>(async id => await ConnectAsync(id).ConfigureAwait(false), _ => CanScanOrConnect);
+        StopScanCommand = new Command(
+            async () => await StopScanAsync().ConfigureAwait(false),
+            () => DevicesBleSessionPolicy.CanStopScan(IsScanningUi, _ble.IsScanning));
+        ConnectCommand = new Command<Guid>(
+            async id => await ConnectAsync(id).ConfigureAwait(false),
+            id => CanScanOrConnect && id != _ble.ConnectedDeviceId);
         DisconnectCommand = new Command(async () => await DisconnectAsync().ConfigureAwait(false), () => _ble.ConnectedDeviceId.HasValue && !IsBusy);
         RegisterCommand = new Command(async () => await RegisterAsync().ConfigureAwait(false), () => !IsBusy);
         ScanPackagingCommand = new Command(async () => await ScanPackagingAsync().ConfigureAwait(false), () => !IsBusy);
@@ -74,6 +81,9 @@ public sealed class DevicesViewModel : BaseViewModel
         {
             ShowAllDevices = !ShowAllDevices;
             OnPropertyChanged(nameof(ShowAllToggleText));
+            OnPropertyChanged(nameof(VitalsRawLine));
+            OnPropertyChanged(nameof(ShowReadingsEmpty));
+            OnPropertyChanged(nameof(ShowVitalsWaiting));
         });
 
         _ble.DiscoveredDevicesChanged += OnDiscoveredChanged;
@@ -93,8 +103,10 @@ public sealed class DevicesViewModel : BaseViewModel
     public string NearbySectionTitle { get; }
     public string ClaimSectionTitle { get; }
     public string ReadingsEmptyHint { get; }
+    public string VitalsWaitingHint { get; }
     public string BleUnsupportedMessage { get; }
     public string DevicesConnectLabel { get; }
+    public string DevicesConnectedRowLabel { get; }
 
     public string SyncReadingsButtonText { get; }
     public string ClaimHint { get; }
@@ -166,6 +178,7 @@ public sealed class DevicesViewModel : BaseViewModel
             OnPropertyChanged(nameof(VitalsSpo2Line));
             OnPropertyChanged(nameof(VitalsRawLine));
             OnPropertyChanged(nameof(ShowReadingsEmpty));
+            OnPropertyChanged(nameof(ShowVitalsWaiting));
         }
     }
 
@@ -180,14 +193,27 @@ public sealed class DevicesViewModel : BaseViewModel
             : null;
 
     public string? VitalsRawLine =>
-        string.IsNullOrEmpty(LastVitals?.RawHex) ? null : Format(T("DevicesRawHexFormat"), LastVitals!.RawHex);
+        DevicesVitalsDisplayPolicy.ShowRawHexToPatient(ShowAllDevices)
+        && !string.IsNullOrEmpty(LastVitals?.RawHex)
+            ? Format(T("DevicesRawHexFormat"), LastVitals!.RawHex)
+            : null;
 
     public bool ShowReadingsEmpty =>
-        string.IsNullOrEmpty(VitalsHeartLine)
-        && string.IsNullOrEmpty(VitalsSpo2Line)
+        !IsBleConnected
+        && !DevicesVitalsDisplayPolicy.HasPatientFacingReading(LastVitals?.HeartRateBpm, LastVitals?.SpO2Percent)
         && string.IsNullOrEmpty(VitalsRawLine);
 
+    public bool ShowVitalsWaiting =>
+        IsBleConnected
+        && !DevicesVitalsDisplayPolicy.HasPatientFacingReading(LastVitals?.HeartRateBpm, LastVitals?.SpO2Percent)
+        && string.IsNullOrEmpty(VitalsRawLine);
+
+    public bool ShowNearbyEmpty => Items.Count == 0;
+
     public Guid? ConnectedDeviceId => _ble.ConnectedDeviceId;
+
+    /// <summary>True while the singleton BLE coordinator still has an active peripheral.</summary>
+    public bool IsBleConnected => _ble.ConnectedDeviceId.HasValue;
 
     public ObservableCollection<WearableDeviceRowViewModel> Items { get; } = new();
 
@@ -247,6 +273,28 @@ public sealed class DevicesViewModel : BaseViewModel
         _ble.DiscoveredDevicesChanged -= OnDiscoveredChanged;
         _ble.VitalsUpdated -= OnVitalsUpdated;
         _ble.ErrorOccurred -= OnBleError;
+        DisposeScanCts();
+    }
+
+    public void Dispose()
+    {
+        DetachBleHandlers();
+        GC.SuppressFinalize(this);
+    }
+
+    private void DisposeScanCts()
+    {
+        try
+        {
+            _scanCts?.Cancel();
+        }
+        catch
+        {
+            // ignore
+        }
+
+        _scanCts?.Dispose();
+        _scanCts = null;
     }
 
     public async Task OnAppearingAsync()
@@ -263,6 +311,7 @@ public sealed class DevicesViewModel : BaseViewModel
         }
 
         await LoadClaimedDevicesAsync().ConfigureAwait(false);
+        ApplyActiveBleConnectionToUi();
     }
 
     private async Task LoadClaimedDevicesAsync()
@@ -272,7 +321,7 @@ public sealed class DevicesViewModel : BaseViewModel
             var resp = await _patientDevices.GetMyDevicesAsync(CancellationToken.None).ConfigureAwait(false);
             if (!resp.IsSuccess || resp.Data is null || resp.Data.Count == 0)
             {
-                if (!HasClaimedDevice)
+                if (!HasClaimedDevice && !_ble.ConnectedDeviceId.HasValue)
                     StatusHint = T("DevicesClaimBeforeConnectHint");
                 return;
             }
@@ -285,9 +334,12 @@ public sealed class DevicesViewModel : BaseViewModel
             if (!string.IsNullOrWhiteSpace(first.Model)
                 && ModelSkuOptions.Contains(first.Model))
                 ModelSku = first.Model;
-            StatusHint = string.IsNullOrWhiteSpace(ClaimedBluetoothMac)
-                ? T("DevicesClaimReadyFirstPairHint")
-                : Format(T("DevicesClaimReadyMacHint"), ClaimedBluetoothMac!);
+            if (!_ble.ConnectedDeviceId.HasValue)
+            {
+                StatusHint = string.IsNullOrWhiteSpace(ClaimedBluetoothMac)
+                    ? T("DevicesClaimReadyFirstPairHint")
+                    : Format(T("DevicesClaimReadyMacHint"), ClaimedBluetoothMac!);
+            }
         }
         catch (Exception ex)
         {
@@ -295,17 +347,35 @@ public sealed class DevicesViewModel : BaseViewModel
         }
     }
 
+    /// <summary>
+    /// Stop scanning when leaving the page. Keep the GATT link (singleton coordinator)
+    /// so returning still shows Connected.
+    /// </summary>
     public async Task OnDisappearingAsync()
     {
         try
         {
+            DisposeScanCts();
             await _ble.StopScanAsync().ConfigureAwait(false);
-            await _ble.DisconnectAsync().ConfigureAwait(false);
+            if (DevicesBleSessionPolicy.DisconnectWhenLeavingDevicesPage)
+                await _ble.DisconnectAsync().ConfigureAwait(false);
         }
         catch
         {
             // ignore
         }
+    }
+
+    private void ApplyActiveBleConnectionToUi()
+    {
+        OnPropertyChanged(nameof(ConnectedDeviceId));
+        OnPropertyChanged(nameof(IsBleConnected));
+        OnPropertyChanged(nameof(ShowVitalsWaiting));
+        OnPropertyChanged(nameof(ShowReadingsEmpty));
+        if (_ble.ConnectedDeviceId.HasValue)
+            StatusHint = T("DevicesConnected");
+        RefreshItems();
+        RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
     }
 
     private void OnDiscoveredChanged(object? sender, EventArgs e) =>
@@ -339,17 +409,25 @@ public sealed class DevicesViewModel : BaseViewModel
     private void RefreshItems()
     {
         Items.Clear();
+        var connectedId = _ble.ConnectedDeviceId;
         foreach (var d in _ble.DiscoveredDevices)
         {
+            var isConnected = connectedId.HasValue && d.Id == connectedId.Value;
             Items.Add(new WearableDeviceRowViewModel
             {
                 Id = d.Id,
                 Title = string.IsNullOrWhiteSpace(d.Name)
                     ? T("DevicesUnnamedPeripheral")
                     : d.Name!,
-                RssiText = d.Rssi?.ToString(CultureInfo.InvariantCulture) ?? "—",
+                RssiText = d.Rssi?.ToString(CultureInfo.InvariantCulture) ?? "-",
+                IsConnected = isConnected,
+                ActionLabel = isConnected ? DevicesConnectedRowLabel : DevicesConnectLabel,
             });
         }
+
+        OnPropertyChanged(nameof(ShowNearbyEmpty));
+        OnPropertyChanged(nameof(ShowVitalsWaiting));
+        OnPropertyChanged(nameof(ShowReadingsEmpty));
     }
 
     private async Task ScanAsync()
@@ -386,8 +464,20 @@ public sealed class DevicesViewModel : BaseViewModel
 
             IsScanningUi = true;
             StatusHint = T("DevicesScanning");
-            await _ble.StartScanAsync(ShowAllDevices).ConfigureAwait(false);
-            StatusHint = T("DevicesScanComplete");
+            DisposeScanCts();
+            _scanCts = new CancellationTokenSource();
+            var scanToken = _scanCts.Token;
+            try
+            {
+                await _ble.StartScanAsync(ShowAllDevices, scanToken).ConfigureAwait(false);
+                StatusHint = scanToken.IsCancellationRequested
+                    ? T("DevicesScanStopped")
+                    : T("DevicesScanComplete");
+            }
+            catch (OperationCanceledException)
+            {
+                StatusHint = T("DevicesScanStopped");
+            }
         }
         catch (Exception ex)
         {
@@ -406,6 +496,15 @@ public sealed class DevicesViewModel : BaseViewModel
     {
         try
         {
+            try
+            {
+                _scanCts?.Cancel();
+            }
+            catch
+            {
+                // ignore
+            }
+
             await _ble.StopScanAsync().ConfigureAwait(false);
             IsScanningUi = false;
             StatusHint = T("DevicesScanStopped");
@@ -430,20 +529,23 @@ public sealed class DevicesViewModel : BaseViewModel
         var peripheralMac = BluetoothMacNormalizer.TryNormalize(peripheral?.MacAddress);
         var expectedMac = BluetoothMacNormalizer.TryNormalize(ClaimedBluetoothMac);
 
-        if (expectedMac is not null)
+        if (!ClaimedWatchConnectGate.AllowsConnect(ClaimedBluetoothMac, peripheral?.MacAddress))
         {
-            if (peripheralMac is null || !BluetoothMacNormalizer.EqualsNormalized(expectedMac, peripheralMac))
-            {
-                ErrorMessage = T("DevicesWrongWatchMac");
-                return;
-            }
+            ErrorMessage = Format(
+                T("DevicesWrongWatchMac"),
+                expectedMac ?? ClaimedBluetoothMac ?? "");
+            return;
         }
 
         IsBusy = true;
         try
         {
             await _ble.ConnectAsync(deviceId).ConfigureAwait(false);
+            ErrorMessage = null;
             OnPropertyChanged(nameof(ConnectedDeviceId));
+            OnPropertyChanged(nameof(IsBleConnected));
+            OnPropertyChanged(nameof(ShowVitalsWaiting));
+            OnPropertyChanged(nameof(ShowReadingsEmpty));
             StatusHint = T("DevicesConnected");
             SyncResultText = null;
 
@@ -485,6 +587,7 @@ public sealed class DevicesViewModel : BaseViewModel
                         }
 
                         OnPropertyChanged(nameof(ConnectedDeviceId));
+                        OnPropertyChanged(nameof(IsBleConnected));
                     }
                     else
                     {
@@ -513,6 +616,9 @@ public sealed class DevicesViewModel : BaseViewModel
         {
             await _ble.DisconnectAsync().ConfigureAwait(false);
             OnPropertyChanged(nameof(ConnectedDeviceId));
+            OnPropertyChanged(nameof(IsBleConnected));
+            OnPropertyChanged(nameof(ShowVitalsWaiting));
+            OnPropertyChanged(nameof(ShowReadingsEmpty));
             LastVitals = null;
             _lastHeartAt = null;
             _lastSpo2At = null;

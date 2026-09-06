@@ -56,6 +56,49 @@ public sealed class DevicesPageResourceTests
         }
     }
 
+    [Fact]
+    public void DevicesPageDisconnectOnlyVisibleWhenConnected()
+    {
+        var pageXml = File.ReadAllText(FindRepoFile(
+            Path.Combine("RaphCare.Mobile", "Core", "Features", "Devices", "Views", "DevicesPage.xaml")));
+
+        Assert.Contains(
+            "IsVisible=\"{Binding IsBleConnected}\"",
+            pageXml,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "Command=\"{Binding DisconnectCommand}\"",
+            pageXml,
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void DevicesPageClaimActionsStackFullWidthNotSideBySide()
+    {
+        var pageXml = File.ReadAllText(FindRepoFile(
+            Path.Combine("RaphCare.Mobile", "Core", "Features", "Devices", "Views", "DevicesPage.xaml")));
+
+        var claimIdx = pageXml.IndexOf("Command=\"{Binding ScanPackagingCommand}\"", StringComparison.Ordinal);
+        Assert.True(claimIdx > 0);
+        var claimBlock = pageXml[Math.Max(0, claimIdx - 280)..Math.Min(pageXml.Length, claimIdx + 200)];
+
+        // Side-by-side Grid truncated "Photo of barcode" on narrow phones.
+        Assert.DoesNotContain("ColumnDefinitions=\"*,*\"", claimBlock, StringComparison.Ordinal);
+        Assert.Contains("VerticalStackLayout", claimBlock, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding RegisterCommand}\"", pageXml, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void DevicesPageNearbyRowUsesPerDeviceActionLabel()
+    {
+        var pageXml = File.ReadAllText(FindRepoFile(
+            Path.Combine("RaphCare.Mobile", "Core", "Features", "Devices", "Views", "DevicesPage.xaml")));
+
+        Assert.Contains("Text=\"{Binding ActionLabel}\"", pageXml, StringComparison.Ordinal);
+        Assert.Contains("IsEnabled=\"{Binding CanConnect}\"", pageXml, StringComparison.Ordinal);
+        Assert.Contains("IsVisible=\"{Binding ShowVitalsWaiting}\"", pageXml, StringComparison.Ordinal);
+    }
+
     private static string FindRepoFile(string relativePath)
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
