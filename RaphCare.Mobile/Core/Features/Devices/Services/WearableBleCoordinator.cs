@@ -28,6 +28,9 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     private Guid? _connectedId;
     private bool _usingHbandSession;
     private string? _lastSessionMac;
+    // The scan UI must retain this independently of Plugin.BLE discovery. A vendor MAC
+    // session can be connectable even when the watch is not advertising as a peripheral.
+    private string? _claimedWatchMac;
     private string? _scanPreferredMac;
     private bool _scanShowAll;
     private WearableVitalsSnapshot? _lastVitals;
@@ -77,8 +80,11 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
 
     public WearableVitalsSnapshot? LastVitals => _lastVitals;
 
-    public IReadOnlyList<WearableDeviceDisplayItem> DiscoveredDevices =>
-        _devices.Values
+    public IReadOnlyList<WearableDeviceDisplayItem> DiscoveredDevices
+    {
+        get
+        {
+            var devices = _devices.Values
             .Select(d => new WearableDeviceDisplayItem
             {
                 Id = d.Id,
@@ -88,6 +94,25 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             })
             .OrderByDescending(x => x.Rssi ?? int.MinValue)
             .ToList();
+
+            var hasClaimedAdvertisement = devices.Any(d =>
+                BluetoothMacNormalizer.EqualsNormalized(d.MacAddress, _claimedWatchMac));
+            if (WearableBleScanRules.ShouldShowClaimedWatchFallback(
+                    _claimedWatchMac,
+                    hasClaimedAdvertisement))
+            {
+                devices.Add(new WearableDeviceDisplayItem
+                {
+                    Id = VendorSessionPlaceholderId,
+                    Name = "Claimed wearable",
+                    MacAddress = _claimedWatchMac,
+                    Rssi = null,
+                });
+            }
+
+            return devices;
+        }
+    }
 
     public event EventHandler? DiscoveredDevicesChanged;
     public event EventHandler<WearableVitalsSnapshot>? VitalsUpdated;
@@ -149,12 +174,14 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             await ReleaseActiveLinksForManualScanAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        _devices.Clear();
-        _macById.Clear();
-        RaiseDiscoveredChanged();
-
         var preferredMac = BluetoothMacNormalizer.TryNormalize(preferredMacAddress)
                            ?? BluetoothMacNormalizer.TryNormalize(_lastSessionMac);
+        _claimedWatchMac = preferredMac;
+        _devices.Clear();
+        _macById.Clear();
+        // Raise after retaining the claimed MAC so Nearby immediately has a usable saved
+        // row while Plugin.BLE performs its 30-second scan.
+        RaiseDiscoveredChanged();
         SeedPairedOrConnectedDevices(preferredMac, showAllDevices);
         await ScanIntoCacheAsync(showAllDevices, preferredMac, 30_000, cancellationToken)
             .ConfigureAwait(false);
@@ -323,6 +350,43 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
 
             await StopScanAsync().ConfigureAwait(false);
 
+            // A saved row is deliberately not backed by Plugin.BLE. Its purpose is to make
+            // the proven Veepoo connect-by-MAC path available when Android returns no scan
+            // advertisements for the claimed band.
+            if (deviceId == VendorSessionPlaceholderId
+                && !string.IsNullOrWhiteSpace(_claimedWatchMac))
+            {
+                if (!DevicesBleSessionPolicy.PreferExclusiveVendorSession || !_hband.IsAvailable)
+                {
+                    ErrorOccurred?.Invoke(this,
+                        "Watch SDK is unavailable. Scan for the watch again, then Connect.");
+                    return;
+                }
+
+                try
+                {
+                    await _hband.ConnectAndHandshakeAsync(
+                            _claimedWatchMac,
+                            null,
+                            HBandSdkInfo.DefaultDevicePasswordPlaceholder,
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                    _connectedId = VendorSessionPlaceholderId;
+                    _usingHbandSession = true;
+                    _lastSessionMac = _claimedWatchMac;
+                    return;
+                }
+                catch (Exception hbandEx)
+                {
+                    _usingHbandSession = false;
+                    _connectedId = null;
+                    ErrorOccurred?.Invoke(this,
+                        "Watch SDK connect failed. Keep the watch nearby and unlocked, then Connect again. "
+                        + hbandEx.Message);
+                    return;
+                }
+            }
+
             if (!_devices.TryGetValue(deviceId, out var device))
             {
                 ErrorOccurred?.Invoke(this, "Device is no longer in range. Scan again.");
@@ -444,6 +508,8 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         var targetMac = BluetoothMacNormalizer.TryNormalize(macAddress);
         if (targetMac is null)
             return;
+
+        _claimedWatchMac = targetMac;
 
         await _connectGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try

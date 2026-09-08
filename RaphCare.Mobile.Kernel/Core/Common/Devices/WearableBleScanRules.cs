@@ -59,4 +59,15 @@ public static class WearableBleScanRules
         || MatchesE580StyleName(deviceName)
         || (preferredMac is not null
             && BluetoothMacNormalizer.EqualsNormalized(deviceMac, preferredMac));
+
+    /// <summary>
+    /// A claimed Veepoo watch can be reachable by its locked MAC while it is not advertising
+    /// to Plugin.BLE (for example while the vendor stack or H Band previously held the radio).
+    /// Keep one saved-watch row available so Connect can use the vendor MAC path.
+    /// </summary>
+    public static bool ShouldShowClaimedWatchFallback(
+        string? preferredMac,
+        bool hasDiscoveredClaimedMac) =>
+        BluetoothMacNormalizer.TryNormalize(preferredMac) is not null
+        && !hasDiscoveredClaimedMac;
 }

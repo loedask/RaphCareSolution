@@ -632,6 +632,15 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             }
 
             await _ble.ConnectAsync(deviceId).ConfigureAwait(false);
+            // The coordinator reports vendor/GATT failures through ErrorOccurred and returns
+            // without a connection. Do not overwrite that error with a false Connected state.
+            if (!_ble.ConnectedDeviceId.HasValue)
+            {
+                if (string.IsNullOrWhiteSpace(ErrorMessage))
+                    ErrorMessage = "Could not connect to the watch. Keep it nearby and try again.";
+                return;
+            }
+
             ErrorMessage = null;
             OnPropertyChanged(nameof(ConnectedDeviceId));
             OnPropertyChanged(nameof(IsBleConnected));

@@ -106,4 +106,13 @@ public sealed class WearableBleScanRulesTests
             preferredMac: ClaimedMac,
             showAllDevices: true));
     }
+
+    [Fact]
+    public void ClaimedWatchFallbackMustRemainVisibleWhenPluginBleSeesNoMatchingAdvertisement()
+    {
+        // A Veepoo MAC connect can work while the band is not advertising to Plugin.BLE.
+        Assert.True(WearableBleScanRules.ShouldShowClaimedWatchFallback(ClaimedMac, false));
+        Assert.False(WearableBleScanRules.ShouldShowClaimedWatchFallback(ClaimedMac, true));
+        Assert.False(WearableBleScanRules.ShouldShowClaimedWatchFallback(null, false));
+    }
 }

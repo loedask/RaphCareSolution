@@ -19,6 +19,8 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("UsePermissivePluginBleScanFilter", text, StringComparison.Ordinal);
         Assert.Contains("SeedPairedOrConnectedDevices", text, StringComparison.Ordinal);
         Assert.Contains("GetSystemConnectedOrPairedDevices", text, StringComparison.Ordinal);
+        Assert.Contains("ShouldShowClaimedWatchFallback", text, StringComparison.Ordinal);
+        Assert.Contains("VendorSessionPlaceholderId", text, StringComparison.Ordinal);
         Assert.Contains("preferredMac", text, StringComparison.Ordinal);
     }
 
