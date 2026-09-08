@@ -210,7 +210,7 @@ Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_P
 - [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: REQUEST_CANCELED (-2) retries after GATT handoff; reconnect claimed MAC when Devices appears after process death; proxy invoke guarded; physical ET580/ET585 Measure prove-out still open; iOS not wired
 - [ ] Reliable full band data (HBand-class parity for in-scope metrics) `(partial)`: Phase 1 HR/SpO₂ hooks in; activity/sleep/history still open. See `docs/14`
 - [ ] Full typed HBand SDK C# binding project `(out of scope for Phase 1)`: JNI bridge used instead; optional later. See `docs/12_HBand_SDK_Integration.md`
-- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: exclusive Veepoo Connect; manual Scan permissive filter + claimed MAC + paired seed; heal Measure session; no cold stopDetect; awaiting ET580/ET585 prove-out
+- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: exclusive Veepoo Connect; Nearby **Claimed wearable** fallback row when Scan finds no ads; heal Measure session; no cold stopDetect; awaiting ET580/ET585 prove-out
 - [ ] Auto sync / background monitoring of band readings `(partial)`: manual sync + outbox exist; background unproven; OS limits in `docs/14`
 - [ ] Activity (steps / kcal / distance / goals) domain + sync + mobile `(not started)`
 - [ ] Sleep domain + sync + mobile `(not started)`
