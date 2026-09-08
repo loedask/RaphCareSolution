@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Linq;
 using Microsoft.Maui.ApplicationModel;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions;
@@ -26,8 +27,14 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
 
     private Guid? _connectedId;
     private bool _usingHbandSession;
+    private string? _lastSessionMac;
+    private string? _scanPreferredMac;
+    private bool _scanShowAll;
     private WearableVitalsSnapshot? _lastVitals;
     private int _suppressDisconnectClear;
+
+    /// <summary>Used when vendor reconnect succeeds before Plugin.BLE has rediscovered the peripheral.</summary>
+    private static readonly Guid VendorSessionPlaceholderId = Guid.Parse("d0e5c001-b1e0-4a7c-9e58-000000000001");
 
     public WearableBleCoordinator(IHBandWearableBridge hband)
     {
@@ -38,6 +45,9 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         _adapter.DeviceDisconnected += (_, e) =>
         {
             if (_suppressDisconnectClear > 0)
+                return;
+            // Exclusive Veepoo owns the radio; Plugin.BLE disconnect after handoff is expected.
+            if (_usingHbandSession)
                 return;
             if (_connectedId != e.Device.Id)
                 return;
@@ -53,6 +63,17 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     public Guid? ConnectedDeviceId => _connectedId;
 
     public bool IsVendorMeasureAvailable => _hband.IsAvailable;
+
+    /// <summary>
+    /// True when Measure can call startDetect on an exclusive vendor session
+    /// (or when exclusive mode is off / vendor SDK missing).
+    /// </summary>
+    public bool IsLiveMeasureSessionReady =>
+        DevicesBleSessionPolicy.IsExclusiveLiveMeasureSessionReady(
+            DevicesBleSessionPolicy.PreferExclusiveVendorSession,
+            _hband.IsAvailable,
+            _usingHbandSession,
+            _hband.IsSessionReady);
 
     public WearableVitalsSnapshot? LastVitals => _lastVitals;
 
@@ -75,7 +96,16 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     public async Task<PermissionStatus> RequestBluetoothPermissionsAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        return await Permissions.RequestAsync<BluetoothPermissions>().ConfigureAwait(false);
+        // Runtime permission dialogs must run on the UI thread. Off-thread RequestAsync can
+        // return without granting Nearby devices, then Scan throws SecurityException.
+        return await MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var status = await Permissions.CheckStatusAsync<BluetoothPermissions>().ConfigureAwait(true);
+            if (status == PermissionStatus.Granted)
+                return status;
+            return await Permissions.RequestAsync<BluetoothPermissions>().ConfigureAwait(true);
+        }).ConfigureAwait(false);
     }
 
     public Task<bool> EnsureBluetoothAdapterOnAsync(CancellationToken cancellationToken = default)
@@ -86,7 +116,10 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         return Task.FromResult(CrossBluetoothLE.Current.State == BluetoothState.On);
     }
 
-    public async Task StartScanAsync(bool showAllDevices, CancellationToken cancellationToken = default)
+    public async Task StartScanAsync(
+        bool showAllDevices,
+        string? preferredMacAddress = null,
+        CancellationToken cancellationToken = default)
     {
         if (!IsBleSupported)
         {
@@ -101,11 +134,112 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         }
 
         await StopScanAsync().ConfigureAwait(false);
+
+        // Auto-reconnect / Connect can hold Plugin.BLE or Veepoo on the watch. Android then
+        // often hides that peripheral from Scan, so Nearby stays empty.
+        var pluginConnected = _devices.Values.Any(d => d.State != DeviceState.Disconnected)
+                              || (_connectedId is Guid cid
+                                  && _devices.TryGetValue(cid, out var linked)
+                                  && linked.State != DeviceState.Disconnected);
+        if (WearableBleScanRules.ShouldReleaseActiveLinksBeforeManualScan(
+                hasConnectedDeviceId: _connectedId.HasValue,
+                pluginBleConnected: pluginConnected,
+                vendorSessionActive: _usingHbandSession || _hband.IsSessionReady))
+        {
+            await ReleaseActiveLinksForManualScanAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         _devices.Clear();
         _macById.Clear();
         RaiseDiscoveredChanged();
 
-        _adapter.ScanTimeout = 30_000;
+        var preferredMac = BluetoothMacNormalizer.TryNormalize(preferredMacAddress)
+                           ?? BluetoothMacNormalizer.TryNormalize(_lastSessionMac);
+        SeedPairedOrConnectedDevices(preferredMac, showAllDevices);
+        await ScanIntoCacheAsync(showAllDevices, preferredMac, 30_000, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private async Task ReleaseActiveLinksForManualScanAsync(CancellationToken cancellationToken)
+    {
+        await CleanupNotificationsAsync().ConfigureAwait(false);
+
+        if (_usingHbandSession || _hband.IsSessionReady)
+        {
+            try
+            {
+                await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Bridge skips native teardown when no session was started.
+            }
+
+            _usingHbandSession = false;
+        }
+
+        foreach (var device in _devices.Values.ToList())
+        {
+            if (device.State == DeviceState.Disconnected)
+                continue;
+            await ReleasePluginBleLinkAsync(device, cancellationToken).ConfigureAwait(false);
+        }
+
+        _connectedId = null;
+        await Task.Delay(DevicesBleSessionPolicy.PostGattDisconnectSettle, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private void SeedPairedOrConnectedDevices(string? preferredMac, bool showAllDevices)
+    {
+        try
+        {
+            IReadOnlyList<IDevice> known;
+            try
+            {
+                known = _adapter.GetSystemConnectedOrPairedDevices();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"GetSystemConnectedOrPairedDevices: {ex.Message}");
+                return;
+            }
+
+            var added = false;
+            foreach (var device in known)
+            {
+                var mac = TryReadMacAddress(device);
+                if (!WearableBleScanRules.IncludeInFilteredScan(
+                        device.Name,
+                        mac,
+                        preferredMac,
+                        showAllDevices))
+                    continue;
+
+                _devices[device.Id] = device;
+                if (!string.IsNullOrWhiteSpace(mac))
+                    _macById[device.Id] = mac!;
+                added = true;
+            }
+
+            if (added)
+                RaiseDiscoveredChanged();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Seed paired watches: {ex.Message}");
+        }
+    }
+
+    private async Task ScanIntoCacheAsync(
+        bool showAllDevices,
+        string? preferredMac,
+        int timeoutMs,
+        CancellationToken cancellationToken)
+    {
+        _scanShowAll = showAllDevices;
+        _scanPreferredMac = preferredMac;
+        _adapter.ScanTimeout = timeoutMs;
         _adapter.DeviceDiscovered -= OnDeviceDiscovered;
         _adapter.DeviceDiscovered += OnDeviceDiscovered;
 
@@ -118,15 +252,20 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             }
             catch
             {
-                // Best-effort stop when the Devices page cancels the scan.
+                // Best-effort stop when reconnect or the Devices page cancels the scan.
             }
         });
 
         try
         {
+            // When a claimed MAC is known (or Show all is on), accept ads in Plugin.BLE and
+            // filter in OnDeviceDiscovered. Early name/MAC filtering drops blank-name bands.
+            var permissive = WearableBleScanRules.UsePermissivePluginBleScanFilter(
+                showAllDevices,
+                hasPreferredMac: preferredMac is not null);
             await _adapter.StartScanningForDevicesAsync(
                     new ScanFilterOptions(),
-                    d => showAllDevices || E585E580DeviceFilter.Matches(d.Name),
+                    d => permissive || WearableBleScanRules.MatchesE580StyleName(d.Name),
                     false,
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -137,11 +276,17 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         }
         catch (Exception ex)
         {
-            ErrorOccurred?.Invoke(this, ex.Message);
+            ErrorOccurred?.Invoke(
+                this,
+                BlePermissionFailure.IsMissingNearbyDevicesPermission(ex.Message)
+                    ? "Nearby devices permission is required. Allow it in phone Settings for RaphCare, then try again."
+                    : ex.Message);
         }
         finally
         {
             _adapter.DeviceDiscovered -= OnDeviceDiscovered;
+            _scanPreferredMac = null;
+            _scanShowAll = false;
         }
     }
 
@@ -167,6 +312,15 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         await _connectGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
+            var perm = await RequestBluetoothPermissionsAsync(cancellationToken).ConfigureAwait(false);
+            if (perm != PermissionStatus.Granted)
+            {
+                ErrorOccurred?.Invoke(
+                    this,
+                    "Nearby devices permission is required. Allow it in phone Settings for RaphCare, then try again.");
+                return;
+            }
+
             await StopScanAsync().ConfigureAwait(false);
 
             if (!_devices.TryGetValue(deviceId, out var device))
@@ -176,22 +330,51 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             }
 
             await CleanupNotificationsAsync().ConfigureAwait(false);
-            if (_usingHbandSession)
-            {
-                await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
-                _usingHbandSession = false;
-            }
 
             var mac = _macById.GetValueOrDefault(deviceId) ?? TryReadMacAddress(device);
             if (!string.IsNullOrWhiteSpace(mac))
                 _macById[deviceId] = mac;
 
-            if (DevicesBleSessionPolicy.TryVendorSdkOnConnect
-                && _hband.IsAvailable
-                && !string.IsNullOrWhiteSpace(mac))
+            if (DevicesBleSessionPolicy.ShouldReuseExistingVendorSession(
+                    _hband.IsSessionReady,
+                    _hband.ConnectedMacAddress,
+                    mac))
+            {
+                _connectedId = device.Id;
+                _usingHbandSession = true;
+                _lastSessionMac = mac;
+                return;
+            }
+
+            if (_usingHbandSession)
             {
                 try
                 {
+                    await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Bridge skips native teardown when no session was started.
+                }
+
+                _usingHbandSession = false;
+            }
+
+            // Exclusive Veepoo session: handshake only (no startDetect on Connect).
+            // Dual-stack (Plugin.BLE Connected + Measure handoff) was force-closing the app.
+            if (DevicesBleSessionPolicy.PreferExclusiveVendorSession && _hband.IsAvailable)
+            {
+                if (string.IsNullOrWhiteSpace(mac))
+                {
+                    ErrorOccurred?.Invoke(
+                        this,
+                        "Bluetooth address missing. Scan again, then Connect.");
+                    return;
+                }
+
+                try
+                {
+                    await ReleasePluginBleLinkAsync(device, cancellationToken).ConfigureAwait(false);
                     await _hband.ConnectAndHandshakeAsync(
                             mac,
                             device.Name,
@@ -200,26 +383,14 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                         .ConfigureAwait(false);
                     _connectedId = device.Id;
                     _usingHbandSession = true;
-
-                    // Live vitals via vendor protocol (HR first, then SpO₂).
-                    await _hband.StartLiveHeartRateAsync(cancellationToken).ConfigureAwait(false);
-                    try
-                    {
-                        await _hband.StartLiveSpo2Async(cancellationToken).ConfigureAwait(false);
-                    }
-                    catch (Exception spo2Ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"SpO₂ start: {spo2Ex.Message}");
-                    }
-
+                    _lastSessionMac = mac;
                     return;
                 }
                 catch (Exception hbandEx)
                 {
-                    // Vendor session often fails on sample bands; fall through to GATT quietly.
-                    System.Diagnostics.Debug.WriteLine(
-                        $"HBand connect failed, trying standard BLE: {hbandEx.Message}");
                     _usingHbandSession = false;
+                    _connectedId = null;
+                    _lastSessionMac = null;
                     try
                     {
                         await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
@@ -228,12 +399,20 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                     {
                         // ignore
                     }
+
+                    ErrorOccurred?.Invoke(
+                        this,
+                        "Watch SDK connect failed. Keep the watch nearby and unlocked, then Connect again. "
+                        + hbandEx.Message);
+                    return;
                 }
             }
 
             await _adapter.ConnectToDeviceAsync(device, ConnectParameters.None, cancellationToken).ConfigureAwait(false);
             _connectedId = device.Id;
             _usingHbandSession = false;
+            if (!string.IsNullOrWhiteSpace(mac))
+                _lastSessionMac = mac;
 
             await SubscribeStandardHealthNotifiesAsync(device, cancellationToken).ConfigureAwait(false);
         }
@@ -246,11 +425,260 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             ErrorOccurred?.Invoke(this, ex.Message);
             _connectedId = null;
             _usingHbandSession = false;
+            _lastSessionMac = null;
         }
         finally
         {
             _connectGate.Release();
         }
+    }
+
+    public async Task ReconnectClaimedWatchAsync(
+        string macAddress,
+        string? deviceName,
+        CancellationToken cancellationToken = default)
+    {
+        if (!IsBleSupported)
+            return;
+
+        var targetMac = BluetoothMacNormalizer.TryNormalize(macAddress);
+        if (targetMac is null)
+            return;
+
+        await _connectGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var perm = await RequestBluetoothPermissionsAsync(cancellationToken).ConfigureAwait(false);
+            if (perm != PermissionStatus.Granted)
+            {
+                ErrorOccurred?.Invoke(
+                    this,
+                    "Nearby devices permission is required. Allow it in phone Settings for RaphCare, then try again.");
+                return;
+            }
+
+            if (!await EnsureBluetoothAdapterOnAsync(cancellationToken).ConfigureAwait(false))
+            {
+                ErrorOccurred?.Invoke(this, "Bluetooth is off. Turn it on and try again.");
+                return;
+            }
+
+            await StopScanAsync().ConfigureAwait(false);
+            await CleanupNotificationsAsync().ConfigureAwait(false);
+
+            if (DevicesBleSessionPolicy.ShouldReuseExistingVendorSession(
+                    _hband.IsSessionReady,
+                    _hband.ConnectedMacAddress,
+                    targetMac))
+            {
+                _usingHbandSession = true;
+                _lastSessionMac = targetMac;
+                BindConnectedIdFromMac(targetMac);
+                return;
+            }
+
+            if (DevicesBleSessionPolicy.PreferExclusiveVendorSession && _hband.IsAvailable)
+            {
+                try
+                {
+                    await ReleasePluginBleForMacAsync(targetMac, cancellationToken).ConfigureAwait(false);
+                    await _hband.ConnectAndHandshakeAsync(
+                            targetMac,
+                            deviceName,
+                            HBandSdkInfo.DefaultDevicePasswordPlaceholder,
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                    _usingHbandSession = true;
+                    _lastSessionMac = targetMac;
+                    BindConnectedIdFromMac(targetMac);
+                    return;
+                }
+                catch (Exception hbandEx)
+                {
+                    _usingHbandSession = false;
+                    _connectedId = null;
+                    _lastSessionMac = null;
+                    try
+                    {
+                        await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    ErrorOccurred?.Invoke(
+                        this,
+                        "Watch SDK connect failed. Keep the watch nearby and unlocked, then Connect again. "
+                        + hbandEx.Message);
+                    return;
+                }
+            }
+
+            if (DevicesBleSessionPolicy.ShouldUsePluginBleReconnectWhenVendorUnavailable(_hband.IsAvailable))
+            {
+                await TryConnectClaimedWatchViaPluginBleAsync(targetMac, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        finally
+        {
+            _connectGate.Release();
+        }
+    }
+
+    private async Task TryConnectClaimedWatchViaPluginBleAsync(string targetMac, CancellationToken cancellationToken)
+    {
+        if (CrossBluetoothLE.Current.State != BluetoothState.On)
+            return;
+
+        using var scanCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        scanCts.CancelAfter(DevicesBleSessionPolicy.ClaimedWatchReconnectScanTimeout);
+        try
+        {
+            _devices.Clear();
+            _macById.Clear();
+            RaiseDiscoveredChanged();
+            await ScanIntoCacheAsync(
+                    showAllDevices: false,
+                    preferredMac: targetMac,
+                    timeoutMs: (int)DevicesBleSessionPolicy.ClaimedWatchReconnectScanTimeout.TotalMilliseconds,
+                    cancellationToken: scanCts.Token)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // Scan window ended. Use whatever was discovered.
+        }
+
+        try
+        {
+            await StopScanAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            // ignore
+        }
+
+        Guid? matchId = null;
+        foreach (var pair in _macById)
+        {
+            if (BluetoothMacNormalizer.EqualsNormalized(pair.Value, targetMac))
+            {
+                matchId = pair.Key;
+                break;
+            }
+        }
+
+        if (matchId is null || !_devices.TryGetValue(matchId.Value, out var device))
+            return;
+
+        await _adapter.ConnectToDeviceAsync(device, ConnectParameters.None, cancellationToken)
+            .ConfigureAwait(false);
+        _connectedId = device.Id;
+        _usingHbandSession = false;
+        _lastSessionMac = targetMac;
+        await SubscribeStandardHealthNotifiesAsync(device, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task ReleasePluginBleForMacAsync(string targetMac, CancellationToken ct)
+    {
+        foreach (var pair in _macById)
+        {
+            if (!BluetoothMacNormalizer.EqualsNormalized(pair.Value, targetMac))
+                continue;
+            if (!_devices.TryGetValue(pair.Key, out var device))
+                continue;
+            if (device.State == DeviceState.Disconnected)
+                continue;
+
+            await ReleasePluginBleLinkAsync(device, ct).ConfigureAwait(false);
+            return;
+        }
+
+        if (_connectedId is Guid id
+            && _devices.TryGetValue(id, out var connected)
+            && connected.State != DeviceState.Disconnected)
+        {
+            await ReleasePluginBleLinkAsync(connected, ct).ConfigureAwait(false);
+        }
+    }
+
+    private void BindConnectedIdFromMac(string mac)
+    {
+        foreach (var pair in _macById)
+        {
+            if (BluetoothMacNormalizer.EqualsNormalized(pair.Value, mac))
+            {
+                _connectedId = pair.Key;
+                return;
+            }
+        }
+
+        _connectedId = VendorSessionPlaceholderId;
+    }
+
+    private string? TryResolveConnectedMac(Guid? deviceId, IDevice? device)
+    {
+        if (deviceId is Guid id
+            && _macById.TryGetValue(id, out var mapped)
+            && !string.IsNullOrWhiteSpace(mapped))
+            return mapped;
+
+        if (device is not null)
+        {
+            var fromDevice = TryReadMacAddress(device);
+            if (!string.IsNullOrWhiteSpace(fromDevice))
+                return fromDevice;
+        }
+
+        var fromBridge = _hband.ConnectedMacAddress;
+        if (!string.IsNullOrWhiteSpace(fromBridge))
+            return fromBridge;
+
+        return string.IsNullOrWhiteSpace(_lastSessionMac) ? null : _lastSessionMac;
+    }
+
+    private async Task EnsureVendorSessionForMeasureAsync(
+        IDevice? device,
+        string mac,
+        string? deviceName,
+        CancellationToken ct)
+    {
+        if (DevicesBleSessionPolicy.ShouldReuseExistingVendorSession(
+                _hband.IsSessionReady,
+                _hband.ConnectedMacAddress,
+                mac))
+        {
+            _usingHbandSession = true;
+            _lastSessionMac = mac;
+            if (_connectedId is null)
+                BindConnectedIdFromMac(mac);
+            return;
+        }
+
+        if (device is not null)
+            await ReleasePluginBleLinkAsync(device, ct).ConfigureAwait(false);
+
+        using var handshakeCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        handshakeCts.CancelAfter(DevicesBleSessionPolicy.VendorHandshakeTimeout);
+        await _hband.ConnectAndHandshakeAsync(
+                mac,
+                deviceName,
+                HBandSdkInfo.DefaultDevicePasswordPlaceholder,
+                handshakeCts.Token)
+            .ConfigureAwait(false);
+
+        _usingHbandSession = true;
+        _lastSessionMac = mac;
+        if (device is not null)
+            _connectedId = device.Id;
+        else
+            BindConnectedIdFromMac(mac);
     }
 
     private async Task SubscribeStandardHealthNotifiesAsync(IDevice device, CancellationToken cancellationToken)
@@ -357,6 +785,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             }
 
             _connectedId = null;
+            _lastSessionMac = null;
             _lastVitals = null;
         }
         finally
@@ -367,22 +796,14 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
 
     public async Task<WearableVitalsSnapshot?> MeasureLiveVitalsAsync(CancellationToken cancellationToken = default)
     {
-        if (!_hband.IsAvailable)
-        {
-            ErrorOccurred?.Invoke(this, "Live measure needs the watch SDK on this phone build.");
-            return null;
-        }
+        IDevice? device = null;
+        if (_connectedId is Guid connectedId)
+            _devices.TryGetValue(connectedId, out device);
 
-        if (_connectedId is not Guid deviceId || !_devices.TryGetValue(deviceId, out var device))
+        var deviceId = _connectedId ?? Guid.Empty;
+        if (!_usingHbandSession && device is null)
         {
             ErrorOccurred?.Invoke(this, "Connect your claimed watch first, then tap Measure.");
-            return null;
-        }
-
-        var mac = _macById.GetValueOrDefault(deviceId) ?? TryReadMacAddress(device);
-        if (string.IsNullOrWhiteSpace(mac))
-        {
-            ErrorOccurred?.Invoke(this, "Bluetooth address missing. Scan again, then Connect.");
             return null;
         }
 
@@ -394,66 +815,89 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         try
         {
             await StopScanAsync().ConfigureAwait(false);
-            await CleanupNotificationsAsync().ConfigureAwait(false);
 
-            // Vendor SDK needs the radio; drop Plugin.BLE GATT if we own it.
-            if (!_usingHbandSession)
+            if (!DevicesBleSessionPolicy.EnableVendorLiveMeasure)
             {
-                Interlocked.Increment(ref _suppressDisconnectClear);
-                try
+                if (!_usingHbandSession && device is { State: DeviceState.Connected })
                 {
-                    try
-                    {
-                        await _adapter.DisconnectDeviceAsync(device).ConfigureAwait(false);
-                    }
-                    catch
-                    {
-                        // already disconnected
-                    }
-
-                    await Task.Delay(DevicesBleSessionPolicy.PostGattDisconnectSettle, ct).ConfigureAwait(false);
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref _suppressDisconnectClear);
-                }
-            }
-            else
-            {
-                try
-                {
-                    await _hband.DisconnectAsync(ct).ConfigureAwait(false);
-                }
-                catch
-                {
-                    // ignore
+                    var existing = await TryWaitForExistingGattSampleAsync(ct).ConfigureAwait(false);
+                    if (existing is not null
+                        && DevicesVitalsDisplayPolicy.HasPatientFacingReading(
+                            existing.HeartRateBpm,
+                            existing.SpO2Percent))
+                        return existing;
                 }
 
-                _usingHbandSession = false;
-                await Task.Delay(DevicesBleSessionPolicy.PostGattDisconnectSettle, ct).ConfigureAwait(false);
-            }
-
-            using var handshakeCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            handshakeCts.CancelAfter(DevicesBleSessionPolicy.VendorHandshakeTimeout);
-            try
-            {
-                await _hband.ConnectAndHandshakeAsync(
-                        mac,
-                        device.Name,
-                        HBandSdkInfo.DefaultDevicePasswordPlaceholder,
-                        handshakeCts.Token)
-                    .ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-            {
                 ErrorOccurred?.Invoke(
                     this,
-                    "Watch measure could not start Bluetooth in time. Stay on Devices Connected, then try Measure again.");
+                    DevicesBleSessionPolicy.VendorLiveMeasureDisabledPatientMessage);
                 return null;
             }
 
-            _connectedId = deviceId;
-            _usingHbandSession = true;
+            if (!_hband.IsAvailable)
+            {
+                ErrorOccurred?.Invoke(this, "Live measure needs the watch SDK on this phone build.");
+                return null;
+            }
+
+            var mac = TryResolveConnectedMac(_connectedId, device);
+            if (DevicesBleSessionPolicy.ShouldAdoptBridgeVendorSession(
+                    _usingHbandSession,
+                    _hband.IsSessionReady))
+            {
+                _usingHbandSession = true;
+                if (_connectedId is null && !string.IsNullOrWhiteSpace(mac))
+                    BindConnectedIdFromMac(mac);
+            }
+
+            // Auto-reconnect / Devices can show Connected on Plugin.BLE while Measure needs Veepoo.
+            // Handshake here only when GATT is not holding the radio (no dual-stack steal).
+            if (!_usingHbandSession)
+            {
+                var pluginBleGattConnected = device is { State: DeviceState.Connected };
+                if (DevicesBleSessionPolicy.ShouldEstablishVendorSessionForMeasure(
+                        DevicesBleSessionPolicy.EnableVendorLiveMeasure,
+                        DevicesBleSessionPolicy.PreferExclusiveVendorSession,
+                        _hband.IsAvailable,
+                        alreadyUsingVendorSession: false,
+                        hasBluetoothMac: !string.IsNullOrWhiteSpace(mac),
+                        pluginBleGattConnected: pluginBleGattConnected))
+                {
+                    try
+                    {
+                        await EnsureVendorSessionForMeasureAsync(
+                                device,
+                                mac!,
+                                device?.Name,
+                                ct)
+                            .ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                    {
+                        ErrorOccurred?.Invoke(
+                            this,
+                            "Watch connect for Measure timed out. Keep the watch nearby and unlocked, then try again.");
+                        return null;
+                    }
+                    catch (Exception establishEx)
+                    {
+                        ErrorOccurred?.Invoke(
+                            this,
+                            "Watch connect for Measure failed. Keep the watch nearby and unlocked, then try again. "
+                            + establishEx.Message);
+                        return null;
+                    }
+                }
+                else
+                {
+                    ErrorOccurred?.Invoke(
+                        this,
+                        pluginBleGattConnected
+                            ? "Devices shows Connected on Bluetooth only. Open Devices, tap Disconnect, then Connect again, then Measure."
+                            : "Connect your claimed watch on Devices first, then Measure.");
+                    return null;
+                }
+            }
 
             var tcs = new TaskCompletionSource<WearableVitalsSnapshot>(TaskCreationOptions.RunContinuationsAsynchronously);
             void OnMeasureSample(object? sender, WearableVitalsSnapshot snap)
@@ -467,7 +911,8 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             VitalsUpdated += OnMeasureSample;
             try
             {
-                // Veepoo forbids overlapping long ops; measure heart rate first only.
+                // Never call stopDetect* before the first startDetect* on this session.
+                // Cold stopDetect was force-closing the app ("RaphCare keeps stopping").
                 await _hband.StartLiveHeartRateAsync(ct).ConfigureAwait(false);
 
                 using var sampleCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
@@ -477,15 +922,28 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                     using var reg = sampleCts.Token.Register(() => tcs.TrySetCanceled(sampleCts.Token));
                     var sample = await tcs.Task.ConfigureAwait(false);
 
-                    // Best-effort SpO₂ after the first HR sample (still sequential).
                     try
                     {
-                        await _hband.StartLiveSpo2Async(ct).ConfigureAwait(false);
-                        await Task.Delay(TimeSpan.FromSeconds(8), ct).ConfigureAwait(false);
+                        await _hband.StopLiveDetectionsAsync(ct).ConfigureAwait(false);
                     }
-                    catch (Exception spo2Ex)
+                    catch (Exception stopEx)
                     {
-                        System.Diagnostics.Debug.WriteLine($"SpO₂ start: {spo2Ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"Stop detect: {stopEx.Message}");
+                    }
+
+                    if (DevicesBleSessionPolicy.EnableVendorSpo2DuringMeasure)
+                    {
+                        try
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(1), ct).ConfigureAwait(false);
+                            await _hband.StartLiveSpo2Async(ct).ConfigureAwait(false);
+                            await Task.Delay(TimeSpan.FromSeconds(8), ct).ConfigureAwait(false);
+                            await _hband.StopLiveDetectionsAsync(ct).ConfigureAwait(false);
+                        }
+                        catch (Exception spo2Ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"SpO₂ start: {spo2Ex.Message}");
+                        }
                     }
 
                     return _lastVitals ?? sample;
@@ -501,6 +959,14 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             finally
             {
                 VitalsUpdated -= OnMeasureSample;
+                try
+                {
+                    await _hband.StopLiveDetectionsAsync(CancellationToken.None).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // ignore
+                }
             }
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -508,7 +974,6 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             ErrorOccurred?.Invoke(
                 this,
                 "Measure timed out. Keep the watch nearby, open Heart Rate on the watch, then try again.");
-            _usingHbandSession = false;
             return null;
         }
         catch (OperationCanceledException)
@@ -518,23 +983,96 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         catch (Exception ex)
         {
             ErrorOccurred?.Invoke(this, ex.Message);
-            _usingHbandSession = false;
             return null;
         }
         finally
         {
-            try
+            if (DevicesBleSessionPolicy.RestorePluginBleAfterMeasure
+                && device is not null
+                && (_usingHbandSession || device.State == DeviceState.Disconnected))
             {
-                using var restoreCts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
-                await TryRestorePluginBleAfterMeasureAsync(device, deviceId, restoreCts.Token)
-                    .ConfigureAwait(false);
-            }
-            catch (Exception restoreEx)
-            {
-                System.Diagnostics.Debug.WriteLine($"Measure restore: {restoreEx.Message}");
+                try
+                {
+                    using var restoreCts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+                    await TryRestorePluginBleAfterMeasureAsync(device, deviceId, restoreCts.Token)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception restoreEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Measure restore: {restoreEx.Message}");
+                }
             }
 
             _connectGate.Release();
+        }
+    }
+
+    private async Task ReleasePluginBleLinkAsync(IDevice device, CancellationToken ct)
+    {
+        await CleanupNotificationsAsync().ConfigureAwait(false);
+        var wasConnected = device.State != DeviceState.Disconnected;
+        Interlocked.Increment(ref _suppressDisconnectClear);
+        try
+        {
+            if (wasConnected)
+            {
+                try
+                {
+                    await _adapter.DisconnectDeviceAsync(device).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // already disconnected
+                }
+            }
+
+            if (DevicesBleSessionPolicy.ShouldWaitAfterReleasingPluginBle(wasConnected))
+                await Task.Delay(DevicesBleSessionPolicy.PostGattDisconnectSettle, ct).ConfigureAwait(false);
+        }
+        finally
+        {
+            Interlocked.Decrement(ref _suppressDisconnectClear);
+        }
+    }
+
+    private async Task<WearableVitalsSnapshot?> TryWaitForExistingGattSampleAsync(CancellationToken ct)
+    {
+        if (_lastVitals is not null
+            && DevicesVitalsDisplayPolicy.HasPatientFacingReading(_lastVitals.HeartRateBpm, _lastVitals.SpO2Percent)
+            && (DateTimeOffset.UtcNow - _lastVitals.At) < TimeSpan.FromMinutes(2))
+        {
+            return _lastVitals;
+        }
+
+        var tcs = new TaskCompletionSource<WearableVitalsSnapshot>(TaskCreationOptions.RunContinuationsAsynchronously);
+        void OnSample(object? sender, WearableVitalsSnapshot snap)
+        {
+            if (!DevicesVitalsDisplayPolicy.HasPatientFacingReading(snap.HeartRateBpm, snap.SpO2Percent))
+                return;
+            tcs.TrySetResult(snap);
+        }
+
+        VitalsUpdated += OnSample;
+        try
+        {
+            using var waitCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            waitCts.CancelAfter(
+                DevicesBleSessionPolicy.EnableVendorLiveMeasure
+                    ? TimeSpan.FromSeconds(8)
+                    : TimeSpan.FromSeconds(3));
+            using var reg = waitCts.Token.Register(() => tcs.TrySetCanceled(waitCts.Token));
+            try
+            {
+                return await tcs.Task.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
+        }
+        finally
+        {
+            VitalsUpdated -= OnSample;
         }
     }
 
@@ -554,10 +1092,25 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
 
     private void OnDeviceDiscovered(object? sender, BleDeviceEventArgs e)
     {
-        _devices[e.Device.Id] = e.Device;
         var mac = TryReadMacAddress(e.Device);
+        if (!WearableBleScanRules.IncludeInFilteredScan(
+                e.Device.Name,
+                mac,
+                _scanPreferredMac,
+                _scanShowAll))
+            return;
+
+        _devices[e.Device.Id] = e.Device;
         if (!string.IsNullOrWhiteSpace(mac))
-            _macById[e.Device.Id] = mac;
+        {
+            _macById[e.Device.Id] = mac!;
+            if (_usingHbandSession
+                && BluetoothMacNormalizer.EqualsNormalized(_hband.ConnectedMacAddress, mac))
+            {
+                _connectedId = e.Device.Id;
+            }
+        }
+
         MainThread.BeginInvokeOnMainThread(() => DiscoveredDevicesChanged?.Invoke(this, EventArgs.Empty));
     }
 

@@ -28,7 +28,7 @@ It is not a progress board. Completion % lives on the partner status sheet. Use 
 | **In progress** | Partly built. Do not sell it as finished. |
 | **Later** | On the list. Not in the current sale. |
 
-Last reviewed: 6 September 2026
+Last reviewed: 8 September 2026
 
 ---
 
@@ -147,8 +147,8 @@ Android is the day-to-day test target. iPhone can run the app. Video on iPhone i
 | iPhone app | The project can target iPhone. Full release checks and iPhone video are still open. | In progress |
 | Push alerts on Android | App can register. Delivery needs Firebase on the server, then a real-device test. | In progress |
 | Push alerts on iPhone | Needs store and push setup, then a real-device test. | In progress |
-| Claim a watch | Patient claims the serial Ops already assigned. They can type it or photograph the packaging barcode or QR. They cannot invent a serial. Bluetooth Connect is blocked until claim, and only the locked MAC is accepted after the first pair. Leaving Devices keeps the link when the band stays nearby. | Ready |
-| E580 or E585 style band | Scan and connect after claim. Open Watch readings and Measure now for heart rate and oxygen. Measure retries when the watch radio is busy after Connect. Confirm on your sample watches. | In progress |
+| Claim a watch | Patient claims the serial Ops already assigned. They can type it or photograph the packaging barcode or QR. They cannot invent a serial. Bluetooth Connect is blocked until claim, and only the locked Bluetooth address is accepted after the first pair. Leaving Devices keeps the link when the band stays nearby. Closing the app and opening Devices again reconnects that claimed watch when it is nearby. | Ready |
+| E580 or E585 style band | Scan or auto-connect, then Measure heart rate on Watch readings. Measure opens the watch link if needed. Stay in the app while measuring. Confirm on sample watches. | In progress |
 | Watch readings screen | Dedicated screen for heart rate and oxygen, with room for more measures later. | Ready |
 | Live heart rate and oxygen | Wired on Android. Hardware prove-out still needed. | In progress |
 | Auto sync in the background | Manual sync exists. Background sync is not finished. | Later |

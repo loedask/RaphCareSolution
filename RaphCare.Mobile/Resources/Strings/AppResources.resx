@@ -1427,6 +1427,12 @@ Accessible. Intelligent. Human.</value>
   <data name="WatchReadingsReadyToMeasureHint" xml:space="preserve">
     <value>Ready. On the watch, open Heart Rate and tap to test if needed, then Measure now.</value>
   </data>
+  <data name="WatchReadingsReadyExclusiveHint" xml:space="preserve">
+    <value>Ready. Stay on this screen. On the watch open Heart Rate and tap to test if needed, then Measure now. Do not switch apps while measuring.</value>
+  </data>
+  <data name="WatchReadingsNeedsDevicesConnectHint" xml:space="preserve">
+    <value>Bluetooth is linked, but Measure needs a fresh Connect. Open Devices, tap Disconnect, then Connect, then return here.</value>
+  </data>
   <data name="WatchReadingsMeasuringHint" xml:space="preserve">
     <value>Measuring. Keep the watch on your wrist and nearby.</value>
   </data>
@@ -1441,6 +1447,12 @@ Accessible. Intelligent. Human.</value>
   </data>
   <data name="WatchReadingsVendorUnavailable" xml:space="preserve">
     <value>Live measure is not available on this phone build.</value>
+  </data>
+  <data name="WatchReadingsVendorMeasureDisabled" xml:space="preserve">
+    <value>Live Measure through the watch SDK is temporarily off. It was closing the app on some phones. Keep your watch Connected on Devices. We will turn Measure back on in a later build.</value>
+  </data>
+  <data name="WatchReadingsVendorMeasureDisabledHint" xml:space="preserve">
+    <value>Measure is paused while we fix a crash with this watch. Stay Connected on Devices. Tap Measure only checks the phone Bluetooth link for now.</value>
   </data>
   <data name="WatchReadingsValueEmpty" xml:space="preserve">
     <value>-</value>
@@ -1461,7 +1473,7 @@ Accessible. Intelligent. Human.</value>
     <value>Checking Bluetooth permission…</value>
   </data>
   <data name="DevicesPermissionDenied" xml:space="preserve">
-    <value>Bluetooth permission was denied. Enable it in system settings.</value>
+    <value>Nearby devices permission is off. Open phone Settings, find RaphCare, allow Nearby devices (and Bluetooth), then return and tap Scan.</value>
   </data>
   <data name="DevicesBluetoothOff" xml:space="preserve">
     <value>Bluetooth is off. Turn it on and try again.</value>
@@ -1475,8 +1487,20 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesScanStopped" xml:space="preserve">
     <value>Scan stopped.</value>
   </data>
+  <data name="DevicesScanEmptyHint" xml:space="preserve">
+    <value>No watches found. Put the band nearby, force-stop the separate H Band app if installed, tap Showing to list all Bluetooth, then Scan again.</value>
+  </data>
   <data name="DevicesConnected" xml:space="preserve">
     <value>Connected.</value>
+  </data>
+  <data name="DevicesConnectedNeedsMeasureLink" xml:space="preserve">
+    <value>Bluetooth linked. Tap Disconnect, then Connect again so Measure can read the watch.</value>
+  </data>
+  <data name="DevicesReconnectingHint" xml:space="preserve">
+    <value>Reconnecting your claimed watch…</value>
+  </data>
+  <data name="DevicesReconnectFailedHint" xml:space="preserve">
+    <value>Could not reconnect. Keep the watch nearby, tap Scan, then Connect.</value>
   </data>
   <data name="DevicesDisconnected" xml:space="preserve">
     <value>Disconnected.</value>

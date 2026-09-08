@@ -106,7 +106,7 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
             : T("WatchReadingsValueEmpty");
 
     public bool CanMeasure =>
-        !IsBusy && !IsMeasuring && IsBleConnected && _ble.IsVendorMeasureAvailable;
+        !IsBusy && !IsMeasuring && IsBleConnected;
 
     public bool CanSync =>
         !IsBusy
@@ -144,7 +144,27 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
         {
             var devices = await _patientDevices.GetMyDevicesAsync(CancellationToken.None).ConfigureAwait(false);
             if (devices.IsSuccess && devices.Data is { Count: > 0 })
-                _registeredDeviceId = devices.Data[0].DeviceId;
+            {
+                var first = devices.Data[0];
+                _registeredDeviceId = first.DeviceId;
+                var mac = BluetoothMacNormalizer.TryNormalize(first.BluetoothMacAddress);
+                if (DevicesBleSessionPolicy.ShouldReconnectClaimedWatchOnAppear(
+                        hasLockedBluetoothMac: mac is not null,
+                        hasConnectedDeviceId: _ble.ConnectedDeviceId.HasValue,
+                        liveMeasureSessionReady: _ble.IsLiveMeasureSessionReady))
+                {
+                    StatusHint = T("DevicesReconnectingHint");
+                    await _ble.ReconnectClaimedWatchAsync(
+                            mac!,
+                            string.IsNullOrWhiteSpace(first.Model) ? null : first.Model,
+                            CancellationToken.None)
+                        .ConfigureAwait(false);
+                    OnPropertyChanged(nameof(IsBleConnected));
+                    OnPropertyChanged(nameof(ShowNotConnected));
+                    if (!_ble.ConnectedDeviceId.HasValue)
+                        StatusHint = NotConnectedHint;
+                }
+            }
 
             var latest = await _patientDevices.GetMyLatestReadingsAsync(CancellationToken.None).ConfigureAwait(false);
             if (latest.IsSuccess && latest.Data is not null)
@@ -152,8 +172,12 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
 
             if (!IsBleConnected)
                 StatusHint = NotConnectedHint;
+            else if (!_ble.IsLiveMeasureSessionReady)
+                StatusHint = T("WatchReadingsNeedsDevicesConnectHint");
+            else if (!DevicesBleSessionPolicy.EnableVendorLiveMeasure)
+                StatusHint = T("WatchReadingsVendorMeasureDisabledHint");
             else if (!DevicesVitalsDisplayPolicy.HasPatientFacingReading(_lastVitals?.HeartRateBpm, _lastVitals?.SpO2Percent))
-                StatusHint = T("WatchReadingsReadyToMeasureHint");
+                StatusHint = T("WatchReadingsReadyExclusiveHint");
         }
         catch (Exception ex)
         {
@@ -213,12 +237,6 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
             return;
         }
 
-        if (!_ble.IsVendorMeasureAvailable)
-        {
-            ErrorMessage = T("WatchReadingsVendorUnavailable");
-            return;
-        }
-
         IsMeasuring = true;
         StatusHint = T("WatchReadingsMeasuringHint");
         try
@@ -231,7 +249,16 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
                 ApplySnapshot(snap);
                 StatusHint = T("WatchReadingsUpdatedHint");
             }
-            else if (string.IsNullOrWhiteSpace(ErrorMessage))
+            else if (!DevicesBleSessionPolicy.EnableVendorLiveMeasure)
+            {
+                ErrorMessage = T("WatchReadingsVendorMeasureDisabled");
+                StatusHint = T("WatchReadingsVendorMeasureDisabledHint");
+            }
+            else if (!string.IsNullOrWhiteSpace(ErrorMessage))
+            {
+                StatusHint = T("WatchReadingsMeasureFailedHint");
+            }
+            else
             {
                 StatusHint = T("WatchReadingsMeasureFailedHint");
             }

@@ -34,5 +34,7 @@ public sealed class UnavailableHBandWearableBridge : IHBandWearableBridge
     public Task StartLiveSpo2Async(CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("HBand vendor SDK is not available on this platform build."));
 
+    public Task StopLiveDetectionsAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
     public Task DisconnectAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 }

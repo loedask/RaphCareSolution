@@ -13,6 +13,71 @@ public static class DevicesBleSessionPolicy
     public static bool DisconnectWhenLeavingDevicesPage => false;
 
     /// <summary>
+    /// Closing the app drops in-memory GATT and vendor state. Opening Devices (or Watch readings)
+    /// should reconnect the claimed Bluetooth address without asking the patient to Scan first.
+    /// </summary>
+    public static bool ReconnectClaimedWatchWhenDevicesAppears => true;
+
+    /// <summary>
+    /// Closing the app drops in-memory GATT and vendor state. Opening Devices (or Watch readings)
+    /// should reconnect the claimed Bluetooth address without asking the patient to Scan first.
+    /// Also re-run when UI shows Connected but the exclusive Measure session is missing.
+    /// </summary>
+    public static bool ShouldReconnectClaimedWatchOnAppear(
+        bool hasLockedBluetoothMac,
+        bool hasConnectedDeviceId,
+        bool liveMeasureSessionReady) =>
+        ReconnectClaimedWatchWhenDevicesAppears
+        && hasLockedBluetoothMac
+        && (!hasConnectedDeviceId || !liveMeasureSessionReady);
+
+    /// <summary>
+    /// Exclusive Measure needs the Veepoo session, not Plugin.BLE Connected alone.
+    /// </summary>
+    public static bool IsExclusiveLiveMeasureSessionReady(
+        bool preferExclusiveVendorSession,
+        bool vendorSdkAvailable,
+        bool coordinatorUsingVendorSession,
+        bool bridgeSessionReady) =>
+        !preferExclusiveVendorSession
+        || !vendorSdkAvailable
+        || coordinatorUsingVendorSession
+        || bridgeSessionReady;
+
+    /// <summary>
+    /// Mid-Measure handshake is safe only when Plugin.BLE is not holding GATT.
+    /// Stealing the radio from an active GATT link force-closed the app.
+    /// </summary>
+    public static bool AllowVendorConnectDuringMeasureWhenNoGatt => true;
+
+    /// <summary>
+    /// When the watch SDK is not on the phone, reconnect by a short Scan then GATT Connect.
+    /// Do not do that while the vendor session is the Connect path (dual-stack crashed the app).
+    /// </summary>
+    public static bool ShouldUsePluginBleReconnectWhenVendorUnavailable(bool vendorSdkAvailable) =>
+        !vendorSdkAvailable;
+
+    /// <summary>How long auto-reconnect may scan for the claimed MAC before giving up.</summary>
+    public static TimeSpan ClaimedWatchReconnectScanTimeout { get; } = TimeSpan.FromSeconds(12);
+
+    /// <summary>
+    /// Tapping Connect (or auto-reconnect) must not call vendor disconnect then connect
+    /// on the same MAC. That teardown after the app was closed force-closed Android.
+    /// </summary>
+    public static bool ShouldReuseExistingVendorSession(
+        bool vendorSessionReady,
+        string? sessionMac,
+        string? targetMac) =>
+        vendorSessionReady && BluetoothMacNormalizer.EqualsNormalized(sessionMac, targetMac);
+
+    /// <summary>
+    /// Only wait for the radio after actually dropping a Plugin.BLE GATT link.
+    /// A scan-only peripheral is already disconnected; waiting still delayed Connect.
+    /// </summary>
+    public static bool ShouldWaitAfterReleasingPluginBle(bool pluginBleWasConnected) =>
+        pluginBleWasConnected;
+
+    /// <summary>
     /// Stop scan must stay available while the Devices UI shows an in-flight scan.
     /// Do not wait for adapter <c>IsScanning</c> alone: that flag can lag behind the UI, so the
     /// button never enables and Stop appears broken.
@@ -21,12 +86,17 @@ public static class DevicesBleSessionPolicy
         isScanningUi || adapterIsScanning;
 
     /// <summary>
-    /// When true, Connect tries the Veepoo/HBand SDK before Plugin.BLE.
-    /// Keep off for patient Connect: the vendor stack often shows a brief Android toast
-    /// ("This feature is not supported") when it probes BLE advertising.
-    /// Live HR/SpO₂ use <c>MeasureLiveVitalsAsync</c> on the Watch readings page instead.
+    /// When true and the HBand SDK is present with a MAC, Connect uses Veepoo only
+    /// (handshake, no live detect yet). No Plugin.BLE GATT fallback for that attempt.
+    /// Dual-stack handoff (Plugin.BLE Connected, then Measure steals the radio) was killing
+    /// the process. Scan still uses Plugin.BLE to discover the MAC.
     /// </summary>
-    public static bool TryVendorSdkOnConnect => false;
+    public static bool PreferExclusiveVendorSession => true;
+
+    /// <summary>
+    /// Legacy name kept for older call sites. Prefer <see cref="PreferExclusiveVendorSession"/>.
+    /// </summary>
+    public static bool TryVendorSdkOnConnect => PreferExclusiveVendorSession;
 
     /// <summary>How long Measure waits for the first heart rate or oxygen sample after handshake.</summary>
     public static TimeSpan LiveMeasureTimeout { get; } = TimeSpan.FromSeconds(40);
@@ -38,12 +108,80 @@ public static class DevicesBleSessionPolicy
     public static TimeSpan VendorHandshakeTimeout { get; } = TimeSpan.FromSeconds(45);
 
     /// <summary>Pause after dropping Plugin.BLE so the vendor stack can reclaim the radio.</summary>
-    public static TimeSpan PostGattDisconnectSettle { get; } = TimeSpan.FromMilliseconds(2500);
+    public static TimeSpan PostGattDisconnectSettle { get; } = TimeSpan.FromSeconds(5);
 
     /// <summary>How many times Measure retries vendor connect after Inuker REQUEST_CANCELED (-2).</summary>
-    public static int VendorConnectMaxAttempts { get; } = 3;
+    public static int VendorConnectMaxAttempts { get; } = 2;
+
+    /// <summary>
+    /// Calling Veepoo <c>disconnectWatch</c> / <c>stopDetect*</c> before any successful vendor
+    /// connect triggers Android "This feature is not supported" and can kill the process.
+    /// </summary>
+    public static bool MustNotCallVendorDisconnectWithoutSession => true;
+
+    /// <summary>Whether a vendor teardown JNI call is allowed for this session state.</summary>
+    public static bool ShouldInvokeVendorDisconnect(bool sessionReady, bool connectStarted) =>
+        sessionReady || connectStarted;
+
+    /// <summary>
+    /// Veepoo <c>stopDetectHeart</c> / <c>stopDetectSPO2H</c> before any matching
+    /// <c>startDetect*</c> can toast and kill the Android process.
+    /// </summary>
+    public static bool MustNotCallVendorStopDetectWithoutStart => true;
+
+    /// <summary>Whether a vendor stopDetect JNI call is allowed.</summary>
+    public static bool ShouldInvokeVendorStopDetect(bool detectStarted) => detectStarted;
+
+    /// <summary>
+    /// When true, Measure uses Veepoo <c>startDetectHeart</c> on an exclusive vendor session.
+    /// Requires <see cref="PreferExclusiveVendorSession"/> Connect first (no mid-Measure radio steal).
+    /// </summary>
+    public static bool EnableVendorLiveMeasure => true;
+
+    /// <summary>
+    /// Coordinator flag can lag the bridge after auto-reconnect. Adopt the bridge session for Measure.
+    /// </summary>
+    public static bool ShouldAdoptBridgeVendorSession(
+        bool coordinatorUsingVendorSession,
+        bool bridgeSessionReady) =>
+        !coordinatorUsingVendorSession && bridgeSessionReady;
+
+    /// <summary>
+    /// Mid-Measure Plugin.BLE → Veepoo handshake force-closed the app when GATT was still up.
+    /// Handshake during Measure is allowed only when there is no Plugin.BLE GATT to steal.
+    /// </summary>
+    public static bool ShouldEstablishVendorSessionForMeasure(
+        bool enableVendorLiveMeasure,
+        bool preferExclusiveVendorSession,
+        bool vendorSdkAvailable,
+        bool alreadyUsingVendorSession,
+        bool hasBluetoothMac,
+        bool pluginBleGattConnected) =>
+        enableVendorLiveMeasure
+        && preferExclusiveVendorSession
+        && vendorSdkAvailable
+        && !alreadyUsingVendorSession
+        && hasBluetoothMac
+        && AllowVendorConnectDuringMeasureWhenNoGatt
+        && !pluginBleGattConnected;
+
+    /// <summary>
+    /// When true, Measure starts SpO₂ after the first heart-rate sample.
+    /// Keep off: Veepoo often crashes if SpO₂ starts while heart detect is still running.
+    /// </summary>
+    public static bool EnableVendorSpo2DuringMeasure => false;
+
+    /// <summary>
+    /// When true, Measure reconnects Plugin.BLE after vendor detect.
+    /// Keep off with exclusive vendor sessions: restoring GATT mid-lifecycle reintroduced crashes.
+    /// </summary>
+    public static bool RestorePluginBleAfterMeasure => false;
+
+    /// <summary>Patient-facing copy when vendor Measure is gated off.</summary>
+    public static string VendorLiveMeasureDisabledPatientMessage { get; } =
+        "Live Measure through the watch SDK is temporarily off. It was closing the app on some phones. Keep your watch Connected on Devices. We will turn Measure back on in a later build.";
 
     /// <summary>Total Measure budget (handshake settle + sample wait).</summary>
     public static TimeSpan LiveMeasureOverallTimeout { get; } =
-        VendorHandshakeTimeout + LiveMeasureTimeout + PostGattDisconnectSettle + TimeSpan.FromSeconds(15);
+        VendorHandshakeTimeout + LiveMeasureTimeout + PostGattDisconnectSettle + TimeSpan.FromSeconds(20);
 }

@@ -1,5 +1,5 @@
 <div class="doc-header">
-<img src="../brand/raphcare-logo.png" alt="RaphCare" />
+<img src="../../brand/raphcare-logo.png" alt="RaphCare" />
 <h1>RaphCare partner update (5 Sep 2026)</h1>
 </div>
 
@@ -16,7 +16,7 @@ What changed in this 1.8 line (since the 1.7.0 note):
 - **Hospitals linked to me.** On Active clinic, hospitals from care links (registration, staff grant, visits) show in their own list. Tap one to make it active. Name search still finds the directory; it is not a membership list.
 - **Mental health questionnaires.** PHQ-9 and GAD-7 self-checks on the phone (needs an active clinic). Answers can show on the hospital chart for staff.
 
-One-page phone note: [`mobile-update-v1.8.4+16.pdf`](../mobile-updates/mobile-update-v1.8.4+16.pdf).
+One-page phone note: [`mobile-update-v1.8.4+16.pdf`](../../mobile-updates/archives/mobile-update-v1.8.4+16.pdf).
 
 ## 2. Staff web on a phone (Portal and Ops)
 
@@ -26,7 +26,7 @@ Sign-in today is email and password. After you add the shortcut, open it once an
 
 ## 3. Feature catalog
 
-The shareable list of what RaphCare does is updated for phone Home honesty, linked hospitals, and the home-screen shortcut: [`raphcare-feature-catalog-v1.pdf`](raphcare-feature-catalog-v1.pdf). It is not a progress board. Completion % stays on the partner status sheet.
+The shareable list of what RaphCare does is updated for phone Home honesty, linked hospitals, and the home-screen shortcut: [`raphcare-feature-catalog-v1.pdf`](../../raphcare-feature-catalog-v1.pdf). It is not a progress board. Completion % stays on the partner status sheet.
 
 ## 4. Demo clinic and accounts (unchanged)
 
@@ -47,7 +47,7 @@ Staff sign-in: [Professional sign-in](https://raphcare-hqf6gsa3acanargz.southafr
 
 Ops sign-in: [Ops sign-in](https://raphcare-ops.azurewebsites.net/signin)
 
-A one-page sheet with the same logins is here: [`raphcare-demo-accounts-v2.pdf`](raphcare-demo-accounts-v2.pdf). Keep that sheet private. It has the password.
+A one-page sheet with the same logins is here: [`raphcare-demo-accounts-v2.pdf`](../../raphcare-demo-accounts-v2.pdf). Keep that sheet private. It has the password.
 
 ## 5. Links
 

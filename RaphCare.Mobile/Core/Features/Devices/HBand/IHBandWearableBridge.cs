@@ -34,5 +34,8 @@ public interface IHBandWearableBridge
     /// <summary>Start vendor SpO₂ detection (after handshake).</summary>
     Task StartLiveSpo2Async(CancellationToken cancellationToken = default);
 
+    /// <summary>Stop in-flight heart / SpO₂ detect without full disconnect.</summary>
+    Task StopLiveDetectionsAsync(CancellationToken cancellationToken = default);
+
     Task DisconnectAsync(CancellationToken cancellationToken = default);
 }

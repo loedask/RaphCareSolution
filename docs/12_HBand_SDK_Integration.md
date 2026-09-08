@@ -56,6 +56,8 @@ RaphCare uses **two** approaches:
 
 A full **.NET Android binding project** remains optional later for typed APIs. Phase 1 uses JNI intentionally (large `vpprotocol` AAR).
 
+**Patient app session rule (current):** when the AARs are present, **Connect** uses an exclusive Veepoo handshake (no Plugin.BLE GATT fallback for that attempt). **Measure** only calls `startDetectHeart` on that session. Do not hand the radio from Plugin.BLE to Veepoo mid-Measure. Crash capture: `scripts/Capture-RaphCareAndroidLogcat.ps1`.
+
 ---
 
 ## Suggested next engineering steps
