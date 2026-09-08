@@ -401,6 +401,11 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             var first = resp.Data[0];
             RegisteredDeviceId = first.DeviceId;
             ClaimedBluetoothMac = BluetoothMacNormalizer.TryNormalize(first.BluetoothMacAddress);
+            System.Diagnostics.Debug.WriteLine(
+                "LoadClaimedDevices: "
+                + $"deviceId={first.DeviceId}, "
+                + $"apiMac={first.BluetoothMacAddress ?? "(null)"}, "
+                + $"normalized={ClaimedBluetoothMac ?? "(null)"}");
             if (string.IsNullOrWhiteSpace(SerialNumber))
                 SerialNumber = first.SerialNumber ?? string.Empty;
             if (!string.IsNullOrWhiteSpace(first.Model)
@@ -409,7 +414,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             if (!_ble.ConnectedDeviceId.HasValue)
             {
                 StatusHint = string.IsNullOrWhiteSpace(ClaimedBluetoothMac)
-                    ? T("DevicesClaimReadyFirstPairHint")
+                    ? T("DevicesClaimMissingBluetoothMacHint")
                     : Format(T("DevicesClaimReadyMacHint"), ClaimedBluetoothMac!);
             }
         }
@@ -526,6 +531,25 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         IsBusy = true;
         try
         {
+            // Claimed wearable fallback needs the locked MAC from the API. Reload before Scan
+            // so a stale empty ClaimedBluetoothMac cannot leave Nearby blank.
+            await LoadClaimedDevicesAsync().ConfigureAwait(false);
+            if (WearableBleScanRules.IsMissingClaimedBluetoothMacForFallback(ClaimedBluetoothMac))
+            {
+                ErrorMessage = T("DevicesClaimMissingBluetoothMac");
+                StatusHint = T("DevicesClaimMissingBluetoothMacHint");
+                System.Diagnostics.Debug.WriteLine(
+                    "Devices Scan: claim has no usable BluetoothMacAddress. "
+                    + $"RegisteredDeviceId={RegisteredDeviceId}, continuing with Show all Bluetooth for first lock.");
+                // First-pair path: discover any nearby band, Connect, then bind MAC to the claim.
+                ShowAllDevices = true;
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"Devices Scan: ClaimedBluetoothMac={ClaimedBluetoothMac}");
+            }
+
             var perm = await _ble.RequestBluetoothPermissionsAsync().ConfigureAwait(false);
             if (perm != PermissionStatus.Granted)
             {

@@ -110,6 +110,30 @@ public static class DevicesBleSessionPolicy
     /// <summary>Pause after dropping Plugin.BLE so the vendor stack can reclaim the radio.</summary>
     public static TimeSpan PostGattDisconnectSettle { get; } = TimeSpan.FromSeconds(5);
 
+    /// <summary>
+    /// After exclusive Veepoo <c>disconnectWatch</c>, wait the same window before
+    /// <c>connectDevice</c>. Immediate Disconnect then Connect was force-closing Android.
+    /// </summary>
+    public static TimeSpan PostVendorDisconnectSettle { get; } = PostGattDisconnectSettle;
+
+    /// <summary>
+    /// Remaining delay before a safe vendor reconnect after <paramref name="lastVendorDisconnectUtc"/>.
+    /// Zero when no recent disconnect or the settle window has already elapsed.
+    /// </summary>
+    public static TimeSpan RemainingVendorReconnectSettle(
+        DateTimeOffset? lastVendorDisconnectUtc,
+        DateTimeOffset utcNow)
+    {
+        if (lastVendorDisconnectUtc is null)
+            return TimeSpan.Zero;
+
+        var elapsed = utcNow - lastVendorDisconnectUtc.Value;
+        if (elapsed >= PostVendorDisconnectSettle)
+            return TimeSpan.Zero;
+
+        return PostVendorDisconnectSettle - elapsed;
+    }
+
     /// <summary>How many times Measure retries vendor connect after Inuker REQUEST_CANCELED (-2).</summary>
     public static int VendorConnectMaxAttempts { get; } = 2;
 

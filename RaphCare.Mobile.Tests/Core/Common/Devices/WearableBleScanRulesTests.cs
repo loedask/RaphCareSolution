@@ -114,5 +114,18 @@ public sealed class WearableBleScanRulesTests
         Assert.True(WearableBleScanRules.ShouldShowClaimedWatchFallback(ClaimedMac, false));
         Assert.False(WearableBleScanRules.ShouldShowClaimedWatchFallback(ClaimedMac, true));
         Assert.False(WearableBleScanRules.ShouldShowClaimedWatchFallback(null, false));
+        Assert.False(WearableBleScanRules.ShouldShowClaimedWatchFallback("not-a-mac", false));
+    }
+
+    [Fact]
+    public void MissingClaimedBluetoothMacMustBeTreatedAsClaimDataNotRadioFailure()
+    {
+        // Regression: 1.8.29 screenshots showed empty Nearby with no Claimed wearable row.
+        // That only happens when ClaimedBluetoothMac is null/invalid after normalize.
+        Assert.True(WearableBleScanRules.IsMissingClaimedBluetoothMacForFallback(null));
+        Assert.True(WearableBleScanRules.IsMissingClaimedBluetoothMacForFallback(""));
+        Assert.True(WearableBleScanRules.IsMissingClaimedBluetoothMacForFallback("zz"));
+        Assert.False(WearableBleScanRules.IsMissingClaimedBluetoothMacForFallback(ClaimedMac));
+        Assert.False(WearableBleScanRules.IsMissingClaimedBluetoothMacForFallback("6f9ac84ce445"));
     }
 }

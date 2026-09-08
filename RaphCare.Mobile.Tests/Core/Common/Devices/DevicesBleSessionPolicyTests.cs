@@ -147,6 +147,36 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
+    public void MustWaitAfterVendorDisconnectBeforeReconnect()
+    {
+        // Regression: Disconnect then Connect on Claimed wearable force-closed the app
+        // when Veepoo connectDevice ran before disconnectWatch finished tearing down.
+        Assert.Equal(
+            DevicesBleSessionPolicy.PostGattDisconnectSettle,
+            DevicesBleSessionPolicy.PostVendorDisconnectSettle);
+        Assert.Equal(
+            TimeSpan.Zero,
+            DevicesBleSessionPolicy.RemainingVendorReconnectSettle(null, DateTimeOffset.UtcNow));
+
+        var disconnectedAt = new DateTimeOffset(2026, 9, 8, 12, 0, 0, TimeSpan.Zero);
+        Assert.Equal(
+            TimeSpan.FromSeconds(5),
+            DevicesBleSessionPolicy.RemainingVendorReconnectSettle(
+                disconnectedAt,
+                disconnectedAt));
+        Assert.Equal(
+            TimeSpan.FromSeconds(2),
+            DevicesBleSessionPolicy.RemainingVendorReconnectSettle(
+                disconnectedAt,
+                disconnectedAt.AddSeconds(3)));
+        Assert.Equal(
+            TimeSpan.Zero,
+            DevicesBleSessionPolicy.RemainingVendorReconnectSettle(
+                disconnectedAt,
+                disconnectedAt.AddSeconds(5)));
+    }
+
+    [Fact]
     public void MissingBluetoothScanSecurityExceptionIsRecognized()
     {
         // Regression: Scan showed raw "Need android.permission.BLUETOOTH_SCAN ... registerScanner"

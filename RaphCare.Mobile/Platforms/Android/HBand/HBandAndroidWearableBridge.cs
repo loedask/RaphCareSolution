@@ -173,7 +173,9 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                             });
 
                         var mac = new Java.Lang.String(macAddress);
-                        var name = new Java.Lang.String(deviceName ?? string.Empty);
+                        // Empty device name has crashed reconnect after Disconnect on some firmware.
+                        var safeName = string.IsNullOrWhiteSpace(deviceName) ? "ET580" : deviceName.Trim();
+                        var name = new Java.Lang.String(safeName);
 
                         // Prefer mac+name, then mac-only. Typed TryInvoke avoids wrong overloads.
                         var connected = TryInvoke(manager, "connectDevice", mac, name, connectProxy, notifyProxy)

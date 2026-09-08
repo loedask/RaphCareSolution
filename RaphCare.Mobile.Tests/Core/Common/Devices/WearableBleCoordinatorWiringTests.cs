@@ -21,6 +21,9 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("GetSystemConnectedOrPairedDevices", text, StringComparison.Ordinal);
         Assert.Contains("ShouldShowClaimedWatchFallback", text, StringComparison.Ordinal);
         Assert.Contains("VendorSessionPlaceholderId", text, StringComparison.Ordinal);
+        Assert.Contains("RemainingVendorReconnectSettle", text, StringComparison.Ordinal);
+        Assert.Contains("WaitForVendorReconnectSettleAsync", text, StringComparison.Ordinal);
+        Assert.Contains("ResolveClaimedDeviceName", text, StringComparison.Ordinal);
         Assert.Contains("preferredMac", text, StringComparison.Ordinal);
     }
 
@@ -29,11 +32,10 @@ public sealed class WearableBleCoordinatorWiringTests
     {
         var text = ReadDevicesViewModelSource();
 
-        Assert.Contains(
-            "StartScanAsync(ShowAllDevices, ClaimedBluetoothMac",
-            text,
-            StringComparison.Ordinal);
+        Assert.Contains("StartScanAsync(ShowAllDevices, ClaimedBluetoothMac", text, StringComparison.Ordinal);
         Assert.Contains("IsLiveMeasureSessionReady", text, StringComparison.Ordinal);
+        Assert.Contains("IsMissingClaimedBluetoothMacForFallback", text, StringComparison.Ordinal);
+        Assert.Contains("LoadClaimedDevicesAsync", text, StringComparison.Ordinal);
     }
 
     [Fact]

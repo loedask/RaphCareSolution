@@ -1346,6 +1346,12 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesClaimReadyFirstPairHint" xml:space="preserve">
     <value>Watch claimed. Scan and Connect once to lock Bluetooth to this band.</value>
   </data>
+  <data name="DevicesClaimMissingBluetoothMac" xml:space="preserve">
+    <value>This claimed watch has no Bluetooth address on the server yet. Ask Ops to set the MAC on the device record, or Scan with Show all Bluetooth and Connect once to lock it.</value>
+  </data>
+  <data name="DevicesClaimMissingBluetoothMacHint" xml:space="preserve">
+    <value>Claimed watch is missing a Bluetooth MAC. The Claimed wearable row cannot appear until Ops sets it, or you Connect once from a full Bluetooth scan.</value>
+  </data>
   <data name="DevicesClaimReadyMacHint" xml:space="preserve">
     <value>Watch claimed. Connect only to Bluetooth {0}.</value>
   </data>

@@ -70,4 +70,11 @@ public static class WearableBleScanRules
         bool hasDiscoveredClaimedMac) =>
         BluetoothMacNormalizer.TryNormalize(preferredMac) is not null
         && !hasDiscoveredClaimedMac;
+
+    /// <summary>
+    /// Without a locked six-octet MAC, Nearby cannot show the Claimed wearable fallback
+    /// and Connect-by-MAC cannot run. Surface that as claim data, not a radio failure.
+    /// </summary>
+    public static bool IsMissingClaimedBluetoothMacForFallback(string? claimedBluetoothMac) =>
+        BluetoothMacNormalizer.TryNormalize(claimedBluetoothMac) is null;
 }
