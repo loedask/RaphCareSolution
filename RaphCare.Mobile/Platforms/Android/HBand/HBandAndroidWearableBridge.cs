@@ -208,11 +208,13 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         var mac = new Java.Lang.String(macAddress);
                         var name = new Java.Lang.String(safeName);
 
-                        // Prefer mac+name, then mac-only. Typed TryInvoke avoids wrong overloads.
+                        // vpprotocol-2.3.81.15 overloads (javap):
+                        //   connectDevice(String, IConnectResponse, INotifyResponse)  // wiki / preferred
+                        //   connectDevice(String, String, IConnectResponse, INotifyResponse) // synchronized
+                        // Prefer mac-only: the mac+name overload force-closed partner phones.
                         // If logcat ends at CONNECT-2 with no CONNECT-3, connectDevice aborted the process.
                         Log.Info(Tag, $"CONNECT-2 calling connectDevice: {macAddress}, {safeName}");
-                        var connected = TryInvoke(manager, "connectDevice", mac, name, connectProxy, notifyProxy)
-                                        || TryInvoke(manager, "connectDevice", mac, connectProxy, notifyProxy);
+                        var connected = TryInvokeConnectDevice(manager, mac, name, connectProxy, notifyProxy);
                         Log.Info(Tag, $"CONNECT-3 connectDevice returned: {connected}");
                         if (!connected)
                         {
@@ -801,6 +803,30 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         return null;
     }
 
+    /// <summary>
+    /// Invokes the bundled AAR <c>connectDevice</c> overload. Prefer the documented
+    /// mac-only form when <see cref="DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload"/> is set.
+    /// </summary>
+    private static bool TryInvokeConnectDevice(
+        Java.Lang.Object manager,
+        Java.Lang.String mac,
+        Java.Lang.String name,
+        Java.Lang.Object connectProxy,
+        Java.Lang.Object notifyProxy)
+    {
+        if (TryInvoke(manager, "connectDevice", mac, connectProxy, notifyProxy))
+            return true;
+
+        if (DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload)
+        {
+            Log.Warn(Tag, "Official 3-arg connectDevice not found; not trying mac+name overload.");
+            return false;
+        }
+
+        Log.Warn(Tag, "Falling back to connectDevice(mac, name, …).");
+        return TryInvoke(manager, "connectDevice", mac, name, connectProxy, notifyProxy);
+    }
+
     private static bool TryInvoke(Java.Lang.Object target, string methodName, params Java.Lang.Object?[] args)
     {
         try
@@ -819,6 +845,8 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             {
                 try
                 {
+                    if (string.Equals(methodName, "connectDevice", StringComparison.Ordinal))
+                        Log.Info(Tag, "CONNECT-INVOKE " + DescribeJavaMethod(method));
                     method.Invoke(target, args!);
                     return true;
                 }
@@ -834,6 +862,13 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         }
 
         return false;
+    }
+
+    private static string DescribeJavaMethod(Method method)
+    {
+        var pts = method.GetParameterTypes() ?? [];
+        var args = string.Join(", ", pts.Select(p => p.Name ?? "?"));
+        return $"{method.DeclaringClass?.Name}.{method.Name}({args})";
     }
 
     private static bool ParametersCompatible(Class[] parameterTypes, Java.Lang.Object?[] args)

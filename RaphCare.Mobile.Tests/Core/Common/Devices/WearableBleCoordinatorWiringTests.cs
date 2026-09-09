@@ -102,6 +102,9 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("CONNECT-1 native check:", text, StringComparison.Ordinal);
         Assert.Contains("CONNECT-2 calling connectDevice:", text, StringComparison.Ordinal);
         Assert.Contains("CONNECT-3 connectDevice returned:", text, StringComparison.Ordinal);
+        Assert.Contains("TryInvokeConnectDevice", text, StringComparison.Ordinal);
+        Assert.Contains("PreferOfficialMacOnlyConnectDeviceOverload", text, StringComparison.Ordinal);
+        Assert.Contains("CONNECT-INVOKE", text, StringComparison.Ordinal);
     }
 
     [Fact]
