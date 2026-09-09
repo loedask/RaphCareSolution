@@ -89,6 +89,22 @@ public sealed class WearableBleCoordinatorWiringTests
     }
 
     [Fact]
+    public void VendorConnectMustLogConnectDeviceMarkersForCrashDiagnosis()
+    {
+        // Partner: Connect force-closed after Scan. Markers prove whether connectDevice returns.
+        var text = File.ReadAllText(FindRepoFile(
+            Path.Combine(
+                "RaphCare.Mobile",
+                "Platforms",
+                "Android",
+                "HBand",
+                "HBandAndroidWearableBridge.cs")));
+        Assert.Contains("CONNECT-1 native check:", text, StringComparison.Ordinal);
+        Assert.Contains("CONNECT-2 calling connectDevice:", text, StringComparison.Ordinal);
+        Assert.Contains("CONNECT-3 connectDevice returned:", text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void MeasureMustNotStopDetectBeforeFirstStartDetect()
     {
         var text = ReadCoordinatorSource();

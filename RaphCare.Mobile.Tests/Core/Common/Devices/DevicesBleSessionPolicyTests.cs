@@ -79,12 +79,12 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
-    public void ExclusiveModeKeepsVendorSessionAliveAfterUserDisconnect()
+    public void ExclusiveModeOffMeansDisconnectDoesNotRetainVendorSession()
     {
-        // Regression: native disconnectWatch then connectDevice in the same process
-        // force-closed the app on E580/E585. Disconnect must stay logical in exclusive mode.
-        Assert.True(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
-        Assert.True(DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect);
+        // While PreferExclusiveVendorSession is false (connectDevice diagnostic), Disconnect
+        // must not pretend to keep a vendor session that Connect will not use.
+        Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
+        Assert.False(DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect);
     }
 
     [Fact]
@@ -122,13 +122,13 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
-    public void PreferExclusiveVendorSessionForClaimedWatchConnect()
+    public void ClaimedWatchConnectMustUsePluginBleWhileVendorConnectDeviceCrashes()
     {
-        // Dual-stack (Plugin.BLE Connected, then Measure steals the radio for Veepoo)
-        // force-closed the Android process. Connect owns Veepoo; Measure only starts detect.
-        Assert.True(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
-        Assert.True(DevicesBleSessionPolicy.TryVendorSdkOnConnect);
-        Assert.True(DevicesBleSessionPolicy.EnableVendorLiveMeasure);
+        // Regression: Scan found ET585, then exclusive connectDevice force-closed the app.
+        // Keep Veepoo Connect off until the bundled AAR overload/proxies are verified.
+        Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
+        Assert.False(DevicesBleSessionPolicy.TryVendorSdkOnConnect);
+        Assert.False(DevicesBleSessionPolicy.EnableVendorLiveMeasure);
         Assert.False(DevicesBleSessionPolicy.RestorePluginBleAfterMeasure);
         Assert.False(DevicesBleSessionPolicy.EnableVendorSpo2DuringMeasure);
     }

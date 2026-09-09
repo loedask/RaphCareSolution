@@ -159,7 +159,7 @@ Design lock and screen map: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobi
 | Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
-| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear (vendor session, or a short Scan then GATT if the vendor libraries are missing); manual Scan keeps exclusive Veepoo alive and only releases Plugin.BLE GATT (no Scan auto-Connect); Watch readings page Measure uses vendor live HR/SpO₂; offline outbox retries |
+| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear (vendor session, or a short Scan then GATT if the vendor libraries are missing); manual Scan keeps exclusive Veepoo alive and only releases Plugin.BLE GATT (no Scan auto-Connect); Connect temporarily uses Plugin.BLE while exclusive Veepoo connectDevice is under diagnosis (watch SDK Measure gated off); Watch readings page Measure uses vendor live HR/SpO₂ when exclusive Connect is re-enabled; offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
