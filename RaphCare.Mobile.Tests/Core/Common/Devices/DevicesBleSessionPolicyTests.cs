@@ -42,6 +42,25 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
+    public void DevicesAppearMustNotRequestBluetoothPermissionThenConnect()
+    {
+        // Regression: OnAppearing RequestAsync → grant → Veepoo connectDevice force-closed
+        // the app as soon as the patient accepted Nearby devices.
+        Assert.False(DevicesBleSessionPolicy.ShouldRequestBluetoothPermissionOnDevicesAppear);
+        Assert.True(DevicesBleSessionPolicy.PostPermissionGrantSettle >= TimeSpan.FromMilliseconds(500));
+        Assert.False(DevicesBleSessionPolicy.ShouldReconnectClaimedWatchOnAppearWithPermission(
+            nearbyDevicesPermissionGranted: false,
+            hasLockedBluetoothMac: true,
+            hasConnectedDeviceId: false,
+            liveMeasureSessionReady: false));
+        Assert.True(DevicesBleSessionPolicy.ShouldReconnectClaimedWatchOnAppearWithPermission(
+            nearbyDevicesPermissionGranted: true,
+            hasLockedBluetoothMac: true,
+            hasConnectedDeviceId: false,
+            liveMeasureSessionReady: false));
+    }
+
+    [Fact]
     public void ConnectMustReuseVendorSessionOnTheSameMacInsteadOfDisconnectThenConnect()
     {
         const string mac = "6F:9A:C8:4C:E4:45";
@@ -57,6 +76,32 @@ public sealed class DevicesBleSessionPolicyTests
             vendorSessionReady: true,
             sessionMac: mac,
             targetMac: "AA:BB:CC:DD:EE:01"));
+    }
+
+    [Fact]
+    public void ExclusiveModeKeepsVendorSessionAliveAfterUserDisconnect()
+    {
+        // Regression: native disconnectWatch then connectDevice in the same process
+        // force-closed the app on E580/E585. Disconnect must stay logical in exclusive mode.
+        Assert.True(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
+        Assert.True(DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect);
+    }
+
+    [Fact]
+    public void AutoReconnectMustCoolDownAfterFailure()
+    {
+        // Regression: Devices appear kept calling connectDevice after a timeout, leaving
+        // "Reconnecting..." and a hung radio until the patient force-closed the app.
+        var failedAt = new DateTimeOffset(2026, 9, 8, 20, 0, 0, TimeSpan.Zero);
+        Assert.True(DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterRecentFailure(
+            failedAt,
+            failedAt.AddMinutes(1)));
+        Assert.False(DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterRecentFailure(
+            failedAt,
+            failedAt.AddMinutes(2)));
+        Assert.False(DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterRecentFailure(
+            null,
+            failedAt));
     }
 
     [Fact]

@@ -28,7 +28,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-09-08
+Last reviewed: 2026-09-09
 
 ---
 
@@ -159,7 +159,7 @@ Design lock and screen map: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobi
 | Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
-| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear (vendor session, or a short Scan then GATT if the vendor libraries are missing); Watch readings page Measure uses vendor live HR/SpO₂; offline outbox retries |
+| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear (vendor session, or a short Scan then GATT if the vendor libraries are missing); manual Scan keeps exclusive Veepoo alive and only releases Plugin.BLE GATT (no Scan auto-Connect); Watch readings page Measure uses vendor live HR/SpO₂; offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
@@ -210,7 +210,7 @@ Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_P
 - [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: REQUEST_CANCELED (-2) retries after GATT handoff; reconnect claimed MAC when Devices appears after process death; proxy invoke guarded; physical ET580/ET585 Measure prove-out still open; iOS not wired
 - [ ] Reliable full band data (HBand-class parity for in-scope metrics) `(partial)`: Phase 1 HR/SpO₂ hooks in; activity/sleep/history still open. See `docs/14`
 - [ ] Full typed HBand SDK C# binding project `(out of scope for Phase 1)`: JNI bridge used instead; optional later. See `docs/12_HBand_SDK_Integration.md`
-- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: exclusive Veepoo Connect; Nearby **Claimed wearable** fallback when Scan finds no ads; settle after Disconnect before reconnect (avoids process kill); heal Measure session; no cold stopDetect; awaiting ET580/ET585 prove-out
+- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: exclusive Veepoo Connect; Claimed wearable Connect; logical Disconnect; SDK ClassLoader load; heart status (wear/busy/battery) surfaced; awaiting ET580/ET585 prove-out of live BPM
 - [ ] Auto sync / background monitoring of band readings `(partial)`: manual sync + outbox exist; background unproven; OS limits in `docs/14`
 - [ ] Activity (steps / kcal / distance / goals) domain + sync + mobile `(not started)`
 - [ ] Sleep domain + sync + mobile `(not started)`

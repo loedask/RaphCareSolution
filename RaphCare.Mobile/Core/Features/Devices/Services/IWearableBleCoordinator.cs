@@ -29,6 +29,10 @@ public interface IWearableBleCoordinator
     event EventHandler<string?>? ErrorOccurred;
 
     Task<PermissionStatus> RequestBluetoothPermissionsAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>Check Nearby devices / Bluetooth permission without showing a dialog.</summary>
+    Task<PermissionStatus> CheckBluetoothPermissionsAsync(CancellationToken cancellationToken = default);
+
     Task<bool> EnsureBluetoothAdapterOnAsync(CancellationToken cancellationToken = default);
 
     Task StartScanAsync(

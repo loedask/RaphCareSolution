@@ -1481,6 +1481,9 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesPermissionDenied" xml:space="preserve">
     <value>Nearby devices permission is off. Open phone Settings, find RaphCare, allow Nearby devices (and Bluetooth), then return and tap Scan.</value>
   </data>
+  <data name="DevicesPermissionNeededHint" xml:space="preserve">
+    <value>Tap Scan or Connect and allow Nearby devices when the phone asks. The app will not connect until you allow it.</value>
+  </data>
   <data name="DevicesBluetoothOff" xml:space="preserve">
     <value>Bluetooth is off. Turn it on and try again.</value>
   </data>
@@ -1488,7 +1491,10 @@ Accessible. Intelligent. Human.</value>
     <value>Scanning for wearables…</value>
   </data>
   <data name="DevicesScanComplete" xml:space="preserve">
-    <value>Scan finished.</value>
+    <value>Scan finished. Tap Connect on your claimed watch.</value>
+  </data>
+  <data name="DevicesConnectingHint" xml:space="preserve">
+    <value>Connecting to your watch…</value>
   </data>
   <data name="DevicesScanStopped" xml:space="preserve">
     <value>Scan stopped.</value>
@@ -1506,7 +1512,7 @@ Accessible. Intelligent. Human.</value>
     <value>Reconnecting your claimed watch…</value>
   </data>
   <data name="DevicesReconnectFailedHint" xml:space="preserve">
-    <value>Could not reconnect. Keep the watch nearby, tap Scan, then Connect.</value>
+    <value>Could not reconnect. Force-stop the H Band app if installed, keep the watch nearby and unlocked, then tap Connect.</value>
   </data>
   <data name="DevicesDisconnected" xml:space="preserve">
     <value>Disconnected.</value>

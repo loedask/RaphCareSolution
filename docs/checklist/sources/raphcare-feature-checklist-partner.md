@@ -17,7 +17,7 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 
 Each section shows its % in the heading. Numbers stay in sync when status changes.
 
-Last reviewed: 2026-09-08
+Last reviewed: 2026-09-09
 
 ---
 
@@ -104,7 +104,7 @@ What patients see on Android and iPhone.
 | Push alerts on Android | Partial | Needs Firebase configured on the server |
 | Push alerts on iPhone | Partial | Needs store and push setup, then a real device test |
 | Claim an assigned watch serial in the app | Done | Hospital path: after staff assign the watch, the patient types that serial or photographs the packaging barcode or QR. Direct package path: claim the packaging serial when the watch is stocked under Direct. Unknown serials are rejected. Scan and Connect stay off until claim. After the first pair, only that Bluetooth address is accepted. Trying a different nearby band shows which Bluetooth address belongs to your claim. Closing the app and opening Devices again reconnects that claimed watch when it is nearby. |
-| Connect **E580** or **E585** style Bluetooth bands | Partial | Scan needs Nearby devices permission on Android 12+. Auto-connect and manual Scan both work (Scan briefly drops a held link so the band can appear). Disconnect then Connect again waits a short settle so the app does not close. Connect, then Measure on Watch readings. Force-stop the separate H Band app if the phone has it. Stay on the app while measuring. Blood pressure and other monitors are later |
+| Connect **E580** or **E585** style Bluetooth bands | Partial | Scan needs Nearby devices permission on Android 12+. Opening Devices reconnects the claimed watch when permission is already allowed. Manual Scan fills Nearby (including your saved watch row) without dropping the watch radio; tap Connect only if you need to. Disconnect clears Connected in the app but keeps the watch radio until you leave the app, so Connect again is safe. Connect, then Measure on Watch readings. If Measure says the watch is loose, busy, or low battery, fix that and try again. Force-stop the separate H Band app if the phone has it. Stay on the app while measuring. Blood pressure and other monitors are later |
 | Live heart rate and blood oxygen in the app | Partial | Android vendor path wired; confirm on your ET580 or ET585 samples |
 | Auto sync and background monitoring | Not started | Manual sync exists; background sync not finished |
 | Full band health history (like the vendor companion app) | Partial | Connect and live HR/SpO₂ started; activity, sleep, and history still open |

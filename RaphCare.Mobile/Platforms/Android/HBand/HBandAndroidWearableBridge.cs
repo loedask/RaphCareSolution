@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Android.Util;
@@ -31,23 +32,31 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
     private readonly List<HBandInvocationHandler> _handlerRoots = new();
     private HBandInvocationHandler? _activeHandler;
 
+    private bool? _sdkAvailableCached;
+
     public bool IsAvailable
     {
         get
         {
+            if (_sdkAvailableCached is bool cached)
+                return cached;
+
             try
             {
-                Class.ForName("com.veepoo.protocol.VPOperateManager");
+                LoadSdkClass("com.veepoo.protocol.VPOperateManager");
+                _sdkAvailableCached = true;
                 return true;
             }
             catch (Throwable t)
             {
                 Log.Warn(Tag, "VPOperateManager missing (watch SDK not in this build): " + t.Message);
+                _sdkAvailableCached = false;
                 return false;
             }
             catch (Exception ex)
             {
                 Log.Warn(Tag, "VPOperateManager missing (watch SDK not in this build): " + ex.Message);
+                _sdkAvailableCached = false;
                 return false;
             }
         }
@@ -95,7 +104,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         lock (_sync)
         {
             if (_sessionReady
-                && string.Equals(_connectedMac, macAddress, StringComparison.OrdinalIgnoreCase))
+                && BluetoothMacNormalizer.EqualsNormalized(_connectedMac, macAddress))
                 return;
         }
 
@@ -105,15 +114,43 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                // Never call disconnectWatch/stopDetect on a cold manager (Inuker toast + crash).
+                var connectTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var notifyTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                linked.CancelAfter(TimeSpan.FromSeconds(40));
+                using var reg = linked.Token.Register(() =>
+                {
+                    connectTcs.TrySetCanceled(linked.Token);
+                    notifyTcs.TrySetCanceled(linked.Token);
+                });
+
+                // If Veepoo already holds this MAC (common after a soft Disconnect or a hung
+                // prior attempt), skip connectDevice. Calling it again often never callbacks.
+                if (await TryAdoptExistingNativeLinkAsync(manager, macAddress, cancellationToken)
+                        .ConfigureAwait(false))
+                {
+                    await ConfirmPasswordAsync(manager, devicePassword, cancellationToken)
+                        .ConfigureAwait(false);
+                    await SyncPersonInfoAsync(manager, cancellationToken).ConfigureAwait(false);
+                    lock (_sync)
+                    {
+                        _connectedMac = macAddress;
+                        _sessionReady = true;
+                        _vendorConnectStarted = true;
+                    }
+
+                    return;
+                }
+
+                // Stale connectStarted / half-open radio: tear down before a fresh connectDevice.
                 var mayTeardown = DevicesBleSessionPolicy.ShouldInvokeVendorDisconnect(
                     IsSessionReady,
                     Volatile.Read(ref _vendorConnectStarted));
-                if (mayTeardown)
+                if (mayTeardown || IsAnyNativeConnected(manager))
                 {
                     await MainThread.InvokeOnMainThreadAsync(() => DisconnectCoreAsync())
                         .ConfigureAwait(false);
-                    await Task.Delay(TimeSpan.FromMilliseconds(900 * attempt), cancellationToken)
+                    await Task.Delay(TimeSpan.FromMilliseconds(1200 * attempt), cancellationToken)
                         .ConfigureAwait(false);
                 }
                 else if (attempt > 1)
@@ -121,16 +158,6 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                     await Task.Delay(TimeSpan.FromMilliseconds(900 * attempt), cancellationToken)
                         .ConfigureAwait(false);
                 }
-
-                var connectTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                var notifyTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                linked.CancelAfter(TimeSpan.FromSeconds(25));
-                using var reg = linked.Token.Register(() =>
-                {
-                    connectTcs.TrySetCanceled(linked.Token);
-                    notifyTcs.TrySetCanceled(linked.Token);
-                });
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
@@ -144,6 +171,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                                 if (method.Name is "connectState" or "onResponse" or "onConnectResponse")
                                 {
                                     var code = UnboxInt(args.Length > 0 ? args[0] : null);
+                                    Log.Debug(Tag, $"connectState code={code}");
                                     if (code == RequestSuccessCode())
                                         connectTcs.TrySetResult(true);
                                     else
@@ -162,6 +190,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                                 if (method.Name is "notifyState" or "onResponse" or "notifySuccess" or "onNotifyResponse")
                                 {
                                     var code = args.Length > 0 ? UnboxInt(args[0]) : RequestSuccessCode();
+                                    Log.Debug(Tag, $"notifyState code={code}");
                                     if (code == RequestSuccessCode() || method.Name is "notifySuccess")
                                         notifyTcs.TrySetResult(true);
                                     else
@@ -193,7 +222,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         Log.Error(Tag, "connectDevice threw: " + t);
                         connectTcs.TrySetException(
                             new InvalidOperationException(
-                                "Watch measure could not start Bluetooth. Keep the watch nearby and try again."));
+                                "Watch Bluetooth could not start. Keep the watch nearby and unlocked, then Connect again."));
                     }
                 }).ConfigureAwait(false);
 
@@ -205,8 +234,10 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
+                    await MainThread.InvokeOnMainThreadAsync(() => DisconnectCoreAsync())
+                        .ConfigureAwait(false);
                     throw new TimeoutException(
-                        "HBand connect timed out. Keep the watch nearby and try Measure again.");
+                        "Watch connect timed out. Keep the watch nearby and unlocked, force-stop the H Band app if it is installed, then Connect again.");
                 }
 
                 await ConfirmPasswordAsync(manager, devicePassword, cancellationToken).ConfigureAwait(false);
@@ -219,6 +250,11 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                 }
 
                 return;
+            }
+            catch (TimeoutException ex) when (attempt < DevicesBleSessionPolicy.VendorConnectMaxAttempts)
+            {
+                lastError = ex;
+                Log.Warn(Tag, $"Connect attempt {attempt} timed out; clearing radio and retrying.");
             }
             catch (InvalidOperationException ex) when (
                 attempt < DevicesBleSessionPolicy.VendorConnectMaxAttempts
@@ -257,20 +293,32 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
 
                     try
                     {
-                        var bpm = ReadIntProperty(args[0]!, "getData", "data", "getHeartRate", "heartRate", "getValue", "value");
-                        if (bpm is >= 20 and <= 300)
+                        var heart = args[0]!;
+                        var statusName = ReadEnumName(heart, "getHeartStatus", "heartStatus");
+                        var bpm = ReadIntProperty(heart, "getData", "data", "getHeartRate", "heartRate", "getValue", "value");
+                        Log.Debug(Tag, $"Heart sample status={statusName ?? "(null)"} bpm={bpm?.ToString(CultureInfo.InvariantCulture) ?? "(null)"} raw={heart}");
+
+                        if (WearableHeartDetectRules.IsBlockingHeartStatus(statusName))
+                        {
+                            var msg = WearableHeartDetectRules.PatientMessageForHeartStatus(statusName);
+                            if (!string.IsNullOrWhiteSpace(msg))
+                                RaiseError(msg);
+                            return null;
+                        }
+
+                        if (WearableHeartDetectRules.ShouldAcceptHeartSample(statusName, bpm))
                         {
                             RaiseVitals(new WearableVitalsSnapshot
                             {
                                 At = DateTimeOffset.UtcNow,
                                 HeartRateBpm = bpm,
                                 CharacteristicUuid = "hband:heart",
-                                RawHex = $"hr={bpm}"
+                                RawHex = $"hr={bpm};status={statusName}"
                             });
                         }
                         else
                         {
-                            Log.Warn(Tag, $"Heart callback ignored bpm={bpm}");
+                            Log.Warn(Tag, $"Heart callback ignored status={statusName} bpm={bpm}");
                         }
                     }
                     catch (Exception ex)
@@ -536,7 +584,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         if (_initialized && _manager is not null)
             return;
 
-        var mgrClass = Class.ForName("com.veepoo.protocol.VPOperateManager");
+        var mgrClass = LoadSdkClass("com.veepoo.protocol.VPOperateManager");
         Java.Lang.Object? manager = null;
         var appContext = global::Android.App.Application.Context;
         foreach (var name in new[] { "getMangerInstance", "getInstance" })
@@ -570,8 +618,75 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             throw new InvalidOperationException("Could not obtain VPOperateManager instance.");
 
         TryInvoke(manager, "init", appContext);
+        TryInvoke(manager, "setAutoConnectBTBySdk", Java.Lang.Boolean.ValueOf(false));
         _manager = manager;
         _initialized = true;
+    }
+
+    private static Task<bool> TryAdoptExistingNativeLinkAsync(
+        Java.Lang.Object manager,
+        string macAddress,
+        CancellationToken cancellationToken) =>
+        MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (IsDeviceConnected(manager, macAddress) || IsCurrentDeviceConnected(manager))
+            {
+                Log.Info(Tag, "Adopting existing Veepoo link for " + macAddress);
+                return true;
+            }
+
+            return false;
+        });
+
+    private static bool IsAnyNativeConnected(Java.Lang.Object manager) =>
+        IsCurrentDeviceConnected(manager);
+
+    private static bool IsCurrentDeviceConnected(Java.Lang.Object manager)
+    {
+        try
+        {
+            foreach (var method in manager.Class.GetMethods())
+            {
+                if (method.Name != "isCurrentDeviceConnected")
+                    continue;
+                if ((method.GetParameterTypes()?.Length ?? -1) != 0)
+                    continue;
+                var result = method.Invoke(manager);
+                return result is Java.Lang.Boolean b && b.BooleanValue();
+            }
+        }
+        catch (Throwable t)
+        {
+            Log.Warn(Tag, "isCurrentDeviceConnected: " + t.Message);
+        }
+
+        return false;
+    }
+
+    private static bool IsDeviceConnected(Java.Lang.Object manager, string macAddress)
+    {
+        try
+        {
+            var mac = new Java.Lang.String(macAddress);
+            foreach (var method in manager.Class.GetMethods())
+            {
+                if (method.Name != "isDeviceConnected")
+                    continue;
+                var pts = method.GetParameterTypes() ?? [];
+                if (pts.Length != 1)
+                    continue;
+                var result = method.Invoke(manager, mac);
+                if (result is Java.Lang.Boolean b && b.BooleanValue())
+                    return true;
+            }
+        }
+        catch (Throwable t)
+        {
+            Log.Warn(Tag, "isDeviceConnected: " + t.Message);
+        }
+
+        return false;
     }
 
     private void EnsureSession()
@@ -611,7 +726,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         {
             try
             {
-                iface = Class.ForName(name);
+                iface = LoadSdkClass(name);
                 break;
             }
             catch (Throwable)
@@ -640,14 +755,14 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
     {
         try
         {
-            var sexClass = Class.ForName("com.veepoo.protocol.model.enums.ESex");
+            var sexClass = LoadSdkClass("com.veepoo.protocol.model.enums.ESex");
             var sexObj = sexClass.GetField("MAN")?.Get(null)
                          ?? sexClass.GetField("MALE")?.Get(null)
                          ?? sexClass.GetEnumConstants()?[0];
             if (sexObj is null)
                 return null;
 
-            var personClass = Class.ForName("com.veepoo.protocol.model.datas.PersonInfoData");
+            var personClass = LoadSdkClass("com.veepoo.protocol.model.datas.PersonInfoData");
             foreach (var ctor in personClass.GetConstructors())
             {
                 var pts = ctor.GetParameterTypes() ?? [];
@@ -762,7 +877,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
     {
         try
         {
-            var codeClass = Class.ForName("com.inuker.bluetooth.library.Code");
+            var codeClass = LoadSdkClass("com.inuker.bluetooth.library.Code");
             var field = codeClass.GetField("REQUEST_SUCCESS");
             return UnboxInt(field?.Get(null));
         }
@@ -788,6 +903,55 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         {
             return -1;
         }
+    }
+
+    private static Class LoadSdkClass(string name)
+    {
+        // Multidex / Bind=false AAR classes are visible on the app Context classloader.
+        // Class.ForName(name) alone can miss them and report "Watch SDK is unavailable".
+        var loader = global::Android.App.Application.Context?.ClassLoader;
+        if (loader is not null)
+            return Class.ForName(name, initialize: true, loader);
+
+        return Class.ForName(name);
+    }
+
+    private static string? ReadEnumName(Java.Lang.Object javaObj, params string[] names)
+    {
+        var cls = javaObj.Class;
+        foreach (var name in names)
+        {
+            try
+            {
+                var m = cls.GetMethod(name);
+                var value = m.Invoke(javaObj);
+                if (value is null)
+                    continue;
+                if (value is Java.Lang.Enum e)
+                    return e.Name();
+                var nameMethod = value.Class.GetMethod("name");
+                return nameMethod?.Invoke(value)?.ToString();
+            }
+            catch
+            {
+                // try next
+            }
+
+            try
+            {
+                var f = cls.GetField(name);
+                var value = f.Get(javaObj);
+                if (value is Java.Lang.Enum e)
+                    return e.Name();
+                return value?.ToString();
+            }
+            catch
+            {
+                // next
+            }
+        }
+
+        return null;
     }
 
     private static int? ReadIntProperty(Java.Lang.Object javaObj, params string[] names)

@@ -148,7 +148,9 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
                 var first = devices.Data[0];
                 _registeredDeviceId = first.DeviceId;
                 var mac = BluetoothMacNormalizer.TryNormalize(first.BluetoothMacAddress);
-                if (DevicesBleSessionPolicy.ShouldReconnectClaimedWatchOnAppear(
+                var perm = await _ble.CheckBluetoothPermissionsAsync().ConfigureAwait(false);
+                if (DevicesBleSessionPolicy.ShouldReconnectClaimedWatchOnAppearWithPermission(
+                        nearbyDevicesPermissionGranted: perm == PermissionStatus.Granted,
                         hasLockedBluetoothMac: mac is not null,
                         hasConnectedDeviceId: _ble.ConnectedDeviceId.HasValue,
                         liveMeasureSessionReady: _ble.IsLiveMeasureSessionReady))
@@ -163,6 +165,12 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
                     OnPropertyChanged(nameof(ShowNotConnected));
                     if (!_ble.ConnectedDeviceId.HasValue)
                         StatusHint = NotConnectedHint;
+                }
+                else if (mac is not null
+                         && perm != PermissionStatus.Granted
+                         && !DevicesBleSessionPolicy.ShouldRequestBluetoothPermissionOnDevicesAppear)
+                {
+                    StatusHint = T("DevicesPermissionNeededHint");
                 }
             }
 

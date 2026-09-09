@@ -19,6 +19,19 @@ public static class DevicesBleSessionPolicy
     public static bool ReconnectClaimedWatchWhenDevicesAppears => true;
 
     /// <summary>
+    /// Opening Devices must not show the Nearby-devices dialog then immediately call Veepoo
+    /// <c>connectDevice</c>. That grant→JNI sequence force-closes the app on some phones.
+    /// Check permission on appear; Request only from explicit Scan or Connect.
+    /// </summary>
+    public static bool ShouldRequestBluetoothPermissionOnDevicesAppear => false;
+
+    /// <summary>
+    /// After the user grants Nearby devices, wait before Scan/Connect JNI so the Activity
+    /// result finishes and the main looper is idle.
+    /// </summary>
+    public static TimeSpan PostPermissionGrantSettle { get; } = TimeSpan.FromMilliseconds(800);
+
+    /// <summary>
     /// Closing the app drops in-memory GATT and vendor state. Opening Devices (or Watch readings)
     /// should reconnect the claimed Bluetooth address without asking the patient to Scan first.
     /// Also re-run when UI shows Connected but the exclusive Measure session is missing.
@@ -30,6 +43,20 @@ public static class DevicesBleSessionPolicy
         ReconnectClaimedWatchWhenDevicesAppears
         && hasLockedBluetoothMac
         && (!hasConnectedDeviceId || !liveMeasureSessionReady);
+
+    /// <summary>
+    /// Auto-reconnect on appear only when Nearby devices is already granted.
+    /// </summary>
+    public static bool ShouldReconnectClaimedWatchOnAppearWithPermission(
+        bool nearbyDevicesPermissionGranted,
+        bool hasLockedBluetoothMac,
+        bool hasConnectedDeviceId,
+        bool liveMeasureSessionReady) =>
+        nearbyDevicesPermissionGranted
+        && ShouldReconnectClaimedWatchOnAppear(
+            hasLockedBluetoothMac,
+            hasConnectedDeviceId,
+            liveMeasureSessionReady);
 
     /// <summary>
     /// Exclusive Measure needs the Veepoo session, not Plugin.BLE Connected alone.
@@ -92,6 +119,27 @@ public static class DevicesBleSessionPolicy
     /// the process. Scan still uses Plugin.BLE to discover the MAC.
     /// </summary>
     public static bool PreferExclusiveVendorSession => true;
+
+    /// <summary>
+    /// The Veepoo manager used by the E580/E585 crashes on some phones when a successful
+    /// <c>disconnectWatch</c> is followed by a second <c>connectDevice</c> in the same app
+    /// process. In exclusive mode, Devices Disconnect is therefore a logical disconnect:
+    /// clear RaphCare's Connected state but retain the vendor session for a safe reconnect.
+    /// The session is naturally released when Android terminates the process.
+    /// </summary>
+    public static bool KeepVendorSessionAliveAfterUserDisconnect => PreferExclusiveVendorSession;
+
+    /// <summary>
+    /// After an auto-reconnect timeout/failure, wait before trying again on Devices appear.
+    /// Repeated Veepoo connectDevice calls without a cool-down leave the radio hung.
+    /// </summary>
+    public static readonly TimeSpan ClaimedWatchReconnectFailureCooldown = TimeSpan.FromMinutes(2);
+
+    public static bool ShouldSkipClaimedWatchReconnectAfterRecentFailure(
+        DateTimeOffset? lastFailureUtc,
+        DateTimeOffset utcNow) =>
+        lastFailureUtc is not null
+        && utcNow - lastFailureUtc.Value < ClaimedWatchReconnectFailureCooldown;
 
     /// <summary>
     /// Legacy name kept for older call sites. Prefer <see cref="PreferExclusiveVendorSession"/>.

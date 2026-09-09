@@ -33,6 +33,8 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     private string? _claimedBluetoothMac;
     private string? _syncResultText;
     private CancellationTokenSource? _scanCts;
+    private CancellationTokenSource? _reconnectCts;
+    private DateTimeOffset? _lastClaimedReconnectFailureUtc;
 
     public DevicesViewModel(IWearableBleCoordinator ble, IPatientDevicesService patientDevices, IVitalsSyncOutbox vitalsOutbox)
     {
@@ -294,6 +296,9 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
 
     public void Dispose()
     {
+        _reconnectCts?.Cancel();
+        _reconnectCts?.Dispose();
+        _reconnectCts = null;
         DetachBleHandlers();
         GC.SuppressFinalize(this);
     }
@@ -335,35 +340,63 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     private async Task TryReconnectClaimedWatchAsync()
     {
         var mac = BluetoothMacNormalizer.TryNormalize(ClaimedBluetoothMac);
-        if (!DevicesBleSessionPolicy.ShouldReconnectClaimedWatchOnAppear(
+        var perm = await _ble.CheckBluetoothPermissionsAsync().ConfigureAwait(false);
+        var permissionGranted = perm == PermissionStatus.Granted;
+
+        if (!DevicesBleSessionPolicy.ShouldReconnectClaimedWatchOnAppearWithPermission(
+                nearbyDevicesPermissionGranted: permissionGranted,
                 hasLockedBluetoothMac: mac is not null,
                 hasConnectedDeviceId: _ble.ConnectedDeviceId.HasValue,
                 liveMeasureSessionReady: _ble.IsLiveMeasureSessionReady))
+        {
+            if (mac is not null
+                && DevicesBleSessionPolicy.ShouldReconnectClaimedWatchOnAppear(
+                    hasLockedBluetoothMac: true,
+                    hasConnectedDeviceId: _ble.ConnectedDeviceId.HasValue,
+                    liveMeasureSessionReady: _ble.IsLiveMeasureSessionReady)
+                && !permissionGranted
+                && !DevicesBleSessionPolicy.ShouldRequestBluetoothPermissionOnDevicesAppear)
+            {
+                StatusHint = T("DevicesPermissionNeededHint");
+            }
+
             return;
+        }
+
+        if (DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterRecentFailure(
+                _lastClaimedReconnectFailureUtc,
+                DateTimeOffset.UtcNow))
+        {
+            StatusHint = T("DevicesReconnectFailedHint");
+            return;
+        }
+
+        _reconnectCts?.Cancel();
+        _reconnectCts?.Dispose();
+        _reconnectCts = new CancellationTokenSource();
+        var reconnectToken = _reconnectCts.Token;
 
         ErrorMessage = null;
         StatusHint = T("DevicesReconnectingHint");
         IsBusy = true;
         try
         {
-            var perm = await _ble.RequestBluetoothPermissionsAsync().ConfigureAwait(false);
-            if (perm != PermissionStatus.Granted)
-            {
-                ErrorMessage = T("DevicesPermissionDenied");
-                return;
-            }
-
             if (!await _ble.EnsureBluetoothAdapterOnAsync().ConfigureAwait(false))
             {
                 ErrorMessage = T("DevicesBluetoothOff");
                 return;
             }
 
-            await _ble.ReconnectClaimedWatchAsync(mac!, ModelSku, CancellationToken.None)
+            await _ble.ReconnectClaimedWatchAsync(mac!, ModelSku, reconnectToken)
                 .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (reconnectToken.IsCancellationRequested)
+        {
+            // Manual Connect or leaving the page cancelled auto-reconnect.
         }
         catch (Exception ex)
         {
+            _lastClaimedReconnectFailureUtc = DateTimeOffset.UtcNow;
             ErrorMessage = BlePermissionFailure.IsMissingNearbyDevicesPermission(ex.Message)
                 ? T("DevicesPermissionDenied")
                 : ex.Message;
@@ -375,12 +408,18 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             {
                 if (_ble.ConnectedDeviceId.HasValue)
                 {
+                    _lastClaimedReconnectFailureUtc = null;
                     ApplyActiveBleConnectionToUi();
                     return;
                 }
 
                 RefreshItems();
-                StatusHint = T("DevicesReconnectFailedHint");
+                if (!reconnectToken.IsCancellationRequested)
+                {
+                    _lastClaimedReconnectFailureUtc ??= DateTimeOffset.UtcNow;
+                    StatusHint = T("DevicesReconnectFailedHint");
+                }
+
                 RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
             }).ConfigureAwait(false);
         }
@@ -432,6 +471,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     {
         try
         {
+            _reconnectCts?.Cancel();
             DisposeScanCts();
             await _ble.StopScanAsync().ConfigureAwait(false);
             if (DevicesBleSessionPolicy.DisconnectWhenLeavingDevicesPage)
@@ -574,11 +614,17 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
                 await _ble.StartScanAsync(ShowAllDevices, ClaimedBluetoothMac, scanToken).ConfigureAwait(false);
                 await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
                 if (scanToken.IsCancellationRequested)
+                {
                     StatusHint = T("DevicesScanStopped");
+                }
                 else if (Items.Count == 0)
+                {
                     StatusHint = T("DevicesScanEmptyHint");
+                }
                 else
+                {
                     StatusHint = T("DevicesScanComplete");
+                }
             }
             catch (OperationCanceledException)
             {
@@ -598,6 +644,9 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
             RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
         }
+
+        // Scan only populates Nearby (including the Claimed wearable row). Do not auto-Connect:
+        // Scan → disconnectWatch → connectDevice force-closes some phones. Patient taps Connect.
     }
 
     private async Task StopScanAsync()
@@ -627,6 +676,9 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     private async Task ConnectAsync(Guid deviceId)
     {
         ErrorMessage = null;
+        // Do not let a hung auto-reconnect hold the connect gate while the patient taps Connect.
+        _reconnectCts?.Cancel();
+
         if (!HasClaimedDevice || RegisteredDeviceId is not Guid claimedId)
         {
             ErrorMessage = T("DevicesClaimBeforeConnect");
@@ -646,6 +698,8 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         }
 
         IsBusy = true;
+        BusyMessage = T("DevicesConnectingHint");
+        StatusHint = T("DevicesConnectingHint");
         try
         {
             var perm = await _ble.RequestBluetoothPermissionsAsync().ConfigureAwait(false);
@@ -664,6 +718,8 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
                     ErrorMessage = "Could not connect to the watch. Keep it nearby and try again.";
                 return;
             }
+
+            _lastClaimedReconnectFailureUtc = null;
 
             ErrorMessage = null;
             OnPropertyChanged(nameof(ConnectedDeviceId));

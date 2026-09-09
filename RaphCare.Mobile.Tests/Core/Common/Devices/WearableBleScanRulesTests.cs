@@ -11,26 +11,15 @@ public sealed class WearableBleScanRulesTests
     private const string ClaimedMac = "6F:9A:C8:4C:E4:45";
 
     [Fact]
-    public void ManualScanWhileBluetoothOnlyConnectedMustReleaseTheHeldLink()
+    public void ManualScanWhilePluginBleGattConnectedMustReleaseGattOnly()
     {
         // Partner: Devices showed Connected / Bluetooth-only, Scan ran, Nearby stayed empty.
-        // Android often hides a peripheral that Plugin.BLE or Veepoo still holds.
+        // Android often hides a peripheral that Plugin.BLE still holds.
+        // Exclusive Veepoo alone must NOT request release (disconnectWatch during Scan crashes).
         Assert.True(WearableBleScanRules.ShouldReleaseActiveLinksBeforeManualScan(
-            hasConnectedDeviceId: true,
-            pluginBleConnected: false,
-            vendorSessionActive: false));
-        Assert.True(WearableBleScanRules.ShouldReleaseActiveLinksBeforeManualScan(
-            hasConnectedDeviceId: false,
-            pluginBleConnected: true,
-            vendorSessionActive: false));
-        Assert.True(WearableBleScanRules.ShouldReleaseActiveLinksBeforeManualScan(
-            hasConnectedDeviceId: false,
-            pluginBleConnected: false,
-            vendorSessionActive: true));
+            pluginBleConnected: true));
         Assert.False(WearableBleScanRules.ShouldReleaseActiveLinksBeforeManualScan(
-            hasConnectedDeviceId: false,
-            pluginBleConnected: false,
-            vendorSessionActive: false));
+            pluginBleConnected: false));
     }
 
     [Fact]

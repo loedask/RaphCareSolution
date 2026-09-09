@@ -11,6 +11,7 @@
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource BackgroundColor}">
 
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Padding="20,16,20,96" Spacing="14">
 
@@ -296,4 +297,6 @@
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
+        <shared:BusyOverlay IsBusy="{Binding IsBusy}" Message="{Binding BusyMessage}" />
+    </Grid>
 </ContentPage>

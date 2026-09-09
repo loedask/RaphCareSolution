@@ -6,14 +6,12 @@ namespace RaphCare.Mobile.Kernel.Core.Common.Devices;
 public static class WearableBleScanRules
 {
     /// <summary>
-    /// Plugin.BLE / Veepoo holding the watch often blocks rediscovery. Release before manual Scan
-    /// whenever Devices still shows a connected id, an active GATT link, or a vendor session.
+    /// Plugin.BLE holding GATT can hide the watch from rediscovery. Release Plugin.BLE only
+    /// before manual Scan. Do not tear down an exclusive Veepoo session here:
+    /// <c>disconnectWatch</c> then <c>connectDevice</c> force-closes some phones.
     /// </summary>
-    public static bool ShouldReleaseActiveLinksBeforeManualScan(
-        bool hasConnectedDeviceId,
-        bool pluginBleConnected,
-        bool vendorSessionActive) =>
-        hasConnectedDeviceId || pluginBleConnected || vendorSessionActive;
+    public static bool ShouldReleaseActiveLinksBeforeManualScan(bool pluginBleConnected) =>
+        pluginBleConnected;
 
     /// <summary>
     /// When a claimed MAC is known, Plugin.BLE must not drop advertisements in its early filter.

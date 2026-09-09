@@ -24,7 +24,54 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("RemainingVendorReconnectSettle", text, StringComparison.Ordinal);
         Assert.Contains("WaitForVendorReconnectSettleAsync", text, StringComparison.Ordinal);
         Assert.Contains("ResolveClaimedDeviceName", text, StringComparison.Ordinal);
+        Assert.Contains("TryConnectClaimedWatchViaPluginBleAsync", text, StringComparison.Ordinal);
+        Assert.Contains("KeepVendorSessionAliveAfterUserDisconnect", text, StringComparison.Ordinal);
+        Assert.Contains("retainedVendorSession", text, StringComparison.Ordinal);
         Assert.Contains("preferredMac", text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ClaimedWearableConnectMustReuseRetainedVendorSession()
+    {
+        // After logical Disconnect, Connect on the Claimed wearable row must adopt the
+        // live Veepoo session instead of calling connectDevice again.
+        var text = ReadCoordinatorSource();
+        var placeholderIdx = text.IndexOf(
+            "deviceId == VendorSessionPlaceholderId",
+            StringComparison.Ordinal);
+        Assert.True(placeholderIdx >= 0, "Claimed wearable Connect path not found.");
+        var nextPathIdx = text.IndexOf(
+            "if (!_devices.TryGetValue(deviceId",
+            placeholderIdx,
+            StringComparison.Ordinal);
+        Assert.True(nextPathIdx > placeholderIdx, "Could not bound placeholder Connect body.");
+        var body = text[placeholderIdx..nextPathIdx];
+        Assert.Contains("ShouldReuseExistingVendorSession", body, StringComparison.Ordinal);
+        var reuseIdx = body.IndexOf("ShouldReuseExistingVendorSession", StringComparison.Ordinal);
+        var handshakeIdx = body.IndexOf("ConnectAndHandshakeAsync", StringComparison.Ordinal);
+        Assert.True(reuseIdx >= 0 && handshakeIdx > reuseIdx,
+            "Reuse check must run before ConnectAndHandshake on the Claimed wearable path.");
+    }
+
+    [Fact]
+    public void ManualScanMustNotTearDownVendorSession()
+    {
+        // Regression: ReleaseActiveLinksForManualScanAsync called _hband.DisconnectAsync,
+        // so Scan → disconnectWatch → Connect force-closed the app.
+        var text = ReadCoordinatorSource();
+        var methodIdx = text.IndexOf(
+            "private async Task ReleaseActiveLinksForManualScanAsync",
+            StringComparison.Ordinal);
+        Assert.True(methodIdx >= 0, "ReleaseActiveLinksForManualScanAsync not found.");
+        var nextMethodIdx = text.IndexOf(
+            "\n    private ",
+            methodIdx + 1,
+            StringComparison.Ordinal);
+        Assert.True(nextMethodIdx > methodIdx, "Could not bound ReleaseActiveLinksForManualScanAsync.");
+        var body = text[methodIdx..nextMethodIdx];
+        Assert.DoesNotContain("await _hband.DisconnectAsync", body, StringComparison.Ordinal);
+        Assert.Contains("ReleasePluginBleLinkAsync", body, StringComparison.Ordinal);
+        Assert.Contains("Never call _hband.DisconnectAsync here", body, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -35,6 +82,9 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("StartScanAsync(ShowAllDevices, ClaimedBluetoothMac", text, StringComparison.Ordinal);
         Assert.Contains("IsLiveMeasureSessionReady", text, StringComparison.Ordinal);
         Assert.Contains("IsMissingClaimedBluetoothMacForFallback", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("ShouldAutoConnectClaimedWatchAfterManualScan", text, StringComparison.Ordinal);
+        Assert.Contains("CheckBluetoothPermissionsAsync", text, StringComparison.Ordinal);
+        Assert.Contains("ShouldReconnectClaimedWatchOnAppearWithPermission", text, StringComparison.Ordinal);
         Assert.Contains("LoadClaimedDevicesAsync", text, StringComparison.Ordinal);
     }
 

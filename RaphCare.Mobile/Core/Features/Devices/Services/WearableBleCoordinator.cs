@@ -131,8 +131,28 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             var status = await Permissions.CheckStatusAsync<BluetoothPermissions>().ConfigureAwait(true);
             if (status == PermissionStatus.Granted)
                 return status;
-            return await Permissions.RequestAsync<BluetoothPermissions>().ConfigureAwait(true);
+
+            var requested = await Permissions.RequestAsync<BluetoothPermissions>().ConfigureAwait(true);
+            if (requested == PermissionStatus.Granted
+                && DevicesBleSessionPolicy.PostPermissionGrantSettle > TimeSpan.Zero)
+            {
+                // Grant returns while the Activity is still finishing the permission result.
+                // Starting Veepoo connectDevice in that window force-closes some phones.
+                await Task.Delay(DevicesBleSessionPolicy.PostPermissionGrantSettle).ConfigureAwait(true);
+            }
+
+            return requested;
         }).ConfigureAwait(false);
+    }
+
+    public Task<PermissionStatus> CheckBluetoothPermissionsAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return await Permissions.CheckStatusAsync<BluetoothPermissions>().ConfigureAwait(true);
+        });
     }
 
     public Task<bool> EnsureBluetoothAdapterOnAsync(CancellationToken cancellationToken = default)
@@ -162,16 +182,14 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
 
         await StopScanAsync().ConfigureAwait(false);
 
-        // Auto-reconnect / Connect can hold Plugin.BLE or Veepoo on the watch. Android then
-        // often hides that peripheral from Scan, so Nearby stays empty.
+        // Plugin.BLE GATT can hide the peripheral from Scan. Release GATT only.
+        // Keep exclusive Veepoo sessions alive (native disconnectWatch during Scan,
+        // then Connect, force-closes some phones).
         var pluginConnected = _devices.Values.Any(d => d.State != DeviceState.Disconnected)
                               || (_connectedId is Guid cid
                                   && _devices.TryGetValue(cid, out var linked)
                                   && linked.State != DeviceState.Disconnected);
-        if (WearableBleScanRules.ShouldReleaseActiveLinksBeforeManualScan(
-                hasConnectedDeviceId: _connectedId.HasValue,
-                pluginBleConnected: pluginConnected,
-                vendorSessionActive: _usingHbandSession || _hband.IsSessionReady))
+        if (WearableBleScanRules.ShouldReleaseActiveLinksBeforeManualScan(pluginConnected))
         {
             await ReleaseActiveLinksForManualScanAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -193,21 +211,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     {
         await CleanupNotificationsAsync().ConfigureAwait(false);
 
-        if (_usingHbandSession || _hband.IsSessionReady)
-        {
-            try
-            {
-                await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
-            }
-            catch
-            {
-                // Bridge skips native teardown when no session was started.
-            }
-
-            _usingHbandSession = false;
-            MarkVendorDisconnected();
-        }
-
+        // Never call _hband.DisconnectAsync here. Exclusive Veepoo stays up during Scan.
         foreach (var device in _devices.Values.ToList())
         {
             if (device.State == DeviceState.Disconnected)
@@ -215,8 +219,9 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             await ReleasePluginBleLinkAsync(device, cancellationToken).ConfigureAwait(false);
         }
 
-        _connectedId = null;
-        await WaitForVendorReconnectSettleAsync(cancellationToken).ConfigureAwait(false);
+        // Clear Connected only when it was Plugin.BLE GATT, not a retained vendor session.
+        if (!_usingHbandSession && !_hband.IsSessionReady)
+            _connectedId = null;
     }
 
     private void SeedPairedOrConnectedDevices(string? preferredMac, bool showAllDevices)
@@ -360,8 +365,35 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             {
                 if (!DevicesBleSessionPolicy.PreferExclusiveVendorSession || !_hband.IsAvailable)
                 {
+                    if (!_hband.IsAvailable)
+                    {
+                        // Same recovery as auto-reconnect: Plugin.BLE by MAC when AARs did not load.
+                        await TryConnectClaimedWatchViaPluginBleAsync(_claimedWatchMac, cancellationToken)
+                            .ConfigureAwait(false);
+                        if (_connectedId is not null)
+                            return;
+
+                        ErrorOccurred?.Invoke(this,
+                            "Watch SDK is missing from this install. Reinstall the latest RaphCare APK, or Scan for the watch and Connect from the list.");
+                        return;
+                    }
+
                     ErrorOccurred?.Invoke(this,
-                        "Watch SDK is unavailable. Scan for the watch again, then Connect.");
+                        "Watch SDK path is off. Scan for the watch again, then Connect.");
+                    return;
+                }
+
+                // After a logical Disconnect the vendor session is still up. Reuse it so we
+                // never call connectDevice again in this process (that sequence kills the app).
+                if (DevicesBleSessionPolicy.ShouldReuseExistingVendorSession(
+                        _hband.IsSessionReady,
+                        _hband.ConnectedMacAddress,
+                        _claimedWatchMac))
+                {
+                    _connectedId = VendorSessionPlaceholderId;
+                    _usingHbandSession = true;
+                    _lastSessionMac = _claimedWatchMac;
+                    ClearVendorDisconnectSettle();
                     return;
                 }
 
@@ -531,12 +563,12 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         await _connectGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var perm = await RequestBluetoothPermissionsAsync(cancellationToken).ConfigureAwait(false);
+            var perm = await CheckBluetoothPermissionsAsync(cancellationToken).ConfigureAwait(false);
             if (perm != PermissionStatus.Granted)
             {
                 ErrorOccurred?.Invoke(
                     this,
-                    "Nearby devices permission is required. Allow it in phone Settings for RaphCare, then try again.");
+                    "Nearby devices permission is required. Tap Scan or Connect and allow it when asked.");
                 return;
             }
 
@@ -853,11 +885,20 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         try
         {
             await CleanupNotificationsAsync().ConfigureAwait(false);
+            var retainedVendorSession = false;
             if (_usingHbandSession || _hband.IsSessionReady)
             {
-                await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+                // E580/E585 Veepoo can terminate the Android process when disconnectWatch is
+                // followed by connectDevice in this process. Preserve its exclusive session;
+                // the next Connect safely reuses it while the UI is logically disconnected.
+                retainedVendorSession = DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect;
+                if (!retainedVendorSession)
+                {
+                    await _hband.DisconnectAsync(cancellationToken).ConfigureAwait(false);
+                    MarkVendorDisconnected();
+                }
+
                 _usingHbandSession = false;
-                MarkVendorDisconnected();
             }
 
             if (_connectedId is { } id && _devices.TryGetValue(id, out var device))
@@ -873,7 +914,8 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             }
 
             _connectedId = null;
-            _lastSessionMac = null;
+            if (!retainedVendorSession)
+                _lastSessionMac = null;
             _lastVitals = null;
         }
         finally
@@ -997,6 +1039,16 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             }
 
             VitalsUpdated += OnMeasureSample;
+            string? blockingHeartMessage = null;
+            void OnMeasureError(object? sender, string? message)
+            {
+                if (string.IsNullOrWhiteSpace(message))
+                    return;
+                blockingHeartMessage = message;
+                tcs.TrySetCanceled(CancellationToken.None);
+            }
+
+            _hband.ErrorOccurred += OnMeasureError;
             try
             {
                 // Never call stopDetect* before the first startDetect* on this session.
@@ -1038,14 +1090,20 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
-                    ErrorOccurred?.Invoke(
-                        this,
-                        "No heart rate yet. On the watch open Heart Rate, tap to test, keep it on your wrist, then Measure again.");
+                    // Wear/busy/battery already raised via ErrorOccurred; do not overwrite with timeout copy.
+                    if (string.IsNullOrWhiteSpace(blockingHeartMessage))
+                    {
+                        ErrorOccurred?.Invoke(
+                            this,
+                            "No heart rate yet. On the watch open Heart Rate, tap to test, keep it on your wrist, then Measure again.");
+                    }
+
                     return _lastVitals;
                 }
             }
             finally
             {
+                _hband.ErrorOccurred -= OnMeasureError;
                 VitalsUpdated -= OnMeasureSample;
                 try
                 {
