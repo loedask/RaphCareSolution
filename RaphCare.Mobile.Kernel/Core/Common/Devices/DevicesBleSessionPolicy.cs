@@ -115,10 +115,12 @@ public static class DevicesBleSessionPolicy
     /// <summary>
     /// When true and the HBand SDK is present with a MAC, Connect uses Veepoo only
     /// (handshake, no live detect yet). No Plugin.BLE GATT fallback for that attempt.
-    /// Dual-stack handoff (Plugin.BLE Connected, then Measure steals the radio) was killing
-    /// the process. Scan still uses Plugin.BLE to discover the MAC.
+    /// Temporarily false: after Scan found ET585, exclusive <c>connectDevice</c> force-closed
+    /// the app on partner phones. Plugin.BLE Connect is the safe path until the bundled
+    /// Veepoo AAR <c>connectDevice</c> signature and proxies are verified. Measure via the
+    /// watch SDK stays off while this is false.
     /// </summary>
-    public static bool PreferExclusiveVendorSession => true;
+    public static bool PreferExclusiveVendorSession => false;
 
     /// <summary>
     /// The Veepoo manager used by the E580/E585 crashes on some phones when a successful
@@ -207,8 +209,9 @@ public static class DevicesBleSessionPolicy
     /// <summary>
     /// When true, Measure uses Veepoo <c>startDetectHeart</c> on an exclusive vendor session.
     /// Requires <see cref="PreferExclusiveVendorSession"/> Connect first (no mid-Measure radio steal).
+    /// Off while exclusive Connect is disabled (same connectDevice crash surface).
     /// </summary>
-    public static bool EnableVendorLiveMeasure => true;
+    public static bool EnableVendorLiveMeasure => PreferExclusiveVendorSession;
 
     /// <summary>
     /// Coordinator flag can lag the bridge after auto-reconnect. Adopt the bridge session for Measure.

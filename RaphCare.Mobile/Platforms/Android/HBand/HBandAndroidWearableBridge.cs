@@ -126,9 +126,11 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
 
                 // If Veepoo already holds this MAC (common after a soft Disconnect or a hung
                 // prior attempt), skip connectDevice. Calling it again often never callbacks.
+                Log.Info(Tag, $"CONNECT-1 native check: {macAddress}");
                 if (await TryAdoptExistingNativeLinkAsync(manager, macAddress, cancellationToken)
                         .ConfigureAwait(false))
                 {
+                    Log.Info(Tag, $"CONNECT-1 adopted existing link: {macAddress}");
                     await ConfirmPasswordAsync(manager, devicePassword, cancellationToken)
                         .ConfigureAwait(false);
                     await SyncPersonInfoAsync(manager, cancellationToken).ConfigureAwait(false);
@@ -159,6 +161,8 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         .ConfigureAwait(false);
                 }
 
+                // Empty device name has crashed reconnect after Disconnect on some firmware.
+                var safeName = string.IsNullOrWhiteSpace(deviceName) ? "ET580" : deviceName.Trim();
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     try
@@ -202,13 +206,14 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                             });
 
                         var mac = new Java.Lang.String(macAddress);
-                        // Empty device name has crashed reconnect after Disconnect on some firmware.
-                        var safeName = string.IsNullOrWhiteSpace(deviceName) ? "ET580" : deviceName.Trim();
                         var name = new Java.Lang.String(safeName);
 
                         // Prefer mac+name, then mac-only. Typed TryInvoke avoids wrong overloads.
+                        // If logcat ends at CONNECT-2 with no CONNECT-3, connectDevice aborted the process.
+                        Log.Info(Tag, $"CONNECT-2 calling connectDevice: {macAddress}, {safeName}");
                         var connected = TryInvoke(manager, "connectDevice", mac, name, connectProxy, notifyProxy)
                                         || TryInvoke(manager, "connectDevice", mac, connectProxy, notifyProxy);
+                        Log.Info(Tag, $"CONNECT-3 connectDevice returned: {connected}");
                         if (!connected)
                         {
                             throw new InvalidOperationException(
