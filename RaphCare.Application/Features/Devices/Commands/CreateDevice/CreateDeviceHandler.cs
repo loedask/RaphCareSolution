@@ -24,25 +24,28 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
     public async Task<Guid> Handle(CreateDeviceCommand request, CancellationToken cancellationToken)
     {
         var serial = request.SerialNumber.Trim();
-        var existing = await _repository.SearchAsync(
+        var existingPage = await _repository.SearchAsync(
             q => q.Where(d => d.SerialNumber == serial),
             1,
             1,
             false,
             cancellationToken).ConfigureAwait(false);
 
-        if (existing.Items.Count > 0)
+        var existing = existingPage.Items.Count > 0 ? existingPage.Items[0] : null;
+        if (existing is not null && existing.IsActive)
         {
             throw new ValidationException(
             [
-                new ValidationFailure(nameof(CreateDeviceCommand.SerialNumber), "A device with this serial number is already in the fleet.")
+                new ValidationFailure(
+                    nameof(CreateDeviceCommand.SerialNumber),
+                    "A device with this serial number is already in the fleet. To correct the Bluetooth MAC, use Save MAC on that stock row.")
             ]);
         }
 
-        string? mac;
+        string? macFromForm;
         try
         {
-            mac = BluetoothMacAddress.NormalizeOrNull(request.BluetoothMacAddress);
+            macFromForm = BluetoothMacAddress.NormalizeOrNull(request.BluetoothMacAddress);
         }
         catch (FormatException)
         {
@@ -54,24 +57,34 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
             ]);
         }
 
-        if (mac is not null)
+        // Restore keeps a stored MAC when the form leaves MAC blank; new stock and bare restores need a MAC.
+        var mac = macFromForm ?? existing?.BluetoothMacAddress;
+        if (string.IsNullOrWhiteSpace(mac))
         {
-            var macConflict = await _repository.SearchAsync(
-                q => q.Where(d => d.BluetoothMacAddress == mac),
-                1,
-                1,
-                false,
-                cancellationToken).ConfigureAwait(false);
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    nameof(CreateDeviceCommand.BluetoothMacAddress),
+                    "Enter the Bluetooth MAC from the watch Device Info screen (for example AA:BB:CC:DD:EE:FF).")
+            ]);
+        }
 
-            if (macConflict.Items.Count > 0)
-            {
-                throw new ValidationException(
-                [
-                    new ValidationFailure(
-                        nameof(CreateDeviceCommand.BluetoothMacAddress),
-                        "A device with this Bluetooth MAC is already in the fleet.")
-                ]);
-            }
+        var excludeId = existing?.Id;
+        var macConflict = await _repository.SearchAsync(
+            q => q.Where(d => d.BluetoothMacAddress == mac && (excludeId == null || d.Id != excludeId)),
+            1,
+            1,
+            false,
+            cancellationToken).ConfigureAwait(false);
+
+        if (macConflict.Items.Count > 0)
+        {
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    nameof(CreateDeviceCommand.BluetoothMacAddress),
+                    "A device with this Bluetooth MAC is already in the fleet. Find that stock row to correct values if needed.")
+            ]);
         }
 
         var typeId = request.DeviceTypeId == Guid.Empty
@@ -80,6 +93,23 @@ public class CreateDeviceHandler : IRequestHandler<CreateDeviceCommand, Guid>
         var manufacturerId = request.DeviceManufacturerId == Guid.Empty
             ? KnownDeviceCatalogIds.GenericOemManufacturerId
             : request.DeviceManufacturerId;
+
+        if (existing is not null)
+        {
+            // Ops "Delete" retires devices with history. Re-add restores the same serial to stock.
+            existing.ClinicId = request.ClinicId;
+            existing.Model = request.Model.Trim();
+            existing.BluetoothMacAddress = mac;
+            existing.DeviceTypeId = typeId;
+            existing.DeviceManufacturerId = manufacturerId;
+            existing.IsActive = true;
+            existing.IsAssigned = false;
+            existing.Status = "InStock";
+            existing.ActivatedAt = null;
+            await _repository.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return existing.Id;
+        }
 
         var device = new Device
         {

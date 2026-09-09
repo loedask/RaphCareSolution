@@ -183,7 +183,7 @@ When Phase A ships, update both feature checklists (status, %, Last reviewed) an
 
 ## Out of scope for v1 smoke
 
-- Full visual parity vs the React concept (see [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md))
+- Full visual polish vs locked Premium soft (see [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md))
 - Clinician mobile app (out of product scope)
 - Load or performance testing
 - Chaos or multi-tenant isolation suites

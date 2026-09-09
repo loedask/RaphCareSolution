@@ -140,6 +140,8 @@ public static class MobileServiceCollectionExtensions
         services.AddTransient<TelehealthJoinPage>();
         services.AddTransient<DevicesViewModel>();
         services.AddTransient<DevicesPage>();
+        services.AddTransient<WatchReadingsViewModel>();
+        services.AddTransient<WatchReadingsPage>();
         services.AddTransient<BillingViewModel>();
         services.AddTransient<AddPaymentMethodViewModel>();
         services.AddTransient<BillingPage>();

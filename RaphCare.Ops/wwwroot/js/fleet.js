@@ -278,18 +278,56 @@ window.raphCareOpsFleet = {
     return canvas;
   },
 
+  /** Grayscale + contrast. Helps white-on-black Device Info and screen glare. */
+  _contrastCanvas: function (source) {
+    var canvas = document.createElement("canvas");
+    canvas.width = source.width;
+    canvas.height = source.height;
+    var ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx)
+      throw new Error("failed");
+    ctx.drawImage(source, 0, 0);
+    var image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var data = image.data;
+    var contrast = 1.45;
+    var intercept = 128 * (1 - contrast);
+    for (var i = 0; i < data.length; i += 4) {
+      var gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+      var v = Math.max(0, Math.min(255, gray * contrast + intercept));
+      data[i] = v;
+      data[i + 1] = v;
+      data[i + 2] = v;
+    }
+    ctx.putImageData(image, 0, 0);
+    return canvas;
+  },
+
+  _scoreOcrText: function (text) {
+    if (!text)
+      return -1;
+    var t = String(text);
+    var score = Math.min(25, t.trim().length / 8);
+    if (/\bMAC\b/i.test(t))
+      score += 4;
+    if (/\bDevice\s*Info\b/i.test(t))
+      score += 3;
+    if (/(?:[0-9A-Fa-f]{2}[:\-]){5}[0-9A-Fa-f]{2}/.test(t))
+      score += 8;
+    else if (/\b(?=[0-9A-Fa-f]*[A-Fa-f])[0-9A-Fa-f]{12}\b/.test(t))
+      score += 5;
+    if (/\bET?585\b/i.test(t))
+      score += 6;
+    else if (/\bET?580\b/i.test(t))
+      score += 6;
+    else if (/\bET?59\d\b/i.test(t))
+      score += 1;
+    if (/\bVersion\b/i.test(t))
+      score += 1;
+    return score;
+  },
+
   _textLooksUseful: function (text) {
-    if (!text || text.trim().length < 4)
-      return false;
-    if (/(?:[0-9A-Fa-f]{2}[:\-]){5}[0-9A-Fa-f]{2}/.test(text))
-      return true;
-    if (/\bET?585\b|\bET?580\b|\bY6\b/i.test(text))
-      return true;
-    if (/\b(?:Serial|S\/?N)\b/i.test(text))
-      return true;
-    if (/\b[A-Z]{1,4}-[A-Z0-9]{2,}-[A-Z0-9]{2,}\b/i.test(text))
-      return true;
-    return text.trim().length >= 12;
+    return window.raphCareOpsFleet._scoreOcrText(text) >= 6;
   },
 
   _extractFromCanvas: async function (canvas) {
@@ -313,21 +351,75 @@ window.raphCareOpsFleet = {
     if (barcodes.length > 0)
       return { ok: true, barcodes: barcodes, text: "" };
 
-    var text = await window.raphCareOpsFleet._recognizeText(canvas);
-    if (!window.raphCareOpsFleet._textLooksUseful(text)) {
+    var contrast = null;
+    var inverted = null;
+    var invertedContrast = null;
+    try { contrast = window.raphCareOpsFleet._contrastCanvas(canvas); } catch { /* keep */ }
+    try { inverted = window.raphCareOpsFleet._invertCanvas(canvas); } catch { /* keep */ }
+    try {
+      if (contrast)
+        invertedContrast = window.raphCareOpsFleet._invertCanvas(contrast);
+    } catch { /* keep */ }
+
+    var variants = [
+      { canvas: canvas, whitelist: null },
+      { canvas: contrast, whitelist: null },
+      { canvas: inverted, whitelist: null },
+      { canvas: invertedContrast, whitelist: null },
+      // MAC-only alphabet on the best Device Info prep (white-on-black → inverted contrast).
+      {
+        canvas: invertedContrast || inverted || contrast || canvas,
+        whitelist: "0123456789ABCDEFabcdef:"
+      }
+    ];
+
+    var bestText = "";
+    var bestScore = -1;
+    var merged = [];
+
+    for (var i = 0; i < variants.length; i++) {
+      var variant = variants[i];
+      if (!variant.canvas)
+        continue;
       try {
-        var inverted = window.raphCareOpsFleet._invertCanvas(canvas);
-        var invertedText = await window.raphCareOpsFleet._recognizeText(inverted);
-        if (window.raphCareOpsFleet._textLooksUseful(invertedText)
-            || (invertedText || "").length > (text || "").length) {
-          text = invertedText;
+        var text = await window.raphCareOpsFleet._recognizeText(variant.canvas, variant.whitelist);
+        if (!text || !text.trim())
+          continue;
+        merged.push(text.trim());
+        var score = window.raphCareOpsFleet._scoreOcrText(text);
+        // Prefer MAC-restricted passes slightly when they actually found a MAC.
+        if (variant.whitelist && /(?:[0-9A-Fa-f]{2}[:\-]){5}[0-9A-Fa-f]{2}|\b[0-9A-Fa-f]{12}\b/.test(text))
+          score += 2;
+        if (score > bestScore) {
+          bestScore = score;
+          bestText = text;
         }
       } catch {
-        // Keep the first OCR pass.
+        // Try the next prep.
       }
     }
 
-    return { ok: true, barcodes: [], text: text || "" };
+    // Give the parser every distinct pass so a correct MAC in a weaker overall pass is not lost.
+    // Put the highest-scoring pass first so PreferFill / first MAC match stay stable.
+    var combined = bestText || "";
+    if (merged.length > 1) {
+      var unique = [];
+      var seen = {};
+      var pushUnique = function (chunk) {
+        var key = chunk.replace(/\s+/g, " ").toLowerCase();
+        if (seen[key])
+          return;
+        seen[key] = true;
+        unique.push(chunk);
+      };
+      if (bestText)
+        pushUnique(bestText.trim());
+      for (var m = 0; m < merged.length; m++)
+        pushUnique(merged[m]);
+      combined = unique.join("\n");
+    }
+
+    return { ok: true, barcodes: [], text: combined || bestText || "" };
   },
 
   _loadTesseract: function () {
@@ -387,12 +479,13 @@ window.raphCareOpsFleet = {
     }
   },
 
-  _recognizeText: async function (canvas) {
+  _recognizeText: async function (canvas, whitelist) {
     var worker = await window.raphCareOpsFleet._ensureOcrWorker();
+    var chars = whitelist
+      || "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:-./_ #";
     try {
       await worker.setParameters({
-        tessedit_char_whitelist:
-          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:-./_ #",
+        tessedit_char_whitelist: chars,
         preserve_interword_spaces: "1"
       });
     } catch {

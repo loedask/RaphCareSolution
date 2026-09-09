@@ -1,54 +1,30 @@
 ---
-description: React (Vite) concept app — structure and copy reference for RaphCare.Mobile; visuals follow Premium soft
+description: RaphCare.Mobile visuals follow locked Premium soft styles; old React mockup is archive only
 globs: RaphCare.Mobile/**/*,RaphCare.Mobile/**/*.xaml,RaphCare.Mobile.Kernel/**/*.cs,RaphCare.Client/**/*.cs
 alwaysApply: false
 ---
 
-# Mobile concept — structure source (React + Vite)
+# Mobile design lock (Premium soft)
 
-## Source repo
+## Source of truth
 
-**`C:\laragon\www\raphcare-mobile-app-concept`** — **React 18 + Vite + TypeScript**. UI stack includes **Tailwind CSS**, **shadcn/ui** (built on **Radix UI**), **lucide-react** icons, **framer-motion**, **react-router-dom**, **TanStack Query**, **react-hook-form** + **zod**, toasts (**sonner** / **radix toast**), and **i18n** under `src/i18n/`.
+**Look and feel:** `RaphCare.Mobile/Resources/Styles/` and `Core/Common/Controls/`. Doc: **`docs/Mobile_Concept_Port.md`**.
 
-**Do not** port those libraries into MAUI.
+**Architecture / DI / features:** **`.cursor/rules/raphcare-mobile.mdc`**.
 
-**Authoritative design doc in this repo:** **`docs/Mobile_Concept_Port.md`**.
+## Do
 
-## Look and feel (Premium soft)
+- Prefer shared Premium soft tokens for new or polished UI.
+- Avoid one-off colors in page XAML when a style key exists.
+- Keep the screen inventory in **`docs/Mobile_Concept_Port.md`** when adding or retiring screens.
+- Wire Shell, ViewModels, Client, Kernel per **`.cursor/rules/raphcare-mobile.mdc`**.
 
-MAUI visuals follow the **Premium soft** identity in **`Resources/Styles/`** and **`Core/Common/Controls/`**, not pixel parity with the React concept.
+## Do not
 
-Keep from the concept: **routes**, **screen inventory**, **copy**, and **feature layout ideas**.
+- Treat the old React Vite mockup (`C:\laragon\www\raphcare-mobile-app-concept`) as a visual target.
+- Sync MAUI colors, type, radii, or shadows from that mockup’s CSS or Tailwind config.
+- Mark screens done based on mockup pixel parity.
 
-Do **not** force concept colors, radii, shadows, or density onto Premium soft screens unless product asks to restore concept parity.
+## Archive note
 
-## What still comes from the concept
-
-- Route ↔ Shell / `AppNavigator` map
-- Feature completeness and screen checklist
-- Icon inventory ideas (lucide → `Resources/Images`)
-- i18n string alignment with `AppResources.resx`
-
-## Fidelity rules for RaphCare.Mobile
-
-- Prefer **Premium soft** tokens for new or polished UI.
-- Map shared chrome into **`Resources/Styles/`** and **`Core/Common/Controls/`**. Avoid one-off colors in page XAML.
-- Document intentional deltas in **`docs/Mobile_Concept_Port.md`**.
-- Wire **Shell**, **ViewModels**, **Client**, **Kernel** per **`.cursor/rules/raphcare-mobile.mdc`**.
-
-## Architecture vs design
-
-- **Structure / DI / features:** this solution’s rules.
-- **Look and feel:** Premium soft MAUI identity (see **`docs/Mobile_Concept_Port.md`**).
-
-## Making the concept visible to Cursor
-
-The concept folder is **outside** **`RaphCareSolution`** unless you add it to the workspace:
-
-1. **Multi-root workspace** — Add the Laragon path so you can **`@`** `src/pages/*.tsx`, `src/index.css`, `src/components/ui/*`.
-2. **Paste / attach** — Screenshots or snippets for the screen in progress.
-3. **`docs/Mobile_Concept_Port.md`** — Route map and historical token tables; live colors live in `Colors.xaml`.
-
-## Optional
-
-A **`.cursor/rules/`** inside the concept repo applies only when that folder is opened alone.
+The Vite app was an early layout sketch. It is optional historical reading for old screen names only. Prefer the MAUI screen map in **`docs/Mobile_Concept_Port.md`**.

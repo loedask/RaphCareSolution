@@ -75,6 +75,9 @@ public static class AppNavigator
     /// <summary>Connected devices and BLE wearables (E580/E585-class scan and connect).</summary>
     public const string Devices = "DevicesPage";
 
+    /// <summary>Watch readings (heart rate, oxygen, and later measures).</summary>
+    public const string WatchReadings = "WatchReadingsPage";
+
     /// <summary>Billing and plans (payment methods, invoices, plan upgrade).</summary>
     public const string Billing = "BillingPage";
 
@@ -141,6 +144,7 @@ public static class AppNavigator
         Routing.RegisterRoute(TelehealthJoin, typeof(TelehealthJoinPage));
 
         Routing.RegisterRoute(Devices, typeof(DevicesPage));
+        Routing.RegisterRoute(WatchReadings, typeof(WatchReadingsPage));
 
         Routing.RegisterRoute(Billing, typeof(BillingPage));
         Routing.RegisterRoute(AddBillingPaymentMethod, typeof(AddPaymentMethodPage));
@@ -195,6 +199,7 @@ public static class AppNavigator
             Settings => (FeatureFlags.SettingsEnabled, Settings),
             CareTelehealth => (FeatureFlags.CareTelehealthEnabled, CareTelehealth),
             Devices => (FeatureFlags.DevicesEnabled, Devices),
+            WatchReadings => (FeatureFlags.DevicesEnabled, WatchReadings),
             Billing => (FeatureFlags.BillingEnabled, Billing),
             MentalHealth => (FeatureFlags.MentalHealthEnabled, MentalHealth),
             FamilyMembers => (FeatureFlags.FamilyMembersEnabled, FamilyMembers),

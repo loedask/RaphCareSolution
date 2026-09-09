@@ -32,123 +32,139 @@
 
         <AdminPageCard Title="@AppResources.T("Fleet_AddTitle")" Lead="@AppResources.T("Fleet_AddLead")">
             <div class="admin-page-card-body">
-                <div class="fleet-add-form">
-                    <div class="fleet-add-grid">
-                        <div class="fleet-add-field">
-                            <span class="fleet-add-label">@AppResources.T("Common_Hospitals")</span>
-                            <SearchableSelect TValue="string"
-                                              Placeholder="@AppResources.T("Fleet_SelectHospital")"
-                                              Value="_newClinicId"
-                                              ValueChanged="OnNewClinicChanged"
-                                              Options="HospitalSelectOptions" />
-                        </div>
-                        <label class="fleet-add-field">
-                            <span class="fleet-add-label">@AppResources.T("Fleet_SerialLabel")</span>
-                            <input class="form-control"
-                                   @bind="_newSerial"
-                                   @bind:event="oninput"
-                                   placeholder="@AppResources.T("Fleet_SerialPlaceholder")"
-                                   autocomplete="off"
-                                   spellcheck="false" />
-                        </label>
-                        <label class="fleet-add-field">
-                            <span class="fleet-add-label">@AppResources.T("Fleet_MacLabel")</span>
-                            <input class="form-control"
-                                   @bind="_newMac"
-                                   @bind:event="oninput"
-                                   placeholder="@AppResources.T("Fleet_MacPlaceholder")"
-                                   autocomplete="off"
-                                   spellcheck="false" />
-                        </label>
-                        <div class="fleet-add-field fleet-add-field-span">
-                            <span class="fleet-add-label">@AppResources.T("Fleet_ModelLabel")</span>
-                            <div class="fleet-model-radios" role="radiogroup" aria-label="@AppResources.T("Fleet_ModelLabel")">
-                                @foreach (var model in FleetModels)
-                                {
-                                    <label class="fleet-model-radio @(_newModel == model ? "selected" : null)">
-                                        <input type="radio"
-                                               name="fleet-add-model"
-                                               value="@model"
-                                               checked="@(_newModel == model)"
-                                               @onchange="() => _newModel = model" />
-                                        <span>@model</span>
-                                    </label>
-                                }
+                <div class="fleet-add-form fleet-add-layout">
+                    <section class="fleet-step fleet-step-capture" aria-labelledby="fleet-step-capture-title">
+                        <header class="fleet-step-head">
+                            <span class="fleet-step-mark" aria-hidden="true">1</span>
+                            <div>
+                                <h3 id="fleet-step-capture-title" class="fleet-step-title">@AppResources.T("Fleet_StepCaptureTitle")</h3>
+                                <p class="fleet-step-lead">@AppResources.T("Fleet_StepCaptureLead")</p>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="fleet-add-actions">
-                        <button type="button"
-                                class="btn btn-primary"
-                                disabled="@(_saving || string.IsNullOrWhiteSpace(_newClinicId) || string.IsNullOrWhiteSpace(_newSerial))"
-                                @onclick="AddDeviceAsync">
-                            @(_saving ? AppResources.T("Common_Saving") : AppResources.T("Fleet_AddButton"))
-                        </button>
-                    </div>
-
-                    <div class="fleet-scan-panel">
-                        <div class="fleet-scan-panel-head">
-                            <span class="fleet-scan-panel-title">@AppResources.T("Fleet_ScanToolsTitle")</span>
+                        </header>
+                        <div class="fleet-scan-panel">
                             <p class="fleet-scan-hint">@AppResources.T("Fleet_ScanPrivacy")</p>
-                        </div>
-                        <div class="fleet-scan-actions">
-                            <button type="button"
-                                    class="btn btn-secondary fleet-scan-btn"
-                                    disabled="@(_cameraMode is not null || _extracting)"
-                                    @onclick="StartBarcodeScanAsync">
-                                @AppResources.T("Fleet_ScanBarcode")
-                            </button>
-                            <button type="button"
-                                    class="btn btn-secondary fleet-scan-btn"
-                                    disabled="@(_cameraMode is not null || _extracting)"
-                                    @onclick="StartTakePictureAsync">
-                                @AppResources.T("Fleet_TakePicture")
-                            </button>
-                            <button type="button"
-                                    class="btn btn-secondary fleet-scan-btn"
-                                    disabled="@(_cameraMode is not null || _extracting)"
-                                    @onclick="TriggerPhotoPick">
-                                @(_extracting ? AppResources.T("Fleet_ScanExtracting") : AppResources.T("Fleet_ExtractPhoto"))
-                            </button>
-                            <input id="@PhotoInputId"
-                                   type="file"
-                                   accept="image/*"
-                                   hidden
-                                   @onchange="OnPhotoSelectedAsync" />
-                        </div>
+                            <div class="fleet-scan-actions">
+                                <button type="button"
+                                        class="btn btn-secondary fleet-scan-btn"
+                                        disabled="@(_cameraMode is not null || _extracting)"
+                                        @onclick="StartBarcodeScanAsync">
+                                    @AppResources.T("Fleet_ScanBarcode")
+                                </button>
+                                <button type="button"
+                                        class="btn btn-secondary fleet-scan-btn"
+                                        disabled="@(_cameraMode is not null || _extracting)"
+                                        @onclick="StartTakePictureAsync">
+                                    @AppResources.T("Fleet_TakePicture")
+                                </button>
+                                <button type="button"
+                                        class="btn btn-secondary fleet-scan-btn"
+                                        disabled="@(_cameraMode is not null || _extracting)"
+                                        @onclick="TriggerPhotoPick">
+                                    @(_extracting ? AppResources.T("Fleet_ScanExtracting") : AppResources.T("Fleet_ExtractPhoto"))
+                                </button>
+                                <input id="@PhotoInputId"
+                                       type="file"
+                                       accept="image/*"
+                                       hidden
+                                       @onchange="OnPhotoSelectedAsync" />
+                            </div>
 
-                        @if (_scanCandidates.Count > 0)
-                        {
-                            <div class="fleet-scan-candidates">
-                                <span class="fleet-scan-candidates-label">@AppResources.T("Fleet_ScanCandidates")</span>
-                                <div class="fleet-scan-candidate-list">
-                                    @foreach (var candidate in _scanCandidates)
+                            @if (_scanCandidates.Count > 0)
+                            {
+                                <div class="fleet-scan-candidates">
+                                    <span class="fleet-scan-candidates-label">@AppResources.T("Fleet_ScanCandidates")</span>
+                                    <div class="fleet-scan-candidate-list">
+                                        @foreach (var candidate in _scanCandidates)
+                                        {
+                                            <button type="button"
+                                                    class="fleet-scan-candidate"
+                                                    @onclick="() => ApplyCandidate(candidate)">
+                                                <span class="fleet-scan-candidate-kind">@CandidateKindLabel(candidate.Kind)</span>
+                                                @candidate.Value
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </section>
+
+                    <section class="fleet-step fleet-step-confirm" aria-labelledby="fleet-step-confirm-title">
+                        <header class="fleet-step-head">
+                            <span class="fleet-step-mark" aria-hidden="true">2</span>
+                            <div>
+                                <h3 id="fleet-step-confirm-title" class="fleet-step-title">@AppResources.T("Fleet_StepConfirmTitle")</h3>
+                                <p class="fleet-step-lead">@AppResources.T("Fleet_StepConfirmLead")</p>
+                            </div>
+                        </header>
+                        <div class="fleet-add-grid">
+                            <div class="fleet-add-field fleet-add-field-span">
+                                <span class="fleet-add-label">@AppResources.T("Common_Hospitals")</span>
+                                <SearchableSelect TValue="string"
+                                                  Placeholder="@AppResources.T("Fleet_SelectHospital")"
+                                                  Value="_newClinicId"
+                                                  ValueChanged="OnNewClinicChanged"
+                                                  Options="HospitalSelectOptions" />
+                            </div>
+                            <label class="fleet-add-field">
+                                <span class="fleet-add-label">@AppResources.T("Fleet_SerialLabel")</span>
+                                <input class="form-control"
+                                       @bind="_newSerial"
+                                       @bind:event="oninput"
+                                       placeholder="@AppResources.T("Fleet_SerialPlaceholder")"
+                                       autocomplete="off"
+                                       spellcheck="false" />
+                            </label>
+                            <label class="fleet-add-field">
+                                <span class="fleet-add-label">@AppResources.T("Fleet_MacLabelRequired")</span>
+                                <input class="form-control"
+                                       @bind="_newMac"
+                                       @bind:event="oninput"
+                                       placeholder="@AppResources.T("Fleet_MacPlaceholder")"
+                                       autocomplete="off"
+                                       spellcheck="false"
+                                       required />
+                            </label>
+                            <div class="fleet-add-field fleet-add-field-span">
+                                <span class="fleet-add-label">@AppResources.T("Fleet_ModelLabel")</span>
+                                <div class="fleet-model-radios" role="radiogroup" aria-label="@AppResources.T("Fleet_ModelLabel")">
+                                    @foreach (var model in FleetModels)
                                     {
-                                        <button type="button"
-                                                class="fleet-scan-candidate"
-                                                @onclick="() => ApplyCandidate(candidate)">
-                                            <span class="fleet-scan-candidate-kind">@CandidateKindLabel(candidate.Kind)</span>
-                                            @candidate.Value
-                                        </button>
+                                        <label class="fleet-model-radio @(_newModel == model ? "selected" : null)">
+                                            <input type="radio"
+                                                   name="fleet-add-model"
+                                                   value="@model"
+                                                   checked="@(_newModel == model)"
+                                                   @onchange="() => _newModel = model" />
+                                            <span>@model</span>
+                                        </label>
                                     }
                                 </div>
                             </div>
-                        }
-                    </div>
+                        </div>
 
-                    @if (!string.IsNullOrEmpty(_addError))
-                    {
-                        <p class="claim-error">@_addError</p>
-                    }
-                    @if (!string.IsNullOrEmpty(_addSuccess))
-                    {
-                        <p class="fleet-add-feedback">@_addSuccess</p>
-                    }
-                    @if (!string.IsNullOrEmpty(_scanMacHint))
-                    {
-                        <p class="fleet-add-feedback">@_scanMacHint</p>
-                    }
+                        <div class="fleet-add-actions">
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    disabled="@(_saving || string.IsNullOrWhiteSpace(_newClinicId) || string.IsNullOrWhiteSpace(_newSerial) || string.IsNullOrWhiteSpace(_newMac))"
+                                    @onclick="AddDeviceAsync">
+                                @(_saving ? AppResources.T("Common_Saving") : AppResources.T("Fleet_AddButton"))
+                            </button>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(_addError))
+                        {
+                            <p class="claim-error">@_addError</p>
+                        }
+                        @if (!string.IsNullOrEmpty(_addSuccess))
+                        {
+                            <p class="fleet-add-feedback">@_addSuccess</p>
+                        }
+                        @if (!string.IsNullOrEmpty(_scanMacHint))
+                        {
+                            <p class="fleet-add-feedback">@_scanMacHint</p>
+                        }
+                    </section>
                 </div>
             </div>
         </AdminPageCard>
@@ -177,20 +193,43 @@
                                autocomplete="off"
                                spellcheck="false" />
                     </label>
-                    <label class="admin-checkbox fleet-stock-checkbox">
-                        <input type="checkbox" @bind="_unassignedOnly" @bind:after="ReloadListAsync" />
-                        @AppResources.T("Fleet_UnassignedOnly")
-                    </label>
                 </div>
 
-                @if (_devices.Count == 0)
+                <nav class="hospital-deck-segments fleet-stock-tabs" role="tablist" aria-label="@AppResources.T("Fleet_StockTabsAria")">
+                    <button type="button"
+                            role="tab"
+                            class="hospital-deck-segment @(_stockTab == StockTabAll ? "is-active" : null)"
+                            aria-selected="@(_stockTab == StockTabAll)"
+                            @onclick="() => SetStockTab(StockTabAll)">
+                        <span class="hospital-deck-segment-label">@AppResources.T("Fleet_TabAll")</span>
+                        <span class="hospital-deck-segment-count @(_totalCount == 0 ? "is-empty" : null)">@_totalCount</span>
+                    </button>
+                    <button type="button"
+                            role="tab"
+                            class="hospital-deck-segment @(_stockTab == StockTabInStock ? "is-active" : null)"
+                            aria-selected="@(_stockTab == StockTabInStock)"
+                            @onclick="() => SetStockTab(StockTabInStock)">
+                        <span class="hospital-deck-segment-label">@AppResources.T("Fleet_TabInStock")</span>
+                        <span class="hospital-deck-segment-count @(InStockCount == 0 ? "is-empty" : null)">@InStockCount</span>
+                    </button>
+                    <button type="button"
+                            role="tab"
+                            class="hospital-deck-segment @(_stockTab == StockTabAssigned ? "is-active" : null)"
+                            aria-selected="@(_stockTab == StockTabAssigned)"
+                            @onclick="() => SetStockTab(StockTabAssigned)">
+                        <span class="hospital-deck-segment-label">@AppResources.T("Fleet_TabAssigned")</span>
+                        <span class="hospital-deck-segment-count @(AssignedCount == 0 ? "is-empty" : null)">@AssignedCount</span>
+                    </button>
+                </nav>
+
+                @if (VisibleDevices.Count == 0)
                 {
-                    <p class="text-muted">@AppResources.T("Fleet_EmptyStock")</p>
+                    <p class="text-muted">@EmptyStockMessage</p>
                 }
                 else
                 {
-                    <div class="admin-table-wrap">
-                        <table class="admin-table">
+                    <div class="admin-table-wrap fleet-table-wrap">
+                        <table class="admin-table fleet-table">
                             <thead>
                                 <tr>
                                     <th>@AppResources.T("Common_Hospitals")</th>
@@ -198,25 +237,38 @@
                                     <th>@AppResources.T("Fleet_ModelLabel")</th>
                                     <th>@AppResources.T("Fleet_MacLabel")</th>
                                     <th>@AppResources.T("Fleet_ActivatedLabel")</th>
-                                    <th>Status</th>
-                                    <th>@AppResources.T("Fleet_AssignColumn")</th>
+                                    <th>@AppResources.T("Fleet_StatusColumn")</th>
+                                    <th>@AppResources.T("Fleet_ActionsColumn")</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var device in _devices)
+                                @foreach (var device in VisibleDevices)
                                 {
                                     <tr>
                                         <td>@ClinicName(device.ClinicId)</td>
-                                        <td>@device.SerialNumber</td>
+                                        <td><span class="fleet-serial">@device.SerialNumber</span></td>
                                         <td>@device.Model</td>
-                                        <td>
+                                        <td class="fleet-mac-cell">
                                             @if (string.IsNullOrWhiteSpace(device.BluetoothMacAddress))
                                             {
-                                                <span class="text-muted">@AppResources.T("Fleet_MacNotSet")</span>
+                                                <div class="fleet-mac-editor">
+                                                    <input class="form-control fleet-mac-input"
+                                                           value="@GetMacDraft(device.Id)"
+                                                           @oninput="e => SetMacDraft(device.Id, e.Value?.ToString())"
+                                                           placeholder="@AppResources.T("Fleet_MacPlaceholder")"
+                                                           autocomplete="off"
+                                                           spellcheck="false" />
+                                                    <button type="button"
+                                                            class="btn btn-secondary btn-sm"
+                                                            disabled="@(_busyDeviceId == device.Id || string.IsNullOrWhiteSpace(GetMacDraft(device.Id)))"
+                                                            @onclick="() => SaveMacAsync(device)">
+                                                        @(_busyDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_SaveMacButton"))
+                                                    </button>
+                                                </div>
                                             }
                                             else
                                             {
-                                                <code>@device.BluetoothMacAddress</code>
+                                                <code class="fleet-mac-code">@device.BluetoothMacAddress</code>
                                             }
                                         </td>
                                         <td>
@@ -225,30 +277,48 @@
                                                 : AppResources.T("Fleet_MacNotSet"))
                                         </td>
                                         <td>
-                                            @(string.IsNullOrWhiteSpace(device.Status) ? (device.IsAssigned ? AppResources.T("Fleet_StatusAssigned") : AppResources.T("Fleet_StatusInStock")) : device.Status)
+                                            <span class="fleet-status-pill @(device.IsAssigned ? "is-assigned" : "is-stock")">
+                                                @(device.IsAssigned
+                                                    ? AppResources.T("Fleet_StatusAssigned")
+                                                    : AppResources.T("Fleet_StatusInStock"))
+                                            </span>
                                         </td>
                                         <td>
-                                            @if (device.IsAssigned)
-                                            {
-                                                <span class="text-muted">@AppResources.T("Fleet_AlreadyAssigned")</span>
-                                            }
-                                            else
-                                            {
-                                                <div class="claim-form-row" style="flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                                            <div class="fleet-row-actions">
+                                                @if (device.IsAssigned)
+                                                {
+                                                    <span class="text-muted fleet-row-note">@AppResources.T("Fleet_AlreadyAssigned")</span>
+                                                    <button type="button"
+                                                            class="btn btn-secondary"
+                                                            disabled="@(_busyDeviceId == device.Id)"
+                                                            @onclick="() => RevokeAsync(device)">
+                                                        @(_busyDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_RevokeButton"))
+                                                    </button>
+                                                }
+                                                else
+                                                {
                                                     <SearchableSelect TValue="string"
                                                                       CssClass="fleet-assign-select"
                                                                       Placeholder="@AppResources.T("Fleet_SelectPatient")"
                                                                       Value="@GetAssignPatient(device.Id)"
                                                                       ValueChanged="v => SetAssignPatient(device.Id, v)"
                                                                       Options="PatientSelectOptions(device.ClinicId)" />
-                                                    <button type="button"
-                                                            class="btn btn-secondary"
-                                                            disabled="@(_assigningDeviceId == device.Id || string.IsNullOrWhiteSpace(GetAssignPatient(device.Id)))"
-                                                            @onclick="() => AssignAsync(device)">
-                                                        @(_assigningDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_AssignButton"))
-                                                    </button>
-                                                </div>
-                                            }
+                                                    <div class="fleet-row-action-buttons">
+                                                        <button type="button"
+                                                                class="btn btn-secondary"
+                                                                disabled="@(_busyDeviceId == device.Id || string.IsNullOrWhiteSpace(GetAssignPatient(device.Id)))"
+                                                                @onclick="() => AssignAsync(device)">
+                                                            @(_busyDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_AssignButton"))
+                                                        </button>
+                                                        <button type="button"
+                                                                class="btn btn-ghost"
+                                                                disabled="@(_busyDeviceId == device.Id)"
+                                                                @onclick="() => DeleteAsync(device)">
+                                                            @(_busyDeviceId == device.Id ? AppResources.T("Common_Saving") : AppResources.T("Fleet_DeleteButton"))
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -291,6 +361,9 @@
 @code {
     private const string FleetPath = "/fleet";
     private const string PhotoInputId = "fleet-scan-file";
+    private const string StockTabAll = "all";
+    private const string StockTabInStock = "instock";
+    private const string StockTabAssigned = "assigned";
 
     private static readonly string[] FleetModels = ["E585", "E580", "Y6 Pro"];
 
@@ -308,8 +381,8 @@
     private string? _cameraMode;
     private bool _extracting;
     private bool _authRequired;
-    private bool _unassignedOnly = true;
-    private Guid? _assigningDeviceId;
+    private string _stockTab = StockTabAll;
+    private Guid? _busyDeviceId;
     private string? _error;
     private string? _addError;
     private string? _addSuccess;
@@ -326,6 +399,7 @@
     private IReadOnlyList<FleetDeviceScanParser.Candidate> _scanCandidates = Array.Empty<FleetDeviceScanParser.Candidate>();
     private readonly Dictionary<Guid, IReadOnlyList<ClinicPatientListItem>> _patientsByClinic = new();
     private readonly Dictionary<Guid, string> _assignPatientByDevice = new();
+    private readonly Dictionary<Guid, string> _macDraftByDevice = new();
     private DotNetObjectReference<Index>? _jsSelf;
 
     private string _signInReturnUrl =>
@@ -343,6 +417,25 @@
         PatientsForClinic(clinicId)
             .Select(p => new SelectOption<string>(p.PatientId.ToString(), $"{p.FirstName} {p.LastName}"))
             .ToArray();
+
+    private IReadOnlyList<FleetDeviceListItem> VisibleDevices => _stockTab switch
+    {
+        StockTabInStock => _devices.Where(d => !d.IsAssigned).ToList(),
+        StockTabAssigned => _devices.Where(d => d.IsAssigned).ToList(),
+        _ => _devices
+    };
+
+    private int InStockCount => _devices.Count(d => !d.IsAssigned);
+    private int AssignedCount => _devices.Count(d => d.IsAssigned);
+
+    private string EmptyStockMessage => _stockTab switch
+    {
+        StockTabInStock => AppResources.T("Fleet_EmptyInStockTab"),
+        StockTabAssigned => AppResources.T("Fleet_EmptyAssignedTab"),
+        _ => AppResources.T("Fleet_EmptyStock")
+    };
+
+    private void SetStockTab(string tab) => _stockTab = tab;
 
     private void OnNewClinicChanged(string? value) =>
         _newClinicId = value ?? string.Empty;
@@ -384,7 +477,7 @@
             pageNumber: 1,
             pageSize: 100,
             clinicId: clinicFilter,
-            unassignedOnly: _unassignedOnly ? true : null,
+            unassignedOnly: null,
             serialContains: string.IsNullOrWhiteSpace(_filterSerial) ? null : _filterSerial.Trim());
 
         if (!response.IsSuccess || response.Data is null)
@@ -429,6 +522,37 @@
     private void SetAssignPatient(Guid deviceId, string? patientId) =>
         _assignPatientByDevice[deviceId] = patientId ?? string.Empty;
 
+    private string GetMacDraft(Guid deviceId) =>
+        _macDraftByDevice.TryGetValue(deviceId, out var value) ? value : string.Empty;
+
+    private void SetMacDraft(Guid deviceId, string? mac) =>
+        _macDraftByDevice[deviceId] = mac ?? string.Empty;
+
+    private async Task SaveMacAsync(FleetDeviceListItem device)
+    {
+        var mac = GetMacDraft(device.Id).Trim();
+        if (string.IsNullOrWhiteSpace(mac))
+        {
+            _error = AppResources.T("Fleet_MacRequired");
+            return;
+        }
+
+        _busyDeviceId = device.Id;
+        _error = null;
+        var response = await FleetService.SetDeviceBluetoothMacAsync(device.Id, mac);
+        _busyDeviceId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Fleet_CouldNotSaveMac");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        _macDraftByDevice.Remove(device.Id);
+        await ReloadListAsync();
+    }
+
     private async Task AddDeviceAsync()
     {
         _addError = null;
@@ -440,12 +564,18 @@
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(_newMac))
+        {
+            _addError = AppResources.T("Fleet_MacRequired");
+            return;
+        }
+
         _saving = true;
         var response = await FleetService.CreateDeviceAsync(
             clinicId,
             _newSerial.Trim(),
             _newModel,
-            string.IsNullOrWhiteSpace(_newMac) ? null : _newMac.Trim());
+            _newMac.Trim());
         _saving = false;
 
         if (!response.IsSuccess)
@@ -467,14 +597,60 @@
         if (!Guid.TryParse(GetAssignPatient(device.Id), out var patientId))
             return;
 
-        _assigningDeviceId = device.Id;
+        _busyDeviceId = device.Id;
         _error = null;
         var response = await FleetService.AssignDeviceToPatientAsync(device.Id, patientId);
-        _assigningDeviceId = null;
+        _busyDeviceId = null;
 
         if (!response.IsSuccess)
         {
             _error = response.ErrorMessage ?? AppResources.T("Fleet_CouldNotAssign");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        await ReloadListAsync();
+    }
+
+    private async Task RevokeAsync(FleetDeviceListItem device)
+    {
+        var confirmed = await Js.InvokeAsync<bool>(
+            "confirm",
+            AppResources.Format("Fleet_RevokeConfirmFormat", device.SerialNumber));
+        if (!confirmed)
+            return;
+
+        _busyDeviceId = device.Id;
+        _error = null;
+        var response = await FleetService.UnassignDeviceFromPatientAsync(device.Id);
+        _busyDeviceId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Fleet_CouldNotRevoke");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        await ReloadListAsync();
+    }
+
+    private async Task DeleteAsync(FleetDeviceListItem device)
+    {
+        var confirmed = await Js.InvokeAsync<bool>(
+            "confirm",
+            AppResources.Format("Fleet_DeleteConfirmFormat", device.SerialNumber));
+        if (!confirmed)
+            return;
+
+        _busyDeviceId = device.Id;
+        _error = null;
+        var response = await FleetService.DeleteDeviceAsync(device.Id);
+        _busyDeviceId = null;
+
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Fleet_CouldNotDelete");
             _authRequired = response.StatusCode is 401 or 403;
             return;
         }
@@ -650,25 +826,32 @@
             _newModel = result.SuggestedModel;
         }
 
-        if (string.IsNullOrWhiteSpace(result.PreferredValue))
+        var fill = FleetDeviceScanParser.SuggestFill(result);
+        if (string.IsNullOrWhiteSpace(fill.Serial) && string.IsNullOrWhiteSpace(fill.Mac))
         {
             _addError = AppResources.T("Fleet_ScanNothingFound");
             _scanMacHint = null;
             return;
         }
 
-        if (result.PreferredLooksLikeMac)
+        if (!string.IsNullOrWhiteSpace(fill.Serial))
+            _newSerial = fill.Serial;
+
+        if (!string.IsNullOrWhiteSpace(fill.Mac))
         {
-            _newMac = result.PreferredValue;
-            _scanMacHint = fromBarcode ? null : AppResources.T("Fleet_ScanMacHint");
+            _newMac = fill.Mac;
+            // Hint only when MAC was the only find (packaging serial still preferred for claim).
+            _scanMacHint = string.IsNullOrWhiteSpace(fill.Serial) && !fromBarcode
+                ? AppResources.T("Fleet_ScanMacHint")
+                : null;
         }
         else
         {
-            _newSerial = result.PreferredValue;
             _scanMacHint = null;
         }
 
         _addSuccess = AppResources.T("Fleet_ScanFound");
+        _addError = null;
     }
 
     private void ApplyCandidate(FleetDeviceScanParser.Candidate candidate)

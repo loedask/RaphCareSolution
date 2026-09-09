@@ -4,7 +4,7 @@ PDF companion: [`raphcare-feature-checklist.pdf`](../raphcare-feature-checklist.
 
 Plain-language twin for non-technical partners: [`raphcare-feature-checklist-partner.md`](raphcare-feature-checklist-partner.md) (and its PDF). Keep both in sync when status changes.
 
-Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Design / visual parity for Mobile stays in [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md); release gates stay in [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
+Track progress across **API**, **Web admin panel**, and **Mobile** (patient app). Mobile design lock and screen map: [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md). Release gates: [`Mobile_Release_Ready_Checklist.md`](Mobile_Release_Ready_Checklist.md).
 
 **Overall completion (this checklist):** **80%**  
 **Without wearable Phase 2+ metrics** (activity / sleep / stress / temp / ECG / glucose rows): **83%**
@@ -28,7 +28,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-09-06
+Last reviewed: 2026-09-09
 
 ---
 
@@ -65,7 +65,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page (hospital-deck)
 - [x] Admin dashboard (hospital-scoped; multi-hospital accounts use All hospitals first; single hospital auto-selects)
-- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): Portal-style top bar; stock serials under a hospital or Direct (type, packaging barcode/QR scan, take picture, or choose photo; images stay in-browser); optional Ops assign. Hospital Portal Devices assigns in-stock watches to patients.
+- [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): Portal-style top bar; scan-first add (barcode / picture / photo, then hospital, serial, required Bluetooth MAC, model); stock tabs All / In stock / Assigned; optional Ops assign; revoke assignment back to stock; Ops-only delete (hard remove when unused, retire when history exists). Hospital Portal Devices assigns in-stock watches to patients.
 - [x] Web UI language switcher (en / fr / ln / sw)
 - [x] Phone-usable admin (responsive layout + thin home-screen install): Portal and Ops top bar, forms, tables, hospital deck, and fleet tighten under 768px / 480px. Manifest and icons support Add to Home Screen. No offline service worker. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 
@@ -133,9 +133,9 @@ New vertical: Domain `Ward` / `Room` / `Bed` / `InpatientAdmission`, migration `
 
 ---
 
-## Step 3: Patient Mobile (concept parity + APIs) - 63%
+## Step 3: Patient Mobile (Premium soft + APIs) - 63%
 
-Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobile.Kernel` / `FeatureFlags`.
+Design lock and screen map: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobile.Kernel` / `FeatureFlags`. Do not chase the old React mockup for visuals.
 
 ### Shell, auth, onboarding
 
@@ -159,16 +159,16 @@ Concept: `C:\laragon\www\raphcare-mobile-app-concept`. Screens and tokens: `docs
 | Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
-| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked Bluetooth MAC (first pair learns MAC); offline outbox retries |
+| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear (vendor session, or a short Scan then GATT if the vendor libraries are missing); manual Scan keeps exclusive Veepoo alive and only releases Plugin.BLE GATT (no Scan auto-Connect); Watch readings page Measure uses vendor live HR/SpO₂; offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
 | Mental health | [x] | [x] | [x] | Content, mood check-in, patient PHQ-9 / GAD-7 self-assessment |
-| AI assistant | [x] | [x] | [x] | Chat bubbles with in-session history; last 8 turns sent as model context; Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
+| AI assistant | [x] | [x] | [x] | Home quick action opens chat bubbles with in-session history; last 8 turns sent as model context; Azure OpenAI gpt-4.1-mini when `PatientAssistant` is set; placeholder otherwise |
 | Notifications | [x] | [x] | [x] | List / mark read / push registration |
 | Settings / profile | [x] | [x] | [x] | Edit (including photo upload), personal info, medical info (blood type picker with Unknown; allergy/chronic chips + Other), emergency contacts (pick from phone contacts or enter manually), insurance plan badge from API, payment methods vs billing history routes, honest privacy (local toggles; delete/export via support/clinic), help, language, change password, Active clinic (typed search / RC- code; not an auto-loaded membership list) |
 
-Screen visual parity table is marked done in `Mobile_Concept_Port.md` (last pass). Re-check when the React concept changes.
+Screen completeness table is marked done in `Mobile_Concept_Port.md` under the Premium soft lock. Re-check when product adds or retires a patient screen.
 
 ### Mobile device coverage (phones, OS, wearables)
 
@@ -199,7 +199,7 @@ Push notifications on device:
 Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_Patient_Device_Packages_and_Fleet.md`, **`docs/14_Wearable_Capability_Catalog.md`**, desk steps in [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md)):
 
 - [x] Devices screen: BLE scan, connect, disconnect
-- [x] Patient claim of fleet serial (hospital: prior staff assignment; Direct packaging self-claim when programme allows; no invent-serial register)
+- [x] Patient claim of fleet serial (hospital: prior staff assignment; Direct packaging self-claim when programme allows; no invent-serial register; type serial or photograph packaging barcode/QR)
 - [x] E580 / E585 name filter (`E585E580DeviceFilter`, includes `ET580` / `ET585`) + "show all BLE" fallback
 - [x] Android Bluetooth / Nearby devices permission flow
 - [x] iOS Bluetooth usage string (`Info.plist`)
@@ -207,10 +207,10 @@ Wearables / patient hardware (see `docs/11_Devices_BLE_E580_E585.md`, `docs/13_P
 - [x] SpO₂ GATT read when the band exposes standard PLX (`0x2A5F` / `0x2A60`)
 - [x] Vitals sync to API + offline outbox retry (`FileVitalsSyncOutbox`): HR / SpO₂ batches only
 - [x] SKU-agnostic wearable capability catalog documented (`docs/14_Wearable_Capability_Catalog.md`)
-- [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: sideload 1.5.2 packages current `jar_core` AARs; physical ET580/ET585 verification still open; iOS not wired
+- [x] HBand Android vendor path (JNI): download script + `HBandAndroidWearableBridge` + connect/pwd/person + live HR/SpO₂ start `(partial)`: REQUEST_CANCELED (-2) retries after GATT handoff; reconnect claimed MAC when Devices appears after process death; proxy invoke guarded; physical ET580/ET585 Measure prove-out still open; iOS not wired
 - [ ] Reliable full band data (HBand-class parity for in-scope metrics) `(partial)`: Phase 1 HR/SpO₂ hooks in; activity/sleep/history still open. See `docs/14`
 - [ ] Full typed HBand SDK C# binding project `(out of scope for Phase 1)`: JNI bridge used instead; optional later. See `docs/12_HBand_SDK_Integration.md`
-- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: wired in 1.5.2; awaiting [`Wearable_Hardware_Proveout.md`](Wearable_Hardware_Proveout.md) on a real band
+- [ ] Live HR + SpO₂ in patient app via vendor protocol verified on hardware `(partial)`: exclusive Veepoo Connect; Claimed wearable Connect; logical Disconnect; SDK ClassLoader load; heart status (wear/busy/battery) surfaced; awaiting ET580/ET585 prove-out of live BPM
 - [ ] Auto sync / background monitoring of band readings `(partial)`: manual sync + outbox exist; background unproven; OS limits in `docs/14`
 - [ ] Activity (steps / kcal / distance / goals) domain + sync + mobile `(not started)`
 - [ ] Sleep domain + sync + mobile `(not started)`
@@ -394,7 +394,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 |-----|---------|
 | `raphcare-feature-checklist-partner.md` | Plain-language status for non-technical partners |
 | [`Web_And_Mobile_Smoke_Plan.md`](Web_And_Mobile_Smoke_Plan.md) | Planned API, Web UI, and Mobile smoke layers |
-| [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md) | Tokens, route map, screen visual parity |
+| [`../../Mobile_Concept_Port.md`](../../Mobile_Concept_Port.md) | Premium soft design lock and patient screen map |
 | `Mobile_Release_Ready_Checklist.md` | Flags, quality bar, release backlog |
 | [`../../09_Mobile_App_Guide.md`](../../09_Mobile_App_Guide.md) | Mobile structure, DI, config |
 | [`../../11_Devices_BLE_E580_E585.md`](../../11_Devices_BLE_E580_E585.md) | BLE bands (E580 / E585) |

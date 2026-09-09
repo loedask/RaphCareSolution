@@ -27,7 +27,7 @@ public sealed class GetAdminClinicDevicesHandler(
             return null;
 
         var devicesPage = await deviceRepository.SearchAsync(
-            q => q.Where(d => d.ClinicId == request.ClinicId).OrderBy(d => d.SerialNumber),
+            q => q.Where(d => d.ClinicId == request.ClinicId && d.IsActive).OrderBy(d => d.SerialNumber),
             1,
             200,
             applyDefaultIdOrdering: false,

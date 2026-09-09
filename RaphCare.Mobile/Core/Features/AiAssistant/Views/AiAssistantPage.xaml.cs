@@ -35,14 +35,26 @@ public partial class AiAssistantPage : ContentPage
     }
 
     private void OnMessagesChanged(object? sender, EventArgs e) =>
-        MainThread.BeginInvokeOnMainThread(() => ScrollToLatest(animate: true));
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            // Let CollectionView realize the new cell before ScrollTo (Android process kill otherwise).
+            await Task.Delay(50).ConfigureAwait(true);
+            ScrollToLatest(animate: true);
+        });
 
     private void ScrollToLatest(bool animate)
     {
         if (_viewModel is null || _viewModel.Messages.Count == 0)
             return;
 
-        var last = _viewModel.Messages[^1];
-        MessagesList.ScrollTo(last, position: ScrollToPosition.End, animate: animate);
+        try
+        {
+            var index = _viewModel.Messages.Count - 1;
+            MessagesList.ScrollTo(index, position: ScrollToPosition.End, animate: animate);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"AiAssistant ScrollTo skipped: {ex.Message}");
+        }
     }
 }

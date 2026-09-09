@@ -15,9 +15,9 @@
 | **`RaphCare.Mobile.Kernel`** | Small **net10.0** library: `AuthResult`, feature flags types. No MAUI references. Keeps logic unit-testable without pulling MAUI workloads into test projects. |
 | **`RaphCare.Client`** | HTTP, API contracts, DTOs, `IAccessTokenProvider` consumption from the app. Do **not** duplicate those in Mobile. |
 
-## Design port (React concept)
+## Design (Premium soft)
 
-The UI design target is the **React + Vite** app at **`C:\laragon\www\raphcare-mobile-app-concept`**. **Match its look** (colors, type, spacing, radii, shadows, layout) in MAUI. See **`docs/Mobile_Concept_Port.md`** for tokens, fonts, route mapping, and a parity checklist. Cursor: **`.cursor/rules/raphcare-mobile-concept-template.mdc`**.
+**Look and feel** is the locked **Premium soft** identity in `RaphCare.Mobile/Resources/Styles/` and shared controls. See **`docs/Mobile_Concept_Port.md`** for the design lock and patient screen map. Cursor: **`.cursor/rules/raphcare-mobile-concept-template.mdc`**. Do **not** match the old React Vite mockup for visuals.
 
 ## Configuration layers (order)
 
@@ -57,7 +57,7 @@ Optional: `Onboarding:DefaultVoiceLanguage` (default `en-ZA` in **appsettings.js
 
 ### Create account (design parity)
 
-**RegisterOptions** matches the React concept: **Email** (Entra), **Phone** (SMS OTP + API JWT), **Voice** (phone verification first, then **in-app microphone recording** with waveform-style motion, then upload). Phone/voice use **RaphCare.Client** `IOtpAuthService` / `IVoiceOnboardingService`. Recording uses **Plugin.Maui.Audio** (`IAudioManager` / `IAudioRecorder`), registered in `MauiProgram` via `AddAudio()`. Microphone permission is requested at runtime; platform manifests include the required declarations (Android `RECORD_AUDIO`, iOS/Mac `NSMicrophoneUsageDescription`, Mac Catalyst sandbox **audio-input** entitlement, Windows **microphone** capability).
+**RegisterOptions** offers **Email** (Entra), **Phone** (SMS OTP + API JWT), and **Voice** (phone verification first, then **in-app microphone recording** with waveform-style motion, then upload). Phone/voice use **RaphCare.Client** `IOtpAuthService` / `IVoiceOnboardingService`. Recording uses **Plugin.Maui.Audio** (`IAudioManager` / `IAudioRecorder`), registered in `MauiProgram` via `AddAudio()`. Microphone permission is requested at runtime; platform manifests include the required declarations (Android `RECORD_AUDIO`, iOS/Mac `NSMicrophoneUsageDescription`, Mac Catalyst sandbox **audio-input** entitlement, Windows **microphone** capability).
 
 **Phone OTP in development:** The API does not send real SMS yet. With **`ASPNETCORE_ENVIRONMENT=Development`**, **`SmsService`** logs a **warning** containing the full text `Your RaphCare verification code is: …` (search the API console output for **`[Development] SMS not sent. OTP for testing`**). Use that code on **Verify phone** in the app. See **`docs/06_Key_Workflows.md`** (OTP Auth Flow).
 

@@ -17,7 +17,7 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 
 Each section shows its % in the heading. Numbers stay in sync when status changes.
 
-Last reviewed: 2026-09-06
+Last reviewed: 2026-09-09
 
 ---
 
@@ -39,7 +39,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
-| Fleet watches (platform) | Done | Ops web app stocks serials under a hospital or the Direct programme (type, optional Bluetooth MAC, scan barcode, take a picture, or choose a photo; the image is not uploaded). Ops and Portal Devices lists show MAC and activated date when known. Hospital staff assign an in-stock watch to a patient on Devices. Patients claim the serial, then Bluetooth only pairs to that watch. |
+| Fleet watches (platform) | Done | Ops stocks watches under a hospital or Direct. Capture packaging or Device Info first, then confirm hospital, serial, and Bluetooth MAC. The list uses All, In stock, and Assigned tabs. Ops can revoke an assignment back to stock, or delete a stock row (history is retired, not erased). Ops and Portal Devices lists show MAC and activated date when known. Hospital staff assign an in-stock watch to a patient on Devices. Patients claim the serial, then Bluetooth only pairs to that watch. |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Use Portal and Ops on a phone | Done | Layouts tighten on small screens: top bar, forms, tables you can swipe, and hospital section tabs. Staff can add a home-screen shortcut from the browser (not a separate staff app, and not offline). |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
@@ -103,8 +103,8 @@ What patients see on Android and iPhone.
 | Video visit on a real iPhone | Not started | Needs iOS video kit wiring |
 | Push alerts on Android | Partial | Needs Firebase configured on the server |
 | Push alerts on iPhone | Partial | Needs store and push setup, then a real device test |
-| Claim an assigned watch serial in the app | Done | Hospital path: after staff assign the watch, the patient enters that serial. Direct package path: claim the packaging serial when the watch is stocked under Direct. Unknown serials are rejected. Scan and Connect stay off until claim. After the first pair, only that Bluetooth address is accepted. |
-| Connect **E580** or **E585** style Bluetooth bands | Partial | Scan includes ET580 and ET585 labels; heart rate or oxygen only when the band speaks standard Bluetooth health profiles |
+| Claim an assigned watch serial in the app | Done | Hospital path: after staff assign the watch, the patient types that serial or photographs the packaging barcode or QR. Direct package path: claim the packaging serial when the watch is stocked under Direct. Unknown serials are rejected. Scan and Connect stay off until claim. After the first pair, only that Bluetooth address is accepted. Trying a different nearby band shows which Bluetooth address belongs to your claim. Closing the app and opening Devices again reconnects that claimed watch when it is nearby. |
+| Connect **E580** or **E585** style Bluetooth bands | Partial | Scan needs Nearby devices permission on Android 12+. Opening Devices reconnects the claimed watch when permission is already allowed. Manual Scan fills Nearby (including your saved watch row) without dropping the watch radio; tap Connect only if you need to. Disconnect clears Connected in the app but keeps the watch radio until you leave the app, so Connect again is safe. Connect, then Measure on Watch readings. If Measure says the watch is loose, busy, or low battery, fix that and try again. Force-stop the separate H Band app if the phone has it. Stay on the app while measuring. Blood pressure and other monitors are later |
 | Live heart rate and blood oxygen in the app | Partial | Android vendor path wired; confirm on your ET580 or ET585 samples |
 | Auto sync and background monitoring | Not started | Manual sync exists; background sync not finished |
 | Full band health history (like the vendor companion app) | Partial | Connect and live HR/SpO₂ started; activity, sleep, and history still open |
@@ -219,4 +219,5 @@ This list is the current manual smoke for admin web and the patient phone app. B
 8. **Admin web:** open Collection. Search by pickup code, name, or health ID, or scan a pickup QR. Call a code onto the waiting screen. Open the waiting screen on another tab. Mark a prescription collected, or enter a lab result. Try cancel and undo. Print a slip and a wall poster.
 9. **Patient app on Android:** sign in as `demo.patient@raphcare.com`. You should get a notice that something is ready to collect. After staff enter a lab result, you should also get a separate notice that the result is ready (open Health records for the values). Waiting items show a pickup code and a QR code. Scan the wall poster at the counter to show only that hospital. When staff tap Call, the app should say come to the counter and you should get a notice.
 10. **Patient app on Android:** open Home, try Appointments and Devices (Bluetooth band if you have one). Open the chat assistant and send a short wellness question. You should get a real reply. This is not a doctor.
-11. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).
+11. **Patient app on Android:** if you have a claimed watch, Connect, then close the app fully and open Devices again. It should reconnect that watch when it is nearby. You should not have to Scan first.
+12. **Patient app on iPhone (if available):** same smoke test; note anything that fails (especially video).

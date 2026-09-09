@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shared="clr-namespace:RaphCare.Mobile.Core.Common.Controls"
+             xmlns:vm="clr-namespace:RaphCare.Mobile.Core.Features.Devices.ViewModels"
+             x:Class="RaphCare.Mobile.Core.Features.Devices.Views.WatchReadingsPage"
+             x:DataType="vm:WatchReadingsViewModel"
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,16,20,96" Spacing="14">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <Button Grid.Column="0"
+                        Style="{StaticResource IconBackButton}"
+                        Text="←"
+                        FontSize="20"
+                        Command="{Binding BackCommand}" />
+                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                    <Label Text="{Binding Title}"
+                           FontFamily="SpaceGrotesk"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource ForegroundColor}"
+                           Margin="0" />
+                    <Label Text="{Binding PageHint}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           Margin="0" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="{StaticResource ErrorColor}"
+                   Style="{StaticResource BodySmall}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <Label Text="{Binding StatusHint}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding StatusHint, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <Label Text="{Binding NotConnectedHint}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding ShowNotConnected}" />
+
+            <Border Style="{StaticResource CardPremium}" Margin="0" Padding="18">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Border Grid.Column="0" Style="{StaticResource AppIconWellAccent}">
+                            <Image Source="icon_heart_on_accent.png" Style="{StaticResource AppIconImage}" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Text="{Binding HeartRateLabel}"
+                                   Style="{StaticResource SectionTitle}"
+                                   Margin="0" />
+                            <Label Text="{Binding HeartRateValue}"
+                                   FontFamily="SpaceGrotesk"
+                                   FontSize="28"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource ForegroundColor}"
+                                   Margin="0" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardPremium}" Margin="0" Padding="18">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Border Grid.Column="0" Style="{StaticResource AppIconWellAccent}">
+                            <Image Source="icon_heart_on_accent.png" Style="{StaticResource AppIconImage}" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Text="{Binding Spo2Label}"
+                                   Style="{StaticResource SectionTitle}"
+                                   Margin="0" />
+                            <Label Text="{Binding Spo2Value}"
+                                   FontFamily="SpaceGrotesk"
+                                   FontSize="28"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource ForegroundColor}"
+                                   Margin="0" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <ActivityIndicator IsRunning="{Binding IsMeasuring}"
+                               IsVisible="{Binding IsMeasuring}"
+                               Color="{StaticResource PrimaryColor}"
+                               HeightRequest="28" />
+
+            <shared:GradientButton Text="{Binding MeasureButtonText}"
+                                   Command="{Binding MeasureCommand}"
+                                   IsBusy="{Binding IsMeasuring}"
+                                   HorizontalOptions="Fill"
+                                   Padding="12,14" />
+
+            <Button Text="{Binding SyncButtonText}"
+                    Style="{StaticResource OutlineTealButton}"
+                    Command="{Binding SyncCommand}"
+                    HorizontalOptions="Fill" />
+
+            <Label Text="{Binding SyncResultText}"
+                   Style="{StaticResource BodySmall}"
+                   TextColor="{StaticResource MutedForegroundColor}"
+                   IsVisible="{Binding SyncResultText, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <Border Style="{StaticResource CardBorder}" Margin="0" Padding="18">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="{Binding ComingSoonTitle}"
+                           Style="{StaticResource SectionTitle}"
+                           Margin="0" />
+                    <Label Text="{Binding ComingSoonBody}"
+                           Style="{StaticResource BodySmall}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           Margin="0" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

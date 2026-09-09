@@ -286,56 +286,63 @@ public sealed class HomeViewModel : BaseViewModel
             // Push registration is best-effort for demos; ignore token/API failures here.
         }
 
-        var appointmentsTask = _appointments.GetMyAppointmentsAsync(1, 50, CancellationToken.None);
-        var devicesTask = _patientDevices.GetMyDevicesAsync(CancellationToken.None);
-        var readingsTask = _patientDevices.GetMyLatestReadingsAsync(CancellationToken.None);
-        var moodsTask = _mentalHealth.GetMyMoodCheckInsAsync(14, CancellationToken.None);
-        await Task.WhenAll(appointmentsTask, devicesTask, readingsTask, moodsTask).ConfigureAwait(false);
-
-        var appointmentsResponse = await appointmentsTask.ConfigureAwait(false);
-        var devicesResponse = await devicesTask.ConfigureAwait(false);
-        var readingsResponse = await readingsTask.ConfigureAwait(false);
-        var moodsResponse = await moodsTask.ConfigureAwait(false);
-
-        var nowUtc = DateTime.UtcNow;
-        AppointmentViewModel? next = null;
-        if (appointmentsResponse.IsSuccess && appointmentsResponse.Data?.Items is { } items)
+        try
         {
-            next = HomeUpcomingAppointmentRules.PickNextUpcoming(
-                items,
-                nowUtc,
-                a => a.ScheduledStart.Kind == DateTimeKind.Unspecified
-                    ? DateTime.SpecifyKind(a.ScheduledStart, DateTimeKind.Utc)
-                    : a.ScheduledStart.ToUniversalTime(),
-                a => a.ScheduledEnd.Kind == DateTimeKind.Unspecified
-                    ? DateTime.SpecifyKind(a.ScheduledEnd, DateTimeKind.Utc)
-                    : a.ScheduledEnd.ToUniversalTime(),
-                a => a.Status);
+            var appointmentsTask = _appointments.GetMyAppointmentsAsync(1, 50, CancellationToken.None);
+            var devicesTask = _patientDevices.GetMyDevicesAsync(CancellationToken.None);
+            var readingsTask = _patientDevices.GetMyLatestReadingsAsync(CancellationToken.None);
+            var moodsTask = _mentalHealth.GetMyMoodCheckInsAsync(14, CancellationToken.None);
+            await Task.WhenAll(appointmentsTask, devicesTask, readingsTask, moodsTask).ConfigureAwait(false);
+
+            var appointmentsResponse = await appointmentsTask.ConfigureAwait(false);
+            var devicesResponse = await devicesTask.ConfigureAwait(false);
+            var readingsResponse = await readingsTask.ConfigureAwait(false);
+            var moodsResponse = await moodsTask.ConfigureAwait(false);
+
+            var nowUtc = DateTime.UtcNow;
+            AppointmentViewModel? next = null;
+            if (appointmentsResponse.IsSuccess && appointmentsResponse.Data?.Items is { } items)
+            {
+                next = HomeUpcomingAppointmentRules.PickNextUpcoming(
+                    items,
+                    nowUtc,
+                    a => a.ScheduledStart.Kind == DateTimeKind.Unspecified
+                        ? DateTime.SpecifyKind(a.ScheduledStart, DateTimeKind.Utc)
+                        : a.ScheduledStart.ToUniversalTime(),
+                    a => a.ScheduledEnd.Kind == DateTimeKind.Unspecified
+                        ? DateTime.SpecifyKind(a.ScheduledEnd, DateTimeKind.Utc)
+                        : a.ScheduledEnd.ToUniversalTime(),
+                    a => a.Status);
+            }
+
+            var culture = CultureInfo.CurrentCulture;
+            var metrics = BuildHealthMetricsFromReadings(
+                readingsResponse.IsSuccess ? readingsResponse.Data : null);
+            var devices = BuildConnectedDevicesFromApi(
+                devicesResponse.IsSuccess ? devicesResponse.Data : null);
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                ApplyUpcoming(next, culture);
+                HealthMetrics.Clear();
+                foreach (var m in metrics)
+                    HealthMetrics.Add(m);
+                HasHealthMetrics = HealthMetrics.Count > 0;
+                ShowHealthEmpty = !HasHealthMetrics;
+
+                ConnectedDevices.Clear();
+                foreach (var d in devices)
+                    ConnectedDevices.Add(d);
+                HasConnectedDevices = ConnectedDevices.Count > 0;
+                ShowDevicesEmpty = !HasConnectedDevices;
+
+                ApplyWellnessInsight(moodsResponse.IsSuccess ? moodsResponse.Data : null);
+            });
         }
-
-        var culture = CultureInfo.CurrentCulture;
-        var metrics = BuildHealthMetricsFromReadings(
-            readingsResponse.IsSuccess ? readingsResponse.Data : null);
-        var devices = BuildConnectedDevicesFromApi(
-            devicesResponse.IsSuccess ? devicesResponse.Data : null);
-
-        await MainThread.InvokeOnMainThreadAsync(() =>
+        catch
         {
-            ApplyUpcoming(next, culture);
-            HealthMetrics.Clear();
-            foreach (var m in metrics)
-                HealthMetrics.Add(m);
-            HasHealthMetrics = HealthMetrics.Count > 0;
-            ShowHealthEmpty = !HasHealthMetrics;
-
-            ConnectedDevices.Clear();
-            foreach (var d in devices)
-                ConnectedDevices.Add(d);
-            HasConnectedDevices = ConnectedDevices.Count > 0;
-            ShowDevicesEmpty = !HasConnectedDevices;
-
-            ApplyWellnessInsight(moodsResponse.IsSuccess ? moodsResponse.Data : null);
-        });
+            // Keep last painted Home content. Unhandled exceptions here previously left a blank tab.
+        }
     }
 
     private void ApplyWellnessInsight(IReadOnlyList<PatientMoodCheckInViewModel>? moods)

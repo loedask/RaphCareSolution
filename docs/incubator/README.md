@@ -26,7 +26,7 @@ Each program gets its own folder when you start an application. Share the form q
 |--------|---------|--------|
 | [`yc/`](yc/) | Y Combinator | Draft ready (`application.html`) |
 
-Last reviewed: 5 September 2026
+Last reviewed: 8 September 2026
 
 ## Folder layout
 

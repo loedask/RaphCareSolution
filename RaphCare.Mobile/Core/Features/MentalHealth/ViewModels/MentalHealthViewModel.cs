@@ -65,6 +65,7 @@ public sealed class MentalHealthViewModel : BaseViewModel
         StartGad7Command = new Command(async () => await BeginAssessmentAsync("GAD-7"));
         CancelAssessmentCommand = new Command(CancelAssessment);
         SubmitAssessmentCommand = new Command(async () => await SubmitAssessmentAsync(), () => CanSubmitAssessment);
+        BackCommand = new Command(async () => await SafeShellNavigator.GoToAsync(".."));
     }
 
     public string HowAreYouLabel { get; }
@@ -164,6 +165,7 @@ public sealed class MentalHealthViewModel : BaseViewModel
     public ICommand StartGad7Command { get; }
     public ICommand CancelAssessmentCommand { get; }
     public ICommand SubmitAssessmentCommand { get; }
+    public ICommand BackCommand { get; }
 
     public async Task LoadAsync()
     {

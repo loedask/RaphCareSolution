@@ -45,6 +45,8 @@ Apply when editing **RaphCare.Mobile**, **RaphCare.Mobile.Kernel**, or **RaphCar
 
 - Mobile **Release** uses **`TreatWarningsAsErrors`**. Prefer fixing new warnings over suppressing them; XAML compiled-binding (`x:DataType`) warnings are known tech debt.
 
-## External React concept (Vite)
+## Design (Premium soft)
 
-- Design reference: **`C:\laragon\www\raphcare-mobile-app-concept`** for routes, screen inventory, and copy. **Visual design follows the Premium soft MAUI identity** in `Resources/Styles/` (see **`.cursor/rules/raphcare-mobile-concept-template.mdc`** and **`docs/Mobile_Concept_Port.md`**). Architecture stays per this rule (Features, Common, Infrastructure, Client, Kernel).
+- **Look and feel:** locked **Premium soft** identity in `Resources/Styles/` and `Core/Common/Controls/`. See **`docs/Mobile_Concept_Port.md`** and **`.cursor/rules/raphcare-mobile-concept-template.mdc`**.
+- Do **not** match the old React Vite mockup for visuals. That path is archive-only.
+- Architecture stays per this rule (Features, Common, Infrastructure, Client, Kernel).

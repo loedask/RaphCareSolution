@@ -30,6 +30,7 @@ public sealed class RequestCallViewModel : BaseViewModel
         LowBandModeText = T("RequestCallModeLowBand");
         StartButtonText = T("RequestCallStart");
         BackButtonText = T("CommonCancel");
+        ModePickerLabel = T("RequestCallModePickerLabel");
 
         SelectVideoCommand = new Command(() => Mode = "video");
         SelectAudioCommand = new Command(() => Mode = "audio");
@@ -43,6 +44,7 @@ public sealed class RequestCallViewModel : BaseViewModel
     public string LowBandModeText { get; }
     public string StartButtonText { get; }
     public string BackButtonText { get; }
+    public string ModePickerLabel { get; }
 
     public string State
     {

@@ -226,7 +226,7 @@ Doctor: demo.doctor@raphcare.com
 Patient (phone app): demo.patient@raphcare.com
 Password (all demo accounts): RaphCareDemo!2026
 
-Android patient APK is available for sideload against this staging API (current build ~v1.8.x).`,
+Android patient APK is available for sideload against this staging API (current build 1.8.37).`,
         meta: "Prefer Portal for reviewers on a laptop. Patient experience needs the Android APK if you send it."
       },
       {
@@ -236,7 +236,7 @@ Android patient APK is available for sideload against this staging API (current 
 
 Hospitals use a web Portal to run day-to-day care in one place: register a site, invite staff, manage patients, book appointments, run visits with vitals and notes, order prescriptions and labs, join video visits, and (on the Hospital plan) run beds, ward notes, a pharmacy/lab collection counter with a TV waiting screen, casualty triage, theatre lists, referrals, and discharge billing.
 
-Platform Ops stocks and assigns wearable devices. Patients claim an assigned watch in the app. They also book care, keep health records, see pickup codes and QR codes for medicines and labs, manage insurance and family members, do mental-health check-ins, and chat with a hospital-configured AI assistant that does not act as a doctor.
+Platform Ops stocks watches by capturing packaging first, then confirming serial and Bluetooth address. Ops can assign a watch, take it back to stock, or remove a mistaken row. Patients claim an assigned watch in the app, then measure heart rate on Watch readings. They also book care, keep health records, see pickup codes and QR codes for medicines and labs, manage insurance and family members, do mental-health check-ins, and chat with a hospital-configured AI assistant that does not act as a doctor.
 
 We built this for how clinics actually work today: paper files, WhatsApp consults, and disconnected tools. RaphCare replaces that stack with one multi-tenant system that already runs on Azure staging, with English, French, Lingala, and Swahili on the Portal.`
       },
@@ -259,8 +259,8 @@ We already host the product in Azure South Africa North. Building here keeps us 
 
 Shipped today:
 • Hospital Portal: outpatient workflows, patient chart, telemedicine join, inpatient beds, collection counter and waiting screens, casualty, theatre, referrals, discharge invoice, AI discharge draft, multi-language UI
-• Ops site: wearable fleet stock and assignment
-• Patient Android app (v1.8.x): sign-in, appointments, honest Home (real upcoming visits, claimed watches, synced vitals), health records with pickup QR, insurance, billing, family, mental health (mood, PHQ-9, GAD-7), AI chat, Active clinic with hospitals linked to you, medical profile and emergency contacts (from the phone book or typed in), claim assigned watches then Bluetooth only to that locked band
+• Ops site: capture packaging first, then confirm serial and Bluetooth address. Assignment, revoke, and delete stay on the same fleet list.
+• Patient Android app (v1.8.37): sign-in, appointments, honest Home (real upcoming visits, claimed watches, synced vitals), health records with pickup QR, insurance, billing, family, mental health (mood, PHQ-9, GAD-7), AI chat that keeps the last few turns in a session, Active clinic with hospitals linked to you, medical profile and emergency contacts (from the phone book or typed in), claim an assigned watch then Bluetooth only to that locked band, Watch readings to measure heart rate. Closing the app and opening Devices reconnects that claimed watch when it is nearby.
 • Shared .NET API, Azure SQL, private blob storage for photos and voice onboarding, Azure OpenAI for chat and draft summaries
 • Staff Portal and Ops work on a phone browser, including a home-screen shortcut (same website, not a separate staff app)
 

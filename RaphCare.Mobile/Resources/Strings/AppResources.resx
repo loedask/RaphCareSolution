@@ -1314,7 +1314,28 @@ Accessible. Intelligent. Human.</value>
     <value>Claim your assigned watch first. Then put the bracelet nearby, tap Scan, and Connect only to that watch.</value>
   </data>
   <data name="DevicesClaimHint" xml:space="preserve">
-    <value>Enter the packaging serial after RaphCare or your clinic assigned the watch. Claim before you scan Bluetooth.</value>
+    <value>Type the packaging serial, or photograph the barcode or QR on the box, after RaphCare or your clinic assigned the watch. Claim before you scan Bluetooth.</value>
+  </data>
+  <data name="DevicesScanPackagingButton" xml:space="preserve">
+    <value>Photo of barcode</value>
+  </data>
+  <data name="DevicesScanPackagingCameraDenied" xml:space="preserve">
+    <value>Camera permission is needed to photograph the packaging barcode.</value>
+  </data>
+  <data name="DevicesScanPackagingUnsupported" xml:space="preserve">
+    <value>This phone cannot open the camera for packaging photos. Type the serial instead.</value>
+  </data>
+  <data name="DevicesScanPackagingFailed" xml:space="preserve">
+    <value>Could not take that photo. Try again, or type the serial.</value>
+  </data>
+  <data name="DevicesScanPackagingNoCode" xml:space="preserve">
+    <value>No barcode or QR found. Use a clearer shot of the packaging code, or type the serial.</value>
+  </data>
+  <data name="DevicesScanPackagingNeedSerial" xml:space="preserve">
+    <value>That photo looks like a Bluetooth address, not the packaging serial. Photograph the box barcode, or type the serial.</value>
+  </data>
+  <data name="DevicesScanPackagingFilledFormat" xml:space="preserve">
+    <value>Filled serial {0} from the photo. Check the model, then Claim watch.</value>
   </data>
   <data name="DevicesClaimBeforeConnect" xml:space="preserve">
     <value>Claim your assigned watch before scanning or connecting Bluetooth.</value>
@@ -1325,11 +1346,17 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesClaimReadyFirstPairHint" xml:space="preserve">
     <value>Watch claimed. Scan and Connect once to lock Bluetooth to this band.</value>
   </data>
+  <data name="DevicesClaimMissingBluetoothMac" xml:space="preserve">
+    <value>This claimed watch has no Bluetooth address on the server yet. Ask Ops to set the MAC on the device record, or Scan with Show all Bluetooth and Connect once to lock it.</value>
+  </data>
+  <data name="DevicesClaimMissingBluetoothMacHint" xml:space="preserve">
+    <value>Claimed watch is missing a Bluetooth MAC. The Claimed wearable row cannot appear until Ops sets it, or you Connect once from a full Bluetooth scan.</value>
+  </data>
   <data name="DevicesClaimReadyMacHint" xml:space="preserve">
     <value>Watch claimed. Connect only to Bluetooth {0}.</value>
   </data>
   <data name="DevicesWrongWatchMac" xml:space="preserve">
-    <value>That is not the watch assigned to you. Connect only to your claimed band.</value>
+    <value>That is not the watch assigned to you. Connect only to Bluetooth {0}.</value>
   </data>
   <data name="DevicesMacMissingAfterConnect" xml:space="preserve">
     <value>Connected, but this phone could not read a Bluetooth address. Try again near the band.</value>
@@ -1349,6 +1376,102 @@ Accessible. Intelligent. Human.</value>
   <data name="DevicesLastReading" xml:space="preserve">
     <value>Last reading</value>
   </data>
+  <data name="DevicesStatusSectionTitle" xml:space="preserve">
+    <value>Watch status</value>
+  </data>
+  <data name="DevicesBluetoothSectionTitle" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="DevicesNearbySectionTitle" xml:space="preserve">
+    <value>Nearby watches</value>
+  </data>
+  <data name="DevicesClaimSectionTitle" xml:space="preserve">
+    <value>Claim your watch</value>
+  </data>
+  <data name="DevicesReadingsEmptyHint" xml:space="preserve">
+    <value>Connect your watch, then heart rate and oxygen show here.</value>
+  </data>
+  <data name="DevicesVitalsWaitingHint" xml:space="preserve">
+    <value>Connected. Heart rate and oxygen show here when this band sends them.</value>
+  </data>
+  <data name="DevicesConnectedRowButton" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="DevicesOpenReadingsButton" xml:space="preserve">
+    <value>Open watch readings</value>
+  </data>
+  <data name="DevicesReadingsLinkHint" xml:space="preserve">
+    <value>Measure heart rate and oxygen on a dedicated screen. More reading types will land there later.</value>
+  </data>
+  <data name="WatchReadingsPageTitle" xml:space="preserve">
+    <value>Watch readings</value>
+  </data>
+  <data name="WatchReadingsPageHint" xml:space="preserve">
+    <value>Connect your claimed watch on Devices first. Then measure here. On-watch Health Monitor alone does not send numbers to the phone.</value>
+  </data>
+  <data name="WatchReadingsHeartRateLabel" xml:space="preserve">
+    <value>Heart rate</value>
+  </data>
+  <data name="WatchReadingsSpo2Label" xml:space="preserve">
+    <value>Blood oxygen</value>
+  </data>
+  <data name="WatchReadingsMeasureButton" xml:space="preserve">
+    <value>Measure now</value>
+  </data>
+  <data name="WatchReadingsSyncButton" xml:space="preserve">
+    <value>Sync to clinic</value>
+  </data>
+  <data name="WatchReadingsComingSoonTitle" xml:space="preserve">
+    <value>Coming later</value>
+  </data>
+  <data name="WatchReadingsComingSoonBody" xml:space="preserve">
+    <value>Blood pressure, stress, temperature, and other watch monitors will show here when RaphCare can read them from your band.</value>
+  </data>
+  <data name="WatchReadingsNotConnectedHint" xml:space="preserve">
+    <value>No watch linked. Go back to Devices, Scan, and Connect your claimed band.</value>
+  </data>
+  <data name="WatchReadingsReadyToMeasureHint" xml:space="preserve">
+    <value>Ready. On the watch, open Heart Rate and tap to test if needed, then Measure now.</value>
+  </data>
+  <data name="WatchReadingsReadyExclusiveHint" xml:space="preserve">
+    <value>Ready. Stay on this screen. On the watch open Heart Rate and tap to test if needed, then Measure now. Do not switch apps while measuring.</value>
+  </data>
+  <data name="WatchReadingsNeedsDevicesConnectHint" xml:space="preserve">
+    <value>Bluetooth is linked, but Measure needs a fresh Connect. Open Devices, tap Disconnect, then Connect, then return here.</value>
+  </data>
+  <data name="WatchReadingsMeasuringHint" xml:space="preserve">
+    <value>Measuring. Keep the watch on your wrist and nearby.</value>
+  </data>
+  <data name="WatchReadingsUpdatedHint" xml:space="preserve">
+    <value>Reading updated.</value>
+  </data>
+  <data name="WatchReadingsMeasureFailedHint" xml:space="preserve">
+    <value>No reading yet. Try Heart Rate on the watch, then Measure again.</value>
+  </data>
+  <data name="WatchReadingsMeasureTimeout" xml:space="preserve">
+    <value>Measure stopped after waiting. Keep the watch nearby, open Heart Rate and tap to test, then try Measure again.</value>
+  </data>
+  <data name="WatchReadingsVendorUnavailable" xml:space="preserve">
+    <value>Live measure is not available on this phone build.</value>
+  </data>
+  <data name="WatchReadingsVendorMeasureDisabled" xml:space="preserve">
+    <value>Live Measure through the watch SDK is temporarily off. It was closing the app on some phones. Keep your watch Connected on Devices. We will turn Measure back on in a later build.</value>
+  </data>
+  <data name="WatchReadingsVendorMeasureDisabledHint" xml:space="preserve">
+    <value>Measure is paused while we fix a crash with this watch. Stay Connected on Devices. Tap Measure only checks the phone Bluetooth link for now.</value>
+  </data>
+  <data name="WatchReadingsValueEmpty" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="WatchReadingsSyncNoVitals" xml:space="preserve">
+    <value>Measure a heart rate or oxygen reading first, then sync.</value>
+  </data>
+  <data name="WatchReadingsSyncOk" xml:space="preserve">
+    <value>Synced.</value>
+  </data>
+  <data name="WatchReadingsSyncOkFormat" xml:space="preserve">
+    <value>Synced heart rate {0}, oxygen {1}.</value>
+  </data>
   <data name="DevicesUnnamedPeripheral" xml:space="preserve">
     <value>Unknown device</value>
   </data>
@@ -1356,7 +1479,10 @@ Accessible. Intelligent. Human.</value>
     <value>Checking Bluetooth permission…</value>
   </data>
   <data name="DevicesPermissionDenied" xml:space="preserve">
-    <value>Bluetooth permission was denied. Enable it in system settings.</value>
+    <value>Nearby devices permission is off. Open phone Settings, find RaphCare, allow Nearby devices (and Bluetooth), then return and tap Scan.</value>
+  </data>
+  <data name="DevicesPermissionNeededHint" xml:space="preserve">
+    <value>Tap Scan or Connect and allow Nearby devices when the phone asks. The app will not connect until you allow it.</value>
   </data>
   <data name="DevicesBluetoothOff" xml:space="preserve">
     <value>Bluetooth is off. Turn it on and try again.</value>
@@ -1365,13 +1491,28 @@ Accessible. Intelligent. Human.</value>
     <value>Scanning for wearables…</value>
   </data>
   <data name="DevicesScanComplete" xml:space="preserve">
-    <value>Scan finished.</value>
+    <value>Scan finished. Tap Connect on your claimed watch.</value>
+  </data>
+  <data name="DevicesConnectingHint" xml:space="preserve">
+    <value>Connecting to your watch…</value>
   </data>
   <data name="DevicesScanStopped" xml:space="preserve">
     <value>Scan stopped.</value>
   </data>
+  <data name="DevicesScanEmptyHint" xml:space="preserve">
+    <value>No watches found. Put the band nearby, force-stop the separate H Band app if installed, tap Showing to list all Bluetooth, then Scan again.</value>
+  </data>
   <data name="DevicesConnected" xml:space="preserve">
     <value>Connected.</value>
+  </data>
+  <data name="DevicesConnectedNeedsMeasureLink" xml:space="preserve">
+    <value>Bluetooth linked. Tap Disconnect, then Connect again so Measure can read the watch.</value>
+  </data>
+  <data name="DevicesReconnectingHint" xml:space="preserve">
+    <value>Reconnecting your claimed watch…</value>
+  </data>
+  <data name="DevicesReconnectFailedHint" xml:space="preserve">
+    <value>Could not reconnect. Force-stop the H Band app if installed, keep the watch nearby and unlocked, then tap Connect.</value>
   </data>
   <data name="DevicesDisconnected" xml:space="preserve">
     <value>Disconnected.</value>
@@ -2160,7 +2301,10 @@ Accessible. Intelligent. Human.</value>
     <value>Audio</value>
   </data>
   <data name="RequestCallModeLowBand" xml:space="preserve">
-    <value>Low bandwidth</value>
+    <value>Low data</value>
+  </data>
+  <data name="RequestCallModePickerLabel" xml:space="preserve">
+    <value>How to connect</value>
   </data>
   <data name="RequestCallStart" xml:space="preserve">
     <value>Request call now</value>

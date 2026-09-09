@@ -57,16 +57,16 @@ public sealed class GetPlatformOpsStatsHandler(
                 .ConfigureAwait(false),
             FacilityCount = await CountAsync(facilityRepository, q => q, cancellationToken)
                 .ConfigureAwait(false),
-            DeviceCount = await CountAsync(deviceRepository, q => q, cancellationToken)
+            DeviceCount = await CountAsync(deviceRepository, q => q.Where(d => d.IsActive), cancellationToken)
                 .ConfigureAwait(false),
             UnassignedDeviceCount = await CountAsync(
                     deviceRepository,
-                    q => q.Where(d => !d.IsAssigned),
+                    q => q.Where(d => d.IsActive && !d.IsAssigned),
                     cancellationToken)
                 .ConfigureAwait(false),
             AssignedDeviceCount = await CountAsync(
                     deviceRepository,
-                    q => q.Where(d => d.IsAssigned),
+                    q => q.Where(d => d.IsActive && d.IsAssigned),
                     cancellationToken)
                 .ConfigureAwait(false),
             AppointmentsTodayCount = await CountAsync(

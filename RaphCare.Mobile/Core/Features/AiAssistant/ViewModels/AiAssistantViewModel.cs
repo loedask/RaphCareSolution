@@ -158,6 +158,13 @@ public sealed class AiAssistantViewModel : BaseViewModel
                 OnPropertyChanged(nameof(HasDisclaimer));
             }).ConfigureAwait(false);
         }
+        catch (Exception)
+        {
+            await RunOnMainThreadAsync(() =>
+            {
+                ErrorMessage = T("AiAssistantSendFailed");
+            }).ConfigureAwait(false);
+        }
         finally
         {
             IsBusy = false;

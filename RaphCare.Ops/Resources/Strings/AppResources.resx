@@ -87,13 +87,28 @@
   <data name="Fleet_AuthTitle" xml:space="preserve"><value>Sign in as platform admin</value></data>
   <data name="Fleet_AuthLead" xml:space="preserve"><value>Fleet inventory needs a RaphCare platform administrator account.</value></data>
   <data name="Fleet_AddTitle" xml:space="preserve"><value>Add to stock</value></data>
-  <data name="Fleet_AddLead" xml:space="preserve"><value>Pick the hospital or Direct programme that will own the device, then enter the serial from packaging.</value></data>
+  <data name="Fleet_AddLead" xml:space="preserve"><value>Scan packaging or the Device Info screen first, then confirm the hospital, serial, and Bluetooth MAC.</value></data>
+  <data name="Fleet_StepCaptureTitle" xml:space="preserve"><value>Capture</value></data>
+  <data name="Fleet_StepCaptureLead" xml:space="preserve"><value>Scan a barcode, take a picture, or choose a photo of packaging or Device Info.</value></data>
+  <data name="Fleet_StepConfirmTitle" xml:space="preserve"><value>Confirm and add</value></data>
+  <data name="Fleet_StepConfirmLead" xml:space="preserve"><value>Choose the owning hospital. Use the packaging serial from the box (not the ET585-style series name on Device Info). Check the Bluetooth MAC against Device Info before you add.</value></data>
+  <data name="Fleet_StockTabsAria" xml:space="preserve"><value>Stock filters</value></data>
+  <data name="Fleet_TabAll" xml:space="preserve"><value>All</value></data>
+  <data name="Fleet_TabInStock" xml:space="preserve"><value>In stock</value></data>
+  <data name="Fleet_TabAssigned" xml:space="preserve"><value>Assigned</value></data>
+  <data name="Fleet_EmptyInStockTab" xml:space="preserve"><value>No unassigned stock for these filters.</value></data>
+  <data name="Fleet_EmptyAssignedTab" xml:space="preserve"><value>No assigned watches for these filters.</value></data>
+  <data name="Fleet_StatusColumn" xml:space="preserve"><value>Status</value></data>
   <data name="Fleet_SelectHospital" xml:space="preserve"><value>Select hospital</value></data>
   <data name="Fleet_SerialLabel" xml:space="preserve"><value>Serial</value></data>
-  <data name="Fleet_SerialPlaceholder" xml:space="preserve"><value>Serial on packaging</value></data>
+  <data name="Fleet_SerialPlaceholder" xml:space="preserve"><value>Packaging serial from the box</value></data>
   <data name="Fleet_MacLabel" xml:space="preserve"><value>Bluetooth MAC</value></data>
-  <data name="Fleet_MacPlaceholder" xml:space="preserve"><value>Optional AA:BB:CC:DD:EE:FF</value></data>
+  <data name="Fleet_MacLabelRequired" xml:space="preserve"><value>Bluetooth MAC (required)</value></data>
+  <data name="Fleet_MacPlaceholder" xml:space="preserve"><value>AA:BB:CC:DD:EE:FF from Device Info</value></data>
   <data name="Fleet_MacNotSet" xml:space="preserve"><value>Not set</value></data>
+  <data name="Fleet_MacRequired" xml:space="preserve"><value>Enter the Bluetooth MAC from the watch Device Info screen.</value></data>
+  <data name="Fleet_SaveMacButton" xml:space="preserve"><value>Save MAC</value></data>
+  <data name="Fleet_CouldNotSaveMac" xml:space="preserve"><value>Could not save the Bluetooth MAC.</value></data>
   <data name="Fleet_ActivatedLabel" xml:space="preserve"><value>Activated</value></data>
   <data name="Fleet_ModelLabel" xml:space="preserve"><value>Model</value></data>
   <data name="Fleet_AddButton" xml:space="preserve"><value>Add to fleet</value></data>
@@ -106,12 +121,20 @@
   <data name="Fleet_SerialFilterLabel" xml:space="preserve"><value>Serial contains</value></data>
   <data name="Fleet_UnassignedOnly" xml:space="preserve"><value>Unassigned only</value></data>
   <data name="Fleet_EmptyStock" xml:space="preserve"><value>No devices match these filters.</value></data>
+  <data name="Fleet_EmptyUnassignedOnly" xml:space="preserve"><value>No unassigned stock for these filters. Clear Unassigned only to see assigned watches (including revoke).</value></data>
   <data name="Fleet_CouldNotLoad" xml:space="preserve"><value>Could not load fleet devices.</value></data>
   <data name="Fleet_AssignColumn" xml:space="preserve"><value>Assign</value></data>
+  <data name="Fleet_ActionsColumn" xml:space="preserve"><value>Actions</value></data>
   <data name="Fleet_AlreadyAssigned" xml:space="preserve"><value>Assigned</value></data>
   <data name="Fleet_SelectPatient" xml:space="preserve"><value>Select patient</value></data>
   <data name="Fleet_AssignButton" xml:space="preserve"><value>Assign</value></data>
   <data name="Fleet_CouldNotAssign" xml:space="preserve"><value>Could not assign the device.</value></data>
+  <data name="Fleet_RevokeButton" xml:space="preserve"><value>Revoke assignment</value></data>
+  <data name="Fleet_RevokeConfirmFormat" xml:space="preserve"><value>Revoke the patient assignment for {0}? The watch returns to stock.</value></data>
+  <data name="Fleet_CouldNotRevoke" xml:space="preserve"><value>Could not revoke the assignment.</value></data>
+  <data name="Fleet_DeleteButton" xml:space="preserve"><value>Delete</value></data>
+  <data name="Fleet_DeleteConfirmFormat" xml:space="preserve"><value>Remove {0} from stock? If the watch was used before, it is retired (hidden from Ops). Add the same serial again later to put it back in stock.</value></data>
+  <data name="Fleet_CouldNotDelete" xml:space="preserve"><value>Could not delete the device.</value></data>
   <data name="Fleet_StatusAssigned" xml:space="preserve"><value>Assigned</value></data>
   <data name="Fleet_StatusInStock" xml:space="preserve"><value>In stock</value></data>
   <data name="Fleet_ScanToolsTitle" xml:space="preserve"><value>Fill serial from packaging</value></data>
@@ -130,7 +153,7 @@
   <data name="Fleet_ScanOcrLoadFailed" xml:space="preserve"><value>Could not start text recognition in this browser (network or script blocked). Try Chrome or Edge, allow the page to load scripts, or type the serial.</value></data>
   <data name="Fleet_ScanOcrFailed" xml:space="preserve"><value>Text recognition failed on that image. Try a closer, sharper shot of the watch Device Info screen, or type the serial.</value></data>
   <data name="Fleet_ScanNothingFound" xml:space="preserve"><value>No serial, barcode, or MAC found. Type the packaging serial, or take a clearer photo.</value></data>
-  <data name="Fleet_ScanFound" xml:space="preserve"><value>Filled from scan. Check the serial before you add the device.</value></data>
+  <data name="Fleet_ScanFound" xml:space="preserve"><value>Filled from scan. Check the serial and Bluetooth MAC against Device Info before you add. Photos can misread letters and numbers, especially with screen glare.</value></data>
   <data name="Fleet_ScanMacHint" xml:space="preserve"><value>This looks like a Bluetooth MAC from Device Info. It is filled in the MAC field. Prefer the packaging serial for claim when you have it.</value></data>
   <data name="Fleet_ScanCandidates" xml:space="preserve"><value>Use a value from the photo:</value></data>
   <data name="Fleet_ScanExtracting" xml:space="preserve"><value>Reading photo…</value></data>

@@ -6,25 +6,171 @@
              x:Class="RaphCare.Mobile.Core.Features.CareTelehealth.Views.RequestCallPage"
              x:DataType="vm:RequestCallViewModel"
              Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource BackgroundColor}">
 
-    <Grid RowDefinitions="*,Auto" Padding="24">
-        <VerticalStackLayout Grid.Row="0" Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
-            <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsIdle}" HorizontalOptions="Center">
-                <Button Text="{Binding VideoModeText}" Command="{Binding SelectVideoCommand}" Style="{StaticResource SecondaryButton}" />
-                <Button Text="{Binding AudioModeText}" Command="{Binding SelectAudioCommand}" Style="{StaticResource SecondaryButton}" />
-                <Button Text="{Binding LowBandModeText}" Command="{Binding SelectLowBandCommand}" Style="{StaticResource SecondaryButton}" />
-            </HorizontalStackLayout>
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20,16,20,24" RowSpacing="16">
 
-            <ActivityIndicator IsRunning="{Binding IsConnecting}" IsVisible="{Binding IsConnecting}" Color="{StaticResource PrimaryColor}" />
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Style="{StaticResource IconBackButton}"
+                    Text="←"
+                    FontSize="20"
+                    Command="{Binding BackCommand}" />
+            <Label Grid.Column="1"
+                   Text="{Binding Title}"
+                   FontFamily="SpaceGrotesk"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource ForegroundColor}"
+                   VerticalOptions="Center"
+                   Margin="0" />
+        </Grid>
 
-            <Label Text="{Binding StateTitle}" Style="{StaticResource TitleLarge}" HorizontalTextAlignment="Center" />
-            <Label Text="{Binding StateSubtitle}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" HorizontalTextAlignment="Center" />
-        </VerticalStackLayout>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" VerticalOptions="Center">
 
-        <VerticalStackLayout Grid.Row="1" Spacing="12">
-            <shared:GradientButton Text="{Binding StartButtonText}" Command="{Binding StartCommand}" IsVisible="{Binding ShowStartButton}" />
-            <Button Text="{Binding BackButtonText}" Style="{StaticResource SecondaryButton}" Command="{Binding BackCommand}" />
+                <Border Style="{StaticResource CardPremium}" Margin="0" Padding="22">
+                    <VerticalStackLayout Spacing="16" HorizontalOptions="Fill">
+                        <Border Style="{StaticResource AppIconWellAccent}"
+                                HorizontalOptions="Center">
+                            <Image Source="icon_phone_on_accent.png"
+                                   Style="{StaticResource AppIconImage}" />
+                        </Border>
+
+                        <VerticalStackLayout Spacing="6" HorizontalOptions="Fill">
+                            <Label Text="{Binding StateTitle}"
+                                   FontFamily="SpaceGrotesk"
+                                   FontSize="26"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource ForegroundColor}"
+                                   HorizontalTextAlignment="Center"
+                                   Margin="0" />
+                            <Label Text="{Binding StateSubtitle}"
+                                   Style="{StaticResource BodyMedium}"
+                                   TextColor="{StaticResource MutedForegroundColor}"
+                                   HorizontalTextAlignment="Center"
+                                   Margin="0" />
+                        </VerticalStackLayout>
+
+                        <ActivityIndicator IsRunning="{Binding IsConnecting}"
+                                           IsVisible="{Binding IsConnecting}"
+                                           Color="{StaticResource PrimaryColor}"
+                                           HeightRequest="28" />
+
+                        <VerticalStackLayout Spacing="8"
+                                             IsVisible="{Binding IsIdle}"
+                                             HorizontalOptions="Fill">
+                            <Label Text="{Binding ModePickerLabel}"
+                                   Style="{StaticResource Micro}"
+                                   TextColor="{StaticResource PrimaryColor}"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   Margin="0" />
+
+                            <!-- Equal-width segment so "Low data" never clips off-screen -->
+                            <Border Stroke="{StaticResource BorderColor}"
+                                    StrokeThickness="1"
+                                    BackgroundColor="{StaticResource SecondaryColor}"
+                                    Padding="4"
+                                    HorizontalOptions="Fill">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="18" />
+                                </Border.StrokeShape>
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4">
+                                    <Button Grid.Column="0"
+                                            Text="{Binding VideoModeText}"
+                                            Command="{Binding SelectVideoCommand}"
+                                            FontFamily="DMSans"
+                                            FontSize="13"
+                                            FontAttributes="Bold"
+                                            CornerRadius="14"
+                                            Padding="6,12"
+                                            MinimumHeightRequest="48"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{StaticResource MutedForegroundColor}"
+                                            BorderWidth="0"
+                                            HorizontalOptions="Fill">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding IsVideoMode}"
+                                                         Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                                                <Setter Property="TextColor" Value="{StaticResource PrimaryForegroundColor}" />
+                                                <Setter Property="Shadow">
+                                                    <Shadow Brush="#1B9BBB" Opacity="0.28" Radius="10" Offset="0,3" />
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Grid.Column="1"
+                                            Text="{Binding AudioModeText}"
+                                            Command="{Binding SelectAudioCommand}"
+                                            FontFamily="DMSans"
+                                            FontSize="13"
+                                            FontAttributes="Bold"
+                                            CornerRadius="14"
+                                            Padding="6,12"
+                                            MinimumHeightRequest="48"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{StaticResource MutedForegroundColor}"
+                                            BorderWidth="0"
+                                            HorizontalOptions="Fill">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding IsAudioMode}"
+                                                         Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                                                <Setter Property="TextColor" Value="{StaticResource PrimaryForegroundColor}" />
+                                                <Setter Property="Shadow">
+                                                    <Shadow Brush="#1B9BBB" Opacity="0.28" Radius="10" Offset="0,3" />
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Grid.Column="2"
+                                            Text="{Binding LowBandModeText}"
+                                            Command="{Binding SelectLowBandCommand}"
+                                            FontFamily="DMSans"
+                                            FontSize="13"
+                                            FontAttributes="Bold"
+                                            CornerRadius="14"
+                                            Padding="6,12"
+                                            MinimumHeightRequest="48"
+                                            LineBreakMode="TailTruncation"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{StaticResource MutedForegroundColor}"
+                                            BorderWidth="0"
+                                            HorizontalOptions="Fill">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding IsLowBandMode}"
+                                                         Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                                                <Setter Property="TextColor" Value="{StaticResource PrimaryForegroundColor}" />
+                                                <Setter Property="Shadow">
+                                                    <Shadow Brush="#1B9BBB" Opacity="0.28" Radius="10" Offset="0,3" />
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="10">
+            <shared:GradientButton Text="{Binding StartButtonText}"
+                                   Command="{Binding StartCommand}"
+                                   IsVisible="{Binding ShowStartButton}"
+                                   HorizontalOptions="Fill" />
+            <Button Text="{Binding BackButtonText}"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding BackCommand}"
+                    HorizontalOptions="Fill" />
         </VerticalStackLayout>
     </Grid>
 </ContentPage>

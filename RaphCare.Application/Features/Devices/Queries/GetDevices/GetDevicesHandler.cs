@@ -28,6 +28,7 @@ public class GetDevicesHandler : IRequestHandler<GetDevicesQuery, PagedResult<De
             {
                 if (request.ClinicId is Guid clinicId)
                     q = q.Where(d => d.ClinicId == clinicId);
+                q = q.Where(d => d.IsActive);
                 if (request.UnassignedOnly == true)
                     q = q.Where(d => !d.IsAssigned);
                 if (serialFilter is not null)
