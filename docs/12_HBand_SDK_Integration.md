@@ -56,13 +56,28 @@ RaphCare uses **two** approaches:
 
 A full **.NET Android binding project** remains optional later for typed APIs. Phase 1 uses JNI intentionally (large `vpprotocol` AAR).
 
-**Patient app session rule (current):** when the AARs are present, **Connect** uses an exclusive Veepoo handshake (no Plugin.BLE GATT fallback for that attempt). **Measure** only calls `startDetectHeart` on that session. Do not hand the radio from Plugin.BLE to Veepoo mid-Measure. Crash capture: `scripts/Capture-RaphCareAndroidLogcat.ps1`.
+**Patient app session rule (current):** Scan uses Plugin.BLE. **Connect** uses Plugin.BLE GATT while Veepoo `connectDevice` force-closes on partner phones (tried mac+name and wiki mac-only from `vpprotocol-2.3.81.15`). The bridge still prefers the wiki overload when exclusive mode is re-enabled. **Measure** via `startDetectHeart` stays gated off with exclusive Connect. Crash capture: `scripts/Capture-RaphCareAndroidLogcat.ps1`.
+
+Stable prove-out checkpoint: tag **`v1.8.40`** (Plugin.BLE Connect works; watch on-wrist HR works; phone Measure intentionally off).
+
+### Follow-up (blocked): Veepoo Connect / Measure
+
+Do **not** flip `PreferExclusiveVendorSession` / `EnableVendorLiveMeasure` back on until this is fixed. Re-enabling exclusive Connect closes the app after Scan finds ET585.
+
+Next Veepoo work needs a deeper look (**AAR/JNI init**, not just the `connectDevice` overload):
+
+1. Confirm `VPOperateManager.init` / ClassLoader / `BluetoothService` startup against the exact bundled AARs (`vpbluetooth-1.20`, `vpprotocol-2.3.81.15`).
+2. Compare proxy interfaces (`IConnectResponse.connectState(int, BleGattProfile, boolean)`, `INotifyResponse.notifyState(int)`) with live JNI callbacks.
+3. Capture logcat through `CONNECT-1` / `CONNECT-2` / `CONNECT-INVOKE` / `CONNECT-3` on a crash build.
+4. Only then: exclusive Connect → `startDetectHeart` → heart callback → Watch readings UI.
+
+The on-watch Heart Rate screen (for example **071 bpm**) does not broadcast proprietary live HR to Plugin.BLE. Phone Measure needs a successful Veepoo session.
 
 ---
 
 ## Suggested next engineering steps
 
-1. Device test on ET580 / ET585: scan, connect, confirm live HR and SpO₂ in Devices UI, then Sync readings. Desk steps: **`docs/checklist/sources/Wearable_Hardware_Proveout.md`**.
+1. Unblock Veepoo Connect / Measure (follow-up section above). Desk steps: **`docs/checklist/sources/Wearable_Hardware_Proveout.md`**.
 2. Expand bridge methods for activity, sleep, and stress (catalog Phase 3).
 3. Background / auto sync (`docs/14` Phase 2).
 4. iOS HBand SDK binding + shared abstraction.

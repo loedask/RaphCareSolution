@@ -115,12 +115,18 @@ public static class DevicesBleSessionPolicy
     /// <summary>
     /// When true and the HBand SDK is present with a MAC, Connect uses Veepoo only
     /// (handshake, no live detect yet). No Plugin.BLE GATT fallback for that attempt.
-    /// Temporarily false: after Scan found ET585, exclusive <c>connectDevice</c> force-closed
-    /// the app on partner phones. Plugin.BLE Connect is the safe path until the bundled
-    /// Veepoo AAR <c>connectDevice</c> signature and proxies are verified. Measure via the
-    /// watch SDK stays off while this is false.
+    /// False again: 1.8.39 used the wiki mac-only <c>connectDevice</c> and Connect still
+    /// force-closed after Scan found ET585. Plugin.BLE Connect is the proven path (1.8.38).
+    /// Keep <see cref="PreferOfficialMacOnlyConnectDeviceOverload"/> for the next AAR attempt.
     /// </summary>
     public static bool PreferExclusiveVendorSession => false;
+
+    /// <summary>
+    /// Bundled <c>vpprotocol</c> exposes two <c>connectDevice</c> overloads. Prefer the wiki
+    /// form <c>(mac, IConnectResponse, INotifyResponse)</c>. The synchronized
+    /// <c>(mac, name, …)</c> overload was the first candidate and force-closed some phones.
+    /// </summary>
+    public static bool PreferOfficialMacOnlyConnectDeviceOverload => true;
 
     /// <summary>
     /// The Veepoo manager used by the E580/E585 crashes on some phones when a successful

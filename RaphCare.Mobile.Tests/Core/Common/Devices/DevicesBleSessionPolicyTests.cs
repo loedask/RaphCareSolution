@@ -81,8 +81,7 @@ public sealed class DevicesBleSessionPolicyTests
     [Fact]
     public void ExclusiveModeOffMeansDisconnectDoesNotRetainVendorSession()
     {
-        // While PreferExclusiveVendorSession is false (connectDevice diagnostic), Disconnect
-        // must not pretend to keep a vendor session that Connect will not use.
+        // Exclusive Connect is off because connectDevice (mac-only and mac+name) force-closes.
         Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
         Assert.False(DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect);
     }
@@ -124,11 +123,12 @@ public sealed class DevicesBleSessionPolicyTests
     [Fact]
     public void ClaimedWatchConnectMustUsePluginBleWhileVendorConnectDeviceCrashes()
     {
-        // Regression: Scan found ET585, then exclusive connectDevice force-closed the app.
-        // Keep Veepoo Connect off until the bundled AAR overload/proxies are verified.
+        // Regression: Scan found ET585; exclusive connectDevice (including wiki mac-only)
+        // force-closed the app. Keep Veepoo Connect off until a safe native path exists.
         Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
         Assert.False(DevicesBleSessionPolicy.TryVendorSdkOnConnect);
         Assert.False(DevicesBleSessionPolicy.EnableVendorLiveMeasure);
+        Assert.True(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
         Assert.False(DevicesBleSessionPolicy.RestorePluginBleAfterMeasure);
         Assert.False(DevicesBleSessionPolicy.EnableVendorSpo2DuringMeasure);
     }
