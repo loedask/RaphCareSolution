@@ -81,7 +81,7 @@ public sealed class DevicesBleSessionPolicyTests
     [Fact]
     public void ExclusiveModeOffMeansDisconnectDoesNotRetainVendorSession()
     {
-        // Exclusive Connect is off because connectDevice (mac-only and mac+name) force-closes.
+        // Exclusive Connect stays off: probe 1.8.41 still force-closed on Scan → Connect.
         Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
         Assert.False(DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect);
     }
@@ -121,14 +121,18 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
-    public void ClaimedWatchConnectMustUsePluginBleWhileVendorConnectDeviceCrashes()
+    public void ClaimedWatchConnectMustUsePluginBleAfterProbe1_8_41StillCrashed()
     {
-        // Regression: Scan found ET585; exclusive connectDevice (including wiki mac-only)
-        // force-closed the app. Keep Veepoo Connect off until a safe native path exists.
+        // Regression: probe 1.8.41 (init harden + exclusive Connect) still force-closed
+        // on Scan → Connect. Keep Veepoo Connect and Measure off until a safe native path exists.
         Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
         Assert.False(DevicesBleSessionPolicy.TryVendorSdkOnConnect);
         Assert.False(DevicesBleSessionPolicy.EnableVendorLiveMeasure);
-        Assert.True(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
+        // 3-arg wiki form only forwards to 4-arg with name "none"; prefer mac+name next time.
+        Assert.False(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
+        Assert.True(DevicesBleSessionPolicy.WarmUpVendorSdkOnDevicesAppear);
+        Assert.True(DevicesBleSessionPolicy.PostScanStopSettleBeforeVendorConnect
+                    >= TimeSpan.FromMilliseconds(1000));
         Assert.False(DevicesBleSessionPolicy.RestorePluginBleAfterMeasure);
         Assert.False(DevicesBleSessionPolicy.EnableVendorSpo2DuringMeasure);
     }

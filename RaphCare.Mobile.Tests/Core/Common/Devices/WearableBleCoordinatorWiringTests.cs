@@ -105,6 +105,15 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("TryInvokeConnectDevice", text, StringComparison.Ordinal);
         Assert.Contains("PreferOfficialMacOnlyConnectDeviceOverload", text, StringComparison.Ordinal);
         Assert.Contains("CONNECT-INVOKE", text, StringComparison.Ordinal);
+        Assert.Contains("INIT-1", text, StringComparison.Ordinal);
+        Assert.Contains("INIT-3", text, StringComparison.Ordinal);
+        Assert.Contains("getMangerInstance", text, StringComparison.Ordinal);
+        Assert.Contains("HasBluetoothClient", text, StringComparison.Ordinal);
+        Assert.Contains("WarmUpAsync", text, StringComparison.Ordinal);
+        Assert.Contains("WarmUpVendorSdkAsync", File.ReadAllText(FindRepoFile(
+            Path.Combine("RaphCare.Mobile", "Core", "Features", "Devices", "Services", "WearableBleCoordinator.cs"))), StringComparison.Ordinal);
+        Assert.Contains("SettleAfterScanStopBeforeVendorConnectAsync", File.ReadAllText(FindRepoFile(
+            Path.Combine("RaphCare.Mobile", "Core", "Features", "Devices", "Services", "WearableBleCoordinator.cs"))), StringComparison.Ordinal);
     }
 
     [Fact]

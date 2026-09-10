@@ -11,7 +11,10 @@
     </queries>
     <application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true" android:usesCleartextTraffic="true" tools:replace="android:label">
         <!-- HBand / Veepoo BluetoothKit service (required when Platforms/Android/libs AARs are present). -->
-        <service android:name="com.inuker.bluetooth.library.BluetoothService" android:exported="false" />
+        <service
+            android:name="com.inuker.bluetooth.library.BluetoothService"
+            android:enabled="true"
+            android:exported="false" />
         <!-- MSAL redirect; scheme must match Entra redirect URI msal{ClientId}://auth (see appsettings Entra:ClientId). -->
         <activity android:name="microsoft.identity.client.BrowserTabActivity" android:exported="true">
             <intent-filter>

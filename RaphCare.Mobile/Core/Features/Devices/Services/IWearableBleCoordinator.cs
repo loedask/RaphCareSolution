@@ -40,6 +40,12 @@ public interface IWearableBleCoordinator
         string? preferredMacAddress = null,
         CancellationToken cancellationToken = default);
     Task StopScanAsync();
+
+    /// <summary>
+    /// Warm-load the vendor watch SDK (init only). No <c>connectDevice</c>.
+    /// </summary>
+    Task WarmUpVendorSdkAsync(CancellationToken cancellationToken = default);
+
     Task ConnectAsync(Guid deviceId, CancellationToken cancellationToken = default);
     Task DisconnectAsync(CancellationToken cancellationToken = default);
 

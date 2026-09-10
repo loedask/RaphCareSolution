@@ -115,18 +115,33 @@ public static class DevicesBleSessionPolicy
     /// <summary>
     /// When true and the HBand SDK is present with a MAC, Connect uses Veepoo only
     /// (handshake, no live detect yet). No Plugin.BLE GATT fallback for that attempt.
-    /// False again: 1.8.39 used the wiki mac-only <c>connectDevice</c> and Connect still
-    /// force-closed after Scan found ET585. Plugin.BLE Connect is the proven path (1.8.38).
-    /// Keep <see cref="PreferOfficialMacOnlyConnectDeviceOverload"/> for the next AAR attempt.
+    /// False again after probe <c>1.8.41</c>: init harden (getMangerInstance, BluetoothClient
+    /// check, mac+name, post-scan settle, warm-up) still force-closed on Scan → Connect.
+    /// Plugin.BLE Connect is the proven path (<c>v1.8.40</c> / this rollback).
     /// </summary>
     public static bool PreferExclusiveVendorSession => false;
 
     /// <summary>
-    /// Bundled <c>vpprotocol</c> exposes two <c>connectDevice</c> overloads. Prefer the wiki
-    /// form <c>(mac, IConnectResponse, INotifyResponse)</c>. The synchronized
-    /// <c>(mac, name, …)</c> overload was the first candidate and force-closed some phones.
+    /// When true, call the 3-arg wiki form first. javap shows that overload only forwards to
+    /// the synchronized 4-arg <c>connectDevice</c> with device name <c>"none"</c>, so it is
+    /// not a safer alternate path. Keep false: use mac+name with the advertised watch name
+    /// (HBand sample style) when exclusive Connect is re-enabled.
     /// </summary>
-    public static bool PreferOfficialMacOnlyConnectDeviceOverload => true;
+    public static bool PreferOfficialMacOnlyConnectDeviceOverload => false;
+
+    /// <summary>
+    /// After Plugin.BLE <c>StopScan</c>, wait before Veepoo <c>connectDevice</c> so the
+    /// adapter can settle. Dual-stack Scan then Inuker connect force-closed some phones.
+    /// Used only when <see cref="PreferExclusiveVendorSession"/> is on.
+    /// </summary>
+    public static TimeSpan PostScanStopSettleBeforeVendorConnect { get; } =
+        TimeSpan.FromMilliseconds(1500);
+
+    /// <summary>
+    /// Opening Devices should warm-load <c>VPOperateManager</c> + Inuker <c>BluetoothClient</c>
+    /// without calling <c>connectDevice</c>. Surfaces INIT log markers early.
+    /// </summary>
+    public static bool WarmUpVendorSdkOnDevicesAppear => true;
 
     /// <summary>
     /// The Veepoo manager used by the E580/E585 crashes on some phones when a successful

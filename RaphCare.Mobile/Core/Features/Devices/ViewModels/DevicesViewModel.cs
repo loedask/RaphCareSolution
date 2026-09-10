@@ -334,6 +334,15 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
 
         await LoadClaimedDevicesAsync().ConfigureAwait(false);
         ApplyActiveBleConnectionToUi();
+        try
+        {
+            await _ble.WarmUpVendorSdkAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            // Warm-up is best-effort; Connect still initializes.
+        }
+
         await TryReconnectClaimedWatchAsync().ConfigureAwait(false);
     }
 

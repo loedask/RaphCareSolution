@@ -20,6 +20,12 @@ public interface IHBandWearableBridge
     event EventHandler<string?>? ErrorOccurred;
 
     /// <summary>
+    /// Load <c>VPOperateManager</c> and ensure Inuker <c>BluetoothClient</c> exists.
+    /// Does not call <c>connectDevice</c>. Safe to run on Devices appear.
+    /// </summary>
+    Task WarmUpAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Connect by BLE MAC, wait for notify, confirm device password, sync default person info.
     /// </summary>
     Task ConnectAndHandshakeAsync(

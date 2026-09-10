@@ -21,6 +21,8 @@ public sealed class UnavailableHBandWearableBridge : IHBandWearableBridge
         remove { }
     }
 
+    public Task WarmUpAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
     public Task ConnectAndHandshakeAsync(
         string macAddress,
         string? deviceName,

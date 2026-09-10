@@ -86,6 +86,16 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
     private void RaiseError(string? message) =>
         MainThread.BeginInvokeOnMainThread(() => ErrorOccurred?.Invoke(this, message));
 
+    public Task WarmUpAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            EnsureInitialized();
+        });
+    }
+
     public async Task ConnectAndHandshakeAsync(
         string macAddress,
         string? deviceName,
@@ -126,8 +136,10 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
 
                 // If Veepoo already holds this MAC (common after a soft Disconnect or a hung
                 // prior attempt), skip connectDevice. Calling it again often never callbacks.
+                // Skip the probe when BluetoothClient is missing (isDeviceConnected NPEs).
                 Log.Info(Tag, $"CONNECT-1 native check: {macAddress}");
-                if (await TryAdoptExistingNativeLinkAsync(manager, macAddress, cancellationToken)
+                if (VeepooSdkInitRules.ShouldProbeNativeConnectedLink(HasBluetoothClient(manager.Class))
+                    && await TryAdoptExistingNativeLinkAsync(manager, macAddress, cancellationToken)
                         .ConfigureAwait(false))
                 {
                     Log.Info(Tag, $"CONNECT-1 adopted existing link: {macAddress}");
@@ -145,10 +157,14 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                 }
 
                 // Stale connectStarted / half-open radio: tear down before a fresh connectDevice.
+                // Only probe native "already connected" when BluetoothClient exists.
                 var mayTeardown = DevicesBleSessionPolicy.ShouldInvokeVendorDisconnect(
                     IsSessionReady,
                     Volatile.Read(ref _vendorConnectStarted));
-                if (mayTeardown || IsAnyNativeConnected(manager))
+                var nativeConnected = VeepooSdkInitRules.ShouldProbeNativeConnectedLink(
+                                          HasBluetoothClient(manager.Class))
+                                      && IsAnyNativeConnected(manager);
+                if (mayTeardown || nativeConnected)
                 {
                     await MainThread.InvokeOnMainThreadAsync(() => DisconnectCoreAsync())
                         .ConfigureAwait(false);
@@ -209,9 +225,9 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         var name = new Java.Lang.String(safeName);
 
                         // vpprotocol-2.3.81.15 overloads (javap):
-                        //   connectDevice(String, IConnectResponse, INotifyResponse)  // wiki / preferred
+                        //   connectDevice(String, IConnectResponse, INotifyResponse)  // wraps to name "none"
                         //   connectDevice(String, String, IConnectResponse, INotifyResponse) // synchronized
-                        // Prefer mac-only: the mac+name overload force-closed partner phones.
+                        // Prefer mac+name unless PreferOfficialMacOnlyConnectDeviceOverload is on.
                         // If logcat ends at CONNECT-2 with no CONNECT-3, connectDevice aborted the process.
                         Log.Info(Tag, $"CONNECT-2 calling connectDevice: {macAddress}, {safeName}");
                         var connected = TryInvokeConnectDevice(manager, mac, name, connectProxy, notifyProxy);
@@ -591,43 +607,113 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         if (_initialized && _manager is not null)
             return;
 
+        Log.Info(Tag, "INIT-1 loading VPOperateManager");
         var mgrClass = LoadSdkClass("com.veepoo.protocol.VPOperateManager");
+        try
+        {
+            LoadSdkClass("com.inuker.bluetooth.library.BluetoothService");
+            Log.Info(Tag, "INIT-1 BluetoothService class present");
+        }
+        catch (Throwable t)
+        {
+            Log.Warn(Tag, "INIT-1 BluetoothService class missing: " + t.Message);
+        }
+
+        var appContext = global::Android.App.Application.Context
+                         ?? throw new InvalidOperationException("Application.Context is null.");
+
+        // Prefer getMangerInstance(Context): it creates BluetoothClient. Bare getInstance()
+        // leaves vp_dm null; isDeviceConnected / connectDevice then NPE.
         Java.Lang.Object? manager = null;
-        var appContext = global::Android.App.Application.Context;
-        foreach (var name in new[] { "getMangerInstance", "getInstance" })
+        string? obtainPath = null;
+        if (VeepooSdkInitRules.PreferGetManagerInstanceWithContext)
         {
             try
             {
-                var m = mgrClass.GetMethod(name, Class.FromType(typeof(global::Android.Content.Context)));
+                var m = mgrClass.GetMethod(
+                    "getMangerInstance",
+                    Class.FromType(typeof(global::Android.Content.Context)));
                 manager = m.Invoke(null, appContext) as Java.Lang.Object;
                 if (manager is not null)
-                    break;
+                    obtainPath = "getMangerInstance(Context)";
             }
-            catch (Throwable)
+            catch (Throwable t)
             {
-                // try next
+                Log.Warn(Tag, "INIT-2 getMangerInstance failed: " + t.Message);
             }
+        }
 
+        if (manager is null)
+        {
             try
             {
-                var m = mgrClass.GetMethod(name);
+                var m = mgrClass.GetMethod("getInstance");
                 manager = m.Invoke(null) as Java.Lang.Object;
                 if (manager is not null)
-                    break;
+                    obtainPath = "getInstance()";
             }
-            catch (Throwable)
+            catch (Throwable t)
             {
-                // try next
+                Log.Warn(Tag, "INIT-2 getInstance failed: " + t.Message);
             }
         }
 
         if (manager is null)
             throw new InvalidOperationException("Could not obtain VPOperateManager instance.");
 
-        TryInvoke(manager, "init", appContext);
+        Log.Info(Tag, "INIT-2 obtained via " + obtainPath);
+        var clientPresent = HasBluetoothClient(mgrClass);
+        if (VeepooSdkInitRules.ShouldCallInitWhenBluetoothClientMissing(clientPresent))
+        {
+            Log.Info(Tag, "INIT-2 BluetoothClient missing; calling init(ApplicationContext)");
+            if (!TryInvoke(manager, "init", appContext))
+                throw new InvalidOperationException("VPOperateManager.init failed.");
+            clientPresent = HasBluetoothClient(mgrClass);
+        }
+        else
+        {
+            // getMangerInstance already inited; instance init is a no-op when mContext is set.
+            TryInvoke(manager, "init", appContext);
+        }
+
+        if (!clientPresent)
+        {
+            Log.Error(Tag, "INIT-3 BluetoothClient still null after init");
+            throw new InvalidOperationException(
+                "Watch SDK BluetoothClient is null after init. Reinstall the latest RaphCare APK.");
+        }
+
         TryInvoke(manager, "setAutoConnectBTBySdk", Java.Lang.Boolean.ValueOf(false));
         _manager = manager;
         _initialized = true;
+        Log.Info(Tag, "INIT-3 ready (BluetoothClient present)");
+    }
+
+    /// <summary>
+    /// True when the static Inuker <c>BluetoothClient</c> field on <c>VPOperateManager</c> is set.
+    /// Field name is obfuscated (<c>vp_dm</c>); match by type.
+    /// </summary>
+    private static bool HasBluetoothClient(Class mgrClass)
+    {
+        try
+        {
+            foreach (var field in mgrClass.GetDeclaredFields() ?? [])
+            {
+                var typeName = field.Type?.Name ?? string.Empty;
+                if (typeName.IndexOf("BluetoothClient", StringComparison.Ordinal) < 0)
+                    continue;
+
+                field.Accessible = true;
+                var value = field.Get(null);
+                return value is not null;
+            }
+        }
+        catch (Throwable t)
+        {
+            Log.Warn(Tag, "HasBluetoothClient: " + t.Message);
+        }
+
+        return false;
     }
 
     private static Task<bool> TryAdoptExistingNativeLinkAsync(
@@ -804,8 +890,9 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
     }
 
     /// <summary>
-    /// Invokes the bundled AAR <c>connectDevice</c> overload. Prefer the documented
-    /// mac-only form when <see cref="DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload"/> is set.
+    /// Invokes the bundled AAR <c>connectDevice</c> overload. Prefer mac+name (sample style)
+    /// unless <see cref="DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload"/>
+    /// is set. Note: the 3-arg form only forwards to 4-arg with name <c>"none"</c>.
     /// </summary>
     private static bool TryInvokeConnectDevice(
         Java.Lang.Object manager,
@@ -814,16 +901,22 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         Java.Lang.Object connectProxy,
         Java.Lang.Object notifyProxy)
     {
+        var preferMacPlusName = VeepooSdkInitRules.PreferMacPlusNameConnectDeviceOverload(
+            DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
+
+        if (preferMacPlusName)
+        {
+            if (TryInvoke(manager, "connectDevice", mac, name, connectProxy, notifyProxy))
+                return true;
+
+            Log.Warn(Tag, "mac+name connectDevice missing; trying 3-arg (name becomes none).");
+            return TryInvoke(manager, "connectDevice", mac, connectProxy, notifyProxy);
+        }
+
         if (TryInvoke(manager, "connectDevice", mac, connectProxy, notifyProxy))
             return true;
 
-        if (DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload)
-        {
-            Log.Warn(Tag, "Official 3-arg connectDevice not found; not trying mac+name overload.");
-            return false;
-        }
-
-        Log.Warn(Tag, "Falling back to connectDevice(mac, name, …).");
+        Log.Warn(Tag, "Official 3-arg connectDevice not found; trying mac+name overload.");
         return TryInvoke(manager, "connectDevice", mac, name, connectProxy, notifyProxy);
     }
 

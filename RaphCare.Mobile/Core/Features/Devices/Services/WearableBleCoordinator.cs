@@ -338,6 +338,22 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         }
     }
 
+    public async Task WarmUpVendorSdkAsync(CancellationToken cancellationToken = default)
+    {
+        if (!DevicesBleSessionPolicy.WarmUpVendorSdkOnDevicesAppear || !_hband.IsAvailable)
+            return;
+
+        try
+        {
+            await _hband.WarmUpAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // Init probe must not block Devices; Connect still has its own init path.
+            ErrorOccurred?.Invoke(this, "Watch SDK warm-up: " + ex.Message);
+        }
+    }
+
     public async Task ConnectAsync(Guid deviceId, CancellationToken cancellationToken = default)
     {
         if (!IsBleSupported)
@@ -403,6 +419,8 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                     // when Veepoo reconnectDevice ran before Android finished disconnectWatch.
                     await WaitForVendorReconnectSettleAsync(cancellationToken).ConfigureAwait(false);
                     await ReleasePluginBleForMacAsync(_claimedWatchMac, cancellationToken)
+                        .ConfigureAwait(false);
+                    await SettleAfterScanStopBeforeVendorConnectAsync(cancellationToken)
                         .ConfigureAwait(false);
                     await _hband.ConnectAndHandshakeAsync(
                             _claimedWatchMac,
@@ -482,6 +500,8 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                 {
                     await WaitForVendorReconnectSettleAsync(cancellationToken).ConfigureAwait(false);
                     await ReleasePluginBleLinkAsync(device, cancellationToken).ConfigureAwait(false);
+                    await SettleAfterScanStopBeforeVendorConnectAsync(cancellationToken)
+                        .ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(device.Name))
                         _claimedWatchDeviceName = device.Name;
                     await _hband.ConnectAndHandshakeAsync(
@@ -599,6 +619,8 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                 {
                     await WaitForVendorReconnectSettleAsync(cancellationToken).ConfigureAwait(false);
                     await ReleasePluginBleForMacAsync(targetMac, cancellationToken).ConfigureAwait(false);
+                    await SettleAfterScanStopBeforeVendorConnectAsync(cancellationToken)
+                        .ConfigureAwait(false);
                     await _hband.ConnectAndHandshakeAsync(
                             targetMac,
                             ResolveClaimedDeviceName(deviceName),
@@ -1194,6 +1216,14 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             DateTimeOffset.UtcNow);
         if (remaining > TimeSpan.Zero)
             await Task.Delay(remaining, ct).ConfigureAwait(false);
+    }
+
+    private static Task SettleAfterScanStopBeforeVendorConnectAsync(CancellationToken ct)
+    {
+        var settle = DevicesBleSessionPolicy.PostScanStopSettleBeforeVendorConnect;
+        return settle > TimeSpan.Zero
+            ? Task.Delay(settle, ct)
+            : Task.CompletedTask;
     }
 
     /// <summary>
