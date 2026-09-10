@@ -56,7 +56,7 @@ RaphCare uses **two** approaches:
 
 A full **.NET Android binding project** remains optional later for typed APIs. Phase 1 uses JNI intentionally (large `vpprotocol` AAR).
 
-**Patient app session rule (current):** Scan uses Plugin.BLE. **Connect** uses Plugin.BLE GATT. Probe **1.8.41** re-enabled exclusive Veepoo Connect after init harden and still force-closed on Scan → Connect. **Measure** stays gated off with exclusive Connect. Crash capture: `scripts/Capture-RaphCareAndroidLogcat.ps1` (look for `INIT-*` and `CONNECT-*` under `RaphCareHBand`).
+**Patient app session rule (current):** Scan uses Plugin.BLE. **Connect** uses Plugin.BLE GATT. Probe **1.8.41** re-enabled exclusive Veepoo Connect after init harden and still force-closed on Scan → Connect. **Measure** stays gated off with exclusive Connect. Crash capture: `scripts/Capture-RaphCareAndroidLogcat.ps1` (look for `INIT-*` and `CONNECT-*` under `RaphCareHBand`, plus `DEBUG` tombstones). The script previously passed filterspecs as one argv string and used an invalid `RaphCare*` wildcard; that is fixed so the next exclusive probe can actually capture native aborts.
 
 Stable Connect checkpoint: tag **`v1.8.40`** / build **1.8.42** (Plugin.BLE Connect). Failed probe: **1.8.41**.
 

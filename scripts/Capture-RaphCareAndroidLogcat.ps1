@@ -66,8 +66,13 @@ Write-Host "Capturing for $WaitSeconds seconds..."
 Write-Host "Output: $outFile"
 Write-Host ""
 
-$filter = "RaphCare*:V RaphCareHBand:V AndroidRuntime:E DEBUG:E mono-rt:E chromium:S"
-$proc = Start-Process -FilePath $adb -ArgumentList @("logcat", "-v", "threadtime", $filter) `
+# adb logcat filterspecs must be separate argv tokens (not one quoted blob).
+# Tag names are exact-match; wildcards like RaphCare*:V are invalid.
+# DEBUG:E is where debuggerd writes native SIGSEGV/SIGABRT tombstones.
+# Pass one ArgumentList string on Windows so CreateProcess tokenizes correctly
+# (an array with a space-joined filterspec was passed as a single malformed arg).
+$argLine = "logcat -v threadtime RaphCareHBand:V AndroidRuntime:E DEBUG:E mono-rt:E libc:F chromium:S"
+$proc = Start-Process -FilePath $adb -ArgumentList $argLine `
     -RedirectStandardOutput $outFile -NoNewWindow -PassThru
 
 try {
@@ -83,4 +88,5 @@ Write-Host "Done. Share this file with the engineer:"
 Write-Host "  $outFile"
 if ((Get-Item -LiteralPath $outFile).Length -lt 64) {
     Write-Warning "Log file looks empty. Try again with the phone unlocked and USB debugging authorized."
+    Write-Warning "Also confirm USB debugging is authorized and the device stayed connected for the whole capture."
 }
