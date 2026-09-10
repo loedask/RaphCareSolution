@@ -115,11 +115,11 @@ public static class DevicesBleSessionPolicy
     /// <summary>
     /// When true and the HBand SDK is present with a MAC, Connect uses Veepoo only
     /// (handshake, no live detect yet). No Plugin.BLE GATT fallback for that attempt.
-    /// False again after probe <c>1.8.41</c>: init harden (getMangerInstance, BluetoothClient
-    /// check, mac+name, post-scan settle, warm-up) still force-closed on Scan → Connect.
-    /// Plugin.BLE Connect is the proven path (<c>v1.8.40</c> / this rollback).
+    /// Probe <c>1.8.43</c>: exclusive on again with fixed logcat capture so a Scan → Connect
+    /// crash can yield CONNECT markers and a native DEBUG tombstone. Daily stable Connect
+    /// remains <c>1.8.42</c> (Plugin.BLE). Do not treat this build as the partner default.
     /// </summary>
-    public static bool PreferExclusiveVendorSession => false;
+    public static bool PreferExclusiveVendorSession => true;
 
     /// <summary>
     /// When true, call the 3-arg wiki form first. javap shows that overload only forwards to

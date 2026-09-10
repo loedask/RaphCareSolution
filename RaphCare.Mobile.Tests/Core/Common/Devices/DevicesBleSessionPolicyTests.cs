@@ -79,11 +79,11 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
-    public void ExclusiveModeOffMeansDisconnectDoesNotRetainVendorSession()
+    public void ExclusiveModeOnMeansDisconnectRetainsVendorSession()
     {
-        // Exclusive Connect stays off: probe 1.8.41 still force-closed on Scan → Connect.
-        Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
-        Assert.False(DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect);
+        // Probe 1.8.43: exclusive Connect on for diagnosable capture; soft Disconnect retains session.
+        Assert.True(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
+        Assert.True(DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect);
     }
 
     [Fact]
@@ -121,14 +121,13 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
-    public void ClaimedWatchConnectMustUsePluginBleAfterProbe1_8_41StillCrashed()
+    public void Probe1_8_43UsesExclusiveVendorConnectForDiagnosableCapture()
     {
-        // Regression: probe 1.8.41 (init harden + exclusive Connect) still force-closed
-        // on Scan → Connect. Keep Veepoo Connect and Measure off until a safe native path exists.
-        Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
-        Assert.False(DevicesBleSessionPolicy.TryVendorSdkOnConnect);
-        Assert.False(DevicesBleSessionPolicy.EnableVendorLiveMeasure);
-        // 3-arg wiki form only forwards to 4-arg with name "none"; prefer mac+name next time.
+        // Isolated probe: exclusive on so Scan → Connect can be captured with fixed logcat.
+        // Daily stable Connect remains 1.8.42 (Plugin.BLE). Roll back if this probe crashes.
+        Assert.True(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
+        Assert.True(DevicesBleSessionPolicy.TryVendorSdkOnConnect);
+        Assert.True(DevicesBleSessionPolicy.EnableVendorLiveMeasure);
         Assert.False(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
         Assert.True(DevicesBleSessionPolicy.WarmUpVendorSdkOnDevicesAppear);
         Assert.True(DevicesBleSessionPolicy.PostScanStopSettleBeforeVendorConnect

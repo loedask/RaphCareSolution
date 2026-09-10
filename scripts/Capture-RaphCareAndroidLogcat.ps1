@@ -61,9 +61,13 @@ Write-Host "Clearing logcat..."
 & $adb logcat -c | Out-Null
 
 Write-Host ""
-Write-Host "Reproduce the crash now (Connect on Devices, then Measure on Watch readings)."
+Write-Host "Reproduce now:"
+Write-Host "  1) Start this script first (log is cleared)."
+Write-Host "  2) On the phone: Devices, Scan until ET585 appears, then tap Connect."
+Write-Host "  3) If Connect survives, try Watch readings → Measure."
 Write-Host "Capturing for $WaitSeconds seconds..."
 Write-Host "Output: $outFile"
+Write-Host "Inspect later for: CONNECT-2 without CONNECT-3, Fatal signal, DEBUG tombstone."
 Write-Host ""
 
 # adb logcat filterspecs must be separate argv tokens (not one quoted blob).

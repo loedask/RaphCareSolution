@@ -56,13 +56,23 @@ RaphCare uses **two** approaches:
 
 A full **.NET Android binding project** remains optional later for typed APIs. Phase 1 uses JNI intentionally (large `vpprotocol` AAR).
 
-**Patient app session rule (current):** Scan uses Plugin.BLE. **Connect** uses Plugin.BLE GATT. Probe **1.8.41** re-enabled exclusive Veepoo Connect after init harden and still force-closed on Scan → Connect. **Measure** stays gated off with exclusive Connect. Crash capture: `scripts/Capture-RaphCareAndroidLogcat.ps1` (look for `INIT-*` and `CONNECT-*` under `RaphCareHBand`, plus `DEBUG` tombstones). The script previously passed filterspecs as one argv string and used an invalid `RaphCare*` wildcard; that is fixed so the next exclusive probe can actually capture native aborts.
+**Patient app session rule (current):** Probe **1.8.43** turns exclusive Veepoo Connect and Measure **on** so Scan → Connect can be diagnosed with the fixed logcat script. Daily stable Connect remains **1.8.42** (Plugin.BLE). If 1.8.43 crashes, reinstall 1.8.42.
 
-Stable Connect checkpoint: tag **`v1.8.40`** / build **1.8.42** (Plugin.BLE Connect). Failed probe: **1.8.41**.
+Crash capture: `scripts/Capture-RaphCareAndroidLogcat.ps1` (start **before** Connect). Inspect for `CONNECT-2` without `CONNECT-3`, `Fatal signal`, and `DEBUG` tombstone lines (`.so` / symbol). Filterspecs are separate argv tokens; invalid `RaphCare*` wildcard removed.
 
-### Follow-up (blocked): Veepoo Connect and Measure
+Stable Connect checkpoint: **1.8.42**. Failed undiagnosed probe: **1.8.41**. Capture probe: **1.8.43**.
 
-Do **not** flip `PreferExclusiveVendorSession` or `EnableVendorLiveMeasure` back on until this is fixed. Probe **1.8.41** (init harden) still closed the app after Scan → Connect.
+### Follow-up: Veepoo Connect and Measure (probe 1.8.43)
+
+Exclusive flags are **on** only for this diagnosable probe. After capture, if Connect still aborts, set `PreferExclusiveVendorSession` back to `false` and return to 1.8.42 behavior.
+
+Inspect log for:
+
+1. `RaphCareHBand` `CONNECT-2` without `CONNECT-3` → `connectDevice` native abort.
+2. `AndroidRuntime` / `Fatal signal`.
+3. `DEBUG` tombstone naming the crashing `.so` or symbol.
+
+That distinguishes a `connectDevice` abort from an init / ClassLoader / `BluetoothService` bind failure.
 
 #### Init audit findings (`vpprotocol-2.3.81.15` javap)
 
@@ -72,13 +82,14 @@ Do **not** flip `PreferExclusiveVendorSession` or `EnableVendorLiveMeasure` back
 4. Inuker binds **`com.inuker.bluetooth.library.BluetoothService`** on first connect (`bindServiceSync`). The app manifest must declare it (`enabled=true`, `exported=false`). If bind fails, the library falls back to in-process `BluetoothServiceImpl`.
 5. Dual-stack risk remains: Plugin.BLE Scan then Inuker `connectDevice` on the same radio. Exclusive Connect must stop scan, release Plugin.BLE GATT, then settle (`PostScanStopSettleBeforeVendorConnect`) before JNI connect.
 
-#### Still blocked before flipping exclusive on
+#### Capture checklist for probe 1.8.43
 
-1. Capture logcat through `INIT-1`, `INIT-3`, `CONNECT-1`, `CONNECT-2`, `CONNECT-INVOKE`, and `CONNECT-3` on a crash build (`scripts/Capture-RaphCareAndroidLogcat.ps1`). Probe 1.8.41 failed without a partner logcat dump; next exclusive attempt needs that capture.
-2. Compare proxy callbacks (`IConnectResponse.connectState(int, BleGattProfile, boolean)`, `INotifyResponse.notifyState(int)`) with live JNI delivery, and check dual-stack radio ownership after Plugin.BLE Scan.
-3. Only then: exclusive Connect, then `startDetectHeart`, then heart callback, then Watch readings UI.
+1. Install `RaphCare-v1.8.43+55.apk`. Keep `RaphCare-v1.8.42+54.apk` for rollback.
+2. Run `scripts/Capture-RaphCareAndroidLogcat.ps1` **before** tapping Connect.
+3. Devices → Scan → Connect. If Connected, try Measure.
+4. Share `artifacts/android/logs/raphcare-logcat-*.txt`.
 
-Hardening kept in the bridge (exclusive **off** again in 1.8.42): prefer `getMangerInstance`, verify `BluetoothClient`, INIT markers, Devices appear warm-up (init only), mac+name preference, scan-stop settle before vendor connect.
+Hardening already in the bridge: prefer `getMangerInstance`, verify `BluetoothClient`, INIT markers, Devices appear warm-up (init only), mac+name `connectDevice`, scan-stop settle before vendor connect.
 
 The on-watch Heart Rate screen (for example **071 bpm**) does not broadcast proprietary live HR to Plugin.BLE. Phone Measure needs a successful Veepoo session.
 
@@ -86,7 +97,7 @@ The on-watch Heart Rate screen (for example **071 bpm**) does not broadcast prop
 
 ## Suggested next engineering steps
 
-1. Unblock Veepoo Connect and Measure (follow-up section above; probe 1.8.41 failed). Desk steps: **`docs/checklist/sources/Wearable_Hardware_Proveout.md`**.
+1. Diagnose Veepoo Connect with probe 1.8.43 + fixed logcat (follow-up section above). Desk steps: **`docs/checklist/sources/Wearable_Hardware_Proveout.md`**.
 2. Expand bridge methods for activity, sleep, and stress (catalog Phase 3).
 3. Background / auto sync (`docs/14` Phase 2).
 4. iOS HBand SDK binding + shared abstraction.

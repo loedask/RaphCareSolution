@@ -28,7 +28,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-09-09
+Last reviewed: 2026-09-10
 
 ---
 
@@ -159,7 +159,7 @@ Design lock and screen map: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobi
 | Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
-| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear; manual Scan keeps exclusive Veepoo alive and only releases Plugin.BLE GATT (no Scan auto-Connect); Connect uses Plugin.BLE after probe 1.8.41 (init harden + exclusive Veepoo) still force-closed on Scan → Connect; watch SDK Measure gated off; offline outbox retries |
+| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear; manual Scan keeps exclusive Veepoo alive and only releases Plugin.BLE GATT (no Scan auto-Connect); daily Connect is Plugin.BLE (1.8.42); probe 1.8.43 turns exclusive Veepoo Connect and Measure on for logcat diagnosis only; offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |

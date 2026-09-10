@@ -28,7 +28,7 @@ It is not a progress board. Completion % lives on the partner status sheet. Use 
 | **In progress** | Partly built. Do not sell it as finished. |
 | **Later** | On the list. Not in the current sale. |
 
-Last reviewed: 9 September 2026
+Last reviewed: 10 September 2026
 
 ---
 
@@ -148,9 +148,9 @@ Android is the day-to-day test target. iPhone can run the app. Video on iPhone i
 | Push alerts on Android | App can register. Delivery needs Firebase on the server, then a real-device test. | In progress |
 | Push alerts on iPhone | Needs store and push setup, then a real-device test. | In progress |
 | Claim a watch | Patient claims the serial Ops already assigned. They can type it or photograph the packaging barcode or QR. They cannot invent a serial. Bluetooth Connect is blocked until claim, and only the locked Bluetooth address is accepted after the first pair. Leaving Devices keeps the link when the band stays nearby. Closing the app and opening Devices again reconnects that claimed watch when it is nearby. | Ready |
-| E580 or E585 style band | Scan, then Connect with phone Bluetooth so the app stays open. Measure through the watch SDK is off until Connect is safe. Confirm on sample watches. | In progress |
+| E580 or E585 style band | Scan, then Connect. Daily builds use phone Bluetooth so the app stays open. Probe builds may try the watch SDK for diagnosis; roll back to 1.8.42 if Connect closes the app. | In progress |
 | Watch readings screen | Dedicated screen for heart rate and oxygen, with room for more measures later. | Ready |
-| Live heart rate and oxygen | Wired on Android. Probe 1.8.41 still closed the app on Connect. Hardware prove-out waits on a safe watch-SDK path. | In progress |
+| Live heart rate and oxygen | Wired on Android. Needs a safe watch-SDK Connect path, then a live sample on ET585. | In progress |
 | Auto sync in the background | Manual sync exists. Background sync is not finished. | Later |
 | Activity, sleep, stress | On the watches. Not in RaphCare yet. | Later |
 | Body temperature, ECG, glucose-style screens | Documented. Not in the app yet. Optical glucose stays gated for clinical use. | Later |
