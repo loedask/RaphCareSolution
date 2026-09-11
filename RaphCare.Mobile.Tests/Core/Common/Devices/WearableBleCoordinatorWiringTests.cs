@@ -110,6 +110,8 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("getMangerInstance", text, StringComparison.Ordinal);
         Assert.Contains("HasBluetoothClient", text, StringComparison.Ordinal);
         Assert.Contains("WarmUpAsync", text, StringComparison.Ordinal);
+        Assert.Contains("MarkConnectStep", text, StringComparison.Ordinal);
+        Assert.Contains("VendorConnectCrashProbeRules", text, StringComparison.Ordinal);
         Assert.Contains("WarmUpVendorSdkAsync", File.ReadAllText(FindRepoFile(
             Path.Combine("RaphCare.Mobile", "Core", "Features", "Devices", "Services", "WearableBleCoordinator.cs"))), StringComparison.Ordinal);
         Assert.Contains("SettleAfterScanStopBeforeVendorConnectAsync", File.ReadAllText(FindRepoFile(

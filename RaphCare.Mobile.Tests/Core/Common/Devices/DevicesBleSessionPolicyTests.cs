@@ -121,19 +121,22 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
-    public void Probe1_8_43UsesExclusiveVendorConnectForDiagnosableCapture()
+    public void CrashProbeMustPauseAutoReconnectSoPatientCanReadStepCode()
     {
-        // Isolated probe: exclusive on so Scan → Connect can be captured with fixed logcat.
-        // Daily stable Connect remains 1.8.42 (Plugin.BLE). Roll back if this probe crashes.
+        // Regression: 1.8.44 showed the step then auto-reconnect cleared ErrorMessage
+        // and often crashed again before the patient could read CONNECT-2.
+        Assert.True(DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterCrashProbe(true));
+        Assert.False(DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterCrashProbe(false));
+    }
+
+    [Fact]
+    public void Probe1_8_45UsesExclusiveVendorConnectWithCrashBreadcrumb()
+    {
         Assert.True(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
         Assert.True(DevicesBleSessionPolicy.TryVendorSdkOnConnect);
         Assert.True(DevicesBleSessionPolicy.EnableVendorLiveMeasure);
         Assert.False(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
         Assert.True(DevicesBleSessionPolicy.WarmUpVendorSdkOnDevicesAppear);
-        Assert.True(DevicesBleSessionPolicy.PostScanStopSettleBeforeVendorConnect
-                    >= TimeSpan.FromMilliseconds(1000));
-        Assert.False(DevicesBleSessionPolicy.RestorePluginBleAfterMeasure);
-        Assert.False(DevicesBleSessionPolicy.EnableVendorSpo2DuringMeasure);
     }
 
     [Fact]

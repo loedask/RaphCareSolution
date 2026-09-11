@@ -10,6 +10,7 @@ using RaphCare.Mobile.Core.Features.Auth.Views;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Rtc;
 using RaphCare.Mobile.Core.Features.CareTelehealth.ViewModels;
 using RaphCare.Mobile.Core.Features.CareTelehealth.Views;
+using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Devices.Services;
 using RaphCare.Mobile.Core.Features.Devices.ViewModels;
 using RaphCare.Mobile.Core.Features.Devices.Views;
@@ -29,7 +30,6 @@ using RaphCare.Mobile.Platforms.Android.HBand;
 #elif IOS
 using RaphCare.Mobile.Platforms.iOS.Telehealth;
 #endif
-using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Home.ViewModels;
 using RaphCare.Mobile.Core.Features.Home.Views;
 using RaphCare.Mobile.Core.Features.Hybrid.Views;
@@ -85,6 +85,7 @@ public static class MobileServiceCollectionExtensions
         services.AddSingleton<IWearableBleCoordinator, WearableBleCoordinator>();
 
         services.AddSingleton<IVitalsSyncOutbox, FileVitalsSyncOutbox>();
+        services.AddSingleton<IVendorConnectStepProbe, FileVendorConnectStepProbe>();
 
         services.AddSingleton<ILocalPatientProfileStore, LocalPatientProfileStore>();
 

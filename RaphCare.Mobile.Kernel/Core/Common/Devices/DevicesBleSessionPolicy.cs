@@ -115,9 +115,8 @@ public static class DevicesBleSessionPolicy
     /// <summary>
     /// When true and the HBand SDK is present with a MAC, Connect uses Veepoo only
     /// (handshake, no live detect yet). No Plugin.BLE GATT fallback for that attempt.
-    /// Probe <c>1.8.43</c>: exclusive on again with fixed logcat capture so a Scan → Connect
-    /// crash can yield CONNECT markers and a native DEBUG tombstone. Daily stable Connect
-    /// remains <c>1.8.42</c> (Plugin.BLE). Do not treat this build as the partner default.
+    /// Probe <c>1.8.45</c>: exclusive on; crash breadcrumb kept on Devices appear (no auto-reconnect
+    /// wipe). Daily stable Connect remains <c>1.8.42</c>.
     /// </summary>
     public static bool PreferExclusiveVendorSession => true;
 
@@ -136,6 +135,14 @@ public static class DevicesBleSessionPolicy
     /// </summary>
     public static TimeSpan PostScanStopSettleBeforeVendorConnect { get; } =
         TimeSpan.FromMilliseconds(1500);
+
+    /// <summary>
+    /// After a native Connect abort, Devices appear must show the breadcrumb and must not
+    /// auto-reconnect (that re-enters connectDevice and can crash again before the user reads it).
+    /// </summary>
+    public static bool ShouldSkipClaimedWatchReconnectAfterCrashProbe(
+        bool hasIncompleteCrashProbeStep) =>
+        hasIncompleteCrashProbeStep;
 
     /// <summary>
     /// Opening Devices should warm-load <c>VPOperateManager</c> + Inuker <c>BluetoothClient</c>

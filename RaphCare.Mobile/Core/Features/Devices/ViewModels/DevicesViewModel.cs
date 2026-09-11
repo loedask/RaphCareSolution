@@ -6,6 +6,7 @@ using Microsoft.Maui.Media;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Devices;
 using RaphCare.Client.Models.Fleet;
+using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Devices.Models;
 using RaphCare.Mobile.Core.Features.Devices.Services;
 using RaphCare.Mobile.Core.Common.Navigation;
@@ -20,6 +21,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     private readonly IWearableBleCoordinator _ble;
     private readonly IPatientDevicesService _patientDevices;
     private readonly IVitalsSyncOutbox _vitalsOutbox;
+    private readonly IVendorConnectStepProbe _connectStepProbe;
     private bool _showAllDevices;
     private bool _isScanningUi;
     private string? _errorMessage;
@@ -36,11 +38,16 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     private CancellationTokenSource? _reconnectCts;
     private DateTimeOffset? _lastClaimedReconnectFailureUtc;
 
-    public DevicesViewModel(IWearableBleCoordinator ble, IPatientDevicesService patientDevices, IVitalsSyncOutbox vitalsOutbox)
+    public DevicesViewModel(
+        IWearableBleCoordinator ble,
+        IPatientDevicesService patientDevices,
+        IVitalsSyncOutbox vitalsOutbox,
+        IVendorConnectStepProbe connectStepProbe)
     {
         _ble = ble ?? throw new ArgumentNullException(nameof(ble));
         _patientDevices = patientDevices ?? throw new ArgumentNullException(nameof(patientDevices));
         _vitalsOutbox = vitalsOutbox ?? throw new ArgumentNullException(nameof(vitalsOutbox));
+        _connectStepProbe = connectStepProbe ?? throw new ArgumentNullException(nameof(connectStepProbe));
         Title = T("DevicesPageTitle");
 
         ScanButtonText = T("DevicesScan");
@@ -334,6 +341,28 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
 
         await LoadClaimedDevicesAsync().ConfigureAwait(false);
         ApplyActiveBleConnectionToUi();
+
+        string? incompleteCrashStep = null;
+        try
+        {
+            incompleteCrashStep = _connectStepProbe.TryConsumeIncompleteStep();
+        }
+        catch
+        {
+            // Probe read is best-effort.
+        }
+
+        if (DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterCrashProbe(
+                incompleteCrashStep is not null))
+        {
+            // Keep this message; do not warm-up/reconnect (that wiped the red text and
+            // re-crashed on exclusive Connect before the patient could read the step code).
+            ErrorMessage = VendorConnectCrashProbeRules.PatientMessageForIncompleteStep(
+                incompleteCrashStep!);
+            StatusHint = "Auto-reconnect paused so you can read the crash step above.";
+            return;
+        }
+
         try
         {
             await _ble.WarmUpVendorSdkAsync().ConfigureAwait(false);

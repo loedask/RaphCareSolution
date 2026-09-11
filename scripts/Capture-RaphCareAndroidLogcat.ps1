@@ -27,11 +27,19 @@ function Find-Adb {
     $cmd = Get-Command adb -ErrorAction SilentlyContinue
     if ($cmd) { return $cmd.Source }
 
-    $candidates = @(
-        (Join-Path $env:LOCALAPPDATA "Android\Sdk\platform-tools\adb.exe"),
-        (Join-Path $env:ANDROID_HOME "platform-tools\adb.exe"),
-        (Join-Path $env:ANDROID_SDK_ROOT "platform-tools\adb.exe")
-    )
+    $candidates = [System.Collections.Generic.List[string]]::new()
+    if ($env:LOCALAPPDATA) {
+        $candidates.Add((Join-Path $env:LOCALAPPDATA "Android\Sdk\platform-tools\adb.exe"))
+    }
+    if ($env:ANDROID_HOME) {
+        $candidates.Add((Join-Path $env:ANDROID_HOME "platform-tools\adb.exe"))
+    }
+    if ($env:ANDROID_SDK_ROOT) {
+        $candidates.Add((Join-Path $env:ANDROID_SDK_ROOT "platform-tools\adb.exe"))
+    }
+    # Common Windows install from older Android Studio / SDK Manager layouts.
+    $candidates.Add("${env:ProgramFiles(x86)}\Android\android-sdk\platform-tools\adb.exe")
+    $candidates.Add("$env:ProgramFiles\Android\android-sdk\platform-tools\adb.exe")
     foreach ($c in $candidates) {
         if ($c -and (Test-Path -LiteralPath $c)) { return $c }
     }

@@ -31,8 +31,8 @@
         <ApplicationId>com.yindula.raphcare</ApplicationId>
 
         <!-- Versions: display = marketing (Settings / APK name); code = Android versionCode (must rise for each Play upload). -->
-        <ApplicationDisplayVersion>1.8.43</ApplicationDisplayVersion>
-        <ApplicationVersion>55</ApplicationVersion>
+        <ApplicationDisplayVersion>1.8.45</ApplicationDisplayVersion>
+        <ApplicationVersion>57</ApplicationVersion>
 
         <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
         <WindowsPackageType>None</WindowsPackageType>

@@ -56,13 +56,24 @@ RaphCare uses **two** approaches:
 
 A full **.NET Android binding project** remains optional later for typed APIs. Phase 1 uses JNI intentionally (large `vpprotocol` AAR).
 
-**Patient app session rule (current):** Probe **1.8.43** turns exclusive Veepoo Connect and Measure **on** so Scan → Connect can be diagnosed with the fixed logcat script. Daily stable Connect remains **1.8.42** (Plugin.BLE). If 1.8.43 crashes, reinstall 1.8.42.
+**Patient app session rule (current):** Probe **1.8.44** turns exclusive Veepoo Connect and Measure **on**, and writes the last Connect step to phone storage. After a crash, reopen Devices to see a message with the step code (for example `CONNECT-2`). No USB required for that clue. Daily stable Connect remains **1.8.42**.
 
-Crash capture: `scripts/Capture-RaphCareAndroidLogcat.ps1` (start **before** Connect). Inspect for `CONNECT-2` without `CONNECT-3`, `Fatal signal`, and `DEBUG` tombstone lines (`.so` / symbol). Filterspecs are separate argv tokens; invalid `RaphCare*` wildcard removed.
+### What public sources say (working pattern)
 
-Stable Connect checkpoint: **1.8.42**. Failed undiagnosed probe: **1.8.41**. Capture probe: **1.8.43**.
+Official HBand / Veepoo docs and sample ([HBandSDK/Android_Ble_SDK](https://github.com/HBandSDK/Android_Ble_SDK)):
 
-### Follow-up: Veepoo Connect and Measure (probe 1.8.43)
+1. Use **only** `VPOperateManager` for scan and connect (`startScanDevice` then `connectDevice`). Do not run a second BLE stack in parallel.
+2. Prefer `getMangerInstance(getApplicationContext())`.
+3. Wait for notify success before `confirmDevicePwd` / `syncPersonInfo`.
+4. Device does not support overlapping async operations.
+
+We found no public MAUI app that mixes **Plugin.BLE Scan** with Veepoo `connectDevice` successfully. The dual-stack path is the leading suspect for the Scan → Connect process kill. A future fix may scan via Veepoo (or hand off MAC without leaving Plugin.BLE on the radio).
+
+Crash capture (when USB works): `scripts/Capture-RaphCareAndroidLogcat.ps1`. On-device breadcrumb: `IVendorConnectStepProbe` / `FileVendorConnectStepProbe`.
+
+Stable Connect checkpoint: **1.8.42**. Capture probes: **1.8.43** (logcat), **1.8.44** (in-app step).
+
+### Follow-up: Veepoo Connect and Measure (probe 1.8.44)
 
 Exclusive flags are **on** only for this diagnosable probe. After capture, if Connect still aborts, set `PreferExclusiveVendorSession` back to `false` and return to 1.8.42 behavior.
 

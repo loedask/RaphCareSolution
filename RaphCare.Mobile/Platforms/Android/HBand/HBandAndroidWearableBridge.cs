@@ -20,6 +20,7 @@ namespace RaphCare.Mobile.Platforms.Android.HBand;
 public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposable
 {
     private const string Tag = "RaphCareHBand";
+    private readonly IVendorConnectStepProbe? _connectStepProbe;
     private readonly object _sync = new();
     private Java.Lang.Object? _manager;
     private bool _initialized;
@@ -33,6 +34,21 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
     private HBandInvocationHandler? _activeHandler;
 
     private bool? _sdkAvailableCached;
+
+    public HBandAndroidWearableBridge(IVendorConnectStepProbe? connectStepProbe = null) =>
+        _connectStepProbe = connectStepProbe;
+
+    private void MarkConnectStep(string step)
+    {
+        try
+        {
+            _connectStepProbe?.Mark(step);
+        }
+        catch (Exception ex)
+        {
+            Log.Warn(Tag, "Connect step probe mark failed: " + ex.Message);
+        }
+    }
 
     public bool IsAvailable
     {
@@ -138,6 +154,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                 // prior attempt), skip connectDevice. Calling it again often never callbacks.
                 // Skip the probe when BluetoothClient is missing (isDeviceConnected NPEs).
                 Log.Info(Tag, $"CONNECT-1 native check: {macAddress}");
+                MarkConnectStep(VendorConnectCrashProbeRules.StepConnect1);
                 if (VeepooSdkInitRules.ShouldProbeNativeConnectedLink(HasBluetoothClient(manager.Class))
                     && await TryAdoptExistingNativeLinkAsync(manager, macAddress, cancellationToken)
                         .ConfigureAwait(false))
@@ -153,6 +170,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         _vendorConnectStarted = true;
                     }
 
+                    MarkConnectStep(VendorConnectCrashProbeRules.StepHandshakeOk);
                     return;
                 }
 
@@ -179,6 +197,8 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
 
                 // Empty device name has crashed reconnect after Disconnect on some firmware.
                 var safeName = string.IsNullOrWhiteSpace(deviceName) ? "ET580" : deviceName.Trim();
+                // Mark before hopping to the UI thread so a native abort still leaves CONNECT-2.
+                MarkConnectStep(VendorConnectCrashProbeRules.StepConnect2);
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     try
@@ -230,8 +250,10 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         // Prefer mac+name unless PreferOfficialMacOnlyConnectDeviceOverload is on.
                         // If logcat ends at CONNECT-2 with no CONNECT-3, connectDevice aborted the process.
                         Log.Info(Tag, $"CONNECT-2 calling connectDevice: {macAddress}, {safeName}");
+                        MarkConnectStep(VendorConnectCrashProbeRules.StepConnectInvoke);
                         var connected = TryInvokeConnectDevice(manager, mac, name, connectProxy, notifyProxy);
                         Log.Info(Tag, $"CONNECT-3 connectDevice returned: {connected}");
+                        MarkConnectStep(VendorConnectCrashProbeRules.StepConnect3);
                         if (!connected)
                         {
                             throw new InvalidOperationException(
@@ -272,6 +294,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                     _sessionReady = true;
                 }
 
+                MarkConnectStep(VendorConnectCrashProbeRules.StepHandshakeOk);
                 return;
             }
             catch (TimeoutException ex) when (attempt < DevicesBleSessionPolicy.VendorConnectMaxAttempts)
@@ -608,6 +631,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             return;
 
         Log.Info(Tag, "INIT-1 loading VPOperateManager");
+        MarkConnectStep(VendorConnectCrashProbeRules.StepInit1);
         var mgrClass = LoadSdkClass("com.veepoo.protocol.VPOperateManager");
         try
         {
@@ -662,6 +686,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             throw new InvalidOperationException("Could not obtain VPOperateManager instance.");
 
         Log.Info(Tag, "INIT-2 obtained via " + obtainPath);
+        MarkConnectStep(VendorConnectCrashProbeRules.StepInit2);
         var clientPresent = HasBluetoothClient(mgrClass);
         if (VeepooSdkInitRules.ShouldCallInitWhenBluetoothClientMissing(clientPresent))
         {
@@ -687,6 +712,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         _manager = manager;
         _initialized = true;
         Log.Info(Tag, "INIT-3 ready (BluetoothClient present)");
+        MarkConnectStep(VendorConnectCrashProbeRules.StepInit3);
     }
 
     /// <summary>
