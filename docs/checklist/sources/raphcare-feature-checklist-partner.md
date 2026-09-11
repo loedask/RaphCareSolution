@@ -17,7 +17,7 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 
 Each section shows its % in the heading. Numbers stay in sync when status changes.
 
-Last reviewed: 2026-09-10
+Last reviewed: 2026-09-11
 
 ---
 
@@ -105,7 +105,7 @@ What patients see on Android and iPhone.
 | Push alerts on iPhone | Partial | Needs store and push setup, then a real device test |
 | Claim an assigned watch serial in the app | Done | Hospital path: after staff assign the watch, the patient types that serial or photographs the packaging barcode or QR. Direct package path: claim the packaging serial when the watch is stocked under Direct. Unknown serials are rejected. Scan and Connect stay off until claim. After the first pair, only that Bluetooth address is accepted. Trying a different nearby band shows which Bluetooth address belongs to your claim. Closing the app and opening Devices again reconnects that claimed watch when it is nearby. |
 | Connect **E580** or **E585** style Bluetooth bands | Partial | Scan needs Nearby devices permission on Android 12+. Opening Devices reconnects the claimed watch when permission is already allowed. Manual Scan fills Nearby (including your saved watch row) without dropping the watch radio; tap Connect only if you need to. Daily builds use phone Bluetooth Connect (1.8.42). Build 1.8.43 is a crash-diagnosis probe for watch-SDK Connect; if the app closes, reinstall 1.8.42. Force-stop the separate H Band app if the phone has it. Blood pressure and other monitors are later |
-| Live heart rate and blood oxygen in the app | Partial | Android vendor Measure is on only in probe 1.8.43 for diagnosis. Confirm later when Connect stays open |
+| Live heart rate and blood oxygen in the app | Partial | Android vendor Measure is on only in engineer probe 1.8.47 (vendor-only scan). Confirm later when Connect stays open |
 | Auto sync and background monitoring | Not started | Manual sync exists; background sync not finished |
 | Full band health history (like the vendor companion app) | Partial | Connect and live HR/SpO₂ started; activity, sleep, and history still open |
 | Activity (steps, calories, distance), sleep, stress | Not started | On the watches; not in RaphCare yet |

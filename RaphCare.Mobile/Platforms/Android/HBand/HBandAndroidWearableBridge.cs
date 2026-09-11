@@ -98,6 +98,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
 
     public event EventHandler<WearableVitalsSnapshot>? VitalsUpdated;
     public event EventHandler<string?>? ErrorOccurred;
+    public event EventHandler<VendorScanDeviceFoundEventArgs>? VendorScanDeviceFound;
 
     private void RaiseError(string? message) =>
         MainThread.BeginInvokeOnMainThread(() => ErrorOccurred?.Invoke(this, message));
@@ -110,6 +111,109 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             cancellationToken.ThrowIfCancellationRequested();
             EnsureInitialized();
         });
+    }
+
+    public async Task StartVendorScanAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        await MainThread.InvokeOnMainThreadAsync(EnsureInitialized).ConfigureAwait(false);
+        var manager = _manager ?? throw new InvalidOperationException("VPOperateManager is null.");
+
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            MarkConnectStep(VendorConnectCrashProbeRules.StepScan1);
+            Log.Info(Tag, "SCAN-1 preparing startScanDevice");
+
+            var searchProxy = CreateProxy(
+                "com.inuker.bluetooth.library.search.response.SearchResponse",
+                (method, args) =>
+                {
+                    try
+                    {
+                        if (method.Name == "onDeviceFounded" && args.Length > 0 && args[0] is not null)
+                            RaiseVendorScanDeviceFound(args[0]!);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn(Tag, "onDeviceFounded handler: " + ex.Message);
+                    }
+
+                    return null;
+                },
+                fallbackInterfaceNames:
+                [
+                    "com.veepoo.protocol.listener.base.IScanDeviceListener",
+                    "com.veepoo.protocol.listener.data.IScanDeviceListener"
+                ]);
+
+            MarkConnectStep(VendorConnectCrashProbeRules.StepScanInvoke);
+            Log.Info(Tag, "SCAN-INVOKE calling startScanDevice");
+            if (!TryInvoke(manager, "startScanDevice", searchProxy)
+                && !TryInvoke(manager, "startScanDevice", Integer.ValueOf(10_000), searchProxy))
+            {
+                throw new InvalidOperationException(
+                    "Veepoo startScanDevice was not found or failed to invoke.");
+            }
+        }).ConfigureAwait(false);
+    }
+
+    public async Task StopVendorScanAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (_manager is null)
+            return;
+
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                TryInvoke(_manager, "stopScanDevice");
+                MarkConnectStep(VendorConnectCrashProbeRules.StepScanStop);
+                Log.Info(Tag, "SCAN-STOP stopScanDevice returned");
+            }
+            catch (Exception ex)
+            {
+                Log.Warn(Tag, "stopScanDevice: " + ex.Message);
+            }
+        }).ConfigureAwait(false);
+    }
+
+    private void RaiseVendorScanDeviceFound(Java.Lang.Object searchResult)
+    {
+        string? address = null;
+        string? name = null;
+        var rssi = 0;
+        try
+        {
+            address = searchResult.Class.GetMethod("getAddress")?.Invoke(searchResult)?.ToString();
+            name = searchResult.Class.GetMethod("getName")?.Invoke(searchResult)?.ToString();
+            var rssiObj = searchResult.Class.GetField("rssi")?.Get(searchResult);
+            if (rssiObj is Integer boxed)
+                rssi = boxed.IntValue();
+            else if (rssiObj is Java.Lang.Object jo)
+                rssi = UnboxInt(jo);
+        }
+        catch (Throwable t)
+        {
+            Log.Warn(Tag, "SearchResult parse: " + t.Message);
+        }
+
+        var mac = BluetoothMacNormalizer.TryNormalize(address);
+        if (mac is null)
+            return;
+
+        MarkConnectStep(VendorConnectCrashProbeRules.StepScanResult);
+        Log.Info(Tag, "SCAN-RESULT mac=" + mac + " name=" + (name ?? ""));
+
+        var args = new VendorScanDeviceFoundEventArgs
+        {
+            MacAddress = mac,
+            Name = string.IsNullOrWhiteSpace(name) ? null : name.Trim(),
+            Rssi = rssi
+        };
+        MainThread.BeginInvokeOnMainThread(() => VendorScanDeviceFound?.Invoke(this, args));
     }
 
     public async Task ConnectAndHandshakeAsync(

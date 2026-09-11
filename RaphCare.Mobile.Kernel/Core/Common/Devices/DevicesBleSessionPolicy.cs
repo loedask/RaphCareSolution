@@ -115,10 +115,21 @@ public static class DevicesBleSessionPolicy
     /// <summary>
     /// When true and the HBand SDK is present with a MAC, Connect uses Veepoo only
     /// (handshake, no live detect yet). No Plugin.BLE GATT fallback for that attempt.
-    /// Probe <c>1.8.45</c>: exclusive on; crash breadcrumb kept on Devices appear (no auto-reconnect
-    /// wipe). Daily stable Connect remains <c>1.8.42</c>.
+    /// Off for daily builds: stable Connect is Plugin.BLE (<c>1.8.42</c>). Do not reuse this
+    /// flag for the single-stack scan probe; use <see cref="UseVeepooNativeScanProbe"/>.
     /// </summary>
-    public static bool PreferExclusiveVendorSession => true;
+    public static bool PreferExclusiveVendorSession => false;
+
+    /// <summary>
+    /// Engineer-only probe: Veepoo <c>startScanDevice</c> then <c>connectDevice</c> in one
+    /// stack. Never starts Plugin.BLE scan/connect for that session. Separate from
+    /// <see cref="PreferExclusiveVendorSession"/> so the failed hybrid path stays off.
+    /// Probe <c>1.8.46</c>: on for diagnostic APK only.
+    /// </summary>
+    public static bool UseVeepooNativeScanProbe => true;
+
+    /// <summary>How long the vendor-native scan probe waits for a matching advertisement.</summary>
+    public static TimeSpan VendorNativeScanTimeout { get; } = TimeSpan.FromSeconds(20);
 
     /// <summary>
     /// When true, call the 3-arg wiki form first. javap shows that overload only forwards to
@@ -236,10 +247,11 @@ public static class DevicesBleSessionPolicy
 
     /// <summary>
     /// When true, Measure uses Veepoo <c>startDetectHeart</c> on an exclusive vendor session.
-    /// Requires <see cref="PreferExclusiveVendorSession"/> Connect first (no mid-Measure radio steal).
-    /// Off while exclusive Connect is disabled (same connectDevice crash surface).
+    /// Requires exclusive Connect or a successful vendor-scan probe session first
+    /// (no mid-Measure radio steal when PreferExclusive is off).
     /// </summary>
-    public static bool EnableVendorLiveMeasure => PreferExclusiveVendorSession;
+    public static bool EnableVendorLiveMeasure =>
+        PreferExclusiveVendorSession || UseVeepooNativeScanProbe;
 
     /// <summary>
     /// Coordinator flag can lag the bridge after auto-reconnect. Adopt the bridge session for Measure.

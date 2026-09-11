@@ -38,4 +38,23 @@ public static class VeepooSdkInitRules
     /// </summary>
     public static bool ShouldProbeNativeConnectedLink(bool bluetoothClientPresent) =>
         bluetoothClientPresent;
+
+    /// <summary>
+    /// Single-stack probe: discover via Veepoo <c>startScanDevice</c>, then
+    /// <c>connectDevice</c> from that same stack. Never starts Plugin.BLE for the session.
+    /// </summary>
+    public static bool ShouldUseVendorNativeScan(bool useVeepooNativeScanProbe) =>
+        useVeepooNativeScanProbe;
+
+    /// <summary>
+    /// Accept a vendor-scan hit when it matches the claimed MAC or an E580/E585-style name.
+    /// </summary>
+    public static bool ShouldAcceptVendorScanResult(
+        string? deviceName,
+        string? deviceMac,
+        string? preferredMac,
+        bool nameLooksLikeE580Style) =>
+        (preferredMac is not null
+         && BluetoothMacNormalizer.EqualsNormalized(deviceMac, preferredMac))
+        || nameLooksLikeE580Style;
 }

@@ -140,6 +140,14 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
         RaiseCanExecuteChanged(MeasureCommand, SyncCommand);
         ApplySnapshot(_ble.LastVitals);
 
+        if (_ble.TryConsumeVendorConnectCrashMessage(out var crashMessage)
+            && DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterCrashProbe(true))
+        {
+            ErrorMessage = crashMessage;
+            StatusHint = "Auto-reconnect paused so you can read the crash step above.";
+            return;
+        }
+
         try
         {
             var devices = await _patientDevices.GetMyDevicesAsync(CancellationToken.None).ConfigureAwait(false);

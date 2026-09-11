@@ -6,7 +6,6 @@ using Microsoft.Maui.Media;
 using RaphCare.Client.Contracts.Interfaces;
 using RaphCare.Client.Models.Devices;
 using RaphCare.Client.Models.Fleet;
-using RaphCare.Mobile.Core.Features.Devices.HBand;
 using RaphCare.Mobile.Core.Features.Devices.Models;
 using RaphCare.Mobile.Core.Features.Devices.Services;
 using RaphCare.Mobile.Core.Common.Navigation;
@@ -21,9 +20,9 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     private readonly IWearableBleCoordinator _ble;
     private readonly IPatientDevicesService _patientDevices;
     private readonly IVitalsSyncOutbox _vitalsOutbox;
-    private readonly IVendorConnectStepProbe _connectStepProbe;
     private bool _showAllDevices;
     private bool _isScanningUi;
+    private bool _isVendorScanProbeBusy;
     private string? _errorMessage;
     private string? _statusHint;
     private WearableVitalsSnapshot? _lastVitals;
@@ -41,13 +40,11 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     public DevicesViewModel(
         IWearableBleCoordinator ble,
         IPatientDevicesService patientDevices,
-        IVitalsSyncOutbox vitalsOutbox,
-        IVendorConnectStepProbe connectStepProbe)
+        IVitalsSyncOutbox vitalsOutbox)
     {
         _ble = ble ?? throw new ArgumentNullException(nameof(ble));
         _patientDevices = patientDevices ?? throw new ArgumentNullException(nameof(patientDevices));
         _vitalsOutbox = vitalsOutbox ?? throw new ArgumentNullException(nameof(vitalsOutbox));
-        _connectStepProbe = connectStepProbe ?? throw new ArgumentNullException(nameof(connectStepProbe));
         Title = T("DevicesPageTitle");
 
         ScanButtonText = T("DevicesScan");
@@ -68,6 +65,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         BleUnsupportedMessage = T("DevicesBleUnsupported");
         DevicesConnectLabel = T("DevicesConnectButton");
         DevicesConnectedRowLabel = T("DevicesConnectedRowButton");
+        VendorScanProbeButtonText = "Try vendor scan (diagnostic)";
 
         SyncReadingsButtonText = T("DevicesSyncReadings");
         ClaimHint = T("DevicesClaimHint");
@@ -84,6 +82,9 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             async id => await ConnectAsync(id).ConfigureAwait(false),
             id => CanScanOrConnect && id != _ble.ConnectedDeviceId);
         DisconnectCommand = new Command(async () => await DisconnectAsync().ConfigureAwait(false), () => _ble.ConnectedDeviceId.HasValue && !IsBusy);
+        VendorScanProbeCommand = new Command(
+            async () => await VendorScanProbeAsync().ConfigureAwait(false),
+            () => CanVendorScanProbe);
         RegisterCommand = new Command(async () => await RegisterAsync().ConfigureAwait(false), () => !IsBusy);
         ScanPackagingCommand = new Command(async () => await ScanPackagingAsync().ConfigureAwait(false), () => !IsBusy);
         SyncLastReadingCommand = new Command(async () => await SyncLastReadingAsync().ConfigureAwait(false), () => !IsBusy);
@@ -122,6 +123,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     public string BleUnsupportedMessage { get; }
     public string DevicesConnectLabel { get; }
     public string DevicesConnectedRowLabel { get; }
+    public string VendorScanProbeButtonText { get; }
 
     public string SyncReadingsButtonText { get; }
     public string ClaimHint { get; }
@@ -135,7 +137,20 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
 
     public bool HasClaimedDevice => RegisteredDeviceId.HasValue;
 
-    public bool CanScanOrConnect => !IsBusy && _ble.IsBleSupported && HasClaimedDevice;
+    public bool CanScanOrConnect => !IsBusy && _ble.IsBleSupported && HasClaimedDevice && !IsVendorScanProbeBusy;
+
+    /// <summary>
+    /// Engineer diagnostic: enabled whenever the vendor SDK is present and Bluetooth is usable.
+    /// Does not require a claimed watch (scan matches E580/E585 by name), but a claimed MAC is preferred.
+    /// </summary>
+    public bool CanVendorScanProbe =>
+        ShowVendorScanProbe
+        && !IsBusy
+        && _ble.IsBleSupported
+        && !IsVendorScanProbeBusy;
+
+    public bool ShowVendorScanProbe =>
+        DevicesBleSessionPolicy.UseVeepooNativeScanProbe && _ble.IsVendorMeasureAvailable;
 
     public string ShowAllToggleText => ShowAllDevices ? ShowAllLabel : E580E585FilterLabel;
 
@@ -165,6 +180,19 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             _isScanningUi = value;
             OnPropertyChanged(nameof(IsScanningUi));
             RaiseCanExecuteChanged(StopScanCommand);
+        }
+    }
+
+    public bool IsVendorScanProbeBusy
+    {
+        get => _isVendorScanProbeBusy;
+        private set
+        {
+            if (!SetProperty(ref _isVendorScanProbeBusy, value))
+                return;
+            OnPropertyChanged(nameof(CanScanOrConnect));
+            OnPropertyChanged(nameof(CanVendorScanProbe));
+            RaiseBleCommandStates();
         }
     }
 
@@ -257,7 +285,10 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             OnPropertyChanged(nameof(ClaimedDeviceIdLabel));
             OnPropertyChanged(nameof(HasClaimedDevice));
             OnPropertyChanged(nameof(CanScanOrConnect));
-            RaiseCanExecuteChanged(ScanCommand, ConnectCommand);
+            OnPropertyChanged(nameof(CanVendorScanProbe));
+            // Must include VendorScanProbeCommand: CanExecute is evaluated at construction when
+            // RegisteredDeviceId is still null, so omitting it leaves the diagnostic button dead.
+            RaiseBleCommandStates();
         }
     }
 
@@ -277,6 +308,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     public ICommand StopScanCommand { get; }
     public ICommand ConnectCommand { get; }
     public ICommand DisconnectCommand { get; }
+    public ICommand VendorScanProbeCommand { get; }
     public ICommand RegisterCommand { get; }
     public ICommand ScanPackagingCommand { get; }
     public ICommand SyncLastReadingCommand { get; }
@@ -341,25 +373,20 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
 
         await LoadClaimedDevicesAsync().ConfigureAwait(false);
         ApplyActiveBleConnectionToUi();
+        // Claimed-device load refreshes Scan/Connect CanExecute; diagnostic must too or
+        // VendorScanProbeCommand stays disabled from construction-time HasClaimedDevice=false.
+        OnPropertyChanged(nameof(ShowVendorScanProbe));
+        OnPropertyChanged(nameof(CanVendorScanProbe));
+        RaiseBleCommandStates();
 
-        string? incompleteCrashStep = null;
-        try
-        {
-            incompleteCrashStep = _connectStepProbe.TryConsumeIncompleteStep();
-        }
-        catch
-        {
-            // Probe read is best-effort.
-        }
-
-        if (DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterCrashProbe(
-                incompleteCrashStep is not null))
+        if (_ble.TryConsumeVendorConnectCrashMessage(out var crashMessage)
+            && DevicesBleSessionPolicy.ShouldSkipClaimedWatchReconnectAfterCrashProbe(true))
         {
             // Keep this message; do not warm-up/reconnect (that wiped the red text and
             // re-crashed on exclusive Connect before the patient could read the step code).
-            ErrorMessage = VendorConnectCrashProbeRules.PatientMessageForIncompleteStep(
-                incompleteCrashStep!);
+            ErrorMessage = crashMessage;
             StatusHint = "Auto-reconnect paused so you can read the crash step above.";
+            RaiseBleCommandStates();
             return;
         }
 
@@ -373,6 +400,19 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         }
 
         await TryReconnectClaimedWatchAsync().ConfigureAwait(false);
+        RaiseBleCommandStates();
+    }
+
+    private void RaiseBleCommandStates()
+    {
+        OnPropertyChanged(nameof(CanScanOrConnect));
+        OnPropertyChanged(nameof(CanVendorScanProbe));
+        RaiseCanExecuteChanged(
+            ScanCommand,
+            StopScanCommand,
+            ConnectCommand,
+            DisconnectCommand,
+            VendorScanProbeCommand);
     }
 
     private async Task TryReconnectClaimedWatchAsync()
@@ -458,7 +498,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
                     StatusHint = T("DevicesReconnectFailedHint");
                 }
 
-                RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
+                RaiseBleCommandStates();
             }).ConfigureAwait(false);
         }
     }
@@ -535,7 +575,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         }
 
         RefreshItems();
-        RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
+        RaiseBleCommandStates();
     }
 
     private void OnDiscoveredChanged(object? sender, EventArgs e) =>
@@ -680,7 +720,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             IsScanningUi = false;
             IsBusy = false;
             await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
-            RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
+            RaiseBleCommandStates();
         }
 
         // Scan only populates Nearby (including the Claimed wearable row). Do not auto-Connect:
@@ -707,7 +747,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         finally
         {
             await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
-            RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
+            RaiseBleCommandStates();
         }
     }
 
@@ -823,7 +863,46 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         {
             IsBusy = false;
             await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
-            RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
+            RaiseBleCommandStates();
+        }
+    }
+
+    private async Task VendorScanProbeAsync()
+    {
+        if (!ShowVendorScanProbe)
+            return;
+
+        IsVendorScanProbeBusy = true;
+        IsBusy = true;
+        ErrorMessage = null;
+        StatusHint = "Vendor scan probe: scanning with the watch SDK only (not Plugin.BLE)…";
+        try
+        {
+            await _ble.ConnectViaVendorScanProbeAsync(
+                    ClaimedBluetoothMac,
+                    preferredDeviceName: null,
+                    CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OnPropertyChanged(nameof(ConnectedDeviceId));
+            OnPropertyChanged(nameof(IsBleConnected));
+            if (_ble.ConnectedDeviceId.HasValue && _ble.IsLiveMeasureSessionReady)
+                StatusHint = "Vendor scan probe connected. Open Watch readings and try Measure.";
+            else if (_ble.ConnectedDeviceId.HasValue)
+                StatusHint = "Vendor scan probe connected (session pending Measure readiness).";
+            else if (string.IsNullOrWhiteSpace(ErrorMessage))
+                StatusHint = "Vendor scan probe finished without a session. Check the red error if any.";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+            IsVendorScanProbeBusy = false;
+            await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
+            RaiseBleCommandStates();
         }
     }
 
@@ -847,7 +926,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         {
             IsBusy = false;
             await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
-            RaiseCanExecuteChanged(ScanCommand, StopScanCommand, ConnectCommand, DisconnectCommand);
+            RaiseBleCommandStates();
         }
     }
 

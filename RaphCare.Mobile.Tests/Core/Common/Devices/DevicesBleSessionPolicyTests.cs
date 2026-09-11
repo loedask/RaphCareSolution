@@ -79,11 +79,11 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
-    public void ExclusiveModeOnMeansDisconnectRetainsVendorSession()
+    public void ExclusiveModeOffMeansDisconnectDoesNotRetainVendorSessionByDefault()
     {
-        // Probe 1.8.43: exclusive Connect on for diagnosable capture; soft Disconnect retains session.
-        Assert.True(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
-        Assert.True(DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect);
+        // Daily path (1.8.42): PreferExclusive off. Soft Disconnect retention follows that flag.
+        Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
+        Assert.False(DevicesBleSessionPolicy.KeepVendorSessionAliveAfterUserDisconnect);
     }
 
     [Fact]
@@ -130,13 +130,15 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
-    public void Probe1_8_45UsesExclusiveVendorConnectWithCrashBreadcrumb()
+    public void Probe1846UsesVendorNativeScanWithoutHybridExclusiveConnect()
     {
-        Assert.True(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
-        Assert.True(DevicesBleSessionPolicy.TryVendorSdkOnConnect);
+        // Hybrid exclusive Connect stayed off (five crashes). New probe is Veepoo scan only.
+        Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
+        Assert.True(DevicesBleSessionPolicy.UseVeepooNativeScanProbe);
         Assert.True(DevicesBleSessionPolicy.EnableVendorLiveMeasure);
         Assert.False(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
         Assert.True(DevicesBleSessionPolicy.WarmUpVendorSdkOnDevicesAppear);
+        Assert.True(DevicesBleSessionPolicy.VendorNativeScanTimeout >= TimeSpan.FromSeconds(10));
     }
 
     [Fact]

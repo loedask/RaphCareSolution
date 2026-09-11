@@ -10,6 +10,9 @@ public sealed class VendorConnectCrashProbeRulesTests
     [InlineData(VendorConnectCrashProbeRules.StepConnectInvoke)]
     [InlineData(VendorConnectCrashProbeRules.StepInit1)]
     [InlineData(VendorConnectCrashProbeRules.StepConnect1)]
+    [InlineData(VendorConnectCrashProbeRules.StepScan1)]
+    [InlineData(VendorConnectCrashProbeRules.StepScanInvoke)]
+    [InlineData(VendorConnectCrashProbeRules.StepScanResult)]
     public void IncompleteConnectStepsMustBeReportedAfterRelaunch(string step)
     {
         Assert.True(VendorConnectCrashProbeRules.ShouldReportIncompleteStep(step));
@@ -22,6 +25,7 @@ public sealed class VendorConnectCrashProbeRulesTests
     [InlineData(VendorConnectCrashProbeRules.StepConnect3)]
     [InlineData(VendorConnectCrashProbeRules.StepHandshakeOk)]
     [InlineData(VendorConnectCrashProbeRules.StepInit3)]
+    [InlineData(VendorConnectCrashProbeRules.StepScanStop)]
     public void SuccessfulStepsClearProbeAndAreNotReported(string step)
     {
         Assert.True(VendorConnectCrashProbeRules.ClearsProbe(step));

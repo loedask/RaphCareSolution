@@ -24,6 +24,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     private readonly List<(ICharacteristic Ch, EventHandler<CharacteristicUpdatedEventArgs> H)> _notifyHandlers = new();
     private readonly SemaphoreSlim _connectGate = new(1, 1);
     private readonly IHBandWearableBridge _hband;
+    private readonly IVendorConnectStepProbe _connectStepProbe;
 
     private Guid? _connectedId;
     private bool _usingHbandSession;
@@ -41,9 +42,12 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     /// <summary>Used when vendor reconnect succeeds before Plugin.BLE has rediscovered the peripheral.</summary>
     private static readonly Guid VendorSessionPlaceholderId = Guid.Parse("d0e5c001-b1e0-4a7c-9e58-000000000001");
 
-    public WearableBleCoordinator(IHBandWearableBridge hband)
+    public WearableBleCoordinator(
+        IHBandWearableBridge hband,
+        IVendorConnectStepProbe connectStepProbe)
     {
         _hband = hband;
+        _connectStepProbe = connectStepProbe ?? throw new ArgumentNullException(nameof(connectStepProbe));
         _hband.VitalsUpdated += OnHbandVitalsUpdated;
         _hband.ErrorOccurred += OnHbandError;
 
@@ -351,6 +355,190 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         {
             // Init probe must not block Devices; Connect still has its own init path.
             ErrorOccurred?.Invoke(this, "Watch SDK warm-up: " + ex.Message);
+        }
+    }
+
+    public bool TryConsumeVendorConnectCrashMessage(out string patientMessage)
+    {
+        patientMessage = string.Empty;
+        try
+        {
+            var step = _connectStepProbe.TryConsumeIncompleteStep();
+            if (step is null)
+                return false;
+
+            patientMessage = VendorConnectCrashProbeRules.PatientMessageForIncompleteStep(step);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task ConnectViaVendorScanProbeAsync(
+        string? preferredMacAddress,
+        string? preferredDeviceName,
+        CancellationToken cancellationToken = default)
+    {
+        if (!IsBleSupported)
+            return;
+
+        if (!VeepooSdkInitRules.ShouldUseVendorNativeScan(DevicesBleSessionPolicy.UseVeepooNativeScanProbe))
+        {
+            ErrorOccurred?.Invoke(this, "Vendor scan probe is off in this build.");
+            return;
+        }
+
+        if (!_hband.IsAvailable)
+        {
+            ErrorOccurred?.Invoke(this,
+                "Watch SDK is missing from this install. Reinstall the latest RaphCare APK.");
+            return;
+        }
+
+        var preferredMac = BluetoothMacNormalizer.TryNormalize(preferredMacAddress);
+        if (preferredMac is not null)
+            _claimedWatchMac = preferredMac;
+        if (!string.IsNullOrWhiteSpace(preferredDeviceName))
+            _claimedWatchDeviceName = preferredDeviceName.Trim();
+
+        await _connectGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var perm = await RequestBluetoothPermissionsAsync(cancellationToken).ConfigureAwait(false);
+            if (perm != PermissionStatus.Granted)
+            {
+                ErrorOccurred?.Invoke(
+                    this,
+                    "Nearby devices permission is required. Allow it in phone Settings for RaphCare, then try again.");
+                return;
+            }
+
+            if (!await EnsureBluetoothAdapterOnAsync(cancellationToken).ConfigureAwait(false))
+            {
+                ErrorOccurred?.Invoke(this, "Bluetooth is off. Turn it on and try again.");
+                return;
+            }
+
+            // Free Plugin.BLE only if it already holds the radio. Do not StartScanning or
+            // ConnectToDevice on Plugin.BLE for this probe session.
+            await StopScanAsync().ConfigureAwait(false);
+            await CleanupNotificationsAsync().ConfigureAwait(false);
+            await ReleaseActivePluginBleWithoutVendorHandoffAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            if (DevicesBleSessionPolicy.ShouldReuseExistingVendorSession(
+                    _hband.IsSessionReady,
+                    _hband.ConnectedMacAddress,
+                    preferredMac ?? _claimedWatchMac))
+            {
+                _usingHbandSession = true;
+                _lastSessionMac = preferredMac ?? _claimedWatchMac;
+                BindConnectedIdFromMac(_lastSessionMac!);
+                ClearVendorDisconnectSettle();
+                return;
+            }
+
+            var matchTcs = new TaskCompletionSource<(string Mac, string? Name)>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void OnVendorDeviceFound(object? sender, VendorScanDeviceFoundEventArgs e)
+            {
+                if (!VeepooSdkInitRules.ShouldAcceptVendorScanResult(
+                        e.Name,
+                        e.MacAddress,
+                        preferredMac,
+                        WearableBleScanRules.MatchesE580StyleName(e.Name)))
+                    return;
+
+                matchTcs.TrySetResult((e.MacAddress, e.Name));
+            }
+
+            _hband.VendorScanDeviceFound += OnVendorDeviceFound;
+            try
+            {
+                await _hband.StartVendorScanAsync(cancellationToken).ConfigureAwait(false);
+
+                using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                timeoutCts.CancelAfter(DevicesBleSessionPolicy.VendorNativeScanTimeout);
+                var timedOut = Task.Delay(Timeout.InfiniteTimeSpan, timeoutCts.Token);
+                var completed = await Task.WhenAny(matchTcs.Task, timedOut).ConfigureAwait(false);
+                if (completed != matchTcs.Task)
+                {
+                    ErrorOccurred?.Invoke(this,
+                        "Vendor scan did not find the watch in time. Keep it nearby and unlocked, then try again.");
+                    return;
+                }
+
+                var (mac, name) = await matchTcs.Task.ConfigureAwait(false);
+                await _hband.StopVendorScanAsync(cancellationToken).ConfigureAwait(false);
+
+                await _hband.ConnectAndHandshakeAsync(
+                        mac,
+                        ResolveClaimedDeviceName(name ?? preferredDeviceName),
+                        HBandSdkInfo.DefaultDevicePasswordPlaceholder,
+                        cancellationToken)
+                    .ConfigureAwait(false);
+
+                _usingHbandSession = true;
+                _lastSessionMac = mac;
+                _claimedWatchMac = mac;
+                BindConnectedIdFromMac(mac);
+                ClearVendorDisconnectSettle();
+            }
+            catch (Exception ex)
+            {
+                _usingHbandSession = false;
+                _connectedId = null;
+                MarkVendorDisconnected();
+                ErrorOccurred?.Invoke(this,
+                    "Vendor scan Connect failed. " + ex.Message);
+            }
+            finally
+            {
+                _hband.VendorScanDeviceFound -= OnVendorDeviceFound;
+                try
+                {
+                    await _hband.StopVendorScanAsync(CancellationToken.None).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Best-effort stop after cancel or failure.
+                }
+            }
+        }
+        finally
+        {
+            _connectGate.Release();
+        }
+    }
+
+    /// <summary>
+    /// Drop a Plugin.BLE GATT link so the radio is free for a pure Veepoo scan session.
+    /// Does not call vendor disconnect or hybrid settle delays.
+    /// </summary>
+    private async Task ReleaseActivePluginBleWithoutVendorHandoffAsync(CancellationToken ct)
+    {
+        if (_usingHbandSession)
+        {
+            // Vendor already owns the session; do not tear it down for a rescan probe.
+            _connectedId = null;
+            return;
+        }
+
+        if (_connectedId is Guid id && _devices.TryGetValue(id, out var device))
+        {
+            await ReleasePluginBleLinkAsync(device, ct).ConfigureAwait(false);
+            _connectedId = null;
+            return;
+        }
+
+        var connectedList = _adapter.ConnectedDevices;
+        if (connectedList is { Count: > 0 })
+        {
+            await ReleasePluginBleLinkAsync(connectedList[0], ct).ConfigureAwait(false);
+            _connectedId = null;
         }
     }
 

@@ -56,7 +56,7 @@ RaphCare uses **two** approaches:
 
 A full **.NET Android binding project** remains optional later for typed APIs. Phase 1 uses JNI intentionally (large `vpprotocol` AAR).
 
-**Patient app session rule (current):** Probe **1.8.44** turns exclusive Veepoo Connect and Measure **on**, and writes the last Connect step to phone storage. After a crash, reopen Devices to see a message with the step code (for example `CONNECT-2`). No USB required for that clue. Daily stable Connect remains **1.8.42**.
+**Patient app session rule (current):** Daily Connect stays **Plugin.BLE** (**1.8.42**). Probe **1.8.46** adds an engineer-only **vendor-native scan** path (`UseVeepooNativeScanProbe`: Veepoo `startScanDevice` then `connectDevice`, no Plugin.BLE scan/GATT for that session). Hybrid exclusive Connect (`PreferExclusiveVendorSession`) stays **off** after five dual-stack crashes. Crash breadcrumbs are consumed on **Devices and Watch readings** (shared `TryConsumeVendorConnectCrashMessage`) so auto-reconnect cannot wipe the step code.
 
 ### What public sources say (working pattern)
 
@@ -67,40 +67,46 @@ Official HBand / Veepoo docs and sample ([HBandSDK/Android_Ble_SDK](https://gith
 3. Wait for notify success before `confirmDevicePwd` / `syncPersonInfo`.
 4. Device does not support overlapping async operations.
 
-We found no public MAUI app that mixes **Plugin.BLE Scan** with Veepoo `connectDevice` successfully. The dual-stack path is the leading suspect for the Scan → Connect process kill. A future fix may scan via Veepoo (or hand off MAC without leaving Plugin.BLE on the radio).
+We found no public MAUI app that mixes **Plugin.BLE Scan** with Veepoo `connectDevice` successfully. Dual-stack (Plugin.BLE Scan + Veepoo Connect) crashed across probes **1.8.39** through **1.8.45**. Probe **1.8.46** removes Plugin.BLE from the radio path for the diagnostic session only.
 
-Crash capture (when USB works): `scripts/Capture-RaphCareAndroidLogcat.ps1`. On-device breadcrumb: `IVendorConnectStepProbe` / `FileVendorConnectStepProbe`.
+Crash capture (when USB works): `scripts/Capture-RaphCareAndroidLogcat.ps1`. Prefer wireless adb when Huawei MTP is flaky. Primary signal: on-device breadcrumb (`IVendorConnectStepProbe` / `FileVendorConnectStepProbe`) on Devices **or** Watch readings after relaunch. Secondary: tombstone / logcat.
 
-Stable Connect checkpoint: **1.8.42**. Capture probes: **1.8.43** (logcat), **1.8.44** (in-app step).
+Stable Connect checkpoint: **1.8.42**. Hybrid exclusive probes: **1.8.43** through **1.8.45**. Single-stack scan probe: **1.8.46** (button CanExecute fix **1.8.47**).
 
-### Follow-up: Veepoo Connect and Measure (probe 1.8.44)
+### Follow-up: Veepoo single-stack scan probe (1.8.46)
 
-Exclusive flags are **on** only for this diagnosable probe. After capture, if Connect still aborts, set `PreferExclusiveVendorSession` back to `false` and return to 1.8.42 behavior.
+1. Install `RaphCare-v1.8.46+58.apk`. Keep `RaphCare-v1.8.42+54.apk` for rollback.
+2. Do **not** run Plugin.BLE Scan in the same session as the diagnostic.
+3. Devices → **Try vendor scan (diagnostic)**.
+4. If the process dies, reopen Devices or Watch readings and read the red step (`SCAN-*` or `CONNECT-*`).
+5. If Connect survives, try Measure on Watch readings.
+6. Report the step code or Measure result; turn `UseVeepooNativeScanProbe` off for partner builds until Scan→Connect is proven.
 
-Inspect log for:
+`PreferExclusiveVendorSession` remains **false**. Do not re-enable hybrid Connect permutations.
 
-1. `RaphCareHBand` `CONNECT-2` without `CONNECT-3` → `connectDevice` native abort.
-2. `AndroidRuntime` / `Fatal signal`.
-3. `DEBUG` tombstone naming the crashing `.so` or symbol.
+Inspect log / breadcrumb for:
 
-That distinguishes a `connectDevice` abort from an init / ClassLoader / `BluetoothService` bind failure.
+1. `SCAN-INVOKE` without `SCAN-RESULT` → native scan abort.
+2. `CONNECT-2` / `CONNECT-INVOKE` without `CONNECT-3` → `connectDevice` abort after vendor scan.
+3. `HANDSHAKE-OK` then Measure sample → single-stack path works.
 
 #### Init audit findings (`vpprotocol-2.3.81.15` javap)
 
 1. **`getMangerInstance(Context)`** (vendor spelling) is the full startup path: sets `mContext`, builds Inuker `BluetoothClient` (`vp_dm`), runs `vp_g()`. Bare **`getInstance()`** creates the manager **without** `BluetoothClient`. Both `isDeviceConnected` and `connectDevice` then dereference `vp_dm` with **no null check** (NPE risk, process can die).
 2. Instance **`init(Context)`** is a no-op when `mContext` is already set. Call `init` only when the client is still missing after obtain.
-3. The wiki **3-arg** `connectDevice(mac, IConnectResponse, INotifyResponse)` only forwards to the synchronized **4-arg** form with device name **`"none"`**. It is not a safer alternate native path. Prefer **mac+name** with the advertised watch name (HBand sample style) on the next exclusive attempt.
-4. Inuker binds **`com.inuker.bluetooth.library.BluetoothService`** on first connect (`bindServiceSync`). The app manifest must declare it (`enabled=true`, `exported=false`). If bind fails, the library falls back to in-process `BluetoothServiceImpl`.
-5. Dual-stack risk remains: Plugin.BLE Scan then Inuker `connectDevice` on the same radio. Exclusive Connect must stop scan, release Plugin.BLE GATT, then settle (`PostScanStopSettleBeforeVendorConnect`) before JNI connect.
+3. The wiki **3-arg** `connectDevice(mac, IConnectResponse, INotifyResponse)` only forwards to the synchronized **4-arg** form with device name **`"none"`**. Prefer **mac+name** with the advertised watch name.
+4. Scan APIs: `startScanDevice(SearchResponse)`, `startScanDevice(int, SearchResponse)`, `stopScanDevice()`. Search callbacks: `onSearchStarted`, `onDeviceFounded(SearchResult)`, `onSearchStopped`, `onSearchCanceled`.
+5. Inuker binds **`com.inuker.bluetooth.library.BluetoothService`** on first connect. Declared in the app manifest.
 
-#### Capture checklist for probe 1.8.43
+#### Capture checklist for probe 1.8.46
 
-1. Install `RaphCare-v1.8.43+55.apk`. Keep `RaphCare-v1.8.42+54.apk` for rollback.
-2. Run `scripts/Capture-RaphCareAndroidLogcat.ps1` **before** tapping Connect.
-3. Devices → Scan → Connect. If Connected, try Measure.
-4. Share `artifacts/android/logs/raphcare-logcat-*.txt`.
+1. Install `RaphCare-v1.8.46+58.apk`. Keep `RaphCare-v1.8.42+54.apk` for rollback.
+2. Optional wireless adb: `adb tcpip 5555` then `adb connect <phone-ip>:5555`, then `scripts/Capture-RaphCareAndroidLogcat.ps1`.
+3. Devices → **Try vendor scan (diagnostic)** (not the normal Scan button).
+4. If Connected, Watch readings → Measure.
+5. On crash: note the in-app step code; optionally `adb pull /data/tombstones/` after relaunch.
 
-Hardening already in the bridge: prefer `getMangerInstance`, verify `BluetoothClient`, INIT markers, Devices appear warm-up (init only), mac+name `connectDevice`, scan-stop settle before vendor connect.
+Hardening already in the bridge: prefer `getMangerInstance`, verify `BluetoothClient`, INIT/SCAN/CONNECT markers, Devices appear warm-up (init only), mac+name `connectDevice`, shared crash-probe consume on Devices and Watch readings.
 
 The on-watch Heart Rate screen (for example **071 bpm**) does not broadcast proprietary live HR to Plugin.BLE. Phone Measure needs a successful Veepoo session.
 
@@ -108,11 +114,12 @@ The on-watch Heart Rate screen (for example **071 bpm**) does not broadcast prop
 
 ## Suggested next engineering steps
 
-1. Diagnose Veepoo Connect with probe 1.8.43 + fixed logcat (follow-up section above). Desk steps: **`docs/checklist/sources/Wearable_Hardware_Proveout.md`**.
-2. Expand bridge methods for activity, sleep, and stress (catalog Phase 3).
-3. Background / auto sync (`docs/14` Phase 2).
-4. iOS HBand SDK binding + shared abstraction.
-5. Optional: generate a thin Android binding library if JNI maintenance becomes costly.
+1. Run probe 1.8.46 single-stack scan on hardware; use in-app breadcrumb as primary evidence. Desk steps: **`docs/checklist/sources/Wearable_Hardware_Proveout.md`**.
+2. If single-stack survives, gate Measure for partners and retire hybrid exclusive flags permanently.
+3. If single-stack still aborts, narrow to AAR/JNI packaging (dual-stack falsified).
+4. Expand bridge methods for activity, sleep, and stress (catalog Phase 3).
+5. Background / auto sync (`docs/14` Phase 2).
+6. iOS HBand SDK binding + shared abstraction.
 
 ---
 

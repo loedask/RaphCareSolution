@@ -119,6 +119,13 @@
                                 Command="{Binding DisconnectCommand}"
                                 IsVisible="{Binding IsBleConnected}"
                                 HorizontalOptions="Fill" />
+
+                        <Button Text="{Binding VendorScanProbeButtonText}"
+                                Style="{StaticResource OutlineTealButton}"
+                                Command="{Binding VendorScanProbeCommand}"
+                                IsEnabled="{Binding CanVendorScanProbe}"
+                                IsVisible="{Binding ShowVendorScanProbe}"
+                                HorizontalOptions="Fill" />
                     </VerticalStackLayout>
                 </Border>
 

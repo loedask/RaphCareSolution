@@ -21,7 +21,18 @@ public sealed class UnavailableHBandWearableBridge : IHBandWearableBridge
         remove { }
     }
 
+    public event EventHandler<VendorScanDeviceFoundEventArgs>? VendorScanDeviceFound
+    {
+        add { }
+        remove { }
+    }
+
     public Task WarmUpAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+    public Task StartVendorScanAsync(CancellationToken cancellationToken = default) =>
+        Task.FromException(new NotSupportedException("HBand vendor SDK is not available on this platform build."));
+
+    public Task StopVendorScanAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 
     public Task ConnectAndHandshakeAsync(
         string macAddress,

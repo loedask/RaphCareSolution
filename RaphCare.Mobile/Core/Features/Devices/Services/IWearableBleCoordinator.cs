@@ -46,6 +46,21 @@ public interface IWearableBleCoordinator
     /// </summary>
     Task WarmUpVendorSdkAsync(CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// If the previous process died mid-vendor Scan/Connect, consume the breadcrumb and
+    /// return the patient message. Call sites must skip auto-reconnect when this returns true.
+    /// </summary>
+    bool TryConsumeVendorConnectCrashMessage(out string patientMessage);
+
+    /// <summary>
+    /// Engineer probe: Veepoo scan then connect in one stack. Never starts Plugin.BLE scan
+    /// or GATT connect for this session. Gated by <c>UseVeepooNativeScanProbe</c>.
+    /// </summary>
+    Task ConnectViaVendorScanProbeAsync(
+        string? preferredMacAddress,
+        string? preferredDeviceName,
+        CancellationToken cancellationToken = default);
+
     Task ConnectAsync(Guid deviceId, CancellationToken cancellationToken = default);
     Task DisconnectAsync(CancellationToken cancellationToken = default);
 

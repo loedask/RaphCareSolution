@@ -6,7 +6,7 @@ namespace RaphCare.Mobile.Tests.Core.Common.Devices;
 public sealed class VeepooSdkInitRulesTests
 {
     [Fact]
-    public void PreferGetManagerInstanceWithContext_IsRequired()
+    public void PreferGetManagerInstanceWithContextIsRequired()
     {
         // Regression: bare getInstance() leaves BluetoothClient null; connectDevice NPEs.
         Assert.True(VeepooSdkInitRules.PreferGetManagerInstanceWithContext);
@@ -35,5 +35,27 @@ public sealed class VeepooSdkInitRulesTests
     {
         Assert.False(VeepooSdkInitRules.ShouldProbeNativeConnectedLink(false));
         Assert.True(VeepooSdkInitRules.ShouldProbeNativeConnectedLink(true));
+    }
+
+    [Fact]
+    public void VendorNativeScanProbeIsGatedSeparatelyFromHybridExclusive()
+    {
+        Assert.True(VeepooSdkInitRules.ShouldUseVendorNativeScan(true));
+        Assert.False(VeepooSdkInitRules.ShouldUseVendorNativeScan(false));
+        Assert.True(VeepooSdkInitRules.ShouldAcceptVendorScanResult(
+            deviceName: "ET585",
+            deviceMac: "AA:BB:CC:DD:EE:FF",
+            preferredMac: null,
+            nameLooksLikeE580Style: true));
+        Assert.True(VeepooSdkInitRules.ShouldAcceptVendorScanResult(
+            deviceName: null,
+            deviceMac: "AA:BB:CC:DD:EE:FF",
+            preferredMac: "AA:BB:CC:DD:EE:FF",
+            nameLooksLikeE580Style: false));
+        Assert.False(VeepooSdkInitRules.ShouldAcceptVendorScanResult(
+            deviceName: "Phone",
+            deviceMac: "11:22:33:44:55:66",
+            preferredMac: "AA:BB:CC:DD:EE:FF",
+            nameLooksLikeE580Style: false));
     }
 }

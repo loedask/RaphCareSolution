@@ -89,6 +89,74 @@ public sealed class WearableBleCoordinatorWiringTests
     }
 
     [Fact]
+    public void CrashProbeMustBeConsumedOnDevicesAndWatchReadingsBeforeAutoReconnect()
+    {
+        // Regression: 1.8.45 paused reconnect on Devices only. Watch readings still called
+        // ReconnectClaimedWatchAsync unconditionally and wiped or re-crashed the breadcrumb.
+        var devices = ReadDevicesViewModelSource();
+        var watch = ReadWatchReadingsViewModelSource();
+        var coordinator = ReadCoordinatorSource();
+
+        Assert.Contains("TryConsumeVendorConnectCrashMessage", coordinator, StringComparison.Ordinal);
+        Assert.Contains("TryConsumeVendorConnectCrashMessage", devices, StringComparison.Ordinal);
+        Assert.Contains("TryConsumeVendorConnectCrashMessage", watch, StringComparison.Ordinal);
+        Assert.Contains("ShouldSkipClaimedWatchReconnectAfterCrashProbe", devices, StringComparison.Ordinal);
+        Assert.Contains("ShouldSkipClaimedWatchReconnectAfterCrashProbe", watch, StringComparison.Ordinal);
+
+        var watchAppearIdx = watch.IndexOf("public async Task OnAppearingAsync", StringComparison.Ordinal);
+        Assert.True(watchAppearIdx >= 0);
+        var reconnectIdx = watch.IndexOf("ReconnectClaimedWatchAsync", watchAppearIdx, StringComparison.Ordinal);
+        var consumeIdx = watch.IndexOf("TryConsumeVendorConnectCrashMessage", watchAppearIdx, StringComparison.Ordinal);
+        Assert.True(consumeIdx > watchAppearIdx && reconnectIdx > consumeIdx,
+            "Watch readings must consume the crash probe before ReconnectClaimedWatchAsync.");
+    }
+
+    [Fact]
+    public void VendorNativeScanProbeMustNotStartPluginBleScan()
+    {
+        var text = ReadCoordinatorSource();
+        var methodIdx = text.IndexOf(
+            "public async Task ConnectViaVendorScanProbeAsync",
+            StringComparison.Ordinal);
+        Assert.True(methodIdx >= 0, "ConnectViaVendorScanProbeAsync not found.");
+        var nextMethodIdx = text.IndexOf(
+            "\n    public async Task ConnectAsync",
+            methodIdx + 1,
+            StringComparison.Ordinal);
+        Assert.True(nextMethodIdx > methodIdx, "Could not bound ConnectViaVendorScanProbeAsync.");
+        var body = text[methodIdx..nextMethodIdx];
+        Assert.DoesNotContain("StartScanningForDevicesAsync", body, StringComparison.Ordinal);
+        Assert.DoesNotContain("ConnectToDeviceAsync", body, StringComparison.Ordinal);
+        Assert.Contains("StartVendorScanAsync", body, StringComparison.Ordinal);
+        Assert.Contains("ConnectAndHandshakeAsync", body, StringComparison.Ordinal);
+        Assert.Contains("UseVeepooNativeScanProbe", body, StringComparison.Ordinal);
+        Assert.Contains("ReleaseActivePluginBleWithoutVendorHandoffAsync", body, StringComparison.Ordinal);
+
+        var devices = ReadDevicesViewModelSource();
+        Assert.Contains("ConnectViaVendorScanProbeAsync", devices, StringComparison.Ordinal);
+        Assert.Contains("VendorScanProbeCommand", devices, StringComparison.Ordinal);
+        Assert.Contains("ShowVendorScanProbe", devices, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void VendorScanProbeCommandMustRefreshCanExecuteAfterClaimLoads()
+    {
+        // Regression: 1.8.46 left VendorScanProbeCommand CanExecute stuck false after
+        // RegisteredDeviceId was set on Devices appear (Scan was refreshed; diagnostic was not).
+        var text = ReadDevicesViewModelSource();
+        Assert.Contains("CanVendorScanProbe", text, StringComparison.Ordinal);
+        Assert.Contains("RaiseBleCommandStates", text, StringComparison.Ordinal);
+
+        var claimSetterIdx = text.IndexOf("public Guid? RegisteredDeviceId", StringComparison.Ordinal);
+        Assert.True(claimSetterIdx >= 0);
+        var nextPropIdx = text.IndexOf("public string? ClaimedBluetoothMac", claimSetterIdx, StringComparison.Ordinal);
+        Assert.True(nextPropIdx > claimSetterIdx);
+        var claimBody = text[claimSetterIdx..nextPropIdx];
+        Assert.Contains("RaiseBleCommandStates", claimBody, StringComparison.Ordinal);
+        Assert.Contains("VendorScanProbeCommand", text[text.IndexOf("private void RaiseBleCommandStates", StringComparison.Ordinal)..], StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void VendorConnectMustLogConnectDeviceMarkersForCrashDiagnosis()
     {
         // Partner: Connect force-closed after Scan. Markers prove whether connectDevice returns.
@@ -107,6 +175,10 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("CONNECT-INVOKE", text, StringComparison.Ordinal);
         Assert.Contains("INIT-1", text, StringComparison.Ordinal);
         Assert.Contains("INIT-3", text, StringComparison.Ordinal);
+        Assert.Contains("SCAN-1", text, StringComparison.Ordinal);
+        Assert.Contains("SCAN-INVOKE", text, StringComparison.Ordinal);
+        Assert.Contains("SCAN-RESULT", text, StringComparison.Ordinal);
+        Assert.Contains("startScanDevice", text, StringComparison.Ordinal);
         Assert.Contains("getMangerInstance", text, StringComparison.Ordinal);
         Assert.Contains("HasBluetoothClient", text, StringComparison.Ordinal);
         Assert.Contains("WarmUpAsync", text, StringComparison.Ordinal);
@@ -162,6 +234,16 @@ public sealed class WearableBleCoordinatorWiringTests
                 "Devices",
                 "ViewModels",
                 "DevicesViewModel.cs")));
+
+    private static string ReadWatchReadingsViewModelSource() =>
+        File.ReadAllText(FindRepoFile(
+            Path.Combine(
+                "RaphCare.Mobile",
+                "Core",
+                "Features",
+                "Devices",
+                "ViewModels",
+                "WatchReadingsViewModel.cs")));
 
     private static string FindRepoFile(string relativePath)
     {
