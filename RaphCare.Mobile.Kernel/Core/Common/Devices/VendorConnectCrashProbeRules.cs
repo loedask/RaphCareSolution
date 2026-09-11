@@ -13,6 +13,7 @@ public static class VendorConnectCrashProbeRules
     public const string StepScanInvoke = "SCAN-INVOKE";
     public const string StepScanResult = "SCAN-RESULT";
     public const string StepScanStop = "SCAN-STOP";
+    public const string StepScanProxyFailed = "SCAN-PROXY-FAILED";
     public const string StepConnect1 = "CONNECT-1";
     public const string StepConnect2 = "CONNECT-2";
     public const string StepConnectInvoke = "CONNECT-INVOKE";
@@ -21,6 +22,8 @@ public static class VendorConnectCrashProbeRules
 
     /// <summary>
     /// Incomplete steps that mean the process likely died mid-vendor Scan or Connect.
+    /// Includes <see cref="StepScanStop"/>: stopping scan is housekeeping before the risky
+    /// <c>connectDevice</c> call, not proof Connect will survive.
     /// </summary>
     public static bool ShouldReportIncompleteStep(string? step) =>
         step is StepInit1
@@ -28,15 +31,18 @@ public static class VendorConnectCrashProbeRules
             or StepScan1
             or StepScanInvoke
             or StepScanResult
+            or StepScanStop
+            or StepScanProxyFailed
             or StepConnect1
             or StepConnect2
             or StepConnectInvoke;
 
     /// <summary>
     /// Successful markers clear the probe; do not report them after relaunch.
+    /// Do not clear on <see cref="StepScanStop"/> — that precedes <c>connectDevice</c>.
     /// </summary>
     public static bool ClearsProbe(string? step) =>
-        step is StepInit3 or StepScanStop or StepConnect3 or StepHandshakeOk;
+        step is StepInit3 or StepConnect3 or StepHandshakeOk;
 
     /// <summary>Patient-facing copy after relaunch. Includes the step code for engineers.</summary>
     public static string PatientMessageForIncompleteStep(string step)
@@ -50,6 +56,11 @@ public static class VendorConnectCrashProbeRules
             StepScanResult =>
                 "The app closed after the watch SDK found the watch (" + step
                 + "), before Connect finished.",
+            StepScanStop =>
+                "The app closed after stopping the watch SDK scan, before Connect finished ("
+                + step + ").",
+            StepScanProxyFailed =>
+                "The app closed while preparing the watch SDK scan listener (" + step + ").",
             StepConnect1 =>
                 "The app closed while checking the watch link (" + step + ").",
             StepConnect2 or StepConnectInvoke =>

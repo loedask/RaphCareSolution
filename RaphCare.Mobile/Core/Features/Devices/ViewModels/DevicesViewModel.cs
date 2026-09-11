@@ -875,7 +875,17 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         IsVendorScanProbeBusy = true;
         IsBusy = true;
         ErrorMessage = null;
-        StatusHint = "Vendor scan probe: scanning with the watch SDK only (not Plugin.BLE)…";
+        BusyMessage = "Vendor probe: starting…";
+        StatusHint = BusyMessage;
+
+        void OnVendorStep(object? sender, string step)
+        {
+            var text = "Vendor probe: " + step;
+            BusyMessage = text;
+            StatusHint = text;
+        }
+
+        _ble.VendorConnectStepChanged += OnVendorStep;
         try
         {
             await _ble.ConnectViaVendorScanProbeAsync(
@@ -899,6 +909,7 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         }
         finally
         {
+            _ble.VendorConnectStepChanged -= OnVendorStep;
             IsBusy = false;
             IsVendorScanProbeBusy = false;
             await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);

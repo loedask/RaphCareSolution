@@ -50,6 +50,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
         _connectStepProbe = connectStepProbe ?? throw new ArgumentNullException(nameof(connectStepProbe));
         _hband.VitalsUpdated += OnHbandVitalsUpdated;
         _hband.ErrorOccurred += OnHbandError;
+        _hband.ConnectStepChanged += OnHbandConnectStepChanged;
 
         _adapter.DeviceDisconnected += (_, e) =>
         {
@@ -123,6 +124,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     public event EventHandler? DiscoveredDevicesChanged;
     public event EventHandler<WearableVitalsSnapshot>? VitalsUpdated;
     public event EventHandler<string?>? ErrorOccurred;
+    public event EventHandler<string>? VendorConnectStepChanged;
 
     public async Task<PermissionStatus> RequestBluetoothPermissionsAsync(CancellationToken cancellationToken = default)
     {
@@ -1515,6 +1517,9 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     private void OnHbandError(object? sender, string? message) =>
         MainThread.BeginInvokeOnMainThread(() => ErrorOccurred?.Invoke(this, message));
 
+    private void OnHbandConnectStepChanged(object? sender, string step) =>
+        MainThread.BeginInvokeOnMainThread(() => VendorConnectStepChanged?.Invoke(this, step));
+
     private static string? TryReadMacAddress(IDevice device)
     {
 #if ANDROID
@@ -1613,6 +1618,7 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     {
         _hband.VitalsUpdated -= OnHbandVitalsUpdated;
         _hband.ErrorOccurred -= OnHbandError;
+        _hband.ConnectStepChanged -= OnHbandConnectStepChanged;
         _connectGate.Dispose();
     }
 }

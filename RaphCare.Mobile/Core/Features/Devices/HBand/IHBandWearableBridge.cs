@@ -26,6 +26,11 @@ public interface IHBandWearableBridge
     event EventHandler<VendorScanDeviceFoundEventArgs>? VendorScanDeviceFound;
 
     /// <summary>
+    /// Live breadcrumb steps (INIT/SCAN/CONNECT) for on-screen probe progress.
+    /// </summary>
+    event EventHandler<string>? ConnectStepChanged;
+
+    /// <summary>
     /// Load <c>VPOperateManager</c> and ensure Inuker <c>BluetoothClient</c> exists.
     /// Does not call <c>connectDevice</c>. Safe to run on Devices appear.
     /// </summary>

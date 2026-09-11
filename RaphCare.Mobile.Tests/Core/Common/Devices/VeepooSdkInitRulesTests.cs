@@ -58,4 +58,11 @@ public sealed class VeepooSdkInitRulesTests
             preferredMac: "AA:BB:CC:DD:EE:FF",
             nameLooksLikeE580Style: false));
     }
+
+    [Fact]
+    public void TimedStartScanOverloadStaysOffToAvoidDoubleStop()
+    {
+        // Timed startScanDevice(int, …) may schedule its own stop; keep untimed only.
+        Assert.False(VeepooSdkInitRules.ShouldUseTimedStartScanOverload);
+    }
 }

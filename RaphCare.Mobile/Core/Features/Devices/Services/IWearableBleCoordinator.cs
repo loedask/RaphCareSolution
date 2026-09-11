@@ -28,6 +28,9 @@ public interface IWearableBleCoordinator
     event EventHandler<WearableVitalsSnapshot>? VitalsUpdated;
     event EventHandler<string?>? ErrorOccurred;
 
+    /// <summary>Live vendor Scan/Connect breadcrumb steps during a diagnostic probe.</summary>
+    event EventHandler<string>? VendorConnectStepChanged;
+
     Task<PermissionStatus> RequestBluetoothPermissionsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>Check Nearby devices / Bluetooth permission without showing a dialog.</summary>

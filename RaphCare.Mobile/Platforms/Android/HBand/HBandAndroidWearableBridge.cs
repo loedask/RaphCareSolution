@@ -48,6 +48,15 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         {
             Log.Warn(Tag, "Connect step probe mark failed: " + ex.Message);
         }
+
+        try
+        {
+            MainThread.BeginInvokeOnMainThread(() => ConnectStepChanged?.Invoke(this, step));
+        }
+        catch (Exception ex)
+        {
+            Log.Warn(Tag, "Connect step UI notify failed: " + ex.Message);
+        }
     }
 
     public bool IsAvailable
@@ -99,6 +108,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
     public event EventHandler<WearableVitalsSnapshot>? VitalsUpdated;
     public event EventHandler<string?>? ErrorOccurred;
     public event EventHandler<VendorScanDeviceFoundEventArgs>? VendorScanDeviceFound;
+    public event EventHandler<string>? ConnectStepChanged;
 
     private void RaiseError(string? message) =>
         MainThread.BeginInvokeOnMainThread(() => ErrorOccurred?.Invoke(this, message));
@@ -122,38 +132,66 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         await MainThread.InvokeOnMainThreadAsync(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            MarkConnectStep(VendorConnectCrashProbeRules.StepScan1);
-            Log.Info(Tag, "SCAN-1 preparing startScanDevice");
-
-            var searchProxy = CreateProxy(
-                "com.inuker.bluetooth.library.search.response.SearchResponse",
-                (method, args) =>
-                {
-                    try
-                    {
-                        if (method.Name == "onDeviceFounded" && args.Length > 0 && args[0] is not null)
-                            RaiseVendorScanDeviceFound(args[0]!);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Warn(Tag, "onDeviceFounded handler: " + ex.Message);
-                    }
-
-                    return null;
-                },
-                fallbackInterfaceNames:
-                [
-                    "com.veepoo.protocol.listener.base.IScanDeviceListener",
-                    "com.veepoo.protocol.listener.data.IScanDeviceListener"
-                ]);
-
-            MarkConnectStep(VendorConnectCrashProbeRules.StepScanInvoke);
-            Log.Info(Tag, "SCAN-INVOKE calling startScanDevice");
-            if (!TryInvoke(manager, "startScanDevice", searchProxy)
-                && !TryInvoke(manager, "startScanDevice", Integer.ValueOf(10_000), searchProxy))
+            try
             {
+                MarkConnectStep(VendorConnectCrashProbeRules.StepScan1);
+                Log.Info(Tag, "SCAN-1 preparing startScanDevice");
+
+                var searchProxy = CreateProxy(
+                    "com.inuker.bluetooth.library.search.response.SearchResponse",
+                    (method, args) =>
+                    {
+                        try
+                        {
+                            if (method.Name == "onDeviceFounded" && args.Length > 0 && args[0] is not null)
+                                RaiseVendorScanDeviceFound(args[0]!);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Warn(Tag, "onDeviceFounded handler: " + ex.Message);
+                        }
+
+                        return null;
+                    },
+                    fallbackInterfaceNames:
+                    [
+                        "com.veepoo.protocol.listener.base.IScanDeviceListener",
+                        "com.veepoo.protocol.listener.data.IScanDeviceListener"
+                    ]);
+
+                MarkConnectStep(VendorConnectCrashProbeRules.StepScanInvoke);
+                Log.Info(Tag, "SCAN-INVOKE calling startScanDevice");
+                var started = TryInvoke(manager, "startScanDevice", searchProxy);
+                if (!started
+                    && VeepooSdkInitRules.ShouldUseTimedStartScanOverload
+                    && TryInvoke(manager, "startScanDevice", Integer.ValueOf(10_000), searchProxy))
+                {
+                    started = true;
+                }
+
+                if (!started)
+                {
+                    throw new InvalidOperationException(
+                        "Veepoo startScanDevice was not found or failed to invoke.");
+                }
+            }
+            catch (Throwable t)
+            {
+                // Mirror connect-path defense: an uncaught Throwable on the main looper
+                // shows as "keeps stopping" even when it is a plain Java exception.
+                MarkConnectStep(VendorConnectCrashProbeRules.StepScanProxyFailed);
+                Log.Error(Tag, "SCAN-PROXY-FAILED: " + t);
                 throw new InvalidOperationException(
-                    "Veepoo startScanDevice was not found or failed to invoke.");
+                    "Watch SDK scan setup failed: " + (t.Message ?? t.ToString()),
+                    t);
+            }
+            catch (Exception ex)
+            {
+                MarkConnectStep(VendorConnectCrashProbeRules.StepScanProxyFailed);
+                Log.Error(Tag, "SCAN-PROXY-FAILED: " + ex);
+                throw new InvalidOperationException(
+                    "Watch SDK scan setup failed: " + ex.Message,
+                    ex);
             }
         }).ConfigureAwait(false);
     }
@@ -226,6 +264,9 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             throw new ArgumentException("MAC address is required.", nameof(macAddress));
 
         cancellationToken.ThrowIfCancellationRequested();
+        // Mark before EnsureInitialized so a crash during init after vendor scan still
+        // leaves CONNECT-1 (SCAN-STOP no longer clears the probe file).
+        MarkConnectStep(VendorConnectCrashProbeRules.StepConnect1);
         // Only hop to the UI thread for short JNI calls. Awaiting connect/notify callbacks
         // while occupying the main looper deadlocks Inuker (ANR / process kill on Measure).
         await MainThread.InvokeOnMainThreadAsync(EnsureInitialized).ConfigureAwait(false);
@@ -945,11 +986,22 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         string[]? fallbackInterfaceNames = null)
     {
         Class? iface = null;
+        var tried = new List<string>();
         foreach (var name in new[] { primaryInterface }.Concat(fallbackInterfaceNames ?? []))
         {
+            tried.Add(name);
             try
             {
-                iface = LoadSdkClass(name);
+                var loaded = LoadSdkClass(name);
+                // Proxy.NewProxyInstance only accepts Java interfaces. A same-named
+                // abstract class that merely loads must not defeat the fallback list.
+                if (!loaded.IsInterface)
+                {
+                    Log.Warn(Tag, "CreateProxy skip non-interface: " + name);
+                    continue;
+                }
+
+                iface = loaded;
                 break;
             }
             catch (Throwable)
@@ -959,7 +1011,12 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
         }
 
         if (iface is null)
-            throw new InvalidOperationException($"Interface not found: {primaryInterface}");
+            throw new InvalidOperationException(
+                "No proxyable Java interface found for "
+                + primaryInterface
+                + " (tried: "
+                + string.Join(", ", tried)
+                + ").");
 
         var loader = iface.ClassLoader ?? throw new InvalidOperationException("Missing class loader.");
         var invocationHandler = new HBandInvocationHandler(handler);

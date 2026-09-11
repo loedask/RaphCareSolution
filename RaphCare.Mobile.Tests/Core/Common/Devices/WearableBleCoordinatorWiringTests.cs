@@ -136,6 +136,26 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("ConnectViaVendorScanProbeAsync", devices, StringComparison.Ordinal);
         Assert.Contains("VendorScanProbeCommand", devices, StringComparison.Ordinal);
         Assert.Contains("ShowVendorScanProbe", devices, StringComparison.Ordinal);
+        Assert.Contains("VendorConnectStepChanged", devices, StringComparison.Ordinal);
+        Assert.Contains("BusyMessage", devices, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void VendorScanCreateProxyMustRequireJavaInterface()
+    {
+        // Defense: Proxy.NewProxyInstance only accepts interfaces. A loaded abstract class
+        // must not lock CreateProxy before fallbacks (see docs/12 after 1.8.47 crash review).
+        var text = File.ReadAllText(FindRepoFile(
+            Path.Combine(
+                "RaphCare.Mobile",
+                "Platforms",
+                "Android",
+                "HBand",
+                "HBandAndroidWearableBridge.cs")));
+        Assert.Contains("IsInterface", text, StringComparison.Ordinal);
+        Assert.Contains("SCAN-PROXY-FAILED", text, StringComparison.Ordinal);
+        Assert.Contains("ShouldUseTimedStartScanOverload", text, StringComparison.Ordinal);
+        Assert.Contains("ConnectStepChanged", text, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -57,4 +57,11 @@ public static class VeepooSdkInitRules
         (preferredMac is not null
          && BluetoothMacNormalizer.EqualsNormalized(deviceMac, preferredMac))
         || nameLooksLikeE580Style;
+
+    /// <summary>
+    /// Prefer the untimed <c>startScanDevice(SearchResponse)</c> overload. The timed
+    /// <c>startScanDevice(int, …)</c> form may schedule its own stop, which can race with
+    /// an explicit <c>stopScanDevice</c> from the coordinator.
+    /// </summary>
+    public static bool ShouldUseTimedStartScanOverload => false;
 }

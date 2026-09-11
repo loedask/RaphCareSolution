@@ -71,7 +71,15 @@ We found no public MAUI app that mixes **Plugin.BLE Scan** with Veepoo `connectD
 
 Crash capture (when USB works): `scripts/Capture-RaphCareAndroidLogcat.ps1`. Prefer wireless adb when Huawei MTP is flaky. Primary signal: on-device breadcrumb (`IVendorConnectStepProbe` / `FileVendorConnectStepProbe`) on Devices **or** Watch readings after relaunch. Secondary: tombstone / logcat.
 
-Stable Connect checkpoint: **1.8.42**. Hybrid exclusive probes: **1.8.43** through **1.8.45**. Single-stack scan probe: **1.8.46** (button CanExecute fix **1.8.47**).
+Stable Connect checkpoint: **1.8.42**. Hybrid exclusive probes: **1.8.43** through **1.8.45**. Single-stack scan probe: **1.8.46** through **1.8.48** (1.8.48 fixes SCAN-STOP clearing the breadcrumb and adds live step text).
+
+### Probe 1.8.48 notes
+
+- `ClearsProbe` no longer includes `SCAN-STOP` (that step precedes `connectDevice`).
+- `CreateProxy` skips non-interface Java types; scan setup is try/caught with `SCAN-PROXY-FAILED`.
+- Untimed `startScanDevice(SearchResponse)` only (`ShouldUseTimedStartScanOverload` false).
+- Devices diagnostic shows live step codes on the busy overlay via `ConnectStepChanged`.
+- javap on bundled AARs: `SearchResponse` is an **interface** in this package (so the abstract-class proxy theory does not apply to this AAR, but the IsInterface guard remains).
 
 ### Follow-up: Veepoo single-stack scan probe (1.8.46)
 

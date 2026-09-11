@@ -159,7 +159,7 @@ Design lock and screen map: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobi
 | Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
-| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear; crash breadcrumb consumed on Devices and Watch readings (pauses auto-reconnect); manual Scan keeps exclusive Veepoo alive and only releases Plugin.BLE GATT (no Scan auto-Connect); daily Connect is Plugin.BLE (1.8.42); probe 1.8.46/47 engineer Veepoo-native scan→connect (diagnostic button CanExecute refresh fixed in 1.8.47); offline outbox retries |
+| Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear; crash breadcrumb consumed on Devices and Watch readings (pauses auto-reconnect); SCAN-STOP no longer clears breadcrumb before connectDevice (1.8.48); live vendor-probe step on Loading overlay; daily Connect is Plugin.BLE (1.8.42); probe UseVeepooNativeScanProbe; offline outbox retries |
 | Insurance | [x] | [x] | [x] | Hub + add / detail |
 | Billing | [x] | [x] | [x] | Hub + add payment method |
 | Family members | [x] | [x] | [x] | List / add / detail |
