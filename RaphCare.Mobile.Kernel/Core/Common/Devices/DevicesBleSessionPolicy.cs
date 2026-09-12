@@ -133,11 +133,11 @@ public static class DevicesBleSessionPolicy
 
     /// <summary>
     /// When true, call the 3-arg wiki form first. javap shows that overload only forwards to
-    /// the synchronized 4-arg <c>connectDevice</c> with device name <c>"none"</c>, so it is
-    /// not a safer alternate path. Keep false: use mac+name with the advertised watch name
-    /// (HBand sample style) when exclusive Connect is re-enabled.
+    /// the synchronized 4-arg <c>connectDevice</c> with device name <c>"none"</c>. Probe
+    /// <c>1.8.53</c>: true for one A/B after SCAN-KEEP still died at WAIT-CONNECT (async GATT
+    /// phase may still differ between overloads).
     /// </summary>
-    public static bool PreferOfficialMacOnlyConnectDeviceOverload => false;
+    public static bool PreferOfficialMacOnlyConnectDeviceOverload => true;
 
     /// <summary>
     /// After Plugin.BLE <c>StopScan</c> or Veepoo <c>stopScanDevice</c>, wait before

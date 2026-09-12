@@ -20,10 +20,11 @@ public sealed class VeepooSdkInitRulesTests
     }
 
     [Fact]
-    public void MacOnlyConnectDeviceOverloadIsNotASaferPath()
+    public void MacOnlyConnectDeviceOverloadFlagSelectsThreeArgPath()
     {
         // javap: 3-arg connectDevice forwards to 4-arg with name "none".
-        Assert.False(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
+        // Probe 1.8.53 turns PreferOfficialMacOnly on for WAIT-CONNECT A/B.
+        Assert.True(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
         Assert.True(VeepooSdkInitRules.PreferMacPlusNameConnectDeviceOverload(
             preferOfficialMacOnlyConnectDeviceOverload: false));
         Assert.False(VeepooSdkInitRules.PreferMacPlusNameConnectDeviceOverload(

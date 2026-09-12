@@ -130,13 +130,14 @@ public sealed class DevicesBleSessionPolicyTests
     }
 
     [Fact]
-    public void Probe1846UsesVendorNativeScanWithoutHybridExclusiveConnect()
+    public void Probe1853UsesMacOnlyConnectDeviceOverloadForWaitConnectAb()
     {
-        // Hybrid exclusive Connect stayed off (five crashes). New probe is Veepoo scan only.
+        // Hybrid exclusive Connect stayed off. Vendor scan probe stays on.
+        // 1.8.53: A/B mac-only connectDevice after SCAN-KEEP still died at WAIT-CONNECT.
         Assert.False(DevicesBleSessionPolicy.PreferExclusiveVendorSession);
         Assert.True(DevicesBleSessionPolicy.UseVeepooNativeScanProbe);
         Assert.True(DevicesBleSessionPolicy.EnableVendorLiveMeasure);
-        Assert.False(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
+        Assert.True(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
         Assert.True(DevicesBleSessionPolicy.WarmUpVendorSdkOnDevicesAppear);
         Assert.True(DevicesBleSessionPolicy.VendorNativeScanTimeout >= TimeSpan.FromSeconds(10));
     }

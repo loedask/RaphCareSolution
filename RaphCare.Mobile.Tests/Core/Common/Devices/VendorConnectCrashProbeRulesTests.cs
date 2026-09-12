@@ -6,7 +6,9 @@ namespace RaphCare.Mobile.Tests.Core.Common.Devices;
 public sealed class VendorConnectCrashProbeRulesTests
 {
     [Theory]
+    [InlineData(VendorConnectCrashProbeRules.StepScanKeep)]
     [InlineData(VendorConnectCrashProbeRules.StepSettle1)]
+    [InlineData(VendorConnectCrashProbeRules.StepConnectMacOnly)]
     [InlineData(VendorConnectCrashProbeRules.StepConnect2)]
     [InlineData(VendorConnectCrashProbeRules.StepConnectInvoke)]
     [InlineData(VendorConnectCrashProbeRules.StepConnect3)]

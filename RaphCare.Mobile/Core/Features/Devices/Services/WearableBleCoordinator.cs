@@ -529,14 +529,11 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                 }
 
                 var (mac, name) = await matchTcs.Task.ConfigureAwait(false);
-                await _hband.StopVendorScanAsync(cancellationToken).ConfigureAwait(false);
 
-                // Phone trail 1.8.50 died at WAIT-CONNECT when connectDevice ran immediately
-                // after stopScanDevice. Same settle used after Plugin.BLE StopScan.
-                _connectStepProbe.Mark(VendorConnectCrashProbeRules.StepSettle1);
-                await SettleAfterScanStopBeforeVendorConnectAsync(cancellationToken)
-                    .ConfigureAwait(false);
-
+                // 1.8.50/51: stopScan (+ settle) then connectDevice still died at WAIT-CONNECT.
+                // Probe 1.8.52: keep startScanDevice warm through connectDevice so Inuker can
+                // retain the scan-cache entry for the GATT callback path. finally still stops.
+                _connectStepProbe.Mark(VendorConnectCrashProbeRules.StepScanKeep);
                 await _hband.ConnectAndHandshakeAsync(
                         mac,
                         ResolveClaimedDeviceName(name ?? preferredDeviceName),

@@ -407,6 +407,8 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         // If logcat ends at CONNECT-2 with no CONNECT-3, connectDevice aborted the process.
                         Log.Info(Tag, $"CONNECT-2 calling connectDevice: {macAddress}, {safeName}");
                         MarkConnectStep(VendorConnectCrashProbeRules.StepConnectInvoke);
+                        if (DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload)
+                            MarkConnectStep(VendorConnectCrashProbeRules.StepConnectMacOnly);
                         var connected = TryInvokeConnectDevice(manager, mac, name, connectProxy, notifyProxy);
                         Log.Info(Tag, $"CONNECT-3 connectDevice returned: {connected}");
                         MarkConnectStep(VendorConnectCrashProbeRules.StepConnect3);

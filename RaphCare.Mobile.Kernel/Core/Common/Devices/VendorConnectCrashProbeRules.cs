@@ -14,10 +14,12 @@ public static class VendorConnectCrashProbeRules
     public const string StepScanResult = "SCAN-RESULT";
     public const string StepScanStop = "SCAN-STOP";
     public const string StepScanProxyFailed = "SCAN-PROXY-FAILED";
+    public const string StepScanKeep = "SCAN-KEEP";
     public const string StepSettle1 = "SETTLE-1";
     public const string StepConnect1 = "CONNECT-1";
     public const string StepConnect2 = "CONNECT-2";
     public const string StepConnectInvoke = "CONNECT-INVOKE";
+    public const string StepConnectMacOnly = "CONNECT-MACONLY";
     public const string StepConnect3 = "CONNECT-3";
     public const string StepWaitConnect = "WAIT-CONNECT";
     public const string StepWaitNotify = "WAIT-NOTIFY";
@@ -40,10 +42,12 @@ public static class VendorConnectCrashProbeRules
             or StepScanResult
             or StepScanStop
             or StepScanProxyFailed
+            or StepScanKeep
             or StepSettle1
             or StepConnect1
             or StepConnect2
             or StepConnectInvoke
+            or StepConnectMacOnly
             or StepConnect3
             or StepWaitConnect
             or StepWaitNotify
@@ -75,6 +79,8 @@ public static class VendorConnectCrashProbeRules
                 + step + ").",
             StepScanProxyFailed =>
                 "The app closed while preparing the watch SDK scan listener (" + step + ").",
+            StepScanKeep =>
+                "The app closed while connecting with the watch SDK scan still running (" + step + ").",
             StepSettle1 =>
                 "The app closed while waiting for Bluetooth to settle after scan (" + step + ").",
             StepConnect1 =>
@@ -82,6 +88,8 @@ public static class VendorConnectCrashProbeRules
             StepConnect2 or StepConnectInvoke =>
                 "The app closed while connecting to the watch through the watch SDK (" + step
                 + "). That usually means the native connect call aborted.",
+            StepConnectMacOnly =>
+                "The app closed while connecting with the mac-only watch SDK overload (" + step + ").",
             StepConnect3 =>
                 "The app closed after the watch SDK connect call returned, before the watch finished linking ("
                 + step + ").",
