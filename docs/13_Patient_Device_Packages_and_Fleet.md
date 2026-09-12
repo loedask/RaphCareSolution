@@ -50,7 +50,7 @@ Patient falls or triggers SOS
 
 - **RaphCare SafeCare Plan** (or “Emergency Monitoring Package”)  
 - Includes: Y6 Pro emergency watch, SOS monitoring, fall detection, location tracking, emergency call routing.
-- **List prices** (South Africa and Congo): [`partner-updates/raphcare-price-list-v1.pdf`](partner-updates/raphcare-price-list-v1.pdf) (edit under [`partner-updates/sources/`](partner-updates/sources/)).
+- **List prices** (South Africa and Congo): [`partner-updates/raphcare-price-list-v2.pdf`](partner-updates/raphcare-price-list-v2.pdf) (edit under [`partner-updates/sources/`](partner-updates/sources/)).
 - **Clinic visibility:** Admin patient chart (`/admin/hospitals/{id}/patients/{patientId}`) and hospital **Devices** tab list emergency events from `GET api/clinical/patients/{patientId}/emergency-events` and `GET api/clinical/emergency-events` (requires `X-Clinic-Id`).
 
 ### Engineering status in this repository
@@ -87,7 +87,7 @@ Sensor reading on device
 
 - **RaphCare Health Track Plan** (or “Basic Health Monitoring Package”)  
 - Includes: E585 watch, heart rate, oxygen, and activity monitoring, plus monthly remote check-ins (example).
-- **List prices** (South Africa and Congo): [`partner-updates/raphcare-price-list-v1.pdf`](partner-updates/raphcare-price-list-v1.pdf) (edit under [`partner-updates/sources/`](partner-updates/sources/)).
+- **List prices** (South Africa and Congo): [`partner-updates/raphcare-price-list-v2.pdf`](partner-updates/raphcare-price-list-v2.pdf) (edit under [`partner-updates/sources/`](partner-updates/sources/)).
 
 ### Engineering status in this repository
 
@@ -134,4 +134,4 @@ Same as **E585** for app and API; filter and docs treat **E580** and **E585** as
 | **12** | HBand SDK repos, optional AARs, binding-project next step |
 | **14** | Wearable capability catalog (features survive SKU changes) |
 | **10** | Twilio SMS (relevant for alerting workflows) |
-| Price list | South Africa and Congo starting prices: [`partner-updates/raphcare-price-list-v1.pdf`](partner-updates/raphcare-price-list-v1.pdf) |
+| Price list | South Africa and Congo starting prices: [`partner-updates/raphcare-price-list-v2.pdf`](partner-updates/raphcare-price-list-v2.pdf) |

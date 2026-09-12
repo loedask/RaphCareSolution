@@ -6,10 +6,11 @@ Edit notes here. Partner-facing PDFs are written one level up in `docs/partner-u
 
 | Stem | Purpose |
 |------|---------|
-| `partner-update-YYYY-MM-DD` | Dated product / web / API partner note |
+| `partner-update-YYYY-MM-DD` | Dated product, web, and API partner note |
 | `raphcare-feature-catalog-v1` | Shareable list of what the product does (Portal for hospitals, Ops for platform owners, Mobile for patients) |
-| `raphcare-price-list-v1` | Price list PDF |
+| `raphcare-price-list-v2` | Price list PDF (current; adds Practice for solo GPs) |
 | `raphcare-demo-accounts-v2` | Staging demo logins sheet (current; keep private) |
+| `archives/raphcare-price-list-v1` | Prior price list (no Practice tier) |
 | `archives/raphcare-demo-accounts-v1` | Prior demo accounts sheet (Aug 2026) |
 
 Each stem has `.md`, `.config.json`, and often its own `.pdf.css` (dated notes share `partner-update.pdf.css`).
@@ -20,7 +21,7 @@ When a new version should replace the current sheet:
 
 1. Move the previous stem’s `.md`, `.config.json`, and `.pdf.css` into `sources/archives/`.
 2. Move the previous `.pdf` into `docs/partner-updates/archives/`.
-3. Create the next stem in `sources/` (for example `raphcare-feature-catalog-v2`) with updated subtitle / `document_title`.
+3. Create the next stem in `sources/` (for example `raphcare-feature-catalog-v2`) with updated subtitle and `document_title`.
 4. Export the new stem to the folder root. Export archived stems with `-Archive` if you need to rebuild an old PDF.
 
 Dated partner updates keep the date in the stem instead of a `vN` suffix.

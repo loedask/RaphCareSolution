@@ -17,7 +17,7 @@ This is the shareable list of what RaphCare does. It is grouped by who uses it:
 It is not a progress board. Completion % lives on the partner status sheet. Use this catalog when someone asks what is in the product.
 
 <div class="note">
-<p><strong>How to sell vs what you can demo.</strong> Staging shows the full hospital workspace on the Portal so a walkthrough is easy. Commercially, Clinic is the lighter outpatient set. Hospital adds beds, the counter, casualty, theatre, and the rest of the stay. The Portal headings below follow that split. Ops is not sold as a hospital plan line; it is how RaphCare (or a partner running the platform) stocks and assigns watches.</p>
+<p><strong>How to sell vs what you can demo.</strong> Staging shows the full hospital workspace on the Portal so a walkthrough is easy. Commercially, Practice is for a solo GP or small rooms practice. Clinic is the lighter outpatient set with a fuller front desk team. Hospital adds beds, the counter, casualty, theatre, and the rest of the stay. The Portal headings below follow the Clinic and Hospital split. Ops is not sold as a hospital plan line; it is how RaphCare (or a partner running the platform) stocks and assigns watches.</p>
 </div>
 
 ## How to read status
@@ -53,7 +53,7 @@ Patients can sign in on the web too, but they only get a short welcome. The full
 | Languages | English, French, Lingala, and Swahili on the website. | Ready |
 | Staff use on a phone | Same Portal website on a small screen. Top bar, forms, and tables tighten for phone and tablet. Staff can add a home-screen shortcut from the browser. Not a separate staff app. | Ready |
 
-### On every site (Clinic and Hospital)
+### On every site (Practice, Clinic, and Hospital)
 
 | Feature | What it does | Status |
 |---------|--------------|--------|
@@ -191,14 +191,15 @@ Ideas for after the Hospital plan board. AI would still only draft or suggest. A
 
 ---
 
-## Clinic vs Hospital (commercial reminder)
+## Practice, Clinic, and Hospital (commercial reminder)
 
 | Plan | What they get |
 |------|----------------|
+| Practice | One solo GP or small rooms practice. Outpatient admin, appointments, visits, patient chart. Up to 3 staff. No beds or hospital floor tools. |
 | Clinic | One site. Outpatient admin, appointments, visits, patient chart. Up to 8 staff. |
 | Hospital | Everything in Clinic, plus beds, ward notes, collection counter, waiting screens, discharge invoice, occupancy, casualty, theatre, outbound referrals, nurse job, roster, return visit at discharge, and AI discharge draft. Up to 25 staff. |
 | Network | Several sites. Quoted. Shared patient index and reporting as we switch that on. |
 
-Patients use the phone app. Hospital staff use the Portal. Platform owners use Ops for wearable fleet. There is no clinician phone app in this catalog.
+Patients use the phone app. Practice and hospital staff use the Portal. Platform owners use Ops for wearable fleet. There is no clinician phone app in this catalog. RaphCare does not place shared doctors into hospital patient lists.
 
-Prices sit on the separate price list.
+Prices sit on the separate price list (v2).
