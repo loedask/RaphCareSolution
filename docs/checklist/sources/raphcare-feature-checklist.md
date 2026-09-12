@@ -28,7 +28,7 @@ Each step ends with a short status note and its section %. Recalculate when you 
 
 Backend (API + Application + Persistence) -> `RaphCare.Client` -> Web / Mobile. Do not duplicate API contracts inside Mobile.
 
-Last reviewed: 2026-09-11
+Last reviewed: 2026-09-12
 
 ---
 
@@ -303,6 +303,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 ### Care loops and clinic ops
 
+- [ ] Consult waiting display for Practice and Clinic `(optional / later)`: receptionist or doctor calls the next appointment into the consult room; TV or tablet shows ticket or short code, not the name (separate from pharmacy pickup waiting screen)
 - [ ] Open-loop / care-gap board on hospital home `(optional / later)`: overdue referrals, missed return visits, uncollected medicines, open labs waiting on results
 - [ ] AI ops suggestions on that board `(optional / later)`: propose next staff actions; human confirms (Care GP / Plena / Beacon style)
 - [ ] Appointment and pickup reminder agent `(optional / later)`: in-app notice first; SMS or voice when configured (Evergrove / Avoca style)
@@ -336,7 +337,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 ### Step 6 status
 
-**Roadmap only (not in overall %).** Prefer ship order when you schedule: (1) visit/ward note draft, (2) care-gap board, (3) patient companion on labs and vitals, (4) reminder agent, (5) casualty triage suggestion, then optional imaging plug-in.
+**Roadmap only (not in overall %).** Prefer ship order when you schedule: (1) consult waiting display for Practice and Clinic, (2) visit/ward note draft, (3) care-gap board, (4) patient companion on labs and vitals, (5) reminder agent, (6) casualty triage suggestion, then optional imaging plug-in.
 
 ---
 

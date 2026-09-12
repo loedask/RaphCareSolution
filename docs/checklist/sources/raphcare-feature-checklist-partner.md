@@ -17,7 +17,7 @@ This is the **simple** status board. Same topics as the builder checklist, witho
 
 Each section shows its % in the heading. Numbers stay in sync when status changes.
 
-Last reviewed: 2026-09-11
+Last reviewed: 2026-09-12
 
 ---
 
@@ -168,6 +168,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 
 | Area | Status | What you could do later |
 |------|--------|-------------------------|
+| Consult waiting display | Later | When the doctor is free, receptionist or doctor calls the next person into the room. A TV or tablet in reception shows a ticket or short code, not the name. For Practice and Clinic. Separate from the pharmacy pickup waiting screen. |
 | Open work board | Later | One place for overdue referrals, missed return visits, medicines not yet collected, and labs still waiting |
 | Smart suggestions on that board | Later | Soft prompts for what staff might do next. Staff confirm. |
 | Visit or ward note draft with AI | Later | Same idea as the discharge draft: start text from vitals and stay facts. Staff edit. |
@@ -187,7 +188,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 | Deeper mental-health note help | Done | Staff can draft an AI therapy note from scores on the patient chart when the hospital turns that on. |
 | US insurance prior auth and claims | Not for this product | Out of scope for RaphCare. |
 
-**Bottom line (later):** a backlog for the next product wave. Prefer order when you schedule: visit or ward note draft, open work board, plain-language labs help, reminders, then casualty priority hint.
+**Bottom line (later):** a backlog for the next product wave. Prefer order when you schedule: consult waiting display for Practice and Clinic, visit or ward note draft, open work board, plain-language labs help, reminders, then casualty priority hint.
 
 ---
 
