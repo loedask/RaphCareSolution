@@ -6,8 +6,14 @@ namespace RaphCare.Mobile.Tests.Core.Common.Devices;
 public sealed class VendorConnectCrashProbeRulesTests
 {
     [Theory]
+    [InlineData(VendorConnectCrashProbeRules.StepSettle1)]
     [InlineData(VendorConnectCrashProbeRules.StepConnect2)]
     [InlineData(VendorConnectCrashProbeRules.StepConnectInvoke)]
+    [InlineData(VendorConnectCrashProbeRules.StepConnect3)]
+    [InlineData(VendorConnectCrashProbeRules.StepWaitConnect)]
+    [InlineData(VendorConnectCrashProbeRules.StepWaitNotify)]
+    [InlineData(VendorConnectCrashProbeRules.StepPwd1)]
+    [InlineData(VendorConnectCrashProbeRules.StepPerson1)]
     [InlineData(VendorConnectCrashProbeRules.StepInit1)]
     [InlineData(VendorConnectCrashProbeRules.StepConnect1)]
     [InlineData(VendorConnectCrashProbeRules.StepScan1)]
@@ -25,13 +31,25 @@ public sealed class VendorConnectCrashProbeRulesTests
     }
 
     [Theory]
-    [InlineData(VendorConnectCrashProbeRules.StepConnect3)]
     [InlineData(VendorConnectCrashProbeRules.StepHandshakeOk)]
     [InlineData(VendorConnectCrashProbeRules.StepInit3)]
     public void SuccessfulStepsClearProbeAndAreNotReported(string step)
     {
         Assert.True(VendorConnectCrashProbeRules.ClearsProbe(step));
         Assert.False(VendorConnectCrashProbeRules.ShouldReportIncompleteStep(step));
+    }
+
+    [Fact]
+    public void Connect3MustNotClearProbeRegressionFromPhoneTrail1849()
+    {
+        // Phone trail reached CONNECT-3 then relaunched without HANDSHAKE-OK. Clearing on
+        // CONNECT-3 hid the incomplete step after relaunch.
+        Assert.False(VendorConnectCrashProbeRules.ClearsProbe(VendorConnectCrashProbeRules.StepConnect3));
+        Assert.True(VendorConnectCrashProbeRules.ShouldReportIncompleteStep(
+            VendorConnectCrashProbeRules.StepConnect3));
+        var message = VendorConnectCrashProbeRules.PatientMessageForIncompleteStep(
+            VendorConnectCrashProbeRules.StepConnect3);
+        Assert.Contains("connect call returned", message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

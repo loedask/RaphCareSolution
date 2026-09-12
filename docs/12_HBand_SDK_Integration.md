@@ -71,7 +71,14 @@ We found no public MAUI app that mixes **Plugin.BLE Scan** with Veepoo `connectD
 
 Crash capture (when USB works): `scripts/Capture-RaphCareAndroidLogcat.ps1`. Prefer wireless adb when Huawei MTP is flaky. Primary signal: on-device breadcrumb (`IVendorConnectStepProbe` / `FileVendorConnectStepProbe`) on Devices **or** Watch readings after relaunch. Secondary: tombstone / logcat.
 
-Stable Connect checkpoint: **1.8.42**. Hybrid exclusive probes: **1.8.43** through **1.8.45**. Single-stack scan probe: **1.8.46** through **1.8.48** (1.8.48 fixes SCAN-STOP clearing the breadcrumb and adds live step text).
+Stable Connect checkpoint: **1.8.42**. Hybrid exclusive probes: **1.8.43** through **1.8.45**. Single-stack scan probe: **1.8.46** through **1.8.51**. Phone trail on **1.8.49** proved vendor scan and `connectDevice` both complete; **1.8.50** localized death to `WAIT-CONNECT` (awaiting `IConnectResponse`). **1.8.51** adds post-`stopScanDevice` settle (`SETTLE-1`, 1.5s) on the vendor-scan probe path and pins connect/notify proxies until handshake.
+
+### Probe 1.8.49 / 1.8.50 / 1.8.51 notes
+
+- Append-only on-phone trail (`raphcare-vendor-probe-log.txt`) under app external files + Share from Devices.
+- Phone log (2026-09-12): `SCAN-*` → `CONNECT-INVOKE` → `CONNECT-3` → `WAIT-CONNECT`, then process die (red UI).
+- `ClearsProbe` is only `INIT-3` and `HANDSHAKE-OK` (not `CONNECT-3`).
+- Vendor-scan probe now calls `SettleAfterScanStopBeforeVendorConnectAsync` before `ConnectAndHandshakeAsync`.
 
 ### Probe 1.8.48 notes
 
@@ -83,10 +90,10 @@ Stable Connect checkpoint: **1.8.42**. Hybrid exclusive probes: **1.8.43** throu
 
 ### Follow-up: Veepoo single-stack scan probe (1.8.46)
 
-1. Install `RaphCare-v1.8.46+58.apk`. Keep `RaphCare-v1.8.42+54.apk` for rollback.
+1. Install `RaphCare-v1.8.51+63.apk`. Keep `RaphCare-v1.8.42+54.apk` for rollback.
 2. Do **not** run Plugin.BLE Scan in the same session as the diagnostic.
 3. Devices → **Try vendor scan (diagnostic)**.
-4. If the process dies, reopen Devices or Watch readings and read the red step (`SCAN-*` or `CONNECT-*`).
+4. If the process dies, reopen Devices or Watch readings and read the red step (`SCAN-*`, `SETTLE-1`, `CONNECT-*`, `WAIT-*`, `PWD-1`, or `PERSON-1`). Share the probe log.
 5. If Connect survives, try Measure on Watch readings.
 6. Report the step code or Measure result; turn `UseVeepooNativeScanProbe` off for partner builds until Scan→Connect is proven.
 
@@ -96,7 +103,9 @@ Inspect log / breadcrumb for:
 
 1. `SCAN-INVOKE` without `SCAN-RESULT` → native scan abort.
 2. `CONNECT-2` / `CONNECT-INVOKE` without `CONNECT-3` → `connectDevice` abort after vendor scan.
-3. `HANDSHAKE-OK` then Measure sample → single-stack path works.
+3. `CONNECT-3` / `WAIT-CONNECT` without `WAIT-NOTIFY` / `HANDSHAKE-OK` → died after `connectDevice` returned (GATT callback / password / person).
+4. `SETTLE-1` without `CONNECT-1` → died during post-scan settle (unlikely).
+5. `HANDSHAKE-OK` then Measure sample → single-stack path works.
 
 #### Init audit findings (`vpprotocol-2.3.81.15` javap)
 

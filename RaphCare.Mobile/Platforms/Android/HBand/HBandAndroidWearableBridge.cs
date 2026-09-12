@@ -32,6 +32,8 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
     private readonly List<Java.Lang.Object> _proxyRoots = new();
     private readonly List<HBandInvocationHandler> _handlerRoots = new();
     private HBandInvocationHandler? _activeHandler;
+    private Java.Lang.Object? _pinnedConnectResponseProxy;
+    private Java.Lang.Object? _pinnedNotifyResponseProxy;
 
     private bool? _sdkAvailableCached;
 
@@ -316,8 +318,12 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                     }
 
                     MarkConnectStep(VendorConnectCrashProbeRules.StepHandshakeOk);
+                    ClearPinnedConnectProxies();
                     return;
                 }
+
+                // Note: CONNECT-3 no longer ClearsProbe. Phone trail 1.8.49 reached CONNECT-3
+                // then died before HANDSHAKE-OK (wait callbacks / password / person sync).
 
                 // Stale connectStarted / half-open radio: tear down before a fresh connectDevice.
                 // Only probe native "already connected" when BluetoothClient exists.
@@ -386,6 +392,11 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                                 return null;
                             });
 
+                        // Pin until handshake completes. Locals alone are not enough if the
+                        // native stack holds a weak peer and GC runs before connectState.
+                        _pinnedConnectResponseProxy = connectProxy;
+                        _pinnedNotifyResponseProxy = notifyProxy;
+
                         var mac = new Java.Lang.String(macAddress);
                         var name = new Java.Lang.String(safeName);
 
@@ -406,6 +417,8 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         }
 
                         Volatile.Write(ref _vendorConnectStarted, true);
+                        GC.KeepAlive(connectProxy);
+                        GC.KeepAlive(notifyProxy);
                     }
                     catch (Throwable t)
                     {
@@ -419,7 +432,9 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                 try
                 {
                     // Wait off the main thread so connectState can be delivered on the looper.
+                    MarkConnectStep(VendorConnectCrashProbeRules.StepWaitConnect);
                     await connectTcs.Task.ConfigureAwait(false);
+                    MarkConnectStep(VendorConnectCrashProbeRules.StepWaitNotify);
                     await notifyTcs.Task.ConfigureAwait(false);
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -440,6 +455,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                 }
 
                 MarkConnectStep(VendorConnectCrashProbeRules.StepHandshakeOk);
+                ClearPinnedConnectProxies();
                 return;
             }
             catch (TimeoutException ex) when (attempt < DevicesBleSessionPolicy.VendorConnectMaxAttempts)
@@ -659,6 +675,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
 
     private async Task ConfirmPasswordAsync(Java.Lang.Object manager, string password, CancellationToken cancellationToken)
     {
+        MarkConnectStep(VendorConnectCrashProbeRules.StepPwd1);
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         using var reg = cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken));
 
@@ -698,6 +715,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
 
     private async Task SyncPersonInfoAsync(Java.Lang.Object manager, CancellationToken cancellationToken)
     {
+        MarkConnectStep(VendorConnectCrashProbeRules.StepPerson1);
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         using var reg = cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken));
 
@@ -767,7 +785,14 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             Log.Warn(Tag, "Disconnect: " + ex.Message);
         }
 
+        ClearPinnedConnectProxies();
         return Task.CompletedTask;
+    }
+
+    private void ClearPinnedConnectProxies()
+    {
+        _pinnedConnectResponseProxy = null;
+        _pinnedNotifyResponseProxy = null;
     }
 
     private void EnsureInitialized()

@@ -140,9 +140,9 @@ public static class DevicesBleSessionPolicy
     public static bool PreferOfficialMacOnlyConnectDeviceOverload => false;
 
     /// <summary>
-    /// After Plugin.BLE <c>StopScan</c>, wait before Veepoo <c>connectDevice</c> so the
-    /// adapter can settle. Dual-stack Scan then Inuker connect force-closed some phones.
-    /// Used only when <see cref="PreferExclusiveVendorSession"/> is on.
+    /// After Plugin.BLE <c>StopScan</c> or Veepoo <c>stopScanDevice</c>, wait before
+    /// <c>connectDevice</c> so the adapter can settle. Immediate stop-then-connect force-closed
+    /// some phones at WAIT-CONNECT (probe trail 1.8.50).
     /// </summary>
     public static TimeSpan PostScanStopSettleBeforeVendorConnect { get; } =
         TimeSpan.FromMilliseconds(1500);
