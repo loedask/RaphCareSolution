@@ -136,8 +136,11 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.Contains("ConnectViaVendorScanProbeAsync", devices, StringComparison.Ordinal);
         Assert.Contains("VendorScanProbeCommand", devices, StringComparison.Ordinal);
         Assert.Contains("ShowVendorScanProbe", devices, StringComparison.Ordinal);
-        Assert.Contains("VendorConnectStepChanged", devices, StringComparison.Ordinal);
-        Assert.Contains("BusyMessage", devices, StringComparison.Ordinal);
+        Assert.Contains("ShareProbeLogCommand", devices, StringComparison.Ordinal);
+        Assert.Contains("ProbeSelfTestCommand", devices, StringComparison.Ordinal);
+        Assert.Contains("ShareVendorProbeTrailAsync", text, StringComparison.Ordinal);
+        Assert.Contains("raphcare-vendor-probe-log.txt", File.ReadAllText(FindRepoFile(
+            Path.Combine("RaphCare.Mobile", "Core", "Features", "Devices", "HBand", "FileVendorConnectStepProbe.cs"))), StringComparison.Ordinal);
     }
 
     [Fact]

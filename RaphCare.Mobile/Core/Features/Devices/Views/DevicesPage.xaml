@@ -126,6 +126,18 @@
                                 IsEnabled="{Binding CanVendorScanProbe}"
                                 IsVisible="{Binding ShowVendorScanProbe}"
                                 HorizontalOptions="Fill" />
+
+                        <Button Text="{Binding ShareProbeLogButtonText}"
+                                Style="{StaticResource OutlineTealButton}"
+                                Command="{Binding ShareProbeLogCommand}"
+                                IsVisible="{Binding ShowVendorScanProbe}"
+                                HorizontalOptions="Fill" />
+
+                        <Button Text="{Binding ProbeSelfTestButtonText}"
+                                Style="{StaticResource OutlineTealButton}"
+                                Command="{Binding ProbeSelfTestCommand}"
+                                IsVisible="{Binding ShowVendorScanProbe}"
+                                HorizontalOptions="Fill" />
                     </VerticalStackLayout>
                 </Border>
 

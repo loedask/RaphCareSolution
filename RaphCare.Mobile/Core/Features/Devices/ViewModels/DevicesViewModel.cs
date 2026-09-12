@@ -66,6 +66,8 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         DevicesConnectLabel = T("DevicesConnectButton");
         DevicesConnectedRowLabel = T("DevicesConnectedRowButton");
         VendorScanProbeButtonText = "Try vendor scan (diagnostic)";
+        ShareProbeLogButtonText = "Share probe log";
+        ProbeSelfTestButtonText = "Test breadcrumb (no watch)";
 
         SyncReadingsButtonText = T("DevicesSyncReadings");
         ClaimHint = T("DevicesClaimHint");
@@ -85,6 +87,12 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
         VendorScanProbeCommand = new Command(
             async () => await VendorScanProbeAsync().ConfigureAwait(false),
             () => CanVendorScanProbe);
+        ShareProbeLogCommand = new Command(
+            async () => await ShareProbeLogAsync().ConfigureAwait(false),
+            () => ShowVendorScanProbe);
+        ProbeSelfTestCommand = new Command(
+            () => RunProbeSelfTest(),
+            () => ShowVendorScanProbe);
         RegisterCommand = new Command(async () => await RegisterAsync().ConfigureAwait(false), () => !IsBusy);
         ScanPackagingCommand = new Command(async () => await ScanPackagingAsync().ConfigureAwait(false), () => !IsBusy);
         SyncLastReadingCommand = new Command(async () => await SyncLastReadingAsync().ConfigureAwait(false), () => !IsBusy);
@@ -124,6 +132,8 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     public string DevicesConnectLabel { get; }
     public string DevicesConnectedRowLabel { get; }
     public string VendorScanProbeButtonText { get; }
+    public string ShareProbeLogButtonText { get; }
+    public string ProbeSelfTestButtonText { get; }
 
     public string SyncReadingsButtonText { get; }
     public string ClaimHint { get; }
@@ -309,6 +319,8 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     public ICommand ConnectCommand { get; }
     public ICommand DisconnectCommand { get; }
     public ICommand VendorScanProbeCommand { get; }
+    public ICommand ShareProbeLogCommand { get; }
+    public ICommand ProbeSelfTestCommand { get; }
     public ICommand RegisterCommand { get; }
     public ICommand ScanPackagingCommand { get; }
     public ICommand SyncLastReadingCommand { get; }
@@ -385,7 +397,9 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             // Keep this message; do not warm-up/reconnect (that wiped the red text and
             // re-crashed on exclusive Connect before the patient could read the step code).
             ErrorMessage = crashMessage;
-            StatusHint = "Auto-reconnect paused so you can read the crash step above.";
+            StatusHint =
+                "Auto-reconnect paused so you can read the crash step above. "
+                + "Tap Share probe log to send the on-phone log file (no USB needed).";
             RaiseBleCommandStates();
             return;
         }
@@ -407,12 +421,14 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(CanScanOrConnect));
         OnPropertyChanged(nameof(CanVendorScanProbe));
-        RaiseCanExecuteChanged(
+            RaiseCanExecuteChanged(
             ScanCommand,
             StopScanCommand,
             ConnectCommand,
             DisconnectCommand,
-            VendorScanProbeCommand);
+            VendorScanProbeCommand,
+            ShareProbeLogCommand,
+            ProbeSelfTestCommand);
     }
 
     private async Task TryReconnectClaimedWatchAsync()
@@ -914,6 +930,36 @@ public sealed class DevicesViewModel : BaseViewModel, IDisposable
             IsVendorScanProbeBusy = false;
             await RunOnMainThreadAsync(RefreshItems).ConfigureAwait(false);
             RaiseBleCommandStates();
+        }
+    }
+
+    private async Task ShareProbeLogAsync()
+    {
+        try
+        {
+            StatusHint = "Probe log: " + _ble.VendorProbeTrailPath;
+            await _ble.ShareVendorProbeTrailAsync(CancellationToken.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+    private void RunProbeSelfTest()
+    {
+        try
+        {
+            var result = _ble.RunVendorProbeBreadcrumbSelfTest();
+            StatusHint = result;
+            if (result.StartsWith("Breadcrumb FAILED", StringComparison.Ordinal))
+                ErrorMessage = result;
+            else
+                ErrorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
         }
     }
 

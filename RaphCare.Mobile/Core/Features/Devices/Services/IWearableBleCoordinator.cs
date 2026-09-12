@@ -31,6 +31,20 @@ public interface IWearableBleCoordinator
     /// <summary>Live vendor Scan/Connect breadcrumb steps during a diagnostic probe.</summary>
     event EventHandler<string>? VendorConnectStepChanged;
 
+    /// <summary>On-phone path for the append-only vendor probe trail (Share / Files app).</summary>
+    string VendorProbeTrailPath { get; }
+
+    bool HasVendorProbeTrailLog { get; }
+
+    /// <summary>Opens the system Share sheet for the probe trail file (no adb).</summary>
+    Task ShareVendorProbeTrailAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Writes a SELF-TEST mark and peeks it back. Confirms the breadcrumb file works
+    /// without a watch. Leaves a line in the trail log.
+    /// </summary>
+    string RunVendorProbeBreadcrumbSelfTest();
+
     Task<PermissionStatus> RequestBluetoothPermissionsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>Check Nearby devices / Bluetooth permission without showing a dialog.</summary>

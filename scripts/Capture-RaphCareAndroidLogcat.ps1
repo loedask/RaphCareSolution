@@ -69,13 +69,16 @@ Write-Host "Clearing logcat..."
 & $adb logcat -c | Out-Null
 
 Write-Host ""
-Write-Host "Reproduce now:"
-Write-Host "  1) Start this script first (log is cleared)."
-Write-Host "  2) On the phone: Devices, Scan until ET585 appears, then tap Connect."
-Write-Host "  3) If Connect survives, try Watch readings → Measure."
+Write-Host "Reproduce now (start this script BEFORE tapping on the phone):"
+Write-Host "  Probe build (1.8.46+): Devices → Try vendor scan (diagnostic). Do NOT use normal Scan first."
+Write-Host "  Stable Connect (1.8.42 style): Devices → Scan → Connect (Plugin.BLE only)."
+Write-Host "  If a vendor session survives: Watch readings → Measure."
 Write-Host "Capturing for $WaitSeconds seconds..."
 Write-Host "Output: $outFile"
-Write-Host "Inspect later for: CONNECT-2 without CONNECT-3, Fatal signal, DEBUG tombstone."
+Write-Host "Inspect later for:"
+Write-Host "  - RaphCareHBand SCAN-* / CONNECT-2 without CONNECT-3"
+Write-Host "  - AndroidRuntime / Fatal signal"
+Write-Host "  - DEBUG tombstone lines naming the crashing .so or symbol"
 Write-Host ""
 
 # adb logcat filterspecs must be separate argv tokens (not one quoted blob).

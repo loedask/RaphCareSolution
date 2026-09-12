@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
@@ -125,6 +126,60 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
     public event EventHandler<WearableVitalsSnapshot>? VitalsUpdated;
     public event EventHandler<string?>? ErrorOccurred;
     public event EventHandler<string>? VendorConnectStepChanged;
+
+    public string VendorProbeTrailPath => _connectStepProbe.ShareableTrailPath;
+
+    public bool HasVendorProbeTrailLog => _connectStepProbe.HasTrailLog;
+
+    public async Task ShareVendorProbeTrailAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var path = _connectStepProbe.ShareableTrailPath;
+        if (!File.Exists(path) || new FileInfo(path).Length == 0)
+        {
+            // Seed a line so Share always has a file after the user taps Share once.
+            _connectStepProbe.Mark("SHARE-OPENED");
+            path = _connectStepProbe.ShareableTrailPath;
+        }
+
+        if (!File.Exists(path))
+        {
+            ErrorOccurred?.Invoke(this, "Probe log file is missing on this phone.");
+            return;
+        }
+
+        await MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            await Share.Default.RequestAsync(new ShareFileRequest
+            {
+                Title = "RaphCare vendor probe log",
+                File = new ShareFile(path)
+            }).ConfigureAwait(true);
+        }).ConfigureAwait(false);
+    }
+
+    public string RunVendorProbeBreadcrumbSelfTest()
+    {
+        const string code = "SELF-TEST";
+        _connectStepProbe.Mark(code);
+        var peeked = _connectStepProbe.PeekIncompleteStep();
+        _connectStepProbe.Clear();
+        if (string.Equals(peeked, code, StringComparison.Ordinal))
+        {
+            return "Breadcrumb OK. Wrote "
+                   + code
+                   + " and read it back. Log file: "
+                   + _connectStepProbe.ShareableTrailPath
+                   + ". Use Share probe log to send it.";
+        }
+
+        return "Breadcrumb FAILED. Expected "
+               + code
+               + " but peek returned '"
+               + (peeked ?? "(null)")
+               + "'. Log path: "
+               + _connectStepProbe.ShareableTrailPath;
+    }
 
     public async Task<PermissionStatus> RequestBluetoothPermissionsAsync(CancellationToken cancellationToken = default)
     {
