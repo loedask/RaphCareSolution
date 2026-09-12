@@ -3,6 +3,7 @@ using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.Queries.GetCasualtyDisplay;
 using RaphCare.Application.Features.Organization.Queries.GetCollectionDisplay;
+using RaphCare.Application.Features.Organization.Queries.GetConsultDisplay;
 using Xunit;
 
 namespace RaphCare.Application.Tests.Common.Behaviors;
@@ -36,6 +37,24 @@ public sealed class AuthorizationBehaviorPublicDisplayTests
 
         await behavior.Handle(
             new GetCasualtyDisplayQuery { Token = "CASUALTYTOKEN1" },
+            ct =>
+            {
+                called = true;
+                return Task.FromResult<object?>(null);
+            },
+            CancellationToken.None);
+
+        Assert.True(called);
+    }
+
+    [Fact]
+    public async Task HandleAllowsAnonymousConsultDisplayQueryWithoutSignIn()
+    {
+        var behavior = new AuthorizationBehavior<GetConsultDisplayQuery, object?>(new AnonymousUser());
+        var called = false;
+
+        await behavior.Handle(
+            new GetConsultDisplayQuery { Token = "CONSULTTOKEN12" },
             ct =>
             {
                 called = true;

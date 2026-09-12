@@ -1,0 +1,461 @@
+@page "/admin/hospitals/{ClinicId:guid}/consult"
+@layout AdminLayout
+@using RaphCare.Domain.Common
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@AppResources.T("Consult_PageTitle")</PageTitle>
+
+<section class="admin-page hospital-deck">
+    @if (_loading && _board is null)
+    {
+        <HospitalDeckLoading Message="@AppResources.T("Consult_Loading")" />
+    }
+    else
+    {
+        <HospitalDeckMasthead BackHref="@HospitalDeckReturnUrl.ForLinkedSectionReturn(ClinicId, "consult")"
+                              BackText="@AppResources.T("Common_BackToHospital")"
+                              Monogram="@HospitalDeckInitials.FromName(_clinicName)"
+                              Eyebrow="@AppResources.T("Consult_Title")"
+                              Title="@_clinicName"
+                              Lead="@AppResources.Format("Consult_Lead", _clinicName)"
+                              StatusText="@FormatStatusLine()"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_clinicName"
+                              CurrentCrumb="@AppResources.T("Consult_Title")">
+            <HospitalDeckChip Label="@AppResources.T("Common_Waiting")" Value="@WaitingCount.ToString()" />
+            <HospitalDeckChip Label="@AppResources.T("Consult_CalledTitle")" Value="@CalledCount.ToString()" />
+        </HospitalDeckMasthead>
+
+        <AdminAlert Message="@_error" />
+        <AdminAlert Tone="success" Message="@_success" />
+
+        <div class="hospital-deck-workspace">
+        <HospitalDeckRail AriaLabel="@AppResources.T("Consult_SectionsAria")"
+                          Kicker="@AppResources.T("Consult_Title")">
+            <HospitalDeckRailItem Index="01" Icon="grid" IsActive="@(_tab == "waiting")" Count="@WaitingCount" OnSelect='() => SetTab("waiting")'>
+                @AppResources.T("Consult_WaitingTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="02" Icon="admit" IsActive="@(_tab == "called")" Count="@CalledCount" OnSelect='() => SetTab("called")'>
+                @AppResources.T("Consult_CalledTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="03" Icon="calendar" IsActive="@(_tab == "today")" OnSelect='() => SetTab("today")'>
+                @AppResources.T("Consult_TodayTitle")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="04" Icon="history" IsActive="@(_tab == "recent")" OnSelect='() => SetTab("recent")'>
+                @AppResources.T("Consult_RecentTitle")
+            </HospitalDeckRailItem>
+        </HospitalDeckRail>
+
+        <div class="hospital-deck-stage">
+        @if (_tab == "waiting")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Consult_Eyebrow")"
+                           Title="@AppResources.T("Consult_WaitingTitle")"
+                           Lead="@AppResources.T("Consult_WaitingLead")">
+                <div class="admin-page-card-body">
+                    <div class="admin-page-actions collection-find-actions">
+                        <button type="button" class="btn btn-ghost" disabled="@_busy" @onclick="OpenWaitingScreenAsync">
+                            @AppResources.T("Consult_OpenDisplay")
+                        </button>
+                    </div>
+                    <p class="hint">@AppResources.T("Consult_DisplayHint")</p>
+                    @if (_board is null || _board.Waiting.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Consult_NoWaiting")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Consult_QueueCode")</th>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("Common_Provider")</th>
+                                        <th>@AppResources.T("Consult_Arrived")</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in _board.Waiting)
+                                    {
+                                        <tr>
+                                            <td class="pickup-code">@ticket.QueueCode</td>
+                                            <td>
+                                                @if (ticket.PatientId is Guid waitingPatientId && !string.IsNullOrWhiteSpace(ticket.PatientName))
+                                                {
+                                                    <HospitalDirectoryPerson Name="@ticket.PatientName"
+                                                                         Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, waitingPatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "consult", _tab))" />
+                                                }
+                                                else
+                                                {
+                                                    @(string.IsNullOrWhiteSpace(ticket.PatientName) ? AppResources.T("Common_EmptyCell") : ticket.PatientName)
+                                                }
+                                            </td>
+                                            <td>@(string.IsNullOrWhiteSpace(ticket.ProviderName) ? AppResources.T("Common_EmptyCell") : ticket.ProviderName)</td>
+                                            <td>@FormatLocal(ticket.ArrivedAt)</td>
+                                            <td>
+                                                <button type="button" class="btn btn-secondary" disabled="@(_savingId == ticket.Id)" @onclick="() => CallAsync(ticket.Id)">
+                                                    @AppResources.T("Consult_Call")
+                                                </button>
+                                                <button type="button" class="btn btn-primary" disabled="@(_savingId == ticket.Id)" @onclick="() => CompleteTicketAsync(ticket.Id)">
+                                                    @AppResources.T("Consult_Complete")
+                                                </button>
+                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == ticket.Id)" @onclick="() => CancelTicketAsync(ticket.Id)">
+                                                    @AppResources.T("Consult_CancelTicket")
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "called")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Consult_Eyebrow")"
+                           Title="@AppResources.T("Consult_CalledTitle")"
+                           Lead="@AppResources.T("Consult_CalledLead")">
+                <div class="admin-page-card-body">
+                    @if (_board is null || _board.Called.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Consult_NoCalled")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Consult_QueueCode")</th>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("Common_Provider")</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in _board.Called)
+                                    {
+                                        <tr>
+                                            <td class="pickup-code">
+                                                @ticket.QueueCode
+                                                <span class="badge badge-success">@AppResources.T("Consult_OnScreen")</span>
+                                            </td>
+                                            <td>
+                                                @if (ticket.PatientId is Guid calledPatientId && !string.IsNullOrWhiteSpace(ticket.PatientName))
+                                                {
+                                                    <HospitalDirectoryPerson Name="@ticket.PatientName"
+                                                                             Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, calledPatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "consult", _tab))" />
+                                                }
+                                                else
+                                                {
+                                                    @(string.IsNullOrWhiteSpace(ticket.PatientName) ? AppResources.T("Common_EmptyCell") : ticket.PatientName)
+                                                }
+                                            </td>
+                                            <td>@(string.IsNullOrWhiteSpace(ticket.ProviderName) ? AppResources.T("Common_EmptyCell") : ticket.ProviderName)</td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary" disabled="@(_savingId == ticket.Id)" @onclick="() => CompleteTicketAsync(ticket.Id)">
+                                                    @AppResources.T("Consult_Complete")
+                                                </button>
+                                                <button type="button" class="btn btn-ghost" disabled="@(_savingId == ticket.Id)" @onclick="() => CancelTicketAsync(ticket.Id)">
+                                                    @AppResources.T("Consult_CancelTicket")
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "today")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Consult_Eyebrow")"
+                           Title="@AppResources.T("Consult_TodayTitle")"
+                           Lead="@AppResources.T("Consult_TodayLead")">
+                <div class="admin-page-card-body">
+                    <p class="hint">@AppResources.T("Consult_TodayHint")</p>
+                    @if (_board is null || _board.TodayAppointments.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Consult_NoToday")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Common_DateTime")</th>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("Common_Provider")</th>
+                                        <th>@AppResources.T("Common_Status")</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in _board.TodayAppointments)
+                                    {
+                                        <tr>
+                                            <td>@FormatLocal(appointment.ScheduledStart)</td>
+                                            <td>
+                                                <HospitalDirectoryPerson Name="@appointment.PatientName"
+                                                                         Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, appointment.PatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "consult", _tab))" />
+                                            </td>
+                                            <td>@appointment.ProviderName</td>
+                                            <td>@FormatAppointmentStatus(appointment)</td>
+                                            <td>
+                                                @if (appointment.AlreadyQueued)
+                                                {
+                                                    <span class="text-muted">@AppResources.T("Consult_AlreadyQueued")</span>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button"
+                                                            class="btn btn-primary"
+                                                            disabled="@(_savingAppointmentId == appointment.AppointmentId)"
+                                                            @onclick="() => EnqueueAsync(appointment.AppointmentId)">
+                                                        @AppResources.T("Consult_AddToQueue")
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        else if (_tab == "recent")
+        {
+            <AdminPageCard Eyebrow="@AppResources.T("Consult_Eyebrow")"
+                           Title="@AppResources.T("Consult_RecentTitle")"
+                           Lead="@AppResources.T("Consult_RecentLead")">
+                <div class="admin-page-card-body">
+                    @if (_board is null || _board.Recent.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("Consult_NoRecent")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Consult_QueueCode")</th>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("Common_Status")</th>
+                                        <th>@AppResources.T("Consult_Arrived")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in _board.Recent)
+                                    {
+                                        <tr>
+                                            <td class="pickup-code">@ticket.QueueCode</td>
+                                            <td>
+                                                @if (ticket.PatientId is Guid recentPatientId && !string.IsNullOrWhiteSpace(ticket.PatientName))
+                                                {
+                                                    <HospitalDirectoryPerson Name="@ticket.PatientName"
+                                                                             Href="@HospitalDeckReturnUrl.PatientHref(ClinicId, recentPatientId, HospitalDeckReturnUrl.ForClinicPage(ClinicId, "consult", _tab))" />
+                                                }
+                                                else
+                                                {
+                                                    @(string.IsNullOrWhiteSpace(ticket.PatientName) ? AppResources.T("Common_EmptyCell") : ticket.PatientName)
+                                                }
+                                            </td>
+                                            <td>@FormatTicketStatus(ticket.Status)</td>
+                                            <td>@FormatLocal(ticket.ArrivedAt)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        }
+        </div>
+        </div>
+
+        <div class="hospital-deck-foot">
+            <HospitalDeckBackLink Href="@HospitalDeckReturnUrl.ForLinkedSectionReturn(ClinicId, "consult")" Text="@AppResources.T("Common_BackToHospital")" />
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private IClinicContextService ClinicContext { get; set; } = default!;
+    [Inject] private IJSRuntime Js { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _busy;
+    private string _tab = "waiting";
+    private Guid? _savingId;
+    private Guid? _savingAppointmentId;
+    private string? _error;
+    private string? _success;
+    private string _clinicName = AppResources.T("Common_ThisHospital");
+    private string _clinicTimeZone = "UTC";
+    private ClinicConsultBoard? _board;
+
+    private int WaitingCount => _board?.WaitingCount ?? _board?.Waiting.Count ?? 0;
+    private int CalledCount => _board?.CalledCount ?? _board?.Called.Count ?? 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CultureService.CultureChanged += OnCultureChanged;
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
+        if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
+        {
+            _clinicName = clinicResponse.Data.Name;
+            _clinicTimeZone = clinicResponse.Data.TimeZone;
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+
+        await LoadBoardAsync();
+    }
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    private void SetTab(string tab) => _tab = tab;
+
+    private string FormatStatusLine()
+    {
+        var waiting = WaitingCount;
+        return waiting == 1
+            ? AppResources.Format("Consult_WaitingOne", waiting)
+            : AppResources.Format("Consult_WaitingMany", waiting);
+    }
+
+    private string FormatLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.FormatClinicLocal(utc, _clinicTimeZone);
+
+    private static string FormatTicketStatus(string? status) =>
+        status switch
+        {
+            "Waiting" => AppResources.T("Common_Waiting"),
+            "Called" => AppResources.T("Consult_CalledTitle"),
+            "Completed" => AppResources.T("Common_CompletedStatus"),
+            "Cancelled" => AppResources.T("Common_Cancelled"),
+            _ => string.IsNullOrWhiteSpace(status) ? AppResources.T("Common_EmptyCell") : status
+        };
+
+    private static string FormatAppointmentStatus(ClinicConsultAppointment appointment) =>
+        appointment.AlreadyQueued
+            ? AppResources.T("Consult_AlreadyQueued")
+            : appointment.Status switch
+            {
+                "InProgress" => AppResources.T("Consult_StatusInProgress"),
+                "Scheduled" => AppResources.T("Consult_StatusScheduled"),
+                _ => string.IsNullOrWhiteSpace(appointment.Status)
+                    ? AppResources.T("Common_EmptyCell")
+                    : appointment.Status
+            };
+
+    private async Task LoadBoardAsync()
+    {
+        _busy = true;
+        if (_board is null)
+            _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetConsultBoardAsync(ClinicId);
+        _busy = false;
+        _loading = false;
+        if (response.IsSuccess && response.Data is not null)
+            _board = response.Data;
+        else
+            _error = response.ErrorMessage ?? AppResources.T("Consult_CouldNotLoad");
+    }
+
+    private async Task EnqueueAsync(Guid appointmentId)
+    {
+        _savingAppointmentId = appointmentId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CreateConsultTicketAsync(ClinicId, new CreateConsultTicketRequest
+        {
+            AppointmentId = appointmentId
+        });
+        _savingAppointmentId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Consult_CouldNotCreate");
+            return;
+        }
+
+        _success = AppResources.T("Consult_Created");
+        _tab = "waiting";
+        await LoadBoardAsync();
+    }
+
+    private async Task CallAsync(Guid ticketId)
+    {
+        _savingId = ticketId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CallConsultTicketAsync(ClinicId, ticketId);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Consult_CouldNotCall");
+            return;
+        }
+
+        _success = AppResources.T("Consult_Called");
+        await LoadBoardAsync();
+    }
+
+    private Task CompleteTicketAsync(Guid ticketId) => FinishAsync(ticketId, cancel: false);
+
+    private Task CancelTicketAsync(Guid ticketId) => FinishAsync(ticketId, cancel: true);
+
+    private async Task FinishAsync(Guid ticketId, bool cancel)
+    {
+        _savingId = ticketId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.CompleteConsultTicketAsync(ClinicId, ticketId, cancel);
+        _savingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? (cancel
+                ? AppResources.T("Consult_CouldNotCancel")
+                : AppResources.T("Consult_CouldNotComplete"));
+            return;
+        }
+
+        _success = cancel ? AppResources.T("Consult_Cancelled") : AppResources.T("Consult_Completed");
+        await LoadBoardAsync();
+    }
+
+    private async Task OpenWaitingScreenAsync()
+    {
+        _busy = true;
+        _error = null;
+        var response = await AdminClinicService.EnsureConsultDisplayTokenAsync(ClinicId);
+        _busy = false;
+        if (!response.IsSuccess || string.IsNullOrWhiteSpace(response.Data))
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Consult_CouldNotOpenDisplay");
+            return;
+        }
+
+        var url = Navigation.ToAbsoluteUri($"display/consult/{response.Data}").ToString();
+        await Js.InvokeVoidAsync("raphCareClinic.openWindow", url, "raphcareConsultDisplay");
+    }
+}

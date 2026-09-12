@@ -59,6 +59,11 @@ public interface IAdminClinicService
     Task<Response<ClinicCasualtyTicket>> CallCasualtyTicketAsync(Guid clinicId, Guid ticketId, CancellationToken cancellationToken = default);
     Task<Response<ClinicCasualtyTicket>> CompleteCasualtyTicketAsync(Guid clinicId, Guid ticketId, bool cancel = false, CancellationToken cancellationToken = default);
     Task<Response<string>> EnsureCasualtyDisplayTokenAsync(Guid clinicId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicConsultBoard>> GetConsultBoardAsync(Guid clinicId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicConsultTicket>> CreateConsultTicketAsync(Guid clinicId, CreateConsultTicketRequest request, CancellationToken cancellationToken = default);
+    Task<Response<ClinicConsultTicket>> CallConsultTicketAsync(Guid clinicId, Guid ticketId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicConsultTicket>> CompleteConsultTicketAsync(Guid clinicId, Guid ticketId, bool cancel = false, CancellationToken cancellationToken = default);
+    Task<Response<string>> EnsureConsultDisplayTokenAsync(Guid clinicId, CancellationToken cancellationToken = default);
     Task<Response<ClinicTheatreBoard>> GetTheatreBoardAsync(Guid clinicId, DateTime? dayUtc = null, CancellationToken cancellationToken = default);
     Task<Response<ClinicTheatreCase>> CreateTheatreCaseAsync(Guid clinicId, CreateTheatreCaseRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicTheatreCase>> UpdateTheatreCaseStatusAsync(Guid clinicId, Guid caseId, string status, CancellationToken cancellationToken = default);

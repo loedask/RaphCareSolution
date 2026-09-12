@@ -89,8 +89,11 @@ public static class ServiceRegistration
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
         services.AddTransient<IPlatformOpsStatsService>(sp => new PlatformOpsStatsService(
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
+        services.AddTransient<IPlatformPriceCatalogService>(sp => new PlatformPriceCatalogService(
+            sp.GetRequiredService<IHttpClientFactory>().CreateClient(HttpClientName)));
         services.AddTransient<ICollectionDisplayService, CollectionDisplayService>();
         services.AddTransient<ICasualtyDisplayService, CasualtyDisplayService>();
+        services.AddTransient<IConsultDisplayService, ConsultDisplayService>();
 
         return services;
     }

@@ -217,10 +217,11 @@ No non-founder engineers or contractors have contributed to the product.`
         a: `Hospital Portal (staff demo):
 https://raphcare-hqf6gsa3acanargz.southafricanorth-01.azurewebsites.net/professional/signin
 
-Ops (wearable fleet):
+Ops (wearable fleet and list prices):
 https://raphcare-ops.azurewebsites.net/signin
 
-Demo clinic: RaphCare Demo Clinic
+Demo clinic (Hospital plan): RaphCare Demo Clinic
+Demo practice (Practice plan): RaphCare Demo Practice
 Admin: demo.admin@raphcare.com
 Doctor: demo.doctor@raphcare.com
 Patient (phone app): demo.patient@raphcare.com
@@ -234,9 +235,9 @@ Android patient APK is available for sideload against this staging API (current 
         q: "What is your company going to make? Please describe your product and what it does or will do.",
         a: `RaphCare is a digital clinic operating system for African hospitals and clinics, plus a patient phone app.
 
-Hospitals use a web Portal to run day-to-day care in one place: register a site, invite staff, manage patients, book appointments, run visits with vitals and notes, order prescriptions and labs, join video visits, and (on the Hospital plan) run beds, ward notes, a pharmacy/lab collection counter with a TV waiting screen, casualty triage, theatre lists, referrals, and discharge billing.
+Hospitals use a web Portal to run day-to-day care in one place: register a site, invite staff, manage patients, book appointments, run visits with vitals and notes, order prescriptions and labs, join video visits, and call the next consult onto a reception waiting screen. On the Hospital plan they also run beds, ward notes, a pharmacy/lab collection counter with a pickup TV waiting screen, casualty triage, theatre lists, referrals, and discharge billing.
 
-Platform Ops stocks watches by capturing packaging first, then confirming serial and Bluetooth address. Ops can assign a watch, take it back to stock, or remove a mistaken row. Patients claim an assigned watch in the app, then measure heart rate on Watch readings. They also book care, keep health records, see pickup codes and QR codes for medicines and labs, manage insurance and family members, do mental-health check-ins, and chat with a hospital-configured AI assistant that does not act as a doctor.
+Platform Ops stocks watches by capturing packaging first, then confirming serial and Bluetooth address. Ops can assign a watch, take it back to stock, or remove a mistaken row. Ops can also edit commercial list prices in rand and US dollars. Patients claim an assigned watch in the app, then measure heart rate on Watch readings. They also book care, keep health records, see pickup codes and QR codes for medicines and labs, manage insurance and family members, do mental-health check-ins, and chat with a hospital-configured AI assistant that does not act as a doctor.
 
 We built this for how clinics actually work today: paper files, WhatsApp consults, and disconnected tools. RaphCare replaces that stack with one multi-tenant system that already runs on Azure staging, with English, French, Lingala, and Swahili on the Portal.`
       },
@@ -258,9 +259,9 @@ We already host the product in Azure South Africa North. Building here keeps us 
         a: `We have a working product on Azure staging, not a mockup.
 
 Shipped today:
-• Hospital Portal: outpatient workflows, patient chart, telemedicine join, inpatient beds, collection counter and waiting screens, casualty, theatre, referrals, discharge invoice, AI discharge draft, multi-language UI
-• Ops site: capture packaging first, then confirm serial and Bluetooth address. Assignment, revoke, and delete stay on the same fleet list.
-• Patient Android app (v1.8.53): sign-in, appointments, honest Home (real upcoming visits, claimed watches, synced vitals), health records with pickup QR, insurance, billing, family, mental health (mood, PHQ-9, GAD-7), AI chat that keeps the last few turns in a session, Active clinic with hospitals linked to you, medical profile and emergency contacts (from the phone book or typed in), claim an assigned watch then Bluetooth only to that locked band, Watch readings to measure heart rate. Closing the app and opening Devices reconnects that claimed watch when it is nearby.
+• Hospital Portal: outpatient workflows, patient chart, telemedicine join, consult waiting display, inpatient beds on the Hospital plan, collection counter and waiting screens, casualty, theatre, referrals, discharge invoice, AI discharge draft, multi-language UI. Practice plan demo site hides Hospital floor tools.
+• Ops site: capture packaging first, then confirm serial and Bluetooth address. Assignment, revoke, and delete stay on the same fleet list. Ops can edit list prices for site plans and patient care tiers.
+• Patient Android app (v1.9.0 preview): sign-in, appointments, honest Home (real upcoming visits, claimed watches, synced vitals), health records with pickup QR, insurance, billing with Paystack care-plan checkout when keys are set, family, mental health (mood, PHQ-9, GAD-7), AI chat that keeps the last few turns in a session, Active clinic with hospitals linked to you, medical profile and emergency contacts (from the phone book or typed in), claim an assigned watch then Bluetooth only to that locked band, Watch readings to measure heart rate. Closing the app and opening Devices reconnects that claimed watch when it is nearby.
 • Shared .NET API, Azure SQL, private blob storage for photos and voice onboarding, Azure OpenAI for chat and draft summaries
 • Staff Portal and Ops work on a phone browser, including a home-screen shortcut (same website, not a separate staff app)
 
@@ -353,7 +354,7 @@ RaphCare is built as that unified stack, with Ops for device fleet, not as a tel
         a: `Practices and hospitals pay for software. Patients stay free for core records and booking. Paid app care plans (Essential Care, Complete Care) are billed per person: the patient pays, or a programme pays for them (practice, clinic, employer, scheme, or NGO). Wearable packages work the same way.
 
 List pricing (ex tax, discussion rates):
-• Practice plan: R 1,990 / month in South Africa ($49 in Congo) for a solo GP or small rooms practice (up to 3 staff), including a consult waiting display when that ships
+• Practice plan: R 1,990 / month in South Africa ($49 in Congo) for a solo GP or small rooms practice (up to 3 staff), including a consult waiting display
 • Clinic plan: R 3,490 / month ($89) for outpatient admin (up to 8 staff), including the same consult waiting display
 • Hospital plan: R 9,990 / month ($249) adds beds, collection counter, pickup waiting screen, casualty, theatre, discharge billing, and related stay tools
 • Network: from R 19,990 / month ($499), quoted for multi-site

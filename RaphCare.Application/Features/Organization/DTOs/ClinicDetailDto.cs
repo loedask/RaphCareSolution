@@ -8,6 +8,12 @@ public sealed class ClinicDetailDto
     public string ReferenceCode { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public string TimeZone { get; set; } = string.Empty;
+    public string CommercialPlan { get; set; } = string.Empty;
+    public bool HasInpatient { get; set; }
+    public bool HasCollection { get; set; }
+    public bool HasCasualty { get; set; }
+    public bool HasTheatre { get; set; }
+    public bool HasConsultWaiting { get; set; }
     public bool IsActive { get; set; }
     public bool AllowAiDischargeDraft { get; set; }
     public bool AllowAiMentalHealthNotes { get; set; }

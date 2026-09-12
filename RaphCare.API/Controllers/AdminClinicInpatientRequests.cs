@@ -98,6 +98,16 @@ public sealed class CompleteAdminClinicCasualtyTicketRequest
     public bool Cancel { get; set; }
 }
 
+public sealed class CreateAdminClinicConsultTicketRequest
+{
+    public Guid AppointmentId { get; set; }
+}
+
+public sealed class CompleteAdminClinicConsultTicketRequest
+{
+    public bool Cancel { get; set; }
+}
+
 public sealed class CreateAdminClinicTheatreCaseRequest
 {
     public Guid PatientId { get; set; }

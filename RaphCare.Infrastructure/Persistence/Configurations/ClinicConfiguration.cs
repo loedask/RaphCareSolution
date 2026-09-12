@@ -16,9 +16,14 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
         builder.Property(e => e.ReferenceCode).IsRequired().HasMaxLength(ClinicReferenceCode.MaxLength);
         builder.Property(e => e.Country).IsRequired().HasMaxLength(100);
         builder.Property(e => e.TimeZone).IsRequired().HasMaxLength(50);
+        builder.Property(e => e.CommercialPlan)
+            .IsRequired()
+            .HasMaxLength(ClinicCommercialPlan.MaxLength)
+            .HasDefaultValue(ClinicCommercialPlan.Default);
         builder.Property(e => e.RegisteredByApplicationUserId);
         builder.Property(e => e.CollectionDisplayToken).HasMaxLength(ClinicCollectionDisplayToken.Length);
         builder.Property(e => e.CasualtyDisplayToken).HasMaxLength(ClinicCollectionDisplayToken.Length);
+        builder.Property(e => e.ConsultDisplayToken).HasMaxLength(ClinicCollectionDisplayToken.Length);
         builder.HasIndex(e => e.RegistrationNumber);
         builder.HasIndex(e => e.ReferenceCode).IsUnique();
         builder.HasIndex(e => e.CollectionDisplayToken)
@@ -27,6 +32,9 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
         builder.HasIndex(e => e.CasualtyDisplayToken)
             .IsUnique()
             .HasFilter("[CasualtyDisplayToken] IS NOT NULL");
+        builder.HasIndex(e => e.ConsultDisplayToken)
+            .IsUnique()
+            .HasFilter("[ConsultDisplayToken] IS NOT NULL");
         builder.HasIndex(e => e.IsDeleted);
         builder.HasQueryFilter(e => !e.IsDeleted);
         builder.HasMany(e => e.Facilities).WithOne(f => f.Clinic).HasForeignKey(f => f.ClinicId).OnDelete(DeleteBehavior.Restrict);

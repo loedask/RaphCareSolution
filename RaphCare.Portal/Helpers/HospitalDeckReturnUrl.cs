@@ -10,7 +10,7 @@ public static class HospitalDeckReturnUrl
     /// hospital page with this tab so the matching rail item stays highlighted.
     /// </summary>
     public static bool IsLinkedSectionTab(string? tab) =>
-        tab is "inpatient" or "collection" or "casualty" or "theatre" or "referrals" or "roster";
+        tab is "inpatient" or "collection" or "casualty" or "consult" or "theatre" or "referrals" or "roster";
 
     public static string ForClinicTab(Guid clinicId, string tab) =>
         $"/admin/hospitals/{clinicId}?tab={Uri.EscapeDataString(tab)}";

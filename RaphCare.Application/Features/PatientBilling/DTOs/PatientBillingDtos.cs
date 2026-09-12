@@ -39,3 +39,13 @@ public sealed class PatientInvoiceHistoryItemDto
     public DateTime? PaidAt { get; set; }
     public Guid? VisitId { get; set; }
 }
+
+public sealed class CarePlanCheckoutDto
+{
+    public string Reference { get; set; } = string.Empty;
+    public string AuthorizationUrl { get; set; } = string.Empty;
+    public string? AccessCode { get; set; }
+    public string PlanCode { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public string Currency { get; set; } = "ZAR";
+}

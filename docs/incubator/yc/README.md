@@ -14,7 +14,7 @@ Prefer facts from:
 
 - Partner feature checklist / catalog under `docs/checklist` and `docs/partner-updates`
 - Staging hosts in `docs/Mobile_Android_Test_Hosting.md`
-- Demo logins in `docs/partner-updates/sources/raphcare-demo-accounts-v2.md`
+- Demo logins in `docs/partner-updates/sources/raphcare-demo-accounts-v3.md`
 - Price list in `docs/partner-updates/sources/raphcare-price-list-v2.md`
 
 Do not claim paying users, FDA clearance, or live insurance products unless those are true.

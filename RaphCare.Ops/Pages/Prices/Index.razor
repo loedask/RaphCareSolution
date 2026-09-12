@@ -1,0 +1,324 @@
+@page "/prices"
+@using RaphCare.Client.Models
+@using RaphCare.Client.Models.Ops
+@using RaphCare.Ui.Components
+<PageTitle>@AppResources.T("Prices_PageTitle")</PageTitle>
+
+<section class="admin-page admin-brand-page">
+    <AdminPageHeader CssClass="brand-hero"
+                     Eyebrow="@AppResources.T("OpsLayout_NavSection")"
+                     Title="@AppResources.T("Prices_Title")"
+                     Lead="@AppResources.T("Prices_Lead")" />
+
+    @if (_loading)
+    {
+        <p class="admin-loading-copy">@AppResources.T("Common_Loading")</p>
+    }
+    else if (_authRequired)
+    {
+        <AdminEmptyState CssClass="admin-guidance-state"
+                         Title="@AppResources.T("Prices_AuthTitle")"
+                         Lead="@AppResources.T("Prices_AuthLead")">
+            <div class="admin-guidance-actions">
+                <a class="btn btn-primary" href="@_signInReturnUrl">@AppResources.T("Common_SignInAgain")</a>
+            </div>
+        </AdminEmptyState>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <AdminAlert Message="@_error" />
+        }
+        @if (!string.IsNullOrEmpty(_success))
+        {
+            <p class="fleet-add-feedback">@_success</p>
+        }
+
+        <AdminPageCard Title="@AppResources.T("Prices_CatalogTitle")" Lead="@AppResources.T("Prices_CatalogLead")">
+            <AdminPageCardMeta>
+                <span class="admin-progress-pill">@AppResources.Format("Prices_TotalMeta", _items.Count)</span>
+            </AdminPageCardMeta>
+            <div class="admin-page-card-body">
+                @if (_items.Count == 0)
+                {
+                    <p class="text-muted">@AppResources.T("Prices_Empty")</p>
+                }
+                else
+                {
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>@AppResources.T("Prices_SkuColumn")</th>
+                                    <th>@AppResources.T("Prices_NameColumn")</th>
+                                    <th>@AppResources.T("Prices_CategoryColumn")</th>
+                                    <th>@AppResources.T("Prices_ZarColumn")</th>
+                                    <th>@AppResources.T("Prices_UsdColumn")</th>
+                                    <th>@AppResources.T("Prices_ActionsColumn")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in _items)
+                                {
+                                    <tr>
+                                        <td><code>@item.SkuCode</code></td>
+                                        <td>@item.DisplayName</td>
+                                        <td>@item.Category</td>
+                                        <td>
+                                            <input class="form-control"
+                                                   type="number"
+                                                   min="0"
+                                                   step="0.01"
+                                                   value="@GetZarDraft(item.Id)"
+                                                   @oninput="e => SetZarDraft(item.Id, e.Value?.ToString())" />
+                                        </td>
+                                        <td>
+                                            <input class="form-control"
+                                                   type="number"
+                                                   min="0"
+                                                   step="0.01"
+                                                   value="@GetUsdDraft(item.Id)"
+                                                   @oninput="e => SetUsdDraft(item.Id, e.Value?.ToString())" />
+                                        </td>
+                                        <td>
+                                            <button type="button"
+                                                    class="btn btn-secondary btn-sm"
+                                                    disabled="@(_busyId == item.Id)"
+                                                    @onclick="() => SaveAsync(item)">
+                                                @(_busyId == item.Id ? AppResources.T("Common_Saving") : AppResources.T("Prices_SaveButton"))
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </AdminPageCard>
+
+        <AdminPageCard Title="@AppResources.T("Prices_PlanTitle")" Lead="@AppResources.T("Prices_PlanLead")">
+            <div class="admin-page-card-body">
+                <div class="form-grid">
+                    <label>
+                        @AppResources.T("Prices_PlanHospitalLabel")
+                        <SearchableSelect TValue="string"
+                                          Value="_planClinicId"
+                                          ValueChanged="OnPlanClinicChangedAsync"
+                                          Placeholder="@AppResources.T("Prices_SelectHospital")"
+                                          Options="ClinicOptions" />
+                    </label>
+                    @if (!string.IsNullOrWhiteSpace(_planClinicId))
+                    {
+                        <label>
+                            @AppResources.T("Prices_PlanLabel")
+                            <select class="form-control" @bind="_selectedPlan" disabled="@_planBusy">
+                                @foreach (var plan in PlanOptions)
+                                {
+                                    <option value="@plan">@plan</option>
+                                }
+                            </select>
+                        </label>
+                    }
+                </div>
+                @if (!string.IsNullOrWhiteSpace(_planClinicId))
+                {
+                    <div class="admin-page-actions">
+                        <button type="button"
+                                class="btn btn-primary"
+                                disabled="@_planBusy"
+                                @onclick="SavePlanAsync">
+                            @(_planBusy ? AppResources.T("Common_Saving") : AppResources.T("Prices_SavePlanButton"))
+                        </button>
+                    </div>
+                    @if (_loadedPlan is not null)
+                    {
+                        <p class="hint">@FormatPlanFeatures(_loadedPlan)</p>
+                    }
+                }
+            </div>
+        </AdminPageCard>
+    }
+</section>
+
+@code {
+    private const string PricesPath = "/prices";
+    private static readonly string[] PlanOptions = ["Practice", "Clinic", "Hospital", "Network"];
+
+    [Inject] private IPlatformPriceCatalogService CatalogService { get; set; } = default!;
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _authRequired;
+    private string? _error;
+    private string? _success;
+    private Guid? _busyId;
+    private bool _planBusy;
+    private string _planClinicId = string.Empty;
+    private string _selectedPlan = "Clinic";
+    private ClinicCommercialPlanInfo? _loadedPlan;
+    private IReadOnlyList<PriceCatalogItem> _items = Array.Empty<PriceCatalogItem>();
+    private IReadOnlyList<ClinicListItem> _clinics = Array.Empty<ClinicListItem>();
+    private readonly Dictionary<Guid, string> _zarDraft = new();
+    private readonly Dictionary<Guid, string> _usdDraft = new();
+
+    private string _signInReturnUrl =>
+        $"/signin?returnUrl={Uri.EscapeDataString(PricesPath)}";
+
+    private IReadOnlyList<SelectOption<string>> ClinicOptions =>
+        new[] { new SelectOption<string>(string.Empty, AppResources.T("Prices_SelectHospital")) }
+            .Concat(_clinics.Select(c => new SelectOption<string>(c.Id.ToString(), c.Name)))
+            .ToArray();
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        _error = null;
+        _success = null;
+
+        var clinicsResponse = await AdminClinicService.GetClinicsAsync();
+        if (!clinicsResponse.IsSuccess || clinicsResponse.Data is null)
+        {
+            _loading = false;
+            _items = Array.Empty<PriceCatalogItem>();
+            _clinics = Array.Empty<ClinicListItem>();
+            _error = clinicsResponse.ErrorMessage ?? AppResources.T("Common_CouldNotLoadHospitals");
+            _authRequired = clinicsResponse.StatusCode is 401 or 403;
+            return;
+        }
+
+        _clinics = clinicsResponse.Data;
+
+        var response = await CatalogService.GetCatalogAsync(activeOnly: true);
+        _loading = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _items = Array.Empty<PriceCatalogItem>();
+            _error = response.ErrorMessage ?? AppResources.T("Prices_CouldNotLoad");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        _items = response.Data;
+        foreach (var item in _items)
+        {
+            _zarDraft[item.Id] = item.AmountZar.ToString("0.##");
+            _usdDraft[item.Id] = item.AmountUsd.ToString("0.##");
+        }
+    }
+
+    private string GetZarDraft(Guid id) =>
+        _zarDraft.TryGetValue(id, out var value) ? value : string.Empty;
+
+    private string GetUsdDraft(Guid id) =>
+        _usdDraft.TryGetValue(id, out var value) ? value : string.Empty;
+
+    private void SetZarDraft(Guid id, string? value) =>
+        _zarDraft[id] = value ?? string.Empty;
+
+    private void SetUsdDraft(Guid id, string? value) =>
+        _usdDraft[id] = value ?? string.Empty;
+
+    private async Task SaveAsync(PriceCatalogItem item)
+    {
+        _error = null;
+        _success = null;
+
+        if (!decimal.TryParse(GetZarDraft(item.Id), out var zar) || zar < 0
+            || !decimal.TryParse(GetUsdDraft(item.Id), out var usd) || usd < 0)
+        {
+            _error = AppResources.T("Prices_InvalidAmounts");
+            return;
+        }
+
+        _busyId = item.Id;
+        var response = await CatalogService.UpdateItemAsync(item.Id, zar, usd);
+        _busyId = null;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Prices_CouldNotSave");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        var updated = response.Data;
+        _items = _items.Select(i => i.Id == updated.Id ? updated : i).ToList();
+        _zarDraft[updated.Id] = updated.AmountZar.ToString("0.##");
+        _usdDraft[updated.Id] = updated.AmountUsd.ToString("0.##");
+        _success = AppResources.Format("Prices_SavedFormat", updated.DisplayName);
+    }
+
+    private async Task OnPlanClinicChangedAsync(string? value)
+    {
+        _planClinicId = value ?? string.Empty;
+        _loadedPlan = null;
+        _error = null;
+        _success = null;
+
+        if (!Guid.TryParse(_planClinicId, out var clinicId) || clinicId == Guid.Empty)
+            return;
+
+        _planBusy = true;
+        var response = await CatalogService.GetClinicCommercialPlanAsync(clinicId);
+        _planBusy = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Prices_CouldNotLoadPlan");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        _loadedPlan = response.Data;
+        _selectedPlan = string.IsNullOrWhiteSpace(response.Data.CommercialPlan)
+            ? "Clinic"
+            : response.Data.CommercialPlan;
+    }
+
+    private async Task SavePlanAsync()
+    {
+        if (!Guid.TryParse(_planClinicId, out var clinicId) || clinicId == Guid.Empty)
+            return;
+
+        _error = null;
+        _success = null;
+        _planBusy = true;
+        var response = await CatalogService.UpdateClinicCommercialPlanAsync(clinicId, _selectedPlan);
+        _planBusy = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("Prices_CouldNotSavePlan");
+            _authRequired = response.StatusCode is 401 or 403;
+            return;
+        }
+
+        _loadedPlan = response.Data;
+        _selectedPlan = response.Data.CommercialPlan;
+        var clinicName = _clinics.FirstOrDefault(c => c.Id == clinicId)?.Name ?? clinicId.ToString();
+        _success = AppResources.Format("Prices_PlanSavedFormat", clinicName, response.Data.CommercialPlan);
+    }
+
+    private static string FormatPlanFeatures(ClinicCommercialPlanInfo plan)
+    {
+        var parts = new List<string>();
+        if (plan.HasConsultWaiting)
+            parts.Add(AppResources.T("Prices_FeatureConsult"));
+        if (plan.HasCollection)
+            parts.Add(AppResources.T("Prices_FeatureCollection"));
+        if (plan.HasInpatient)
+            parts.Add(AppResources.T("Prices_FeatureInpatient"));
+        if (plan.HasCasualty)
+            parts.Add(AppResources.T("Prices_FeatureCasualty"));
+        if (plan.HasTheatre)
+            parts.Add(AppResources.T("Prices_FeatureTheatre"));
+        return parts.Count == 0
+            ? AppResources.T("Prices_FeatureNone")
+            : AppResources.Format("Prices_FeatureListFormat", string.Join(", ", parts));
+    }
+}

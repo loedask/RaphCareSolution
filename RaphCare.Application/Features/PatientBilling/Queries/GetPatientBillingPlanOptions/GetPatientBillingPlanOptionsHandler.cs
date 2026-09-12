@@ -1,12 +1,18 @@
 using MediatR;
+using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.PatientBilling.DTOs;
+using RaphCare.Domain.Billing;
 
 namespace RaphCare.Application.Features.PatientBilling.Queries.GetPatientBillingPlanOptions;
 
-public sealed class GetPatientBillingPlanOptionsHandler : IRequestHandler<GetPatientBillingPlanOptionsQuery, IReadOnlyList<PatientBillingPlanOptionDto>>
+public sealed class GetPatientBillingPlanOptionsHandler(IRepository<PriceCatalogItem> catalogRepository)
+    : IRequestHandler<GetPatientBillingPlanOptionsQuery, IReadOnlyList<PatientBillingPlanOptionDto>>
 {
-    public Task<IReadOnlyList<PatientBillingPlanOptionDto>> Handle(
+    public async Task<IReadOnlyList<PatientBillingPlanOptionDto>> Handle(
         GetPatientBillingPlanOptionsQuery request,
-        CancellationToken cancellationToken) =>
-        Task.FromResult(PatientBillingCatalog.All);
+        CancellationToken cancellationToken)
+    {
+        var items = await catalogRepository.ListAsync(cancellationToken).ConfigureAwait(false);
+        return PatientBillingCatalog.FromCatalog(items);
+    }
 }

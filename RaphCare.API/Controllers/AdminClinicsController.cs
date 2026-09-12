@@ -26,17 +26,22 @@ using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicAppoi
 using RaphCare.Application.Features.Organization.Commands.CallAdminClinicLabOrder;
 using RaphCare.Application.Features.Organization.Commands.CallAdminClinicPrescription;
 using RaphCare.Application.Features.Organization.Commands.CallAdminClinicCasualtyTicket;
+using RaphCare.Application.Features.Organization.Commands.CallAdminClinicConsultTicket;
 using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicCasualtyTicket;
+using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicConsultTicket;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicCasualtyTicket;
+using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicConsultTicket;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicTheatreCase;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicReferral;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicRosterEntry;
 using RaphCare.Application.Features.Organization.Commands.DeleteAdminClinicRosterEntry;
 using RaphCare.Application.Features.Organization.Commands.EnsureCasualtyDisplayToken;
 using RaphCare.Application.Features.Organization.Commands.EnsureCollectionDisplayToken;
+using RaphCare.Application.Features.Organization.Commands.EnsureConsultDisplayToken;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicTheatreCaseStatus;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinicReferralStatus;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicCasualtyBoard;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicConsultBoard;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicTheatreBoard;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicReferralBoard;
 using RaphCare.Application.Features.Organization.Queries.GetAdminClinicRosterBoard;
@@ -1127,6 +1132,89 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(
             new EnsureCasualtyDisplayTokenCommand { ClinicId = id },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Consult queue board for this hospital (today's appointments and queue).</summary>
+    [HttpGet("{id:guid}/consult/board", Name = "GetAdminClinicConsultBoard")]
+    [ProducesResponseType(typeof(AdminClinicConsultBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetConsultBoard(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicConsultBoardQuery { ClinicId = id },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Enqueue today's appointment onto the consult board.</summary>
+    [HttpPost("{id:guid}/consult/tickets", Name = "CreateAdminClinicConsultTicket")]
+    [ProducesResponseType(typeof(AdminClinicConsultTicketDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateConsultTicket(
+        Guid id,
+        [FromBody] CreateAdminClinicConsultTicketRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new CreateAdminClinicConsultTicketRequest();
+        var result = await mediator.Send(
+            new CreateAdminClinicConsultTicketCommand
+            {
+                ClinicId = id,
+                AppointmentId = body.AppointmentId
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Call a consult queue code onto the waiting screen.</summary>
+    [HttpPost("{id:guid}/consult/tickets/{ticketId:guid}/call", Name = "CallAdminClinicConsultTicket")]
+    [ProducesResponseType(typeof(AdminClinicConsultTicketDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CallConsultTicket(
+        Guid id,
+        Guid ticketId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new CallAdminClinicConsultTicketCommand { ClinicId = id, TicketId = ticketId },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Complete or cancel a consult ticket.</summary>
+    [HttpPost("{id:guid}/consult/tickets/{ticketId:guid}/complete", Name = "CompleteAdminClinicConsultTicket")]
+    [ProducesResponseType(typeof(AdminClinicConsultTicketDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CompleteConsultTicket(
+        Guid id,
+        Guid ticketId,
+        [FromBody] CompleteAdminClinicConsultTicketRequest? body,
+        CancellationToken cancellationToken)
+    {
+        body ??= new CompleteAdminClinicConsultTicketRequest();
+        var result = await mediator.Send(
+            new CompleteAdminClinicConsultTicketCommand
+            {
+                ClinicId = id,
+                TicketId = ticketId,
+                Cancel = body.Cancel
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Create or return the consult waiting-screen token for this hospital.</summary>
+    [HttpPost("{id:guid}/consult-display", Name = "EnsureAdminClinicConsultDisplay")]
+    [ProducesResponseType(typeof(ConsultDisplayLinkDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> EnsureConsultDisplay(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new EnsureConsultDisplayTokenCommand { ClinicId = id },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }

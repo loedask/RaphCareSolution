@@ -1397,11 +1397,13 @@
                 ? AppResources.T("Common_BackToCollection")
                 : BackUrl.Contains("/casualty", StringComparison.OrdinalIgnoreCase)
                     ? AppResources.T("Common_BackToCasualty")
-                    : BackUrl.Contains("/theatre", StringComparison.OrdinalIgnoreCase)
-                        ? AppResources.T("Common_BackToTheatre")
-                        : BackUrl.Contains("/referrals", StringComparison.OrdinalIgnoreCase)
-                            ? AppResources.T("Common_BackToReferrals")
-                            : AppResources.T("Common_BackToHospital");
+                    : BackUrl.Contains("/consult", StringComparison.OrdinalIgnoreCase)
+                        ? AppResources.T("Common_BackToConsult")
+                        : BackUrl.Contains("/theatre", StringComparison.OrdinalIgnoreCase)
+                            ? AppResources.T("Common_BackToTheatre")
+                            : BackUrl.Contains("/referrals", StringComparison.OrdinalIgnoreCase)
+                                ? AppResources.T("Common_BackToReferrals")
+                                : AppResources.T("Common_BackToHospital");
 
 
     private string ClinicDisplayName => _clinicName ?? AppResources.T("Common_ThisHospital");

@@ -47,6 +47,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<InpatientAdmission> InpatientAdmissions => Set<InpatientAdmission>();
     public DbSet<InpatientObservation> InpatientObservations => Set<InpatientObservation>();
     public DbSet<CasualtyTicket> CasualtyTickets => Set<CasualtyTicket>();
+    public DbSet<ConsultTicket> ConsultTickets => Set<ConsultTicket>();
     public DbSet<TheatreCase> TheatreCases => Set<TheatreCase>();
     public DbSet<Referral> Referrals => Set<Referral>();
     public DbSet<ClinicRosterEntry> ClinicRosterEntries => Set<ClinicRosterEntry>();
@@ -89,6 +90,7 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new InpatientAdmissionConfiguration());
         modelBuilder.ApplyConfiguration(new InpatientObservationConfiguration());
         modelBuilder.ApplyConfiguration(new CasualtyTicketConfiguration());
+        modelBuilder.ApplyConfiguration(new ConsultTicketConfiguration());
         modelBuilder.ApplyConfiguration(new TheatreCaseConfiguration());
         modelBuilder.ApplyConfiguration(new ReferralConfiguration());
         modelBuilder.ApplyConfiguration(new ClinicRosterEntryConfiguration());

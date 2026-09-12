@@ -27,7 +27,7 @@ public static class DemoPackSeeder
         LoggerMessage.Define(
             LogLevel.Information,
             new EventId(1, nameof(LogPackReady)),
-            "Staging demo pack is ready (RaphCare Demo Clinic + demo.*@raphcare.com accounts).");
+            "Staging demo pack is ready (RaphCare Demo Clinic Hospital + Demo Practice + demo.*@raphcare.com accounts).");
 
     private static readonly Action<ILogger, Exception?> LogPackFailed =
         LoggerMessage.Define(
@@ -54,6 +54,7 @@ public static class DemoPackSeeder
         try
         {
             await EnsureDemoClinicAsync(clinical, cancellationToken).ConfigureAwait(false);
+            await EnsureDemoPracticeAsync(clinical, cancellationToken).ConfigureAwait(false);
             await EnsureDirectClinicAsync(clinical, cancellationToken).ConfigureAwait(false);
             await EnsureDemoCapacityAsync(clinical, cancellationToken).ConfigureAwait(false);
             await MigrateLegacyDemoEmailsAsync(identity, cancellationToken).ConfigureAwait(false);
@@ -116,6 +117,7 @@ public static class DemoPackSeeder
                 ReferenceCode = "RC-DEMCLN",
                 Country = "South Africa",
                 TimeZone = "South Africa Standard Time",
+                CommercialPlan = ClinicCommercialPlan.Hospital,
                 IsActive = true,
                 RegisteredByApplicationUserId = ClinicalSeedIds.DemoAdminUserId
             };
@@ -123,10 +125,76 @@ public static class DemoPackSeeder
             clinical.Entry(clinic).Property(c => c.Id).CurrentValue = ClinicalSeedIds.DemoClinicId;
             await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
+        else if (!string.Equals(clinic.CommercialPlan, ClinicCommercialPlan.Hospital, StringComparison.Ordinal))
+        {
+            clinic.CommercialPlan = ClinicCommercialPlan.Hospital;
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
 
         if (string.IsNullOrWhiteSpace(clinic.CollectionDisplayToken))
         {
             clinic.CollectionDisplayToken = ClinicCollectionDisplayToken.Generate();
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        if (string.IsNullOrWhiteSpace(clinic.ConsultDisplayToken))
+        {
+            clinic.ConsultDisplayToken = ClinicCollectionDisplayToken.Generate();
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task EnsureDemoPracticeAsync(ClinicalDbContext clinical, CancellationToken cancellationToken)
+    {
+        var clinic = await clinical.Clinics
+            .FirstOrDefaultAsync(c => c.Id == ClinicalSeedIds.DemoPracticeClinicId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (clinic is null)
+        {
+            clinic = new Clinic
+            {
+                Name = "RaphCare Demo Practice",
+                RegistrationNumber = "REG-DEMO-PRAC",
+                ReferenceCode = "RC-DEMPRC",
+                Country = "South Africa",
+                TimeZone = "South Africa Standard Time",
+                CommercialPlan = ClinicCommercialPlan.Practice,
+                IsActive = true,
+                RegisteredByApplicationUserId = ClinicalSeedIds.DemoAdminUserId
+            };
+            clinical.Clinics.Add(clinic);
+            clinical.Entry(clinic).Property(c => c.Id).CurrentValue = ClinicalSeedIds.DemoPracticeClinicId;
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        else if (!string.Equals(clinic.CommercialPlan, ClinicCommercialPlan.Practice, StringComparison.Ordinal))
+        {
+            clinic.CommercialPlan = ClinicCommercialPlan.Practice;
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        if (string.IsNullOrWhiteSpace(clinic.ConsultDisplayToken))
+        {
+            clinic.ConsultDisplayToken = ClinicCollectionDisplayToken.Generate();
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        var providers = clinical.Set<Provider>();
+        var provider = await providers
+            .FirstOrDefaultAsync(p => p.Id == ClinicalSeedIds.DemoPracticeProviderId, cancellationToken)
+            .ConfigureAwait(false);
+        if (provider is null)
+        {
+            provider = new Provider
+            {
+                ClinicId = ClinicalSeedIds.DemoPracticeClinicId,
+                ApplicationUserId = ClinicalSeedIds.DemoProviderApplicationUserId,
+                LicenseNumber = "DEMO-LIC-PRAC",
+                IsActive = true,
+                JoinedAt = DateTime.UtcNow
+            };
+            providers.Add(provider);
+            clinical.Entry(provider).Property(p => p.Id).CurrentValue = ClinicalSeedIds.DemoPracticeProviderId;
             await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
@@ -474,6 +542,31 @@ public static class DemoPackSeeder
             });
         }
 
+        Guid[] practiceStaff =
+        [
+            ClinicalSeedIds.DemoAdminUserId,
+            ClinicalSeedIds.DemoProviderApplicationUserId
+        ];
+
+        foreach (var userId in practiceStaff)
+        {
+            var exists = await clinical.ClinicStaffMemberships
+                .AnyAsync(
+                    m => m.ApplicationUserId == userId && m.ClinicId == ClinicalSeedIds.DemoPracticeClinicId,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (exists)
+                continue;
+
+            clinical.ClinicStaffMemberships.Add(new ClinicStaffMembership
+            {
+                ApplicationUserId = userId,
+                ClinicId = ClinicalSeedIds.DemoPracticeClinicId,
+                IsActive = true,
+                JoinedAt = DateTime.UtcNow
+            });
+        }
+
         await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -513,7 +606,8 @@ public static class DemoPackSeeder
             await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        await GrantAccessAsync(clinical, patient.Id, cancellationToken).ConfigureAwait(false);
+        await GrantAccessAsync(clinical, patient.Id, ClinicalSeedIds.DemoClinicId, cancellationToken).ConfigureAwait(false);
+        await GrantAccessAsync(clinical, patient.Id, ClinicalSeedIds.DemoPracticeClinicId, cancellationToken).ConfigureAwait(false);
 
         var inpatient = await clinical.Patients
             .FirstOrDefaultAsync(p => p.Id == ClinicalSeedIds.DemoInpatientPatientId, cancellationToken)
@@ -539,13 +633,20 @@ public static class DemoPackSeeder
             inpatient.Email = "demo.inpatient@raphcare.com";
             await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
+
+        await GrantAccessAsync(clinical, ClinicalSeedIds.DemoInpatientPatientId, ClinicalSeedIds.DemoClinicId, cancellationToken)
+            .ConfigureAwait(false);
     }
 
-    private static async Task GrantAccessAsync(ClinicalDbContext clinical, Guid patientId, CancellationToken cancellationToken)
+    private static async Task GrantAccessAsync(
+        ClinicalDbContext clinical,
+        Guid patientId,
+        Guid clinicId,
+        CancellationToken cancellationToken)
     {
         var hasAccess = await clinical.PatientClinicAccesses
             .AnyAsync(
-                a => a.PatientId == patientId && a.ClinicId == ClinicalSeedIds.DemoClinicId,
+                a => a.PatientId == patientId && a.ClinicId == clinicId,
                 cancellationToken)
             .ConfigureAwait(false);
         if (hasAccess)
@@ -554,7 +655,7 @@ public static class DemoPackSeeder
         clinical.PatientClinicAccesses.Add(new PatientClinicAccess
         {
             PatientId = patientId,
-            ClinicId = ClinicalSeedIds.DemoClinicId,
+            ClinicId = clinicId,
             AccessType = PatientClinicAccessType.ManualGrant,
             GrantedAt = DateTime.UtcNow,
             GrantedByRule = "DemoPackSeeder",
@@ -689,6 +790,66 @@ public static class DemoPackSeeder
             if (bed is not null)
                 bed.Status = "Occupied";
             await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        if (!await clinical.Appointments.AnyAsync(a => a.Id == ClinicalSeedIds.DemoPracticeAppointmentId, cancellationToken).ConfigureAwait(false))
+        {
+            var appointment = new Appointment
+            {
+                ClinicId = ClinicalSeedIds.DemoPracticeClinicId,
+                PatientId = ClinicalSeedIds.DemoPatientId,
+                ProviderId = ClinicalSeedIds.DemoPracticeProviderId,
+                ScheduledStart = now.AddMinutes(30),
+                ScheduledEnd = now.AddMinutes(60),
+                Type = "InPerson",
+                Status = "Scheduled",
+                Reason = "Demo Practice consult"
+            };
+            clinical.Appointments.Add(appointment);
+            clinical.Entry(appointment).Property(a => a.Id).CurrentValue = ClinicalSeedIds.DemoPracticeAppointmentId;
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            var practiceAppointment = await clinical.Appointments
+                .FirstAsync(a => a.Id == ClinicalSeedIds.DemoPracticeAppointmentId, cancellationToken)
+                .ConfigureAwait(false);
+            practiceAppointment.ScheduledStart = now.AddMinutes(30);
+            practiceAppointment.ScheduledEnd = now.AddMinutes(60);
+            practiceAppointment.Status = "Scheduled";
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        if (!await clinical.ConsultTickets.AnyAsync(t => t.Id == ClinicalSeedIds.DemoPracticeConsultTicketId, cancellationToken).ConfigureAwait(false))
+        {
+            var ticket = new ConsultTicket
+            {
+                ClinicId = ClinicalSeedIds.DemoPracticeClinicId,
+                AppointmentId = ClinicalSeedIds.DemoPracticeAppointmentId,
+                PatientId = ClinicalSeedIds.DemoPatientId,
+                ProviderId = ClinicalSeedIds.DemoPracticeProviderId,
+                QueueCode = "PRAC01",
+                Status = "Waiting",
+                ArrivedAt = now.AddMinutes(-5),
+                CreatedByApplicationUserId = ClinicalSeedIds.DemoAdminUserId
+            };
+            clinical.ConsultTickets.Add(ticket);
+            clinical.Entry(ticket).Property(t => t.Id).CurrentValue = ClinicalSeedIds.DemoPracticeConsultTicketId;
+            await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            var ticket = await clinical.ConsultTickets
+                .FirstAsync(t => t.Id == ClinicalSeedIds.DemoPracticeConsultTicketId, cancellationToken)
+                .ConfigureAwait(false);
+            if (ticket.Status is "Completed" or "Cancelled")
+            {
+                ticket.Status = "Waiting";
+                ticket.CalledAt = null;
+                ticket.CompletedAt = null;
+                ticket.ArrivedAt = now.AddMinutes(-5);
+                await clinical.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 }

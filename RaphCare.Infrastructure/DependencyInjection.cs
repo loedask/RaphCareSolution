@@ -1,6 +1,8 @@
+using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using RaphCare.Application.Common.Configuration;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Infrastructure.Configuration;
@@ -57,7 +59,22 @@ public static class DependencyInjection
         services.AddSingleton<ITelehealthRtcTokenGenerator, AgoraRtcTokenService>();
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IPaymentGatewayService, PaymentGatewayService>();
+        services.Configure<PaystackOptions>(configuration.GetSection(PaystackOptions.SectionName));
+        var paystack = configuration.GetSection(PaystackOptions.SectionName).Get<PaystackOptions>();
+        if (paystack?.IsEnabled == true)
+        {
+            services.AddHttpClient(PaystackPaymentGatewayService.HttpClientName, (sp, client) =>
+            {
+                var opts = sp.GetRequiredService<IOptions<PaystackOptions>>().Value;
+                client.BaseAddress = new Uri("https://api.paystack.co/");
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", opts.SecretKey);
+            });
+            services.AddScoped<IPaymentGatewayService, PaystackPaymentGatewayService>();
+        }
+        else
+            services.AddScoped<IPaymentGatewayService, PaymentGatewayService>();
+
         services.AddScoped<IAIService, AIService>();
         services.AddScoped<IDeviceIntegrationService, DeviceIntegrationService>();
         services.AddScoped<ITeleSessionService, TeleSessionService>();

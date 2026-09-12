@@ -46,6 +46,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Dashboard metrics
 - [x] Clinical team (providers): list, detail, create, set active, create and delete schedules
 - [x] Appointments: list, book, cancel, reschedule
+- [x] Consult waiting display: enqueue today's appointments, call, complete, public `/display/consult/{token}` (codes only)
 - [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, lab orders (admin or doctor, InProgress)
 - [x] Collection board: search pending prescriptions/labs, camera QR scan, call a code onto the waiting screen, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR, public waiting-screen token (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs, profile photo when the patient uploaded one
@@ -61,11 +62,14 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Patient detail page (staff chart on hospital-deck: overview, clinical, coverage, devices, care; shows the patient's profile photo when present)
 - [x] Clinician (provider) detail and schedules (hospital-deck)
 - [x] Appointments page (hospital-deck)
+- [x] Consult page (hospital-deck): today's appointments into the queue, Call, Complete, open waiting screen at `/display/consult/{token}`
 - [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress; hospital-deck)
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
 - [x] Tele join page (hospital-deck)
 - [x] Admin dashboard (hospital-scoped; multi-hospital accounts use All hospitals first; single hospital auto-selects)
 - [x] Platform Fleet page in **RaphCare.Ops** (`/fleet`): Portal-style top bar; scan-first add (barcode / picture / photo, then hospital, serial, required Bluetooth MAC, model); stock tabs All / In stock / Assigned; optional Ops assign; revoke assignment back to stock; Ops-only delete (hard remove when unused, retire when history exists). Hospital Portal Devices assigns in-stock watches to patients.
+- [x] Ops price catalog (`/prices`): list commercial SKUs; edit ZAR and USD list amounts; API `GET/PUT api/ops/price-catalog` (RequirePlatformAdmin). Clinic `CommercialPlan` (Practice / Clinic / Hospital / Network) gates Hospital-only Portal nav and board APIs.
+- [x] Paystack patient care-plan checkout: `initialize` / `confirm` + `POST api/webhooks/paystack` when `Paystack:SecretKey` is set; Free upgrade stays unpaid; site software invoices via Paystack still follow-up (`docs/08_External_Integrations.md`)
 - [x] Web UI language switcher (en / fr / ln / sw)
 - [x] Phone-usable admin (responsive layout + thin home-screen install): Portal and Ops top bar, forms, tables, hospital deck, and fleet tighten under 768px / 480px. Manifest and icons support Add to Home Screen. No offline service worker. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md)
 
@@ -75,7 +79,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress, collection board and waiting screens, and Ops fleet stock under hospital or Direct. Phone and tablet layout plus a thin home-screen install are in place. Clinician Mobile stays out of scope. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress, collection and consult waiting screens, and Ops fleet stock under hospital or Direct. Phone and tablet layout plus a thin home-screen install are in place. Clinician Mobile stays out of scope. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -303,7 +307,6 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 ### Care loops and clinic ops
 
-- [ ] Consult waiting display for Practice and Clinic `(optional / later)`: receptionist or doctor calls the next appointment into the consult room; TV or tablet shows ticket or short code, not the name (separate from pharmacy pickup waiting screen)
 - [ ] Open-loop / care-gap board on hospital home `(optional / later)`: overdue referrals, missed return visits, uncollected medicines, open labs waiting on results
 - [ ] AI ops suggestions on that board `(optional / later)`: propose next staff actions; human confirms (Care GP / Plena / Beacon style)
 - [ ] Appointment and pickup reminder agent `(optional / later)`: in-app notice first; SMS or voice when configured (Evergrove / Avoca style)
@@ -337,7 +340,7 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 ### Step 6 status
 
-**Roadmap only (not in overall %).** Prefer ship order when you schedule: (1) consult waiting display for Practice and Clinic, (2) visit/ward note draft, (3) care-gap board, (4) patient companion on labs and vitals, (5) reminder agent, (6) casualty triage suggestion, then optional imaging plug-in.
+**Roadmap only (not in overall %).** Prefer ship order when you schedule: (1) visit/ward note draft, (2) care-gap board, (3) patient companion on labs and vitals, (4) reminder agent, (5) casualty triage suggestion, then optional imaging plug-in.
 
 ---
 
@@ -381,10 +384,10 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 | Surface | Primary owner | Status snapshot |
 |---------|---------------|-----------------|
-| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle plus ward notes and discharge invoice; casualty queue and display token; theatre board; outbound referral board; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
+| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle plus ward notes and discharge invoice; casualty and consult queues and display tokens; theatre board; outbound referral board; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone layout + thin home-screen install (manifest + icons; not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + consult + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone layout + thin home-screen install (manifest + icons; not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

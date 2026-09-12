@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Application.Features.Organization.Queries.GetCasualtyDisplay;
 using RaphCare.Application.Features.Organization.Queries.GetCollectionDisplay;
+using RaphCare.Application.Features.Organization.Queries.GetConsultDisplay;
 
 namespace RaphCare.API.Controllers;
 
@@ -28,6 +29,15 @@ public sealed class CollectionDisplayController(IMediator mediator) : Controller
     public async Task<IActionResult> GetCasualty(string token, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetCasualtyDisplayQuery { Token = token }, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    [HttpGet("consult/{token}", Name = "GetConsultDisplay")]
+    [ProducesResponseType(typeof(ConsultDisplayBoardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetConsult(string token, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetConsultDisplayQuery { Token = token }, cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 }

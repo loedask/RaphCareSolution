@@ -14,6 +14,7 @@ public class BillingDbContext(DbContextOptions<BillingDbContext> options) : DbCo
     public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>();
     public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
     public DbSet<PatientCarePlan> PatientCarePlans => Set<PatientCarePlan>();
+    public DbSet<PriceCatalogItem> PriceCatalogItems => Set<PriceCatalogItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,6 +23,7 @@ public class BillingDbContext(DbContextOptions<BillingDbContext> options) : DbCo
         modelBuilder.ApplyConfiguration(new PaymentMethodConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentTransactionConfiguration());
         modelBuilder.ApplyConfiguration(new PatientCarePlanConfiguration());
+        modelBuilder.ApplyConfiguration(new PriceCatalogItemConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

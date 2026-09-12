@@ -4,6 +4,8 @@ namespace RaphCare.Persistence.Seed;
 public static class ClinicalSeedIds
 {
     public static readonly Guid DemoClinicId = Guid.Parse("11111111-1111-1111-1111-111111111101");
+    /// <summary>Solo GP Practice plan demo site for consult waiting and plan gating.</summary>
+    public static readonly Guid DemoPracticeClinicId = Guid.Parse("11111111-1111-1111-1111-111111111121");
     /// <summary>RaphCare Direct programme for private Health Track / SafeCare packages (packaging self-claim).</summary>
     public static readonly Guid DirectClinicId = Guid.Parse("11111111-1111-1111-1111-111111111120");
     public static readonly Guid DemoProviderId = Guid.Parse("11111111-1111-1111-1111-111111111102");
@@ -27,4 +29,7 @@ public static class ClinicalSeedIds
     public static readonly Guid DemoInpatientPatientId = Guid.Parse("11111111-1111-1111-1111-111111111113");
     public static readonly Guid DemoCalledPrescriptionId = Guid.Parse("11111111-1111-1111-1111-111111111114");
     public static readonly Guid DemoAdmissionId = Guid.Parse("11111111-1111-1111-1111-111111111115");
+    public static readonly Guid DemoPracticeAppointmentId = Guid.Parse("11111111-1111-1111-1111-111111111122");
+    public static readonly Guid DemoPracticeConsultTicketId = Guid.Parse("11111111-1111-1111-1111-111111111123");
+    public static readonly Guid DemoPracticeProviderId = Guid.Parse("11111111-1111-1111-1111-111111111124");
 }

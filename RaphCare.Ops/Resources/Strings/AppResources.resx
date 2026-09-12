@@ -159,4 +159,41 @@
   <data name="Fleet_ScanExtracting" xml:space="preserve"><value>Reading photo…</value></data>
   <data name="Fleet_CandidateMac" xml:space="preserve"><value>MAC</value></data>
   <data name="Fleet_CandidateSerial" xml:space="preserve"><value>Serial</value></data>
+  <data name="Prices_Nav" xml:space="preserve"><value>Prices</value></data>
+  <data name="Prices_PageTitle" xml:space="preserve"><value>Prices - RaphCare Ops</value></data>
+  <data name="Prices_Title" xml:space="preserve"><value>Price catalog</value></data>
+  <data name="Prices_Lead" xml:space="preserve"><value>Edit list amounts in ZAR and USD. These feed partner quotes and patient care plan options.</value></data>
+  <data name="Prices_AuthTitle" xml:space="preserve"><value>Sign in as platform admin</value></data>
+  <data name="Prices_AuthLead" xml:space="preserve"><value>You need a platform Ops session to edit list prices.</value></data>
+  <data name="Prices_CatalogTitle" xml:space="preserve"><value>Catalog SKUs</value></data>
+  <data name="Prices_CatalogLead" xml:space="preserve"><value>Change an amount, then save that row. Site plans, seats, patient care, watch packages, usage, and add-ons are listed here.</value></data>
+  <data name="Prices_TotalMeta" xml:space="preserve"><value>{0} SKUs</value></data>
+  <data name="Prices_Empty" xml:space="preserve"><value>No price catalog rows yet. Run API seed so the default list is created.</value></data>
+  <data name="Prices_SkuColumn" xml:space="preserve"><value>SKU</value></data>
+  <data name="Prices_NameColumn" xml:space="preserve"><value>Name</value></data>
+  <data name="Prices_CategoryColumn" xml:space="preserve"><value>Category</value></data>
+  <data name="Prices_ZarColumn" xml:space="preserve"><value>ZAR</value></data>
+  <data name="Prices_UsdColumn" xml:space="preserve"><value>USD</value></data>
+  <data name="Prices_ActionsColumn" xml:space="preserve"><value>Actions</value></data>
+  <data name="Prices_SaveButton" xml:space="preserve"><value>Save</value></data>
+  <data name="Prices_CouldNotLoad" xml:space="preserve"><value>Could not load the price catalog.</value></data>
+  <data name="Prices_CouldNotSave" xml:space="preserve"><value>Could not save that price.</value></data>
+  <data name="Prices_InvalidAmounts" xml:space="preserve"><value>Enter non-negative ZAR and USD amounts.</value></data>
+  <data name="Prices_SavedFormat" xml:space="preserve"><value>Saved {0}.</value></data>
+  <data name="Prices_PlanTitle" xml:space="preserve"><value>Clinic site plan</value></data>
+  <data name="Prices_PlanLead" xml:space="preserve"><value>Pick a hospital or practice, then set Practice, Clinic, Hospital, or Network. That unlocks the matching floor tools on Portal.</value></data>
+  <data name="Prices_PlanHospitalLabel" xml:space="preserve"><value>Hospital or practice</value></data>
+  <data name="Prices_SelectHospital" xml:space="preserve"><value>Select a hospital…</value></data>
+  <data name="Prices_PlanLabel" xml:space="preserve"><value>Commercial plan</value></data>
+  <data name="Prices_SavePlanButton" xml:space="preserve"><value>Save plan</value></data>
+  <data name="Prices_CouldNotLoadPlan" xml:space="preserve"><value>Could not load that clinic plan.</value></data>
+  <data name="Prices_CouldNotSavePlan" xml:space="preserve"><value>Could not save that clinic plan.</value></data>
+  <data name="Prices_PlanSavedFormat" xml:space="preserve"><value>Saved {0} as {1}.</value></data>
+  <data name="Prices_FeatureConsult" xml:space="preserve"><value>consult waiting</value></data>
+  <data name="Prices_FeatureCollection" xml:space="preserve"><value>collection</value></data>
+  <data name="Prices_FeatureInpatient" xml:space="preserve"><value>inpatient</value></data>
+  <data name="Prices_FeatureCasualty" xml:space="preserve"><value>casualty</value></data>
+  <data name="Prices_FeatureTheatre" xml:space="preserve"><value>theatre</value></data>
+  <data name="Prices_FeatureNone" xml:space="preserve"><value>No floor tools on this plan.</value></data>
+  <data name="Prices_FeatureListFormat" xml:space="preserve"><value>Includes: {0}.</value></data>
 </root>

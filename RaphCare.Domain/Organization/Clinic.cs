@@ -23,6 +23,13 @@ public class Clinic : AggregateRoot, ISoftDelete
     public string ReferenceCode { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public string TimeZone { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Commercial site plan: Practice, Clinic, Hospital, or Network.
+    /// Defaults to Clinic for backward compatibility with existing hospitals.
+    /// </summary>
+    public string CommercialPlan { get; set; } = ClinicCommercialPlan.Default;
+
     public bool IsActive { get; set; }
 
     /// <summary>
@@ -56,6 +63,11 @@ public class Clinic : AggregateRoot, ISoftDelete
     /// Unguessable token for the public casualty waiting-room URL. The display shows queue codes only.
     /// </summary>
     public string? CasualtyDisplayToken { get; set; }
+
+    /// <summary>
+    /// Unguessable token for the public consult waiting-room URL. The display shows queue codes only.
+    /// </summary>
+    public string? ConsultDisplayToken { get; set; }
 
     public ICollection<Facility> Facilities { get; set; } = new List<Facility>();
     public ICollection<Department> Departments { get; set; } = new List<Department>();

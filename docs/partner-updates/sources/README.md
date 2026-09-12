@@ -9,8 +9,9 @@ Edit notes here. Partner-facing PDFs are written one level up in `docs/partner-u
 | `partner-update-YYYY-MM-DD` | Dated product, web, and API partner note |
 | `raphcare-feature-catalog-v1` | Shareable list of what the product does (Portal for hospitals, Ops for platform owners, Mobile for patients) |
 | `raphcare-price-list-v2` | Price list PDF (current; adds Practice for solo GPs) |
-| `raphcare-demo-accounts-v2` | Staging demo logins sheet (current; keep private) |
+| `raphcare-demo-accounts-v3` | Staging demo logins sheet (current; keep private) |
 | `archives/raphcare-price-list-v1` | Prior price list (no Practice tier) |
+| `archives/raphcare-demo-accounts-v2` | Prior demo accounts sheet (Sep 2026, single clinic) |
 | `archives/raphcare-demo-accounts-v1` | Prior demo accounts sheet (Aug 2026) |
 
 Each stem has `.md`, `.config.json`, and often its own `.pdf.css` (dated notes share `partner-update.pdf.css`).

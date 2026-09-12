@@ -40,7 +40,7 @@ public partial class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<E
             NotFoundException => (HttpStatusCode.NotFound, "Not Found", exception.Message),
             ValidationException validation => (HttpStatusCode.BadRequest, "Validation Error", "One or more validation failures occurred."),
             BusinessRuleException business => (HttpStatusCode.BadRequest, "Business Rule Violation", business.Message),
-            ForbiddenAccessException => (HttpStatusCode.Forbidden, "Forbidden", "Access denied."),
+            ForbiddenAccessException forbidden => (HttpStatusCode.Forbidden, "Forbidden", forbidden.Message),
             _ => (HttpStatusCode.InternalServerError, "Internal Server Error", "An unexpected error occurred.")
         };
 

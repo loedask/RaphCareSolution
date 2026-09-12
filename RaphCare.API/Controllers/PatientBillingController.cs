@@ -6,6 +6,8 @@ using RaphCare.Application.Common.DTOs;
 using RaphCare.Application.Features.PatientBilling.Commands.AddMyPaymentMethod;
 using RaphCare.Application.Features.PatientBilling.Commands.RemoveMyPaymentMethod;
 using RaphCare.Application.Features.PatientBilling.Commands.SetDefaultMyPaymentMethod;
+using RaphCare.Application.Features.PatientBilling.Commands.ConfirmCarePlanCheckout;
+using RaphCare.Application.Features.PatientBilling.Commands.InitializeCarePlanCheckout;
 using RaphCare.Application.Features.PatientBilling.Commands.UpgradeMyBillingPlan;
 using RaphCare.Application.Features.PatientBilling.DTOs;
 using RaphCare.Application.Features.PatientBilling.Queries.GetMyPatientCarePlan;
@@ -84,6 +86,26 @@ public sealed class PatientBillingController(IMediator mediator) : ControllerBas
     [HttpPost("upgrade", Name = "UpgradeMyBillingPlan")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Upgrade([FromBody] UpgradeMyBillingPlanCommand command, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(command, cancellationToken).ConfigureAwait(false);
+        return NoContent();
+    }
+
+    [HttpPost("checkout/initialize", Name = "InitializeCarePlanCheckout")]
+    [ProducesResponseType(typeof(CarePlanCheckoutDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> InitializeCheckout(
+        [FromBody] InitializeCarePlanCheckoutCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(command, cancellationToken).ConfigureAwait(false);
+        return Ok(result);
+    }
+
+    [HttpPost("checkout/confirm", Name = "ConfirmCarePlanCheckout")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ConfirmCheckout(
+        [FromBody] ConfirmCarePlanCheckoutCommand command,
+        CancellationToken cancellationToken)
     {
         await _mediator.Send(command, cancellationToken).ConfigureAwait(false);
         return NoContent();

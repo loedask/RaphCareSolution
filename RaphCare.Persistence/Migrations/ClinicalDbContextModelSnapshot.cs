@@ -201,6 +201,67 @@ namespace RaphCare.Persistence.Migrations
                     b.ToTable("CarePlanTask");
                 });
 
+            modelBuilder.Entity("RaphCare.Domain.Clinical.ConsultTicket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AppointmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ArrivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CalledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProviderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("QueueCode")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("CalledAt");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("ClinicId", "Status");
+
+                    b.HasIndex("QueueCode");
+
+                    b.ToTable("ConsultTickets", (string)null);
+                });
+
             modelBuilder.Entity("RaphCare.Domain.Clinical.ClinicalAttachment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1272,6 +1333,17 @@ namespace RaphCare.Persistence.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
+                    b.Property<string>("CommercialPlan")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasDefaultValue("Clinic");
+
+                    b.Property<string>("ConsultDisplayToken")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1329,6 +1401,10 @@ namespace RaphCare.Persistence.Migrations
                     b.HasIndex("CollectionDisplayToken")
                         .IsUnique()
                         .HasFilter("[CollectionDisplayToken] IS NOT NULL");
+
+                    b.HasIndex("ConsultDisplayToken")
+                        .IsUnique()
+                        .HasFilter("[ConsultDisplayToken] IS NOT NULL");
 
                     b.HasIndex("IsDeleted");
 

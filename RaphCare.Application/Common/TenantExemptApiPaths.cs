@@ -10,6 +10,7 @@ public static class TenantExemptApiPaths
         path.StartsWith("/api/auth/email", StringComparison.OrdinalIgnoreCase)
         || path.StartsWith("/api/admin/", StringComparison.OrdinalIgnoreCase)
         || path.StartsWith("/api/display/", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/api/webhooks/", StringComparison.OrdinalIgnoreCase)
         || path.StartsWith("/api/devices", StringComparison.OrdinalIgnoreCase)
         || path.StartsWith("/api/ops", StringComparison.OrdinalIgnoreCase)
         // Patient membership / care-history list. Used before Active clinic is set on the phone.

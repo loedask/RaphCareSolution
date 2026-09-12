@@ -35,16 +35,18 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Patient chart (view) | Done | Same large header and section menu as other hospital pages. Sections: overview, clinical, coverage, devices, and care. If the patient uploaded a photo on the phone, it shows in that header. Staff view this; they do not edit it here. |
 | Clinical team and schedules | Done | Add clinicians; manage schedules. Clinician detail uses the same large header and section menu. |
 | Appointments | Done | Book, cancel, reschedule. The appointments page uses the same large header and section menu. |
+| Consult waiting display | Done | Put today's appointments on a consult queue. Call the next code onto a TV or tablet in reception. The screen shows codes only, not names. Separate from pharmacy pickup. |
 | Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete. Visit and tele join pages match the hospital page layout. |
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
 | Fleet watches (platform) | Done | Ops stocks watches under a hospital or Direct. Capture packaging or Device Info first, then confirm hospital, serial, and Bluetooth MAC. The list uses All, In stock, and Assigned tabs. Ops can revoke an assignment back to stock, or delete a stock row (history is retired, not erased). Ops and Portal Devices lists show MAC and activated date when known. Hospital staff assign an in-stock watch to a patient on Devices. Patients claim the serial, then Bluetooth only pairs to that watch. |
+| Price catalog (platform) | Done | Ops can open Prices and change list amounts in rand and US dollars for site plans, seats, patient care, watch packages, extra video, and Clinic AI. |
 | Web languages (English, French, Lingala, Swahili) | Done | Change language in the admin portal |
 | Use Portal and Ops on a phone | Done | Layouts tighten on small screens: top bar, forms, tables you can swipe, and hospital section tabs. Staff can add a home-screen shortcut from the browser (not a separate staff app, and not offline). |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, and a waiting screen that shows pickup codes (not names). Ops stocks watches under a hospital or Direct. Phone layout and a light home-screen shortcut are available.
+**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, a consult waiting screen for the next person into the doctor, and a pharmacy pickup waiting screen that shows codes (not names). Ops stocks watches under a hospital or Direct. Phone layout and a light home-screen shortcut are available.
 
 ---
 
@@ -82,7 +84,7 @@ What patients see on Android and iPhone.
 | Care, request a call, join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
 | Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. When staff call your code, you get a notice and Health records say come to the counter. |
 | Insurance | Done | |
-| Billing and payment methods | Done | |
+| Billing and payment methods | Done | Care plans can start Paystack checkout when keys are set. Site software invoices still later. |
 | Family members | Done | |
 | Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone. Home and Mental Health tips follow your recent check-ins instead of sample copy. |
 | Chat assistant | Done | Scrollable chat with prior messages in the same session. The assistant can use the last few turns so follow-ups make sense. Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
@@ -168,7 +170,6 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 
 | Area | Status | What you could do later |
 |------|--------|-------------------------|
-| Consult waiting display | Later | When the doctor is free, receptionist or doctor calls the next person into the room. A TV or tablet in reception shows a ticket or short code, not the name. For Practice and Clinic. Separate from the pharmacy pickup waiting screen. |
 | Open work board | Later | One place for overdue referrals, missed return visits, medicines not yet collected, and labs still waiting |
 | Smart suggestions on that board | Later | Soft prompts for what staff might do next. Staff confirm. |
 | Visit or ward note draft with AI | Later | Same idea as the discharge draft: start text from vitals and stay facts. Staff edit. |
@@ -188,7 +189,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 | Deeper mental-health note help | Done | Staff can draft an AI therapy note from scores on the patient chart when the hospital turns that on. |
 | US insurance prior auth and claims | Not for this product | Out of scope for RaphCare. |
 
-**Bottom line (later):** a backlog for the next product wave. Prefer order when you schedule: consult waiting display for Practice and Clinic, visit or ward note draft, open work board, plain-language labs help, reminders, then casualty priority hint.
+**Bottom line (later):** a backlog for the next product wave. Prefer order when you schedule: visit or ward note draft, open work board, plain-language labs help, reminders, then casualty priority hint.
 
 ---
 
@@ -213,7 +214,7 @@ This list is the current manual smoke for admin web and the patient phone app. B
 1. **Admin web:** sign in as `demo.admin@raphcare.com` (password `RaphCareDemo!2026` unless you changed `Demo:Password`). Open **RaphCare Demo Clinic**.
 2. **Admin web:** there is no platform left menu. Use All hospitals and Register hospital in the top bar. Open a hospital for its tools.
 3. **Admin web:** on that hospital, open Inpatient. Add a ward, room, or bed if needed, admit someone. Add a ward note. On discharge, try Draft with AI, edit the text, then finish with a nightly rate and (optional) a return visit for next week. Confirm occupancy numbers on the hospital dashboard.
-4. **Admin web:** open Casualty. Add a walk-in (with or without a patient). Call the code and open the casualty waiting screen on another tab. Open Theatre and add today's case, then start and complete it. Open Referrals, log a referral, then accept or complete it. Open Roster, add someone to Morning or Afternoon, then remove them if you want.
+4. **Admin web:** open Consult. Add today's appointment to the queue, Call the code, and open the consult waiting screen on another tab. Open Casualty. Add a walk-in (with or without a patient). Call the code and open the casualty waiting screen on another tab. Open Theatre and add today's case, then start and complete it. Open Referrals, log a referral, then accept or complete it. Open Roster, add someone to Morning or Afternoon, then remove them if you want.
 5. **Admin web:** on the hospital overview (and the admin home when that hospital is selected), confirm recent SOS or fall alerts show if any exist. Open Devices for the full list.
 6. **Admin web:** open a patient chart. Use the section menu for overview, clinical, coverage, devices, and care. If that patient uploaded a photo on the phone, it should show in the header.
 7. **Admin web:** book an appointment and start a visit (outpatient path). While it is in progress, add a note, a prescription with more than one medicine if you want, or a lab order (not a result).

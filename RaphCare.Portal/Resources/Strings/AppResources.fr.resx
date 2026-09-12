@@ -703,6 +703,9 @@
   <data name="Common_Casualty" xml:space="preserve">
     <value>Urgences</value>
   </data>
+  <data name="Common_Consult" xml:space="preserve">
+    <value>Consult</value>
+  </data>
   <data name="Common_Theatre" xml:space="preserve">
     <value>Bloc opÃƒÂ©ratoire</value>
   </data>
@@ -3282,6 +3285,159 @@
   </data>
   <data name="DisplayCasualty_CouldNotLoad" xml:space="preserve">
     <value>Impossible de charger cet ecran d'attente.</value>
+  </data>
+  <data name="Consult_PageTitle" xml:space="preserve">
+    <value>Consult queue</value>
+  </data>
+  <data name="Consult_Title" xml:space="preserve">
+    <value>Consult</value>
+  </data>
+  <data name="Consult_Lead" xml:space="preserve">
+    <value>Call the next appointment into the consult room at {0}.</value>
+  </data>
+  <data name="Consult_Loading" xml:space="preserve">
+    <value>Loading the consult board…</value>
+  </data>
+  <data name="Consult_SectionsAria" xml:space="preserve">
+    <value>Consult sections</value>
+  </data>
+  <data name="Consult_Eyebrow" xml:space="preserve">
+    <value>Outpatient queue</value>
+  </data>
+  <data name="Consult_WaitingTitle" xml:space="preserve">
+    <value>Queue</value>
+  </data>
+  <data name="Consult_WaitingLead" xml:space="preserve">
+    <value>Patients waiting to be called into the room.</value>
+  </data>
+  <data name="Consult_CalledTitle" xml:space="preserve">
+    <value>Called</value>
+  </data>
+  <data name="Consult_CalledLead" xml:space="preserve">
+    <value>Patients already called from the waiting list.</value>
+  </data>
+  <data name="Consult_TodayTitle" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Consult_TodayLead" xml:space="preserve">
+    <value>Today's appointments you can add to the consult queue.</value>
+  </data>
+  <data name="Consult_TodayHint" xml:space="preserve">
+    <value>Add a scheduled or in-progress appointment. The waiting screen shows the code only.</value>
+  </data>
+  <data name="Consult_RecentTitle" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="Consult_RecentLead" xml:space="preserve">
+    <value>Recent consult queue tickets from this hospital.</value>
+  </data>
+  <data name="Consult_WaitingOne" xml:space="preserve">
+    <value>{0} waiting</value>
+  </data>
+  <data name="Consult_WaitingMany" xml:space="preserve">
+    <value>{0} waiting</value>
+  </data>
+  <data name="Consult_OpenDisplay" xml:space="preserve">
+    <value>Open waiting screen</value>
+  </data>
+  <data name="Consult_DisplayHint" xml:space="preserve">
+    <value>The waiting screen shows queue codes only. It does not show names.</value>
+  </data>
+  <data name="Consult_CouldNotLoad" xml:space="preserve">
+    <value>Could not load the consult board.</value>
+  </data>
+  <data name="Consult_CouldNotOpenDisplay" xml:space="preserve">
+    <value>Could not open the waiting screen.</value>
+  </data>
+  <data name="Consult_CouldNotCall" xml:space="preserve">
+    <value>Could not call that ticket.</value>
+  </data>
+  <data name="Consult_CouldNotComplete" xml:space="preserve">
+    <value>Could not complete that ticket.</value>
+  </data>
+  <data name="Consult_CouldNotCancel" xml:space="preserve">
+    <value>Could not cancel that ticket.</value>
+  </data>
+  <data name="Consult_CouldNotCreate" xml:space="preserve">
+    <value>Could not add the appointment to the queue.</value>
+  </data>
+  <data name="Consult_Called" xml:space="preserve">
+    <value>Patient called to the waiting screen.</value>
+  </data>
+  <data name="Consult_Completed" xml:space="preserve">
+    <value>Ticket completed.</value>
+  </data>
+  <data name="Consult_Cancelled" xml:space="preserve">
+    <value>Ticket cancelled.</value>
+  </data>
+  <data name="Consult_Created" xml:space="preserve">
+    <value>Appointment added to the consult queue.</value>
+  </data>
+  <data name="Consult_Call" xml:space="preserve">
+    <value>Call</value>
+  </data>
+  <data name="Consult_Complete" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="Consult_CancelTicket" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Consult_OnScreen" xml:space="preserve">
+    <value>On screen</value>
+  </data>
+  <data name="Consult_NoWaiting" xml:space="preserve">
+    <value>No one is waiting.</value>
+  </data>
+  <data name="Consult_NoCalled" xml:space="preserve">
+    <value>No one is on the waiting screen.</value>
+  </data>
+  <data name="Consult_NoToday" xml:space="preserve">
+    <value>No appointments for today yet.</value>
+  </data>
+  <data name="Consult_NoRecent" xml:space="preserve">
+    <value>No recent tickets yet.</value>
+  </data>
+  <data name="Consult_QueueCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Consult_Arrived" xml:space="preserve">
+    <value>Arrived</value>
+  </data>
+  <data name="Consult_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Consult_AddToQueue" xml:space="preserve">
+    <value>Add to queue</value>
+  </data>
+  <data name="Consult_AlreadyQueued" xml:space="preserve">
+    <value>Already queued</value>
+  </data>
+  <data name="Consult_StatusScheduled" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="Consult_StatusInProgress" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+  <data name="DisplayConsult_PageTitle" xml:space="preserve">
+    <value>Consult waiting</value>
+  </data>
+  <data name="DisplayConsult_Eyebrow" xml:space="preserve">
+    <value>Consult</value>
+  </data>
+  <data name="DisplayConsult_NowServing" xml:space="preserve">
+    <value>Now serving</value>
+  </data>
+  <data name="DisplayConsult_Waiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="DisplayConsult_Idle" xml:space="preserve">
+    <value>Please wait for your code to be called.</value>
+  </data>
+  <data name="DisplayConsult_Hint" xml:space="preserve">
+    <value>Codes only. No names are shown.</value>
+  </data>
+  <data name="DisplayConsult_CouldNotLoad" xml:space="preserve">
+    <value>Could not load this waiting screen.</value>
   </data>
   <data name="Theatre_PageTitle" xml:space="preserve">
     <value>Tableau du bloc</value>

@@ -17,7 +17,7 @@ This is the shareable list of what RaphCare does. It is grouped by who uses it:
 It is not a progress board. Completion % lives on the partner status sheet. Use this catalog when someone asks what is in the product.
 
 <div class="note">
-<p><strong>How to sell vs what you can demo.</strong> Staging shows the full hospital workspace on the Portal so a walkthrough is easy. Commercially, Practice is for a solo GP or small rooms practice. Clinic is the lighter outpatient set with a fuller front desk team. Both include a consult waiting display (call the next person into the doctor) when that ships. Hospital adds beds, the collection counter and pickup waiting screen, casualty, theatre, and the rest of the stay. The Portal headings below follow the Clinic and Hospital split. Ops is not sold as a hospital plan line; it is how RaphCare (or a partner running the platform) stocks and assigns watches.</p>
+<p><strong>How to sell vs what you can demo.</strong> Staging shows the full hospital workspace on the Portal so a walkthrough is easy. Commercially, Practice is for a solo GP or small rooms practice. Clinic is the lighter outpatient set with a fuller front desk team. Both include a consult waiting display (call the next person into the doctor). Hospital adds beds, the collection counter and pickup waiting screen, casualty, theatre, and the rest of the stay. The Portal headings below follow the Clinic and Hospital split. Ops is not sold as a hospital plan line; it is how RaphCare (or a partner running the platform) stocks and assigns watches.</p>
 </div>
 
 ## How to read status
@@ -28,7 +28,7 @@ It is not a progress board. Completion % lives on the partner status sheet. Use 
 | **In progress** | Partly built. Do not sell it as finished. |
 | **Later** | On the list. Not in the current sale. |
 
-Last reviewed: 10 September 2026
+Last reviewed: 12 September 2026
 
 ---
 
@@ -50,6 +50,7 @@ Patients can sign in on the web too, but they only get a short welcome. The full
 | Patient sign-in on the web | Patients can sign in in the browser. After that they see a short welcome, not the full chart. Point them to the phone app for day-to-day use. | Ready |
 | Collection waiting screen | Open on a TV or tablet at the pharmacy or lab counter. Shows pickup codes. Does not show names or medicines. Hospital collection. | Ready |
 | Casualty waiting screen | A second TV queue for walk-ins. Shows codes and a priority colour. Does not show names. Hospital plan. | Ready |
+| Consult waiting screen | Open on a TV or tablet in reception. Shows queue codes for the next consult. Does not show names. Practice, Clinic, and Hospital outpatient. | Ready |
 | Languages | English, French, Lingala, and Swahili on the website. | Ready |
 | Staff use on a phone | Same Portal website on a small screen. Top bar, forms, and tables tighten for phone and tablet. Staff can add a home-screen shortcut from the browser. Not a separate staff app. | Ready |
 
@@ -64,7 +65,7 @@ Patients can sign in on the web too, but they only get a short welcome. The full
 | Patient chart | Staff can read overview, clinical, coverage, devices, and care. They do not edit the chart here. | Ready |
 | Clinical team and schedules | Add clinicians. Set when they are available. | Ready |
 | Appointments | Book, cancel, or reschedule. | Ready |
-| Consult waiting display | When the doctor is free, receptionist or doctor calls the next person into the room. A TV or tablet in reception shows a ticket or short code, not the person's name. For Practice and Clinic (and Hospital outpatient). | Later |
+| Consult waiting display | When the doctor is free, receptionist or doctor calls the next person into the room. A TV or tablet in reception shows a ticket or short code, not the person's name. For Practice and Clinic (and Hospital outpatient). | Ready |
 | Visits and vitals | Start a visit. Record vitals and notes. Order prescriptions and lab tests while the visit is open. Complete the visit. | Ready |
 | Video join for staff | Start a video session from admin. | Ready |
 | Dashboard numbers | See clinic metrics for the site. | Ready |
@@ -109,6 +110,7 @@ A separate website from the hospital Portal. Platform owners use it to stock wea
 | Revoke assignment | Take a watch back to stock when the patient should no longer keep it. | Ready |
 | Delete stock device | Remove a mistaken or unused stock row. Only Ops can do this. Watches with history are retired instead of erased. | Ready |
 | Fleet list | Browse All, In stock, or Assigned. See Bluetooth MAC and activated date when known. Assign, revoke, or delete from the same list. | Ready |
+| Price catalog | Edit list prices in ZAR and USD for site plans, seats, patient care, watch packages, extra video, and Clinic AI. | Ready |
 
 ---
 
@@ -136,7 +138,7 @@ Android is the day-to-day test target. iPhone can run the app. Video on iPhone i
 | Chat assistant | Wellness questions get a reply from the hospital's cloud AI. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. | Ready |
 | Notifications list | In-app notices such as pickup called and lab ready. Real lock-screen push still needs store and server setup. | In progress |
 | Insurance | View and add coverage. | Ready |
-| Billing and payment methods | View bills and add a payment method. Live card or mobile-money collection is not on yet. | Ready |
+| Billing and payment methods | View bills and care plan options. Essential and Complete Care can start Paystack checkout when test or live keys are configured. Site software invoices via Paystack are still later. | Ready |
 | Family members | List, add, and open a family member. | Ready |
 | Mental health | Mood check-in and related content. The Home tip follows recent check-ins. | Ready |
 
@@ -182,7 +184,6 @@ Ideas for after the Hospital plan board. AI would still only draft or suggest. A
 
 | Feature | What it would do | Status |
 |---------|------------------|--------|
-| Consult waiting display | Call the next person into the doctor on a reception TV or tablet. Ticket or short code only. Practice and Clinic (and Hospital outpatient). Separate from pharmacy pickup. | Later |
 | Open work board | One place for overdue referrals, missed return visits, medicines not yet collected, and labs still waiting. | Later |
 | Visit or ward note draft with AI | Start text from vitals and stay facts. Staff edit. | Later |
 | Reminders for visits and pickup | In-app first. Text or call later when the site is set up for that. | Later |
@@ -202,8 +203,8 @@ Ideas for after the Hospital plan board. AI would still only draft or suggest. A
 | Hospital | Everything in Clinic, plus beds, ward notes, collection counter, pickup waiting screen, discharge invoice, occupancy, casualty, theatre, outbound referrals, nurse job, roster, return visit at discharge, and AI discharge draft. Up to 25 staff. |
 | Network | Several sites. Quoted. Shared patient index and reporting as we switch that on. |
 
-Patients use the phone app. Practice and hospital staff use the Portal. Platform owners use Ops for wearable fleet. There is no clinician phone app in this catalog. RaphCare does not place shared doctors into hospital patient lists.
+Patients use the phone app. Practice and hospital staff use the Portal. Platform owners use Ops for wearable fleet and for editing list prices. There is no clinician phone app in this catalog. RaphCare does not place shared doctors into hospital patient lists.
 
 A consult waiting display is for the next person to see the doctor. A pickup waiting screen is for pharmacy or lab codes. They are not the same screen.
 
-Prices sit on the separate price list (v2).
+Prices sit on the separate price list (v2). Ops can change those list amounts on the Ops Prices page.

@@ -1599,6 +1599,150 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicConsultBoard>> GetConsultBoardAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/consult/board", cancellationToken)
+                .ConfigureAwait(false);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicConsultBoard>.Failure("Hospital not found or you do not have access.", 404);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicConsultBoard>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ConsultBoardDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicConsultBoard>.Failure("Could not load the consult board.");
+
+            return Response<ClinicConsultBoard>.Success(MapConsultBoard(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicConsultBoard>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicConsultTicket>> CreateConsultTicketAsync(
+        Guid clinicId,
+        CreateConsultTicketRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/consult/tickets",
+                    new { request.AppointmentId },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicConsultTicket>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ConsultTicketDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicConsultTicket>.Failure("Could not add the consult ticket.");
+
+            return Response<ClinicConsultTicket>.Success(MapConsultTicket(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicConsultTicket>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicConsultTicket>> CallConsultTicketAsync(
+        Guid clinicId,
+        Guid ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/consult/tickets/{ticketId}/call", null, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicConsultTicket>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ConsultTicketDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicConsultTicket>.Failure("Could not call this queue code.");
+
+            return Response<ClinicConsultTicket>.Success(MapConsultTicket(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicConsultTicket>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicConsultTicket>> CompleteConsultTicketAsync(
+        Guid clinicId,
+        Guid ticketId,
+        bool cancel = false,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/consult/tickets/{ticketId}/complete",
+                    new { Cancel = cancel },
+                    JsonOptions,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<ClinicConsultTicket>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<ConsultTicketDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicConsultTicket>.Failure("Could not close this consult ticket.");
+
+            return Response<ClinicConsultTicket>.Success(MapConsultTicket(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicConsultTicket>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<string>> EnsureConsultDisplayTokenAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/consult-display", null, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return Response<string>.Failure(await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false), (int)response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonAsync<CollectionDisplayLinkDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null || string.IsNullOrWhiteSpace(dto.Token))
+                return Response<string>.Failure("Could not open the consult waiting screen.");
+
+            return Response<string>.Success(dto.Token);
+        }
+        catch (HttpRequestException)
+        {
+            return Response<string>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     public async Task<Response<ClinicTheatreBoard>> GetTheatreBoardAsync(
         Guid clinicId,
         DateTime? dayUtc = null,
@@ -1908,6 +2052,46 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         ArrivedAt = dto.ArrivedAt,
         CalledAt = dto.CalledAt,
         CompletedAt = dto.CompletedAt
+    };
+
+    private static ClinicConsultBoard MapConsultBoard(ConsultBoardDto dto) => new()
+    {
+        ClinicName = dto.ClinicName ?? string.Empty,
+        WaitingCount = dto.WaitingCount,
+        CalledCount = dto.CalledCount,
+        Waiting = dto.Waiting?.Select(MapConsultTicket).ToList() ?? [],
+        Called = dto.Called?.Select(MapConsultTicket).ToList() ?? [],
+        Recent = dto.Recent?.Select(MapConsultTicket).ToList() ?? [],
+        TodayAppointments = dto.TodayAppointments?.Select(MapConsultAppointment).ToList() ?? []
+    };
+
+    private static ClinicConsultTicket MapConsultTicket(ConsultTicketDto dto) => new()
+    {
+        Id = dto.Id,
+        AppointmentId = dto.AppointmentId,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName,
+        ProviderId = dto.ProviderId,
+        ProviderName = dto.ProviderName,
+        QueueCode = dto.QueueCode ?? string.Empty,
+        Status = dto.Status ?? string.Empty,
+        ArrivedAt = dto.ArrivedAt,
+        CalledAt = dto.CalledAt,
+        CompletedAt = dto.CompletedAt,
+        ScheduledStart = dto.ScheduledStart
+    };
+
+    private static ClinicConsultAppointment MapConsultAppointment(ConsultAppointmentDto dto) => new()
+    {
+        AppointmentId = dto.AppointmentId,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName ?? string.Empty,
+        ProviderId = dto.ProviderId,
+        ProviderName = dto.ProviderName ?? string.Empty,
+        ScheduledStart = dto.ScheduledStart,
+        Status = dto.Status ?? string.Empty,
+        Reason = dto.Reason,
+        AlreadyQueued = dto.AlreadyQueued
     };
 
     private static ClinicTheatreBoard MapTheatreBoard(TheatreBoardDto dto) => new()
@@ -2885,6 +3069,12 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         ReferenceCode = dto.ReferenceCode,
         Country = dto.Country,
         TimeZone = dto.TimeZone,
+        CommercialPlan = dto.CommercialPlan ?? string.Empty,
+        HasInpatient = dto.HasInpatient,
+        HasCollection = dto.HasCollection,
+        HasCasualty = dto.HasCasualty,
+        HasTheatre = dto.HasTheatre,
+        HasConsultWaiting = dto.HasConsultWaiting,
         IsActive = dto.IsActive,
         AllowAiDischargeDraft = dto.AllowAiDischargeDraft,
         AllowAiMentalHealthNotes = dto.AllowAiMentalHealthNotes,
@@ -3286,6 +3476,12 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string ReferenceCode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
         public string TimeZone { get; set; } = string.Empty;
+        public string? CommercialPlan { get; set; }
+        public bool HasInpatient { get; set; }
+        public bool HasCollection { get; set; }
+        public bool HasCasualty { get; set; }
+        public bool HasTheatre { get; set; }
+        public bool HasConsultWaiting { get; set; }
         public bool IsActive { get; set; }
         public bool AllowAiDischargeDraft { get; set; }
         public bool AllowAiMentalHealthNotes { get; set; }
@@ -3714,6 +3910,46 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public DateTime ArrivedAt { get; set; }
         public DateTime? CalledAt { get; set; }
         public DateTime? CompletedAt { get; set; }
+    }
+
+    private sealed class ConsultBoardDto
+    {
+        public string? ClinicName { get; set; }
+        public int WaitingCount { get; set; }
+        public int CalledCount { get; set; }
+        public List<ConsultTicketDto>? Waiting { get; set; }
+        public List<ConsultTicketDto>? Called { get; set; }
+        public List<ConsultTicketDto>? Recent { get; set; }
+        public List<ConsultAppointmentDto>? TodayAppointments { get; set; }
+    }
+
+    private sealed class ConsultTicketDto
+    {
+        public Guid Id { get; set; }
+        public Guid? AppointmentId { get; set; }
+        public Guid? PatientId { get; set; }
+        public string? PatientName { get; set; }
+        public Guid? ProviderId { get; set; }
+        public string? ProviderName { get; set; }
+        public string? QueueCode { get; set; }
+        public string? Status { get; set; }
+        public DateTime ArrivedAt { get; set; }
+        public DateTime? CalledAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+        public DateTime? ScheduledStart { get; set; }
+    }
+
+    private sealed class ConsultAppointmentDto
+    {
+        public Guid AppointmentId { get; set; }
+        public Guid PatientId { get; set; }
+        public string? PatientName { get; set; }
+        public Guid ProviderId { get; set; }
+        public string? ProviderName { get; set; }
+        public DateTime ScheduledStart { get; set; }
+        public string? Status { get; set; }
+        public string? Reason { get; set; }
+        public bool AlreadyQueued { get; set; }
     }
 
     private sealed class TheatreBoardDto

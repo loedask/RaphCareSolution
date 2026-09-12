@@ -162,6 +162,7 @@ public static class DependencyInjection
         services.AddScoped<IAdminClinicPatientQueryService, AdminClinicPatientQueryService>();
         services.AddScoped<IAdminClinicCollectionQueryService, AdminClinicCollectionQueryService>();
         services.AddScoped<IAdminClinicCasualtyQueryService, AdminClinicCasualtyQueryService>();
+        services.AddScoped<IAdminClinicConsultQueryService, AdminClinicConsultQueryService>();
         services.AddScoped<IAdminClinicTheatreQueryService, AdminClinicTheatreQueryService>();
         services.AddScoped<IAdminClinicReferralQueryService, AdminClinicReferralQueryService>();
         services.AddScoped<IAdminClinicInpatientQueryService, AdminClinicInpatientQueryService>();
@@ -198,6 +199,7 @@ public static class DependencyInjection
         services.AddScoped<IRepository<InpatientAdmission>>(sp => new EfRepository<InpatientAdmission, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<InpatientObservation>>(sp => new EfRepository<InpatientObservation, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<CasualtyTicket>>(sp => new EfRepository<CasualtyTicket, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<ConsultTicket>>(sp => new EfRepository<ConsultTicket, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<TheatreCase>>(sp => new EfRepository<TheatreCase, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Referral>>(sp => new EfRepository<Referral, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<ClinicRosterEntry>>(sp => new EfRepository<ClinicRosterEntry, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
@@ -233,6 +235,7 @@ public static class DependencyInjection
         services.AddScoped<IRepository<PaymentMethod>>(sp => new EfRepository<PaymentMethod, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
         services.AddScoped<IRepository<PaymentTransaction>>(sp => new EfRepository<PaymentTransaction, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
         services.AddScoped<IRepository<PatientCarePlan>>(sp => new EfRepository<PatientCarePlan, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
+        services.AddScoped<IRepository<PriceCatalogItem>>(sp => new EfRepository<PriceCatalogItem, BillingDbContext>(sp.GetRequiredService<BillingDbContext>()));
         services.AddScoped<IRepository<Device>>(sp => new EfRepository<Device, DeviceDbContext>(sp.GetRequiredService<DeviceDbContext>()));
         services.AddScoped<IRepository<DeviceAssignment>>(sp => new EfRepository<DeviceAssignment, DeviceDbContext>(sp.GetRequiredService<DeviceDbContext>()));
         services.AddScoped<IRepository<DeviceReading>>(sp => new EfRepository<DeviceReading, DeviceDbContext>(sp.GetRequiredService<DeviceDbContext>()));

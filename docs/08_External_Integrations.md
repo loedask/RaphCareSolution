@@ -2,9 +2,11 @@
 
 ## Payment Gateways
 
-- **Application:** Interface `IPaymentGatewayService` exists in Application.Common.Interfaces.
-- **Infrastructure:** Placeholder implementation PaymentGatewayService (no Stripe, PayPal, or other payment SDK in .csproj).
-- **Billing:** Invoices and billing entities exist; no wired payment provider.
+- **Application:** Interface `IPaymentGatewayService` supports placeholder charge plus hosted checkout initialize/verify (`PaymentCheckoutSession`, `PaymentChargeVerification`).
+- **Infrastructure:** **Paystack** when `Paystack:SecretKey` is set (`PaystackPaymentGatewayService` via typed HttpClient). Otherwise **`PaymentGatewayService`** is a log-only placeholder.
+- **Patient care plans:** `POST api/patient/billing/checkout/initialize` starts Paystack hosted checkout for Essential/Complete. `POST api/patient/billing/checkout/confirm` verifies the reference and activates the plan. `POST api/webhooks/paystack` handles `charge.success`. Free upgrades still use `POST api/patient/billing/upgrade` without payment. When Paystack is configured, paid `upgrade` is rejected so callers must use checkout.
+- **Config:** `Paystack:SecretKey`, optional `Paystack:PublicKey`, optional `Paystack:CallbackUrl`. Use test keys on staging.
+- **Billing catalog:** Invoices and billing entities exist; site software invoicing via Paystack is a follow-up on top of the Ops price catalog.
 
 ## Device SDKs
 
@@ -47,5 +49,5 @@
 ## Summary
 
 - **Implemented:** Entra ID for JWT validation and user provisioning; API-issued JWT for OTP-verified patients (ITokenService, JwtOptions); OTP generation/validation (IOtpService, OtpCodes in IdentityDbContext).
-- **Placeholder or partial implementations:** IPaymentGatewayService, IEmailService, IAIService, IDeviceIntegrationService, ITeleSessionService, ISpeechToTextService (AzureSpeechToTextService). **SMS:** Twilio when configured (`docs/10_Agora_Twilio_Setup.md`). **Telehealth RTC tokens:** Agora (`AgoraRtcTokenService`, `docs/10_Agora_Twilio_Setup.md`).
-- **Not fully wired:** Payment gateways, device SDKs, production AI SDKs, production Speech SDK (stubs exist).
+- **Placeholder or partial implementations:** IEmailService, IAIService, IDeviceIntegrationService, ITeleSessionService, ISpeechToTextService (AzureSpeechToTextService). **SMS:** Twilio when configured (`docs/10_Agora_Twilio_Setup.md`). **Telehealth RTC tokens:** Agora (`AgoraRtcTokenService`, `docs/10_Agora_Twilio_Setup.md`). **Payments:** Paystack when `Paystack:SecretKey` is set; otherwise payment gateway placeholder.
+- **Not fully wired:** Site software subscription invoices via Paystack, device SDKs, production AI SDKs, production Speech SDK (stubs exist).
