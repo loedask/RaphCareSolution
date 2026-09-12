@@ -26,7 +26,7 @@ RaphCare uses **two** approaches:
 
 ## What the Android SDK expects (summary)
 
-1. **Dependencies:** `vpbluetooth`, `vpprotocol`, JieLi and abpartool companion AARs (see download script), Nordic scanner Maven artifact, AndroidX LocalBroadcastManager. **Gson** comes from the MAUI / GoogleGson graph. Do **not** embed `gson-*.jar` (D8 duplicate-type failure).
+1. **Dependencies:** `vpbluetooth`, `vpprotocol`, JieLi and abpartool companion AARs (see download script), Nordic scanner Maven artifact, **Nordic mcumgr-core / mcumgr-ble / ble AARs** via `tools/download-hband-nordic-mcumgr-libs.ps1` (Veepoo `McuMgrOtaManager.init` on connect; do **not** rely on `AndroidMavenLibrary` for mcumgr — 1.9.1 still `ClassNotFoundException`), AndroidX LocalBroadcastManager. **Gson** comes from the MAUI / GoogleGson graph. Do **not** embed `gson-*.jar` (D8 duplicate-type failure).
 2. **Flow:** `VPOperateManager.getInstance().init(context)`, then `connectDevice(mac, name, …)`. After notify success: `confirmDevicePwd("0000", …)`, then `syncPersonInfo`, then health APIs.
 3. **Concurrency:** Serialize long operations.
 4. **Manifest:** `com.inuker.bluetooth.library.BluetoothService` (declared in `Platforms/Android/AndroidManifest.xml`). Use `tools:replace="android:label"` when AAR manifests conflict.
@@ -56,7 +56,7 @@ RaphCare uses **two** approaches:
 
 A full **.NET Android binding project** remains optional later for typed APIs. Phase 1 uses JNI intentionally (large `vpprotocol` AAR).
 
-**Patient app session rule (current):** Daily Connect stays **Plugin.BLE** (**1.8.42**). Probe **1.8.46** adds an engineer-only **vendor-native scan** path (`UseVeepooNativeScanProbe`: Veepoo `startScanDevice` then `connectDevice`, no Plugin.BLE scan/GATT for that session). Hybrid exclusive Connect (`PreferExclusiveVendorSession`) stays **off** after five dual-stack crashes. Crash breadcrumbs are consumed on **Devices and Watch readings** (shared `TryConsumeVendorConnectCrashMessage`) so auto-reconnect cannot wipe the step code.
+**Patient app session rule (current):** Daily Connect stays **Plugin.BLE** (**1.8.42**). Vendor-scan breakthrough is **1.9.3** (Veepoo `startScanDevice` then `connectDevice` with Nordic mcumgr + SLF4J packaged). Hybrid exclusive Connect (`PreferExclusiveVendorSession`) stays **off** after five dual-stack crashes. Crash breadcrumbs are consumed on **Devices and Watch readings** (shared `TryConsumeVendorConnectCrashMessage`) so auto-reconnect cannot wipe the step code.
 
 ### What public sources say (working pattern)
 
@@ -71,14 +71,27 @@ We found no public MAUI app that mixes **Plugin.BLE Scan** with Veepoo `connectD
 
 Crash capture (when USB works): `scripts/Capture-RaphCareAndroidLogcat.ps1`. Prefer wireless adb when Huawei MTP is flaky. Primary signal: on-device breadcrumb (`IVendorConnectStepProbe` / `FileVendorConnectStepProbe`) on Devices **or** Watch readings after relaunch. Secondary: tombstone / logcat.
 
-Stable Connect checkpoint: **1.8.42**. Hybrid exclusive probes: **1.8.43** through **1.8.45**. Single-stack scan probe: **1.8.46** through **1.8.53**. Phone trail: vendor scan and `connectDevice` return OK; death at `WAIT-CONNECT`. Settle (1.8.51) and keep-scan-warm (1.8.52) did not help. **1.8.53** A/B mac-only `connectDevice` (`PreferOfficialMacOnlyConnectDeviceOverload=true`, trail `CONNECT-MACONLY`).
+Stable Connect checkpoint: **1.8.42** (`RaphCare-v1.8.42+54.apk`). Vendor-scan breakthrough checkpoint: **1.9.3** (`RaphCare-v1.9.3+69.apk`). Hybrid exclusive probes: **1.8.43** through **1.8.45**. Single-stack scan probe: **1.8.46** through **1.9.3**. There is no commercial “preview” APK role; keep 1.8.42 for daily Connect and 1.9.3 for vendor-scan / Measure experiments.
+
+### Root cause (Galaxy A32 logcat, 2026-09-12)
+
+`CONNECT-3` then process death at `WAIT-CONNECT` was **not** an OEM GATT mystery. Logcat:
+
+`NoClassDefFoundError: Failed resolution of: Lio/runtime/mcumgr/ble/McuMgrBleTransport;`  
+at `com.veepoo.protocol.nordic.McuMgrOtaManager.init`  
+at `VPOperateManager$vp_bb.onConnectStatusChanged`
+
+**1.9.2** ships `mcumgr-*-2.7.4.aar` and `ble-2.11.0.aar` under `Platforms/Android/libs` with `Bind="false"` (same packaging as Veepoo AARs). Download via `tools/download-hband-nordic-mcumgr-libs.ps1`. **1.9.1** only added `AndroidMavenLibrary` entries; those did not merge `classes.jar`, so Galaxy still crashed.
+
+**1.9.3** also ships `slf4j-api` / `slf4j-nop` jars (Galaxy 1.9.2: `ClassNotFoundException org.slf4j.LoggerFactory` while loading `McuMgrBleTransport`). Do **not** embed a second `kotlin-stdlib` (MAUI already has `Xamarin.Kotlin.StdLib`; D8 duplicates).
+
+On Galaxy with **1.9.3**, the app stayed open through `WAIT-CONNECT` → `WAIT-NOTIFY` → `PWD-1` (no force-close).
 
 ### Probe 1.8.49–1.8.53 notes
 
 - Append-only on-phone trail + Share from Devices.
+- Settle, SCAN-KEEP, and mac-only overload all still ended at `WAIT-CONNECT` (expected once the missing class is understood).
 - `ClearsProbe` is only `INIT-3` and `HANDSHAKE-OK`.
-- **1.8.52:** `SCAN-KEEP` (no stop before connect) still ended at `WAIT-CONNECT`.
-- **1.8.53:** mac-only overload A/B with scan still kept warm.
 
 ### Probe 1.8.48 notes
 
@@ -88,20 +101,15 @@ Stable Connect checkpoint: **1.8.42**. Hybrid exclusive probes: **1.8.43** throu
 - Devices diagnostic shows live step codes on the busy overlay via `ConnectStepChanged`.
 - javap on bundled AARs: `SearchResponse` is an **interface** in this package (so the abstract-class proxy theory does not apply to this AAR, but the IsInterface guard remains).
 
-### Follow-up: Veepoo single-stack scan probe (1.8.46)
+### Follow-up: Veepoo single-stack scan probe
 
-1. Install `RaphCare-v1.8.53+65.apk`. Keep `RaphCare-v1.8.42+54.apk` for rollback.
-2. Forget ET585 in OS Bluetooth if listed; Huawei App launch unrestricted for RaphCare.
-3. Devices → **Try vendor scan (diagnostic)**. Share probe log (`CONNECT-MACONLY` expected).
-4. If still `WAIT-CONNECT`, prioritize official H Band demo on same phone/watch and tombstone if adb works.
-5. Turn `UseVeepooNativeScanProbe` off for partner builds until Scan→Connect is proven.
+1. Install `RaphCare-v1.9.3+69.apk`. Keep `RaphCare-v1.8.42+54.apk` for daily Connect / rollback.
+2. Run `tools/download-hband-nordic-mcumgr-libs.ps1` before Android rebuilds so mcumgr/slf4j binaries exist under `libs/` (gitignored).
+3. Devices → **Try vendor scan (diagnostic)**. Expect past `WAIT-CONNECT` to `WAIT-NOTIFY` / `PWD-1` / `HANDSHAKE-OK`.
+4. If Connect survives, try Measure on Watch readings.
+5. Turn `UseVeepooNativeScanProbe` off for partner builds until Scan→Connect is proven end-to-end.
 
 `PreferExclusiveVendorSession` remains **false**. Do not re-enable hybrid Connect permutations.
-
-Inspect log / breadcrumb for:
-
-1. `CONNECT-MACONLY` → `CONNECT-3` → `WAIT-CONNECT` → mac-only overload did not change async GATT outcome.
-2. `HANDSHAKE-OK` then Measure sample → single-stack path works.
 
 #### Init audit findings (`vpprotocol-2.3.81.15` javap)
 

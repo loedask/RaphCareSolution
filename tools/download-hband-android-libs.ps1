@@ -62,4 +62,6 @@ foreach ($name in $files) {
     Download-HbandFile -Name $name -OutPath (Join-Path $dest $name)
 }
 Write-Host "Done. Files in: $dest"
-Write-Host "Next: rebuild Android; C# calls VPOperateManager via Platforms/Android/HBand (JNI). See docs/12."
+Write-Host "Next: also fetch Nordic mcumgr AARs (required for Veepoo connect OTA init):"
+Write-Host "  .\tools\download-hband-nordic-mcumgr-libs.ps1"
+Write-Host "Then rebuild Android; C# calls VPOperateManager via Platforms/Android/HBand (JNI). See docs/12."

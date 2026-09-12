@@ -31,8 +31,8 @@
         <ApplicationId>com.yindula.raphcare</ApplicationId>
 
         <!-- Versions: display = marketing (Settings / APK name); code = Android versionCode (must rise for each Play upload). -->
-        <ApplicationDisplayVersion>1.9.0</ApplicationDisplayVersion>
-        <ApplicationVersion>66</ApplicationVersion>
+        <ApplicationDisplayVersion>1.9.3</ApplicationDisplayVersion>
+        <ApplicationVersion>69</ApplicationVersion>
 
         <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
         <WindowsPackageType>None</WindowsPackageType>
@@ -135,6 +135,15 @@
         <AndroidLibrary Include="Platforms\Android\libs\jl_bt_ota_V1.10.0_10931-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\jl_bt_ota_V1.10.0_10931-release.aar')" />
         <AndroidLibrary Include="Platforms\Android\libs\BmpConvert_V1.6.0_10604-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\BmpConvert_V1.6.0_10604-release.aar')" />
         <AndroidLibrary Include="Platforms\Android\libs\abpartool-release.aar" Bind="false" Condition="Exists('Platforms\Android\libs\abpartool-release.aar')" />
+        <!-- Nordic mcumgr: AndroidMavenLibrary alone did not merge classes.jar (Galaxy still
+             ClassNotFoundException McuMgrBleTransport). Ship AARs like other HBand libs. -->
+        <AndroidLibrary Include="Platforms\Android\libs\mcumgr-core-2.7.4.aar" Bind="false" Condition="Exists('Platforms\Android\libs\mcumgr-core-2.7.4.aar')" />
+        <AndroidLibrary Include="Platforms\Android\libs\mcumgr-ble-2.7.4.aar" Bind="false" Condition="Exists('Platforms\Android\libs\mcumgr-ble-2.7.4.aar')" />
+        <AndroidLibrary Include="Platforms\Android\libs\ble-2.11.0.aar" Bind="false" Condition="Exists('Platforms\Android\libs\ble-2.11.0.aar')" />
+        <!-- mcumgr-ble transitive (Galaxy 1.9.2: ClassNotFoundException org.slf4j.LoggerFactory).
+             Do not embed kotlin-stdlib here: MAUI already ships Xamarin.Kotlin.StdLib (D8 duplicate). -->
+        <AndroidLibrary Include="Platforms\Android\libs\slf4j-api-2.0.17.jar" Bind="false" Condition="Exists('Platforms\Android\libs\slf4j-api-2.0.17.jar')" />
+        <AndroidLibrary Include="Platforms\Android\libs\slf4j-nop-2.0.17.jar" Bind="false" Condition="Exists('Platforms\Android\libs\slf4j-nop-2.0.17.jar')" />
         <AndroidMavenLibrary Include="no.nordicsemi.android.support.v18:scanner" Version="1.4.2" Bind="false" VerifyDependencies="false" />
     </ItemGroup>
 

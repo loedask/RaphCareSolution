@@ -220,6 +220,13 @@ public sealed class WearableBleCoordinatorWiringTests
             Path.Combine("RaphCare.Mobile", "Core", "Features", "Devices", "Services", "WearableBleCoordinator.cs"))), StringComparison.Ordinal);
         Assert.Contains("SettleAfterScanStopBeforeVendorConnectAsync", File.ReadAllText(FindRepoFile(
             Path.Combine("RaphCare.Mobile", "Core", "Features", "Devices", "Services", "WearableBleCoordinator.cs"))), StringComparison.Ordinal);
+        var csproj = File.ReadAllText(FindRepoFile(Path.Combine("RaphCare.Mobile", "RaphCare.Mobile.csproj")));
+        Assert.Contains("mcumgr-core-2.7.4.aar", csproj, StringComparison.Ordinal);
+        Assert.Contains("mcumgr-ble-2.7.4.aar", csproj, StringComparison.Ordinal);
+        Assert.Contains("ble-2.11.0.aar", csproj, StringComparison.Ordinal);
+        Assert.Contains("slf4j-api-2.0.17.jar", csproj, StringComparison.Ordinal);
+        Assert.Contains("download-hband-nordic-mcumgr-libs.ps1", File.ReadAllText(FindRepoFile(
+            Path.Combine("tools", "download-hband-android-libs.ps1"))), StringComparison.Ordinal);
     }
 
     [Fact]
