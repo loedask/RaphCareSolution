@@ -980,6 +980,21 @@ Accessible. Intelligent. Human.</value>
   <data name="AppointmentsDetailFailed" xml:space="preserve">
     <value>Could not load this appointment.</value>
   </data>
+  <data name="AppointmentsConsentTitle" xml:space="preserve">
+    <value>Before your visit</value>
+  </data>
+  <data name="AppointmentsConsentAgree" xml:space="preserve">
+    <value>Agree</value>
+  </data>
+  <data name="AppointmentsConsentSigned" xml:space="preserve">
+    <value>You agreed to this consent.</value>
+  </data>
+  <data name="AppointmentsConsentAgreeFailed" xml:space="preserve">
+    <value>Could not save your agreement. Try again.</value>
+  </data>
+  <data name="AppointmentsConsentLoadFailed" xml:space="preserve">
+    <value>Could not load the consent form.</value>
+  </data>
   <data name="RecordsListTitle" xml:space="preserve">
     <value>Health records</value>
   </data>

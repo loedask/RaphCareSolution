@@ -14,6 +14,13 @@ public sealed class AdminClinicVisitDetailDto
     public string VisitType { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string? Summary { get; set; }
+    public Guid? InvoiceId { get; set; }
+    public decimal? InvoiceAmount { get; set; }
+    public string? InvoiceStatus { get; set; }
+    public string? InvoiceCurrency { get; set; }
+    /// <summary>True when the patient has agreed to the practice pre-visit consent for this appointment.</summary>
+    public bool ConsentSigned { get; set; }
+    public DateTime? ConsentSignedAt { get; set; }
     public IReadOnlyList<AdminClinicVisitVitalDto> Vitals { get; set; } = Array.Empty<AdminClinicVisitVitalDto>();
     public IReadOnlyList<AdminClinicVisitDiagnosisDto> Diagnoses { get; set; } = Array.Empty<AdminClinicVisitDiagnosisDto>();
     public IReadOnlyList<AdminClinicVisitPrescriptionDto> Prescriptions { get; set; } = Array.Empty<AdminClinicVisitPrescriptionDto>();

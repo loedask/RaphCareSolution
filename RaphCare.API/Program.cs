@@ -22,6 +22,7 @@ builder.Services.AddScoped<IClinicContext, ClinicContext>();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IFhirExportAuditLogger, FhirExportAuditLogger>();
+builder.Services.AddHostedService<RaphCare.API.HostedServices.AppointmentReminderDispatchHostedService>();
 
 builder.Services.AddAuthorization(options =>
 {

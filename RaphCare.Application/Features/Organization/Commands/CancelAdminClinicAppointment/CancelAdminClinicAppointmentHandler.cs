@@ -1,6 +1,7 @@
 using MediatR;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Application.Features.Appointments;
 using RaphCare.Domain.Clinical;
 
 namespace RaphCare.Application.Features.Organization.Commands.CancelAdminClinicAppointment;
@@ -10,6 +11,7 @@ public sealed class CancelAdminClinicAppointmentHandler(
     IClinicStaffMembershipService clinicStaffMembershipService,
     IUserRoleAssignmentService roleAssignmentService,
     IRepository<Appointment> appointmentRepository,
+    IRepository<AppointmentReminder> appointmentReminderRepository,
     IUnitOfWork unitOfWork)
     : IRequestHandler<CancelAdminClinicAppointmentCommand, bool>
 {
@@ -36,6 +38,11 @@ public sealed class CancelAdminClinicAppointmentHandler(
 
         appointment.IsCancelled = true;
         appointment.Status = "Cancelled";
+        await AppointmentReminderPlanner.ClearUnsentAsync(
+                appointmentReminderRepository,
+                appointment.Id,
+                cancellationToken)
+            .ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
     }

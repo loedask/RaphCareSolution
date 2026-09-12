@@ -108,11 +108,20 @@ public sealed class AdminClinicAppointmentQueryService(
             .GroupBy(v => v.AppointmentId)
             .ToDictionary(g => g.Key, g => g.First().Id);
 
+        var consents = await clinicalDbContext.AppointmentConsents
+            .AsNoTracking()
+            .Where(c => appointmentIds.Contains(c.AppointmentId))
+            .Select(c => new { c.AppointmentId, c.SignedAt })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+        var consentByAppointment = consents.ToDictionary(c => c.AppointmentId, c => c.SignedAt);
+
         var items = rows.Select(r =>
         {
             patientsById.TryGetValue(r.PatientId, out var patient);
             providerNames.TryGetValue(r.ProviderId, out var providerName);
             visitByAppointment.TryGetValue(r.Id, out var visitId);
+            consentByAppointment.TryGetValue(r.Id, out var signedAt);
             return new AdminClinicAppointmentListItemDto
             {
                 Id = r.Id,
@@ -125,7 +134,9 @@ public sealed class AdminClinicAppointmentQueryService(
                 Type = r.Type,
                 Status = r.Status,
                 Reason = r.Reason,
-                ActiveVisitId = visitId == Guid.Empty ? null : visitId
+                ActiveVisitId = visitId == Guid.Empty ? null : visitId,
+                ConsentSigned = signedAt != default,
+                ConsentSignedAt = signedAt == default ? null : signedAt
             };
         }).ToList();
 

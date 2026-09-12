@@ -10,4 +10,6 @@ public interface IAppointmentService
     Task<Response<AppointmentViewModel?>> GetMyAppointmentAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Response<IReadOnlyList<BookableProviderViewModel>>> GetBookableProvidersAsync(CancellationToken cancellationToken = default);
     Task<Response<Guid>> BookAsync(BookAppointmentRequest request, CancellationToken cancellationToken = default);
+    Task<Response<AppointmentConsentViewModel>> GetConsentAsync(Guid appointmentId, CancellationToken cancellationToken = default);
+    Task<Response<AppointmentConsentViewModel>> AgreeConsentAsync(Guid appointmentId, CancellationToken cancellationToken = default);
 }

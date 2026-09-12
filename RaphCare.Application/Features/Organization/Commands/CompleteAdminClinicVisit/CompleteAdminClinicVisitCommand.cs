@@ -8,4 +8,8 @@ public sealed class CompleteAdminClinicVisitCommand : IRequest<AdminClinicVisitD
     public Guid ClinicId { get; set; }
     public Guid VisitId { get; set; }
     public string? Summary { get; set; }
+    public decimal? BillAmount { get; set; }
+    public string? BillDescription { get; set; }
+    public bool MarkPaid { get; set; }
+    public string? Currency { get; set; }
 }

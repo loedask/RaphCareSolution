@@ -13,4 +13,6 @@ public sealed class AdminClinicAppointmentListItemDto
     public string Status { get; set; } = string.Empty;
     public string? Reason { get; set; }
     public Guid? ActiveVisitId { get; set; }
+    public bool ConsentSigned { get; set; }
+    public DateTime? ConsentSignedAt { get; set; }
 }

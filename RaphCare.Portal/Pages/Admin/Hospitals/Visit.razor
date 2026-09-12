@@ -40,6 +40,10 @@
 
         <AdminAlert Message="@_error" />
         <AdminAlert Tone="success" Message="@_success" />
+        @if (!_visit.ConsentSigned && _visit.Status != "Completed")
+        {
+            <AdminAlert Tone="info" Message="@AppResources.T("Common_ConsentNotSignedWarn")" />
+        }
 
         <div class="hospital-deck-workspace">
             <HospitalDeckRail AriaLabel="@AppResources.T("Visit_SectionsAria")"
@@ -81,10 +85,34 @@
                                         @AppResources.T("Common_Summary")
                                         <input class="form-control" @bind="_completeSummary" placeholder="@AppResources.T("Common_OptionalVisitSummary")" />
                                     </label>
+                                    <div class="form-grid">
+                                        <label>
+                                            @AppResources.T("Visit_BillAmountLabel")
+                                            <input class="form-control" @bind="_billAmount" inputmode="decimal" placeholder="0" />
+                                        </label>
+                                        <label>
+                                            @AppResources.T("Visit_BillDescriptionLabel")
+                                            <input class="form-control" @bind="_billDescription" placeholder="@AppResources.T("Visit_BillDescriptionDefault")" />
+                                        </label>
+                                        <label>
+                                            @AppResources.T("Inpatient_CurrencyLabel")
+                                            <input class="form-control" @bind="_billCurrency" />
+                                        </label>
+                                    </div>
+                                    <label class="inpatient-checkbox">
+                                        <input type="checkbox" @bind="_billMarkPaid" />
+                                        @AppResources.T("Inpatient_MarkPaidCash")
+                                    </label>
                                     <button type="button" class="btn btn-primary" disabled="@_completing" @onclick="CompleteVisitAsync">
                                         @(_completing ? AppResources.T("Common_Completing") : AppResources.T("Common_CompleteVisit"))
                                     </button>
                                 </div>
+                            }
+                            else if (_visit.Status == "Completed" && _visit.InvoiceAmount is decimal invoiceAmount and > 0)
+                            {
+                                <p class="hint" style="margin-top: 1rem;">
+                                    @AppResources.Format("Visit_InvoiceSummary", invoiceAmount, _visit.InvoiceCurrency ?? "ZAR", _visit.InvoiceStatus ?? AppResources.T("Common_EmptyCell"))
+                                </p>
                             }
                         </div>
                     </AdminPageCard>
@@ -530,6 +558,10 @@
     private decimal _vitalValue;
     private string _vitalUnit = "bpm";
     private string _completeSummary = string.Empty;
+    private string _billAmount = string.Empty;
+    private string _billDescription = "Consultation";
+    private string _billCurrency = "ZAR";
+    private bool _billMarkPaid = true;
     private string _soapSubjective = string.Empty;
     private string _soapObjective = string.Empty;
     private string _soapAssessment = string.Empty;
@@ -578,6 +610,7 @@
             _clinicName = clinicResponse.Data.Name;
             _canDocumentVisits = clinicResponse.Data.CurrentUserCanDocumentVisits;
             _clinicTimeZone = clinicResponse.Data.TimeZone;
+            _billCurrency = IsCongoCountry(clinicResponse.Data.Country) ? "USD" : "ZAR";
             await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
         }
 
@@ -666,7 +699,14 @@
         var response = await AdminClinicService.CompleteVisitAsync(
             ClinicId,
             VisitId,
-            string.IsNullOrWhiteSpace(_completeSummary) ? null : _completeSummary.Trim());
+            new CompleteVisitRequest
+            {
+                Summary = string.IsNullOrWhiteSpace(_completeSummary) ? null : _completeSummary.Trim(),
+                BillAmount = ParseDecimal(_billAmount),
+                BillDescription = string.IsNullOrWhiteSpace(_billDescription) ? null : _billDescription.Trim(),
+                MarkPaid = _billMarkPaid,
+                Currency = string.IsNullOrWhiteSpace(_billCurrency) ? null : _billCurrency.Trim()
+            });
         _completing = false;
 
         if (!response.IsSuccess)
@@ -676,8 +716,29 @@
         }
 
         _visit = response.Data;
-        _success = AppResources.T("Common_VisitCompleted");
+        _success = response.Data?.InvoiceAmount is decimal amount and > 0
+            ? AppResources.Format(
+                "Visit_CompletedWithInvoice",
+                amount,
+                response.Data.InvoiceCurrency ?? _billCurrency)
+            : AppResources.T("Common_VisitCompleted");
     }
+
+    private static decimal? ParseDecimal(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return null;
+        return decimal.TryParse(raw.Trim(), System.Globalization.NumberStyles.Number,
+            System.Globalization.CultureInfo.InvariantCulture, out var value)
+            ? value
+            : null;
+    }
+
+    private static bool IsCongoCountry(string? country) =>
+        !string.IsNullOrWhiteSpace(country)
+        && (country.Contains("Congo", StringComparison.OrdinalIgnoreCase)
+            || country.Contains("DRC", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(country, "CD", StringComparison.OrdinalIgnoreCase));
 
     private async Task SaveSoapAsync()
     {

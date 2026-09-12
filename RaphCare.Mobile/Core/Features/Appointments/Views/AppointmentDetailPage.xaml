@@ -28,6 +28,22 @@
 
                 <Label Text="{Binding ReasonLabel}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" Margin="0,8,0,0" />
                 <Label Text="{Binding ReasonText}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource MutedForegroundColor}" />
+
+                <VerticalStackLayout Spacing="12"
+                                     Margin="0,16,0,0"
+                                     IsVisible="{Binding ShowConsent}">
+                    <Label Text="{Binding ConsentSectionTitle}" Style="{StaticResource TitleMedium}" />
+                    <Label Text="{Binding ConsentTitle}" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                    <Label Text="{Binding ConsentBody}" Style="{StaticResource BodyMedium}" />
+                    <Label Text="{Binding ConsentSignedLabel}"
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource MutedForegroundColor}"
+                           IsVisible="{Binding ConsentAlreadySigned}" />
+                    <Button Text="{Binding AgreeButtonText}"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding AgreeConsentCommand}"
+                            IsVisible="{Binding ConsentAlreadySigned, Converter={StaticResource InvertedBoolConverter}}" />
+                </VerticalStackLayout>
             </VerticalStackLayout>
 
             <Button Text="← Back"

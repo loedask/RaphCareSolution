@@ -38,7 +38,9 @@ public interface IAdminClinicService
     Task<Response<ClinicAppointmentListItem>> RescheduleAppointmentAsync(Guid clinicId, Guid appointmentId, RescheduleClinicAppointmentRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicVisitDetail>> StartVisitAsync(Guid clinicId, Guid appointmentId, string? summary = null, CancellationToken cancellationToken = default);
     Task<Response<ClinicVisitDetail>> GetVisitAsync(Guid clinicId, Guid visitId, CancellationToken cancellationToken = default);
-    Task<Response<ClinicVisitDetail>> CompleteVisitAsync(Guid clinicId, Guid visitId, string? summary = null, CancellationToken cancellationToken = default);
+    Task<Response<ClinicVisitDetail>> CompleteVisitAsync(Guid clinicId, Guid visitId, CompleteVisitRequest? request = null, CancellationToken cancellationToken = default);
+    Task<Response<IReadOnlyList<ClinicDaySheetItem>>> GetDaySheetAsync(Guid clinicId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicDaySheetItem>> MarkDaySheetInvoicePaidAsync(Guid clinicId, Guid invoiceId, CancellationToken cancellationToken = default);
     Task<Response<ClinicVisitVital>> RecordVisitVitalAsync(Guid clinicId, Guid visitId, RecordVisitVitalRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicVisitSoapNote>> SaveVisitSoapNoteAsync(Guid clinicId, Guid visitId, SaveVisitSoapNoteRequest request, CancellationToken cancellationToken = default);
     Task<Response<ClinicVisitNote>> AddVisitNoteAsync(Guid clinicId, Guid visitId, AddVisitNoteRequest request, CancellationToken cancellationToken = default);
@@ -101,4 +103,6 @@ public interface IAdminClinicService
     Task<Response<ClinicAdmission>> GetAdmissionByIdAsync(Guid clinicId, Guid admissionId, CancellationToken cancellationToken = default);
     Task<Response<ClinicTeleJoinInfo>> StartTeleSessionAsync(Guid clinicId, Guid appointmentId, CancellationToken cancellationToken = default);
     Task<Response<bool>> RevokePatientAccessAsync(Guid clinicId, Guid patientId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicConsentTemplate?>> GetConsentTemplateAsync(Guid clinicId, CancellationToken cancellationToken = default);
+    Task<Response<ClinicConsentTemplate>> UpsertConsentTemplateAsync(Guid clinicId, UpsertClinicConsentTemplateRequest request, CancellationToken cancellationToken = default);
 }

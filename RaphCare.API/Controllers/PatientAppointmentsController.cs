@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaphCare.API.App.Contracts;
 using RaphCare.Application.Common.DTOs;
+using RaphCare.Application.Features.Appointments.Commands.AgreePatientAppointmentConsent;
 using RaphCare.Application.Features.Appointments.Commands.CreatePatientAppointment;
 using RaphCare.Application.Features.Appointments.DTOs;
 using RaphCare.Application.Features.Appointments.Queries.GetBookableProviders;
 using RaphCare.Application.Features.Appointments.Queries.GetMyAppointmentById;
 using RaphCare.Application.Features.Appointments.Queries.GetMyAppointments;
+using RaphCare.Application.Features.Appointments.Queries.GetPatientAppointmentConsent;
 
 namespace RaphCare.API.Controllers;
 
@@ -39,6 +41,26 @@ public class PatientAppointmentsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetMyAppointmentByIdQuery { Id = id }, cancellationToken).ConfigureAwait(false);
+        return Ok(result);
+    }
+
+    [HttpGet("{id:guid}/consent", Name = "GetPatientAppointmentConsent")]
+    [ProducesResponseType(typeof(PatientAppointmentConsentDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetConsent(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetPatientAppointmentConsentQuery { AppointmentId = id },
+            cancellationToken).ConfigureAwait(false);
+        return Ok(result);
+    }
+
+    [HttpPost("{id:guid}/consent/agree", Name = "AgreePatientAppointmentConsent")]
+    [ProducesResponseType(typeof(PatientAppointmentConsentDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> AgreeConsent(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new AgreePatientAppointmentConsentCommand { AppointmentId = id },
+            cancellationToken).ConfigureAwait(false);
         return Ok(result);
     }
 

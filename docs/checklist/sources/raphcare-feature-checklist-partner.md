@@ -34,9 +34,12 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Patients at a hospital | Done | Grant or remove access; open the patient chart |
 | Patient chart (view) | Done | Same large header and section menu as other hospital pages. Sections: overview, clinical, coverage, devices, and care. If the patient uploaded a photo on the phone, it shows in that header. Staff view this; they do not edit it here. |
 | Clinical team and schedules | Done | Add clinicians; manage schedules. Clinician detail uses the same large header and section menu. |
-| Appointments | Done | Book, cancel, reschedule. The appointments page uses the same large header and section menu. |
+| Appointments | Done | Book, cancel, reschedule. See whether the patient agreed to the practice consent form. The appointments page uses the same large header and section menu. |
+| Appointment reminders in the app | Done | When a visit is booked or moved, the patient gets an in-app notice. Timed reminders fire before the visit. Push is used when the phone is set up for it. |
+| Practice consent form | Done | Hospital admins edit a short consent text on the hospital overview. Patients agree in the phone app before a visit. Staff still see a note if it is not signed; completing the visit is still allowed. |
 | Consult waiting display | Done | Put today's appointments on a consult queue. Call the next code onto a TV or tablet in reception. The screen shows codes only, not names. Separate from pharmacy pickup. |
-| Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete. Visit and tele join pages match the hospital page layout. |
+| Visits and vitals | Done | Start a visit; record vitals and notes; order prescriptions and lab tests while the visit is open; complete. Optionally enter a consultation amount and mark cash paid when finishing. Visit and tele join pages match the hospital page layout. |
+| Day sheet | Done | See today's visit invoices. Mark a pending invoice as paid in cash. Available on Practice, Clinic, and Hospital. |
 | Collection counter | Done | Search by pickup code, name, or health ID. Scan a QR from the camera. Call a code onto the waiting screen. Mark a prescription collected. Enter a lab result. Cancel or undo. Print a slip or a wall poster with a QR code. Open a waiting screen on a TV or tablet (codes only, no names). The page uses the same large header and section menu as the hospital details page. Any hospital staff can do this, including after the visit is closed. Pharmacists collect medicines. Lab technicians enter lab results. Generic staff can still do both. |
 | Video join for staff | Done | Start a tele session from admin |
 | Dashboard numbers | Done | See clinic metrics |
@@ -46,7 +49,7 @@ What staff do in the **web admin panel** for day-to-day clinic work (not overnig
 | Use Portal and Ops on a phone | Done | Layouts tighten on small screens: top bar, forms, tables you can swipe, and hospital section tabs. Staff can add a home-screen shortcut from the browser (not a separate staff app, and not offline). |
 | Same tools inside the **patient phone app** | Not for mobile | Patients use the app; staff use the web admin |
 
-**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, a collection counter for medicines and lab tests, a consult waiting screen for the next person into the doctor, and a pharmacy pickup waiting screen that shows codes (not names). Ops stocks watches under a hospital or Direct. Phone layout and a light home-screen shortcut are available.
+**Bottom line (100%):** outpatient hospital admin is ready on the Portal web app, including a patient chart staff can read, visit notes doctors can add while a visit is open, optional consultation billing when a visit ends, a day sheet for today's visit invoices, a collection counter for medicines and lab tests, a consult waiting screen for the next person into the doctor, and a pharmacy pickup waiting screen that shows codes (not names). Ops stocks watches under a hospital or Direct. Phone layout and a light home-screen shortcut are available.
 
 ---
 
@@ -80,7 +83,7 @@ What patients see on Android and iPhone.
 |------|--------|-------|
 | Sign up or sign in (email, phone code, voice) | Done | Includes forgot password: email code, then new password |
 | Home and navigation | Done | Monochrome icons (same teal tint style as the web). Failed taps should not close the app. Some areas can be turned off with feature flags. Home upcoming, devices, vitals, and the wellness tip come from your account (empty when you have none). |
-| Appointments (list, book, detail) | Done | Book uses your clinic and a clinician name list |
+| Appointments (list, book, detail) | Done | Book uses your clinic and a clinician name list. If the practice has a consent form, you can Agree on the appointment detail before the visit. Booked and upcoming visits also create in-app notices. |
 | Care, request a call, join video | Partial | Video call works on **Android**; **iPhone video** still needs more setup |
 | Health records | Done | Includes pickup codes and a QR code for medicines and lab tests waiting at the hospital. Scan a wall poster at the counter to show only that hospital. When staff call your code, you get a notice and Health records say come to the counter. |
 | Insurance | Done | |
@@ -88,7 +91,7 @@ What patients see on Android and iPhone.
 | Family members | Done | |
 | Mental health (mood and self-assessment) | Done | Mood check-in plus PHQ-9 and GAD-7 on the phone. Home and Mental Health tips follow your recent check-ins instead of sample copy. |
 | Chat assistant | Done | Scrollable chat with prior messages in the same session. The assistant can use the last few turns so follow-ups make sense. Replies come from the hospital's cloud AI on the server. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. |
-| Notifications list | Done | Real push alerts need Firebase and store setup |
+| Notifications list | Done | Includes appointment booked or upcoming, pickup called, and lab ready. Real lock-screen push still needs Firebase and store setup |
 | Settings and profile | Done | Includes Active clinic: which hospital this phone uses. **Hospitals linked to me** lists hospitals tied to your record. Directory search finds hospitals by name; it is not a membership list. Enter a short clinic code if you have one. Medical information has blood type presets and quick allergy or chronic chips plus Other. Emergency contacts can be picked from the phone book or typed in. A photo you add on the phone is stored with your record. Insurance shows your plan when one is on file. Payment methods and billing history open the right screens. Privacy is honest about what is phone-only and how to ask for account deletion. |
 | Choose my clinic | Done | Patients do not need Guids; use clinic name or an RC- code from the hospital. Hospitals linked to you show on Active clinic so you can tell membership apart from directory search. |
 
@@ -173,7 +176,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 | Open work board | Later | One place for overdue referrals, missed return visits, medicines not yet collected, and labs still waiting |
 | Smart suggestions on that board | Later | Soft prompts for what staff might do next. Staff confirm. |
 | Visit or ward note draft with AI | Later | Same idea as the discharge draft: start text from vitals and stay facts. Staff edit. |
-| Reminders for visits and pickup | Later | In-app first. Text or call reminders when the site is set up for that. |
+| Text or call reminders | Later | Extra text or call reminders when the site is set up for that. In-app appointment reminders are already Done in hospital admin above. |
 | Plain-language help on labs and vitals | Later | The phone chat explains results and band readings in simple words, and tells people to ask their clinician when unsure |
 | Lab wording help | Later | Suggest how to phrase a lab result and flag a big change from the last one. Staff edit values. |
 | Casualty priority hint | Later | Suggest a colour priority from the complaint and vitals. Staff confirm before the queue. |
@@ -189,7 +192,7 @@ Ideas for after the Hospital plan board. AI still only drafts or suggests. A per
 | Deeper mental-health note help | Done | Staff can draft an AI therapy note from scores on the patient chart when the hospital turns that on. |
 | US insurance prior auth and claims | Not for this product | Out of scope for RaphCare. |
 
-**Bottom line (later):** a backlog for the next product wave. Prefer order when you schedule: visit or ward note draft, open work board, plain-language labs help, reminders, then casualty priority hint.
+**Bottom line (later):** a backlog for the next product wave. Prefer order when you schedule: visit or ward note draft, open work board, plain-language labs help, text reminders, then casualty priority hint.
 
 ---
 

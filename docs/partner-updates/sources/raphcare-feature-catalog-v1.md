@@ -64,9 +64,12 @@ Patients can sign in on the web too, but they only get a short welcome. The full
 | Patients at the site | Grant or remove access. Open the patient chart. | Ready |
 | Patient chart | Staff can read overview, clinical, coverage, devices, and care. They do not edit the chart here. | Ready |
 | Clinical team and schedules | Add clinicians. Set when they are available. | Ready |
-| Appointments | Book, cancel, or reschedule. | Ready |
+| Appointments | Book, cancel, or reschedule. See Signed or Not signed for practice consent. | Ready |
+| Appointment reminders | When a visit is booked or moved, the patient gets an in-app notice. Timed reminders fire before the visit (about a day and about two hours ahead when those times are still in the future). Push is used when configured. No WhatsApp in this wave. | Ready |
+| Practice consent form | Admins edit a short consent text on the hospital overview. Patients Agree in the phone app. Staff get a soft note if it is not signed; completing the visit is still allowed. | Ready |
 | Consult waiting display | When the doctor is free, receptionist or doctor calls the next person into the room. A TV or tablet in reception shows a ticket or short code, not the person's name. For Practice and Clinic (and Hospital outpatient). | Ready |
-| Visits and vitals | Start a visit. Record vitals and notes. Order prescriptions and lab tests while the visit is open. Complete the visit. | Ready |
+| Visits and vitals | Start a visit. Record vitals and notes. Order prescriptions and lab tests while the visit is open. Complete the visit. Optionally bill a consultation amount and mark cash paid. | Ready |
+| Day sheet | See today's visit invoices for the site. Mark a pending invoice as paid in cash. Practice, Clinic, and Hospital outpatient. | Ready |
 | Video join for staff | Start a video session from admin. | Ready |
 | Dashboard numbers | See clinic metrics for the site. | Ready |
 | Hospital device fleet | See watches stocked for this site, Bluetooth MAC and activated date when known, who they are assigned to, and assign an in-stock watch to a linked patient. | Ready |
@@ -131,12 +134,12 @@ Android is the day-to-day test target. iPhone can run the app. Video on iPhone i
 
 | Feature | What it does | Status |
 |---------|--------------|--------|
-| Appointments | List, book, and open detail. Booking uses the chosen clinic and a clinician name list. | Ready |
+| Appointments | List, book, and open detail. If the practice has a consent form, Agree on the appointment before the visit. Booking uses the chosen clinic and a clinician name list. | Ready |
 | Health records | Visit notes, labs, prescriptions, and discharged stays. Waiting medicines or lab tests show a pickup code and a QR code. Scan a wall poster at the counter to show only that hospital. When staff tap Call, the app says come to the counter. | Ready |
 | Lab result ready | When staff enter a lab result, the patient gets a notice that it is ready. The notice does not include the values. Values stay on the health record. | Ready |
 | Request a call and join video | Ask for a call and join from the phone. Video works on Android. iPhone video still needs more setup. Confirm on a real Android handset before you treat it as a live clinic tool. | In progress |
 | Chat assistant | Wellness questions get a reply from the hospital's cloud AI. This is not a doctor. For urgent symptoms, contact a clinician or emergency services. | Ready |
-| Notifications list | In-app notices such as pickup called and lab ready. Real lock-screen push still needs store and server setup. | In progress |
+| Notifications list | In-app notices such as appointment booked or upcoming, pickup called, and lab ready. Real lock-screen push still needs store and server setup for every phone. | In progress |
 | Insurance | View and add coverage. | Ready |
 | Billing and payment methods | View bills and care plan options. Essential and Complete Care can start Paystack checkout when test or live keys are configured. Site software invoices via Paystack are still later. | Ready |
 | Family members | List, add, and open a family member. | Ready |
@@ -186,7 +189,7 @@ Ideas for after the Hospital plan board. AI would still only draft or suggest. A
 |---------|------------------|--------|
 | Open work board | One place for overdue referrals, missed return visits, medicines not yet collected, and labs still waiting. | Later |
 | Visit or ward note draft with AI | Start text from vitals and stay facts. Staff edit. | Later |
-| Reminders for visits and pickup | In-app first. Text or call later when the site is set up for that. | Later |
+| Text or call reminders | Extra text or call reminders for visits and pickup when the site is set up for that. In-app appointment reminders are Ready above. | Later |
 | Plain-language help on labs and vitals | The phone chat explains results and band readings in simple words, and tells people to ask their clinician when unsure. | Later |
 | Casualty priority hint | Suggest a colour from the complaint and vitals. Staff confirm. | Later |
 | Discharge checklist on the phone | After leaving: medicines, return visit, and warning signs in plain language. | Later |

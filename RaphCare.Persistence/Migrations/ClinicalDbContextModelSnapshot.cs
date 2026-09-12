@@ -122,6 +122,60 @@ namespace RaphCare.Persistence.Migrations
                     b.ToTable("AppointmentReminder");
                 });
 
+            modelBuilder.Entity("RaphCare.Domain.Clinical.AppointmentConsent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AppointmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BodySnapshot")
+                        .IsRequired()
+                        .HasMaxLength(8000)
+                        .HasColumnType("nvarchar(8000)");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("SignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("SignedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TitleSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("AppointmentConsents", (string)null);
+                });
+
             modelBuilder.Entity("RaphCare.Domain.Clinical.CarePlan", b =>
                 {
                     b.Property<Guid>("Id")
@@ -199,6 +253,43 @@ namespace RaphCare.Persistence.Migrations
                     b.HasIndex("CarePlanId");
 
                     b.ToTable("CarePlanTask");
+                });
+
+            modelBuilder.Entity("RaphCare.Domain.Clinical.ClinicConsentTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(8000)
+                        .HasColumnType("nvarchar(8000)");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("ClinicId", "IsActive");
+
+                    b.ToTable("ClinicConsentTemplates", (string)null);
                 });
 
             modelBuilder.Entity("RaphCare.Domain.Clinical.ConsultTicket", b =>

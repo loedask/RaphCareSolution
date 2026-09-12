@@ -16,6 +16,7 @@ public sealed class StartAdminClinicVisitHandler(
     IRepository<Visit> visitRepository,
     IRepository<Patient> patientRepository,
     IRepository<Provider> providerRepository,
+    IRepository<AppointmentConsent> consentRepository,
     IProfessionalUserLookupService professionalUserLookupService,
     IDateTimeProvider clock,
     IUnitOfWork unitOfWork)
@@ -91,6 +92,13 @@ public sealed class StartAdminClinicVisitHandler(
                 providerName = string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName;
         }
 
+        var consentPage = await consentRepository.SearchAsync(
+            q => q.Where(c => c.AppointmentId == visit.AppointmentId),
+            1,
+            1,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+        var consent = consentPage.Items.Count > 0 ? consentPage.Items[0] : null;
+
         return new AdminClinicVisitDetailDto
         {
             Id = visit.Id,
@@ -105,6 +113,8 @@ public sealed class StartAdminClinicVisitHandler(
             VisitType = visit.VisitType,
             Status = visit.Status,
             Summary = visit.Summary,
+            ConsentSigned = consent is not null,
+            ConsentSignedAt = consent?.SignedAt,
             Vitals = Array.Empty<AdminClinicVisitVitalDto>()
         };
     }

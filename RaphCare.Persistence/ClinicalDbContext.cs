@@ -18,6 +18,9 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
     public DbSet<PatientExternalId> PatientExternalIds => Set<PatientExternalId>();
     public DbSet<Clinic> Clinics => Set<Clinic>();
     public DbSet<Appointment> Appointments => Set<Appointment>();
+    public DbSet<AppointmentReminder> AppointmentReminders => Set<AppointmentReminder>();
+    public DbSet<AppointmentConsent> AppointmentConsents => Set<AppointmentConsent>();
+    public DbSet<ClinicConsentTemplate> ClinicConsentTemplates => Set<ClinicConsentTemplate>();
     public DbSet<Visit> Visits => Set<Visit>();
     public DbSet<CarePlan> CarePlans => Set<CarePlan>();
     public DbSet<TeleSession> TeleSessions => Set<TeleSession>();
@@ -94,6 +97,8 @@ public class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : Db
         modelBuilder.ApplyConfiguration(new TheatreCaseConfiguration());
         modelBuilder.ApplyConfiguration(new ReferralConfiguration());
         modelBuilder.ApplyConfiguration(new ClinicRosterEntryConfiguration());
+        modelBuilder.ApplyConfiguration(new ClinicConsentTemplateConfiguration());
+        modelBuilder.ApplyConfiguration(new AppointmentConsentConfiguration());
         modelBuilder.ApplyPersistenceConventions();
     }
 }

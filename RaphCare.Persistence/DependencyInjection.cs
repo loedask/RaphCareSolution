@@ -214,6 +214,9 @@ public static class DependencyInjection
         services.AddScoped<IRepository<LabRequest>>(sp => new EfRepository<LabRequest, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<LabResult>>(sp => new EfRepository<LabResult, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Appointment>>(sp => new EfRepository<Appointment, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<AppointmentReminder>>(sp => new EfRepository<AppointmentReminder, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<AppointmentConsent>>(sp => new EfRepository<AppointmentConsent, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
+        services.AddScoped<IRepository<ClinicConsentTemplate>>(sp => new EfRepository<ClinicConsentTemplate, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<TeleSession>>(sp => new EfRepository<TeleSession, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<TeleSessionChat>>(sp => new EfRepository<TeleSessionChat, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));
         services.AddScoped<IRepository<Message>>(sp => new EfRepository<Message, ClinicalDbContext>(sp.GetRequiredService<ClinicalDbContext>()));

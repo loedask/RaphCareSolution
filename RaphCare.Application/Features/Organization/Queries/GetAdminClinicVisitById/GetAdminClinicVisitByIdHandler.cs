@@ -1,6 +1,7 @@
 using MediatR;
 using RaphCare.Application.Common.Interfaces;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Domain.Billing;
 using RaphCare.Domain.Clinical;
 using RaphCare.Domain.Organization;
 using RaphCare.Domain.Patients;
@@ -14,6 +15,8 @@ public sealed class GetAdminClinicVisitByIdHandler(
     IRepository<VitalSignRecord> vitalRepository,
     IRepository<Patient> patientRepository,
     IRepository<Provider> providerRepository,
+    IRepository<Invoice> invoiceRepository,
+    IRepository<AppointmentConsent> consentRepository,
     IProfessionalUserLookupService professionalUserLookupService,
     IAdminClinicPatientQueryService adminClinicPatientQueryService)
     : IRequestHandler<GetAdminClinicVisitByIdQuery, AdminClinicVisitDetailDto?>
@@ -58,6 +61,21 @@ public sealed class GetAdminClinicVisitByIdHandler(
             .GetVisitClinicalDocumentationAsync(visit.Id, visit.VisitStart, cancellationToken)
             .ConfigureAwait(false);
 
+        var invoicePage = await invoiceRepository.SearchAsync(
+            q => q.Where(i => i.VisitId == visit.Id),
+            1,
+            1,
+            applyDefaultIdOrdering: false,
+            cancellationToken).ConfigureAwait(false);
+        var invoice = invoicePage.Items.Count > 0 ? invoicePage.Items[0] : null;
+
+        var consentPage = await consentRepository.SearchAsync(
+            q => q.Where(c => c.AppointmentId == visit.AppointmentId),
+            1,
+            1,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+        var consent = consentPage.Items.Count > 0 ? consentPage.Items[0] : null;
+
         return new AdminClinicVisitDetailDto
         {
             Id = visit.Id,
@@ -72,6 +90,12 @@ public sealed class GetAdminClinicVisitByIdHandler(
             VisitType = visit.VisitType,
             Status = visit.Status,
             Summary = visit.Summary,
+            InvoiceId = invoice?.Id,
+            InvoiceAmount = invoice?.Amount,
+            InvoiceStatus = invoice?.Status,
+            InvoiceCurrency = invoice?.Currency,
+            ConsentSigned = consent is not null,
+            ConsentSignedAt = consent?.SignedAt,
             Vitals = vitalsPage.Items.Select(v => new AdminClinicVisitVitalDto
             {
                 Id = v.Id,

@@ -160,6 +160,7 @@
                                             <th>@AppResources.T("Common_Provider")</th>
                                             <th>@AppResources.T("Common_Type")</th>
                                             <th>@AppResources.T("Common_Status")</th>
+                                            <th>@AppResources.T("Common_ConsentColumn")</th>
                                             <th>@AppResources.T("Common_Reason")</th>
                                             @if (ShowAppointmentActions)
                                             {
@@ -178,6 +179,7 @@
                                                 <td>@appt.ProviderName</td>
                                                 <td>@DisplayAppointmentType(appt.Type)</td>
                                                 <td>@appt.Status</td>
+                                                <td>@(appt.ConsentSigned ? AppResources.T("Common_ConsentSigned") : AppResources.T("Common_ConsentNotSigned"))</td>
                                                 <td>@(string.IsNullOrWhiteSpace(appt.Reason) ? AppResources.T("Common_EmptyCell") : appt.Reason)</td>
                                                 @if (ShowAppointmentActions && appt.Status != "Cancelled")
                                                 {

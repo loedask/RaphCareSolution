@@ -1,6 +1,7 @@
 using MediatR;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Application.Features.Appointments;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Domain.Clinical;
 using RaphCare.Domain.Organization;
@@ -14,11 +15,14 @@ public sealed class CreateAdminClinicAppointmentHandler(
     IUserRoleAssignmentService roleAssignmentService,
     IPatientClinicAccessService patientClinicAccessService,
     IRepository<Appointment> appointmentRepository,
+    IRepository<AppointmentReminder> appointmentReminderRepository,
     IRepository<Provider> providerRepository,
     IRepository<ProviderSchedule> providerScheduleRepository,
     IRepository<Clinic> clinicRepository,
     IRepository<Patient> patientRepository,
     IProfessionalUserLookupService professionalUserLookupService,
+    IDateTimeProvider clock,
+    IMediator mediator,
     IUnitOfWork unitOfWork)
     : IRequestHandler<CreateAdminClinicAppointmentCommand, AdminClinicAppointmentListItemDto?>
 {
@@ -84,10 +88,25 @@ public sealed class CreateAdminClinicAppointmentHandler(
         };
 
         await appointmentRepository.AddAsync(appointment, cancellationToken).ConfigureAwait(false);
+        await AppointmentReminderPlanner.ReplaceUnsentAsync(
+                appointmentReminderRepository,
+                appointment.Id,
+                appointment.ScheduledStart,
+                clock.UtcNow,
+                cancellationToken)
+            .ConfigureAwait(false);
         await patientClinicAccessService
             .GrantEncounterAccessAsync(request.PatientId, request.ClinicId, cancellationToken)
             .ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        await AppointmentPatientNotifier.NotifyBookedAsync(
+                mediator,
+                request.PatientId,
+                clinic?.Name ?? string.Empty,
+                appointment.ScheduledStart,
+                cancellationToken)
+            .ConfigureAwait(false);
 
         var users = await professionalUserLookupService
             .GetUsersByIdsAsync([provider.ApplicationUserId], cancellationToken)

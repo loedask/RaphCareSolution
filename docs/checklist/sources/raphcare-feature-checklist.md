@@ -46,8 +46,11 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Dashboard metrics
 - [x] Clinical team (providers): list, detail, create, set active, create and delete schedules
 - [x] Appointments: list, book, cancel, reschedule
+- [x] Appointment in-app reminders: schedule T-24h / T-2h on book and reschedule; clear unsent on cancel; immediate notice on book/change; API hosted poller dispatches due rows (`Type = appointment`, optional FCM)
+- [x] Practice pre-visit consent template (clinic admin upsert) + signed status on appointment list; soft warn on visit complete (does not block)
 - [x] Consult waiting display: enqueue today's appointments, call, complete, public `/display/consult/{token}` (codes only)
-- [x] Visits: start, get, complete, record vitals, SOAP, notes, prescriptions, lab orders (admin or doctor, InProgress)
+- [x] Visits: start, get, complete (optional consultation bill amount / cash paid), record vitals, SOAP, notes, prescriptions, lab orders (admin or doctor, InProgress)
+- [x] Day sheet: today's visit invoices for the site; hospital admin can mark pending invoices paid in cash (Practice / Clinic / Hospital outpatient)
 - [x] Collection board: search pending prescriptions/labs, camera QR scan, call a code onto the waiting screen, dispense, complete lab result, cancel, undo, recent history, print slip or wall poster with QR, public waiting-screen token (clinic staff; visit may be closed)
 - [x] Staff patient chart (read-only): medical info, emergency contacts, insurance, invoices, mood, care plans, diagnoses, prescriptions, SOAP / notes, labs, profile photo when the patient uploaded one
 - [x] Clinic devices list + hospital assign in-stock device to linked patient (`POST …/devices/{deviceId}/assign`)
@@ -62,6 +65,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 - [x] Patient detail page (staff chart on hospital-deck: overview, clinical, coverage, devices, care; shows the patient's profile photo when present)
 - [x] Clinician (provider) detail and schedules (hospital-deck)
 - [x] Appointments page (hospital-deck)
+- [x] Practice consent form editor on hospital overview (admin); Signed / Not signed on appointment list; soft warn on visit when not signed
 - [x] Consult page (hospital-deck): today's appointments into the queue, Call, Complete, open waiting screen at `/display/consult/{token}`
 - [x] Visit page + vitals + visit-scoped clinical docs (add SOAP / notes / prescriptions / order labs on InProgress; hospital-deck)
 - [x] Collection page (search by code / name / health ID; scan QR; call next; mark collected; enter lab result; cancel; undo; print slip or wall poster; open waiting screen). Command-deck header and numbered section rail. Waiting screen at `/display/{token}` shows pickup codes only.
@@ -79,7 +83,7 @@ Work under `api/admin/clinics` -> `IAdminClinicService` -> Blazor `Pages/Admin/H
 
 ### Step 1 status
 
-**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress, collection and consult waiting screens, and Ops fleet stock under hospital or Direct. Phone and tablet layout plus a thin home-screen install are in place. Clinician Mobile stays out of scope. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
+**100%.** Outpatient hospital admin is end-to-end on API + Client + Portal Web, including a staff-only patient chart (view), visit documentation while a visit is in progress, optional consultation billing on complete, a day sheet for today's visit invoices, collection and consult waiting screens, and Ops fleet stock under hospital or Direct. Phone and tablet layout plus a thin home-screen install are in place. Clinician Mobile stays out of scope. See [`../../15_Web_Admin_On_Phone.md`](../../15_Web_Admin_On_Phone.md).
 
 ---
 
@@ -160,7 +164,7 @@ Design lock and screen map: `docs/Mobile_Concept_Port.md`. Flags: `RaphCare.Mobi
 
 | Area | API | Client | Mobile UI | Notes |
 |------|-----|--------|-----------|-------|
-| Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail |
+| Appointments | [x] | [x] | [x] | List, book (clinic from Active clinic and clinician name picker), detail with practice consent Agree when the site has an active form |
 | Care / telehealth | [x] | [x] | [x] | Request call + join; Agora on Android |
 | Health records | [x] | [x] | [x] | List + detail + pickup codes and QR; scan wall poster to check in; Call notice + on-screen status |
 | Devices / BLE vitals | [x] | [x] | [x] | Claim assigned serial before BLE; Connect matches locked MAC; leaving Devices keeps GATT; closing the app reconnects the claimed watch on Devices appear; crash breadcrumb consumed on Devices and Watch readings (pauses auto-reconnect); SCAN-STOP no longer clears breadcrumb before connectDevice (1.8.48); live vendor-probe step on Loading overlay; daily Connect is Plugin.BLE (1.8.42); probe UseVeepooNativeScanProbe; offline outbox retries |
@@ -309,7 +313,8 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 - [ ] Open-loop / care-gap board on hospital home `(optional / later)`: overdue referrals, missed return visits, uncollected medicines, open labs waiting on results
 - [ ] AI ops suggestions on that board `(optional / later)`: propose next staff actions; human confirms (Care GP / Plena / Beacon style)
-- [ ] Appointment and pickup reminder agent `(optional / later)`: in-app notice first; SMS or voice when configured (Evergrove / Avoca style)
+- [x] Appointment in-app reminders (book / reschedule / due poller) — shipped under Step 1; SMS or voice still `(optional / later)`
+- [ ] Pickup reminder agent `(optional / later)`: SMS or voice when configured (Evergrove / Avoca style)
 - [ ] Paper or photo referral intake to structured referral draft `(optional / later)`: staff edit before save (Plena fax-intake idea, camera/PDF)
 - [ ] Collection busy-window suggestions `(optional / later)`: hint when the counter is likely busy; no US imaging scheduler clone
 - [ ] Staff license / credential expiry reminders on roster `(optional / later)`: dates and alerts only (Arctic slimmed; not payer contracting)
@@ -384,10 +389,10 @@ Ideas adapted from the [YC Healthcare directory](https://www.ycombinator.com/com
 
 | Surface | Primary owner | Status snapshot |
 |---------|---------------|-----------------|
-| **API** admin clinics | `AdminClinicsController` | Outpatient complete; inpatient lifecycle plus ward notes and discharge invoice; casualty and consult queues and display tokens; theatre board; outbound referral board; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
+| **API** admin clinics | `AdminClinicsController` | Outpatient complete with optional consultation invoice; day sheet list and mark paid; inpatient lifecycle plus ward notes and discharge invoice; casualty and consult queues and display tokens; theatre board; outbound referral board; collection board; waiting-screen display token; staff jobs Doctor / Pharmacist / LabTechnician / Nurse |
 | **API** patient | `api/patient/*`, auth, onboarding | Verticals wired; collection-orders + health-record pickup codes; config-dependent push / AI / iOS RTC |
 | **Client** | `IAdminClinicService`, patient `I*Service` | Matches current APIs |
-| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + consult + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone layout + thin home-screen install (manifest + icons; not a full PWA) |
+| **Web admin** | `Pages/Admin/Hospitals/*` | Hospital ops + visit consultation billing + day sheet + inpatient lifecycle + ward notes + discharge invoice + AI discharge draft + occupancy numbers + casualty + consult + theatre + referrals + roster + emergency home + staff patient chart (view) + visit documentation on InProgress + collection counter + waiting screens; UI en/fr/ln/sw; phone layout + thin home-screen install (manifest + icons; not a full PWA) |
 | **Mobile** | `RaphCare.Mobile` patient app | Concept screens in; Android ahead of iOS for video; BLE partial |
 
 ---

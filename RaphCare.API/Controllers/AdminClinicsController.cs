@@ -63,13 +63,17 @@ using RaphCare.Application.Features.Organization.Commands.RemoveClinicStaff;
 using RaphCare.Application.Features.Organization.Commands.ResendClinicStaffInvitation;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminFacility;
 using RaphCare.Application.Features.Organization.Commands.UpdateAdminClinic;
+using RaphCare.Application.Features.Organization.Commands.UpsertAdminClinicConsentTemplate;
 using RaphCare.Application.Features.Organization.Commands.UpdateClinicStaffRole;
 using RaphCare.Application.Features.Organization.DTOs;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicConsentTemplate;
 using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicLabOrder;
 using RaphCare.Application.Features.Organization.Commands.CancelAdminClinicPrescription;
 using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicLabOrder;
 using RaphCare.Application.Features.Organization.Commands.CompleteAdminClinicVisit;
+using RaphCare.Application.Features.Organization.Commands.MarkAdminClinicVisitInvoicePaid;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitLabResult;
+using RaphCare.Application.Features.Organization.Queries.GetAdminClinicDaySheet;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitNote;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitPrescription;
 using RaphCare.Application.Features.Organization.Commands.CreateAdminClinicVisitVital;
@@ -445,6 +449,40 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
         return deleted ? NoContent() : NotFound();
     }
 
+    /// <summary>Get the practice pre-visit consent template for this hospital.</summary>
+    [HttpGet("{id:guid}/consent-template", Name = "GetAdminClinicConsentTemplate")]
+    [ProducesResponseType(typeof(AdminClinicConsentTemplateDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetConsentTemplate(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicConsentTemplateQuery { ClinicId = id },
+            cancellationToken).ConfigureAwait(false);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Create or update the practice pre-visit consent template (clinic admin).</summary>
+    [HttpPut("{id:guid}/consent-template", Name = "UpsertAdminClinicConsentTemplate")]
+    [ProducesResponseType(typeof(AdminClinicConsentTemplateDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpsertConsentTemplate(
+        Guid id,
+        [FromBody] UpsertAdminClinicConsentTemplateRequest body,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new UpsertAdminClinicConsentTemplateCommand
+            {
+                ClinicId = id,
+                TemplateId = body.TemplateId,
+                Title = body.Title,
+                Body = body.Body,
+                IsActive = body.IsActive
+            },
+            cancellationToken).ConfigureAwait(false);
+        return result is null ? NotFound() : Ok(result);
+    }
+
     /// <summary>Dashboard metrics scoped to this hospital.</summary>
     [HttpGet("{id:guid}/dashboard", Name = "GetAdminClinicDashboard")]
     [ProducesResponseType(typeof(AdminClinicDashboardDto), StatusCodes.Status200OK)]
@@ -713,7 +751,43 @@ public class AdminClinicsController(IMediator mediator) : ControllerBase
             {
                 ClinicId = id,
                 VisitId = visitId,
-                Summary = body?.Summary
+                Summary = body?.Summary,
+                BillAmount = body?.BillAmount,
+                BillDescription = body?.BillDescription,
+                MarkPaid = body?.MarkPaid ?? false,
+                Currency = body?.Currency
+            },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Today's visit invoices for the clinic day sheet (UTC day).</summary>
+    [HttpGet("{id:guid}/day-sheet", Name = "GetAdminClinicDaySheet")]
+    [ProducesResponseType(typeof(IReadOnlyList<AdminClinicDaySheetItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetDaySheet(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new GetAdminClinicDaySheetQuery { ClinicId = id },
+            cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Mark a pending visit invoice as paid in cash.</summary>
+    [HttpPost("{id:guid}/day-sheet/{invoiceId:guid}/mark-paid", Name = "MarkAdminClinicVisitInvoicePaid")]
+    [ProducesResponseType(typeof(AdminClinicDaySheetItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> MarkDaySheetInvoicePaid(
+        Guid id,
+        Guid invoiceId,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(
+            new MarkAdminClinicVisitInvoicePaidCommand
+            {
+                ClinicId = id,
+                InvoiceId = invoiceId
             },
             cancellationToken);
         return result is null ? NotFound() : Ok(result);

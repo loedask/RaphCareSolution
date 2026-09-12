@@ -8,6 +8,10 @@ public sealed class StartAdminClinicVisitRequest
 public sealed class CompleteAdminClinicVisitRequest
 {
     public string? Summary { get; set; }
+    public decimal? BillAmount { get; set; }
+    public string? BillDescription { get; set; }
+    public bool MarkPaid { get; set; }
+    public string? Currency { get; set; }
 }
 
 public sealed class CreateAdminClinicVisitVitalRequest

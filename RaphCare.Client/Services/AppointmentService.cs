@@ -35,4 +35,10 @@ public sealed class AppointmentService(HttpClient httpClient) : BaseHttpService(
             return Response<Guid>.Failure(result.ErrorMessage ?? "Booking failed.", result.StatusCode);
         return Response<Guid>.Success(result.Data.Id);
     }
+
+    public Task<Response<AppointmentConsentViewModel>> GetConsentAsync(Guid appointmentId, CancellationToken cancellationToken = default) =>
+        GetAsync<AppointmentConsentViewModel>($"api/patient/appointments/{appointmentId}/consent", cancellationToken);
+
+    public Task<Response<AppointmentConsentViewModel>> AgreeConsentAsync(Guid appointmentId, CancellationToken cancellationToken = default) =>
+        PostAsync<AppointmentConsentViewModel>($"api/patient/appointments/{appointmentId}/consent/agree", new { }, cancellationToken);
 }

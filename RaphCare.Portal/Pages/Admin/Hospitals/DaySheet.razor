@@ -1,0 +1,200 @@
+@page "/admin/hospitals/{ClinicId:guid}/day-sheet"
+@layout AdminLayout
+@using RaphCare.Domain.Common
+@inject IUiCultureService CultureService
+@implements IDisposable
+
+<PageTitle>@AppResources.T("DaySheet_PageTitle")</PageTitle>
+
+<section class="admin-page hospital-deck">
+    @if (_loading && _items is null)
+    {
+        <HospitalDeckLoading Message="@AppResources.T("DaySheet_Loading")" />
+    }
+    else
+    {
+        <HospitalDeckMasthead BackHref="@HospitalDeckReturnUrl.ForLinkedSectionReturn(ClinicId, "day-sheet")"
+                              BackText="@AppResources.T("Common_BackToHospital")"
+                              Monogram="@HospitalDeckInitials.FromName(_clinicName)"
+                              Eyebrow="@AppResources.T("DaySheet_Title")"
+                              Title="@_clinicName"
+                              Lead="@AppResources.Format("DaySheet_Lead", _clinicName)"
+                              StatusText="@FormatStatusLine()"
+                              ClinicId="@ClinicId"
+                              ClinicName="@_clinicName"
+                              CurrentCrumb="@AppResources.T("DaySheet_Title")">
+            <HospitalDeckChip Label="@AppResources.T("DaySheet_PendingChip")" Value="@PendingCount.ToString()" />
+            <HospitalDeckChip Label="@AppResources.T("DaySheet_PaidChip")" Value="@PaidCount.ToString()" />
+        </HospitalDeckMasthead>
+
+        <AdminAlert Message="@_error" />
+        <AdminAlert Tone="success" Message="@_success" />
+
+        <div class="hospital-deck-workspace">
+        <HospitalDeckRail AriaLabel="@AppResources.T("DaySheet_SectionsAria")"
+                          Kicker="@AppResources.T("DaySheet_Title")">
+            <HospitalDeckRailItem Index="01" Icon="history" IsActive="true" Count="@(_items?.Count)">
+                @AppResources.T("DaySheet_TodaysList")
+            </HospitalDeckRailItem>
+        </HospitalDeckRail>
+
+        <div class="hospital-deck-stage">
+            <AdminPageCard Eyebrow="@AppResources.T("DaySheet_Eyebrow")"
+                           Title="@AppResources.T("DaySheet_TodaysList")"
+                           Lead="@AppResources.T("DaySheet_TodaysListLead")">
+                <div class="admin-page-card-body">
+                    <div class="admin-page-actions" style="margin-bottom: 1rem;">
+                        <button type="button" class="btn btn-secondary" disabled="@_busy" @onclick="LoadAsync">
+                            @AppResources.T("DaySheet_Refresh")
+                        </button>
+                    </div>
+                    @if (_items is null || _items.Count == 0)
+                    {
+                        <p class="text-muted">@AppResources.T("DaySheet_Empty")</p>
+                    }
+                    else
+                    {
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>@AppResources.T("Common_Patient")</th>
+                                        <th>@AppResources.T("DaySheet_DescriptionColumn")</th>
+                                        <th>@AppResources.T("DaySheet_AmountColumn")</th>
+                                        <th>@AppResources.T("Common_Status")</th>
+                                        <th>@AppResources.T("DaySheet_PaidAtColumn")</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in _items)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="/admin/hospitals/@ClinicId/patients/@item.PatientId">@item.PatientName</a>
+                                            </td>
+                                            <td>@item.Description</td>
+                                            <td>@FormatAmount(item.Amount, item.Currency)</td>
+                                            <td>@FormatStatus(item.Status)</td>
+                                            <td>@(item.PaidAt is { } paidAt ? FormatLocal(paidAt) : AppResources.T("Common_EmptyCell"))</td>
+                                            <td>
+                                                @if (string.Equals(item.Status, "Pending", StringComparison.OrdinalIgnoreCase))
+                                                {
+                                                    <button type="button"
+                                                            class="btn btn-primary btn-sm"
+                                                            disabled="@(_markingId == item.InvoiceId)"
+                                                            @onclick="() => MarkPaidAsync(item.InvoiceId)">
+                                                        @(_markingId == item.InvoiceId
+                                                            ? AppResources.T("Common_PleaseWait")
+                                                            : AppResources.T("DaySheet_MarkPaid"))
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </AdminPageCard>
+        </div>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public Guid ClinicId { get; set; }
+
+    [Inject] private IAdminClinicService AdminClinicService { get; set; } = default!;
+    [Inject] private ClinicContextService ClinicContext { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _busy;
+    private Guid? _markingId;
+    private string _clinicName = string.Empty;
+    private string? _clinicTimeZone;
+    private string? _error;
+    private string? _success;
+    private IReadOnlyList<ClinicDaySheetItem>? _items;
+
+    private int PendingCount =>
+        _items?.Count(i => string.Equals(i.Status, "Pending", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private int PaidCount =>
+        _items?.Count(i => string.Equals(i.Status, "Paid", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    protected override void OnInitialized() =>
+        CultureService.CultureChanged += OnCultureChanged;
+
+    private void OnCultureChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => CultureService.CultureChanged -= OnCultureChanged;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ClinicContext.SetCurrentClinicAsync(ClinicId).ConfigureAwait(false);
+        var clinicResponse = await AdminClinicService.GetClinicAsync(ClinicId);
+        if (clinicResponse.IsSuccess && clinicResponse.Data is not null)
+        {
+            _clinicName = clinicResponse.Data.Name;
+            _clinicTimeZone = clinicResponse.Data.TimeZone;
+            await ClinicContext.SetCurrentClinicAsync(ClinicId, clinicResponse.Data.Name).ConfigureAwait(false);
+        }
+        else
+        {
+            _clinicName = AppResources.T("Common_ThisHospital");
+        }
+
+        await LoadAsync();
+    }
+
+    private string FormatStatusLine() =>
+        AppResources.Format("DaySheet_StatusLine", PendingCount, PaidCount);
+
+    private static string FormatAmount(decimal amount, string currency) =>
+        $"{amount:0.##} {currency}";
+
+    private static string FormatStatus(string status) =>
+        status switch
+        {
+            "Paid" => AppResources.T("DaySheet_StatusPaid"),
+            "Pending" => AppResources.T("DaySheet_StatusPending"),
+            _ => status
+        };
+
+    private string FormatLocal(DateTime utc) =>
+        ClinicTimeZoneHelper.ToClinicLocal(utc, _clinicTimeZone).ToString("dd MMM yyyy HH:mm");
+
+    private async Task LoadAsync()
+    {
+        _busy = true;
+        if (_items is null)
+            _loading = true;
+        _error = null;
+        var response = await AdminClinicService.GetDaySheetAsync(ClinicId);
+        _busy = false;
+        _loading = false;
+        if (response.IsSuccess && response.Data is not null)
+            _items = response.Data;
+        else
+            _error = response.ErrorMessage ?? AppResources.T("DaySheet_CouldNotLoad");
+    }
+
+    private async Task MarkPaidAsync(Guid invoiceId)
+    {
+        _markingId = invoiceId;
+        _error = null;
+        _success = null;
+        var response = await AdminClinicService.MarkDaySheetInvoicePaidAsync(ClinicId, invoiceId);
+        _markingId = null;
+        if (!response.IsSuccess)
+        {
+            _error = response.ErrorMessage ?? AppResources.T("DaySheet_CouldNotMarkPaid");
+            return;
+        }
+
+        _success = AppResources.T("DaySheet_MarkedPaid");
+        await LoadAsync();
+    }
+}

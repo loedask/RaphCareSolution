@@ -56,49 +56,52 @@
             <HospitalDeckRailItem Index="05" Icon="calendar" IsActive="@(_tab == "appointments")" OnSelect='() => SetTab("appointments")'>
                 @AppResources.T("Common_Appointments")
             </HospitalDeckRailItem>
-            <HospitalDeckRailItem Index="06" Icon="device" IsActive="@(_tab == "devices")" Count="@(_devicesLoaded ? _devices.Count : null)" OnSelect='() => SetTab("devices")'>
+            <HospitalDeckRailItem Index="06" Icon="history" IsActive="@(_tab == "day-sheet")" Href="@($"/admin/hospitals/{ClinicId}/day-sheet")">
+                @AppResources.T("DaySheet_Title")
+            </HospitalDeckRailItem>
+            <HospitalDeckRailItem Index="07" Icon="device" IsActive="@(_tab == "devices")" Count="@(_devicesLoaded ? _devices.Count : null)" OnSelect='() => SetTab("devices")'>
                 @AppResources.T("Common_Devices")
             </HospitalDeckRailItem>
             @if (_detail.HasInpatient)
             {
-                <HospitalDeckRailItem Index="07" Icon="inpatient" IsActive="@(_tab == "inpatient")" Href="@($"/admin/hospitals/{ClinicId}/inpatient")">
+                <HospitalDeckRailItem Index="08" Icon="inpatient" IsActive="@(_tab == "inpatient")" Href="@($"/admin/hospitals/{ClinicId}/inpatient")">
                     @AppResources.T("Common_Inpatient")
                 </HospitalDeckRailItem>
             }
             @if (_detail.HasCollection)
             {
-                <HospitalDeckRailItem Index="08" Icon="collection" IsActive="@(_tab == "collection")" Href="@($"/admin/hospitals/{ClinicId}/collection")">
+                <HospitalDeckRailItem Index="09" Icon="collection" IsActive="@(_tab == "collection")" Href="@($"/admin/hospitals/{ClinicId}/collection")">
                     @AppResources.T("Collection_Title")
                 </HospitalDeckRailItem>
             }
             @if (_detail.HasCasualty)
             {
-                <HospitalDeckRailItem Index="09" Icon="casualty" IsActive="@(_tab == "casualty")" Href="@($"/admin/hospitals/{ClinicId}/casualty")">
+                <HospitalDeckRailItem Index="10" Icon="casualty" IsActive="@(_tab == "casualty")" Href="@($"/admin/hospitals/{ClinicId}/casualty")">
                     @AppResources.T("Common_Casualty")
                 </HospitalDeckRailItem>
             }
             @if (_detail.HasConsultWaiting)
             {
-                <HospitalDeckRailItem Index="10" Icon="consult" IsActive="@(_tab == "consult")" Href="@($"/admin/hospitals/{ClinicId}/consult")">
+                <HospitalDeckRailItem Index="11" Icon="consult" IsActive="@(_tab == "consult")" Href="@($"/admin/hospitals/{ClinicId}/consult")">
                     @AppResources.T("Common_Consult")
                 </HospitalDeckRailItem>
             }
             @if (_detail.HasTheatre)
             {
-                <HospitalDeckRailItem Index="11" Icon="theatre" IsActive="@(_tab == "theatre")" Href="@($"/admin/hospitals/{ClinicId}/theatre")">
+                <HospitalDeckRailItem Index="12" Icon="theatre" IsActive="@(_tab == "theatre")" Href="@($"/admin/hospitals/{ClinicId}/theatre")">
                     @AppResources.T("Common_Theatre")
                 </HospitalDeckRailItem>
             }
             @if (_detail.HasInpatient)
             {
-                <HospitalDeckRailItem Index="12" Icon="referral" IsActive="@(_tab == "referrals")" Href="@($"/admin/hospitals/{ClinicId}/referrals")">
+                <HospitalDeckRailItem Index="13" Icon="referral" IsActive="@(_tab == "referrals")" Href="@($"/admin/hospitals/{ClinicId}/referrals")">
                     @AppResources.T("Common_Referrals")
                 </HospitalDeckRailItem>
-                <HospitalDeckRailItem Index="13" Icon="roster" IsActive="@(_tab == "roster")" Href="@($"/admin/hospitals/{ClinicId}/roster")">
+                <HospitalDeckRailItem Index="14" Icon="roster" IsActive="@(_tab == "roster")" Href="@($"/admin/hospitals/{ClinicId}/roster")">
                     @AppResources.T("Common_Roster")
                 </HospitalDeckRailItem>
             }
-            <HospitalDeckRailItem Index="14" Icon="staff" IsActive="@(_tab == "staff")" Count="@(_staffLoaded ? _staff.Count : null)" OnSelect='() => SetTab("staff")'>
+            <HospitalDeckRailItem Index="15" Icon="staff" IsActive="@(_tab == "staff")" Count="@(_staffLoaded ? _staff.Count : null)" OnSelect='() => SetTab("staff")'>
                 @AppResources.T("Common_Staff")
             </HospitalDeckRailItem>
         </HospitalDeckRail>
@@ -122,6 +125,37 @@
                                           IsAdministrator="_isAdministrator"
                                           Saving="_savingClinic"
                                           OnSave="SaveClinicAsync" />
+
+                @if (_isAdministrator)
+                {
+                    <AdminPageCard Eyebrow="@AppResources.T("Common_ConsentTemplateEyebrow")"
+                                   Title="@AppResources.T("Common_ConsentTemplateTitle")"
+                                   Lead="@AppResources.T("Common_ConsentTemplateLead")">
+                        <div class="admin-page-card-body">
+                            <div class="admin-inline-form">
+                                <div class="form-grid">
+                                    <label>
+                                        @AppResources.T("Common_ConsentFormTitle")
+                                        <input class="form-control" @bind="_consentTitle" maxlength="200" />
+                                    </label>
+                                    <label class="form-check">
+                                        <input type="checkbox" @bind="_consentIsActive" />
+                                        @AppResources.T("Common_ConsentIsActive")
+                                    </label>
+                                    <label style="grid-column: 1 / -1;">
+                                        @AppResources.T("Common_ConsentFormBody")
+                                        <textarea class="form-control" rows="6" @bind="_consentBody" maxlength="8000"></textarea>
+                                    </label>
+                                </div>
+                                <div class="admin-form-actions">
+                                    <button type="button" class="btn btn-primary" disabled="@_savingConsent" @onclick="SaveConsentTemplateAsync">
+                                        @(_savingConsent ? AppResources.T("Common_Saving") : AppResources.T("Common_SaveChanges"))
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </AdminPageCard>
+                }
 
                 <ClinicEmergencyHomeCard ClinicId="@ClinicId"
                                          Events="@_homeEmergencyEvents"
@@ -795,6 +829,11 @@
     private bool _addingProvider;
     private bool _savingFacility;
     private bool _savingClinic;
+    private bool _savingConsent;
+    private Guid? _consentTemplateId;
+    private string _consentTitle = string.Empty;
+    private string _consentBody = string.Empty;
+    private bool _consentIsActive = true;
     private bool _inviting;
     private bool _grantingPatient;
     private Guid? _deletingFacilityId;
@@ -896,6 +935,7 @@
         "patients" => AppResources.T("Common_PatientsStat"),
         "providers" => AppResources.T("Common_ProvidersStat"),
         "appointments" => AppResources.T("Common_Appointments"),
+        "day-sheet" => AppResources.T("DaySheet_Title"),
         "devices" => AppResources.T("Common_Devices"),
         "inpatient" => AppResources.T("Common_Inpatient"),
         "collection" => AppResources.T("Collection_Title"),
@@ -959,6 +999,7 @@
             _isAdministrator = _detail.CurrentUserIsAdministrator;
             ResetFacilityForm(_detail.Country);
             ResetClinicForm(_detail);
+            await LoadConsentTemplateAsync();
             await ClinicContext.SetCurrentClinicAsync(ClinicId, _detail.Name).ConfigureAwait(false);
             return;
         }
@@ -1341,6 +1382,54 @@
             AllowAiDischargeDraft = detail.AllowAiDischargeDraft,
             AllowAiMentalHealthNotes = detail.AllowAiMentalHealthNotes
         };
+    }
+
+    private async Task LoadConsentTemplateAsync()
+    {
+        var response = await AdminClinicService.GetConsentTemplateAsync(ClinicId);
+        if (!response.IsSuccess)
+            return;
+
+        if (response.Data is null)
+        {
+            _consentTemplateId = null;
+            _consentTitle = string.Empty;
+            _consentBody = string.Empty;
+            _consentIsActive = true;
+            return;
+        }
+
+        _consentTemplateId = response.Data.Id;
+        _consentTitle = response.Data.Title;
+        _consentBody = response.Data.Body;
+        _consentIsActive = response.Data.IsActive;
+    }
+
+    private async Task SaveConsentTemplateAsync()
+    {
+        _savingConsent = true;
+        _actionError = null;
+        var response = await AdminClinicService.UpsertConsentTemplateAsync(
+            ClinicId,
+            new UpsertClinicConsentTemplateRequest
+            {
+                TemplateId = _consentTemplateId,
+                Title = _consentTitle,
+                Body = _consentBody,
+                IsActive = _consentIsActive
+            });
+        _savingConsent = false;
+
+        if (!response.IsSuccess || response.Data is null)
+        {
+            _actionError = response.ErrorMessage ?? AppResources.T("Common_CouldNotSaveConsentTemplate");
+            return;
+        }
+
+        _consentTemplateId = response.Data.Id;
+        _consentTitle = response.Data.Title;
+        _consentBody = response.Data.Body;
+        _consentIsActive = response.Data.IsActive;
     }
 
     private bool CanRemoveStaff(ClinicStaffMember member) =>

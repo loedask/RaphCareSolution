@@ -63,6 +63,8 @@ public sealed class ClinicAppointmentListItem
     public string Status { get; set; } = string.Empty;
     public string? Reason { get; set; }
     public Guid? ActiveVisitId { get; set; }
+    public bool ConsentSigned { get; set; }
+    public DateTime? ConsentSignedAt { get; set; }
 }
 
 public sealed class PagedClinicAppointments
@@ -156,6 +158,12 @@ public sealed class ClinicVisitDetail
     public string VisitType { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string? Summary { get; set; }
+    public Guid? InvoiceId { get; set; }
+    public decimal? InvoiceAmount { get; set; }
+    public string? InvoiceStatus { get; set; }
+    public string? InvoiceCurrency { get; set; }
+    public bool ConsentSigned { get; set; }
+    public DateTime? ConsentSignedAt { get; set; }
     public IReadOnlyList<ClinicVisitVital> Vitals { get; set; } = Array.Empty<ClinicVisitVital>();
     public IReadOnlyList<ClinicVisitDiagnosis> Diagnoses { get; set; } = Array.Empty<ClinicVisitDiagnosis>();
     public IReadOnlyList<ClinicVisitPrescription> Prescriptions { get; set; } = Array.Empty<ClinicVisitPrescription>();
@@ -353,6 +361,28 @@ public sealed class CompleteVisitLabOrderRequest
     public string ResultValue { get; set; } = string.Empty;
     public string? Unit { get; set; }
     public string? ReferenceRange { get; set; }
+}
+
+public sealed class CompleteVisitRequest
+{
+    public string? Summary { get; set; }
+    public decimal? BillAmount { get; set; }
+    public string? BillDescription { get; set; }
+    public bool MarkPaid { get; set; }
+    public string? Currency { get; set; }
+}
+
+public sealed class ClinicDaySheetItem
+{
+    public Guid InvoiceId { get; set; }
+    public Guid VisitId { get; set; }
+    public Guid PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public string Currency { get; set; } = "ZAR";
+    public string Status { get; set; } = string.Empty;
+    public DateTime? PaidAt { get; set; }
+    public string Description { get; set; } = string.Empty;
 }
 
 public sealed class ClinicCollectionBoard

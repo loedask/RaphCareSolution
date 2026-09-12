@@ -1,6 +1,7 @@
 using MediatR;
 using RaphCare.Application.Common.Exceptions;
 using RaphCare.Application.Common.Interfaces;
+using RaphCare.Application.Features.Appointments;
 using RaphCare.Application.Features.Organization.DTOs;
 using RaphCare.Domain.Clinical;
 using RaphCare.Domain.Organization;
@@ -13,11 +14,14 @@ public sealed class RescheduleAdminClinicAppointmentHandler(
     IClinicStaffMembershipService clinicStaffMembershipService,
     IUserRoleAssignmentService roleAssignmentService,
     IRepository<Appointment> appointmentRepository,
+    IRepository<AppointmentReminder> appointmentReminderRepository,
     IRepository<Provider> providerRepository,
     IRepository<ProviderSchedule> providerScheduleRepository,
     IRepository<Clinic> clinicRepository,
     IRepository<Patient> patientRepository,
     IProfessionalUserLookupService professionalUserLookupService,
+    IDateTimeProvider clock,
+    IMediator mediator,
     IUnitOfWork unitOfWork)
     : IRequestHandler<RescheduleAdminClinicAppointmentCommand, AdminClinicAppointmentListItemDto?>
 {
@@ -82,7 +86,22 @@ public sealed class RescheduleAdminClinicAppointmentHandler(
         if (request.Reason is not null)
             appointment.Reason = string.IsNullOrWhiteSpace(request.Reason) ? null : request.Reason.Trim();
 
+        await AppointmentReminderPlanner.ReplaceUnsentAsync(
+                appointmentReminderRepository,
+                appointment.Id,
+                appointment.ScheduledStart,
+                clock.UtcNow,
+                cancellationToken)
+            .ConfigureAwait(false);
         await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        await AppointmentPatientNotifier.NotifyRescheduledAsync(
+                mediator,
+                appointment.PatientId,
+                clinic?.Name ?? string.Empty,
+                appointment.ScheduledStart,
+                cancellationToken)
+            .ConfigureAwait(false);
 
         var users = await professionalUserLookupService
             .GetUsersByIdsAsync([provider.ApplicationUserId], cancellationToken)

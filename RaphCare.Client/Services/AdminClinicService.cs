@@ -1083,7 +1083,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
     public async Task<Response<ClinicVisitDetail>> CompleteVisitAsync(
         Guid clinicId,
         Guid visitId,
-        string? summary = null,
+        CompleteVisitRequest? request = null,
         CancellationToken cancellationToken = default)
     {
         try
@@ -1092,7 +1092,14 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             using var response = await client
                 .PostAsJsonAsync(
                     $"api/admin/clinics/{clinicId}/visits/{visitId}/complete",
-                    new { summary },
+                    new
+                    {
+                        summary = request?.Summary,
+                        billAmount = request?.BillAmount,
+                        billDescription = request?.BillDescription,
+                        markPaid = request?.MarkPaid ?? false,
+                        currency = request?.Currency
+                    },
                     cancellationToken)
                 .ConfigureAwait(false);
 
@@ -1100,7 +1107,7 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
             {
                 var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
                 if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                    error = "Only hospital administrators can complete visits.";
+                    error = "Only a doctor or hospital administrator can complete visits.";
                 return Response<ClinicVisitDetail>.Failure(error, (int)response.StatusCode);
             }
 
@@ -1113,6 +1120,75 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         catch (HttpRequestException)
         {
             return Response<ClinicVisitDetail>.Failure("We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<IReadOnlyList<ClinicDaySheetItem>>> GetDaySheetAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/day-sheet", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can view the day sheet.";
+                return Response<IReadOnlyList<ClinicDaySheetItem>>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<List<DaySheetItemDto>>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<IReadOnlyList<ClinicDaySheetItem>>.Failure("Could not load the day sheet.");
+
+            return Response<IReadOnlyList<ClinicDaySheetItem>>.Success(dto.Select(MapDaySheetItem).ToList());
+        }
+        catch (HttpRequestException)
+        {
+            return Response<IReadOnlyList<ClinicDaySheetItem>>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicDaySheetItem>> MarkDaySheetInvoicePaidAsync(
+        Guid clinicId,
+        Guid invoiceId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PostAsync($"api/admin/clinics/{clinicId}/day-sheet/{invoiceId}/mark-paid", content: null, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can mark visit invoices as paid.";
+                return Response<ClinicDaySheetItem>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<DaySheetItemDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicDaySheetItem>.Failure("Could not mark the invoice as paid.");
+
+            return Response<ClinicDaySheetItem>.Success(MapDaySheetItem(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicDaySheetItem>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
         }
     }
 
@@ -2993,6 +3069,85 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         }
     }
 
+    public async Task<Response<ClinicConsentTemplate?>> GetConsentTemplateAsync(
+        Guid clinicId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .GetAsync($"api/admin/clinics/{clinicId}/consent-template", cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return Response<ClinicConsentTemplate?>.Success(null);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                return Response<ClinicConsentTemplate?>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<ConsentTemplateDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicConsentTemplate?>.Success(null);
+
+            return Response<ClinicConsentTemplate?>.Success(MapConsentTemplate(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicConsentTemplate?>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
+    public async Task<Response<ClinicConsentTemplate>> UpsertConsentTemplateAsync(
+        Guid clinicId,
+        UpsertClinicConsentTemplateRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(ServiceRegistration.HttpClientName);
+            using var response = await client
+                .PutAsJsonAsync(
+                    $"api/admin/clinics/{clinicId}/consent-template",
+                    new
+                    {
+                        templateId = request.TemplateId,
+                        title = request.Title,
+                        body = request.Body,
+                        isActive = request.IsActive
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await ReadErrorAsync(response, cancellationToken).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    error = "Only hospital administrators can edit the consent template.";
+                return Response<ClinicConsentTemplate>.Failure(error, (int)response.StatusCode);
+            }
+
+            var dto = await response.Content
+                .ReadFromJsonAsync<ConsentTemplateDto>(JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            if (dto is null)
+                return Response<ClinicConsentTemplate>.Failure("Could not save the consent template.");
+
+            return Response<ClinicConsentTemplate>.Success(MapConsentTemplate(dto));
+        }
+        catch (HttpRequestException)
+        {
+            return Response<ClinicConsentTemplate>.Failure(
+                "We couldn't reach the server. Check your connection and try again.");
+        }
+    }
+
     private static ClinicStaffMember MapStaff(ClinicStaffMemberDto dto) => new()
     {
         UserId = dto.UserId,
@@ -3418,7 +3573,18 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         Type = dto.Type,
         Status = dto.Status,
         Reason = dto.Reason,
-        ActiveVisitId = dto.ActiveVisitId
+        ActiveVisitId = dto.ActiveVisitId,
+        ConsentSigned = dto.ConsentSigned,
+        ConsentSignedAt = dto.ConsentSignedAt
+    };
+
+    private static ClinicConsentTemplate MapConsentTemplate(ConsentTemplateDto dto) => new()
+    {
+        Id = dto.Id,
+        ClinicId = dto.ClinicId,
+        Title = dto.Title,
+        Body = dto.Body,
+        IsActive = dto.IsActive
     };
 
     private static ClinicVisitDetail MapVisit(VisitDetailDto dto) => new()
@@ -3435,6 +3601,12 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         VisitType = dto.VisitType,
         Status = dto.Status,
         Summary = dto.Summary,
+        InvoiceId = dto.InvoiceId,
+        InvoiceAmount = dto.InvoiceAmount,
+        InvoiceStatus = dto.InvoiceStatus,
+        InvoiceCurrency = dto.InvoiceCurrency,
+        ConsentSigned = dto.ConsentSigned,
+        ConsentSignedAt = dto.ConsentSignedAt,
         Vitals = dto.Vitals?.Select(v => new ClinicVisitVital
         {
             Id = v.Id,
@@ -3448,6 +3620,19 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         ClinicalNotes = dto.ClinicalNotes?.Select(MapClinicalNote).ToList() ?? [],
         SoapNotes = dto.SoapNotes?.Select(MapSoapNote).ToList() ?? [],
         LabResults = dto.LabResults?.Select(MapLabResult).ToList() ?? []
+    };
+
+    private static ClinicDaySheetItem MapDaySheetItem(DaySheetItemDto dto) => new()
+    {
+        InvoiceId = dto.InvoiceId,
+        VisitId = dto.VisitId,
+        PatientId = dto.PatientId,
+        PatientName = dto.PatientName,
+        Amount = dto.Amount,
+        Currency = dto.Currency,
+        Status = dto.Status,
+        PaidAt = dto.PaidAt,
+        Description = dto.Description
     };
 
     private sealed class PagedClinicsDto
@@ -3714,6 +3899,17 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string Status { get; set; } = string.Empty;
         public string? Reason { get; set; }
         public Guid? ActiveVisitId { get; set; }
+        public bool ConsentSigned { get; set; }
+        public DateTime? ConsentSignedAt { get; set; }
+    }
+
+    private sealed class ConsentTemplateDto
+    {
+        public Guid Id { get; set; }
+        public Guid ClinicId { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Body { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
     }
 
     private sealed class VisitDetailDto
@@ -3730,12 +3926,31 @@ public sealed class AdminClinicService(IHttpClientFactory httpClientFactory) : I
         public string VisitType { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string? Summary { get; set; }
+        public Guid? InvoiceId { get; set; }
+        public decimal? InvoiceAmount { get; set; }
+        public string? InvoiceStatus { get; set; }
+        public string? InvoiceCurrency { get; set; }
+        public bool ConsentSigned { get; set; }
+        public DateTime? ConsentSignedAt { get; set; }
         public List<VisitVitalDto>? Vitals { get; set; }
         public List<VisitDiagnosisDto>? Diagnoses { get; set; }
         public List<VisitPrescriptionDto>? Prescriptions { get; set; }
         public List<VisitNoteDto>? ClinicalNotes { get; set; }
         public List<VisitSoapNoteDto>? SoapNotes { get; set; }
         public List<VisitLabResultDto>? LabResults { get; set; }
+    }
+
+    private sealed class DaySheetItemDto
+    {
+        public Guid InvoiceId { get; set; }
+        public Guid VisitId { get; set; }
+        public Guid PatientId { get; set; }
+        public string PatientName { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+        public string Currency { get; set; } = "ZAR";
+        public string Status { get; set; } = string.Empty;
+        public DateTime? PaidAt { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 
     private sealed class VisitVitalDto

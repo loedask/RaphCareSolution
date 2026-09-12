@@ -771,6 +771,42 @@
   <data name="Common_HospitalProfileEyebrow" xml:space="preserve">
     <value>Hospital profile</value>
   </data>
+  <data name="Common_ConsentTemplateEyebrow" xml:space="preserve">
+    <value>Pre-visit consent</value>
+  </data>
+  <data name="Common_ConsentTemplateTitle" xml:space="preserve">
+    <value>Practice consent form</value>
+  </data>
+  <data name="Common_ConsentTemplateLead" xml:space="preserve">
+    <value>Patients see this text in the app before a visit and can tap Agree. Completing a visit does not require a signature.</value>
+  </data>
+  <data name="Common_ConsentFormTitle" xml:space="preserve">
+    <value>Form title</value>
+  </data>
+  <data name="Common_ConsentFormBody" xml:space="preserve">
+    <value>Consent text</value>
+  </data>
+  <data name="Common_ConsentIsActive" xml:space="preserve">
+    <value>Active (patients can agree)</value>
+  </data>
+  <data name="Common_ConsentSigned" xml:space="preserve">
+    <value>Signed</value>
+  </data>
+  <data name="Common_ConsentNotSigned" xml:space="preserve">
+    <value>Not signed</value>
+  </data>
+  <data name="Common_ConsentColumn" xml:space="preserve">
+    <value>Consent</value>
+  </data>
+  <data name="Common_ConsentNotSignedWarn" xml:space="preserve">
+    <value>The patient has not agreed to the practice consent form yet. You can still complete this visit.</value>
+  </data>
+  <data name="Common_CouldNotSaveConsentTemplate" xml:space="preserve">
+    <value>Could not save the consent form.</value>
+  </data>
+  <data name="Common_ConsentTemplateSaved" xml:space="preserve">
+    <value>Consent form saved.</value>
+  </data>
   <data name="Common_LocationsEyebrow" xml:space="preserve">
     <value>Locations</value>
   </data>
@@ -3851,5 +3887,86 @@
   </data>
   <data name="Fleet_StatusInStock" xml:space="preserve">
     <value>In stock</value>
+  </data>
+  <data name="Visit_BillAmountLabel" xml:space="preserve">
+    <value>Bill amount</value>
+  </data>
+  <data name="Visit_BillDescriptionLabel" xml:space="preserve">
+    <value>Bill description</value>
+  </data>
+  <data name="Visit_BillDescriptionDefault" xml:space="preserve">
+    <value>Consultation</value>
+  </data>
+  <data name="Visit_CompletedWithInvoice" xml:space="preserve">
+    <value>Visit completed. Invoice {0} {1}.</value>
+  </data>
+  <data name="Visit_InvoiceSummary" xml:space="preserve">
+    <value>Invoice {0} {1} ({2})</value>
+  </data>
+  <data name="DaySheet_PageTitle" xml:space="preserve">
+    <value>Day sheet</value>
+  </data>
+  <data name="DaySheet_Title" xml:space="preserve">
+    <value>Day sheet</value>
+  </data>
+  <data name="DaySheet_Lead" xml:space="preserve">
+    <value>Today's visit invoices for {0}.</value>
+  </data>
+  <data name="DaySheet_Loading" xml:space="preserve">
+    <value>Loading day sheet…</value>
+  </data>
+  <data name="DaySheet_SectionsAria" xml:space="preserve">
+    <value>Day sheet sections</value>
+  </data>
+  <data name="DaySheet_Eyebrow" xml:space="preserve">
+    <value>Billing</value>
+  </data>
+  <data name="DaySheet_TodaysList" xml:space="preserve">
+    <value>Today's invoices</value>
+  </data>
+  <data name="DaySheet_TodaysListLead" xml:space="preserve">
+    <value>Visit invoices created or paid today. Mark cash payments as paid when the patient settles.</value>
+  </data>
+  <data name="DaySheet_Empty" xml:space="preserve">
+    <value>No visit invoices for today yet.</value>
+  </data>
+  <data name="DaySheet_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="DaySheet_DescriptionColumn" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="DaySheet_AmountColumn" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="DaySheet_PaidAtColumn" xml:space="preserve">
+    <value>Paid at</value>
+  </data>
+  <data name="DaySheet_MarkPaid" xml:space="preserve">
+    <value>Mark paid</value>
+  </data>
+  <data name="DaySheet_MarkedPaid" xml:space="preserve">
+    <value>Invoice marked as paid in cash.</value>
+  </data>
+  <data name="DaySheet_CouldNotLoad" xml:space="preserve">
+    <value>Could not load the day sheet.</value>
+  </data>
+  <data name="DaySheet_CouldNotMarkPaid" xml:space="preserve">
+    <value>Could not mark the invoice as paid.</value>
+  </data>
+  <data name="DaySheet_PendingChip" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="DaySheet_PaidChip" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="DaySheet_StatusLine" xml:space="preserve">
+    <value>{0} pending, {1} paid</value>
+  </data>
+  <data name="DaySheet_StatusPaid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="DaySheet_StatusPending" xml:space="preserve">
+    <value>Pending</value>
   </data>
 </root>
