@@ -1427,8 +1427,14 @@ Accessible. Intelligent. Human.</value>
   <data name="WatchReadingsHeartRateLabel" xml:space="preserve">
     <value>Heart rate</value>
   </data>
+  <data name="WatchReadingsHeartRateValueFormat" xml:space="preserve">
+    <value>{0} bpm</value>
+  </data>
   <data name="WatchReadingsSpo2Label" xml:space="preserve">
     <value>Blood oxygen</value>
+  </data>
+  <data name="WatchReadingsSpo2ValueFormat" xml:space="preserve">
+    <value>{0} %</value>
   </data>
   <data name="WatchReadingsMeasureButton" xml:space="preserve">
     <value>Measure now</value>

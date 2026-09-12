@@ -97,12 +97,12 @@ public sealed class WatchReadingsViewModel : BaseViewModel, IDisposable
 
     public string? HeartRateValue =>
         _lastVitals?.HeartRateBpm is int bpm
-            ? Format(T("DevicesHeartRateFormat"), bpm)
+            ? Format(T("WatchReadingsHeartRateValueFormat"), bpm)
             : T("WatchReadingsValueEmpty");
 
     public string? Spo2Value =>
         _lastVitals?.SpO2Percent is decimal spo2
-            ? Format(T("DevicesSpO2Format"), spo2)
+            ? Format(T("WatchReadingsSpo2ValueFormat"), spo2)
             : T("WatchReadingsValueEmpty");
 
     public bool CanMeasure =>

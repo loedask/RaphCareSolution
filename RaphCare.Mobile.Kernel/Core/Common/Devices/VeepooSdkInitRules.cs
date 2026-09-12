@@ -64,4 +64,29 @@ public static class VeepooSdkInitRules
     /// an explicit <c>stopScanDevice</c> from the coordinator.
     /// </summary>
     public static bool ShouldUseTimedStartScanOverload => false;
+
+    /// <summary>
+    /// Java reflection <c>Class.isInstance</c> is always false for primitive parameter types.
+    /// Boxed args (for example <c>java.lang.Boolean</c> for <c>boolean</c>) must still match
+    /// so <c>Method.invoke</c> can unbox. Huawei 1.9.4: <c>confirmDevicePwd(..., boolean)</c>
+    /// never matched when passing <c>Boolean.FALSE</c>.
+    /// </summary>
+    public static bool IsBoxedCompatibleWithJavaPrimitive(string? parameterTypeName, string? argClassName)
+    {
+        if (string.IsNullOrWhiteSpace(parameterTypeName) || string.IsNullOrWhiteSpace(argClassName))
+            return false;
+
+        return parameterTypeName switch
+        {
+            "boolean" => argClassName is "boolean" or "java.lang.Boolean",
+            "byte" => argClassName is "byte" or "java.lang.Byte",
+            "char" => argClassName is "char" or "java.lang.Character",
+            "short" => argClassName is "short" or "java.lang.Short",
+            "int" => argClassName is "int" or "java.lang.Integer",
+            "long" => argClassName is "long" or "java.lang.Long",
+            "float" => argClassName is "float" or "java.lang.Float",
+            "double" => argClassName is "double" or "java.lang.Double",
+            _ => false
+        };
+    }
 }

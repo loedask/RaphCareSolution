@@ -140,6 +140,16 @@ public sealed class DevicesBleSessionPolicyTests
         Assert.True(DevicesBleSessionPolicy.PreferOfficialMacOnlyConnectDeviceOverload);
         Assert.True(DevicesBleSessionPolicy.WarmUpVendorSdkOnDevicesAppear);
         Assert.True(DevicesBleSessionPolicy.VendorNativeScanTimeout >= TimeSpan.FromSeconds(10));
+        // Huawei 1.9.3: finally stopScanDevice after PWD-1 killed the process (SCAN-STOP).
+        Assert.False(DevicesBleSessionPolicy.ShouldStopVendorScanAfterNativeProbe);
+    }
+
+    [Fact]
+    public void VendorNativeScanProbeMustNotStopScanAfterConnectOnDefaultPolicy()
+    {
+        // Regression: 1.9.3 finally always called StopVendorScanAsync after ConnectAndHandshake
+        // (or its failure). Trail: WAIT-NOTIFY → PWD-1 → SCAN-STOP then force-close.
+        Assert.False(DevicesBleSessionPolicy.ShouldStopVendorScanAfterNativeProbe);
     }
 
     [Fact]
@@ -151,6 +161,20 @@ public sealed class DevicesBleSessionPolicyTests
         Assert.True(DevicesBleSessionPolicy.VendorConnectMaxAttempts >= 2);
         Assert.True(DevicesBleSessionPolicy.LiveMeasureOverallTimeout
                     > DevicesBleSessionPolicy.LiveMeasureTimeout);
+        Assert.True(DevicesBleSessionPolicy.LiveHeartRateSettleWindow >= TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public void HeartMeasureFinishesOnlyAfterSettleWindowFromFirstSample()
+    {
+        // Regression: first NORMAL sample was locked immediately (app 66 vs later watch 72).
+        var first = new DateTimeOffset(2026, 9, 12, 17, 34, 0, TimeSpan.Zero);
+        Assert.False(DevicesBleSessionPolicy.ShouldFinishHeartMeasureAfterSettle(
+            null, first, TimeSpan.FromSeconds(8)));
+        Assert.False(DevicesBleSessionPolicy.ShouldFinishHeartMeasureAfterSettle(
+            first, first.AddSeconds(3), TimeSpan.FromSeconds(8)));
+        Assert.True(DevicesBleSessionPolicy.ShouldFinishHeartMeasureAfterSettle(
+            first, first.AddSeconds(8), TimeSpan.FromSeconds(8)));
     }
 
     [Fact]

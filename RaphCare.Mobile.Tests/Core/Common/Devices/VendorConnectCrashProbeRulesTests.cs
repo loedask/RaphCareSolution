@@ -55,16 +55,18 @@ public sealed class VendorConnectCrashProbeRulesTests
     }
 
     [Fact]
-    public void ScanStopMessageMustDistinguishDiedAfterScanBeforeConnect()
+    public void ScanStopMessageMustDistinguishDiedWhileStoppingScanDuringConnect()
     {
         // Regression: 1.8.47 ClearedProbe on SCAN-STOP, so a crash before connectDevice
         // left no relaunch message. SCAN-STOP must report as incomplete and say so clearly.
+        // 1.9.4: wording covers stop during handshake (Huawei PWD-1 → SCAN-STOP), not only
+        // "before Connect" housekeeping.
         var scanStop = VendorConnectCrashProbeRules.PatientMessageForIncompleteStep(
             VendorConnectCrashProbeRules.StepScanStop);
         var connectInvoke = VendorConnectCrashProbeRules.PatientMessageForIncompleteStep(
             VendorConnectCrashProbeRules.StepConnectInvoke);
         Assert.Contains("stopping the watch SDK scan", scanStop, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("before Connect finished", scanStop, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("during Connect", scanStop, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("stopping the watch SDK scan", connectInvoke, StringComparison.OrdinalIgnoreCase);
     }
 }

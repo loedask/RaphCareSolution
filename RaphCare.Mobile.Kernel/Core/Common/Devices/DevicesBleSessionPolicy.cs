@@ -148,6 +148,14 @@ public static class DevicesBleSessionPolicy
         TimeSpan.FromMilliseconds(1500);
 
     /// <summary>
+    /// After SCAN-KEEP + <c>connectDevice</c>, do not call <c>stopScanDevice</c> in the probe
+    /// finally. Huawei Nova 10 trail (1.9.3): <c>PWD-1</c> then finally <c>SCAN-STOP</c> killed
+    /// the process (~120ms). Leave the vendor scan running so password / person sync can finish;
+    /// Inuker times the scan out on its own.
+    /// </summary>
+    public static bool ShouldStopVendorScanAfterNativeProbe => false;
+
+    /// <summary>
     /// After a native Connect abort, Devices appear must show the breadcrumb and must not
     /// auto-reconnect (that re-enters connectDevice and can crash again before the user reads it).
     /// </summary>
@@ -189,6 +197,23 @@ public static class DevicesBleSessionPolicy
 
     /// <summary>How long Measure waits for the first heart rate or oxygen sample after handshake.</summary>
     public static TimeSpan LiveMeasureTimeout { get; } = TimeSpan.FromSeconds(40);
+
+    /// <summary>
+    /// After the first accepted HR sample, keep listening this long and keep the latest
+    /// reading. Measure used to lock the first NORMAL sample immediately (Huawei: app 66
+    /// while a later on-watch test showed 72).
+    /// </summary>
+    public static TimeSpan LiveHeartRateSettleWindow { get; } = TimeSpan.FromSeconds(8);
+
+    /// <summary>
+    /// True when Measure has held at least one accepted HR sample for the settle window.
+    /// </summary>
+    public static bool ShouldFinishHeartMeasureAfterSettle(
+        DateTimeOffset? firstAcceptedSampleAt,
+        DateTimeOffset now,
+        TimeSpan settleWindow) =>
+        firstAcceptedSampleAt is not null
+        && now - firstAcceptedSampleAt >= settleWindow;
 
     /// <summary>
     /// Vendor connect + notify must finish within this window or Measure aborts.
@@ -262,23 +287,29 @@ public static class DevicesBleSessionPolicy
         !coordinatorUsingVendorSession && bridgeSessionReady;
 
     /// <summary>
-    /// Mid-Measure Plugin.BLE → Veepoo handshake force-closed the app when GATT was still up.
-    /// Handshake during Measure is allowed only when there is no Plugin.BLE GATT to steal.
+    /// Mid-Measure Veepoo handshake is allowed when Plugin.BLE GATT is not holding the radio,
+    /// or when Measure will release GATT first then handshake (vendor-scan probe builds).
+    /// Calling <c>connectDevice</c> while Plugin.BLE still owns GATT force-closes the app.
     /// </summary>
     public static bool ShouldEstablishVendorSessionForMeasure(
         bool enableVendorLiveMeasure,
-        bool preferExclusiveVendorSession,
         bool vendorSdkAvailable,
         bool alreadyUsingVendorSession,
         bool hasBluetoothMac,
-        bool pluginBleGattConnected) =>
+        bool pluginBleGattConnected,
+        bool mayReleasePluginBleThenVendorHandshake) =>
         enableVendorLiveMeasure
-        && preferExclusiveVendorSession
         && vendorSdkAvailable
         && !alreadyUsingVendorSession
         && hasBluetoothMac
-        && AllowVendorConnectDuringMeasureWhenNoGatt
-        && !pluginBleGattConnected;
+        && (!pluginBleGattConnected || mayReleasePluginBleThenVendorHandshake);
+
+    /// <summary>
+    /// Probe / exclusive builds: Measure may drop Plugin.BLE then run Veepoo handshake so
+    /// normal Scan → Connect → Measure works (Huawei 1.9.7: Bluetooth-only error).
+    /// </summary>
+    public static bool MayReleasePluginBleThenVendorHandshakeForMeasure =>
+        PreferExclusiveVendorSession || UseVeepooNativeScanProbe;
 
     /// <summary>
     /// When true, Measure starts SpO₂ after the first heart-rate sample.

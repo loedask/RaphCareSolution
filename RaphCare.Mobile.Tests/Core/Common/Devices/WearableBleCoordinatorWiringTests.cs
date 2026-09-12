@@ -138,6 +138,7 @@ public sealed class WearableBleCoordinatorWiringTests
         Assert.True(connectIdx > matchIdx);
         var betweenMatchAndConnect = body[matchIdx..connectIdx];
         Assert.DoesNotContain("StopVendorScanAsync", betweenMatchAndConnect, StringComparison.Ordinal);
+        Assert.Contains("ShouldStopVendorScanAfterNativeProbe", body, StringComparison.Ordinal);
         Assert.Contains("UseVeepooNativeScanProbe", body, StringComparison.Ordinal);
         Assert.Contains("ReleaseActivePluginBleWithoutVendorHandoffAsync", body, StringComparison.Ordinal);
 

@@ -505,7 +505,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         var heart = args[0]!;
                         var statusName = ReadEnumName(heart, "getHeartStatus", "heartStatus");
                         var bpm = ReadIntProperty(heart, "getData", "data", "getHeartRate", "heartRate", "getValue", "value");
-                        Log.Debug(Tag, $"Heart sample status={statusName ?? "(null)"} bpm={bpm?.ToString(CultureInfo.InvariantCulture) ?? "(null)"} raw={heart}");
+                        Log.Info(Tag, $"Heart sample status={statusName ?? "(null)"} bpm={bpm?.ToString(CultureInfo.InvariantCulture) ?? "(null)"}");
 
                         if (WearableHeartDetectRules.IsBlockingHeartStatus(statusName))
                         {
@@ -527,7 +527,7 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
                         }
                         else
                         {
-                            Log.Warn(Tag, $"Heart callback ignored status={statusName} bpm={bpm}");
+                            Log.Info(Tag, $"Heart callback ignored status={statusName} bpm={bpm}");
                         }
                     }
                     catch (Exception ex)
@@ -703,7 +703,10 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             var ok = TryInvoke(manager, "confirmDevicePwd", write, pwdProxy, functionProxy, socialProxy, customProxy, pwd, is24)
                      || TryInvoke(manager, "confirmDevicePwd", write, pwdProxy, functionProxy, socialProxy, pwd, is24);
             if (!ok)
+            {
+                Log.Error(Tag, "confirmDevicePwd overload not found (check boolean primitive match).");
                 throw new InvalidOperationException("confirmDevicePwd overload not found.");
+            }
         }).ConfigureAwait(false);
 
         // Some firmwares never fire pwd callback if already paired; allow timeout fall-through.
@@ -1190,6 +1193,13 @@ public sealed class HBandAndroidWearableBridge : IHBandWearableBridge, IDisposab
             if (arg is null)
             {
                 if (pt.IsPrimitive)
+                    return false;
+                continue;
+            }
+
+            if (pt.IsPrimitive)
+            {
+                if (!VeepooSdkInitRules.IsBoxedCompatibleWithJavaPrimitive(pt.Name, arg.Class?.Name))
                     return false;
                 continue;
             }

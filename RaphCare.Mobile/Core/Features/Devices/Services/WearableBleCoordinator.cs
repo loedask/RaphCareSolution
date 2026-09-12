@@ -558,13 +558,18 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             finally
             {
                 _hband.VendorScanDeviceFound -= OnVendorDeviceFound;
-                try
+                // SCAN-KEEP: stopScanDevice in this finally force-closed Huawei after PWD-1
+                // (trail SCAN-STOP). Policy keeps scan warm through handshake; Inuker times out.
+                if (DevicesBleSessionPolicy.ShouldStopVendorScanAfterNativeProbe)
                 {
-                    await _hband.StopVendorScanAsync(CancellationToken.None).ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Best-effort stop after cancel or failure.
+                    try
+                    {
+                        await _hband.StopVendorScanAsync(CancellationToken.None).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Best-effort stop when policy re-enables cleanup.
+                    }
                 }
             }
         }
@@ -1257,11 +1262,12 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                 var pluginBleGattConnected = device is { State: DeviceState.Connected };
                 if (DevicesBleSessionPolicy.ShouldEstablishVendorSessionForMeasure(
                         DevicesBleSessionPolicy.EnableVendorLiveMeasure,
-                        DevicesBleSessionPolicy.PreferExclusiveVendorSession,
                         _hband.IsAvailable,
                         alreadyUsingVendorSession: false,
                         hasBluetoothMac: !string.IsNullOrWhiteSpace(mac),
-                        pluginBleGattConnected: pluginBleGattConnected))
+                        pluginBleGattConnected: pluginBleGattConnected,
+                        mayReleasePluginBleThenVendorHandshake: DevicesBleSessionPolicy
+                            .MayReleasePluginBleThenVendorHandshakeForMeasure))
                 {
                     try
                     {
@@ -1300,11 +1306,28 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
             }
 
             var tcs = new TaskCompletionSource<WearableVitalsSnapshot>(TaskCreationOptions.RunContinuationsAsynchronously);
+            WearableVitalsSnapshot? bestHeart = null;
+            DateTimeOffset? firstHeartAt = null;
             void OnMeasureSample(object? sender, WearableVitalsSnapshot snap)
             {
                 if (!snap.HeartRateBpm.HasValue && !snap.SpO2Percent.HasValue)
                     return;
                 MergeLastVitals(snap);
+                if (snap.HeartRateBpm.HasValue)
+                {
+                    bestHeart = snap;
+                    firstHeartAt ??= DateTimeOffset.UtcNow;
+                    if (DevicesBleSessionPolicy.ShouldFinishHeartMeasureAfterSettle(
+                            firstHeartAt,
+                            DateTimeOffset.UtcNow,
+                            DevicesBleSessionPolicy.LiveHeartRateSettleWindow))
+                    {
+                        tcs.TrySetResult(bestHeart);
+                    }
+
+                    return;
+                }
+
                 tcs.TrySetResult(snap);
             }
 
@@ -1329,7 +1352,24 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                 sampleCts.CancelAfter(DevicesBleSessionPolicy.LiveMeasureTimeout);
                 try
                 {
-                    using var reg = sampleCts.Token.Register(() => tcs.TrySetCanceled(sampleCts.Token));
+                    // Poll settle completion: samples update bestHeart; finish after the window
+                    // from the first accepted HR (or when tcs completes from the handler).
+                    while (!tcs.Task.IsCompleted)
+                    {
+                        sampleCts.Token.ThrowIfCancellationRequested();
+                        if (DevicesBleSessionPolicy.ShouldFinishHeartMeasureAfterSettle(
+                                firstHeartAt,
+                                DateTimeOffset.UtcNow,
+                                DevicesBleSessionPolicy.LiveHeartRateSettleWindow)
+                            && bestHeart is not null)
+                        {
+                            tcs.TrySetResult(bestHeart);
+                            break;
+                        }
+
+                        await Task.Delay(250, sampleCts.Token).ConfigureAwait(false);
+                    }
+
                     var sample = await tcs.Task.ConfigureAwait(false);
 
                     try
@@ -1360,6 +1400,20 @@ public sealed class WearableBleCoordinator : IWearableBleCoordinator, IDisposabl
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
+                    if (bestHeart is not null)
+                    {
+                        try
+                        {
+                            await _hband.StopLiveDetectionsAsync(CancellationToken.None).ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            // best-effort
+                        }
+
+                        return bestHeart;
+                    }
+
                     // Wear/busy/battery already raised via ErrorOccurred; do not overwrite with timeout copy.
                     if (string.IsNullOrWhiteSpace(blockingHeartMessage))
                     {

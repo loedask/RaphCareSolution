@@ -75,7 +75,7 @@ public static class VendorConnectCrashProbeRules
                 "The app closed after the watch SDK found the watch (" + step
                 + "), before Connect finished.",
             StepScanStop =>
-                "The app closed after stopping the watch SDK scan, before Connect finished ("
+                "The app closed while stopping the watch SDK scan during Connect ("
                 + step + ").",
             StepScanProxyFailed =>
                 "The app closed while preparing the watch SDK scan listener (" + step + ").",

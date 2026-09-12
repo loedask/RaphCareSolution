@@ -6,12 +6,16 @@ namespace RaphCare.Mobile.Tests.Core.Common.Devices;
 public sealed class WearableHeartDetectRulesTests
 {
     [Fact]
-    public void AcceptsNormalDetectBpmAndRejectsWearError()
+    public void AcceptsOnlySettledHeartSampleNotInterimDetect()
     {
-        Assert.True(WearableHeartDetectRules.ShouldAcceptHeartSample("STATE_HEART_DETECT", 72));
-        Assert.True(WearableHeartDetectRules.ShouldAcceptHeartSample("STATE_HEART_NORMAL", 68));
+        // Regression: Measure accepted STATE_HEART_DETECT (early 70 bpm) then stopped;
+        // watch later showed 85 under STATE_HEART_NORMAL.
+        Assert.False(WearableHeartDetectRules.ShouldAcceptHeartSample("STATE_HEART_DETECT", 70));
+        Assert.False(WearableHeartDetectRules.ShouldAcceptHeartSample("STATE_INIT", 70));
+        Assert.True(WearableHeartDetectRules.ShouldAcceptHeartSample("STATE_HEART_NORMAL", 85));
+        Assert.True(WearableHeartDetectRules.ShouldAcceptHeartSample(null, 72));
         Assert.False(WearableHeartDetectRules.ShouldAcceptHeartSample("STATE_HEART_WEAR_ERROR", 72));
-        Assert.False(WearableHeartDetectRules.ShouldAcceptHeartSample("STATE_HEART_DETECT", 5));
+        Assert.False(WearableHeartDetectRules.ShouldAcceptHeartSample("STATE_HEART_NORMAL", 5));
         Assert.False(WearableHeartDetectRules.ShouldAcceptHeartSample(null, null));
     }
 

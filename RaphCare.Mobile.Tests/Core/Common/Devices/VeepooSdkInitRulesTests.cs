@@ -66,4 +66,17 @@ public sealed class VeepooSdkInitRulesTests
         // Timed startScanDevice(int, …) may schedule its own stop; keep untimed only.
         Assert.False(VeepooSdkInitRules.ShouldUseTimedStartScanOverload);
     }
+
+    [Fact]
+    public void BoxedBooleanMustMatchConfirmDevicePwdPrimitiveParameter()
+    {
+        // Regression: Huawei 1.9.4 stayed open at PWD-1 then failed with
+        // "confirmDevicePwd overload not found" because Class.isInstance is false for
+        // boolean primitives when args are java.lang.Boolean.
+        Assert.True(VeepooSdkInitRules.IsBoxedCompatibleWithJavaPrimitive(
+            "boolean", "java.lang.Boolean"));
+        Assert.True(VeepooSdkInitRules.IsBoxedCompatibleWithJavaPrimitive("int", "java.lang.Integer"));
+        Assert.False(VeepooSdkInitRules.IsBoxedCompatibleWithJavaPrimitive("boolean", "java.lang.Integer"));
+        Assert.False(VeepooSdkInitRules.IsBoxedCompatibleWithJavaPrimitive("boolean", null));
+    }
 }

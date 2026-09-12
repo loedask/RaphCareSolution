@@ -52,23 +52,38 @@ public sealed class WearableLiveMeasureSessionRulesTests
     }
 
     [Fact]
-    public void MeasureMustNotStealRadioFromActivePluginBleGatt()
+    public void MeasureMustNotStealRadioFromActivePluginBleGattWithoutReleaseHandoff()
     {
         // Dual-stack handoff (GATT Connected → Veepoo mid-Measure) force-closed the app.
         Assert.False(DevicesBleSessionPolicy.ShouldEstablishVendorSessionForMeasure(
             enableVendorLiveMeasure: true,
-            preferExclusiveVendorSession: true,
             vendorSdkAvailable: true,
             alreadyUsingVendorSession: false,
             hasBluetoothMac: true,
-            pluginBleGattConnected: true));
+            pluginBleGattConnected: true,
+            mayReleasePluginBleThenVendorHandshake: false));
         Assert.True(DevicesBleSessionPolicy.ShouldEstablishVendorSessionForMeasure(
             enableVendorLiveMeasure: true,
-            preferExclusiveVendorSession: true,
             vendorSdkAvailable: true,
             alreadyUsingVendorSession: false,
             hasBluetoothMac: true,
-            pluginBleGattConnected: false));
+            pluginBleGattConnected: false,
+            mayReleasePluginBleThenVendorHandshake: false));
+    }
+
+    [Fact]
+    public void ProbeBuildMayReleasePluginBleThenVendorHandshakeOnMeasure()
+    {
+        // Regression: Huawei normal Scan → Connect → Measure said Bluetooth only while
+        // vendor-scan probe Measure worked. Probe builds release GATT then handshake.
+        Assert.True(DevicesBleSessionPolicy.MayReleasePluginBleThenVendorHandshakeForMeasure);
+        Assert.True(DevicesBleSessionPolicy.ShouldEstablishVendorSessionForMeasure(
+            enableVendorLiveMeasure: true,
+            vendorSdkAvailable: true,
+            alreadyUsingVendorSession: false,
+            hasBluetoothMac: true,
+            pluginBleGattConnected: true,
+            mayReleasePluginBleThenVendorHandshake: true));
     }
 
     [Fact]

@@ -8,6 +8,9 @@ public static class WearableHeartDetectRules
     /// <summary>
     /// True when <paramref name="bpm"/> is a usable live heart rate for the patient UI.
     /// Wear-error / low-battery statuses are rejected even if a number is present.
+    /// Interim <c>STATE_HEART_DETECT</c> samples are rejected: Measure takes the first
+    /// accepted sample and stops, so accepting DETECT locked an early value (Huawei: 70
+    /// while the watch later showed 85 under <c>STATE_HEART_NORMAL</c>).
     /// </summary>
     public static bool ShouldAcceptHeartSample(string? heartStatusName, int? bpm)
     {
@@ -17,7 +20,12 @@ public static class WearableHeartDetectRules
         if (IsBlockingHeartStatus(heartStatusName))
             return false;
 
-        return true;
+        if (heartStatusName is "STATE_HEART_DETECT" or "STATE_INIT")
+            return false;
+
+        // Prefer NORMAL; allow null/unknown status so older firmwares still work.
+        return heartStatusName is null
+            or "STATE_HEART_NORMAL";
     }
 
     /// <summary>Statuses where Measure should stop and tell the patient what to fix.</summary>
